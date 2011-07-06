@@ -129,7 +129,15 @@ private:
     struct {
       bool reading_label:1;
       bool reading_seq:1;
+      bool active:1;
+      bool wait_greater:1;
+      bool wait_equal:1;
+      bool wait_less:1;
+      unsigned int wait_reg:4;
+      unsigned int wait_dst:4;
     };
+    int wait_value;
+    
     cCodeLabel read_label;
     cCodeLabel read_seq;
     cCodeLabel next_label;
@@ -196,6 +204,8 @@ private:
     bool m_slip_read_head:1;
 
     bool m_io_expire:1;
+    
+    unsigned int m_waiting_threads:4;
   };
   
 
@@ -356,9 +366,10 @@ private:
 
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
-  inline void setInternalValue(sInternalValue& dest, int value, bool from_env = false);
-  inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& src);
-  inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2);  
+  inline void setInternalValue(int reg_num, int value, bool from_env = false);
+  inline void setInternalValue(int reg_num, int value, const sInternalValue& src);
+  inline void setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2);
+  void checkWaitingThreads(int cur_thread, int reg_num);
 
   void ReadInst(cInstruction in_inst);
   
@@ -450,6 +461,10 @@ private:
   bool Inst_Search_Seq_Direct_F(cAvidaContext& ctx);
   bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
+  
+  bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Less(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
   
   // Promoter Model
   bool Inst_Promoter(cAvidaContext& ctx);
@@ -553,33 +568,39 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
   return value.value;
 }
 
-inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, bool from_env)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env)
 {
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
   dest.originated = m_cycle_count;
   dest.oldest_component = m_cycle_count;
   dest.env_component = from_env;
+  if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
 
-inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, const sInternalValue& src)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& src)
 {
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = src.oldest_component;
   dest.env_component = src.env_component;
+  if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
 
-inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
 {
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = (op1.oldest_component < op2.oldest_component) ? op1.oldest_component : op2.oldest_component;
   dest.env_component = (op1.env_component || op2.env_component);
+  if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
 

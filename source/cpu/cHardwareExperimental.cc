@@ -208,6 +208,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, nInstFlag::STALL, "Instantly kills the organism"),
 
+    tInstLibEntry<tMethod>("wait-cond-equ", &cHardwareExperimental::Inst_WaitCondition_Equal, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareExperimental::Inst_WaitCondition_Greater, nInstFlag::STALL, ""),
     
     
     // Promoter Model
@@ -291,8 +294,10 @@ void cHardwareExperimental::internalReset()
   
   // Reset that single thread.
   m_threads[0].Reset(this, 0);
+  m_threads[0].active = true;
   m_thread_id_chart = 1; // Mark only the first thread as taken...
   m_cur_thread = 0;
+  m_waiting_threads = 0;
   
   m_mal_active = false;
   m_executedmatchstrings = false;
@@ -334,6 +339,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   
   reading_label = false;
   reading_seq = false;
+  active = true;
   read_label.Clear();
   next_label.Clear();
 
@@ -379,6 +385,12 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     // Setup the hardware for the next instruction to be executed.
     int last_thread = m_cur_thread++;
     if (m_cur_thread >= num_threads) m_cur_thread = 0;
+
+    // If the currently selected thread is inactive, proceed to the next thread
+    if (!m_threads[m_cur_thread].active) {
+      if (num_inst_exec == 1) i--;  // When running in non-parallel mode, adjust i so that we will continue to loop
+      continue;
+    }
     
     m_advance_ip = true;
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
@@ -951,7 +963,7 @@ bool cHardwareExperimental::ForkThread()
   // Find the first free bit in m_thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
-  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+  while ((m_thread_id_chart >> new_id) & 1) new_id++;
   m_threads[num_threads].SetID(new_id);
   m_thread_id_chart |= (1 << new_id);
   
@@ -1189,6 +1201,35 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
 }
 
 
+void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
+{
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != cur_thread && !m_threads[i].active && m_threads[i].wait_reg == reg_num) {
+      int wait_value = m_threads[i].wait_value;
+      int check_value = m_threads[cur_thread].reg[reg_num].value;
+      if ((m_threads[i].wait_greater && check_value > wait_value) ||
+          (m_threads[i].wait_equal && check_value == wait_value) ||
+          (m_threads[i].wait_less && check_value < wait_value)) {
+        
+        // Wake up the thread with matched condition
+        m_threads[i].active = true;
+        m_waiting_threads--;
+        
+        // Set destination register to be the check value
+        sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
+        dest.value = check_value;
+        dest.from_env = false;
+        dest.originated = m_cycle_count;
+        dest.oldest_component = m_threads[cur_thread].reg[reg_num].oldest_component;
+        dest.env_component = m_threads[cur_thread].reg[reg_num].env_component;
+        
+        // Cascade check
+        if (m_waiting_threads) checkWaitingThreads(i, m_threads[i].wait_dst);
+      }
+    }
+  }
+}
+
 
 //////////////////////////
 // And the instructions...
@@ -1339,7 +1380,7 @@ bool cHardwareExperimental::Inst_Pop(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   sInternalValue pop = stackPop();
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], pop.value, pop);
+  setInternalValue(reg_used, pop.value, pop);
   return true;
 }
 
@@ -1375,16 +1416,14 @@ bool cHardwareExperimental::Inst_Swap(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_ShiftR(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value >> 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 bool cHardwareExperimental::Inst_ShiftL(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value << 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
@@ -1392,16 +1431,14 @@ bool cHardwareExperimental::Inst_ShiftL(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Inc(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value + 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 bool cHardwareExperimental::Inst_Dec(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value - 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
@@ -1411,10 +1448,9 @@ bool cHardwareExperimental::Inst_Add(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, r1.value + r2.value, r1, r2);
+  setInternalValue(dst, r1.value + r2.value, r1, r2);
   return true;
 }
 
@@ -1423,10 +1459,9 @@ bool cHardwareExperimental::Inst_Sub(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, r1.value - r2.value, r1, r2);
+  setInternalValue(dst, r1.value - r2.value, r1, r2);
   return true;
 }
 
@@ -1435,10 +1470,9 @@ bool cHardwareExperimental::Inst_Mult(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, r1.value * r2.value, r1, r2);
+  setInternalValue(dst, r1.value * r2.value, r1, r2);
   return true;
 }
 
@@ -1447,14 +1481,13 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     if (0 - INT_MAX > r1.value && r2.value == -1)
       m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
-      setInternalValue(dreg, r1.value / r2.value, r1, r2);
+      setInternalValue(dst, r1.value / r2.value, r1, r2);
   } else {
     m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
@@ -1467,11 +1500,10 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
-    setInternalValue(dreg, r1.value % r2.value, r1, r2);
+    setInternalValue(dst, r1.value % r2.value, r1, r2);
   } else {
     m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
@@ -1485,10 +1517,9 @@ bool cHardwareExperimental::Inst_Nand(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, ~(r1.value & r2.value), r1, r2);
+  setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
   return true;
 }
 
@@ -1500,9 +1531,8 @@ bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate max
   const int cur_size = m_memory.GetSize();
   const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
                              MAX_GENOME_LENGTH - cur_size);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[dst];
   if (Allocate_Main(ctx, alloc_size)) {
-    setInternalValue(reg, cur_size);
+    setInternalValue(dst, cur_size);
     return true;
   } else return false;
 }
@@ -1519,7 +1549,7 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
-  setInternalValue(reg, value_in, true);
+  setInternalValue(reg_used, value_in, true);
   m_organism->DoInput(value_in);
   
   return true;
@@ -1539,7 +1569,7 @@ bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
   
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
-  setInternalValue(reg, value_in, true);
+  setInternalValue(reg_used, value_in, true);
   m_organism->DoInput(value_in);
   
   return true;
@@ -1552,7 +1582,7 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext& ctx)
   
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], value_in, true);
+  setInternalValue(reg_used, value_in, true);
   m_organism->DoInput(value_in);
   
   return true;
@@ -1581,7 +1611,7 @@ bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
   
-  setInternalValue(reg, 0);
+  setInternalValue(reg_used, 0);
   
   return true;
 }
@@ -1706,7 +1736,7 @@ bool cHardwareExperimental::Inst_GetHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg], getHead(head_used).GetPosition());
+  setInternalValue(reg, getHead(head_used).GetPosition());
   return true;
 }
 
@@ -1788,7 +1818,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   } else {
     read_inst = getHead(head_id).GetInst();
   }
-  setInternalValue(m_threads[m_cur_thread].reg[dst], read_inst.GetOp());
+  setInternalValue(dst, read_inst.GetOp());
   ReadInst(read_inst);
   
   if (m_slip_read_head && m_organism->TestCopySlip(ctx))
@@ -1983,6 +2013,97 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
 
 
 
+bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext& ctx)
+{
+  const int wait_value = FindModifiedRegister(rBX);
+  const int check_reg = FindModifiedRegister(rDX);
+  const int wait_dst = FindModifiedRegister(wait_value);
+  
+  // Check if condition has already been met
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value == m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+      return true;
+    }
+  }
+  
+  // Fail to sleep if this is the last thread awake
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  
+  // Put thread to sleep with appropriate wait condition
+  m_threads[m_cur_thread].active = false;
+  m_waiting_threads++;
+  m_threads[m_cur_thread].wait_equal = true;
+  m_threads[m_cur_thread].wait_less = false;
+  m_threads[m_cur_thread].wait_greater = false;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext& ctx)
+{
+  const int wait_value = FindModifiedRegister(rBX);
+  const int check_reg = FindModifiedRegister(rDX);
+  const int wait_dst = FindModifiedRegister(wait_value);
+  
+  // Check if condition has already been met
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value < m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+      return true;
+    }
+  }
+  
+  // Fail to sleep if this is the last thread awake
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  
+  // Put thread to sleep with appropriate wait condition
+  m_threads[m_cur_thread].active = false;
+  m_waiting_threads++;
+  m_threads[m_cur_thread].wait_equal = false;
+  m_threads[m_cur_thread].wait_less = true;
+  m_threads[m_cur_thread].wait_greater = false;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext& ctx)
+{
+  const int wait_value = FindModifiedRegister(rBX);
+  const int check_reg = FindModifiedRegister(rDX);
+  const int wait_dst = FindModifiedRegister(wait_value);
+  
+  // Check if condition has already been met
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value > m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+      return true;
+    }
+  }
+  
+  // Fail to sleep if this is the last thread awake
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  
+  // Put thread to sleep with appropriate wait condition
+  m_threads[m_cur_thread].active = false;
+  m_waiting_threads++;
+  m_threads[m_cur_thread].wait_equal = false;
+  m_threads[m_cur_thread].wait_less = false;
+  m_threads[m_cur_thread].wait_greater = true;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
+  
+  return true;
+}
+
+
 // --------  Promoter Model  --------
 
 bool cHardwareExperimental::Inst_Promoter(cAvidaContext& ctx)
@@ -2087,7 +2208,7 @@ bool cHardwareExperimental::Do_Numberate(cAvidaContext& ctx, int num_bits)
   m_advance_ip = false;
   
   int num = Numberate(getIP().GetPosition(), +1, num_bits);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], num);
+  setInternalValue(reg_used, num);
   return true;
 }
 
@@ -2173,7 +2294,7 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
         // Set defaults for when no active promoter is found
         m_promoter_index = -1;
         getIP().Set(0);
-        setInternalValue(m_threads[m_cur_thread].reg[promoter_reg_used], 0);
+        setInternalValue(promoter_reg_used, 0);
         break;
         
       case 1: // Death to organisms that refuse to use promoters!
@@ -2192,7 +2313,7 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
     
     // Put its bit code in BX for the organism to have if option is set
     if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
-      setInternalValue(m_threads[m_cur_thread].reg[promoter_reg_used], m_promoters[m_promoter_index].bit_code);
+      setInternalValue(promoter_reg_used, m_promoters[m_promoter_index].bit_code);
   }  
 }
 
@@ -2251,7 +2372,7 @@ bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext& ctx)
   const int op1 = FindModifiedNextRegister(reg_used);
   sInternalValue& val = m_threads[m_cur_thread].reg[op1];
 
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
+  setInternalValue(reg_used, (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
   return true; 
 }
 
@@ -2262,7 +2383,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext& ctx)
   const int op1 = FindModifiedNextRegister(reg_used);
   sInternalValue& val = m_threads[m_cur_thread].reg[op1];
   
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
+  setInternalValue(reg_used, (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
   return true; 
 }
 
@@ -2270,7 +2391,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Execurate(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], m_threads[m_cur_thread].GetExecurate());
+  setInternalValue(reg_used, m_threads[m_cur_thread].GetExecurate());
   return true;
 }
 
@@ -2278,7 +2399,7 @@ bool cHardwareExperimental::Inst_Execurate(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], (MASK24 & m_threads[m_cur_thread].GetExecurate()));
+  setInternalValue(reg_used, (MASK24 & m_threads[m_cur_thread].GetExecurate()));
   return true;
 }
 
@@ -2428,7 +2549,7 @@ bool cHardwareExperimental::Inst_SGSense(cAvidaContext& ctx)
 {
   const cStateGrid& sg = m_organism->GetStateGrid();
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
+  setInternalValue(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
   return true; 
 }
 
