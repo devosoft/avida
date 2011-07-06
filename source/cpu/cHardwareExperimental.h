@@ -332,7 +332,7 @@ private:
   
   // --------  Thread Manipulation  -------
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
-  bool KillThread(); // Kill the current thread!
+  bool ExitThread(); // Kill the current thread!
   
   
   // ---------- Instruction Helpers -----------
@@ -381,7 +381,10 @@ private:
   
 
   // ---------- Instruction Library -----------
-
+  // Multi-threading
+  bool Inst_ForkThread(cAvidaContext& ctx);
+  bool Inst_ExitThread(cAvidaContext& ctx);
+    
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);

@@ -116,6 +116,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
     
+    // Threading instructions
+    tInstLibEntry<tMethod>("fork-thread", &cHardwareExperimental::Inst_ForkThread),
+    tInstLibEntry<tMethod>("exit-thread", &cHardwareExperimental::Inst_ExitThread),
+      
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
@@ -971,7 +975,7 @@ bool cHardwareExperimental::ForkThread()
 }
 
 
-bool cHardwareExperimental::KillThread()
+bool cHardwareExperimental::ExitThread()
 {
   // Make sure that there is always at least one thread...
   if (m_threads.GetSize() == 1) return false;
@@ -1234,6 +1238,21 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
 //////////////////////////
 // And the instructions...
 //////////////////////////
+
+// Multi-threading.
+bool cHardwareExperimental::Inst_ForkThread(cAvidaContext& ctx)
+{
+    getIP().Advance();
+    if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
+{
+    if (!ExitThread()) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+    else m_advance_ip = false;
+    return true;
+}
 
 bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
 {
