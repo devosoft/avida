@@ -85,7 +85,7 @@
 
 
 - (void) end {
-  driver->SetDone();
+  driver->Finish();
 }
 
 
