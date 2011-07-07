@@ -29,6 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "avida/core/Types.h"
 #include "avida/data/Types.h"
 
 @protocol CoreViewListener;
@@ -47,6 +48,8 @@ namespace Avida {
 
 - (id) init;
 - (AvidaRun*) initWithDirectory:(NSURL*)dir;
+
+- (Avida::World*) world;
 
 - (void) dealloc;
 - (void) finalize;
