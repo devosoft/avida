@@ -75,7 +75,7 @@ bool Avida::World::AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet)
   
   // Push new facet onto the end, then shift values until it is in position.
   m_facet_order.Push(facet);
-  for (int i = m_facet_order.GetSize() - 1; i > insert_at; i++) m_facet_order.Swap(i, i - 1);
+  for (int i = m_facet_order.GetSize() - 1; i > insert_at; i--) m_facet_order.Swap(i, i - 1);
   
   if (facet_id == Reserved::DataManagerFacetID) m_data_manager = facet;
   else if (facet_id == Reserved::EnvironmentFacetID) m_environment = facet;
