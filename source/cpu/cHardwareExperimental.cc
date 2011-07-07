@@ -116,10 +116,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
     
-    // Threading instructions
+    // Threading 
     tInstLibEntry<tMethod>("fork-thread", &cHardwareExperimental::Inst_ForkThread),
     tInstLibEntry<tMethod>("exit-thread", &cHardwareExperimental::Inst_ExitThread),
-      
+    tInstLibEntry<tMethod>("id-thread", &cHardwareExperimental::Inst_IdThread),
+
+    
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
@@ -148,6 +150,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("shift-l", &cHardwareExperimental::Inst_ShiftL, 0, "Shift bits in ?BX? left by one (multiply by two)"),
     tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, 0, "Increment ?BX? by one"),
     tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, 0, "Decrement ?BX? by one"),
+    tInstLibEntry<tMethod>("zero", &cHardwareExperimental::Inst_Zero, 0, "Set ?BX? to 0"),
 
     tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, 0, "Add BX to CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, 0, "Subtract CX from BX and place the result in ?BX?"),
@@ -212,6 +215,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, nInstFlag::STALL, "Instantly kills the organism"),
 
+    // Thread Execution Control
     tInstLibEntry<tMethod>("wait-cond-equ", &cHardwareExperimental::Inst_WaitCondition_Equal, nInstFlag::STALL, ""),
     tInstLibEntry<tMethod>("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, nInstFlag::STALL, ""),
     tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareExperimental::Inst_WaitCondition_Greater, nInstFlag::STALL, ""),
@@ -242,15 +246,23 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
       
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
+    tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
+    tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
+    tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
+    tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly),    
+    tInstLibEntry<tMethod>("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly),    
+    
+    // Rotation
     tInstLibEntry<tMethod>("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-right-one", &cHardwareExperimental::Inst_RotateRightOne, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
 
       
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-group-res-quant", &cHardwareExperimental::Inst_SenseGroupResQuant, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
 
@@ -1021,6 +1033,13 @@ bool cHardwareExperimental::ExitThread()
   return true;
 }
 
+bool cHardwareExperimental::Inst_IdThread(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, GetCurThreadID(), false);
+  return true;
+}
+
 ////////////////////////////
 //  Instruction Helpers...
 ////////////////////////////
@@ -1481,6 +1500,12 @@ bool cHardwareExperimental::Inst_Dec(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_Zero(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, 0, false);
+  return true;
+}
 
 bool cHardwareExperimental::Inst_Add(cAvidaContext& ctx)
 {
@@ -2603,6 +2628,44 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
     return true;
 }
 
+bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
+  int facing = m_organism->GetFacing();
+  int north_offset = 0;
+  if (facing == 0) north_offset = 0;          //N 
+  else if (facing == 1) north_offset = 7;    //NW
+  else if (facing == 3) north_offset = 6;    //W
+  else if (facing == 2) north_offset = 5;    //SW
+  else if (facing == 6) north_offset = 4;     //S
+  else if (facing == 7) north_offset = 3;     //SE
+  else if (facing == 5) north_offset = 2;     //E
+  else if (facing == 4) north_offset = 1;     //NE
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, north_offset, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetNortherly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetNortherly(), true);
+  return true;  
+}
+
+bool cHardwareExperimental::Inst_GetEasterly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetEasterly(), true);
+  return true;  
+}
+
+bool cHardwareExperimental::Inst_ZeroEasterly(cAvidaContext& ctx) {
+  m_organism->ClearEasterly();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext& ctx) {
+  m_organism->ClearNortherly();
+  return true;
+}
+
 bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
     m_organism->Rotate(1);
@@ -2618,26 +2681,26 @@ bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
 {
     int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-    int opinion = 0;
+    int group = 0;
     
-    if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
+    if(m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
     
     const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);   
     double max_res = 0;
     for(int i = 0; i < actualNeighborhoodSize; i++) {
         m_organism->Rotate(1);
         tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-        if (faced_res[opinion] > max_res) max_res = faced_res[opinion];
+        if (faced_res[group] > max_res) max_res = faced_res[group];
     } 
     
-    if (max_res > current_res[opinion]) {
+    if (max_res > current_res[group]) {
         for(int i = 0; i < actualNeighborhoodSize; i++) {
             tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-            if (faced_res[opinion] != max_res) m_organism->Rotate(1);
+            if (faced_res[group] != max_res) m_organism->Rotate(1);
         }
     }
     // return % change
-    int res_diff = (int) ((max_res - current_res[opinion])/current_res[opinion] * 100 + 0.5);
+    int res_diff = (int) ((max_res - current_res[group])/current_res[group] * 100 + 0.5);
     int reg_to_set = FindModifiedRegister(rBX);
     setInternalValue(reg_to_set, res_diff, true);
     return true;
@@ -2666,6 +2729,21 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
     return true;
 }
 
+bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  
+  for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+    if (!m_organism->IsNeighborCellOccupied()) { 
+      setInternalValue(reg_used, 1, true);      
+      return true;
+    }
+    m_organism->Rotate(1); // continue to rotate
+  }  
+  setInternalValue(reg_used, 0, true);
+  return true;
+}
+
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
@@ -2681,15 +2759,15 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
     return true;
 }
 
-bool cHardwareExperimental::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_SenseGroupResQuant(cAvidaContext& ctx)
 {
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
     // check if this is a valid group
     if(m_organism->HasOpinion()) {
-        int opinion = m_organism->GetOpinion().first;
-        int res_opinion = (int) (res_count[opinion] * 100 + 0.5);
+        int group = m_organism->GetOpinion().first;
+        int res_group = (int) (res_count[group] * 100 + 0.5);
         int reg_to_set = FindModifiedRegister(rBX);
-        setInternalValue(reg_to_set, res_opinion, true);
+        setInternalValue(reg_to_set, res_group, true);
     }
     return true;
 }
@@ -2698,11 +2776,11 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
 {
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
     if(m_organism->HasOpinion()) {
-        int opinion = m_organism->GetOpinion().first;
+        int group = m_organism->GetOpinion().first;
         int reg_to_set = FindModifiedRegister(rBX);
-        double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
+        double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[group];  
         // return % change
-        int res_diff = (int) ((faced_res - res_count[opinion])/res_count[opinion] * 100 + 0.5);
+        int res_diff = (int) ((faced_res - res_count[group])/res_count[group] * 100 + 0.5);
         setInternalValue(reg_to_set, res_diff, true);
     }
     return true;
@@ -2741,7 +2819,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
-    int opinion;
+    int group;
     // Check if the org is currently part of a group
     assert(m_organism != 0);
 	
@@ -2753,16 +2831,16 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     
     // injected orgs might not have an opinion
     if (m_organism->HasOpinion()) {
-        opinion = m_organism->GetOpinion().first;
+        group = m_organism->GetOpinion().first;
         
         //return false if org setting opinion to current one (avoid paying costs for not switching)
-        if (opinion == prop_group_id) return false;
+        if (group == prop_group_id) return false;
         
         // If tolerances are on the org must pass immigration chance @JJB
         if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
             // If there are no members of the target group, automatically successful immigration
             if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
-                m_organism->LeaveGroup(opinion);
+                m_organism->LeaveGroup(group);
             }
             // Calculate chances based on target group tolerance of another org successfully immigrating
             else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
@@ -2772,7 +2850,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
                 double rand = m_world->GetRandom().GetDouble();
                 if (rand <= probability_immigration) {
                     // Org successfully immigrates
-                    m_organism->LeaveGroup(opinion);
+                    m_organism->LeaveGroup(group);
                 }
                 // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
                 else {
@@ -2782,7 +2860,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
         }
         else {
             // otherwise, subtract org from current group
-            m_organism->LeaveGroup(opinion);
+            m_organism->LeaveGroup(group);
         }
     }
 	
@@ -2790,8 +2868,8 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     m_organism->SetOpinion(prop_group_id);
 	
     // Add org to group count
-    opinion = m_organism->GetOpinion().first;	
-    m_organism->JoinGroup(opinion);
+    group = m_organism->GetOpinion().first;	
+    m_organism->JoinGroup(group);
     
     return true;
 }
@@ -2800,9 +2878,9 @@ bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
 {
     assert(m_organism != 0);
     if (m_organism->HasOpinion()) {
-        const int opinion_reg = FindModifiedRegister(rBX);
+        const int group_reg = FindModifiedRegister(rBX);
         
-        setInternalValue(opinion_reg, m_organism->GetOpinion().first, false);
+        setInternalValue(group_reg, m_organism->GetOpinion().first, false);
     }
     return true;
 }

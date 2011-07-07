@@ -386,7 +386,8 @@ private:
   // Multi-threading
   bool Inst_ForkThread(cAvidaContext& ctx);
   bool Inst_ExitThread(cAvidaContext& ctx);
-    
+  bool Inst_IdThread(cAvidaContext& ctx);
+  
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
@@ -415,6 +416,7 @@ private:
   bool Inst_ShiftL(cAvidaContext& ctx);
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
+  bool Inst_Zero(cAvidaContext& ctx);
 
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
@@ -467,6 +469,7 @@ private:
   bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
+  // Thread Execution Control
   bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
   bool Inst_WaitCondition_Less(cAvidaContext& ctx);
   bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
@@ -498,20 +501,28 @@ private:
   bool Inst_SGRotateR(cAvidaContext& ctx);
   bool Inst_SGSense(cAvidaContext& ctx);
 
-  // Movement and Navigation
+  // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_GetNorthOffset(cAvidaContext& ctx);  
+  bool Inst_GetNortherly(cAvidaContext& ctx); 
+  bool Inst_GetEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroNortherly(cAvidaContext& ctx);
+  
+  // Rotation
   bool Inst_RotateLeftOne(cAvidaContext& ctx);
   bool Inst_RotateRightOne(cAvidaContext& ctx);
   bool Inst_RotateUphill(cAvidaContext& ctx);
   bool Inst_RotateHome(cAvidaContext& ctx);
-
+  bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
+  
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
-  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
+  bool Inst_SenseGroupResQuant(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
  
-  // Opinion and Group 
+  // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_GetGroupID(cAvidaContext& ctx);
 };
