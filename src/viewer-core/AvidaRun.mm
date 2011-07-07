@@ -75,7 +75,7 @@
 
 
 - (void) pause {
-  driver->SetPause();
+  driver->Pause();
 }
 
 
