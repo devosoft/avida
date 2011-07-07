@@ -85,6 +85,7 @@ namespace Avida {
       
       LIB_EXPORT static Driver* InitWithDirectory(const Apto::String& dir);
       
+      LIB_EXPORT inline World* GetWorld() { return m_new_world; }
       
       LIB_EXPORT DriverPauseState GetPauseState() const { return m_pause_state; }
       LIB_EXPORT bool IsPaused() const { return m_paused; }
