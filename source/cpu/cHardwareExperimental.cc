@@ -481,7 +481,10 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
       if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
-      
+
+      // Check if the instruction just executed caused premature death, break out of execution if so
+      if (phenotype.GetToDelete()) break;
+
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) ip.Advance();
