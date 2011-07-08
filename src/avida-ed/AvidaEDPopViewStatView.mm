@@ -36,6 +36,7 @@
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Manager.h"
 
+static const float PANEL_MIN_WIDTH = 300.0;
 
 @interface AvidaEDPopViewStatViewEnvActions : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
   NSMutableArray* entries;
@@ -181,7 +182,7 @@
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize {
   NSRect bounds = [self bounds];
   
-  if (bounds.size.width != oldBoundsSize.width) {
+  if (bounds.size.width != oldBoundsSize.width && bounds.size.width >= PANEL_MIN_WIDTH) {
     const CGFloat spacing = 7.0;
     CGFloat stat_panel_width = floor((bounds.size.width - 3 * spacing) / 2.0);
 

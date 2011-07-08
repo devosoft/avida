@@ -38,12 +38,24 @@
 
 #include "avida/viewer-core/Map.h"
 
-static const float MAIN_SPLIT_LEFT_MIN = 150.0;
+static const float MAIN_SPLIT_LEFT_MIN = 140.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 650.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
 static const float POP_SPLIT_LEFT_MIN = 350.0;
 static const float POP_SPLIT_RIGHT_MIN = 300.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
+
+@interface AvidaEDController (hidden)
+- (void) popSplitViewAnimationEnd:(NSNumber*)collapsed;
+@end
+@implementation AvidaEDController (hidden)
+- (void) popSplitViewAnimationEnd:(NSNumber*)collapsed {
+  popSplitViewIsAnimating = NO;
+  if ([collapsed boolValue]) {
+    [popViewStatView setHidden:YES];
+  }
+}
+@end
 
 @implementation AvidaEDController
 
@@ -129,6 +141,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   if (map) {
     map->SetMode(map_mode_to_color[[mapViewMode indexOfSelectedItem]]);
     [mapView updateState:map];
+    [mapScaleView updateState:map];
   }
   
 }
@@ -138,6 +151,63 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     [mapView setZoom:[mapZoom doubleValue]];
   }
 }
+
+- (IBAction) togglePopViewStatView:(id)sender {
+  CGFloat dividerThickness = [popSplitView dividerThickness];
+  
+  if (popSplitViewIsAnimating) return;
+  
+  if ([sender state] == NSOnState) {
+    // uncollapse
+    NSRect oldPopViewStatViewFrame = popViewStatView.frame;
+    oldPopViewStatViewFrame.size.width = 0;
+    oldPopViewStatViewFrame.origin.x = popSplitView.frame.size.width;
+    [popViewStatView setFrame:oldPopViewStatViewFrame];
+    [popViewStatView setHidden:NO];
+    
+    NSMutableDictionary *expandPopViewDishViewAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [expandPopViewDishViewAnimationDict setObject:popViewDishView forKey:NSViewAnimationTargetKey];
+    NSRect newPopViewDishViewFrame = popViewDishView.frame;
+    newPopViewDishViewFrame.size.width =  popSplitView.frame.size.width - lastPopViewStatViewWidth - dividerThickness;
+    [expandPopViewDishViewAnimationDict setObject:[NSValue valueWithRect:newPopViewDishViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSMutableDictionary *expandPopViewStatViewAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [expandPopViewStatViewAnimationDict setObject:popViewStatView forKey:NSViewAnimationTargetKey];
+    NSRect newPopViewStatViewFrame = popViewStatView.frame;
+    newPopViewStatViewFrame.size.width = lastPopViewStatViewWidth;
+    newPopViewStatViewFrame.origin.x = popSplitView.frame.size.width - lastPopViewStatViewWidth;
+    [expandPopViewStatViewAnimationDict setObject:[NSValue valueWithRect:newPopViewStatViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSViewAnimation *expandAnimation = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObjects:expandPopViewDishViewAnimationDict, expandPopViewStatViewAnimationDict, nil]];
+    [expandAnimation setDuration:0.25f];
+    [expandAnimation startAnimation];
+    [self performSelector:@selector(popSplitViewAnimationEnd:) withObject:[NSNumber numberWithBool:NO] afterDelay:0.25f];
+  } else {
+    // collapse
+    // Store last width so we can jump back
+    lastPopViewStatViewWidth = popViewStatView.frame.size.width;
+    
+    NSMutableDictionary *collapseMainAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [collapseMainAnimationDict setObject:popViewDishView forKey:NSViewAnimationTargetKey];
+    NSRect newPopViewDishViewFrame = popViewDishView.frame;
+    newPopViewDishViewFrame.size.width =  popSplitView.frame.size.width - dividerThickness;
+    [collapseMainAnimationDict setObject:[NSValue valueWithRect:newPopViewDishViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSMutableDictionary *collapsePopViewStatViewAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [collapsePopViewStatViewAnimationDict setObject:popViewStatView forKey:NSViewAnimationTargetKey];
+    NSRect newPopViewStatViewFrame = popViewStatView.frame;
+//    newPopViewStatViewFrame.size.width = 0.0f;
+    newPopViewStatViewFrame.origin.x = popViewStatView.frame.size.width;
+    [collapsePopViewStatViewAnimationDict setObject:[NSValue valueWithRect:newPopViewStatViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSViewAnimation *collapseAnimation = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObjects:collapseMainAnimationDict, collapsePopViewStatViewAnimationDict, nil]];
+    [collapseAnimation setDuration:0.25f];
+    [collapseAnimation startAnimation];
+    [self performSelector:@selector(popSplitViewAnimationEnd:) withObject:[NSNumber numberWithBool:YES] afterDelay:0.25f];
+  }
+  popSplitViewIsAnimating = YES;
+}
+
 
 - (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
   if (splitView == mainSplitView) {
@@ -218,6 +288,16 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   else if (splitView == popSplitView) return proposedMin + POP_SPLIT_LEFT_MIN;
   
   return proposedMin;
+}
+
+- (void) splitViewDidResizeSubviews:(NSNotification*)notification {
+  if (!popSplitViewIsAnimating) {
+    if ([popSplitView isSubviewCollapsed:popViewStatView]) {
+      [btnTogglePopViewStatView setState:NSOffState];
+    } else {
+      [btnTogglePopViewStatView setState:NSOnState];
+    }
+  }
 }
 
 - (void) windowWillClose:(NSNotification*)notification {
