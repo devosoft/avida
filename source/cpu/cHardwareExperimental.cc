@@ -1010,8 +1010,8 @@ bool cHardwareExperimental::ForkThread()
 
 bool cHardwareExperimental::ExitThread()
 {
-  // Make sure that there is always at least one thread...
-  if (m_threads.GetSize() == 1) return false;
+  // Make sure that there is always at least one thread awake...
+  if ((m_threads.GetSize() == 1) || (m_waiting_threads == (m_threads.GetSize() - 1))) return false;
   
   // Note the current thread and set the current back one.
   const int kill_thread = m_cur_thread;
@@ -2090,8 +2090,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext& ctx)
       setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
       return true;
     }
-  }
-  
+  }  
   // Fail to sleep if this is the last thread awake
   if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
@@ -2121,7 +2120,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext& ctx)
       return true;
     }
   }
-  
+
   // Fail to sleep if this is the last thread awake
   if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
@@ -2151,7 +2150,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext& ctx)
       return true;
     }
   }
-  
+
   // Fail to sleep if this is the last thread awake
   if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
