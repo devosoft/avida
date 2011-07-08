@@ -207,10 +207,7 @@ private:
   Apto::Array<DiscreteScale::Entry> m_scale_labels;
   
 public:
-  cGenotypeMapMode(cWorld* world)
-    : m_info(new Avida::CoreView::ClassificationInfo(world, "genotype", NUM_COLORS))
-    , m_color_count(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
-  { ; }
+  cGenotypeMapMode(cWorld* world);
   virtual ~cGenotypeMapMode() { delete m_info; }
   
   // MapMode Interface
@@ -219,7 +216,7 @@ public:
   const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
   const DiscreteScale& GetScale() const { return *this; }
-  const Apto::String& GetScaleLabel() const { static const Apto::String name("Genotypes"); return name; }
+  const Apto::String& GetScaleLabel() const { static const Apto::String name("Most Abundant Genotypes"); return name; }
   
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
   
@@ -229,9 +226,25 @@ public:
   // DiscreteScale Interface
   int GetScaleRange() const { return m_color_count.GetSize() - Avida::CoreView::MAP_RESERVED_COLORS; }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
-  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }  
+  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }
+  bool IsCategorical() const { return true; }
 };
 
+cGenotypeMapMode::cGenotypeMapMode(cWorld* world)
+  : m_info(new Avida::CoreView::ClassificationInfo(world, "genotype", NUM_COLORS))
+  , m_color_count(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
+  , m_scale_labels(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
+{
+  m_scale_labels[0].index = -4;
+  m_scale_labels[0].label = "Unoccupied";
+  m_scale_labels[1].index = -3;
+  m_scale_labels[1].label = "-";
+  m_scale_labels[2].index = -2;
+  m_scale_labels[2].label = "-";
+  m_scale_labels[3].index = -1;
+  m_scale_labels[3].label = "Unassigned";
+  for (int i = 4; i < m_scale_labels.GetSize(); i++) m_scale_labels[i].index = i - 4;
+}
 
 void cGenotypeMapMode::Update(cPopulation& pop)
 {
@@ -244,17 +257,19 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       m_color_grid[i] = -4;
       m_color_count[0]++;
     } else {
-      Avida::CoreView::ClassificationInfo::MapColor* mapcolor =
-      org->GetBioGroup("genotype")->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
+      cBioGroup* bg = org->GetBioGroup("genotype");
+      Avida::CoreView::ClassificationInfo::MapColor* mapcolor = bg->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;
-        m_color_count[mapcolor->color + 4];
+        m_color_count[mapcolor->color + 4]++;
+        m_scale_labels[mapcolor->color + 4].label = bg->GetProperty("name").AsString();
       } else {
         m_color_grid[i] = -1;
         m_color_count[3]++;
       }
     }
   }
+  for (int i = 0; i < m_color_count.GetSize(); i++) if (m_color_count[i] == 0) m_scale_labels[i].label = "-";
 }
 
 

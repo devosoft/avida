@@ -63,6 +63,7 @@ namespace Avida {
       virtual int GetScaleRange() const = 0;
       virtual int GetNumLabeledEntries() const = 0;
       virtual Entry GetEntry(int index) const = 0;
+      virtual bool IsCategorical() const { return false; }
     };
     
     
