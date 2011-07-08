@@ -411,16 +411,14 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
 
-  const int num_threads = m_threads.GetSize();
-  
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? num_threads : 1;
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
     int last_thread = m_cur_thread++;
-    if (m_cur_thread >= num_threads) m_cur_thread = 0;
+    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
 
     // If the currently selected thread is inactive, proceed to the next thread
     if (!m_threads[m_cur_thread].active) {
@@ -2470,11 +2468,9 @@ bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
-  // const bool viable = Divide_CheckViable(ctx, div_point, child_size);
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
 
-  
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   // Since the divide will now succeed, set up the information to be sent
@@ -2498,7 +2494,10 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Handle Divide Mutations...
   Divide_DoMutations(ctx);
-  
+
+  const bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), m_organism->OffspringGenome().GetSize(), 1);
+  if (viable == false) return false;
+
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
