@@ -35,9 +35,11 @@
 
 @interface MapScaleView : NSView {
   int num_colors;
+  bool is_categorical;
   
   Apto::Array<int> map_colors;
   Apto::Array<Avida::CoreView::DiscreteScale::Entry> scale_entries;
+  Apto::Array<int> color_count;
   NSMutableArray* color_cache;
   NSString* scale_label;
 }
