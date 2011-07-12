@@ -42,7 +42,7 @@ static const float MAIN_SPLIT_LEFT_MIN = 140.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 650.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
 static const float POP_SPLIT_LEFT_MIN = 350.0;
-static const float POP_SPLIT_RIGHT_MIN = 300.0;
+static const float POP_SPLIT_RIGHT_MIN = 305.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 @interface AvidaEDController (hidden)
@@ -246,16 +246,16 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     NSRect leftFrame = [leftView frame];
     NSRect rightFrame = [rightView frame];
     
-    float dividerThickness = [splitView dividerThickness];
+    CGFloat dividerThickness = [splitView dividerThickness];
     
-    int diffWidth = newFrame.size.width - oldSize.width;
+    CGFloat diffWidth = floor(newFrame.size.width - oldSize.width);
     
     leftFrame.size.height = newFrame.size.height;
     leftFrame.origin = NSMakePoint(0, 0);
     if ((rightFrame.size.width <= POP_SPLIT_RIGHT_MIN && diffWidth < 0) || diffWidth > 0) {
       leftFrame.size.width += diffWidth;
     } else if (leftFrame.size.width > POP_SPLIT_LEFT_MIN) {
-      leftFrame.size.width += diffWidth * POP_SPLIT_LEFT_PROPORTIONAL_RESIZE;
+      leftFrame.size.width += floor(diffWidth * POP_SPLIT_LEFT_PROPORTIONAL_RESIZE);
     }
     
     rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
