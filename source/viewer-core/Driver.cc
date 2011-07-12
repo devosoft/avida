@@ -23,6 +23,7 @@
 
 #include "avida/viewer-core/Driver.h"
 
+#include "avida/core/Context.h"
 #include "avida/data/Manager.h"
 #include "avida/viewer-core/Map.h"
 #include "avida/viewer-core/Listener.h"
@@ -141,6 +142,7 @@ void Avida::CoreView::Driver::Run()
     const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
     
     cAvidaContext ctx(this, m_world->GetRandom());
+    Avida::Context new_ctx(this, &m_world->GetRandom());
     
     m_mutex.Lock();
     while (!m_done) {
@@ -201,6 +203,8 @@ void Avida::CoreView::Driver::Run()
           }
         }
       }
+      
+      m_new_world->PerformUpdate(new_ctx, stats.GetUpdate());
       
       // Exit conditons...
       m_mutex.Lock();
