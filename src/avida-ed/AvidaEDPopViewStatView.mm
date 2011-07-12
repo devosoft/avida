@@ -30,8 +30,81 @@
 #import "AvidaEDPopViewStatView.h"
 
 #import "AvidaRun.h"
+#import "NSStringAdditions.h"
 
 #include "avida/data/Package.h"
+#include "avida/environment/ActionTrigger.h"
+#include "avida/environment/Manager.h"
+
+static const float PANEL_MIN_WIDTH = 300.0;
+
+@interface AvidaEDPopViewStatViewEnvActions : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+  NSMutableArray* entries;
+  NSMutableDictionary* entrymap;
+}
+- (id) init;
+- (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc;
+- (void) updateEntry:(NSString*)name withValue:(NSNumber*)value;
+- (void) clearEntries;
+
+- (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;
+- (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
+
+- (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
+@end
+
+
+@implementation AvidaEDPopViewStatViewEnvActions
+
+- (id) init {
+  entries = [[NSMutableArray alloc] init];
+  entrymap = [[NSMutableDictionary alloc] init];
+  return self;
+}
+
+- (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc {
+  NSMutableDictionary* entry = [[NSMutableDictionary alloc] init];
+  [entry setValue:name forKey:@"Action"];
+  [entry setValue:[NSNumber numberWithInt:NSOffState] forKey:@"State"];
+  [entry setValue:desc forKey:@"Description"];
+  [entry setValue:[NSNumber numberWithInt:0] forKey:@"Orgs Performing"];
+  [entries addObject:entry];
+  [entrymap setValue:[NSNumber numberWithLong:([entries count] - 1)] forKey:name];
+}
+
+
+- (void) updateEntry:(NSString*)name withValue:(NSNumber*)value {
+  [[entries objectAtIndex:[[entrymap valueForKey:name] unsignedIntValue]] setValue:value forKey:@"Orgs Performing"];
+}
+
+
+- (void) clearEntries {
+  [entries removeAllObjects];
+}
+
+
+- (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView {
+  return [entries count];
+}
+
+- (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex {
+  id entry, value;
+  
+  entry = [entries objectAtIndex:rowIndex];
+  value = [entry objectForKey:[tableColumn identifier]];
+  return value;
+}
+
+
+- (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex
+{
+  if ([[tableColumn identifier] isEqualToString:@"State"]) {
+    [cell setTitle:[[entries objectAtIndex:rowIndex] objectForKey:@"Action"]];
+  }
+}
+
+@end
+
 
 
 @interface AvidaEDPopViewStatViewValues : NSObject {
@@ -47,29 +120,22 @@
 @end
 
 
-@implementation AvidaEDPopViewStatView
+@interface AvidaEDPopViewStatView (hidden)
+- (void) setup;  
+@end
 
-- (id)initWithFrame:(NSRect)frame
-{
-  self = [super initWithFrame:frame];
-  if (self) {
-    [self resizeSubviewsWithOldSize:frame.size];
-  }
+@implementation AvidaEDPopViewStatView (hidden)
+- (void) setup {
+  envActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
+  [tblEnvActions setDataSource:envActions];
+  [tblEnvActions setDelegate:envActions];
+  [tblEnvActions reloadData];
 
-  
-  return self;
-}
-
-- (void)awakeFromNib {
-  NSSize bounds_size = [self bounds].size;
-  bounds_size.width++;
-  
-  [self resizeSubviewsWithOldSize:bounds_size];
   NSNumberFormatter* fitFormat = [[NSNumberFormatter alloc] init];
   [fitFormat setNumberStyle:NSNumberFormatterDecimalStyle];
   [fitFormat setMaximumFractionDigits:4];
   [txtFitness setFormatter:fitFormat];
-
+  
   NSNumberFormatter* dec1format = [[NSNumberFormatter alloc] init];
   [dec1format setNumberStyle:NSNumberFormatterDecimalStyle];
   [dec1format setPositiveFormat:@"#0.0"];
@@ -82,6 +148,30 @@
   [dec2format setPositiveFormat:@"#0.00"];
   [dec2format setNegativeFormat:@"-#0.00"];
   [txtAge setFormatter:dec2format];
+}
+@end
+
+
+@implementation AvidaEDPopViewStatView
+
+- (id)initWithFrame:(NSRect)frame
+{
+  self = [super initWithFrame:frame];
+  if (self) {
+    [self resizeSubviewsWithOldSize:frame.size];
+    [self setup];
+  }
+
+  
+  return self;
+}
+
+- (void)awakeFromNib {
+  NSSize bounds_size = [self bounds].size;
+  bounds_size.width++;
+  
+  [self resizeSubviewsWithOldSize:bounds_size];
+  [self setup];
 }
 
 - (void)dealloc
@@ -110,7 +200,7 @@
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize {
   NSRect bounds = [self bounds];
   
-  if (bounds.size.width != oldBoundsSize.width) {
+  if (bounds.size.width != oldBoundsSize.width && bounds.size.width >= PANEL_MIN_WIDTH) {
     const CGFloat spacing = 7.0;
     CGFloat stat_panel_width = floor((bounds.size.width - 3 * spacing) / 2.0);
 
@@ -135,6 +225,14 @@
   run = avidarun;
   recorder = Avida::Data::RecorderPtr(new AvidaEDPopViewStatViewRecorder(self));
   [run attachRecorder:recorder];
+
+  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of([avidarun world]);
+  Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
+  for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next();) {
+    Avida::Environment::ConstActionTriggerPtr action = env->GetActionTrigger(*it.Get());
+    [envActions addNewEntry:[NSString stringWithAptoString:action->GetID()] withDescription:[NSString stringWithAptoString:action->GetDescription()]];
+  }
+  [tblEnvActions reloadData];
 }
 
 - (void) clearAvidaRun {
@@ -151,7 +249,8 @@
   [txtMetabolicRate setStringValue:empty_str];
   [txtGestation setStringValue:empty_str];
   [txtAge setStringValue:empty_str];
-  
+  [envActions clearEntries];
+  [tblEnvActions reloadData];
 }
 
 

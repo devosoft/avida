@@ -54,6 +54,11 @@
   return self;
 }
 
+- (Avida::World*) world
+{
+  return driver->GetWorld();
+}
+
 
 - (void) dealloc {
   delete driver;

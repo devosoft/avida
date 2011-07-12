@@ -43,24 +43,39 @@
 
 
 @interface AvidaEDController : NSWindowController <CoreViewListener, NSSplitViewDelegate, NSWindowDelegate> {
-  IBOutlet NSView* analyzeView;
-  IBOutlet NSView* orgView;
-  IBOutlet NSView* popView;
   
+  IBOutlet NSSplitView* mainSplitView;
+
+  // Population View
+  // --------------------------------------------------------------------------------------------------------------  
+  IBOutlet NSView* popView;
+  IBOutlet NSSplitView* popSplitView;
+
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   
+  IBOutlet NSView* popViewDishView;
   IBOutlet NSScrollView* mapScrollView;
   IBOutlet MapGridView* mapView;
   IBOutlet MapScaleView* mapScaleView;
   IBOutlet NSPopUpButton* mapViewMode;
   IBOutlet NSSlider* mapZoom;
-  
-  IBOutlet NSSplitView* mainSplitView;
-  IBOutlet NSSplitView* popSplitView;
-  
+
   IBOutlet AvidaEDPopViewStatView* popViewStatView;
+  IBOutlet NSButton* btnTogglePopViewStatView;
+  CGFloat lastPopViewStatViewWidth;
+  BOOL popSplitViewIsAnimating;
   
+
+  // Analyze View
+  // --------------------------------------------------------------------------------------------------------------  
+  IBOutlet NSView* analyzeView;
+  
+  // Organism View
+  // --------------------------------------------------------------------------------------------------------------  
+  IBOutlet NSView* orgView;
+  
+
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
@@ -84,6 +99,7 @@
 - (IBAction) toggleRunState:(id)sender;
 - (IBAction) changeMapViewMode:(id)sender;
 - (IBAction) changeMapZoom:(id)sender;
+- (IBAction) togglePopViewStatView:(id)sender;
 
 
 // NSSplitViewDelegate Protocol
@@ -91,7 +107,7 @@
 - (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview;
 - (CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index;
 - (CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index;
-
+- (void) splitViewDidResizeSubviews:(NSNotification*)notification;
 
 // NSWindowDelegate Protocol
 - (void) windowWillClose:(NSNotification*)notification;

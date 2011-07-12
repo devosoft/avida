@@ -1,8 +1,8 @@
 //
-//  AvidaEDPopViewStatView.h
-//  avida/apps/viewer-macos
+//  NSStringAdditions.m
+//  viewer-macos
 //
-//  Created by David Bryson on 4/15/11.
+//  Created by David Michael Bryson on 7/7/11.
 //  Copyright 2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,56 +27,13 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import "NSStringAdditions.h"
 
-#include "avida/data/Recorder.h"
+@implementation NSString (AptoAdditions)
 
-@class AvidaRun;
-class AvidaEDPopViewStatViewRecorder;
-@class AvidaEDPopViewStatViewEnvActions;
-
-
-@interface AvidaEDPopViewStatView : NSView {
-  IBOutlet NSView* orgStatsView;
-  IBOutlet NSView* popStatsView;
-  IBOutlet NSTextField* txtPopSize;
-  IBOutlet NSTextField* txtFitness;
-  IBOutlet NSTextField* txtMetabolicRate;
-  IBOutlet NSTextField* txtGestation;
-  IBOutlet NSTextField* txtAge;
-  IBOutlet NSTableView* tblEnvActions;
-  
-  AvidaRun* run;
-  Avida::Data::RecorderPtr recorder;
-  AvidaEDPopViewStatViewEnvActions* envActions;
++ (NSString*) stringWithAptoString:(const Apto::String&)string
+{
+  return [NSString stringWithUTF8String:(const char*)string];
 }
 
-- (id) initWithFrame:(NSRect)frame;
-- (void) awakeFromNib;
-
-- (void) dealloc;
-- (void) finalize;
-
-- (BOOL) isFlipped;
-
-- (void) resizeSubviewsWithOldSize:(NSSize)oldBoundsSize;
-
-- (void) setAvidaRun:(AvidaRun*)avidarun;
-- (void) clearAvidaRun;
-
 @end
-
-
-class AvidaEDPopViewStatViewRecorder : public Avida::Data::Recorder
-{
-private:
-  Avida::Data::ConstDataSetPtr m_requested;
-  AvidaEDPopViewStatView* m_view;
-  
-public:
-  AvidaEDPopViewStatViewRecorder(AvidaEDPopViewStatView* view) : m_view(view) { ; }
-  
-  Avida::Data::ConstDataSetPtr GetRequested();
-  void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data);
-};
-

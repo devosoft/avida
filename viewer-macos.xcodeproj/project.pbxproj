@@ -30,6 +30,7 @@
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
+		70D0455C13C6351D00E6E5AC /* NSStringAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 /* End PBXBuildFile section */
 
@@ -71,6 +72,8 @@
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		70D0455A13C6351D00E6E5AC /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
+		70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSStringAdditions.mm; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -223,6 +226,8 @@
 				703549C11337AD4300D3865C /* MapGridView.mm */,
 				70D3C086135739E1008374E3 /* MapScaleView.h */,
 				70D3C087135739E1008374E3 /* MapScaleView.mm */,
+				70D0455A13C6351D00E6E5AC /* NSStringAdditions.h */,
+				70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */,
 			);
 			name = "Viewer-Core";
 			path = "viewer-core";
@@ -327,6 +332,7 @@
 				70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */,
 				7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */,
 				7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */,
+				70D0455C13C6351D00E6E5AC /* NSStringAdditions.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

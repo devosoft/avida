@@ -53,7 +53,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 - (void) awakeFromNib {
   num_colors = 0;
-  color_cache = [NSMutableArray arrayWithCapacity:255];  
+  color_cache = [NSMutableArray arrayWithCapacity:255];
   scale_label = nil;
 }
 
@@ -94,29 +94,62 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   }
   
   NSRect bounds = [self bounds];
-  
-  NSRect scaleRect;
-  scaleRect.size.width = bounds.size.width - 40.0;
-  scaleRect.size.height = bounds.size.height - 40.0;
-  scaleRect.origin.x = 20.0;
-  scaleRect.origin.y = 20.0;
-  
-  NSGradient* scale_gradient = [[NSGradient alloc] initWithColors:color_cache];
-  [scale_gradient drawInRect:scaleRect angle:0.0];
-  
   NSFont* font = [NSFont fontWithName:@"Lucida Grande" size:9.0];
   NSDictionary* str_attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-  for (int i = 0; i < scale_entries.GetSize(); i++) {
-    NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i].label];
-    CGFloat offset = -[lbl sizeWithAttributes:str_attributes].width / 2.0;
-    NSPoint lbl_location = NSMakePoint(scaleRect.origin.x + offset + scale_entries[i].index * scaleRect.size.width / num_colors,
-                                       scaleRect.origin.y + scaleRect.size.height + 2.0);
-    [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
+
+  if (is_categorical) {
+    int colors_per_row = (num_colors / 2) + (num_colors % 2);
+    CGFloat color_width = round((bounds.size.width - 20.0) / colors_per_row);
+    CGFloat color_height = round((bounds.size.height - 40.0) / 2.0);
+    
+    NSRect colorRect;
+    colorRect.size.width = 20.0;
+    colorRect.size.height = color_height;
+    colorRect.origin.x = 10.0;
+    colorRect.origin.y = 30.0 + color_height;
+    
+    for (int i = 0; i < num_colors; i++) {
+      if (i == colors_per_row) {
+        colorRect.origin.x = 10.0;
+        colorRect.origin.y = 22.0;
+      }
+      
+      if (color_count[i + Avida::CoreView::MAP_RESERVED_COLORS] == 0) {
+        [[[color_cache objectAtIndex:i] colorWithAlphaComponent:0.3] set];
+      } else {
+        [[color_cache objectAtIndex:i] set];
+      }
+      [NSBezierPath fillRect:colorRect];
+
+      NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i + Avida::CoreView::MAP_RESERVED_COLORS].label];
+      CGFloat offset = -[lbl sizeWithAttributes:str_attributes].height / 2.0;
+      NSPoint lbl_location = NSMakePoint(colorRect.origin.x + 22.0, colorRect.origin.y + (colorRect.size.height / 2.0) + offset);
+      [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
+
+      colorRect.origin.x += color_width;
+    }
+  } else {
+    NSRect scaleRect;
+    scaleRect.size.width = bounds.size.width - 40.0;
+    scaleRect.size.height = bounds.size.height - 40.0;
+    scaleRect.origin.x = 20.0;
+    scaleRect.origin.y = 20.0;
+
+    NSGradient* scale_gradient = [[NSGradient alloc] initWithColors:color_cache];
+    [scale_gradient drawInRect:scaleRect angle:0.0];
+    
+    for (int i = 0; i < scale_entries.GetSize(); i++) {
+      NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i].label];
+      CGFloat offset = -[lbl sizeWithAttributes:str_attributes].width / 2.0;
+      NSPoint lbl_location = NSMakePoint(scaleRect.origin.x + offset + scale_entries[i].index * scaleRect.size.width / num_colors,
+                                         scaleRect.origin.y + scaleRect.size.height + 2.0);
+      [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
+    }
   }
-  
+
   if (scale_label != nil) {
     CGFloat offset = -[scale_label sizeWithAttributes:str_attributes].width / 2.0;
-    NSPoint lbl_location = NSMakePoint(scaleRect.size.width / 2.0 + scaleRect.origin.x + offset, 6.0);
+    NSPoint lbl_location = NSMakePoint(bounds.size.width / 2.0 + bounds.origin.x + offset, 6.0);
     [scale_label drawAtPoint:lbl_location withAttributes:str_attributes];
   }
 }
@@ -127,12 +160,14 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   map_colors = state->GetColors();
   num_colors = state->GetColorScale().GetScaleRange();
+  is_categorical = state->GetColorScale().IsCategorical();
   
   int num_entries = state->GetColorScale().GetNumLabeledEntries();
   scale_entries.Resize(num_entries);
   for (int i = 0; i < num_entries; i++) {
     scale_entries[i] = state->GetColorScale().GetEntry(i);
   }
+  color_count = state->GetColorCounts();
   
   scale_label = [NSString stringWithUTF8String:(const char*)state->GetColorScaleLabel()];
   
