@@ -65,6 +65,23 @@
   bounds_size.width++;
   
   [self resizeSubviewsWithOldSize:bounds_size];
+  NSNumberFormatter* fitFormat = [[NSNumberFormatter alloc] init];
+  [fitFormat setNumberStyle:NSNumberFormatterDecimalStyle];
+  [fitFormat setMaximumFractionDigits:4];
+  [txtFitness setFormatter:fitFormat];
+
+  NSNumberFormatter* dec1format = [[NSNumberFormatter alloc] init];
+  [dec1format setNumberStyle:NSNumberFormatterDecimalStyle];
+  [dec1format setPositiveFormat:@"#0.0"];
+  [dec1format setNegativeFormat:@"-#0.0"];
+  [txtMetabolicRate setFormatter:dec1format];
+  [txtGestation setFormatter:dec1format];
+  
+  NSNumberFormatter* dec2format = [[NSNumberFormatter alloc] init];
+  [dec2format setNumberStyle:NSNumberFormatterDecimalStyle];
+  [dec2format setPositiveFormat:@"#0.00"];
+  [dec2format setNegativeFormat:@"-#0.00"];
+  [txtAge setFormatter:dec2format];
 }
 
 - (void)dealloc
