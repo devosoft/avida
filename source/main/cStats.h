@@ -1111,6 +1111,7 @@ private:
   
   // Helper Methods
   template <class T> Data::PackagePtr packageData(T (cStats::*)() const) const;
+  template <class T, class U> Data::PackagePtr packageArgData(T (cStats::*)(U arg) const, U arg) const;
 };
 
 

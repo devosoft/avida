@@ -354,6 +354,11 @@ template <class T> Data::PackagePtr cStats::packageData(T (cStats::*func)() cons
   return Data::PackagePtr(new Data::Wrap<T>((this->*func)()));
 }
 
+template <class T, class U> Data::PackagePtr cStats::packageArgData(T (cStats::*func)(U) const, U arg) const
+{
+  return Data::PackagePtr(new Data::Wrap<T>((this->*func)(arg)));
+}
+
 
 void cStats::setupProvidedData()
 {
@@ -463,6 +468,26 @@ void cStats::setupProvidedData()
   
   // Minimums
   m_data_manager.Add("min_fitness", "Minimum Fitness in Population", &cStats::GetMinFitness);
+  
+  
+  
+  Apto::Functor<Data::PackagePtr, Apto::TL::Create<int> > taskLastCount(
+    Apto::BindFirst(
+      Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)(int) const, int> >(
+        this, &cStats::packageArgData<int, int>
+      ),
+      &cStats::GetTaskLastCount
+    )
+  );
+  for(int i = 0; i < task_names.GetSize(); i++) {
+    Apto::String task_id("core.environment.triggers.");
+    task_id += task_names[i] + ".organisms";
+    Apto::String task_desc(task_names[i]);
+
+    m_provided_data[task_id] = ProvidedData(task_desc, Apto::BindFirst(taskLastCount, i));\
+    mgr->Register(task_id, activate);
+	}
+
   
 #undef PROVIDE
 }
