@@ -35,6 +35,7 @@
 #include "avida/data/Package.h"
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Manager.h"
+#include "avida/environment/Product.h"
 
 static const float PANEL_MIN_WIDTH = 300.0;
 
@@ -46,6 +47,8 @@ static const float PANEL_MIN_WIDTH = 300.0;
 - (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc;
 - (void) updateEntry:(NSString*)name withValue:(NSNumber*)value;
 - (void) clearEntries;
+- (NSString*) entryAtIndex:(NSUInteger)idx;
+- (NSUInteger) entryCount;
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;
 - (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
@@ -80,6 +83,14 @@ static const float PANEL_MIN_WIDTH = 300.0;
 
 - (void) clearEntries {
   [entries removeAllObjects];
+}
+
+- (NSString*) entryAtIndex:(NSUInteger)idx
+{
+  return [[entries objectAtIndex:idx] valueForKey:@"Action"];
+}
+- (NSUInteger) entryCount {
+  return [entries count];
 }
 
 
@@ -122,9 +133,15 @@ static const float PANEL_MIN_WIDTH = 300.0;
 
 @interface AvidaEDPopViewStatView (hidden)
 - (void) setup;  
+@property (readonly) AvidaEDPopViewStatViewEnvActions* envActions;
 @end
 
 @implementation AvidaEDPopViewStatView (hidden)
+@dynamic envActions;
+- (AvidaEDPopViewStatViewEnvActions*)envActions {
+  return envActions;
+}
+
 - (void) setup {
   envActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
   [tblEnvActions setDataSource:envActions];
@@ -149,6 +166,7 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [dec2format setNegativeFormat:@"-#0.00"];
   [txtAge setFormatter:dec2format];
 }
+
 @end
 
 
@@ -223,8 +241,6 @@ static const float PANEL_MIN_WIDTH = 300.0;
 - (void) setAvidaRun:(AvidaRun*)avidarun {
   [self clearAvidaRun];
   run = avidarun;
-  recorder = Avida::Data::RecorderPtr(new AvidaEDPopViewStatViewRecorder(self));
-  [run attachRecorder:recorder];
 
   Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of([avidarun world]);
   Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
@@ -233,6 +249,9 @@ static const float PANEL_MIN_WIDTH = 300.0;
     [envActions addNewEntry:[NSString stringWithAptoString:action->GetID()] withDescription:[NSString stringWithAptoString:action->GetDescription()]];
   }
   [tblEnvActions reloadData];
+
+  recorder = Avida::Data::RecorderPtr(new AvidaEDPopViewStatViewRecorder(self));
+  [run attachRecorder:recorder];
 }
 
 - (void) clearAvidaRun {
@@ -260,6 +279,7 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [txtMetabolicRate setDoubleValue:values->ave_metabolic_rate];
   [txtGestation setDoubleValue:values->ave_gestation_time];
   [txtAge setDoubleValue:values->ave_age];
+  [tblEnvActions reloadData];
 }
 
 @end
@@ -274,6 +294,13 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::GetRequested()
     ds->Insert("core.world.ave_metabolic_rate");
     ds->Insert("core.world.ave_gestation_time");
     ds->Insert("core.world.ave_age");
+    
+    for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
+      Apto::String data_id("core.environment.triggers.");
+      data_id += [[m_view.envActions entryAtIndex:i] UTF8String];
+      data_id += ".organisms";
+      ds->Insert(data_id);
+    }
     m_requested = ds;
   }
   
@@ -289,6 +316,15 @@ void AvidaEDPopViewStatViewRecorder::NotifyData(Avida::Update, Avida::Data::Data
   values->ave_metabolic_rate = retrieve_data("core.world.ave_metabolic_rate")->DoubleValue();
   values->ave_gestation_time = retrieve_data("core.world.ave_gestation_time")->DoubleValue();
   values->ave_age = retrieve_data("core.world.ave_age")->DoubleValue();
+
+  for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
+    NSString* entry_name = [m_view.envActions entryAtIndex:i];
+    Apto::String data_id("core.environment.triggers.");
+    data_id += [entry_name UTF8String];
+    data_id += ".organisms";
+    int count = retrieve_data(data_id)->IntValue();
+    [m_view.envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
+  }
 
   [m_view performSelectorOnMainThread:@selector(handleData:) withObject:values waitUntilDone:NO];
 }
