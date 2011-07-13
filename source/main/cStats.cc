@@ -471,6 +471,7 @@ void cStats::setupProvidedData()
   
   
   
+  const cEnvironment& env = m_world->GetEnvironment();
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<int> > taskLastCount(
     Apto::BindFirst(
       Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)(int) const, int> >(
@@ -481,7 +482,8 @@ void cStats::setupProvidedData()
   );
   for(int i = 0; i < task_names.GetSize(); i++) {
     Apto::String task_id("core.environment.triggers.");
-    task_id += task_names[i] + ".organisms";
+    task_id += env.GetTask(i).GetName();
+    task_id += ".organisms";
     Apto::String task_desc(task_names[i]);
 
     m_provided_data[task_id] = ProvidedData(task_desc, Apto::BindFirst(taskLastCount, i));\

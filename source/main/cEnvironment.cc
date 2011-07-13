@@ -25,6 +25,7 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/environment/Manager.h"
+#include "avida/environment/Product.h"
 
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
