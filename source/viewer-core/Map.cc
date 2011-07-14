@@ -79,6 +79,8 @@ public:
   
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
 
+  bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
+  Apto::String GetProperty(const Apto::String& property) const { return ""; }
 
   void Update(cPopulation& pop);
   
@@ -220,6 +222,9 @@ public:
   
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
   
+  bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
+  Apto::String GetProperty(const Apto::String& property) const { return ""; }
+  
   void Update(cPopulation& pop);
   
   
@@ -274,6 +279,151 @@ void cGenotypeMapMode::Update(cPopulation& pop)
 
 
 
+class EnvActionMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
+{
+private:
+  cWorld* m_world;
+  Apto::Array<int> m_action_grid;
+  Apto::Array<Apto::Array<int> > m_raw_action_counts;
+  Apto::Array<int> m_action_counts;
+  Apto::Array<Apto::String> m_action_ids;
+  int m_num_enabled;
+  Apto::Array<bool> m_enabled_actions;
+  Apto::String m_enabled_action_string;
+  DiscreteScale::Entry m_scale_label_entry;
+  Apto::String m_scale_label;
+  
+  
+public:
+  EnvActionMapMode(cWorld* world);
+  ~EnvActionMapMode() { ; }
+  
+  // MapMode Interface
+  const Apto::String& GetName() const { static const Apto::String name("Actions"); return name; }
+  const Apto::Array<int>& GetGridValues() const { return m_action_grid; }
+  const Apto::Array<int>& GetValueCounts() const { return m_action_counts; }
+  
+  const DiscreteScale& GetScale() const { return *this; }
+  const Apto::String& GetScaleLabel() const { return m_scale_label; }
+  
+  int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_TAGS; }
+  
+  bool SetProperty(const Apto::String& property, const Apto::String& value);
+  Apto::String GetProperty(const Apto::String& property) const;
+  
+  void Update(cPopulation& pop);
+  
+  
+  // DiscreteScale Interface
+  int GetScaleRange() const { return 0; }
+  int GetNumLabeledEntries() const { return 1; }
+  DiscreteScale::Entry GetEntry(int index) const { return m_scale_label_entry; }
+  
+  
+private:
+  void updateTagStates();
+};
+
+
+EnvActionMapMode::EnvActionMapMode(cWorld* world)
+ : m_world(world), m_action_counts(Avida::CoreView::MAP_RESERVED_COLORS)
+{
+  cEnvironment& env = m_world->GetEnvironment();
+  const int num_tasks = env.GetNumTasks();
+  m_action_ids.Resize(num_tasks);
+  m_num_enabled = 0;
+  m_enabled_actions.Resize(num_tasks);
+  m_enabled_actions.SetAll(false);
+  m_scale_label_entry.index = 0;
+  
+  for (int i = 0; i < num_tasks; i++) m_action_ids[i] = env.GetTask(i).GetName();
+
+}
+
+bool EnvActionMapMode::SetProperty(const Apto::String& property, const Apto::String& value)
+{
+  if (property == "enabled_actions") {
+    Apto::String vstr(value);
+    Apto::Array<bool> earr(m_action_ids.GetSize());
+    earr.SetAll(false);
+    int num_enabled = 0;
+    while (vstr.GetSize()) {
+      Apto::String act = vstr.Pop(',');
+      for (int i = 0; i < m_action_ids.GetSize(); i++) {
+        if (m_action_ids[i] == act) {
+          earr[i] = true;
+          act = "";
+          num_enabled++;
+          break;
+        }
+      }
+      if (act != "") return false;
+    }
+    m_num_enabled = num_enabled;
+    m_enabled_actions = earr;
+    m_enabled_action_string = value;
+    updateTagStates();
+    return true;
+  }
+  return false;
+}
+
+Apto::String EnvActionMapMode::GetProperty(const Apto::String& property) const
+{
+  if (property == "actions") {
+    if (m_action_ids.GetSize() == 0) return "";
+    Apto::String actionstr(m_action_ids[0]);
+    for (int i = 1; i < m_action_ids.GetSize(); i++) actionstr += Apto::String(",") + m_action_ids[i];
+    return actionstr;
+  } else if (property == "enabled_actions") {
+    return m_enabled_action_string;
+  }
+  
+  return "";
+}
+
+void EnvActionMapMode::Update(cPopulation& pop)
+{
+  m_action_grid.Resize(pop.GetSize());
+  m_raw_action_counts.Resize(pop.GetSize());
+  for (int i = 0; i < m_raw_action_counts.GetSize(); i++) m_raw_action_counts[i].Resize(m_action_ids.GetSize());
+  m_action_counts.SetAll(0);            // reset all color counts
+  
+  for (int i = 0; i < pop.GetSize(); i++) {
+    cOrganism* org = pop.GetCell(i).GetOrganism();
+    if (org == NULL) {
+      m_raw_action_counts[i].SetAll(0);
+    } else {
+      for (int task_id = 0; task_id < m_action_ids.GetSize(); task_id++) {
+        if (org->GetPhenotype().GetCurTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 1;
+        else if (org->GetPhenotype().GetLastTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 2;
+      }
+    }
+  }
+  
+  updateTagStates();
+}
+
+
+void EnvActionMapMode::updateTagStates()
+{
+  if (m_num_enabled == 0) {
+    m_action_grid.SetAll(-4);
+    return;
+  }
+  for (int i = 0; i < m_action_grid.GetSize(); i++) {
+    int color = -1;
+    for (int task_id = 0; task_id < m_action_ids.GetSize(); task_id++) {
+      if (m_enabled_actions[task_id] && !m_raw_action_counts[i][task_id]) {
+        color = -4;
+        break;
+      }
+    }
+    m_action_grid[i] = color;
+    m_action_counts[4 + color]++;
+  }
+}
+
 
 
 Avida::CoreView::Map::Map(cWorld* world)
@@ -282,12 +432,13 @@ Avida::CoreView::Map::Map(cWorld* world)
   , m_num_viewer_colors(-1)
   , m_color_mode(0)
   , m_symbol_mode(-1)
-  , m_tag_mode(-1)
+  , m_tag_mode(2)
 {
   // Setup the available view modes...
-  m_view_modes.Resize(2);
+  m_view_modes.Resize(3);
   m_view_modes[0] = new cFitnessMapMode(world);
   m_view_modes[1] = new cGenotypeMapMode(world);
+  m_view_modes[2] = new EnvActionMapMode(world);
 
   
 //  AddViewMode("Genome Length",  &cCoreView_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
@@ -312,7 +463,13 @@ Avida::CoreView::Map::~Map()
   for (int i = 0; i < m_view_modes.GetSize(); i++) delete m_view_modes[i];
 }
 
-
+bool Avida::CoreView::Map::SetModeProperty(int idx, const Apto::String& property, const Apto::String& value)
+{
+  m_rw_lock.WriteLock();
+  bool rval = m_view_modes[idx]->SetProperty(property, value);
+  m_rw_lock.WriteUnlock();
+  return rval;
+}
 
 void Avida::CoreView::Map::UpdateMaps(cPopulation& pop)
 {

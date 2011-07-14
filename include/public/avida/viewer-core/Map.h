@@ -84,6 +84,9 @@ namespace Avida {
       
       virtual int GetSupportedTypes() const = 0;
       
+      virtual bool SetProperty(const Apto::String& property, const Apto::String& value) = 0;
+      virtual Apto::String GetProperty(const Apto::String& property) const = 0;
+      
       virtual void Update(cPopulation& pop) = 0;
     };
     
@@ -139,6 +142,8 @@ namespace Avida {
       inline int GetNumModes() const { return m_view_modes.GetSize(); }
       inline const Apto::String& GetModeName(int idx) const { return m_view_modes[idx]->GetName(); }
       inline int GetModeSupportedTypes(int idx) const { return m_view_modes[idx]->GetSupportedTypes(); }
+      bool SetModeProperty(int idx, const Apto::String& property, const Apto::String& value);
+      inline Apto::String GetModeProperty(int idx, const Apto::String& property) const { return m_view_modes[idx]->GetProperty(property); }
       
       void SetMode(int mode);
       inline void SetNumViewerColors(int num_colors) { m_num_viewer_colors = num_colors; }
