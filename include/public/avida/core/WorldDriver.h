@@ -26,7 +26,6 @@
 #define AvidaCoreWorldDriver_h
 
 #include "apto/platform.h"
-#include "avida/core/Definitions.h"
 #include "avida/core/GlobalObject.h"
 #include "avida/core/Types.h"
 
@@ -48,6 +47,9 @@ namespace Avida {
     
     // Facilities
     LIB_EXPORT virtual Avida::Feedback& Feedback() = 0;
+    
+    // Callback methods
+    LIB_EXPORT virtual void RegisterCallback(DriverCallback callback) = 0;
   };
 };
 

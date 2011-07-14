@@ -67,6 +67,8 @@ namespace Avida {
       bool m_done;
       bool m_paused;
       
+      Avida::DriverCallback m_callback;
+      
       Map* m_map;
       
       Apto::Set<Listener*> m_listeners;
@@ -102,12 +104,17 @@ namespace Avida {
       // ------------------------------------------------------------------------------------------------------------  
       
     public:
+      // Actions
       LIB_EXPORT void Pause();
       LIB_EXPORT void Finish();
       LIB_EXPORT void Abort(AbortCondition condition);
       
+      // Facilities
       LIB_EXPORT Avida::Feedback& Feedback() { return m_feedback; }
 
+      // Callback methods
+      LIB_EXPORT void RegisterCallback(DriverCallback callback);
+      
       
       // Apto::Thread Interface
       // ------------------------------------------------------------------------------------------------------------  

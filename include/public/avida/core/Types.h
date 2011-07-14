@@ -26,6 +26,8 @@
 #define AvidaCoreTypes_h
 
 #include "apto/core.h"
+#include "avida/core/Definitions.h"
+
 
 namespace Avida {
   
@@ -50,6 +52,7 @@ namespace Avida {
   typedef Apto::String WorldFacetID;
   typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;
   
+  typedef Apto::Functor<void, Apto::TL::Create<DriverEvent> > DriverCallback;
 };
 
 #endif

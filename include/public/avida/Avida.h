@@ -36,7 +36,6 @@
 #endif
 
 
-#include "avida/core/Definitions.h"
 #include "avida/core/Types.h"
 #include "avida/core/Version.h"
 

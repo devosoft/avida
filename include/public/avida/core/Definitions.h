@@ -209,6 +209,11 @@ namespace Avida
   };
   
   
+  enum DriverEvent {
+    THREAD_START,
+    THREAD_END
+  };
+
   extern const char* const BioUnitSourceMap[];
 };
 

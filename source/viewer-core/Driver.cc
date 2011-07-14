@@ -130,8 +130,14 @@ void Avida::CoreView::Driver::Abort(AbortCondition condition)
 }
 
 
+void Avida::CoreView::Driver::RegisterCallback(DriverCallback callback)
+{
+  m_callback = callback;
+}
+
 void Avida::CoreView::Driver::Run()
 {
+  m_callback(THREAD_START);
   try {
     cPopulation& population = m_world->GetPopulation();
     cStats& stats = m_world->GetStats();
@@ -219,6 +225,7 @@ void Avida::CoreView::Driver::Run()
   } catch (Avida::AbortCondition condition) {
     cerr << "abort: " << condition << endl;
   }
+  m_callback(THREAD_END);
 }
 
 

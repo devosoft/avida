@@ -59,6 +59,9 @@ public:
   
   // Facilities
   Avida::Feedback& Feedback() { return m_feedback; }
+
+  // Callback
+  void RegisterCallback(Avida::DriverCallback callback) { ; }
 };
 
 #endif
