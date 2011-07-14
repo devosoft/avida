@@ -45,6 +45,7 @@ namespace Avida {
   double zoom;
   
   Apto::Array<int> map_colors;
+  Apto::Array<int> map_tags;
   NSMutableArray* color_cache;
 }
 

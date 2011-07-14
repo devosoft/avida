@@ -39,7 +39,7 @@
 
 static const float PANEL_MIN_WIDTH = 300.0;
 
-@interface AvidaEDPopViewStatViewEnvActions : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+@interface AvidaEDPopViewStatViewEnvActions : NSObject <NSTableViewDataSource> {
   NSMutableArray* entries;
   NSMutableDictionary* entrymap;
 }
@@ -52,8 +52,7 @@ static const float PANEL_MIN_WIDTH = 300.0;
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;
 - (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
-
-- (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
+- (void) tableView:(NSTableView*)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
 @end
 
 
@@ -106,11 +105,19 @@ static const float PANEL_MIN_WIDTH = 300.0;
   return value;
 }
 
-
-- (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex
+- (void) tableView:(NSTableView*)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
 {
   if ([[tableColumn identifier] isEqualToString:@"State"]) {
-    [cell setTitle:[[entries objectAtIndex:rowIndex] objectForKey:@"Action"]];
+    id entry = [entries objectAtIndex:rowIndex];
+    [entry setValue:object forKey:@"State"];
+    if ([[tableView delegate] respondsToSelector:@selector(envActionStateChange:)]) {
+      NSMutableDictionary* states = [[NSMutableDictionary alloc] init];
+      for (int i = 0; i < [entries count]; i++) {
+        NSMutableDictionary* cur_entry = [entries objectAtIndex:i];
+        [states setValue:[cur_entry valueForKey:@"State"] forKey:[cur_entry valueForKey:@"Action"]];
+      }
+      [[tableView delegate] performSelector:@selector(envActionStateChange:) withObject:states];
+    }
   }
 }
 
@@ -131,8 +138,12 @@ static const float PANEL_MIN_WIDTH = 300.0;
 @end
 
 
-@interface AvidaEDPopViewStatView (hidden)
-- (void) setup;  
+@interface AvidaEDPopViewStatView (hidden) <NSTableViewDelegate>
+- (void) setup;
+
+- (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
+- (void) envActionStateChange:(NSMutableDictionary*)newState;
+
 @property (readonly) AvidaEDPopViewStatViewEnvActions* envActions;
 @end
 
@@ -145,12 +156,12 @@ static const float PANEL_MIN_WIDTH = 300.0;
 - (void) setup {
   envActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
   [tblEnvActions setDataSource:envActions];
-  [tblEnvActions setDelegate:envActions];
+  [tblEnvActions setDelegate:self];
   [tblEnvActions reloadData];
 
   orgEnvActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
   [tblOrgEnvActions setDataSource:orgEnvActions];
-  [tblOrgEnvActions setDelegate:orgEnvActions];
+  [tblOrgEnvActions setDelegate:self];
   [tblOrgEnvActions reloadData];
 
   NSNumberFormatter* fitFormat = [[NSNumberFormatter alloc] init];
@@ -174,6 +185,22 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [dec2format setNegativeFormat:@"-#0.00"];
   [txtAge setFormatter:dec2format];
   [txtOrgAge setFormatter:dec2format];
+}
+
+- (void) envActionStateChange:(NSMutableDictionary*)newState;
+{
+  if ([envActionChangeDelegate respondsToSelector:@selector(envActionStateChange:)]) {
+    [envActionChangeDelegate performSelector:@selector(envActionStateChange:) withObject:newState];
+  }
+}
+
+
+
+- (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex
+{
+  if (tableView == tblEnvActions && [[tableColumn identifier] isEqualToString:@"State"]) {
+    [cell setTitle:[envActions entryAtIndex:rowIndex]];
+  }
 }
 
 @end

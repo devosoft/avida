@@ -1290,7 +1290,6 @@
 																				</object>
 																				<int key="NSResizingMask">3</int>
 																				<bool key="NSIsResizeable">YES</bool>
-																				<bool key="NSIsEditable">YES</bool>
 																				<reference key="NSTableView" ref="176513324"/>
 																			</object>
 																		</array>
@@ -1537,7 +1536,7 @@
 														<string key="NSFrame">{{104, 271}, {61, 15}}</string>
 														<reference key="NSSuperview" ref="674607993"/>
 														<reference key="NSWindow"/>
-														<reference key="NSNextKeyView" ref="381802417"/>
+														<reference key="NSNextKeyView" ref="853191343"/>
 														<int key="NSViewLayerContentsRedrawPolicy">2</int>
 														<bool key="NSEnabled">YES</bool>
 														<object class="NSTextFieldCell" key="NSCell" id="166976838">
@@ -1698,7 +1697,7 @@
 																					</object>
 																					<reference key="NSTextColor" ref="788846637"/>
 																				</object>
-																				<object class="NSTextFieldCell" key="NSDataCell" id="124080652">
+																				<object class="NSTextFieldCell" key="NSDataCell" id="704049421">
 																					<int key="NSCellFlags">337772097</int>
 																					<int key="NSCellFlags2">272631808</int>
 																					<string key="NSContents">Text</string>
@@ -1709,7 +1708,6 @@
 																				</object>
 																				<int key="NSResizingMask">3</int>
 																				<bool key="NSIsResizeable">YES</bool>
-																				<bool key="NSIsEditable">YES</bool>
 																				<reference key="NSTableView" ref="937558958"/>
 																			</object>
 																			<object class="NSTableColumn" id="990132454">
@@ -1736,7 +1734,6 @@
 																				</object>
 																				<int key="NSResizingMask">3</int>
 																				<bool key="NSIsResizeable">YES</bool>
-																				<bool key="NSIsEditable">YES</bool>
 																				<reference key="NSTableView" ref="937558958"/>
 																			</object>
 																		</array>
@@ -1819,7 +1816,7 @@
 														<reference key="NSCornerView" ref="190937186"/>
 														<bytes key="NSScrollAmts">QSAAAEEgAABBmAAAQZgAAA</bytes>
 													</object>
-													<object class="NSCustomView" id="381802417">
+													<object class="NSCustomView" id="853191343">
 														<reference key="NSNextResponder" ref="674607993"/>
 														<int key="NSvFlags">265</int>
 														<string key="NSFrame">{{147, 283}, {15, 15}}</string>
@@ -2214,9 +2211,25 @@
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">boxOrgColor</string>
 						<reference key="source" ref="307699097"/>
-						<reference key="destination" ref="381802417"/>
+						<reference key="destination" ref="853191343"/>
 					</object>
 					<int key="connectionID">274</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">changeSelectedEnvActions:</string>
+						<reference key="source" ref="307699097"/>
+						<reference key="destination" ref="176513324"/>
+					</object>
+					<int key="connectionID">276</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">envActionChangeDelegate</string>
+						<reference key="source" ref="307699097"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">278</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2611,7 +2624,7 @@
 							<reference ref="802848275"/>
 							<reference ref="681542349"/>
 							<reference ref="132120547"/>
-							<reference ref="381802417"/>
+							<reference ref="853191343"/>
 						</array>
 						<reference key="parent" ref="307699097"/>
 					</object>
@@ -3018,7 +3031,7 @@
 						<int key="objectID">238</int>
 						<reference key="object" ref="473823415"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="124080652"/>
+							<reference ref="704049421"/>
 						</array>
 						<reference key="parent" ref="937558958"/>
 					</object>
@@ -3118,12 +3131,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">260</int>
-						<reference key="object" ref="124080652"/>
+						<reference key="object" ref="704049421"/>
 						<reference key="parent" ref="473823415"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">273</int>
-						<reference key="object" ref="381802417"/>
+						<reference key="object" ref="853191343"/>
 						<reference key="parent" ref="591238985"/>
 					</object>
 				</array>
@@ -3276,7 +3289,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">274</int>
+			<int key="maxID">278</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3396,6 +3409,7 @@
 					<string key="superclassName">NSView</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="boxOrgColor">OrgColorBox</string>
+						<string key="envActionChangeDelegate">id</string>
 						<string key="orgStatsView">NSView</string>
 						<string key="popStatsView">NSView</string>
 						<string key="tblEnvActions">NSTableView</string>
@@ -3416,6 +3430,10 @@
 						<object class="IBToOneOutletInfo" key="boxOrgColor">
 							<string key="name">boxOrgColor</string>
 							<string key="candidateClassName">OrgColorBox</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="envActionChangeDelegate">
+							<string key="name">envActionChangeDelegate</string>
+							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="orgStatsView">
 							<string key="name">orgStatsView</string>

@@ -61,6 +61,7 @@ class AvidaEDPopViewStatViewRecorder;
   Avida::Data::RecorderPtr recorder;
   AvidaEDPopViewStatViewEnvActions* envActions;
   AvidaEDPopViewStatViewEnvActions* orgEnvActions;
+  IBOutlet id envActionChangeDelegate;
 }
 
 - (id) initWithFrame:(NSRect)frame;

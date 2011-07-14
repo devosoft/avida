@@ -209,6 +209,26 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 
+- (void) envActionStateChange:(NSMutableDictionary*)newState
+{
+  Apto::String enabled_actions;
+  
+  NSEnumerator *enumerator = [newState keyEnumerator];
+  NSString* key;
+  
+  while ((key = [enumerator nextObject])) {
+    if ([[newState objectForKey:key] unsignedIntValue] == NSOnState) {
+      if (enabled_actions.GetSize()) enabled_actions += ",";
+      enabled_actions += [key UTF8String];
+    }
+  }
+  
+  map->SetModeProperty(map->GetTagMode(), "enabled_actions", enabled_actions);
+  [mapView updateState:map];
+}
+
+
+
 - (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
   if (splitView == mainSplitView) {
     NSView* leftView = [[splitView subviews] objectAtIndex:0];

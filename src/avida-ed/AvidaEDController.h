@@ -101,6 +101,8 @@
 - (IBAction) changeMapZoom:(id)sender;
 - (IBAction) togglePopViewStatView:(id)sender;
 
+- (void) envActionStateChange:(NSMutableDictionary*)newState;
+
 
 // NSSplitViewDelegate Protocol
 - (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize;
