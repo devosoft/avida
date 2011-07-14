@@ -1,8 +1,8 @@
 //
-//  main.mm
+//  OrgColorBox.h
 //  avida/apps/viewer-macos
 //
-//  Created by David Bryson on 10/20/10.
+//  Created by David Bryson on 7/14/11.
 //  Copyright 2010-2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -29,14 +29,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-namespace Avida {
-  void Initialize();
-};
-
-
-int main(int argc, char *argv[])
-{
-  Avida::Initialize();
-  
-  return NSApplicationMain(argc, (const char **)argv);
+@interface OrgColorBox : NSView {
+  NSColor* color;
 }
+- (void) reset;
+@property (readwrite, retain) NSColor* color;
+@end

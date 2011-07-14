@@ -148,10 +148,16 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [tblEnvActions setDelegate:envActions];
   [tblEnvActions reloadData];
 
+  orgEnvActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
+  [tblOrgEnvActions setDataSource:orgEnvActions];
+  [tblOrgEnvActions setDelegate:orgEnvActions];
+  [tblOrgEnvActions reloadData];
+
   NSNumberFormatter* fitFormat = [[NSNumberFormatter alloc] init];
   [fitFormat setNumberStyle:NSNumberFormatterDecimalStyle];
   [fitFormat setMaximumFractionDigits:4];
   [txtFitness setFormatter:fitFormat];
+  [txtOrgFitness setFormatter:fitFormat];
   
   NSNumberFormatter* dec1format = [[NSNumberFormatter alloc] init];
   [dec1format setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -159,12 +165,15 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [dec1format setNegativeFormat:@"-#0.0"];
   [txtMetabolicRate setFormatter:dec1format];
   [txtGestation setFormatter:dec1format];
+  [txtOrgMetabolicRate setFormatter:dec1format];
+  [txtOrgGestation setFormatter:dec1format];
   
   NSNumberFormatter* dec2format = [[NSNumberFormatter alloc] init];
   [dec2format setNumberStyle:NSNumberFormatterDecimalStyle];
   [dec2format setPositiveFormat:@"#0.00"];
   [dec2format setNegativeFormat:@"-#0.00"];
   [txtAge setFormatter:dec2format];
+  [txtOrgAge setFormatter:dec2format];
 }
 
 @end
@@ -246,9 +255,13 @@ static const float PANEL_MIN_WIDTH = 300.0;
   Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
   for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next();) {
     Avida::Environment::ConstActionTriggerPtr action = env->GetActionTrigger(*it.Get());
-    [envActions addNewEntry:[NSString stringWithAptoString:action->GetID()] withDescription:[NSString stringWithAptoString:action->GetDescription()]];
+    NSString* entryName = [NSString stringWithAptoString:action->GetID()];
+    NSString* entryDesc = [NSString stringWithAptoString:action->GetDescription()];
+    [envActions addNewEntry:entryName withDescription:entryDesc];
+    [orgEnvActions addNewEntry:entryName withDescription:entryDesc];
   }
   [tblEnvActions reloadData];
+  [tblOrgEnvActions reloadData];
 
   recorder = Avida::Data::RecorderPtr(new AvidaEDPopViewStatViewRecorder(self));
   [run attachRecorder:recorder];
@@ -270,6 +283,20 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [txtAge setStringValue:empty_str];
   [envActions clearEntries];
   [tblEnvActions reloadData];
+  
+  [self clearSelectedOrg];
+}
+
+- (void) clearSelectedOrg {
+  NSString* empty_str = @"-";
+  [txtOrgName setStringValue:empty_str];
+  [txtOrgFitness setStringValue:empty_str];
+  [txtOrgMetabolicRate setStringValue:empty_str];
+  [txtOrgGestation setStringValue:empty_str];
+  [txtOrgAge setStringValue:empty_str];
+  [txtOrgAncestor setStringValue:empty_str];  
+  [orgEnvActions clearEntries];
+  [tblOrgEnvActions reloadData];
 }
 
 

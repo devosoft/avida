@@ -1,8 +1,8 @@
 //
-//  main.mm
+//  OrgColorBox.m
 //  avida/apps/viewer-macos
 //
-//  Created by David Bryson on 10/20/10.
+//  Created by David Bryson on 7/14/11.
 //  Copyright 2010-2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,16 +27,30 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import "OrgColorBox.h"
 
-namespace Avida {
-  void Initialize();
-};
+@implementation OrgColorBox
 
+@synthesize color;
 
-int main(int argc, char *argv[])
+- (id) initWithFrame:(NSRect)frame
 {
-  Avida::Initialize();
+  self = [super initWithFrame:frame];
+  if (self) {
+    [self reset];
+  }
   
-  return NSApplicationMain(argc, (const char **)argv);
+  return self;
 }
+
+- (void) drawRect:(NSRect)dirtyRect
+{
+  [color set];
+  [NSBezierPath fillRect:dirtyRect];
+}
+
+- (void) reset {
+  color = [NSColor darkGrayColor];
+}
+
+@end

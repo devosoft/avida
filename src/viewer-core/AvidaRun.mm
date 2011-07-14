@@ -33,6 +33,40 @@
 
 #import "CoreViewListener.h"
 
+#include <Foundation/Foundation.h>
+#include <objc/objc-auto.h>
+
+class AutoreleasePoolContainer
+{
+private:
+  NSAutoreleasePool* m_pool;
+  
+public:
+  AutoreleasePoolContainer() : m_pool([[NSAutoreleasePool alloc] init]) { ; }
+  ~AutoreleasePoolContainer()
+  {
+    [m_pool release];
+  }
+};
+
+static Apto::ThreadSpecific<AutoreleasePoolContainer> s_autorelease_pool;
+
+void handleDriverCallback(Avida::DriverEvent event)
+{
+  if (event == Avida::THREAD_START) {
+    if (objc_collectingEnabled()) {
+      objc_registerThreadWithCollector();
+    } else {
+      AutoreleasePoolContainer* pool = s_autorelease_pool.Get();
+      if (pool == NULL) {
+        pool = new AutoreleasePoolContainer;
+        s_autorelease_pool.Set(pool);
+      }
+    }
+  } else if (event == Avida::THREAD_END) {
+    s_autorelease_pool.Set(NULL);
+  }
+}
 
 @implementation AvidaRun
 
@@ -48,6 +82,7 @@
     Apto::String config_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
     driver = Avida::CoreView::Driver::InitWithDirectory(config_path);
     if (!driver) return nil;
+    driver->RegisterCallback(&handleDriverCallback);
     driver->Start();
   }
   

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7029A49C1361CDBD0031433A /* CenteringClipView.m */; };
 		7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
@@ -35,6 +36,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
+		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
 		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
 		7029A49B1361CDBD0031433A /* CenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CenteringClipView.h; sourceTree = "<group>"; };
 		7029A49C1361CDBD0031433A /* CenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CenteringClipView.m; sourceTree = "<group>"; };
@@ -210,6 +213,8 @@
 				703549B71337AD2600D3865C /* SubtleSplitView.h */,
 				703549B81337AD2600D3865C /* SubtleSplitView.m */,
 				703549B61337AD2600D3865C /* main.mm */,
+				701BFFEF13CF305200838CC9 /* OrgColorBox.h */,
+				701BFFF013CF305200838CC9 /* OrgColorBox.m */,
 			);
 			name = Main;
 			path = main;
@@ -333,6 +338,7 @@
 				7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */,
 				7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */,
 				70D0455C13C6351D00E6E5AC /* NSStringAdditions.mm in Sources */,
+				701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

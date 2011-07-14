@@ -31,13 +31,14 @@
 
 #include "avida/data/Recorder.h"
 
+#import "OrgColorBox.h"
+
 @class AvidaRun;
 class AvidaEDPopViewStatViewRecorder;
 @class AvidaEDPopViewStatViewEnvActions;
 
 
 @interface AvidaEDPopViewStatView : NSView {
-  IBOutlet NSView* orgStatsView;
   IBOutlet NSView* popStatsView;
   IBOutlet NSTextField* txtPopSize;
   IBOutlet NSTextField* txtFitness;
@@ -46,9 +47,20 @@ class AvidaEDPopViewStatViewRecorder;
   IBOutlet NSTextField* txtAge;
   IBOutlet NSTableView* tblEnvActions;
   
+  IBOutlet NSView* orgStatsView;  
+  IBOutlet NSTextField* txtOrgName;
+  IBOutlet OrgColorBox* boxOrgColor;
+  IBOutlet NSTextField* txtOrgFitness;
+  IBOutlet NSTextField* txtOrgMetabolicRate;
+  IBOutlet NSTextField* txtOrgGestation;
+  IBOutlet NSTextField* txtOrgAge;
+  IBOutlet NSTextField* txtOrgAncestor;
+  IBOutlet NSTableView* tblOrgEnvActions;
+  
   AvidaRun* run;
   Avida::Data::RecorderPtr recorder;
   AvidaEDPopViewStatViewEnvActions* envActions;
+  AvidaEDPopViewStatViewEnvActions* orgEnvActions;
 }
 
 - (id) initWithFrame:(NSRect)frame;
@@ -63,6 +75,8 @@ class AvidaEDPopViewStatViewRecorder;
 
 - (void) setAvidaRun:(AvidaRun*)avidarun;
 - (void) clearAvidaRun;
+
+- (void) clearSelectedOrg;
 
 @end
 
