@@ -207,6 +207,11 @@ const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext&
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
 }
 
+const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
+{
+  return m_world->GetPopulation().GetCellResources(cell_id, ctx); 
+}
+
 const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 

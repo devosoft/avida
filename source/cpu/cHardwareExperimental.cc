@@ -265,6 +265,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-group-res-quant", &cHardwareExperimental::Inst_SenseGroupResQuant, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-ahead", &cHardwareExperimental::Inst_SenseDiffAhead, nInstFlag::STALL),
 
      
     // Grouping instructions
@@ -537,7 +538,6 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   // Mark the instruction as executed
   getIP().SetFlagExecuted();
 	
-  
   // instruction execution count incremeneted
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
   
@@ -2785,6 +2785,53 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
         setInternalValue(reg_to_set, res_diff, true);
     }
     return true;
+}
+
+bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx) 
+{
+  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+  if ( geometry == 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
+
+  const int reg_used = FindModifiedRegister(rBX);
+  const int sense_dist = m_threads[m_cur_thread].reg[reg_used].value;
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+
+  if(m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    
+    int faced_cell = m_organism->GetFacedCellID();
+    int cell = m_organism->GetCellID();
+    
+    int ahead_dir = cell - faced_cell;
+    
+    double total_ahead = 0;
+    double total_behind = 0;
+    
+    for(int i = 0; i < sense_dist; i++) {
+      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      total_ahead = total_ahead + cell_res[group];
+      cell = cell + ahead_dir;
+    }
+
+    for(int i = 0; i < sense_dist; i++) {
+      // if facing E, SE, or NE check if we are off world edge before using number
+      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir = worldx + 1) || (ahead_dir = (worldx - 1) * - 1)) && (cell % worldx == 0)) break;
+      // else, get the cell value
+      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      total_behind = total_behind + cell_res[group];
+      cell = cell - ahead_dir;
+      // if facing W, SW or NW and next theoretical cell is off edge of world, don't do it.
+      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir = worldx - 1) || (ahead_dir = (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      // if cell is less than 0 or greater than max cell (in grid), don't do it.
+      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
+    }
+
+    // return total diff
+    int res_diff = (int) (total_ahead - total_behind + 0.5);
+    setInternalValue(reg_used, res_diff, true);
+  }
+  return true;
 }
 
 bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx) 

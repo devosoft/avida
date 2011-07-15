@@ -106,6 +106,7 @@ public:
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
   void UpdateResources(const tArray<double>& res_change);

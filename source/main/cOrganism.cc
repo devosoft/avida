@@ -988,7 +988,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   }
   else return false;              
   
-  // Check to make sure the organism is still alive
+  // Check to make sure the organism is alive after the move
   if (m_phenotype.GetToDelete()) return false;
   
   // updates movement predicates

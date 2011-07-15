@@ -521,7 +521,8 @@ private:
   bool Inst_SenseGroupResQuant(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
- 
+  bool Inst_SenseDiffAhead(cAvidaContext& ctx);
+  
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_GetGroupID(cAvidaContext& ctx);

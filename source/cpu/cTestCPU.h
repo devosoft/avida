@@ -78,8 +78,8 @@ private:
   cResourceCount m_resource_count;
   cResourceCount m_faced_cell_resource_count;
   cResourceCount m_deme_resource_count;
-  
-  
+  cResourceCount m_cell_resource_count;
+    
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, int cur_depth);
@@ -114,6 +114,7 @@ public:
   inline const tArray<double>& GetResources(cAvidaContext& ctx); 
   inline const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
+  inline const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -155,6 +156,11 @@ inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)
 inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)    
 {
     return m_deme_resource_count.GetResources(ctx); 
+}
+
+inline const tArray<double>& cTestCPU::GetCellResources(int cell_id, cAvidaContext& ctx)   
+{
+  return m_cell_resource_count.GetResources(ctx); 
 }
 
 inline const tArray< tArray<int> >& cTestCPU::GetCellIdLists()

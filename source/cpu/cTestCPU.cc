@@ -94,9 +94,11 @@ void cTestCPU::InitResources(int res_method, cResourceHistory* res, int update, 
   // Set the resource count to zero by default
   m_resource_count.SetSize(resource_lib.GetSize());
   m_faced_cell_resource_count.SetSize(resource_lib.GetSize());
+  m_cell_resource_count.SetSize(resource_lib.GetSize());
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     m_resource_count.Set(i, 0.0);
     m_faced_cell_resource_count.Set(i, 0.0);
+    m_cell_resource_count.Set(i, 0.0);
   }
     
   SetResourceUpdate(m_res_update, false);
