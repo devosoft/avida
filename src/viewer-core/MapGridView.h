@@ -50,6 +50,7 @@ namespace Avida {
 }
 
 - (id) initWithFrame:(NSRect)frame;
+- (void) awakeFromNib;
 
 - (void) drawRect:(NSRect)rect;
 - (BOOL) isOpaque;

@@ -54,8 +54,13 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     num_colors = 0;
     color_cache = [NSMutableArray arrayWithCapacity:255];
     zoom = -1;
+    [self setWantsLayer:YES];
   }
   return self;
+}
+
+- (void) awakeFromNib {
+  [self setWantsLayer:YES];
 }
 
 - (void) drawRect:(NSRect)dirtyRect {
