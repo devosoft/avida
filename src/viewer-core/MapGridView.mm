@@ -102,9 +102,9 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   NSRect gridCellRect;
   gridCellRect.size.width = block_size - grid_width;
   gridCellRect.size.height = block_size - grid_width;
-  NSRect gridTagRect;
-  gridTagRect.size.width = block_size + grid_width;
-  gridTagRect.size.height = block_size + grid_width;
+//  NSRect gridTagRect;
+//  gridTagRect.size.width = block_size + grid_width;
+//  gridTagRect.size.height = block_size + grid_width;
 
   for (int i = 0; i < map_width; i++) {
     for (int j = 0; j < map_height; j++) {
@@ -119,16 +119,22 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       }
       [NSBezierPath fillRect:gridCellRect];
       
-      gridTagRect.origin = NSMakePoint(mapRect.origin.x + block_size * i - grid_width, mapRect.origin.y + block_size * j - grid_width);
+//      gridTagRect.origin = NSMakePoint(mapRect.origin.x + block_size * i - grid_width, mapRect.origin.y + block_size * j - grid_width);
       int tag = map_tags[i * map_width + j];
       switch (tag) {
         case -4:  continue;
         case -3:  [[NSColor darkGrayColor] set]; break;
         case -2:  [[NSColor grayColor] set]; break;
         case -1:  [[NSColor whiteColor] set]; break;
-        default:  [[NSColor whiteColor] set]; break;
+        default:  continue;
       }
-      [NSBezierPath strokeRect:gridTagRect];
+      [NSGraphicsContext saveGraphicsState];
+      NSBezierPath* tagPath = [NSBezierPath bezierPathWithRect:gridCellRect];
+      [tagPath setLineWidth:2.0];
+      [tagPath setLineCapStyle:NSSquareLineCapStyle];
+      [tagPath setClip];
+      [tagPath stroke];
+      [NSGraphicsContext restoreGraphicsState];
     }
   }
 }
