@@ -6,7 +6,7 @@
 <body>
 
 <div class="revision">
-Revised 2006-09-03 DMB
+Revised 2011-07-15 BLW
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -101,7 +101,7 @@ each of the possible values.  Here is one example:
   FORRANGE i 100 199
     SET d /home/charles/dev/avida/runs/evo-neut/evo_neut_$i
     PURGE_BATCH
-    LOAD_DETAIL_DUMP $d/detail_pop.100000
+    LOAD $d/detail-100000.spop
     RECALCULATE
     DETAIL $d/detail.dat update length fitness sequence
   END
@@ -131,8 +131,8 @@ After we know what directory we are using, we run a PURGE_BATCH to get rid of
 all of the genotypes from the last time through
 the loop (lest we just keep building up more and more genotypes in the
 current batch)
-and then we refill the batch by using LOAD_DETAIL_DUMP to load in all of the
-genotypes saved in the file <kbd>detail-100000.pop</kbd> within our chosen
+and then we refill the batch by using LOAD to load in all of the
+genotypes saved in the file <kbd>detail-100000.spop</kbd> within our chosen
 directory.  The RECALCULATE command runs all of the genotypes through a
 test CPU so we have all the statistics we need, and finally DETAIL will print
 out the stats we want to the file <kbd>detail.dat</kbd>, again
@@ -153,8 +153,7 @@ ancestor.  As such, there are tools in Avida to get at this information.
   FORRANGE i 100 199
     SET d /home/charles/dev/avida/runs/evo-neut/evo_neut_$i
     PURGE_BATCH
-    LOAD_DETAIL_DUMP $d/detail_pop.100000
-    LOAD_DETAIL_DUMP $d/historic_dump.100000
+    LOAD $d/detail-100000.spop
     FIND_LINEAGE num_cpus
     RECALCULATE
     DETAIL lineage.$i.html depth parent_dist length fitness html.sequence
@@ -163,13 +162,16 @@ ancestor.  As such, there are tools in Avida to get at this information.
 
 <p>
 This program looks very similar to the last one.  The first four lines
-are actually identical, but after loading the detail dump at update 100,000,
-we also want to load the historic dump from the same time point.  A
-detail file contains all of the genotypes that were currently alive in the
-population at the time it was printed, while the historic files contain all
-of the genotypes that are direct ancestors of those that were still alive.
-The combination of these two files gives us the lineages of the entire
-population back to the original ancestor.  Since we are only interested in
+are actually identical. A .spop detail file contains all of the genotypes 
+that were currently alive in the population at the time it was printed, 
+and by default all of the genotypes that are direct ancestors of those that 
+were still alive.  (If you used the save_historic=1 option when you saved 
+this population, the .spop contains only the currently-alive genomes, and 
+you will not find much of a lineage!)
+</p>
+<p>
+The .spop file therefore gives us the lineages of the entire population 
+back to the original ancestor.  Since we are only interested in
 a single lineage, the next thing we do is run the FIND_LINEAGE command to
 pick out a single genotype, and discard everything else except for its
 lineage.  In this case, we pick the genotype with the highest abundance 
@@ -205,7 +207,7 @@ genotypes at each time point) we might write a program like:
   SET_BATCH 0
   FORRANGE u 100 100000 100            # Cycle through updates
     PURGE_BATCH                        # Purge current batch (0)
-    LOAD_DETAIL_DUMP $d/detail_pop.$u  # Load in the population at this update
+    LOAD $d/detail-$u.spop  # Load in the population at this update
     FIND_GENOTYPE num_cpus             # Remove all but most abundant genotype
     DUPLICATE 0 1                      # Duplicate batch 0 into batch 1
   END
@@ -217,7 +219,7 @@ genotypes at each time point) we might write a program like:
 <p>
 This program is slightly more complicated than the others, so I added in
 comments directly inside it.  Basically, what we do here is use batch 0
-as our staging area where we load the full detail dumps into, strip them
+as our staging area where we load the full detail dumps, strip them
 down to only the single most abundant genotype, and then copy that genotype
 over into batch one.  By the time we're done, we have all of the dominant
 genotypes inside of batch one, so we can print anything we need right from
@@ -239,8 +241,7 @@ a helper command for yourself as follows:
 <pre>
   FUNCTION MY_HTML_LINEAGE  # arg1=run_directory
     PURGE_BATCH
-    LOAD_DETAIL_DUMP $1/detail_pop.100000
-    LOAD_DETAIL_DUMP $1/historic_dump.100000
+    LOAD $1/detail-100000.spop
     FIND_LINEAGE num_cpus
     RECALCULATE
     DETAIL $1/lineage.html depth parent_dist length fitness html.sequence
@@ -305,7 +306,7 @@ projects.
 <p>
 <strong>Problem 1</strong>. A detail file in Avida contains one line associated with
 each genotype, in order from the most abundant to the least.  Currently,
-the LOAD_DETAIL_DUMP command will load the entire file's worth of
+the LOAD command will load the entire file's worth of
 genotypes into the current batch, but what if you only wanted the top
 few?  You should write a function called LOAD_DETAIL_TOP that takes
 two arguments.  The first ($1) is the name file that needs to be loaded
@@ -318,12 +319,12 @@ along with the Unix command <kbd>head</kbd> which will output the very
 top of a file.  If you typed the line:
 </p>
 <pre>
-  head -42 detail_pop.1000 &gt; my_temp_file
+  head -42 detail-1000.spop &gt; my_temp_file
 </pre>
 
 <p>
 The file <kbd>my_temp_file</kbd> would be created, and its contents would
-be the first 42 lines of <kbd>detail-1000.pop</kbd>.  So, what you need this
+be the first 42 lines of <kbd>detail-1000.spop</kbd>.  So, what you need this
 function to do is create a temporary file with proper number of lines from
 the detail file in it, load that temp file into the current batch, and
 then delete the file (using the <kbd>rm</kbd> command).
