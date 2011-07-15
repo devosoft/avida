@@ -395,8 +395,9 @@ void EnvActionMapMode::Update(cPopulation& pop)
       m_raw_action_counts[i].SetAll(0);
     } else {
       for (int task_id = 0; task_id < m_action_ids.GetSize(); task_id++) {
-        if (org->GetPhenotype().GetCurTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 1;
-        else if (org->GetPhenotype().GetLastTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 2;
+        if (org->GetPhenotype().GetLastTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 1;
+        else if (org->GetPhenotype().GetCurTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 2;
+        else m_raw_action_counts[i][task_id] = 0;
       }
     }
   }
@@ -414,10 +415,14 @@ void EnvActionMapMode::updateTagStates()
   for (int i = 0; i < m_action_grid.GetSize(); i++) {
     int color = -1;
     for (int task_id = 0; task_id < m_action_ids.GetSize(); task_id++) {
-      if (m_enabled_actions[task_id] && !m_raw_action_counts[i][task_id]) {
+      if (!m_enabled_actions[task_id]) continue;  // Task disabled, so ignore value
+      
+      if (m_raw_action_counts[i][task_id] == 0) {  // One of the enabled tasks is not being performed, so clear tag and exit
         color = -4;
         break;
       }
+      
+      if (m_raw_action_counts[i][task_id] == 2) color = -3;  // One of the enabled tasks is a current task, so dim the tag
     }
     m_action_grid[i] = color;
     m_action_counts[4 + color]++;
