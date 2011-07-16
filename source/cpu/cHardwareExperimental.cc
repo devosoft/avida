@@ -2790,39 +2790,51 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx) 
 {
   const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
-  if ( geometry == 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
-
-  const int reg_used = FindModifiedRegister(rBX);
-  const int sense_dist = m_threads[m_cur_thread].reg[reg_used].value;
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  // temp check on world geometry until code can handle other geometries
+  if ( geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
 
   if(m_organism->HasOpinion()) {
     int group = m_organism->GetOpinion().first;
+    // fail if the org is trying to sense a nest/hidden habitat
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    if(resource_lib.GetResource(group)->GetHabitat() == 3) return true;
+    
+    const int reg_used = FindModifiedRegister(rBX);
+    const int sense_dist = m_threads[m_cur_thread].reg[reg_used].value;
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
     
     int faced_cell = m_organism->GetFacedCellID();
     int cell = m_organism->GetCellID();
     
     int ahead_dir = cell - faced_cell;
+    int behind_dir = ahead_dir * - 1;
     
     double total_ahead = 0;
     double total_behind = 0;
     
+    // look ahead (don't worry about current org cell as this will cancel out)
     for(int i = 0; i < sense_dist; i++) {
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
       total_ahead = total_ahead + cell_res[group];
+      // if facing W, SW or NW stop if on edge of world
+      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
       cell = cell + ahead_dir;
+      // if facing E, SE, or NE check if next cell is off edge of world
+      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir == worldx + 1) || (ahead_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
+      // if cell is less than 0 or greater than max cell (in grid), don't do it.
+      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
     }
 
-    for(int i = 0; i < sense_dist; i++) {
-      // if facing E, SE, or NE check if we are off world edge before using number
-      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir = worldx + 1) || (ahead_dir = (worldx - 1) * - 1)) && (cell % worldx == 0)) break;
-      // else, get the cell value
+    // look behind
+    cell = m_organism->GetCellID();
+    for(int j = 0; j < sense_dist; j++) {
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
       total_behind = total_behind + cell_res[group];
-      cell = cell - ahead_dir;
-      // if facing W, SW or NW and next theoretical cell is off edge of world, don't do it.
-      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir = worldx - 1) || (ahead_dir = (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      // if facing W, SW or NW stop if on edge of world
+      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      cell = cell + behind_dir;
+      // if facing E, SE, or NE check if next cell is off edge of world
+      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
       // if cell is less than 0 or greater than max cell (in grid), don't do it.
       if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
     }
