@@ -515,6 +515,8 @@ private:
   bool Inst_RotateUphill(cAvidaContext& ctx);
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
+  bool Inst_RotateRightX(cAvidaContext& ctx);
+  bool Inst_RotateLeftX(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 

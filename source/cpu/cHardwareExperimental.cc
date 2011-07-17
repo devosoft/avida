@@ -197,8 +197,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, 0, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, 0, "Copy the position of the ?IP? head into ?CX?"),
     
-    
-    
+
     // Replication Instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, 0, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::STALL, "Divide code between read and write heads."),
@@ -258,6 +257,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-right-x", &cHardwareExperimental::Inst_RotateRightX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-left-x", &cHardwareExperimental::Inst_RotateLeftX, nInstFlag::STALL),
 
       
     // Resource and Topography Sensing
@@ -2744,6 +2745,44 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
     m_organism->Rotate(1); // continue to rotate
   }  
   setInternalValue(reg_used, 0, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateRightX(cAvidaContext& ctx)
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) rot_num = 1;
+  // Else rotate the nop number of times, stopping at 7 if nop value > 7.
+  if (rot_num > 7) rot_num = 7;
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(-1);
+  setInternalValue(reg_used, rot_num, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateLeftX(cAvidaContext& ctx)
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) rot_num = 1;
+  // Else rotate the nop number of times, stopping at 7 if nop value > 7.
+  if (rot_num > 7) rot_num = 7;
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(1);
+  setInternalValue(reg_used, rot_num, true);
   return true;
 }
 
