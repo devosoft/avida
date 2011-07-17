@@ -259,6 +259,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-right-x", &cHardwareExperimental::Inst_RotateRightX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-left-x", &cHardwareExperimental::Inst_RotateLeftX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
 
       
     // Resource and Topography Sensing
@@ -2760,7 +2761,7 @@ bool cHardwareExperimental::Inst_RotateRightX(cAvidaContext& ctx)
   // If this org has no trailing nop, rotate once.
   const cCodeLabel& search_label = GetLabel();
   if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times, stopping at 7 if nop value > 7.
+  // Else rotate the nop number of times, stopping at 7 if nop value > 7 (do nothing if rot_num < 0).
   if (rot_num > 7) rot_num = 7;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(-1);
   setInternalValue(reg_used, rot_num, true);
@@ -2779,10 +2780,35 @@ bool cHardwareExperimental::Inst_RotateLeftX(cAvidaContext& ctx)
   // If this org has no trailing nop, rotate once.
   const cCodeLabel& search_label = GetLabel();
   if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times, stopping at 7 if nop value > 7.
+  // Else rotate the nop number of times, stopping at 7 if nop value > 7 (do nothing if rot_num < 0).
   if (rot_num > 7) rot_num = 7;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(1);
   setInternalValue(reg_used, rot_num, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  int rot_dir = 1;
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once in random direction.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) {
+    rot_num = 1;
+    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
+  }
+  // Else rotate the nop number of times in the appropriate direction, stopping at 7 if abs(nop value) > 7.
+  rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
+  rot_num = abs(rot_num);
+  if (rot_num > 7) rot_num = 7;
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
+  
+  setInternalValue(reg_used, rot_num * rot_dir, true);
   return true;
 }
 
