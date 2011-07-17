@@ -526,6 +526,9 @@ private:
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_GetGroupID(cAvidaContext& ctx);
+
+  // Org Interactions
+  bool Inst_GetFacedOrgID(cAvidaContext& ctx);
 };
 
 

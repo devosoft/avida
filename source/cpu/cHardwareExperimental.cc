@@ -272,7 +272,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
 
-      
+    // Org Interaction instructions
+    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
+
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
   };
@@ -2944,3 +2946,17 @@ bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
     }
     return true;
 }
+
+bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
+//Get ID of organism faced by this one, if there is an organism in front.
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead())  return false;  
+  
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, neighbor->GetID(), true);
+  return true;
+}
+
