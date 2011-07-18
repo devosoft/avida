@@ -31,14 +31,13 @@
 #include "cResourceLib.h"
 #include "cString.h"
 #include "cTaskLib.h"
-#include "tArraySet.h"
 #include "tList.h"
 
 #include <set>
 
 
 namespace Avida {
-  class cFeedback;
+  class Feedback;
 };
 class cContextPhenotype;
 class cContextReactionRequisite;
@@ -88,8 +87,8 @@ public:
   cEnvironment(cWorld* world);
   ~cEnvironment();
 
-  bool Load(const cString& filename, const cString& working_dir, cFeedback& feedback);
-  bool LoadLine(cString line, cFeedback& feedback);  // Reads in a single environment configuration line
+  bool Load(const cString& filename, const cString& working_dir, Feedback& feedback);
+  bool LoadLine(cString line, Feedback& feedback);  // Reads in a single environment configuration line
 
   // Interaction with the organisms
   void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random = true) const;
@@ -151,23 +150,23 @@ public:
 
 private:
   
-  bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type, cFeedback& feedback);
-  bool AssertInputInt(const cString& input, const cString& name, const cString& type, cFeedback& feedback);
-  bool AssertInputDouble(const cString& input, const cString& name, const cString& type, cFeedback& feedback);
-  bool AssertInputBool(const cString& input, const cString& name, const cString& type, cFeedback& feedback);
-  bool AssertInputValid(void* input, const cString& name, const cString& type, const cString& value, cFeedback& feedback);
+  bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type, Feedback& feedback);
+  bool AssertInputInt(const cString& input, const cString& name, const cString& type, Feedback& feedback);
+  bool AssertInputDouble(const cString& input, const cString& name, const cString& type, Feedback& feedback);
+  bool AssertInputBool(const cString& input, const cString& name, const cString& type, Feedback& feedback);
+  bool AssertInputValid(void* input, const cString& name, const cString& type, const cString& value, Feedback& feedback);
   
-  bool LoadReactionProcess(cReaction* reaction, cString desc, cFeedback& feedback);
-  bool LoadReactionRequisite(cReaction* reaction, cString desc, cFeedback& feedback);
-  bool LoadContextReactionRequisite(cReaction* reaction, cString desc, cFeedback& feedback); 
-  bool LoadResource(cString desc, cFeedback& feedback);
-  bool LoadCell(cString desc, cFeedback& feedback);
-  bool LoadReaction(cString desc, cFeedback& feedback);
-  bool LoadStateGrid(cString desc, cFeedback& feedback);
-  bool LoadSetActive(cString desc, cFeedback& feedback);
+  bool LoadReactionProcess(cReaction* reaction, cString desc, Feedback& feedback);
+  bool LoadReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback);
+  bool LoadContextReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback); 
+  bool LoadResource(cString desc, Feedback& feedback);
+  bool LoadCell(cString desc, Feedback& feedback);
+  bool LoadReaction(cString desc, Feedback& feedback);
+  bool LoadStateGrid(cString desc, Feedback& feedback);
+  bool LoadSetActive(cString desc, Feedback& feedback);
   
-  bool LoadDynamicResource(cString desc, cFeedback& feedback);
-  bool LoadGradientResource(cString desc, cFeedback& feedback);
+  bool LoadDynamicResource(cString desc, Feedback& feedback);
+  bool LoadGradientResource(cString desc, Feedback& feedback);
   double GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskctx,
 
                             const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;

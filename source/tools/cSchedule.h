@@ -25,7 +25,6 @@
 
 class cDeme;
 class cMerit;
-class cChangeList;
 
 /**
  * This class is the base object to handle time-slicing. All other schedulers
@@ -36,7 +35,6 @@ class cSchedule
 {
 protected:
   int item_count;
-  cChangeList* m_change_list;
   
 
   cSchedule(); // @not_implemented
@@ -51,10 +49,6 @@ public:
   virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0) = 0;
   virtual int GetNextID() = 0;
   virtual double GetStatus(int id) { return 0.0; }
-  void SetChangeList(cChangeList *change_list);
-  cChangeList *GetChangeList() { return m_change_list; }
-
-  void SetSize(int _item_count);
 };
 
 #endif

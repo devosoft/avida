@@ -51,8 +51,6 @@ public:
   inline int Top();
   void Flip();
 
-  bool OK();
-
   void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
 };

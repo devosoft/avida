@@ -22,6 +22,9 @@
 #ifndef cWorld_h
 #define cWorld_h
 
+#include "apto/core/SmartPtr.h"
+#include "avida/data/Types.h"
+
 #include "cAvidaConfig.h"
 #include "cAvidaContext.h"
 #include "cDataFileManager.h"
@@ -30,7 +33,7 @@
 #include <cassert>
 
 namespace Avida {
-  class cWorldDriver;
+  class WorldDriver;
 };
 
 class cAnalyze;
@@ -61,13 +64,15 @@ protected:
   cAvidaConfig* m_conf;
   cAvidaContext m_ctx;
   cClassificationManager* m_class_mgr;
-  cDataFileManager* m_data_mgr;
+  cDataFileManager* m_datafile_mgr;
   cEnvironment* m_env;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
-  cStats* m_stats;
-  cWorldDriver* m_driver;
+  Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
+  WorldDriver* m_driver;
+  
+  Avida::Data::Manager* m_data_mgr;
 
   cRandom m_rng;
   
@@ -76,9 +81,7 @@ protected:
   
   bool m_own_driver;      // specifies whether this world object should manage its driver object
 
-  cWorld(cAvidaConfig* cfg, const cString& wd)
-    : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_data_mgr(NULL)
-    , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL) { ; }
+  cWorld(cAvidaConfig* cfg, const cString& wd);
   
 private:
   cWorld(); // @not_implemented
@@ -90,7 +93,7 @@ public:
   static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL); 
   virtual ~cWorld();
   
-  void SetDriver(cWorldDriver* driver, bool take_ownership = false);
+  void SetDriver(WorldDriver* driver, bool take_ownership = false);
   
   const cString& GetWorkingDir() const { return m_working_dir; }
   
@@ -99,17 +102,21 @@ public:
   cAvidaConfig& GetConfig() { return *m_conf; }
   cAvidaContext& GetDefaultContext() { return m_ctx; }
   cClassificationManager& GetClassificationManager() { return *m_class_mgr; }
-  cDataFileManager& GetDataFileManager() { return *m_data_mgr; }
+  cDataFileManager& GetDataFileManager() { return *m_datafile_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cPopulation& GetPopulation() { return *m_pop; }
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
-  cWorldDriver& GetDriver() { return *m_driver; }
+  WorldDriver& GetDriver() { return *m_driver; }
+  
+  Data::Manager& GetDataManager() { return *m_data_mgr; }
+  
+  Data::ProviderPtr GetStatsProvider(cWorld*);
   
   // Access to Data File Manager
-  std::ofstream& GetDataFileOFStream(const cString& fname) { return m_data_mgr->GetOFStream(fname); }
-  cDataFile& GetDataFile(const cString& fname) { return m_data_mgr->Get(fname); }  
+  std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }
+  cDataFile& GetDataFile(const cString& fname) { return m_datafile_mgr->Get(fname); }  
 
   // Config Dependent Modes
   bool GetTestOnDivide() const { return m_test_on_div; }

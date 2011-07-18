@@ -294,34 +294,6 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   return *this;
 }
 
-bool cPhenotype::OK()
-{
-  assert(genome_length >= 0);
-  assert(copied_size >= 0);
-  assert(gestation_time >= 0);
-  assert(gestation_start >= 0);
-  assert(fitness >= 0.0);
-  assert(div_type >= 0.0);
-  assert(cur_bonus >= 0.0);
-  assert(cur_num_errors >= 0);
-  assert(cur_num_donates >= 0);
-  assert(last_merit_base >= 0.0);
-  assert(last_bonus >= 0.0);
-  assert(last_num_errors >= 0);
-  assert(last_num_donates >= 0);
-  assert(last_fitness >= 0.0);
-  assert(num_divides >= 0);
-  assert(num_divides_failed >= 0);
-  assert(generation >= 0);
-  assert(cpu_cycles_used >= 0);  
-  assert(time_used >= 0);
-  assert(age >= 0);
-  assert(child_copied_size >= 0);
-  assert(energy_received_buffer >= 0);
-  // assert(to_die == false);
-  return (m_world);
-}
-
 
 /**
  * This function is run whenever a new organism is being constructed inside
@@ -332,7 +304,7 @@ bool cPhenotype::OK()
  *     - this is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSequence& _genome)
+void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequence& _genome)
 {
   // Copy divide values from parent, which should already be setup.
   merit = parent_phenotype.merit;
@@ -550,7 +522,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
  *     - This is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupInject(const cSequence & _genome)
+void cPhenotype::SetupInject(const Sequence & _genome)
 {
   // Setup reasonable initial values injected organism...
   genome_length   = _genome.GetSize();
@@ -726,7 +698,7 @@ void cPhenotype::SetupInject(const cSequence & _genome)
 }
 
 
-void cPhenotype::ResetMerit(const cSequence & _cgenome)
+void cPhenotype::ResetMerit(const Sequence & _cgenome)
 {
   int cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
@@ -746,7 +718,7 @@ void cPhenotype::ResetMerit(const cSequence & _cgenome)
  * This function is run whenever an organism executes a successful divide.
  **/
 
-void cPhenotype::DivideReset(const cSequence & _genome)
+void cPhenotype::DivideReset(const Sequence & _genome)
 {
   assert(time_used >= 0);
   assert(initialized == true);
@@ -952,7 +924,7 @@ void cPhenotype::DivideReset(const cSequence & _genome)
  * and copied size in its merit.
  **/
 
-void cPhenotype::TestDivideReset(const cSequence & _genome)
+void cPhenotype::TestDivideReset(const Sequence & _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
@@ -1385,7 +1357,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       }
       if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
       
-      // if we want to generate and age-task histogram
+      // if we want to generate an age-task histogram
       if (m_world->GetConfig().AGE_POLY_TRACKING.Get()) {
         m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
       }
@@ -2031,7 +2003,7 @@ void cPhenotype::NewTrial()
  * by another call (like NewTrial). It is a subset of DivideReset @JEB
  **/
 
-void cPhenotype::TrialDivideReset(const cSequence & _genome)
+void cPhenotype::TrialDivideReset(const Sequence & _genome)
 {
   int cur_merit_base = CalcSizeMerit();
   

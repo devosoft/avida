@@ -45,7 +45,6 @@ public:
   cCodeLabel(const cCodeLabel& in_label) : m_nops(in_label.m_nops), m_size(in_label.m_size) { ; }  
   ~cCodeLabel() { ; }
 
-  bool OK();
   bool operator==(const cCodeLabel& other_label) const;
   bool operator!=(const cCodeLabel& other_label) const { return !(operator==(other_label)); }
   char operator[](int position) const { return (int) m_nops[position]; }

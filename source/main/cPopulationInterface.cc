@@ -22,6 +22,8 @@
 
 #include "cPopulationInterface.h"
 
+#include "apto/platform.h"
+
 #include "cDeme.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
@@ -33,7 +35,6 @@
 #include "cTestCPU.h"
 #include "cRandom.h"
 #include "cInstSet.h"
-#include "Platform.h"
 
 #include <cassert>
 #include <algorithm>
@@ -43,7 +44,7 @@
 #define NULL 0
 #endif
 
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 namespace std
 {
   /*inline __int64  abs(__int64 i) { return _abs64(i); }*/
@@ -113,7 +114,7 @@ void cPopulationInterface::SetCellData(const int newData) {
   cell.SetCellData(cell.GetOrganism()->GetID(), newData);
 }
 
-bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome)
+bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
@@ -204,6 +205,11 @@ const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx)
 const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
+}
+
+const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
+{
+  return m_world->GetPopulation().GetCellResources(cell_id, ctx); 
 }
 
 const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
@@ -324,7 +330,7 @@ int cPopulationInterface::BuyValue(const int label, const int buy_price)
 	return value;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);
@@ -852,7 +858,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
  There is the possibility that more than one HGT mutation occurs when this method 
  is called.
  */
-void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
+void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) {
 	InitHGTSupport();
 	
 	// first, gather up all the fragments that we're going to be inserting into this offspring:
@@ -972,7 +978,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 
 /*! Place the fragment at the location of best match.
  */
-void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const cSequence& offspring,
+void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const Sequence& offspring,
 																						 fragment_list_type::iterator& selected,
 																						 substring_match& location) {
 	// find the location within the offspring's genome that best matches the selected fragment:
@@ -989,11 +995,11 @@ void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const cSequence
  Mutations to the offspring are still performed using the entire fragment, so this effectively
  increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
  */
-void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const cSequence& offspring,
+void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const Sequence& offspring,
 																											 fragment_list_type::iterator& selected,
 																											 substring_match& location) {
 	// copy the selected fragment, trimming redundant instructions at the end:
-	cSequence trimmed(*selected);
+	Sequence trimmed(*selected);
 	while((trimmed.GetSize() >= 2) && (trimmed[trimmed.GetSize()-1] == trimmed[trimmed.GetSize()-2])) {
 		trimmed.Remove(trimmed.GetSize()-1);
 	}
@@ -1009,7 +1015,7 @@ void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const cSequen
  The beginning of the fragment location is selected at random, while the end is selected a
  random distance (up to the length of the selected fragment * 2) instructions away.
  */
-void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const cSequence& offspring,
+void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const Sequence& offspring,
 																											fragment_list_type::iterator& selected,
 																											substring_match& location) {
 	// select a random location within the offspring's genome for this fragment to be
@@ -1022,7 +1028,7 @@ void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const cSequenc
 
 /*! Called when this organism is the receiver of an HGT donation.
  */
-void cPopulationInterface::ReceiveHGTDonation(const cSequence& fragment) {
+void cPopulationInterface::ReceiveHGTDonation(const Sequence& fragment) {
 	InitHGTSupport();
 	m_hgt_support->_pending.push_back(fragment);
 }
@@ -1044,6 +1050,20 @@ void cPopulationInterface::LeaveGroup(int group_id)
   m_world->GetPopulation().LeaveGroup(GetOrganism(), group_id);
 }
 
+int cPopulationInterface::NumberOfOrganismsInGroup(int group_id)
+{
+  return m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+}
+
+int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id)
+{
+  return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
+}
+
+int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group)
+{
+  return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism, parent_group);
+}
 
 void cPopulationInterface::BeginSleep()
 {

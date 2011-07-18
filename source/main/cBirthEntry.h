@@ -22,7 +22,7 @@
 #ifndef cBirthEntry_h
 #define cBirthEntry_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #ifndef cMerit_h
 #include "cMerit.h"
@@ -36,7 +36,7 @@ using namespace Avida;
 class cBirthEntry
 {
 public:
-  cGenome genome;
+  Genome genome;
   double energy4Offspring;
   cMerit merit;
   int timestamp; // -1 if empty

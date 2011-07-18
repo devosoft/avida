@@ -25,7 +25,7 @@
 #include "cTestCPU.h"
 
 
-bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome)
+bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
 {
   parent->GetPhenotype().TestDivideReset(parent->GetGenome().GetSequence());
   // @CAO in the future, we probably want to pass this offspring the test_cpu!
@@ -85,6 +85,11 @@ const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaCon
   return m_testcpu->GetDemeResources(deme_id, ctx); 
 }
 
+const tArray<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
+{
+  return m_testcpu->GetCellResources(cell_id, ctx); 
+}
+
 const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 {
 	return m_testcpu->GetCellIdLists();
@@ -129,7 +134,7 @@ int cTestCPUInterface::BuyValue(const int label, const int buy_price)
 	return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code)
+bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
 {
   return false;
 }

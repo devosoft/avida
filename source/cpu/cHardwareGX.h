@@ -138,7 +138,7 @@ public:
   class cProgramid {
   public:
     //! Constructs a cProgramid from a genome and CPU.
-    cProgramid(const cSequence& genome, cHardwareGX* hardware);
+    cProgramid(const Sequence& genome, cHardwareGX* hardware);
     ~cProgramid() {}
     
     //! Returns whether and where this cProgramid matches the passed-in label.
@@ -184,7 +184,7 @@ public:
     const cCPUMemory& GetMemory() const { return m_memory; }
     
     //! Append this programid's genome to the passed-in genome in linear format (includes tags).
-    void AppendLinearGenome(cSequence& genome);
+    void AppendLinearGenome(Sequence& genome);
 
     //! Print this programid's genome, in linear format.
     void PrintGenome(std::ostream& out);
@@ -273,8 +273,8 @@ protected:
   cCodeLabel& GetLabel() { assert(m_current); return m_current->m_next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
+  int FindLabel_Forward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
   const cCodeLabel& GetReadLabel() const { assert(m_current); return m_current->m_read_label; }
   cCodeLabel& GetReadLabel() { assert(m_current); return m_current->m_read_label; }
@@ -317,7 +317,6 @@ public:
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_GX; }  
   bool SupportsSpeculative() const { return false; }
-  bool OK();
   void PrintStatus(std::ostream& fp);
 
   // --------  Stack Manipulation...  --------

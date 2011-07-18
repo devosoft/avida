@@ -22,14 +22,13 @@
 
 #include "cPopulation.h"
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "AvidaTools.h"
 
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cCodeLabel.h"
@@ -240,7 +239,7 @@ cPopulation::cPopulation(cWorld* world)
     }
   }
 
-  BuildTimeSlicer(0);
+  BuildTimeSlicer();
 
   // Setup the resources...
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -303,7 +302,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -327,7 +327,7 @@ cPopulation::cPopulation(cWorld* world)
 
 bool cPopulation::InitiatePop(cUserFeedback* feedback)
 {
-  cGenome start_org;
+  Genome start_org;
   const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
 
   if (filename != "-" && filename != "") {
@@ -364,7 +364,7 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
 
-bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring_genome, cOrganism* parent_organism)
+bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism)
 {
   if (m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get() > 0 && GetNumOrganisms() >= m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get())
   {
@@ -454,7 +454,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
     }
     
     // Update the phenotypes of each offspring....
-    const cSequence& genome = offspring_array[i]->GetGenome().GetSequence();
+    const Sequence& genome = offspring_array[i]->GetGenome().GetSequence();
     offspring_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     offspring_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     offspring_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
@@ -764,7 +764,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                     cCPUTestInfo test_info;
                     cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
                     test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-                    cGenome mg(parent_organism->GetGenome());
+                    Genome mg(parent_organism->GetGenome());
                     mg.SetSequence(parent_organism->GetHardware().GetMemory());
                     test_cpu->TestGenome(ctx, test_info, mg); // Use the true genome
                     if (pc_phenotype & 1) {  // If we must update the merit
@@ -812,7 +812,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
   return parent_alive;
 }
 
-bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code)
+bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
 {
   assert(parent != NULL);
 
@@ -899,9 +899,37 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
 
   // Attempt actual parasite injection
 
-  cGenome mg(parent->GetGenome().GetHardwareType(), parent->GetGenome().GetInstSet(), injected_code);
+  Genome mg(parent->GetGenome().GetHardwareType(), parent->GetGenome().GetInstSet(), injected_code);
   cParasite* parasite = new cParasite(m_world, mg, parent->GetPhenotype().GetGeneration(), SRC_PARASITE_INJECT, label);
 
+  //Handle potential virulence evolution if this parasite is comming from a parasite 
+  //and virulence is inhereted from the parent (source == 1)
+  if (parent->IsParasite() && m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
+  {
+    //mutate virulence
+    // m_world->GetConfig().PARASITE_VIRULENCE.Get()
+    double oldVir = dynamic_cast<cParasite*>(parent)->GetVirulence();
+    
+    //default to not mutating
+    double newVir = oldVir;
+    
+    //but if we do mutate...
+    if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
+    {
+      //get this in a temp variable so we don't have to make the next line huge
+      double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
+      
+      //sd^2 = varience
+      newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
+
+    }
+    parasite->SetVirulence(Max(Min(newVir, 1.0), 0.0));
+  }
+  else
+  {
+    //get default virulence
+    parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+  }
   if (!target_organism->ParasiteInfectHost(parasite)) {
     delete parasite;
     return false;
@@ -941,7 +969,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     cCPUTestInfo test_info;
     cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
     test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
-    cGenome mg(in_organism->GetGenome());
+    Genome mg(in_organism->GetGenome());
     mg.SetSequence(in_organism->GetHardware().GetMemory());
     test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
     
@@ -1013,7 +1041,46 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
 {
   cPopulationCell& src_cell = GetCell(src_cell_id);
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
-
+  
+  // check for habitat effects on movement
+  // get the resource library
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  // get the destination cell resource levels
+  tArray<double> dest_cell_resources = m_world->GetPopulation().GetCellResources(dest_cell_id, ctx);
+  // get the current cell resource levels
+  tArray<double> src_cell_resources = m_world->GetPopulation().GetCellResources(src_cell_id, ctx);
+  // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
+  // which would happen if we built a new barrier under an org and we need to let it get off)
+  bool curr_is_barrier = false;
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 & src_cell_resources[i] > 0) {
+      curr_is_barrier = true;      
+      break;
+    }
+  }
+  if (!curr_is_barrier) {
+    for (int i = 0; i < resource_lib.GetSize(); i++) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 2 & dest_cell_resources[i] > 0) return false;      
+    }    
+  }
+  // if any of the resources in current cells are hills, find the id of the most resistant resource
+  int steepest_hill = 0;
+  double curr_resistance = 1.0;
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 & src_cell_resources[i] > 0) {
+      if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
+        curr_resistance = resource_lib.GetResource(i)->GetResistance();
+        steepest_hill = i;
+      }
+    }
+  } 
+  // apply the chance of move failing for the steepest hill in this cell, if there is a hill at all
+  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1 & src_cell_resources[steepest_hill] > 0) {
+    // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
+    int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
+    if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      
+  }      
+  
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
     int absolute_cell_ID = src_cell.GetOrganism()->GetCellID();
     int deme_id = src_cell.GetOrganism()->GetDemeID();
@@ -1997,7 +2064,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext& ctx)
         int cellid = source_deme.GetCellID(i);
         if (GetCell(cellid).IsOccupied()) {
           int lineage = GetCell(cellid).GetOrganism()->GetLineageLabel();
-          const cGenome& genome = GetCell(cellid).GetOrganism()->GetGenome();
+          const Genome& genome = GetCell(cellid).GetOrganism()->GetGenome();
           InjectGenome(cellid, SRC_DEME_REPLICATE, genome, ctx, lineage); 
         }
       }
@@ -2114,7 +2181,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
   // genome that we're going to seed the target with.
   if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
     // @JEB Original germlines
-    cGenome next_germ(source_deme.GetGermline().GetLatest());
+    Genome next_germ(source_deme.GetGermline().GetLatest());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(next_germ.GetInstSet());
     cAvidaContext ctx(m_world, m_world->GetRandom());
 
@@ -2165,7 +2232,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     assert(germline_genotype);
 
     // create a new genome by mutation
-    cGenome mg(germline_genotype->GetProperty("genome").AsString());
+    Genome mg(germline_genotype->GetProperty("genome").AsString());
     cCPUMemory new_genome(mg.GetSequence());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
     cAvidaContext ctx(m_world, m_world->GetRandom());
@@ -2266,7 +2333,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
  @todo Fix lineage label on injected genomes.
  @todo Different strategies for non-random placement.
  */
-void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAvidaContext& ctx) { 
+void cPopulation::SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx) { 
   // Kill all the organisms in the deme.
   deme.KillAll(ctx); 
 
@@ -2286,7 +2353,7 @@ void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvi
   // Create the specified number of organisms in the deme.
   for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
     int cellid = DemeSelectInjectionCell(_deme, i);
-    InjectGenome(cellid, src, cGenome(bg->GetProperty("genome").AsString()), ctx); 
+    InjectGenome(cellid, src, Genome(bg->GetProperty("genome").AsString()), ctx); 
     DemePostInjection(_deme, cell_array[cellid]);
     _deme.AddFounder(bg);
   }
@@ -2318,10 +2385,10 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // and the even less contrived MIGRATION_RATE.
       //
       // @todo In order to get lineage tracking to work again, we need to change this
-      //       from tracking cGenomes to tracking cGenotypes.  But that's a pain,
+      //       from tracking Genomes to tracking cGenotypes.  But that's a pain,
       //       because the cGenotype* from cOrganism::GetGenotype may not live after
       //       a call to cDeme::KillAll.
-      std::vector<std::pair<cGenome,int> > xfer; // List of genomes we're going to transfer.
+      std::vector<std::pair<Genome,int> > xfer; // List of genomes we're going to transfer.
 
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
@@ -2363,7 +2430,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 
       // And now populate the source and target.
       int j=0;
-      for(std::vector<std::pair<cGenome,int> >::iterator i=xfer.begin(); i!=xfer.end(); ++i, ++j) {
+      for(std::vector<std::pair<Genome,int> >::iterator i=xfer.begin(); i!=xfer.end(); ++i, ++j) {
         int cellid = DemeSelectInjectionCell(source_deme, j);
         InjectGenome(cellid, SRC_DEME_REPLICATE, i->first, ctx, i->second); 
         DemePostInjection(source_deme, cell_array[cellid]);
@@ -2721,7 +2788,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       if (cell_array[source_cellid].IsOccupied() && random.P(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get())) {
         // Moves to the target; save the genome and lineage label of organism being transfered.
         cOrganism* seed = cell_array[source_cellid].GetOrganism();
-        const cGenome& genome = seed->GetGenome();
+        const Genome& genome = seed->GetGenome();
         int lineage = seed->GetLineageLabel();
         seed = 0; // We're done with the seed organism.
 
@@ -2746,7 +2813,7 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvida
 {
   // phenotype can be NULL
 
-  InjectGenome(_cell_id, SRC_DEME_REPLICATE, cGenome(bg->GetProperty("genome").AsString()), ctx); 
+  InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx); 
 
   // At this point, the cell had better be occupied...
   assert(GetCell(_cell_id).IsOccupied());
@@ -4787,8 +4854,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     const cUserFeedback& feedback = input_file.GetFeedback();
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
-        case cUserFeedback::WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
+        case cUserFeedback::UF_ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
+        case cUserFeedback::UF_WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
         default:                      m_world->GetDriver().NotifyComment(feedback.GetMessage(i)); break;
       };
     }
@@ -4888,7 +4955,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       cAvidaContext& ctx = m_world->GetDefaultContext();
 
       assert(tmp.bg->HasProperty("genome"));
-      cGenome mg(tmp.bg->GetProperty("genome").AsString());
+      Genome mg(tmp.bg->GetProperty("genome").AsString());
       cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, SRC_ORGANISM_FILE_LOAD);
 
       // Setup the phenotype...
@@ -4969,7 +5036,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
       fp << "EMPTY" << endl;
     }
     else {
-      cSequence & mem = cell_array[i].GetOrganism()->GetHardware().GetMemory();
+      Sequence & mem = cell_array[i].GetOrganism()->GetHardware().GetMemory();
       fp << mem.GetSize() << " "
       << mem.AsString() << endl;
     }
@@ -4977,21 +5044,6 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
   return true;
 }
 
-bool cPopulation::OK()
-{
-  // First check all sub-objects...
-  if (!schedule->OK()) return false;
-
-  // Next check organisms...
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    assert(cell_array[i].GetID() == i);
-  }
-
-  // And stats...
-  assert(world_x * world_y == cell_array.GetSize());
-
-  return true;
-}
 
 
 /**
@@ -5005,7 +5057,7 @@ bool cPopulation::OK()
  * this organism.
  **/
 
-void cPopulation::Inject(const cGenome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral) 
+void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -5080,15 +5132,18 @@ void cPopulation::Inject(const cGenome& genome, eBioUnitSource src, cAvidaContex
   }
 }
 
-void cPopulation::InjectParasite(const cString& label, const cSequence& injected_code, int cell_id)
+void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
   // target_organism-> target_organism->GetHardware().GetCurThread()
   if (target_organism == NULL) return;
 
-  cGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSet().GetInstSetName(), injected_code);
+  Genome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSet().GetInstSetName(), injected_code);
   cParasite* parasite = new cParasite(m_world, mg, 0, SRC_PARASITE_FILE_LOAD, label);
-
+  
+  //default to configured parasite virulence
+  parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+  
   if (target_organism->ParasiteInfectHost(parasite)) {
     m_world->GetClassificationManager().ClassifyNewBioUnit(parasite);
   } else {
@@ -5249,7 +5304,7 @@ void cPopulation::ResetInputs(cAvidaContext& ctx)
   }
 }
 
-void cPopulation::BuildTimeSlicer(cChangeList * change_list)
+void cPopulation::BuildTimeSlicer()
 {
   switch (m_world->GetConfig().SLICING_METHOD.Get()) {
     case SLICE_CONSTANT:
@@ -5274,7 +5329,6 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       schedule = new cIntegratedSchedule(cell_array.GetSize());
       break;
   }
-  schedule->SetChangeList(change_list);
 }
 
 
@@ -5338,9 +5392,9 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
   cAvidaContext& ctx = m_world->GetDefaultContext();
 
   // Do mutations on the child genome, but restore it to its current state afterward.
-  cGenome save_child = parent.OffspringGenome();
+  Genome save_child = parent.OffspringGenome();
   parent.GetHardware().Divide_DoMutations(ctx);
-  cGenome child_genome = parent.OffspringGenome();
+  Genome child_genome = parent.OffspringGenome();
   parent.GetHardware().Divide_TestFitnessMeasures(ctx);
   parent.OffspringGenome() = save_child;
   cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_COMPETE);
@@ -5376,7 +5430,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, cAvidaContext& ctx2, int lineage_label) 
+void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx2, int lineage_label) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -5776,12 +5830,6 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   return true;
 }
 
-void cPopulation::SetChangeList(cChangeList *change_list){
-  schedule->SetChangeList(change_list);
-}
-cChangeList *cPopulation::GetChangeList(){
-  return schedule->GetChangeList();
-}
 
 void cPopulation::AddBeginSleep(int cellID, int start_time) {
   sleep_log[cellID].Add(make_pair(start_time,-1));
@@ -6179,7 +6227,8 @@ void cPopulation::UpdateGradientCount(const int Verbosity, cWorld* world, const 
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                            ); 
       } 
    }
@@ -6233,7 +6282,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                            ); 
 
     } else if (res->GetDemeResource()) {

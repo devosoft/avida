@@ -28,14 +28,7 @@
 
 
 namespace AvidaTools
-{
-  namespace FileSystem {
-    bool MkDir(const cString& dirname, bool verbose = false);
-    cString GetCWD();
-    cString GetAbsolutePath(const cString& path, const cString& working_dir = GetCWD());
-    inline cString PathAppend(const cString& path, const cString& path_add);
-  };
-  
+{  
   // Utility Functions
   template <typename T> inline T Min(T op1, T op2) { return (op1 > op2) ? op2 : op1; }
   template <typename T> inline T Max(T op1, T op2) { return (op1 > op2) ? op1 : op2; }
@@ -86,11 +79,6 @@ inline int AvidaTools::GridNeighbor(int cell_id, int size_x, int size_y, int dif
   int new_x = Mod(((cell_id % size_x) + diff_x), size_x);
   int new_y = Mod(((cell_id / size_x) + diff_y), size_y);
   return (new_y * size_x) + new_x;
-}
-
-inline cString AvidaTools::FileSystem::PathAppend(const cString& path, const cString& path_add)
-{
-  return cString(path) + "/" + path_add;
 }
 
 #endif

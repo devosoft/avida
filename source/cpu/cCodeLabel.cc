@@ -50,18 +50,6 @@ void cCodeLabel::ReadString(const cString& label_str)
   }
 }
 
-bool cCodeLabel::OK()
-{
-  bool result = true;
-
-  assert (m_size <= nHardware::MAX_LABEL_SIZE);
-  assert (m_size <= m_nops.GetSize());
-  for (int i = 0; i < m_size; i++) {
-    assert (m_nops[i] < nHardware::MAX_NOPS);
-  }
-
-  return result;
-}
 
 bool cCodeLabel::operator==(const cCodeLabel & other_label) const
 {

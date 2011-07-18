@@ -22,14 +22,9 @@
 #ifndef cMutationalNeighborhood_h
 #define cMutationalNeighborhood_h
 
-#include "avida/core/cGenome.h"
+#include "apto/core.h"
+#include "avida/core/Genome.h"
 
-#ifndef cMutex_h
-#include "cMutex.h"
-#endif
-#ifndef cRWLock_h
-#include "cRWLock.h"
-#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -64,8 +59,8 @@ private:
   
   // Internal state information
   // -----------------------------------------------------------------------------------------------------------------------
-  cRWLock m_rwlock;
-  cMutex m_mutex;
+  Apto::RWLock m_rwlock;
+  Apto::Mutex m_mutex;
   
   bool m_initialized;
   int m_cur_site;
@@ -78,7 +73,7 @@ private:
   
   // Base data
   // -----------------------------------------------------------------------------------------------------------------------
-  cGenome m_base_genome;
+  Genome m_base_genome;
   double m_base_fitness;
   double m_base_merit;
   double m_base_gestation;
@@ -96,7 +91,7 @@ private:
     
     double total_fitness;
     double total_sqr_fitness;
-    cGenome peak_genome;
+    Genome peak_genome;
     double peak_fitness;
     
     int pos;
@@ -175,7 +170,7 @@ private:
     
     double total_fitness;
     double total_sqr_fitness;
-    cGenome peak_genome;
+    Genome peak_genome;
     double peak_fitness;
     
     int pos;
@@ -246,7 +241,7 @@ private:
 public:
   // Public Methods - Instantiate and Process Only.   All results must be read with a cMutationalNeighborhood object.
   // -----------------------------------------------------------------------------------------------------------------------
-  cMutationalNeighborhood(cWorld* world, const cGenome& genome, int target);
+  cMutationalNeighborhood(cWorld* world, const Genome& genome, int target);
   ~cMutationalNeighborhood() { ; }
   
   void Process(cAvidaContext& ctx);
@@ -260,17 +255,17 @@ private:
   void ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
   void ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
   void ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
-  double ProcessOneStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
+  double ProcessOneStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const Genome& mod_genome,
                               sStep& odata, int cur_site);
   void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate& osa);
 
-  void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessInsertPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
+  void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, Genome& mod_genome);
+  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, Genome& mod_genome);
+  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, Genome& mod_genome);
+  void ProcessInsertPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, Genome& mod_genome);
+  void ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, Genome& mod_genome);
+  void ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, Genome& mod_genome);
+  double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const Genome& mod_genome,
                               sTwoStep& tdata, const sPendFit& cur, const sPendFit& oth);
   void AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate& osa);
   
@@ -284,7 +279,7 @@ private:
   
   inline int GetTargetTask() const { return m_target; }
 
-  inline const cGenome& GetBaseGenome() const { return m_base_genome; }
+  inline const Genome& GetBaseGenome() const { return m_base_genome; }
   inline double GetBaseFitness() const { return m_base_fitness; }
   inline double GetBaseMerit() const { return m_base_merit; }
   inline double GetBaseGestation() const { return m_base_gestation; }
@@ -299,7 +294,7 @@ private:
   
   inline double Get1SAggregateAverageFitness() const { return m_ot.total_fitness / m_ot.total; }
   inline double Get1SAggregateAverageSqrFitness() const { return m_ot.total_sqr_fitness / m_ot.total; }
-  inline const cGenome& Get1SAggregatePeakGenome() const { return m_ot.peak_genome; }
+  inline const Genome& Get1SAggregatePeakGenome() const { return m_ot.peak_genome; }
   inline double Get1SAggregatePeakFitness() const { return m_ot.peak_fitness; }
   
   inline double Get1SAggregateProbBeneficial()  const { return double(m_ot.pos) / m_ot.total; }
@@ -338,7 +333,7 @@ private:
   
   inline double Get1SPointAverageFitness() const { return m_op.total_fitness / m_op.total; }
   inline double Get1SPointAverageSqrFitness() const { return m_op.total_sqr_fitness / m_op.total; }
-  inline const cGenome& Get1SPointPeakGenome() const { return m_op.peak_genome; }
+  inline const Genome& Get1SPointPeakGenome() const { return m_op.peak_genome; }
   inline double Get1SPointPeakFitness() const { return m_op.peak_fitness; }
   
   inline double Get1SPointProbBeneficial()  const { return double(m_op.pos) / m_op.total; }
@@ -377,7 +372,7 @@ private:
   
   inline double Get1SInsertAverageFitness() const { return m_oi.total_fitness / m_oi.total; }
   inline double Get1SInsertAverageSqrFitness() const { return m_oi.total_sqr_fitness / m_oi.total; }
-  inline const cGenome& Get1SInsertPeakGenome() const { return m_oi.peak_genome; }
+  inline const Genome& Get1SInsertPeakGenome() const { return m_oi.peak_genome; }
   inline double Get1SInsertPeakFitness() const { return m_oi.peak_fitness; }
   
   inline double Get1SInsertProbBeneficial()  const { return double(m_oi.pos) / m_oi.total; }
@@ -416,7 +411,7 @@ private:
   
   inline double Get1SDeleteAverageFitness() const { return m_od.total_fitness / m_od.total; }
   inline double Get1SDeleteAverageSqrFitness() const { return m_od.total_sqr_fitness / m_od.total; }
-  inline const cGenome& Get1SDeletePeakGenome() const { return m_od.peak_genome; }
+  inline const Genome& Get1SDeletePeakGenome() const { return m_od.peak_genome; }
   inline double Get1SDeletePeakFitness() const { return m_od.peak_fitness; }
   
   inline double Get1SDeleteProbBeneficial()  const { return double(m_od.pos) / m_od.total; }
@@ -455,7 +450,7 @@ private:
   
   inline double Get2SAggregateAverageFitness() const { return m_tt.total_fitness / m_tt.total; }
   inline double Get2SAggregateAverageSqrFitness() const { return m_tt.total_sqr_fitness / m_tt.total; }
-  inline const cGenome& Get2SAggregatePeakGenome() const { return m_tt.peak_genome; }
+  inline const Genome& Get2SAggregatePeakGenome() const { return m_tt.peak_genome; }
   inline double Get2SAggregatePeakFitness() const { return m_tt.peak_fitness; }
   
   inline double Get2SAggregateProbBeneficial()  const { return double(m_tt.pos) / m_tt.total; }
@@ -522,7 +517,7 @@ private:
   
   inline double Get2SPointAverageFitness() const { return m_tp.total_fitness / m_tp.total; }
   inline double Get2SPointAverageSqrFitness() const { return m_tp.total_sqr_fitness / m_tp.total; }
-  inline const cGenome& Get2SPointPeakGenome() const { return m_tp.peak_genome; }
+  inline const Genome& Get2SPointPeakGenome() const { return m_tp.peak_genome; }
   inline double Get2SPointPeakFitness() const { return m_tp.peak_fitness; }
   
   inline double Get2SPointProbBeneficial()  const { return double(m_tp.pos) / m_tp.total; }
@@ -588,7 +583,7 @@ private:
   
   inline double Get2SInsertAverageFitness() const { return m_ti.total_fitness / m_ti.total; }
   inline double Get2SInsertAverageSqrFitness() const { return m_ti.total_sqr_fitness / m_ti.total; }
-  inline const cGenome& Get2SInsertPeakGenome() const { return m_ti.peak_genome; }
+  inline const Genome& Get2SInsertPeakGenome() const { return m_ti.peak_genome; }
   inline double Get2SInsertPeakFitness() const { return m_ti.peak_fitness; }
   
   inline double Get2SInsertProbBeneficial()  const { return double(m_ti.pos) / m_ti.total; }
@@ -655,7 +650,7 @@ private:
   
   inline double Get2SDeleteAverageFitness() const { return m_td.total_fitness / m_td.total; }
   inline double Get2SDeleteAverageSqrFitness() const { return m_td.total_sqr_fitness / m_td.total; }
-  inline const cGenome& Get2SDeletePeakGenome() const { return m_td.peak_genome; }
+  inline const Genome& Get2SDeletePeakGenome() const { return m_td.peak_genome; }
   inline double Get2SDeletePeakFitness() const { return m_td.peak_fitness; }
   
   inline double Get2SDeleteProbBeneficial()  const { return double(m_td.pos) / m_td.total; }
@@ -722,7 +717,7 @@ private:
   
   inline double GetInsPntAverageFitness() const { return m_tip.total_fitness / m_tip.total; }
   inline double GetInsPntAverageSqrFitness() const { return m_tip.total_sqr_fitness / m_tip.total; }
-  inline const cGenome& GetInsPntPeakGenome() const { return m_tip.peak_genome; }
+  inline const Genome& GetInsPntPeakGenome() const { return m_tip.peak_genome; }
   inline double GetInsPntPeakFitness() const { return m_tip.peak_fitness; }
   
   inline double GetInsPntProbBeneficial()  const { return double(m_tip.pos) / m_tip.total; }
@@ -789,7 +784,7 @@ private:
   
   inline double GetInsDelAverageFitness() const { return m_tid.total_fitness / m_tid.total; }
   inline double GetInsDelAverageSqrFitness() const { return m_tid.total_sqr_fitness / m_tid.total; }
-  inline const cGenome& GetInsDelPeakGenome() const { return m_tid.peak_genome; }
+  inline const Genome& GetInsDelPeakGenome() const { return m_tid.peak_genome; }
   inline double GetInsDelPeakFitness() const { return m_tid.peak_fitness; }
   
   inline double GetInsDelProbBeneficial()  const { return double(m_tid.pos) / m_tid.total; }
@@ -856,7 +851,7 @@ private:
   
   inline double GetDelPntAverageFitness() const { return m_tdp.total_fitness / m_tdp.total; }
   inline double GetDelPntAverageSqrFitness() const { return m_tdp.total_sqr_fitness / m_tdp.total; }
-  inline const cGenome& GetDelPntPeakGenome() const { return m_tdp.peak_genome; }
+  inline const Genome& GetDelPntPeakGenome() const { return m_tdp.peak_genome; }
   inline double GetDelPntPeakFitness() const { return m_tdp.peak_fitness; }
   
   inline double GetDelPntProbBeneficial()  const { return double(m_tdp.pos) / m_tdp.total; }

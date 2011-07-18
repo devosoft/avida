@@ -26,7 +26,7 @@
 #include "tArray.h"
 
 namespace Avida {
-  class cFeedback;
+  class Feedback;
 };
 
 class cArgSchema;
@@ -50,7 +50,7 @@ private:
   cArgContainer& operator=(const cArgContainer&); // @not_implemented
   
 public:
-  static cArgContainer* Load(cString args, const cArgSchema& schema, cFeedback& feedback);
+  static cArgContainer* Load(cString args, const cArgSchema& schema, Feedback& feedback);
   
   inline int GetInt(int i) const { return m_ints[i]; }
   inline double GetDouble(int i) const { return m_doubles[i]; }

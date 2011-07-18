@@ -52,12 +52,6 @@ void cCPUStack::Flip()
   for (i = 0; i < nHardware::STACK_SIZE; i++) Push(new_stack[i]);
 }
 
-bool cCPUStack::OK()
-{
-  assert(stack_pointer < nHardware::STACK_SIZE); // stack_pointer out of range
-  return true;
-}
-
 void cCPUStack::SaveState(ostream& fp)
 {
   assert(fp.good());

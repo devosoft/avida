@@ -29,7 +29,8 @@
 // be transparently set at compile time and allow the programmer to easily
 // add in new settings with a single line of code.
 
-#include "cMutex.h"
+#include "apto/core/Mutex.h"
+
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
@@ -41,7 +42,6 @@ class cUserFeedback;
 template <class T> class tDictionary;
 
 using namespace std;
-
 
 // The following macro will create all of the code needed to include an
 // entry for a new setting in the configuration.
@@ -57,7 +57,7 @@ using namespace std;
 //     be derived from the cBaseConfigEntry class so that we may easily refer
 //     to any of these dynamically created classes.
 // 3 - Create a private value for this setting.
-// 4 - Create a LoadString() method to load the settings in from a string.
+// 4 - Create a LoadStr() method to load the settings in from a string.
 // 5 - Create a EqualsString() method to determine if the values are the same.
 // 6 - Create a constructor that passes all of the information to the base
 //     class that it can manage to.
@@ -74,14 +74,14 @@ class cEntry_ ## NAME : public cBaseConfigEntry {                     /* 2 */ \
 private:                                                                      \
   TYPE value;                                                         /* 3 */ \
 public:                                                                       \
-  void LoadString(const cString& str_value) {                         /* 4 */ \
+  void LoadStr(const cString& str_value) {                         /* 4 */ \
     value = cStringUtil::Convert(str_value, value);                           \
   }                                                                           \
   bool EqualsString(const cString& str_value) const {                 /* 5 */ \
     return (value == cStringUtil::Convert(str_value, value));                 \
   }                                                                           \
   cEntry_ ## NAME() : cBaseConfigEntry(#NAME,#TYPE,#DEFAULT,DESC) {   /* 6 */ \
-    LoadString(GetDefault());                                         /* 7 */ \
+    LoadStr(GetDefault());                                         /* 7 */ \
     global_group_list.GetLast()->AddEntry(this);                      /* 8 */ \
   }                                                                           \
   TYPE Get() const { return value; }                                  /* 9 */ \
@@ -156,7 +156,7 @@ private:
     cBaseConfigEntry(const cString& _name, const cString& _type, const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
-    virtual void LoadString(const cString& str_value) = 0;
+    virtual void LoadStr(const cString& str_value) = 0;
     virtual bool EqualsString(const cString& str_value) const = 0;
     
     const cString& GetName(int id=0) const { return config_name[id]; }
@@ -236,7 +236,7 @@ private:
     }
     ~cBaseConfigFormatEntry() { ; }
     
-    void LoadString(const cString& str_value) { cString lname(m_name); m_format->Add(lname + " " + str_value); }
+    void LoadStr(const cString& str_value) { cString lname(m_name); m_format->Add(lname + " " + str_value); }
     
     const cString& GetName() const { return m_name; }
     const cString& GetDesc() const { return m_description; }    
@@ -250,7 +250,7 @@ private:
   // things in order.  When all configuration objects are built, we then
   // transfer the list to the local cAvidaConfig object (which occurs in the
   // constructor.)
-  static cMutex global_list_mutex;
+  static Apto::Mutex global_list_mutex;
   static tList<cBaseConfigGroup> global_group_list;
   static tList<cBaseConfigCustomFormat> global_format_list;
   tList<cBaseConfigGroup> m_group_list;
@@ -413,6 +413,11 @@ public:
   CONFIG_ADD_VAR(INJECT_SKIP_FIRST_TASK, int, 0, "They cannot match the first task the host is doing to infect");
   CONFIG_ADD_VAR(INJECT_DEFAULT_SUCCESS, double, 0.0, "If injection is task specific, with what probability should non-matching parasites infect the host ");
   CONFIG_ADD_VAR(PARASITE_VIRULENCE, double, -1, "The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment");
+  CONFIG_ADD_VAR(VIRULENCE_SOURCE, int, 0, "Virulence is set by config (0) or inhereted from parent (1)");
+  CONFIG_ADD_VAR(VIRULENCE_MUT_RATE, double, 0.1, "The probability that virulence will mutate if it is inhereted from the parent (VIRULENCE_SOURCE = 1)");
+  CONFIG_ADD_VAR(VIRULENCE_SD, double, 0.1, "New Virulence will be drawn from a normal distribution centered on the parental virulence, with this standard deviation");
+
+
   CONFIG_ADD_VAR(PARASITE_MEM_SPACES, int, 1, "Parasites get their own memory spaces");
   CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
 
@@ -680,6 +685,7 @@ public:
   CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
   CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
   CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
+  CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
   
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");

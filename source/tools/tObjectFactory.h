@@ -22,9 +22,8 @@
 #ifndef tObjectFactory_h
 #define tObjectFactory_h
 
-#ifndef cMutex_h
-#include "cMutex.h"
-#endif
+#include "apto/core/Mutex.h"
+
 #ifndef tDictionary_h
 #include "tDictionary.h"
 #endif
@@ -75,7 +74,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)();
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactory() { ; }
@@ -83,7 +82,7 @@ public:
 
   template<typename ClassType> bool Register(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = NULL;
     if (m_create_funcs.Find(key, func)) {
       return false;
@@ -95,7 +94,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
     return (func != NULL);
   }
@@ -103,7 +102,7 @@ public:
   BaseType Create(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func();
     }
@@ -114,7 +113,7 @@ public:
   {
     tList<cString> names;
     tList<CreateObjectFunction> funcs;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     
     m_create_funcs.AsLists(names, funcs);
     objects.Resize(names.GetSize());
@@ -129,7 +128,7 @@ public:
   
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -143,7 +142,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)();
   
   tDictionaryNoCase<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactoryNoCase() { ; }
@@ -151,7 +150,7 @@ public:
   
   template<typename ClassType> bool Register(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = NULL;
     if (m_create_funcs.Find(key, func)) {
       return false;
@@ -163,7 +162,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
     return (func != NULL);
   }
@@ -171,7 +170,7 @@ public:
   BaseType Create(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func();
     }
@@ -182,7 +181,7 @@ public:
   {
     tList<cString> names;
     tList<CreateObjectFunction> funcs;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     
     m_create_funcs.AsLists(names, funcs);
     objects.Resize(names.GetSize());
@@ -197,7 +196,7 @@ public:
   
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -211,7 +210,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactory() { ; }
@@ -220,7 +219,7 @@ public:
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return false;
     }
@@ -231,7 +230,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
     return (func != NULL);
   }
@@ -239,7 +238,7 @@ public:
   BaseType Create(const cString& key, Arg1Type arg1)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func(arg1);
     }
@@ -248,7 +247,7 @@ public:
 
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -262,7 +261,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type);
   
   tDictionaryNoCase<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactoryNoCase() { ; }
@@ -271,7 +270,7 @@ public:
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return false;
     }
@@ -282,7 +281,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
     return (func != NULL);
   }
@@ -290,7 +289,7 @@ public:
   BaseType Create(const cString& key, Arg1Type arg1)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func(arg1);
     }
@@ -299,7 +298,7 @@ public:
   
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -314,7 +313,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactory() { ; }
@@ -323,7 +322,7 @@ public:
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return false;
     }
@@ -334,7 +333,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
     return (func != NULL);
   }
@@ -342,7 +341,7 @@ public:
   BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func(arg1, arg2);
     }
@@ -351,7 +350,7 @@ public:
 
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -365,7 +364,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type);
   
   tDictionaryNoCase<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactoryNoCase() { ; }
@@ -374,7 +373,7 @@ public:
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return false;
     }
@@ -385,7 +384,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = NULL;
     m_create_funcs.Remove(key, func);
     return (func != NULL);
@@ -394,7 +393,7 @@ public:
   BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func(arg1, arg2);
     }
@@ -403,7 +402,7 @@ public:
   
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -418,7 +417,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type, Arg3Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactory() { ; }
@@ -427,7 +426,7 @@ public:
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return false;
     }
@@ -438,7 +437,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
     return (func != NULL);
   }
@@ -446,7 +445,7 @@ public:
   BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func(arg1, arg2, arg3);
     }
@@ -455,7 +454,7 @@ public:
 
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }
@@ -468,7 +467,7 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type, Arg3Type);
   
   tDictionaryNoCase<CreateObjectFunction> m_create_funcs;
-  mutable cMutex m_mutex;
+  mutable Apto::Mutex m_mutex;
   
 public:
   tObjectFactoryNoCase() { ; }
@@ -477,7 +476,7 @@ public:
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return false;
     }
@@ -488,7 +487,7 @@ public:
   
   bool Unregister(const cString& key)
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     CreateObjectFunction func = NULL;
     m_create_funcs.Remove(key, func);
     return (func != NULL);
@@ -497,7 +496,7 @@ public:
   BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
   {
     CreateObjectFunction func = NULL;
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
       return func(arg1, arg2, arg3);
     }
@@ -506,7 +505,7 @@ public:
   
   bool Supports(const cString& key) const
   {
-    cMutexAutoLock lock(m_mutex);
+    Apto::MutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
     return supports;
   }

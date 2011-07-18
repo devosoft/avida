@@ -22,7 +22,7 @@
 
 #include "cOrganism.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
@@ -49,7 +49,7 @@ using namespace std;
 using namespace Avida;
 
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, int parent_generation, eBioUnitSource src,
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, eBioUnitSource src,
                      const cString& src_args)
   : m_world(world)
   , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.GetInstSet()).GetNumNops())
@@ -147,10 +147,10 @@ cOrganism::cNetSupport::~cNetSupport()
   for (int i = 0; i < received.GetSize(); i++) delete received[i];
 }
 
-void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* interface)
+void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface)
 {
   delete m_interface;
-  m_interface = interface;
+  m_interface = org_interface;
   
   HardwareReset(ctx);
 }
@@ -612,7 +612,7 @@ void cOrganism::NotifyDeath()
 
 
 
-bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const cSequence& injected_code)
+bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const Sequence& injected_code)
 {
   assert(m_interface);
   return m_interface->InjectParasite(this, parent, label, injected_code);
@@ -962,30 +962,33 @@ bool cOrganism::Move(cAvidaContext& ctx)
   // Actually perform the move
   if (m_interface->Move(ctx, fromcellID, destcellID)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
-    if (facing == 0) m_northerly = m_northerly - 1;       // N
-    else if (facing == 1) {                           // NW
-      m_northerly = m_northerly - 1; 
-      m_easterly = m_easterly - 1;
-    }  
-    else if (facing == 3) m_easterly = m_easterly - 1;    // W
-    else if (facing == 2) {                           // SW
-      m_northerly = m_northerly + 1; 
-      m_easterly = m_easterly - 1;
-    }
-    else if (facing == 6) m_northerly = m_northerly + 1;  // S
-    else if (facing == 7) {                           // SE
-      m_northerly = m_northerly + 1; 
-      m_easterly = m_easterly + 1;
-    }
-    else if (facing == 5) m_easterly = m_easterly + 1;    // E    
-    else if (facing == 4) {                           // NE
-      m_northerly = m_northerly - 1; 
-      m_easterly = m_easterly + 1;
+    //Skip counting if random < chance of miscounting a step.
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+      if (facing == 0) m_northerly = m_northerly - 1;       // N
+      else if (facing == 1) {                           // NW
+        m_northerly = m_northerly - 1; 
+        m_easterly = m_easterly - 1;
+      }  
+      else if (facing == 3) m_easterly = m_easterly - 1;    // W
+      else if (facing == 2) {                           // SW
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly - 1;
+      }
+      else if (facing == 6) m_northerly = m_northerly + 1;  // S
+      else if (facing == 7) {                           // SE
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly + 1;
+      }
+      else if (facing == 5) m_easterly = m_easterly + 1;    // E    
+      else if (facing == 4) {                           // NE
+        m_northerly = m_northerly - 1; 
+        m_easterly = m_easterly + 1;
+      }
     }
   }
   else return false;              
   
-  // Check to make sure the organism is still alive
+  // Check to make sure the organism is alive after the move
   if (m_phenotype.GetToDelete()) return false;
   
   // updates movement predicates

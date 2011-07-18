@@ -305,17 +305,6 @@ void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
   m_organism->SetRunning(prev_run_state);
 }
 
-bool cHardwareSMT::OK()
-{	
-  for (int i = 0; i < m_threads.GetSize(); i++) {
-    for(int j=0; j < NUM_LOCAL_STACKS; j++)
-			if (m_threads[i].local_stacks[j].OK() == false) return false;
-    if (m_threads[i].next_label.OK() == false) return false;
-  }
-	
-  return true;
-}
-
 void cHardwareSMT::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetTimeUsed() << " "
@@ -417,7 +406,7 @@ cHeadCPU cHardwareSMT::FindLabel(int direction)
 // Search forwards for search_label from _after_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const cSequence& search_genome, int pos)
+int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const Sequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -497,7 +486,7 @@ int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const cSeque
 // Search backwards for search_label from _before_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const cSequence& search_genome, int pos)
+int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const Sequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -619,7 +608,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
     return false; // (inject fails)
   }
   if (end_pos < MIN_INJECT_SIZE) {
-    m_mem_array[mem_space_used] = cSequence("a"); 
+    m_mem_array[mem_space_used] = Sequence("a"); 
     m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }  
@@ -636,7 +625,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = cSequence("a"); 
+  m_mem_array[mem_space_used] = Sequence("a"); 
 	
   for (int x = 0; x < NUM_EXTENDED_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
   for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
@@ -962,7 +951,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   bool parent_alive = m_organism->ActivateDivide(ctx);
 	
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = cSequence("a"); 
+  m_mem_array[mem_space_used] = Sequence("a"); 
 	
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.

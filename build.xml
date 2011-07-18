@@ -3,6 +3,7 @@
   <property name="build" location="cbuild"/>
   <property name="apto.include" value="${build}/include"/>
   <property name="apto.library" value="#{build}/lib"/>
+  <property name="tcmalloc.library" value="#{build}/lib"/>
 
   <target name="builddir">
     <mkdir dir="${build}"/>
@@ -11,7 +12,7 @@
   <target name="configure" depends="builddir">
     <exec dir="${build}" executable="cmake" failonerror="true">
       <arg value="-DCMAKE_INCLUDE_PATH:STRING='${apto.include}'"/>
-      <arg value="-DCMAKE_LIBRARY_PATH:STRING='${apto.library}'"/>
+      <arg value="-DCMAKE_LIBRARY_PATH:STRING='${apto.library};${tcmalloc.library}'"/>
       <arg path="${root}"/>
     </exec>
   </target>
@@ -27,6 +28,7 @@
   </target>
 
   <target name="move-platform-consistencytesting-targets" if="platform">
+    <delete file="${build}/work/avida" quiet="true"/>
     <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work"/>
   </target>
   <target name="check-for-consistencytesting-targets" depends="move-platform-consistencytesting-targets">

@@ -21,7 +21,7 @@
 
 #include "cBGGenotypeManager.h"
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cBGGenotype.h"
 #include "cDataFile.h"
@@ -345,7 +345,7 @@ cFlexVar cBGGenotypeManager::GetBioGroupProperty(const cBGGenotype* genotype, co
 
 
 
-unsigned int cBGGenotypeManager::hashGenome(const cSequence& genome) const
+unsigned int cBGGenotypeManager::hashGenome(const Sequence& genome) const
 {
   unsigned int total = 0;
   

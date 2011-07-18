@@ -22,7 +22,7 @@
 #ifndef cUserFeedback_h
 #define cUserFeedback_h
 
-#include "avida/core/cFeedback.h"
+#include "avida/core/Feedback.h"
 
 #include "cString.h"
 #include "tSmartArray.h"
@@ -32,13 +32,13 @@
 using namespace Avida;
 
 
-class cUserFeedback : public cFeedback
+class cUserFeedback : public Feedback
 {
 public:
   enum eFeedbackType {
-    ERROR,
-    WARNING,
-    NOTIFICATION
+    UF_ERROR,
+    UF_WARNING,
+    UF_NOTIFICATION
   };
   
   
@@ -62,7 +62,7 @@ public:
   cUserFeedback() : m_errors(0), m_warnings(0) { ; }
   ~cUserFeedback() { ; }
   
-  // cFeedback Methods
+  // Feedback Methods
   void Error(const char* fmt, ...);
   void Warning(const char* fmt, ...);
   void Notify(const char* fmt, ...);
@@ -83,7 +83,7 @@ inline void cUserFeedback::Error(const char* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  m_entries.Push(sEntry(ERROR, fmt, args));
+  m_entries.Push(sEntry(UF_ERROR, fmt, args));
   va_end(args);
   m_errors++;
 }
@@ -92,7 +92,7 @@ inline void cUserFeedback::Warning(const char* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  m_entries.Push(sEntry(WARNING, fmt, args));
+  m_entries.Push(sEntry(UF_WARNING, fmt, args));
   va_end(args);
   m_warnings++;
 }
@@ -101,7 +101,7 @@ inline void cUserFeedback::Notify(const char* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  m_entries.Push(sEntry(NOTIFICATION, fmt, args));
+  m_entries.Push(sEntry(UF_NOTIFICATION, fmt, args));
   va_end(args);
 }
 

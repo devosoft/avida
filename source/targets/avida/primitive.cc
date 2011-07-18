@@ -20,6 +20,7 @@
 
 #include "AvidaTools.h"
 
+#include "apto/core/FileSystem.h"
 #include "avida/Avida.h"
 #include "avida/util/CmdLine.h"
 
@@ -42,12 +43,12 @@ int main(int argc, char * argv[])
   Avida::Util::ProcessCmdLineArgs(argc, argv, cfg);
   
   cUserFeedback feedback;
-  cWorld* world = cWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), &feedback);
+  cWorld* world = cWorld::Initialize(cfg, cString(Apto::FileSystem::GetCWD()), &feedback);
 
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::ERROR:    cerr << "error: "; break;
-      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
       default: break;
     };
     cerr << feedback.GetMessage(i) << endl;

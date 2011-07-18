@@ -23,7 +23,6 @@
 
 #include "cAvidaContext.h"
 #include "cBGGenotype.h"
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -76,10 +75,6 @@ void cDefaultRunDriver::Run()
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
   while (!m_done) {
-    if (cChangeList* change_list = population.GetChangeList()) {
-      change_list->Reset();
-    }
-    
     m_world->GetEvents(ctx);
     if(m_done == true) break;
     

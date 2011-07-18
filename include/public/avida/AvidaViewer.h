@@ -25,8 +25,8 @@
 #ifndef AvidaAvidaViewer_h
 #define AvidaAvidaViewer_h
 
-#include "avida/viewer-core/cDriver.h"
-#include "avida/viewer-core/cListener.h"
-#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/Driver.h"
+#include "avida/viewer-core/Listener.h"
+#include "avida/viewer-core/Map.h"
 
 #endif

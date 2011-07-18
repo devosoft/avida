@@ -20,7 +20,7 @@
 
 #include "avida/Avida.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cDeme.h"
 #include "cDemeNetwork.h"

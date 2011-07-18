@@ -34,6 +34,7 @@
 #include "cWorld.h"
 #include "tArrayUtils.h"
 #include "tInstLibEntry.h"
+#include "cParasite.h"
 
 #include "AvidaTools.h"
 
@@ -192,7 +193,7 @@ void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_
 
 cBioUnit* cHardwareTransSMT::ThreadGetOwner()
 {
-  return (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
+  return (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
 }
 
 
@@ -211,11 +212,20 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
+    double parasiteVirulence;
     // Setup the hardware for the next instruction to be executed.
     m_cur_thread++;
 		//Ignore incremeting the thread, set it to be the parasite, unless we draw something lower thean 0.8
 		//Then set it to the parasite
-		double parasiteVirulence = m_world->GetConfig().PARASITE_VIRULENCE.Get();
+    if (m_threads.GetSize() > 1 &&  m_threads[1].owner->IsParasite())
+    {
+      parasiteVirulence = dynamic_cast<cParasite*>(m_threads[1].owner)->GetVirulence();
+    }
+    else
+    {
+      parasiteVirulence = m_world->GetConfig().PARASITE_VIRULENCE.Get();
+    }
+    
 		if (parasiteVirulence != -1) {
       
 			double probThread = ctx.GetRandom().GetDouble();
@@ -333,16 +343,6 @@ void cHardwareTransSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction&
   m_organism->SetRunning(prev_run_state);
 }
 
-bool cHardwareTransSMT::OK()
-{	
-  for (int i = 0; i < m_threads.GetSize(); i++) {
-    for(int j=0; j < NUM_LOCAL_STACKS; j++)
-			if (m_threads[i].local_stacks[j].OK() == false) return false;
-    if (m_threads[i].next_label.OK() == false) return false;
-  }
-	
-  return true;
-}
 
 void cHardwareTransSMT::PrintStatus(ostream& fp)
 {
@@ -449,7 +449,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
-                                         const cSequence& search_genome, int pos)
+                                         const Sequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -530,7 +530,7 @@ int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
-                                          const cSequence & search_genome, int pos)
+                                          const Sequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -667,12 +667,12 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 	
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) {
-    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
+    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
     inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = cSequence("a"); 
+  m_mem_array[mem_space_used] = Sequence("a"); 
 	
   if (m_world->GetConfig().INJECT_METHOD.Get() == INJECT_METHOD_SPLIT) {
     for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
@@ -1130,7 +1130,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   //bool parent_alive = m_organism->ActivateDivide(ctx);
   bool parent_alive = m_organism->ActivateDivide(ctx, &m_threads[m_cur_thread].context_phenotype);
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = cSequence("a"); 
+  m_mem_array[mem_space_used] = Sequence("a"); 
 	
   // Division Methods:
   // 0 - DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
@@ -1767,7 +1767,7 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
   
   if (m_mem_array.GetSize() <= mem_space_used) return false;
   
-  m_mem_array[mem_space_used] = cSequence("a"); 
+  m_mem_array[mem_space_used] = Sequence("a"); 
   
   for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
   //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();

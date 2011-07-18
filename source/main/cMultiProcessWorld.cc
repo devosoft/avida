@@ -28,7 +28,7 @@
 #endif
 
 #if BOOST_IS_AVAILABLE
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -330,7 +330,7 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 			
 			GetPopulation().InjectGenome(target_cell,
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
-																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
+																	 Genome(cString(migrant._genome.c_str())), // genome unpacked from message
 																	 ctx, migrant._lineage); // lineage label
 			// unpack the rest from the message:
 			migrant.unpack(GetPopulation().GetCell(target_cell).GetOrganism());

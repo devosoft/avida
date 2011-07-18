@@ -23,7 +23,7 @@
 #ifndef cHardwareBase_h
 #define cHardwareBase_h
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include <cassert>
 #include <climits>
@@ -203,9 +203,9 @@ public:
 	
 	// -------- HGT --------
 	//! Retrieve a genome fragment extending downstream from the read head.
-	virtual cSequence GetGenomeFragment(unsigned int downstream);
+	virtual Sequence GetGenomeFragment(unsigned int downstream);
 	//! Insert a genome fragment at the current write head.
-	virtual void InsertGenomeFragment(const cSequence& fragment);
+	virtual void InsertGenomeFragment(const Sequence& fragment);
   
 protected:
   // --------  Core Execution Methods  --------
@@ -233,9 +233,9 @@ protected:
 
   
   // --------  Mutation Helper Methods  --------
-  bool doUniformMutation(cAvidaContext& ctx, cSequence& genome);
+  bool doUniformMutation(cAvidaContext& ctx, Sequence& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
-  void doSlipMutation(cAvidaContext& ctx, cSequence& genome, int from = -1);
+  void doSlipMutation(cAvidaContext& ctx, Sequence& genome, int from = -1);
   
 
   // --------  Organism Execution Property Calculation  --------

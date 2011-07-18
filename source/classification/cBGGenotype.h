@@ -22,7 +22,7 @@
 #ifndef cBGGenotype_h
 #define cBGGenotype_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #include "cBioGroup.h"
 #include "cCountTracker.h"
@@ -47,7 +47,7 @@ private:
   
   eBioUnitSource m_src;
   cString m_src_args;
-  cGenome m_genome;
+  Genome m_genome;
   cString m_name;
     
   struct {
@@ -112,7 +112,7 @@ public:
   inline bool IsParasite() const { return (m_src == SRC_PARASITE_INJECT || m_src == SRC_PARASITE_FILE_LOAD); }
   inline eBioUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
-  inline const cGenome& GetGenome() const { return m_genome; }
+  inline const Genome& GetGenome() const { return m_genome; }
   inline cString GetGenomeString() const { return m_genome.AsString(); }
   
   inline const cString& GetName() const { return m_name; }

@@ -66,7 +66,7 @@ public:
   void SetPrevSeenCellID(int in_id) { ; }
   void SetPrevTaskCellID(int in_id) { ; }
 
-  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
@@ -80,6 +80,7 @@ public:
   const tArray<double>& GetResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();  
   void UpdateResources(const tArray<double>& res_change);
   void UpdateDemeResources(const tArray<double>& res_change) {;}
@@ -92,7 +93,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
@@ -133,15 +134,19 @@ public:
 	//! HGT conjugation (does nothing).
 	void DoHGTConjugation(cAvidaContext& ctx) { }
 	//! HGT mutation (does nothing).
-	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
+	void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) { }
 	//! Receive HGT donation (does nothing).
-	void ReceiveHGTDonation(const cSequence& fragment) { }
+	void ReceiveHGTDonation(const Sequence& fragment) { }
   
   bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
-  
+  int NumberOfOrganismsInGroup(int group_id) {return 0; }
+    
+  int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) {return 0; }
+
   void BeginSleep() { ; }
   void EndSleep() { ; }
 };

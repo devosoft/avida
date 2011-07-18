@@ -54,7 +54,7 @@ cEventList::~cEventList()
 
 
 bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
-                          double stop, const cString& name, const cString& args, cFeedback& feedback)
+                          double stop, const cString& name, const cString& args, Feedback& feedback)
 {
   cAction* action = cActionLibrary::GetInstance().Create(name, m_world, args, feedback);
   
@@ -87,7 +87,7 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
   return false;
 }
 
-bool cEventList::LoadEventFile(const cString& filename, const cString& working_dir, cFeedback& feedback)
+bool cEventList::LoadEventFile(const cString& filename, const cString& working_dir, Feedback& feedback)
 {
   cInitFile event_file(filename, working_dir);
   
@@ -383,7 +383,7 @@ bool cEventList::CheckBirthInterruptQueue(double t_val)
 
 
 //// Parsing Event List File Format ////
-bool cEventList::AddEventFileFormat(const cString& in_line, cFeedback& feedback)
+bool cEventList::AddEventFileFormat(const cString& in_line, Feedback& feedback)
 {
   cString cur_line = in_line;
   

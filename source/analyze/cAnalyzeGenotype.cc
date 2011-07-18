@@ -22,7 +22,7 @@
 
 #include "cAnalyzeGenotype.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
@@ -49,7 +49,7 @@ using namespace std;
 using namespace Avida;
 
 
-cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& genome)
+cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const Genome& genome)
 : m_world(world)
 , m_genome(genome)
 , name("")
@@ -383,7 +383,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     return;
   }
   
-  cGenome mod_genome(m_genome);
+  Genome mod_genome(m_genome);
   
   // Setup a NULL instruction needed for testing
   const cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(mod_genome.GetInstSet()).ActivateNullInst();
@@ -673,7 +673,7 @@ void cAnalyzeGenotype::SetInstSet(const cString& inst_set)
 
 void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
-  cSequence new_genome(_sequence);
+  Sequence new_genome(_sequence);
   m_genome.SetSequence(new_genome);
 }
 

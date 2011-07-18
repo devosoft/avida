@@ -39,7 +39,7 @@
  **/
 
 namespace Avida {
-  class cSequence;
+  class Sequence;
 };
 
 class cAvidaContext;
@@ -68,31 +68,31 @@ public:
 
   // Handle manipulations & tests of genome.  Return false if divide process
   // should halt.  Place offspring in child_array.
-  bool SubmitOffspring(cAvidaContext& ctx, const cGenome& offspring_genome, cOrganism* parent,
+  bool SubmitOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent,
                        tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);  
 
   bool ValidBirthEntry(const cBirthEntry& entry) const;
-  void StoreAsEntry(const cGenome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const;
+  void StoreAsEntry(const Genome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const;
   void ClearEntry(cBirthEntry& entry);
 
 private:
   cBirthSelectionHandler* getSelectionHandler(int hw_type);
   
-  bool RegionSwap(cSequence& genome0, cSequence& genome1, int start0, int end0, int start1, int end1);
-  void GenomeSwap(cSequence& genome0, cSequence& genome1, double& merit0, double& merit1);
+  bool RegionSwap(Sequence& genome0, Sequence& genome1, int start0, int end0, int start1, int end1);
+  void GenomeSwap(Sequence& genome0, Sequence& genome1, double& merit0, double& merit1);
   
-  bool DoAsexBirth(cAvidaContext& ctx, const cGenome& offspring_genome, cOrganism& parent,
+  bool DoAsexBirth(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism& parent,
                    tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);
-  bool DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const cGenome& new_genome, cOrganism& parent,
+  bool DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const Genome& new_genome, cOrganism& parent,
                        tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);
   
 
-  void DoBasicRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1, double& merit0, double& merit1);
-  void DoModularContRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
+  void DoBasicRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1, double& merit0, double& merit1);
+  void DoModularContRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
                                   double& merit0, double& merit1);
-  void DoModularNonContRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
+  void DoModularNonContRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
                                      double& merit0, double& merit1);
-  void DoModularShuffleRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
+  void DoModularShuffleRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
                                      double& merit0, double& merit1);
   
   void SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGroup*>* p0grps, const tArray<cBioGroup*>* p1grps = NULL);

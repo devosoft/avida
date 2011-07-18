@@ -23,7 +23,6 @@
 #include "cIntegratedSchedule.h"
 
 #include "cDeme.h"
-#include "cChangeList.h"
 #include "cIntegratedScheduleNode.h"
 #include "cMerit.h"
 
@@ -77,9 +76,6 @@ bool cIntegratedSchedule::OK()
 
 void cIntegratedSchedule::Adjust(int item_id, const cMerit& new_merit, int deme_id)
 {
-  if (cChangeList *change_list = GetChangeList()) {
-    change_list->MarkChange(item_id);
-  }
   // Grab the old_merit, the new merit, and compare them.
   const cMerit old_merit = merit_chart[item_id];
 

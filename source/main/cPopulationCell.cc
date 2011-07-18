@@ -281,12 +281,6 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
 }
 
 
-bool cPopulationCell::OK()
-{
-  // Nothing for the moment...
-  return true;
-}
-
 /*! Diffuse genome fragments from this cell to its neighbors.
  
  NOTE: This method is for OUTGOING diffusion only.
@@ -318,7 +312,7 @@ void cPopulationCell::DiffuseGenomeFragments() {
  As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
  remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
  */
-void cPopulationCell::AddGenomeFragments(const cSequence& genome) {
+void cPopulationCell::AddGenomeFragments(const Sequence& genome) {
 	assert(genome.GetSize()>0); // oh, sweet sanity.
 	InitHGTSupport();
 	
@@ -350,11 +344,11 @@ unsigned int cPopulationCell::CountGenomeFragments() const {
 
 /*! Remove and return a random genome fragment.
  */
-cSequence cPopulationCell::PopGenomeFragment() {
+Sequence cPopulationCell::PopGenomeFragment() {
 	assert(m_hgt!=0);
 	fragment_list_type::iterator i = m_hgt->fragments.begin();
 	std::advance(i, m_world->GetRandom().GetUInt(0, m_hgt->fragments.size()));	
-	cSequence tmp = *i;
+	Sequence tmp = *i;
 	m_hgt->fragments.erase(i);
 	return tmp;
 }

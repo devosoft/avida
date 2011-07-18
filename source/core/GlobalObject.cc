@@ -25,21 +25,21 @@
 #include "avida/core/GlobalObject.h"
 #include "avida/private/core/GlobalObject.h"
 
-#include "tList.h"
-#include "cMutex.h"
+#include "apto/core/List.h"
+#include "apto/core/Mutex.h"
 
 #include <cassert>
 #include <cstdlib>
 
 
-Avida::cGlobalObject::~cGlobalObject() { ; }
+Avida::GlobalObject::~GlobalObject() { ; }
 
 
 struct GlobalObjectData
 {
-  tList<Avida::cGlobalObject> objs;
+  Apto::List<Avida::GlobalObject*> objs;
   
-  cMutex mutex;
+  Apto::Mutex mutex;
   bool initialized;
   
   GlobalObjectData() : initialized(false) { ; } 
@@ -48,8 +48,8 @@ struct GlobalObjectData
 
 static void destroyGlobalObjectData()
 {
-  Avida::cGlobalObject* obj;
-  while ((obj = global_obj_data.objs.Pop())) delete obj;
+  Avida::GlobalObject* obj;
+  while (global_obj_data.objs.GetSize() && (obj = global_obj_data.objs.Pop())) delete obj;
 }
 
 
@@ -64,14 +64,14 @@ void Avida::GlobalObjectManager::Initialize()
   }
 }
 
-void Avida::GlobalObjectManager::Register(cGlobalObject* obj)
+void Avida::GlobalObjectManager::Register(GlobalObject* obj)
 {
   global_obj_data.mutex.Lock();
   global_obj_data.objs.Push(obj);
   global_obj_data.mutex.Unlock();
 }
 
-void Avida::GlobalObjectManager::Unregister(cGlobalObject* obj)
+void Avida::GlobalObjectManager::Unregister(GlobalObject* obj)
 {
   global_obj_data.mutex.Lock();
   global_obj_data.objs.Remove(obj);

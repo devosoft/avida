@@ -94,9 +94,11 @@ void cTestCPU::InitResources(int res_method, cResourceHistory* res, int update, 
   // Set the resource count to zero by default
   m_resource_count.SetSize(resource_lib.GetSize());
   m_faced_cell_resource_count.SetSize(resource_lib.GetSize());
+  m_cell_resource_count.SetSize(resource_lib.GetSize());
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     m_resource_count.Set(i, 0.0);
     m_faced_cell_resource_count.Set(i, 0.0);
+    m_cell_resource_count.Set(i, 0.0);
   }
     
   SetResourceUpdate(m_res_update, false);
@@ -208,7 +210,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 }
 
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome)
 {
   ctx.SetTestMode();
   test_info.Clear();
@@ -218,7 +220,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, ofstream& out_fp)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, ofstream& out_fp)
 {
   ctx.SetTestMode();
   test_info.Clear();
@@ -251,7 +253,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth)
+bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, int cur_depth)
 {
   assert(cur_depth < test_info.generation_tests);
 
@@ -345,7 +347,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename, int update)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename, int update)
 {
   if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
     
@@ -444,7 +446,7 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
 {
   if (!bg->HasProperty("genome")) return;
   
-  cGenome mg(bg->GetProperty("genome").AsString());
+  Genome mg(bg->GetProperty("genome").AsString());
   
   if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetSequence().GetSize());
   

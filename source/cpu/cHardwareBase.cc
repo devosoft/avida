@@ -22,7 +22,7 @@
 
 #include "cHardwareBase.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
 #include "cCodeLabel.h"
@@ -244,7 +244,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
-  cSequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
+  Sequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -438,7 +438,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 }
 
 
-bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cSequence& genome)
+bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, Sequence& genome)
 {
   
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
@@ -479,9 +479,9 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 // to another random position and continued reading to the end.
 // This can cause large deletions or tandem duplications.
 // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
-void cHardwareBase::doSlipMutation(cAvidaContext& ctx, cSequence& genome, int from)
+void cHardwareBase::doSlipMutation(cAvidaContext& ctx, Sequence& genome, int from)
 {
-  cSequence genome_copy = cSequence(genome);
+  Sequence genome_copy = Sequence(genome);
   
   // All combinations except beginning to past end allowed
   if (from < 0) from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
@@ -564,7 +564,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -1020,9 +1020,9 @@ void cHardwareBase::ReceiveFlash()
 
 /*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
  */
-cSequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
+Sequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 	cHeadCPU tmp(GetHead(nHardware::HEAD_READ));
-	cSequence fragment(downstream);
+	Sequence fragment(downstream);
 	for(; downstream>0; --downstream, tmp.Advance()) { 
 		fragment.Append(tmp.GetInst());
 	}
@@ -1031,7 +1031,7 @@ cSequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 
 /*! Insert a genome fragment at the current write head.
  */
-void cHardwareBase::InsertGenomeFragment(const cSequence& fragment) {
+void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
 	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
 	wh.GetMemory().Insert(wh.GetPosition(), fragment);
 	wh.Adjust();

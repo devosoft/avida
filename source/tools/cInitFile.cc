@@ -22,17 +22,18 @@
 
 #include "cInitFile.h"
 
+#include "apto/core/FileSystem.h"
+
 #include "AvidaTools.h"
 #include "cFile.h"
 #include "cStringIterator.h"
-#include "tArraySet.h"
 
 
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir, cFeedback& feedback,
-                     const tArraySet<cString>* custom_directives)
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback,
+                     const Apto::Set<cString>* custom_directives)
 : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   tSmartArray<sLine*> lines;
@@ -40,7 +41,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, cFeedb
   postProcess(lines);
 }
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir, const tArraySet<cString>* custom_directives)
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<cString>* custom_directives)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   tSmartArray<sLine*> lines;
@@ -103,9 +104,10 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 
 
 bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
-                         const tArraySet<cString>* custom_directives, cFeedback& feedback)
+                         const Apto::Set<cString>* custom_directives, Feedback& feedback)
 {
-  cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
+  cString path = cString(Apto::FileSystem::GetAbsolutePath(Apto::String(filename), Apto::String(working_dir))); 
+  cFile file(path);
   if (!file.IsOpen()) {
     feedback.Error("unable to open file '%s'.", (const char*)filename);
     return false;   // The file must be opened!
@@ -133,7 +135,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
 
 
 bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
-                               const cString& working_dir, const tArraySet<cString>* custom_directives, cFeedback& feedback)
+                               const cString& working_dir, const Apto::Set<cString>* custom_directives, Feedback& feedback)
 {
   cString cmd = cmdstr.PopWord();
   
@@ -195,9 +197,9 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
       return false;
     }
   } else if (custom_directives) {
-    for (int i = 0; i < custom_directives->GetSize(); i++) {
-      if (cmd == (cString("#") + (*custom_directives)[i])) {
-        m_custom_directives.Set((*custom_directives)[i], cmdstr);
+    for (Apto::Set<cString>::ConstIterator it = custom_directives->Begin(); it.Next();) {
+      if (cmd == (cString("#") + *it.Get())) {
+        m_custom_directives.Set(*it.Get(), cmdstr);
         break;
       }
     }

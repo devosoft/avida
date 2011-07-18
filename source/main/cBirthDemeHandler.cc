@@ -57,7 +57,7 @@ cBirthDemeHandler::cBirthDemeHandler(cWorld* world, cBirthChamber* bc)
   }
 }
 
-cBirthEntry* cBirthDemeHandler::SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent)
+cBirthEntry* cBirthDemeHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
 {
   return m_deme_handlers[parent->GetDemeID()]->SelectOffspring(ctx, offspring, parent);
 }

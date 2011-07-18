@@ -24,6 +24,7 @@
 
 #include "avida/Avida.h"
 
+#include "apto/platform.h"
 #include "avida/private/core/GlobalObject.h"
 
 #include "AvidaTools.h"
@@ -42,7 +43,7 @@ static void exitAvida(int exit_code) {
 
 void Avida::Initialize()
 {
-  AvidaTools::Platform::Initialize();
+  Apto::Platform::Initialize();
   
   // Catch Interrupt making sure to close appropriately
   signal(SIGINT, exitAvida);

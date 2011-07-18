@@ -28,7 +28,7 @@
 #include "cASLibrary.h"
 #include "cASNativeObject.h"
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cAnalyzeGenotype.h"
 #include "cGenomeUtil.h"
@@ -52,7 +52,7 @@ namespace ASAnalyzeLib {
   {
 //    cDriverManager::Status().NotifyComment(cString("Loading: ") + filename);
     
-    cGenome genome(cGenomeUtil::LoadGenome(filename, *inst_set));
+    Genome genome(cGenomeUtil::LoadGenome(filename, *inst_set));
     
     // Construct the new genotype..
     cAnalyzeGenotype* genotype = new cAnalyzeGenotype(world, genome, *inst_set);
@@ -118,7 +118,7 @@ namespace ASAnalyzeLib {
     bool id_inc = input_file.GetFormat().HasString("id");
     
     // Setup the genome...
-    cSequence default_genome(1);
+    Sequence default_genome(1);
     int load_count = 0;
     cGenotypeBatch* batch = new cGenotypeBatch;
     

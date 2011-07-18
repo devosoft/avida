@@ -22,7 +22,7 @@
 
 #include "cGenomeUtil.h"
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cAvidaContext.h"
 #include "cInitFile.h"
@@ -107,7 +107,7 @@ void cGenomeUtil::substring_match::rotate(int r, std::size_t n) {
  ending locations of that match.  Specifically, [begin,end) of the returned substring_match
  denotes the matched region in the base string.
  */
-cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const cSequence& base, const cSequence& substring) {
+cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const Sequence& base, const Sequence& substring) {
 	const int rows=substring.GetSize()+1;
 	const int cols=base.GetSize()+1;
 	substring_match* m[2];
@@ -164,9 +164,9 @@ cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const cSequence& ba
  The return value here is de-circularfied and de-rotated such that [begin,end) are correct
  for the base string (note that, due to circularity, begin could be > end).
  */
-cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContext& ctx, const cSequence& base, const cSequence& substring) {
+cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContext& ctx, const Sequence& base, const Sequence& substring) {
 	// create a copy of the genome:
-	cSequence circ(base);
+	Sequence circ(base);
 	
 	// rotate it so that we remove bias for matching at the front of the genome:
 	const int rotate = ctx.GetRandom().GetInt(circ.GetSize());
@@ -174,7 +174,7 @@ cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContex
 	
 	// need to take circularity of the genome into account.
 	// we can do this by appending the genome with a copy of its first substring-size instructions.
-	cSequence head = circ.Crop(0, substring.GetSize());
+	Sequence head = circ.Crop(0, substring.GetSize());
 	circ.Append(head);
 	
 	// find the location within the circular genome that best matches substring:
@@ -189,9 +189,9 @@ cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContex
 
 /*! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
  */
-void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, const cSequence& genome, fragment_list_type& fragments) {	
+void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, const Sequence& genome, fragment_list_type& fragments) {	
 	// rotate this genome to remove bais for the beginning and end of the genome:
-	cSequence g(genome);
+	Sequence g(genome);
 	g.Rotate(ctx.GetRandom().GetInt(g.GetSize()));
 	
 	// chop this genome up into pieces, add each to the back of the fragment list.
@@ -212,12 +212,12 @@ void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, 
 
 /*! Randomly shuffle the instructions within genome in-place.
  */
-void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, cSequence& genome) {
+void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, Sequence& genome) {
 	std::vector<int> idx(static_cast<std::size_t>(genome.GetSize()));
-	iota(idx.begin(), idx.end(), 0);
+	std::iota(idx.begin(), idx.end(), 0);
 	cRandomStdAdaptor rng(ctx.GetRandom());
 	std::random_shuffle(idx.begin(), idx.end(), rng);
-	cSequence shuffled(genome.GetSize());
+	Sequence shuffled(genome.GetSize());
 	for(int i=0; i<genome.GetSize(); ++i) {
 		shuffled[i] = genome[idx[i]];
 	}

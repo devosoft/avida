@@ -28,7 +28,7 @@
 #endif
 
 namespace Avida {
-  class cFeedback;
+  class Feedback;
 };
 
 class cAnalyze;
@@ -44,7 +44,7 @@ public:
   cAnalyzeCommandDefBase(const cString& name) : m_name(name) { ; }
   virtual ~cAnalyzeCommandDefBase() { ; }
 
-  virtual void Run(cAnalyze* analyze, const cString & args, cAnalyzeCommand& command, cFeedback& feedback) const = 0;
+  virtual void Run(cAnalyze* analyze, const cString & args, cAnalyzeCommand& command, Feedback& feedback) const = 0;
   virtual bool IsFlowCommand() { return false; }
 
   const cString& GetName() const { return m_name; }

@@ -7,6 +7,8 @@
 
 #include "cAnalyzeScreen.h"
 
+#include "apto/platform.h"
+
 #include "cAnalyze.h"
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeCommandDefBase.h"
@@ -22,11 +24,9 @@
 #include "cUserFeedback.h"
 #include "cTextViewerDriver_Base.h"
 
-#include "Platform.h"
-
 #include <csignal>
 
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 # include <process.h>
 # define kill(x, y)
 #else
@@ -487,8 +487,8 @@ void cAnalyzeScreen::ProcessCommandLine()
       command_fun->Run(&analyze, command_args, *cur_command, feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::ERROR:    screen_hist.PushRear(cString("error: ") + feedback.GetMessage(i)); break;
-          case cUserFeedback::WARNING:  screen_hist.PushRear(cString("warning: ") + feedback.GetMessage(i)); break;
+          case cUserFeedback::UF_ERROR:    screen_hist.PushRear(cString("error: ") + feedback.GetMessage(i)); break;
+          case cUserFeedback::UF_WARNING:  screen_hist.PushRear(cString("warning: ") + feedback.GetMessage(i)); break;
           default: break;
         };
       }
@@ -540,8 +540,8 @@ void cAnalyzeScreen::ProcessCommandLine()
         command_fun->Run(&analyze, command_args, *cur_command, feedback);
         for (int i = 0; i < feedback.GetNumMessages(); i++) {
           switch (feedback.GetMessageType(i)) {
-            case cUserFeedback::ERROR:    screen_hist.PushRear(cString("error: ") + feedback.GetMessage(i)); break;
-            case cUserFeedback::WARNING:  screen_hist.PushRear(cString("warning: ") + feedback.GetMessage(i)); break;
+            case cUserFeedback::UF_ERROR:    screen_hist.PushRear(cString("error: ") + feedback.GetMessage(i)); break;
+            case cUserFeedback::UF_WARNING:  screen_hist.PushRear(cString("warning: ") + feedback.GetMessage(i)); break;
             default: break;
           };
         }

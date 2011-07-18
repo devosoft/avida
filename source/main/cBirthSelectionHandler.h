@@ -23,7 +23,7 @@
 #define cBirthSelectionHandler_h
 
 namespace Avida {
-  class cGenome;
+  class Genome;
 };
 
 class cAvidaContext;
@@ -40,7 +40,7 @@ public:
   cBirthSelectionHandler() { ; }
   virtual ~cBirthSelectionHandler() = 0;
   
-  virtual cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent) = 0;
+  virtual cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent) = 0;
 };
 
 #endif

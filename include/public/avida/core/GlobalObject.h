@@ -27,13 +27,13 @@
 
 namespace Avida {
   
-  // cGlobalObject - protocol for globally registered objects
+  // GlobalObject - protocol for globally registered objects
   // --------------------------------------------------------------------------------------------------------------
   
-  class cGlobalObject
+  class GlobalObject
   {
   public:
-    virtual ~cGlobalObject() = 0;
+    virtual ~GlobalObject() = 0;
   };
   
 
@@ -41,8 +41,8 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------
   
   namespace GlobalObjectManager {
-    void Register(cGlobalObject* obj);
-    void Unregister(cGlobalObject* obj);
+    void Register(GlobalObject* obj);
+    void Unregister(GlobalObject* obj);
   };
 };
 

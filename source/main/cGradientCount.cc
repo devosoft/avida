@@ -23,7 +23,7 @@
 
 #include "cGradientCount.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
 #include "cStats.h"
@@ -35,7 +35,7 @@
 using namespace Avida;
 
 
-/* cGradientCount is designed to give moving peaks of resources. Peaks are capped with plateaus. The slope of the peaks
+/* cGradientCount is designed to give moving peaks of resources. Peaks are <optionally> capped with plateaus. The slope of the peaks
 is height / distance. Consequently, when height = distance from center of peak, the value at that cell = 1. This was 
 designed this way because the organims used for this could only consume resources when the value is >= 1. Thus, height also 
 gives radius of 'edible' resources (aka the plateau). If plateaus are >1, you get sloped edges leading up to plateau 
@@ -43,24 +43,34 @@ cylinders.
   Spread gives the radius of the entire resource peak to the outside of the sloped edge. Organisms could detect resources 
 all along the spread, but only consume that portion on the plateau. Thus, spread - plateau = sense radius (smell) while 
 plateau = consumable radius (actual food).
-  Peaks move within the boundaries set by min/max x and y. If the edible portion of the peak hits the boundary, the peak 
+  Peaks move within the boundaries set by min/max x and y. If the plateau / edible portion of the peak hits the boundary, the peak 
 'bounces' (sign of direction of movement changes).
   Smoothness of the movement is controlled by move_a_scaler which is the A in eq1 in Morrison & DeJong 1999. A-values 
-need to be between 1 and 4. Values of 1 to ~3 give smooth movements. Larger values should yield chaotic moves.
-  Peaks stop moving when they are first bitten.
-  Peak values will only be refreshed when either all edible portions (>=1) are consumed or when the decay timestep (in 
+need to be between 1 and 4. Values of 1 to ~3 give smooth movements. Larger values should yield chaotic moves. However, beyond 
+establishing that peaks don't move when the value = 1 and do move when the value > 1, the effects of A-values have not really been 
+evaluated.
+  If depletable (via reaction) peaks stop moving when they are first bitten.
+  Depletable peaks will be refreshed when either all edible portions (>=1) are consumed or when the decay timestep (in 
 updates) is reached, whichever comes first.
-  Once bitten, peaks will not move again until refreshed.
+  Once bitten, depletable peaks will not move again until refreshed.
   Peak values are refreshed to match initial height, spread, and plateau, but for non-halo peaks, the placement of the 
 refreshed peak is random within the min/max x and y area. For halo peaks, the peak is currently refreshed at the SE 
 corner of the orbit.
-cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially*/
+cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially.
+  We use movesign to determine direction of peak movement
+  First, to get smooth movements, for non-halo resources we only allow either the x or y direction change to be evaluated in 
+ a single update. For halo resources, we only evaluate either the orbit or the direction in a given update.
+  Second, we then decide the change of direction based on the current direction, e.g. so that non-halo peak movesigns can't 'jump' 
+from -1 to 1, without first changing to 0
+  Finally, we only toy with movement direction when # updates since last change = updatestep.
+ */
 
 cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay, 
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
-                               double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor)
+                               double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor,
+                               int habitat, int min_size, int max_size, int config, int count, double resistance)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -69,10 +79,12 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_halo(halo), m_halo_inner_radius(halo_inner_radius), m_halo_width(halo_width)
   , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y)
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
-  , m_is_plateau_common(is_plateau_common), m_floor(floor)
+  , m_is_plateau_common(is_plateau_common), m_floor(floor) 
+  , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count), m_resistance(resistance)
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
+  , m_topo_counter(updatestep)
   , m_movesignx(0)
   , m_movesigny(0)
   , m_just_reset(true)
@@ -80,6 +92,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_current_height(0.0)
   , m_ave_plat_cell_loss(0.0)
   , m_common_plat_height(0.0)
+
 {
   if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
@@ -95,12 +108,28 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   m_current_height = m_height;
   m_common_plat_height = m_plateau;
   ResizeClear(worldx, worldy, geometry);
+  if (m_habitat == 2) {
+    generateBarrier(m_world->GetDefaultContext());
+  }
+  else if (m_habitat == 1) {
+    generateHills(m_world->GetDefaultContext());
+  }
+  else {
   generatePeak(m_world->GetDefaultContext());
   UpdateCount(m_world->GetDefaultContext());
+  }
 }
 
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
+  if (m_habitat == 2) {
+    generateBarrier(m_world->GetDefaultContext());
+    return;
+  }
+  else if (m_habitat == 1) {
+    generateHills(m_world->GetDefaultContext());
+    return;
+  }  
   bool has_edible = false;
 
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
@@ -135,22 +164,16 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // When the counter matches decay, regenerate resource peak
   if (m_counter == m_decay) generatePeak(ctx);
   
-  // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten 
-  // keep cones inside their bounding boxes; bounce them if they hit the edge
+  // if we are working with moving peaks, calculate the y-scaler
   if (m_move_a_scaler > 1) m_move_y_scaler = m_move_a_scaler * m_move_y_scaler * (1 - m_move_y_scaler);   
-  
-  // we use movesign to determine direction of peak movement
-  // first, to get smooth movements, we only allow either the x or y direction change to be evaluated in a single update
-  // second, we then decide the change of direction based on the current direction so that peak can't 'jump' from -1 to 1, 
-  // without first changing to 0
-  // finally, we only do this only when # updates since last change = updatestep to slow the frequency of path changes
 
-
-  // we add 1 to distance to account for the anchor grid cell
+  // for halo peaks, find current orbit. Add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;
-    
+  
+  // if we are working with moving resources and it's time to update direction
   if (m_move_counter == m_updatestep && m_move_a_scaler > 1) { 
     m_move_counter = 1;
+    // move cones by moving m_peakx & m_peaky 
     // halo resources orbit at a fixed org walking distance from an anchor point
     // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
     // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
@@ -292,7 +315,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
       }
     }
   } else {
-      // for non-halo peaks
+      // for non-halo peaks keep cones inside their bounding boxes, bouncing them if they hit the edge 
       int temp_height = 0;
       if (m_plateau < 0) temp_height = 1;
       else temp_height = m_height;
@@ -327,8 +350,8 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     if (m_plateau < 0) temp_height = 1;
     else temp_height = m_height;
     // If we are not moving the resource we default to the config input m_peakx and m_peaky for 'normal' gradient resources
-    // for non-moving halo's we generate a random location on the orbit
-    // , otherwise we get a random location and direction.
+    // for non-moving halo's we generate a random location on the orbit,
+    //   otherwise we get a random location and direction.
     if (m_move_a_scaler > 1) {
         if (!m_halo) {
             m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
@@ -337,11 +360,7 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
             m_movesignx = rng.GetInt(-1,2);
             // If x-axis movement is 0, we want to make sure y-axis movement is not also 0  
             if (m_movesignx == 0) {
-                if (rng.GetUInt(0,2)) {
-                    m_movesigny = 1;
-                } else {
-                    m_movesigny = -1;
-                }
+                m_movesigny = (rng.GetUInt(0,2) == 1) ? -1 : 1;
             } else {
                 m_movesigny = rng.GetInt(-1,2);
             }
@@ -373,11 +392,10 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     m_counter = 0;
     m_just_reset = true;
     refreshResourceValues();
-    return;
 }
 
 void cGradientCount::refreshResourceValues()
-{         
+{  
   int max_pos_x;
   int min_pos_x;
   int max_pos_y;
@@ -464,7 +482,6 @@ void cGradientCount::refreshResourceValues()
     }
   }         
   m_just_reset = false;
-  return;
 }
 
 void cGradientCount::getCurrentPlatValues()
@@ -494,5 +511,144 @@ void cGradientCount::getCurrentPlatValues()
     }        
   }
   m_ave_plat_cell_loss = amount_devoured / plateau_cell;
-  return;
 } 
+
+void cGradientCount::generateBarrier(cAvidaContext& ctx)
+// If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
+{ 
+  // generate/regenerate walls when counter == config updatestep
+  if (m_topo_counter == m_updatestep) { 
+    // reset counter
+    m_topo_counter = 1;
+    // clear any old resource
+    for (int ii = 0; ii < GetX(); ii++) {
+      for (int jj = 0; jj < GetY(); jj++) {
+        Element(jj * GetX() + ii).SetAmount(0);
+      }
+    }
+    // generate number barriers equal to count 
+    for (int i = 0; i < m_count; i++) {
+      // drop the anchor/first block for current barrier
+      int randx = ctx.GetRandom().GetUInt(0, GetX());
+      int randy = ctx.GetRandom().GetUInt(0, GetY());   
+      Element(randy * GetX() + randx).SetAmount(m_plateau);
+      
+      // decide the size of the current barrier
+      int rand_block_count = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
+      // for vertical or horizontal wall building, pick a random direction once for the whole wall
+      int direction = 0;
+      if (m_config == 1 || m_config == 2) direction = ctx.GetRandom().GetUInt(0,2);
+      
+      for (int num_blocks = 0; num_blocks < rand_block_count; num_blocks++) {
+        // if config == 0, build random shaped walls
+        if (m_config == 0) {
+          // choose a direction for next block
+          direction = ctx.GetRandom().GetUInt(0, 8);
+          // move one cell in chosen direction
+          if (direction == 0) {
+            randy = randy - 1;
+          }
+          else if (direction == 1) {
+            randy = randy - 1;
+            randx = randx + 1;
+          }
+          else if (direction == 2) {
+            randx = randx + 1;
+          }
+          else if (direction == 3) {
+            randy = randy + 1;
+            randx = randx + 1;
+          }
+          else if (direction == 4) {
+            randy = randy + 1;
+          }
+          else if (direction == 5) {
+            randy = randy + 1;
+            randx = randx - 1;
+          }
+          else if (direction == 6) {
+            randx = randx - 1;
+          }
+          else if (direction == 7) {
+            randy = randy - 1;
+            randx = randx - 1;
+          }
+        }
+        // if config == 1, build vertical walls
+        else if (m_config == 1) {
+          // choose up/down build direction
+          if (direction == 0) randy = randy - 1;
+          else randy = randy + 1;
+        }
+        // if config == 2, build horizontal walls
+        else if (m_config == 2) {
+          // choose left/right build direction
+          if (direction == 0) randx = randx - 1;
+          else randx = randx + 1;
+        }       
+        // place the new block if not off edge of world, otherwise ignore it
+        if (randy < GetY() & randy > 0 & randx < GetX() & randx > 0) Element(randy * GetX() + randx).SetAmount(m_plateau);
+        // we're done with this wall if it's horizontal or vertical build and we went off the world edge already
+        else if (m_config == 1 || m_config == 2) break;
+      }      
+    }
+  }
+  else m_topo_counter++; 
+}
+
+void cGradientCount::generateHills(cAvidaContext& ctx)
+// If habitat == 1 we are creating hills which slow movement, not really gradient resources
+{ 
+  cRandom& rng = ctx.GetRandom();
+  // generate/regenerate hills when counter == config updatestep
+  if (m_topo_counter == m_updatestep) { 
+    // reset counter
+    m_topo_counter = 1;
+    // since we are potentially plotting more than one hill per resource, we need to wipe the world before we start
+    for (int ii = 0; ii < GetX(); ii++) {
+      for (int jj = 0; jj < GetY(); jj++) {
+        Element(jj * GetX() + ii).SetAmount(0);
+      }
+    }
+
+    // generate number hills equal to count
+    for (int i = 0; i < m_count; i++) {
+      // decide the size of the current hill
+      int rand_hill_radius = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
+      
+      // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
+      int chooseEW = rng.GetUInt(0,2);
+      if (chooseEW == 0) {
+        m_peakx = rng.GetUInt(0, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
+      } else {
+        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1);
+      }
+      int chooseNS = rng.GetUInt(0,2);
+      if (chooseNS == 0) { 
+        m_peaky = rng.GetUInt(0, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
+      } else {
+        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1);
+      }
+
+      // figure the coordinate extent of each hill (box)
+      int max_pos_x = min(m_peakx + rand_hill_radius + 1, GetX() - 1);
+      int min_pos_x = max(m_peakx - rand_hill_radius - 1, 0);
+      int max_pos_y = min(m_peaky + rand_hill_radius + 1, GetY() - 1);
+      int min_pos_y = max(m_peaky - rand_hill_radius - 1, 0);
+
+      // look to place new cell values within a box around the hill center
+      for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
+        for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
+          double thisheight = 0.0;
+          double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+          // only plot values when within set config radius & if no larger amount has already been plotted for another overlapping hill
+          if ((thisdist <= rand_hill_radius) & (Element(jj * GetX() + ii).GetAmount() <  m_plateau / (thisdist + 1))) {
+          thisheight = m_plateau / (thisdist + 1);
+          Element(jj * GetX() + ii).SetAmount(thisheight);
+          }
+        }
+      }
+    }
+  }
+  else m_topo_counter++; 
+}

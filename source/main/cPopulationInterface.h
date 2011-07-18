@@ -23,7 +23,7 @@
 #ifndef cPopulationInterface_h
 #define cPopulationInterface_h
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cOrgInterface.h"
 #include "cWorld.h"
@@ -31,7 +31,7 @@
 #include "cPopulationCell.h"
 
 namespace Avida {
-  class cSequence;
+  class Sequence;
 };
 
 class cAvidaContext;
@@ -91,7 +91,7 @@ public:
   void SetPrevSeenCellID(int in_id) { m_prevseen_cell_id = in_id; }
   void SetPrevTaskCellID(int in_id) { m_prev_task_cell = in_id; }
 
-  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
@@ -106,6 +106,7 @@ public:
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
   void UpdateResources(const tArray<double>& res_change);
@@ -119,7 +120,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
   //! Send a message to the faced organism.
@@ -172,19 +173,19 @@ public:
 	//! Called when this organism "requests" an HGT conjugation.
 	void DoHGTConjugation(cAvidaContext& ctx);
 	//! Perform an HGT mutation on this offspring.
-	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
+	void DoHGTMutation(cAvidaContext& ctx, Genome& offspring);
 
 protected:
 	//! Place the fragment at the location of best match.
-	void HGTMatchPlacement(cAvidaContext& ctx, const cSequence& offspring,
+	void HGTMatchPlacement(cAvidaContext& ctx, const Sequence& offspring,
 												 fragment_list_type::iterator& selected,
 												 substring_match& location);
 	//! Place the fragment at the location of best match, with redundant instructions trimmed.
-	void HGTTrimmedPlacement(cAvidaContext& ctx, const cSequence& offspring,
+	void HGTTrimmedPlacement(cAvidaContext& ctx, const Sequence& offspring,
 													 fragment_list_type::iterator& selected,
 													 substring_match& location);	
 	//! Place the fragment at a random location.
-	void HGTRandomPlacement(cAvidaContext& ctx, const cSequence& offspring,
+	void HGTRandomPlacement(cAvidaContext& ctx, const Sequence& offspring,
 													fragment_list_type::iterator& selected,
 													substring_match& location);
 	//! Support for stateful HGT mutations.
@@ -195,13 +196,17 @@ protected:
 	//! Initialize HGT support.
 	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
 	//! Called when this organism is the receiver of an HGT donation.
-	void ReceiveHGTDonation(const cSequence& fragment);
+	void ReceiveHGTDonation(const Sequence& fragment);
   
   
 public:
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
+  int NumberOfOrganismsInGroup(int group_id);
   
+  int CalcGroupToleranceImmigrants(int prop_group_id);
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group);
+    
   void BeginSleep();
   void EndSleep();
 };

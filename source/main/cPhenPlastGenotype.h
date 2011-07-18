@@ -23,8 +23,8 @@
 #ifndef cPhenPlastGenotype_h
 #define cPhenPlastGenotype_h
 
-#include "avida/core/cGenome.h"
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/Genome.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cCPUMemory.h"
 #include "cString.h"
@@ -54,7 +54,7 @@ class cPhenPlastGenotype
 
   typedef set<cPhenotype*, cPhenotype::PhenotypeCompare  > UniquePhenotypes;  //Actually, these are cPlasticPhenotypes*
   tList<cPlasticPhenotype> m_plastic_phenotypes;  //This will store a list of our unique plastic phenotype pointers  
-  cGenome m_genome;
+  Genome m_genome;
   
   int m_num_trials;  
   UniquePhenotypes m_unique;
@@ -76,7 +76,7 @@ class cPhenPlastGenotype
   void Process(cCPUTestInfo& test_info, cWorld* world, cAvidaContext& ctx);
   
 public:
-  cPhenPlastGenotype(const cGenome& in_genome, int num_trails, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx);
+  cPhenPlastGenotype(const Genome& in_genome, int num_trails, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx);
   ~cPhenPlastGenotype();
     
   // Accessors

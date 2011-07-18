@@ -174,8 +174,8 @@ protected:
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
+  int FindLabel_Forward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -247,7 +247,6 @@ public:
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
-  bool OK();
   void PrintStatus(std::ostream& fp);
 
 
@@ -500,6 +499,8 @@ private:
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
   bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseDiffAhead(cAvidaContext& ctx); 
+  bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   
   // Resources
   int FindModifiedResource(cAvidaContext& ctx, int& spec_id);
@@ -859,9 +860,7 @@ public:
    opinions that can be expressed during the same experiment, and possibly augmented
    with a "strength" of that opinion (but not right now).
    */
-  //! Set this organism's current opinion.
   bool Inst_SetOpinion(cAvidaContext& ctx);
-  //! Retrieve this organism's current opinion.
   bool Inst_GetOpinion(cAvidaContext& ctx);
 	//! Only get opinion.  If none then reg is set to zero
 	bool Inst_GetOpinionOnly_ZeroIfNone(cAvidaContext& ctx);

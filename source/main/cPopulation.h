@@ -39,13 +39,12 @@
 
 
 namespace Avida {
-  class cSequence;
+  class Sequence;
 };
 
 class cAvidaContext;
 class cBioUnit;
 class cCodeLabel;
-class cChangeList;
 class cEnvironment;
 class cLineage;
 class cOrganism;
@@ -105,15 +104,15 @@ public:
 
   bool InitiatePop(cUserFeedback* errors = NULL);
 
-  void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, cAvidaContext& ctx, int lineage_label = 0); 
+  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0); 
 
   // Activate the offspring of an organism in the population
-  bool ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring_genome, cOrganism* parent_organism);
-  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
+  bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
+  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
   
   // Inject an organism from the outside world.
-  void Inject(const cGenome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
-  void InjectParasite(const cString& label, const cSequence& injected_code, int cell_id);
+  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
+  void InjectParasite(const cString& label, const Sequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
@@ -145,7 +144,7 @@ public:
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
   
   //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAvidaContext& ctx); 
+  void SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx); 
 
   //! Helper method that seeds a deme from the given genotype.
   void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext& ctx); 
@@ -214,8 +213,6 @@ public:
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0); 
   bool DumpMemorySummary(std::ofstream& fp);
 
-  bool OK();
-
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }
@@ -263,9 +260,6 @@ public:
 
   bool UpdateMerit(int cell_id, double new_merit);
 
-  void SetChangeList(cChangeList* change_list);
-  cChangeList* GetChangeList();
-  
   void AddBeginSleep(int cellID, int start_time);
   void AddEndSleep(int cellID, int end_time);
  
@@ -325,7 +319,7 @@ public:
     void MixPopulation(cAvidaContext& ctx); 
 
 private:
-  void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
+  void BuildTimeSlicer(); // Build the schedule object
   
   // Methods to place offspring in the population.
   cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, cAvidaContext& ctx, bool parent_ok = true); 

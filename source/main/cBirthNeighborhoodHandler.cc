@@ -40,7 +40,7 @@ cBirthNeighborhoodHandler::~cBirthNeighborhoodHandler()
 }
 
 
-cBirthEntry* cBirthNeighborhoodHandler::SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent)
+cBirthEntry* cBirthNeighborhoodHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
 {
   int parent_id = parent->GetOrgInterface().GetCellID();
   

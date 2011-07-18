@@ -35,6 +35,8 @@
 #include "tArray.h"
 #include "tInstLib.h"
 #include "tManagedPointerArray.h"
+#include "cEnvReqs.h"
+#include "cEnvironment.h"
 
 #include <cstring>
 #include <iomanip>
@@ -129,7 +131,15 @@ private:
     struct {
       bool reading_label:1;
       bool reading_seq:1;
+      bool active:1;
+      bool wait_greater:1;
+      bool wait_equal:1;
+      bool wait_less:1;
+      unsigned int wait_reg:4;
+      unsigned int wait_dst:4;
     };
+    int wait_value;
+    
     cCodeLabel read_label;
     cCodeLabel read_seq;
     cCodeLabel next_label;
@@ -196,6 +206,8 @@ private:
     bool m_slip_read_head:1;
 
     bool m_io_expire:1;
+    
+    unsigned int m_waiting_threads:4;
   };
   
 
@@ -225,7 +237,6 @@ public:
   // --------  Helper Methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
-  bool OK();
   void PrintStatus(std::ostream& fp);
 
 
@@ -323,7 +334,7 @@ private:
   
   // --------  Thread Manipulation  -------
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
-  bool KillThread(); // Kill the current thread!
+  bool ExitThread(); // Kill the current thread!
   
   
   // ---------- Instruction Helpers -----------
@@ -357,9 +368,10 @@ private:
 
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
-  inline void setInternalValue(sInternalValue& dest, int value, bool from_env = false);
-  inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& src);
-  inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2);  
+  inline void setInternalValue(int reg_num, int value, bool from_env = false);
+  inline void setInternalValue(int reg_num, int value, const sInternalValue& src);
+  inline void setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2);
+  void checkWaitingThreads(int cur_thread, int reg_num);
 
   void ReadInst(cInstruction in_inst);
   
@@ -371,7 +383,11 @@ private:
   
 
   // ---------- Instruction Library -----------
-
+  // Multi-threading
+  bool Inst_ForkThread(cAvidaContext& ctx);
+  bool Inst_ExitThread(cAvidaContext& ctx);
+  bool Inst_IdThread(cAvidaContext& ctx);
+  
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
@@ -400,6 +416,7 @@ private:
   bool Inst_ShiftL(cAvidaContext& ctx);
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
+  bool Inst_Zero(cAvidaContext& ctx);
 
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
@@ -452,6 +469,11 @@ private:
   bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
+  // Thread Execution Control
+  bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Less(cAvidaContext& ctx);
+  bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
+  
   // Promoter Model
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_Terminate(cAvidaContext& ctx);
@@ -477,7 +499,39 @@ private:
   bool Inst_SGMove(cAvidaContext& ctx);
   bool Inst_SGRotateL(cAvidaContext& ctx);
   bool Inst_SGRotateR(cAvidaContext& ctx);
-  bool Inst_SGSense(cAvidaContext& ctx);  
+  bool Inst_SGSense(cAvidaContext& ctx);
+
+  // Movement and Navigation 
+  bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_GetNorthOffset(cAvidaContext& ctx);  
+  bool Inst_GetNortherly(cAvidaContext& ctx); 
+  bool Inst_GetEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroNortherly(cAvidaContext& ctx);
+  
+  // Rotation
+  bool Inst_RotateLeftOne(cAvidaContext& ctx);
+  bool Inst_RotateRightOne(cAvidaContext& ctx);
+  bool Inst_RotateUphill(cAvidaContext& ctx);
+  bool Inst_RotateHome(cAvidaContext& ctx);
+  bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
+  bool Inst_RotateRightX(cAvidaContext& ctx);
+  bool Inst_RotateLeftX(cAvidaContext& ctx);
+  bool Inst_RotateX(cAvidaContext& ctx);
+  
+  // Resource and Topography Sensing
+  bool Inst_SenseResourceID(cAvidaContext& ctx); 
+  bool Inst_SenseGroupResQuant(cAvidaContext& ctx); 
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
+  bool Inst_SenseDiffAhead(cAvidaContext& ctx);
+  
+  // Groups 
+  bool Inst_JoinGroup(cAvidaContext& ctx);
+  bool Inst_GetGroupID(cAvidaContext& ctx);
+
+  // Org Interactions
+  bool Inst_GetFacedOrgID(cAvidaContext& ctx);
 };
 
 
@@ -554,33 +608,39 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
   return value.value;
 }
 
-inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, bool from_env)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env)
 {
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
   dest.originated = m_cycle_count;
   dest.oldest_component = m_cycle_count;
   dest.env_component = from_env;
+  if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
 
-inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, const sInternalValue& src)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& src)
 {
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = src.oldest_component;
   dest.env_component = src.env_component;
+  if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
 
-inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
 {
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = (op1.oldest_component < op2.oldest_component) ? op1.oldest_component : op2.oldest_component;
   dest.env_component = (op1.env_component || op2.env_component);
+  if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
 

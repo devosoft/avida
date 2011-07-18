@@ -166,10 +166,10 @@ LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
 SET(CORE_DIR ${PROJECT_SOURCE_DIR}/source/core)
 SET(CORE_SOURCES
   ${CORE_DIR}/Avida.cc
-  ${CORE_DIR}/cGenome.cc
-  ${CORE_DIR}/cSequence.cc
   ${CORE_DIR}/Definitions.cc
+  ${CORE_DIR}/Genome.cc
   ${CORE_DIR}/GlobalObject.cc
+  ${CORE_DIR}/Sequence.cc
   ${CORE_DIR}/Version.cc
 )
 SOURCE_GROUP(core FILES ${CORE_SOURCES})
@@ -199,6 +199,15 @@ SET(CPU_SOURCES
 SOURCE_GROUP(cpu FILES ${CPU_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${CPU_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${CPU_DIR})
+
+
+# The core directory
+SET(DATA_DIR ${PROJECT_SOURCE_DIR}/source/data)
+SET(DATA_SOURCES
+  ${DATA_DIR}/Manager.cc
+)
+SOURCE_GROUP(data FILES ${DATA_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${DATA_SOURCES})
 
 
 # The drivers directory
@@ -273,7 +282,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cArgContainer.cc
   ${TOOLS_DIR}/cArgSchema.cc
   ${TOOLS_DIR}/cBitArray.cc
-  ${TOOLS_DIR}/cChangeList.cc
   ${TOOLS_DIR}/cConstBurstSchedule.cc
   ${TOOLS_DIR}/cConstSchedule.cc
   ${TOOLS_DIR}/cDataFile.cc
@@ -325,17 +333,6 @@ SET(VIEWERCORE_SOURCES
 SOURCE_GROUP(viewer-core FILES ${VIEWERCORE_SOURCES})
 
 
-
-# The platform directory
-SET(PLATFORM_DIR ${PROJECT_SOURCE_DIR}/source/tools/platform)
-SET(PLATFORM_SOURCES
-  ${PLATFORM_DIR}/cThread.cc
-  ${PLATFORM_DIR}/Platform.cc
-)
-LIST(APPEND AVIDA_CORE_SOURCES ${PLATFORM_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${PLATFORM_DIR})
-
-
 LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/public)
 LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
 
@@ -352,11 +349,21 @@ ENDIF(NOT TARGET aptostatic)
 # Create the static library from the master source list
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
 ADD_LIBRARY(avidacore ${AVIDA_CORE_SOURCES})
+IF(WIN32)
+  SET_TARGET_PROPERTIES(avidacore PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
+ENDIF(WIN32)
 
 
 
+# Locate TCMalloc
+IF(NOT TARGET tcmalloc-1.4)
+  FIND_LIBRARY(TCMALLOC_LIBRARY tcmalloc-1.4 PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/tcmalloc-1.4/cbuild/lib)
+  ADD_LIBRARY(tcmalloc-1.4 STATIC IMPORTED)
+  SET_PROPERTY(TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
+ENDIF(NOT TARGET tcmalloc-1.4)
 
-# Build Instructions for the TCMalloc library
+
+# Handle the TCMalloc library
 # ------------------------------------------------------------------------------
 IF(UNIX)
   IF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
@@ -368,23 +375,12 @@ ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
 ENDIF(UNIX)
 IF(AVD_ENABLE_TCMALLOC)
-  SET(TCMALLOC_DIR source/platform/tcmalloc-1.4)
-  SET(TCMALLOC_SOURCES
-    ${TCMALLOC_DIR}/atomicops-internals-x86.cc
-    ${TCMALLOC_DIR}/central_freelist.cc
-    ${TCMALLOC_DIR}/common.cc
-    ${TCMALLOC_DIR}/internal_logging.cc
-    ${TCMALLOC_DIR}/malloc_extension.cc
-    ${TCMALLOC_DIR}/page_heap.cc
-    ${TCMALLOC_DIR}/span.cc
-    ${TCMALLOC_DIR}/spinlock.cc
-    ${TCMALLOC_DIR}/static_vars.cc
-    ${TCMALLOC_DIR}/sysinfo.cc
-    ${TCMALLOC_DIR}/system-alloc.cc
-    ${TCMALLOC_DIR}/tcmalloc.cc
-    ${TCMALLOC_DIR}/thread_cache.cc
-  )
-  ADD_LIBRARY(tcmalloc ${TCMALLOC_SOURCES})
+  # Locate TCMalloc
+  IF(NOT TARGET tcmalloc-1.4)
+    FIND_LIBRARY(TCMALLOC_LIBRARY tcmalloc-1.4 PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/tcmalloc/cbuild/lib)
+    ADD_LIBRARY(tcmalloc-1.4 STATIC IMPORTED)
+    SET_PROPERTY(TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
+  ENDIF(NOT TARGET tcmalloc-1.4)
 ENDIF(AVD_ENABLE_TCMALLOC)
 
 
@@ -405,7 +401,7 @@ IF(AVD_CMDLINE)
 
   SET(AVIDA_CMDLINE_LIBS avidacore aptostatic)  
   IF(AVD_ENABLE_TCMALLOC)
-    LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc)
+    LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
   ENDIF(AVD_ENABLE_TCMALLOC)  
   IF(NOT MSVC)
     LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
@@ -467,7 +463,7 @@ IF(AVD_GUI_NCURSES)
       LIST(APPEND AVIDA_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)
     IF(AVD_ENABLE_TCMALLOC)
-      LIST(APPEND AVIDA_VIEWER_LIBS tcmalloc)
+      LIST(APPEND AVIDA_VIEWER_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)
     TARGET_LINK_LIBRARIES(avida-viewer ${AVIDA_VIEWER_LIBS})
     
@@ -515,7 +511,7 @@ IF(AVD_GUI_PROTOTYPE_TEXT)
       LIST(APPEND AVIDA_TEXT_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)
     IF(AVD_ENABLE_TCMALLOC)
-      LIST(APPEND AVIDA_TEXT_VIEWER_LIBS tcmalloc)
+      LIST(APPEND AVIDA_TEXT_VIEWER_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)
     TARGET_LINK_LIBRARIES(avida-text ${AVIDA_TEXT_VIEWER_LIBS})
     

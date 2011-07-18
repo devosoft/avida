@@ -23,7 +23,7 @@
 
 #include <vector>
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 using namespace Avida;
 
@@ -31,7 +31,7 @@ using namespace Avida;
 class cGermline
 {
 protected:
-	std::vector<cGenome> m_germline;
+	std::vector<Genome> m_germline;
 
   cGermline(const cGermline&); // @not_implmented
   
@@ -39,8 +39,8 @@ protected:
 public:
   cGermline() { ; }
     
-	cGenome& GetLatest() { assert(m_germline.size() > 0); return m_germline.back(); }
-	void Add(const cGenome& genome) { m_germline.push_back(genome); }
+	Genome& GetLatest() { assert(m_germline.size() > 0); return m_germline.back(); }
+	void Add(const Genome& genome) { m_germline.push_back(genome); }
 	unsigned int Size() const { return m_germline.size(); }
 };
 

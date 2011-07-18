@@ -22,7 +22,7 @@
 #ifndef cDemePlaceholderUnit_h
 #define cDemePlaceholderUnit_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
@@ -42,16 +42,16 @@ class cDemePlaceholderUnit : public cBioUnit
 private:
   eBioUnitSource m_src;
   cString m_src_args;
-  cGenome m_genome;
+  Genome m_genome;
   cPhenotype m_phenotype;
   
 public:
-  cDemePlaceholderUnit(eBioUnitSource src, const cGenome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
+  cDemePlaceholderUnit(eBioUnitSource src, const Genome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
   ~cDemePlaceholderUnit() { ; }
   
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cGenome& GetGenome() const { return m_genome; }
+  const Genome& GetGenome() const { return m_genome; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 };
 

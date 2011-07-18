@@ -22,14 +22,11 @@
 #ifndef cAnalyzeJobQueue_h
 #define cAnalyzeJobQueue_h
 
+#include "apto/core.h"
+#include "apto/platform.h"
+
 #ifndef cAnalyzeJob
 #include "cAnalyzeJob.h"
-#endif
-#ifndef cConditionVariable_h
-#include "cConditionVariable.h"
-#endif
-#ifndef cMutex_h
-#include "cMutex.h"
 #endif
 #ifndef cRandom_h
 #include "cRandom.h"
@@ -43,6 +40,10 @@
 
 class cAnalyzeJobWorker;
 class cWorld;
+
+#if APTO_PLATFORM(WINDOWS) && defined(AddJob)
+# undef AddJob
+#endif
 
 
 const int MT_RANDOM_POOL_SIZE = 128;
@@ -58,9 +59,9 @@ private:
   tList<cAnalyzeJob> m_queue;
   int m_last_jobid;
   cRandomMT* m_rng_pool[MT_RANDOM_POOL_SIZE];
-  cMutex m_mutex;
-  cConditionVariable m_cond;
-  cConditionVariable m_term_cond;
+  Apto::Mutex m_mutex;
+  Apto::ConditionVariable m_cond;
+  Apto::ConditionVariable m_term_cond;
   
   volatile int m_jobs;      // count of waiting jobs, used in condition variable constructs
   volatile int m_pending;   // count of currently executing jobs

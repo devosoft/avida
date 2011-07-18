@@ -34,7 +34,7 @@
  **/
 
 namespace Avida {
-  class cSequence;
+  class Sequence;
 };
 class cCodeLabel;
 class cInstruction;
@@ -54,8 +54,8 @@ protected:
   
   void fullAdjust(int mem_size = -1);
 
-  int FindLabel_Forward(const cCodeLabel& search_label, const cSequence& search_mem, int pos);
-  int FindLabel_Backward(const cCodeLabel& search_label, const cSequence& search_mem, int pos);
+  int FindLabel_Forward(const cCodeLabel& search_label, const Sequence& search_mem, int pos);
+  int FindLabel_Backward(const cCodeLabel& search_label, const Sequence& search_mem, int pos);
   
 
 public:

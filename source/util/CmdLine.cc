@@ -24,7 +24,8 @@
 
 #include "avida/util/CmdLine.h"
 
-#include "AvidaTools.h"
+#include "apto/core/FileSystem.h"
+
 #include "cActionLibrary.h"
 #include "cAvidaConfig.h"
 #include "cString.h"
@@ -32,13 +33,11 @@
 #include "cUserFeedback.h"
 #include "tDictionary.h"
 
-
 #include <iostream>
 #include <cstdio>
 
 
 using namespace std;
-using namespace AvidaTools;
 
 
 static void processArgs(cStringList &argv, cAvidaConfig* cfg)
@@ -155,7 +154,7 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
       config_filename = cur_arg;
     } else if (cur_arg == "--generate-config") {
       cerr << "Generating default avida.cfg" << endl;
-      cfg->Print(FileSystem::PathAppend(FileSystem::GetCWD(), "avida.cfg"));
+      cfg->Print(cString(Apto::FileSystem::PathAppend(Apto::FileSystem::GetCWD(), "avida.cfg")));
       exit(0);
     } else {
       cerr << "Error: Unknown Option '" << args[arg_num] << "'" << endl
@@ -170,11 +169,11 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
   
   // Load configuration file
   cUserFeedback feedback;
-  cfg->Load(config_filename, FileSystem::GetCWD(), &feedback, &defs, flag_warn_default);
+  cfg->Load(config_filename, cString(Apto::FileSystem::GetCWD()), &feedback, &defs, flag_warn_default);
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::ERROR:    cerr << "error: "; break;
-      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
       default: break;
     };
     cerr << feedback.GetMessage(i) << endl;

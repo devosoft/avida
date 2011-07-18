@@ -23,7 +23,6 @@
 
 #include "cAnalyze.h"
 #include "cAnalyzeView.h"
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"

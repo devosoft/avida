@@ -31,7 +31,7 @@
 
 
 namespace Avida {
-  class cFeedback;
+  class Feedback;
 };
 
 class cAvidaContext;
@@ -96,17 +96,17 @@ public:
   
   
   bool AddEvent(eTriggerType trigger, double start, double interval, double stop, const cString &name, const cString& args,
-                cFeedback& feedback);
+                Feedback& feedback);
   
   /**
    * This function adds an event that is given in the event list file format.
    * In other words, it can be used to parse one line from an event list file,
    * and construct the appropriate event.
    **/
-  bool AddEventFileFormat(const cString& line, cFeedback& feedback);
+  bool AddEventFileFormat(const cString& line, Feedback& feedback);
   
   
-  bool LoadEventFile(const cString& filename, const cString& working_dir, cFeedback&  feedback);
+  bool LoadEventFile(const cString& filename, const cString& working_dir, Feedback&  feedback);
   
   void Process(cAvidaContext& ctx);
   void Sync(); // Get all events caught up.
