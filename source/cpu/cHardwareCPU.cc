@@ -3779,7 +3779,7 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(REG_BX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) ((faced_res - res_count[opinion])/res_count[opinion] * 100 + 0.5);
+    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     GetRegister(reg_to_set) = res_diff;
   }
   return true;
@@ -3791,6 +3791,10 @@ bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx)
   // temp check on world geometry until code can handle other geometries
   if ( geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
   
+  // If this organism has no neighbors, ignore instruction.
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  if (num_neighbors == 0) return false;
+  
   if(m_organism->HasOpinion()) {
     int group = m_organism->GetOpinion().first;
     // fail if the org is trying to sense a nest/hidden habitat
@@ -3800,6 +3804,8 @@ bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx)
     const int reg_used = FindModifiedRegister(REG_BX);
     const int sense_dist = GetRegister(reg_used);
     const int worldx = m_world->GetConfig().WORLD_X.Get();
+    int forward_dist = 0;
+    int backward_dist = 0;
     
     int faced_cell = m_organism->GetFacedCellID();
     int cell = m_organism->GetCellID();
@@ -3811,7 +3817,8 @@ bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx)
     double total_behind = 0;
     
     // look ahead (don't worry about current org cell as this will cancel out)
-    for(int i = 0; i < sense_dist; i++) {
+    for(int i = 0; i < sense_dist + 1; i++) {
+      forward_dist = i;
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
       total_ahead = total_ahead + cell_res[group];
       // if facing W, SW or NW stop if on edge of world
@@ -3825,7 +3832,10 @@ bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx)
     
     // look behind
     cell = m_organism->GetCellID();
-    for(int j = 0; j < sense_dist; j++) {
+    for(int j = 0; j < sense_dist + 1; j++) {
+      backward_dist = j;
+      // look forward as far as you can, but only look backward as far as we look forward or to edge of world
+      if (forward_dist < backward_dist) break;
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
       total_behind = total_behind + cell_res[group];
       // if facing W, SW or NW stop if on edge of world
@@ -3837,9 +3847,10 @@ bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx)
       if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
     }
     
-    // return total diff
-    int res_diff = (int) (total_ahead - total_behind + 0.5);
-    GetRegister(reg_used) = res_diff;
+    // return total diff and actual forward sense distance used
+    int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
+    GetRegister(reg_used) = forward_dist;
+    GetRegister(FindModifiedNextRegister(reg_used)) = res_diff;
   }
   return true;
 }
