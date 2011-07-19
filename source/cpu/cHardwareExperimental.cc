@@ -260,6 +260,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-right-x", &cHardwareExperimental::Inst_RotateRightX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-left-x", &cHardwareExperimental::Inst_RotateLeftX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-dir", &cHardwareExperimental::Inst_RotateDir, nInstFlag::STALL),
 
       
     // Resource and Topography Sensing
@@ -2809,6 +2810,28 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   
   setInternalValue(reg_used, rot_num * rot_dir, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_dir = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once in random direction.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) {
+    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
+    m_organism->Rotate(rot_dir);
+  }
+  // Else rotate to the nop dir, stopping at 4 (reverse) if nop value > 7 or < 0 (i.e. invalid dirs).
+  else {
+    if (rot_dir < 0 || rot_dir > 7) rot_dir = 4;
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+      m_organism->Rotate(1);
+      if (m_organism->GetFacing() == rot_dir) break;
+    }
+  }  
+  setInternalValue(reg_used, rot_dir, true);
   return true;
 }
 
