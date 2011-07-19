@@ -3868,14 +3868,14 @@ bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // are there any barrier resources in the faced cell    
   for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 & cell_resource_levels[i] > 0) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
       GetRegister(reg_to_set) = 2;
       return true;
     }    
   }
   // if no barriers, are there any hills in the faced cell    
   for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 & cell_resource_levels[i] > 0) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
       GetRegister(reg_to_set) = 1;
       return true;
     }

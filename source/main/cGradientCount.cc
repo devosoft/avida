@@ -529,21 +529,25 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
     // generate number barriers equal to count 
     for (int i = 0; i < m_count; i++) {
       // drop the anchor/first block for current barrier
-      int randx = ctx.GetRandom().GetUInt(0, GetX());
-      int randy = ctx.GetRandom().GetUInt(0, GetY());   
-      Element(randy * GetX() + randx).SetAmount(m_plateau);
-      
+      const int start_randx = ctx.GetRandom().GetUInt(0, GetX());
+      const int start_randy = ctx.GetRandom().GetUInt(0, GetY());   
+      Element(start_randy * GetX() + start_randx).SetAmount(m_plateau);
+
+      int randx = start_randx;
+      int randy = start_randy;
+      int prev_blockx = randx;
+      int prev_blocky = randy;
+
       // decide the size of the current barrier
       int rand_block_count = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
       // for vertical or horizontal wall building, pick a random direction once for the whole wall
-      int direction = 0;
-      if (m_config == 1 || m_config == 2) direction = ctx.GetRandom().GetUInt(0,2);
+      int direction = ctx.GetRandom().GetUInt(0,2);
       
       for (int num_blocks = 0; num_blocks < rand_block_count; num_blocks++) {
         // if config == 0, build random shaped walls
         if (m_config == 0) {
-          // choose a direction for next block
-          direction = ctx.GetRandom().GetUInt(0, 8);
+          prev_blockx = randx;
+          prev_blocky = randy;
           // move one cell in chosen direction
           if (direction == 0) {
             randy = randy - 1;
@@ -573,6 +577,8 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
             randy = randy - 1;
             randx = randx - 1;
           }
+          // choose a direction for next block with fixed 90% probability of not changing direction (~1 of 20 blocks will be in new direction)
+          if(ctx.GetRandom().GetUInt(0, 21) == 20) direction = ctx.GetRandom().GetUInt(0, 8);
         }
         // if config == 1, build vertical walls
         else if (m_config == 1) {
@@ -586,10 +592,35 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           if (direction == 0) randx = randx - 1;
           else randx = randx + 1;
         }       
-        // place the new block if not off edge of world, otherwise ignore it
-        if (randy < GetY() & randy > 0 & randx < GetX() & randx > 0) Element(randy * GetX() + randx).SetAmount(m_plateau);
-        // we're done with this wall if it's horizontal or vertical build and we went off the world edge already
-        else if (m_config == 1 || m_config == 2) break;
+        bool count_block = true;
+        // place the new block if not off edge of world
+        if (randy < GetY() && randy >= 0 && randx < GetX() && randx >= 0) {
+          // if we are trying to build across an inner_radius 
+          // or for random walls, if there is already a block here
+          // don't count or place this one (continue walking across inner_radius)
+          if ((randx < (m_halo_anchor_x + m_halo_inner_radius) && 
+               randy < (m_halo_anchor_y + m_halo_inner_radius) && 
+               randx > (m_halo_anchor_x - m_halo_inner_radius) && 
+               randy > (m_halo_anchor_y - m_halo_inner_radius)) || 
+              (m_config == 0 && Element(randy * GetX() + randx).GetAmount())) {
+            num_blocks --;
+            count_block = false;
+          }
+          if (count_block) Element(randy * GetX() + randx).SetAmount(m_plateau);
+        }
+        // if the wall is horizontal or vertical build and we went off the world edge, build from the opposite direction
+        else if (m_config == 1 || m_config == 2) {
+          randx = start_randx; 
+          randy = start_randy; 
+          direction = direction * -1;
+          num_blocks --;
+        }
+        // if a random build and we went off the world edge, backup a block and try again
+        else if (m_config == 0) {
+          randx = prev_blockx;
+          randy = prev_blocky;
+          num_blocks --;
+        }
       }      
     }
   }
@@ -619,15 +650,15 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
       // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
       int chooseEW = rng.GetUInt(0,2);
       if (chooseEW == 0) {
-        m_peakx = rng.GetUInt(0, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
+        m_peakx = rng.GetUInt(rand_hill_radius, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
       } else {
-        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1);
+        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1 - rand_hill_radius);
       }
       int chooseNS = rng.GetUInt(0,2);
       if (chooseNS == 0) { 
-        m_peaky = rng.GetUInt(0, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
+        m_peaky = rng.GetUInt(rand_hill_radius, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
       } else {
-        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1);
+        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1 - rand_hill_radius);
       }
 
       // figure the coordinate extent of each hill (box)
@@ -642,7 +673,7 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
           double thisheight = 0.0;
           double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
           // only plot values when within set config radius & if no larger amount has already been plotted for another overlapping hill
-          if ((thisdist <= rand_hill_radius) & (Element(jj * GetX() + ii).GetAmount() <  m_plateau / (thisdist + 1))) {
+          if ((thisdist <= rand_hill_radius) && (Element(jj * GetX() + ii).GetAmount() <  m_plateau / (thisdist + 1))) {
           thisheight = m_plateau / (thisdist + 1);
           Element(jj * GetX() + ii).SetAmount(thisheight);
           }

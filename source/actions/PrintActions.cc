@@ -3044,10 +3044,10 @@ public:
         double topo_height = 0.0;
         for (int h = 0; h < res_count.GetSize(); h++) {
           int hab_type = resource_lib.GetResource(h)->GetHabitat();
-          if ((res_count[h] > max_resource) & (hab_type != 1) & (hab_type !=2)) max_resource = res_count[h];
-          else if (hab_type == 1 & res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
+          if ((res_count[h] > max_resource) && (hab_type != 1) && (hab_type !=2)) max_resource = res_count[h];
+          else if (hab_type == 1 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
           // allow walls to trump everything else
-          else if (hab_type == 2 & res_count[h] > 0) { 
+          else if (hab_type == 2 && res_count[h] > 0) { 
             topo_height = resource_lib.GetResource(h)->GetPlateau();
             max_resource = 0.0;
             break;
