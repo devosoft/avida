@@ -2762,8 +2762,8 @@ bool cHardwareExperimental::Inst_RotateRightX(cAvidaContext& ctx)
   // If this org has no trailing nop, rotate once.
   const cCodeLabel& search_label = GetLabel();
   if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times, stopping at 7 if nop value > 7 (do nothing if rot_num < 0).
-  if (rot_num > 7) rot_num = 7;
+  // Else rotate the nop number of times
+  if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(-1);
   setInternalValue(reg_used, rot_num, true);
   return true;
@@ -2781,8 +2781,8 @@ bool cHardwareExperimental::Inst_RotateLeftX(cAvidaContext& ctx)
   // If this org has no trailing nop, rotate once.
   const cCodeLabel& search_label = GetLabel();
   if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times, stopping at 7 if nop value > 7 (do nothing if rot_num < 0).
-  if (rot_num > 7) rot_num = 7;
+  // Else rotate the nop number of times
+  if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(1);
   setInternalValue(reg_used, rot_num, true);
   return true;
@@ -2803,10 +2803,10 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
     rot_num = 1;
     m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
   }
-  // Else rotate the nop number of times in the appropriate direction, stopping at 7 if abs(nop value) > 7.
+  // Else rotate the nop number of times in the appropriate direction
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
-  if (rot_num > 7) rot_num = 7;
+  if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   
   setInternalValue(reg_used, rot_num * rot_dir, true);
@@ -2823,9 +2823,9 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
     m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
     m_organism->Rotate(rot_dir);
   }
-  // Else rotate to the nop dir, stopping at 4 (reverse) if nop value > 7 or < 0 (i.e. invalid dirs).
+  // Else rotate to the mod nop dir
   else {
-    if (rot_dir < 0 || rot_dir > 7) rot_dir = 4;
+    if (rot_dir < 0 || rot_dir > 7) rot_dir = abs(rot_dir) % 8;
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(1);
       if (m_organism->GetFacing() == rot_dir) break;
@@ -2932,7 +2932,7 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
         // if facing uphill or across a plain, stop if we reached a peak 
         // (don't allow orgs to look up a hill and down the other side, just to the max height in front of them) 
         if (starting_uphill && (cell_res[group] < prev_cell) && i > 0) { 
-          forward_val = prev_cell; 
+          forward_val = (int) (prev_cell + 0.5); 
           break;
         }
         prev_cell = cell_res[group];
@@ -2972,7 +2972,7 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
         }
         // if backward is uphill or across a plain, stop if we reached a peak 
         if (starting_uphill && (cell_res[group] < prev_cell) && j > 0) {
-          backward_val = cell_res[group];
+          backward_val = (int) (prev_cell + 0.5);
           break;
         }
         prev_cell = cell_res[group];
