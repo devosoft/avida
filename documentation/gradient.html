@@ -44,13 +44,13 @@ Currently moving gradient resources are only supported for bounded grid environm
   <pre>GRADIENT_RESOURCE gradient_resource_name[:options]  {gradient_resource_name ...}</pre>
 
 <p>
-Habitats:
+Habitats:<br>
 The habitat a resource represents controls both the specifications of the resource (i.e. moving or stationary,
 orbiting or bounded within a defined area) and any effect of the resource on the organisms (i.e. blocking or
-slowing movement). Currently there are 3 habitats implemented: gradient, hills, and barriers.
+slowing movement). Currently there are 4 habitats implemented: gradient, hills, barriers, and nests.
 </p>
 <p>
-Gradient Resources: Standard and Halo  
+Gradient Resources: Standard and Halo  <br>
 Standard gradient and halo resources allows the user to specify resource distributions which change over
 time. If movement is enabled, the conical resources move around the Avida grid. This movement may 
 be confined to an orbit around a specified anchor cell on the Avida grid (halos) or within a defined bounding box
@@ -66,19 +66,24 @@ consumed. The cone is then refreshed at some random location within the specifie
 is that if decay is set to 1, you can have walking wounded resources. 
 </p>
 <p>
-Barriers: Random, Vertical, and Horizontal
+Barriers: Random, Vertical, and Horizontal<br>
 Barriers are far simpler than halo and standard gradient resources. Barrier resources are simply meant to represent walls
 which block movement. Barriers are only implemented to be created randomly within the grid (the first block is set down
-in a random cell, then the next block set in a connected random, E-W, or N-S cell, and so on). Because barriers can be 
-generated in the middle of a run, we allow orgs already standing on a barrier (which should only happen if they are born
-on a barrier or if a barrier was created underneath them) to continue moving. In other words, they can exit a barrier,
-but orgs cannot enter one. If an org (not already on a barrier) tries to enter a barrier cell, movement fails and a 0 is 
+in a random cell, then the next block set in a connected random, E-W, or N-S cell, and so on). For a vertical or horizontal 
+barrier, the build direction is randomly selected at the start and the build continues in that direction until all the blocks 
+are placed. If the end of the world is reached and there are still blocks to place, we go back to the original cell and build
+in the opposite direction. For random barriers, a random direction is selected at the start. Then, the direction of the build
+continues unchanged with a 95% probability, and a new random build direction with 5% probability. The user can also 
+specify and exclusion area by using halo_inner_radius and halo anchors.  <br>
+Because barriers can be generated in the middle of a run, we allow orgs already standing on a barrier (which should only happen 
+if they are born on a barrier or if a barrier was created underneath them) to continue moving. In other words, they can exit a 
+barrier, but orgs cannot enter one. If an org (not already on a barrier) tries to enter a barrier cell, movement fails and a 0 is 
 returned to the ?BX? register. Orgs can also make use of the sense-faced-habitat instruction to find the most restrictive
 habitat type in the faced cell. This will return a 1 if the 'worst' resource in the faced cell is a hill, a 2 if a barrier
-is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
+is in the faced cell, and a 0 if no hills or barriers are in the faced cell. 
 </p>  
 <p>
-Hills
+Hills <br>
 Hills are simply meant to represent areas which slow movement. Hills are only implemented to be created randomly within the 
 grid. The center block for each occurance of a hill is set down in a random cell, then the rest of the block is drawn in a 
 circle around the center point using a random radius selected from within the config set radius range. The user can also 
@@ -86,17 +91,21 @@ specify and exclusion area by using halo_inner_radius and halo anchors. The effe
 resistance config setting. This is implemented as the probability of successfully moving while on a hill is equal to 1/resistance. 
 As such, on average, an org on a hill with resistance = 4, will have to execute 4 move instructions to move one cell.
 </p>  
+Nests <br>
+Nests are standard gradient resources, but by declaring a gradient resource to be a nest, the resource will 'hidden' 
+from long-distance sensing instructions such as sense-diff-ahead.
+</p>  
 <div align="center">
 <p>&nbsp;</p>
 <h3>Table 1: <span>Gradient Resource Options</span></h3>
 <p>
 <b>black</b> variables apply to all gradient resource types,<br>
-<span class="resall"><font color="#1c019c">blue</font></span> variables apply to standard and halo gradient resources,<br>
-<span class="reshalo"><font color="#029C1C">green</font></span> variables apply only to halo resources,<br>
-<span class="reslocate"><font color="#9c6800">brown(ish)</font></span> variables apply to halo resources and hills,<br>
-<span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers,<br>
-<span class="reshills"><font color="#9C1FFE">purple</font></span> variables apply only to hills,<br>
-<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills and barriers).<br>
+<span class="resall"><font color="#1c019c">blue</font></span> variables apply to standard and halo gradient resources<br>
+<span class="reshalo"><font color="#029C1C">green</font></span> variables apply only to halo resources<br>
+<span class="reslocate"><font color="#9c6800">brown(ish)</font></span> variables apply to halo resources, hills and barriers<br>
+<span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers<br>
+<span class="reshills"><font color="#9C1FFE">purple</font></span> variables apply only to hills<br>
+<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills and barriers)<br>
 </p>
 <table border="1" cellpadding="2">
 <tr>
@@ -109,7 +118,7 @@ As such, on average, an org on a hill with resistance = 4, will have to execute 
   <td>
     Type of gradient resource. This determines most of the behaviors and effects of the resource. 
   </br>
-    0 = gradient (standard or halo), 1 = hills, 2 = barriers. 
+    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests/hidden. 
   </td>
   <td>0</td>
 </tr>

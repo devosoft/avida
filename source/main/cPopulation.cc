@@ -1053,21 +1053,21 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 & src_cell_resources[i] > 0) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && src_cell_resources[i] > 0) {
       curr_is_barrier = true;      
       break;
     }
   }
   if (!curr_is_barrier) {
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 2 & dest_cell_resources[i] > 0) return false;      
+      if (resource_lib.GetResource(i)->GetHabitat() == 2 && dest_cell_resources[i] > 0) return false;      
     }    
   }
   // if any of the resources in current cells are hills, find the id of the most resistant resource
   int steepest_hill = 0;
   double curr_resistance = 1.0;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 & src_cell_resources[i] > 0) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && src_cell_resources[i] > 0) {
       if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
         curr_resistance = resource_lib.GetResource(i)->GetResistance();
         steepest_hill = i;
@@ -1075,7 +1075,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     }
   } 
   // apply the chance of move failing for the steepest hill in this cell, if there is a hill at all
-  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1 & src_cell_resources[steepest_hill] > 0) {
+  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1 && src_cell_resources[steepest_hill] > 0) {
     // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
     int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
     if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      

@@ -518,6 +518,7 @@ private:
   bool Inst_RotateRightX(cAvidaContext& ctx);
   bool Inst_RotateLeftX(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateDir(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 

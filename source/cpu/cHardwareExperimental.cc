@@ -260,6 +260,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-right-x", &cHardwareExperimental::Inst_RotateRightX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-left-x", &cHardwareExperimental::Inst_RotateLeftX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-dir", &cHardwareExperimental::Inst_RotateDir, nInstFlag::STALL),
 
       
     // Resource and Topography Sensing
@@ -2761,8 +2762,8 @@ bool cHardwareExperimental::Inst_RotateRightX(cAvidaContext& ctx)
   // If this org has no trailing nop, rotate once.
   const cCodeLabel& search_label = GetLabel();
   if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times, stopping at 7 if nop value > 7 (do nothing if rot_num < 0).
-  if (rot_num > 7) rot_num = 7;
+  // Else rotate the nop number of times
+  if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(-1);
   setInternalValue(reg_used, rot_num, true);
   return true;
@@ -2780,8 +2781,8 @@ bool cHardwareExperimental::Inst_RotateLeftX(cAvidaContext& ctx)
   // If this org has no trailing nop, rotate once.
   const cCodeLabel& search_label = GetLabel();
   if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times, stopping at 7 if nop value > 7 (do nothing if rot_num < 0).
-  if (rot_num > 7) rot_num = 7;
+  // Else rotate the nop number of times
+  if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(1);
   setInternalValue(reg_used, rot_num, true);
   return true;
@@ -2802,13 +2803,35 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
     rot_num = 1;
     m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
   }
-  // Else rotate the nop number of times in the appropriate direction, stopping at 7 if abs(nop value) > 7.
+  // Else rotate the nop number of times in the appropriate direction
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
-  if (rot_num > 7) rot_num = 7;
+  if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   
   setInternalValue(reg_used, rot_num * rot_dir, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_dir = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once in random direction.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) {
+    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
+    m_organism->Rotate(rot_dir);
+  }
+  // Else rotate to the mod nop dir
+  else {
+    if (rot_dir < 0 || rot_dir > 7) rot_dir = abs(rot_dir) % 8;
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+      m_organism->Rotate(1);
+      if (m_organism->GetFacing() == rot_dir) break;
+    }
+  }  
+  setInternalValue(reg_used, rot_dir, true);
   return true;
 }
 
@@ -2858,12 +2881,12 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
 {
   const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   // temp check on world geometry until code can handle other geometries
-  if ( geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
-
-  // If this organism has no neighbors, ignore instruction.
+  if (geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
+  
+  // If this organism has no neighboring cells, ignore instruction.
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   if (num_neighbors == 0) return false;
-
+  
   if(m_organism->HasOpinion()) {
     int group = m_organism->GetOpinion().first;
     // fail if the org is trying to sense a nest/hidden habitat
@@ -2872,6 +2895,12 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
     
     const int reg_used = FindModifiedRegister(rBX);
     const int sense_dist = m_threads[m_cur_thread].reg[reg_used].value;
+    // a second reg can be used to further control how the orgs sensing works, but this only operates for specific values
+    const int control_reg = FindModifiedNextRegister(reg_used);
+    int sense_value = 0;
+    const cCodeLabel& search_label = GetLabel();
+    if (search_label.GetSize() > 1) sense_value = m_threads[m_cur_thread].reg[control_reg].value;
+    
     const int worldx = m_world->GetConfig().WORLD_X.Get();
     int forward_dist = 0;
     int backward_dist = 0;
@@ -2886,10 +2915,34 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
     double total_behind = 0;
     
     // look ahead (don't worry about current org cell as this will cancel out)
+    double prev_cell = 0;
+    bool starting_uphill = true;
+    int forward_val = 0;
     for(int i = 0; i < sense_dist + 1; i++) {
       forward_dist = i;
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      
+      // sense-value of -1 means look for peaks
+      if (sense_value == -1) {
+        // if facing downhill from start, look all the way until we get to a slope peak (e.g. look all the way across any valley)
+        if (i == 1 && (cell_res[group] - prev_cell < 0)) starting_uphill = false;
+        if (!starting_uphill) {
+          if (cell_res[group] > prev_cell) starting_uphill = true;
+        }
+        // if facing uphill or across a plain, stop if we reached a peak 
+        // (don't allow orgs to look up a hill and down the other side, just to the max height in front of them) 
+        if (starting_uphill && (cell_res[group] < prev_cell) && i > 0) { 
+          forward_val = (int) (prev_cell + 0.5); 
+          break;
+        }
+        prev_cell = cell_res[group];
+      }
       total_ahead = total_ahead + cell_res[group];
+      
+      // any postive sense-value means stop if we hit a cell with the requested value
+      if (sense_value > 0 && (cell_res[group] == sense_value)) break;
+      
+      // sense-value of 0 (or none) means look as far as possible without being sensitive to hills and valleys
       // if facing W, SW or NW stop if on edge of world
       if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
       cell = cell + ahead_dir;
@@ -2898,15 +2951,38 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
       // if cell is less than 0 or greater than max cell (in grid), don't do it.
       if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
     }
-
+    
     // look behind
+    starting_uphill = true;
+    prev_cell = 0;
+    int backward_val = 0;
     cell = m_organism->GetCellID();
     for(int j = 0; j < sense_dist + 1; j++) {
       backward_dist = j;
-      // look forward as far as you can, but only look backward as far as we look forward or to edge of world
-      if (forward_dist < backward_dist) break;
+      // for sense_value of 0 look forward as far as you can, but only look backward as far as we look forward or to edge of world
+      if (sense_value == 0 && (forward_dist < backward_dist)) break;
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      
+      // sense-value of -1 means look for peaks
+      if (sense_value == -1) {
+        // if backward is downhill from start, look all the way until we get to a slope peak (e.g. look all the way across any valley)
+        if (j == 1 && (cell_res[group] - prev_cell < 0)) starting_uphill = false;
+        if (!starting_uphill) {
+          if (cell_res[group] > prev_cell) starting_uphill = true;
+        }
+        // if backward is uphill or across a plain, stop if we reached a peak 
+        if (starting_uphill && (cell_res[group] < prev_cell) && j > 0) {
+          backward_val = (int) (prev_cell + 0.5);
+          break;
+        }
+        prev_cell = cell_res[group];
+      }
+      
       total_behind = total_behind + cell_res[group];
+      
+      // any postive sense-value means stop if we hit a cell with the requested value
+      if (sense_value > 0 && cell_res[group] == sense_value) break;
+      
       // if facing W, SW or NW stop if on edge of world
       if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
       cell = cell + behind_dir;
@@ -2915,13 +2991,32 @@ bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx)
       // if cell is less than 0 or greater than max cell (in grid), don't do it.
       if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
     }
-
-    // return total diff and actual forward sense distance used
-    int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
+    
+    // our nop values affect what we return
     setInternalValue(reg_used, forward_dist, true);
-    setInternalValue(FindModifiedNextRegister(reg_used), res_diff, true);
+    // for sense_value = 0 return actual forward sense distance used and total diff
+    if (sense_value == 0) {
+      int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
+      setInternalValue(control_reg, res_diff, true);
+    }
+    // for sense_value > 0 or -1 also return the backward distance found, skipping the control register
+    else if (sense_value > 0 || sense_value == -1) {
+      const int back_dist = FindModifiedNextRegister(control_reg);
+      setInternalValue(back_dist, backward_dist, true);
+      // for sense_value = -1, return the values at the peaks (note this now uses 5 registers!)
+      if (sense_value == -1) {
+        if (NUM_REGISTERS > 3) {
+          const int for_val = FindModifiedNextRegister(back_dist);
+          setInternalValue(for_val, forward_val, true);
+          if (NUM_REGISTERS > 4) {
+            const int back_val = FindModifiedNextRegister(for_val);
+            setInternalValue(back_val, backward_val, true);
+          }
+        }
+      }
+    }
   }
-  return true;
+return true;
 }
 
 bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
@@ -2937,14 +3032,14 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
     // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
     // are there any barrier resources in the faced cell    
     for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == 2 & cell_resource_levels[i] > 0) {
+        if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
             setInternalValue(reg_to_set, 2, true);
             return true;
         }    
     }
     // if no barriers, are there any hills in the faced cell    
     for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == 1 & cell_resource_levels[i] > 0) {
+        if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
             setInternalValue(reg_to_set, 1, true);
             return true;
         }
