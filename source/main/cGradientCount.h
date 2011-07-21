@@ -94,6 +94,7 @@ public:
 
   void UpdateCount(cAvidaContext& ctx);
 
+  void StateAll();
   
 private:
   void refreshResourceValues();

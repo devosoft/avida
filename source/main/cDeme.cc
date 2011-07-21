@@ -231,12 +231,14 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
     return;
   }
   
-  for(int i = 0; i < GetSize(); i++) {
-    cPopulationCell& cell = GetCell(i);
-    if(cell.IsOccupied()) {
-      energyUsage.Add(cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio());
+  if (m_world->GetConfig().ENERGY_ENABLED.Get()) {
+    for(int i = 0; i < GetSize(); i++) {
+      cPopulationCell& cell = GetCell(i);
+      if(cell.IsOccupied()) {
+        energyUsage.Add(cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio());
+      }
     }
-  }  
+  }
   
   for(int i = 0; i < cell_events.Size(); i++) {
     cDemeCellEvent& event = cell_events[i];

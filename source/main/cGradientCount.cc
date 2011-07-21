@@ -120,6 +120,12 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   }
 }
 
+void cGradientCount::StateAll()
+{
+  return;
+}
+
+
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
   if (m_habitat == 2) {
