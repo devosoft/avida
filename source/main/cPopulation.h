@@ -195,7 +195,6 @@ public:
   // Print donation stats
   void PrintDonationStats();
 
-
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
   void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);
@@ -246,8 +245,6 @@ public:
   void SetDemeResourceInflow(const cString res_name, double new_level);
   void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
   void SetDemeResourceOutflow(const cString res_name, double new_level);
-
-  void UpdateResStats(cAvidaContext& ctx);
   
   void ResetInputs(cAvidaContext& ctx);
 
