@@ -1638,6 +1638,8 @@ void cAnalyze::CommandPrint(cString cur_string)
   else cout << "Printing organisms..." << endl;
   
   cString directory = PopDirectory(cur_string, "archive/");
+  // Weirdly, PopDirectory() doesn't actually pop, so...
+  cur_string.PopWord();  // There, that actually removes the directory string
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype* genotype = NULL;

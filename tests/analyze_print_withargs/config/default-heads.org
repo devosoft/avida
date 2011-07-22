@@ -1,0 +1,103 @@
+#inst_set heads_default
+#hw_type 0
+
+h-alloc    # Allocate space for child
+h-search   # Locate the end of the organism
+nop-C      #
+nop-A      #
+mov-head   # Place write-head at beginning of offspring.
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+nop-C      #
+h-search   # Mark the beginning of the copy loop
+h-copy     # Do the copy
+if-label   # If we're done copying....
+nop-C      #
+nop-A      #
+h-divide   #    ...divide!
+mov-head   # Otherwise, loop back to the beginning of the copy loop.
+nop-A      # End label.
+nop-B      #
