@@ -624,13 +624,18 @@ specified in the environment configuration file.
   This command first prints the whether or not the test cpu is using 
   resources.  Then it will print the concentration for each resource.
 </dd>
-<dt><strong>LOAD_RESOURCES [<span class="cmdargopt">file_name="resource.dat"</span>]</strong></dt>
+<dt><strong>LOAD_RESOURCES [<span class="cmdargopt">file_name="resource.dat"</span>][<span> class="cmdargopt">resource_cpu_cycle_offset=0</span>]</strong></dt>
 <dd>
   This command loads a time oriented list of resource concentrations.  
   The command takes a file name containing this type of data, and 
   defaults to resource.dat.  The format of the file must be the same 
   as resource.dat, and each line must be in the correct chronological 
   order with oldest first.
+  The resource_cpu_cycle_offset parameter will influence which update RECALCULATE, 
+  etc. will use from the resource.dat file.  Specifically, the update specified 
+  in RECALCULATE, etc. will have resource_cpu_cycle_offset / AVE_TIME_SLICE 
+  (integer division) added to it.  Unless you know exactly why you would use this 
+  option, you should leave it at its default of 0.
 </dd>
 </dl>
 
