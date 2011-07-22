@@ -461,7 +461,7 @@ const tArray< tArray<double> > &  cResourceCount::GetSpatialRes(cAvidaContext& c
     DoUpdates(ctx);
     for (int i = 0; i < num_spatial_resources; i++) {
       for (int j = 0; j < num_cells; j++) {
-	curr_spatial_res_cnt[i][j] = spatial_resource_count[i]->GetAmount(j);
+        curr_spatial_res_cnt[i][j] = spatial_resource_count[i]->GetAmount(j);
       }
     }
   }
@@ -469,10 +469,11 @@ const tArray< tArray<double> > &  cResourceCount::GetSpatialRes(cAvidaContext& c
   return curr_spatial_res_cnt;
 }
 
-void cResourceCount::Modify(const tArray<double> & res_change)
+void cResourceCount::Modify(cAvidaContext& ctx, const tArray<double> & res_change)
 {
   assert(resource_count.GetSize() == res_change.GetSize());
 
+  DoUpdates(ctx);
   for (int i = 0; i < resource_count.GetSize(); i++) {
     resource_count[i] += res_change[i];
     assert(resource_count[i] >= 0.0);
@@ -480,18 +481,20 @@ void cResourceCount::Modify(const tArray<double> & res_change)
 }
 
 
-void cResourceCount::Modify(int res_index, double change)
+void cResourceCount::Modify(cAvidaContext& ctx, int res_index, double change)
 {
   assert(res_index < resource_count.GetSize());
 
+  DoUpdates(ctx);
   resource_count[res_index] += change;
   assert(resource_count[res_index] >= 0.0);
 }
 
-void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
+void cResourceCount::ModifyCell(cAvidaContext& ctx, const tArray<double> & res_change, int cell_id)
 {
   assert(resource_count.GetSize() == res_change.GetSize());
 
+  DoUpdates(ctx);
   for (int i = 0; i < resource_count.GetSize(); i++) {
   if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
         resource_count[i] += res_change[i];
@@ -515,18 +518,20 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
   }
 }
 
-double cResourceCount::Get(int res_index) const
+double cResourceCount::Get(cAvidaContext& ctx, int res_index) const
 {
   assert(res_index < resource_count.GetSize());
+  DoUpdates(ctx);
   if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
       return resource_count[res_index];
   } //else return spacial resource sum
   return spatial_resource_count[res_index]->SumAll();
 }
 
-void cResourceCount::Set(int res_index, double new_level)
+void cResourceCount::Set(cAvidaContext& ctx, int res_index, double new_level)
 {
   assert(res_index < resource_count.GetSize());
+  DoUpdates(ctx);
   if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
      resource_count[res_index] = new_level;
   } else {
@@ -544,7 +549,7 @@ void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
   }
 }
 ///// Private Methods /////////
-void cResourceCount::DoUpdates(cAvidaContext& ctx) const
+void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 { 
   assert(update_time >= -EPSILON);
 
@@ -553,6 +558,7 @@ void cResourceCount::DoUpdates(cAvidaContext& ctx) const
 
   // Preserve remainder of update_time
   update_time -=  num_steps * UPDATE_STEP;
+
 
   while (num_steps > PRECALC_DISTANCE) {
     for (int i = 0; i < resource_count.GetSize(); i++) {
@@ -570,10 +576,12 @@ void cResourceCount::DoUpdates(cAvidaContext& ctx) const
       resource_count[i] += inflow_precalc(i, num_steps);
     }
   }
+  
+  if (global_only) return;
 
   // If one (or more) complete update has occured update the spatial resources
 
-  while (spatial_update_time >= 1.0) { 
+  while (spatial_update_time >= 1.0) {
     spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
@@ -592,10 +600,10 @@ void cResourceCount::DoUpdates(cAvidaContext& ctx) const
   }
 }
 
-void cResourceCount::ReinitializeResources(double additional_resource)
+void cResourceCount::ReinitializeResources(cAvidaContext& ctx, double additional_resource)
 {
   for(int i = 0; i < resource_name.GetSize(); i++) {
-    Set(i, resource_initial[i] + additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
+    Set(ctx, i, resource_initial[i] + additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
 
     // Additionally, set any initial values given by the CELL command
     spatial_resource_count[i]->ResetResourceCounts();

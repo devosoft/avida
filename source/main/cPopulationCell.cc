@@ -312,13 +312,13 @@ void cPopulationCell::DiffuseGenomeFragments() {
  As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
  remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
  */
-void cPopulationCell::AddGenomeFragments(const Sequence& genome) {
+void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome) {
 	assert(genome.GetSize()>0); // oh, sweet sanity.
 	InitHGTSupport();
 	
-	m_world->GetPopulation().AdjustHGTResource(genome.GetSize());
+	m_world->GetPopulation().AdjustHGTResource(ctx, genome.GetSize());
 	
-	cAvidaContext ctx(m_world, m_world->GetRandom());
+  
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
@@ -327,7 +327,7 @@ void cPopulationCell::AddGenomeFragments(const Sequence& genome) {
 	
 	// pop off the front of this cell's buffer until we have <= HGT_MAX_FRAGMENTS_PER_CELL.
 	while(m_hgt->fragments.size()>(unsigned int)m_world->GetConfig().HGT_MAX_FRAGMENTS_PER_CELL.Get()) {
-		m_world->GetPopulation().AdjustHGTResource(-m_hgt->fragments.front().GetSize());
+		m_world->GetPopulation().AdjustHGTResource(ctx, -m_hgt->fragments.front().GetSize());
 		m_hgt->fragments.pop_front();
 	}
 }
@@ -362,10 +362,10 @@ cPopulationCell::fragment_list_type& cPopulationCell::GetFragments() {
 
 /*!	Clear all fragments from this cell, adjust resources as required.
  */
-void cPopulationCell::ClearFragments() {
+void cPopulationCell::ClearFragments(cAvidaContext& ctx) {
 	InitHGTSupport();
 	for(fragment_list_type::iterator i=m_hgt->fragments.begin(); i!=m_hgt->fragments.end(); ++i) {
-		m_world->GetPopulation().AdjustHGTResource(-i->GetSize());
+		m_world->GetPopulation().AdjustHGTResource(ctx, -i->GetSize());
 	}
 	m_hgt->fragments.clear();
 }

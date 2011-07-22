@@ -1482,12 +1482,12 @@ public:
         
         if(res.IsSpatial(resid)) {
           for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
-            deme.AdjustSpatialResource(c, resid, -1 * deme.GetSpatialResource(c, resid, ctx) * adjusted_amount); 
+            deme.AdjustSpatialResource(ctx, c, resid, -1 * deme.GetSpatialResource(c, resid, ctx) * adjusted_amount); 
           } //End iterating through all cells
         }
         else
         {
-          deme.AdjustResource(resid, -1 * res.Get(resid) * adjusted_amount);
+          deme.AdjustResource(ctx, resid, -1 * res.Get(ctx, resid) * adjusted_amount);
         }
         
       } //End if deme is treatable
@@ -2090,7 +2090,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().CompeteDemes(m_type); 
+    m_world->GetPopulation().CompeteDemes(ctx, m_type); 
   }
 };
 
@@ -4972,9 +4972,9 @@ public:
         continue;
       }
       
-      if(res.Get(resid) >= m_thresh) {
+      if(res.Get(ctx, resid) >= m_thresh) {
         //Set the resource to zero
-        deme.AdjustResource(resid, (-1 * res.Get(resid)));
+        deme.AdjustResource(ctx, resid, (-1 * res.Get(ctx, resid)));
         
         //Pick a deme to move to
         int target_demeid = m_world->GetRandom().GetInt(0, m_world->GetConfig().NUM_DEMES.Get()-1);

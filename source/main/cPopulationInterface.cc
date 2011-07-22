@@ -222,14 +222,14 @@ const tArray< tArray<int> >& cPopulationInterface::GetCellIdLists()
 	return m_world->GetPopulation().GetCellIdLists();
 }
 
-void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
+void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
-  return m_world->GetPopulation().UpdateCellResources(res_change, m_cell_id);
+  return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_cell_id);
 }
 
-void cPopulationInterface::UpdateDemeResources(const tArray<double> & res_change)
+void cPopulationInterface::UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
-  return m_world->GetPopulation().UpdateDemeCellResources(res_change, m_cell_id);
+  return m_world->GetPopulation().UpdateDemeCellResources(ctx, res_change, m_cell_id);
 }
 
 void cPopulationInterface::Die(cAvidaContext& ctx) 
@@ -887,8 +887,8 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 			case 1: { // source is the parent (a control)
 				// this is a little hackish, but this is the cleanest way to make sure
 				// that all downstream stuff works right.
-				cell.ClearFragments();
-				cell.AddGenomeFragments(cell.GetOrganism()->GetGenome().GetSequence());
+				cell.ClearFragments(ctx);
+				cell.AddGenomeFragments(ctx, cell.GetOrganism()->GetGenome().GetSequence());
 				break;
 			}
 			default: { // error
@@ -904,7 +904,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 			fragment_list_type::iterator selected=cell.GetFragments().begin();
 			std::advance(selected, ctx.GetRandom().GetInt(cell.GetFragments().size()));
 			fragments.insert(fragments.end(), *selected);			
-			m_world->GetPopulation().AdjustHGTResource(-selected->GetSize());
+			m_world->GetPopulation().AdjustHGTResource(ctx, -selected->GetSize());
 			cell.GetFragments().erase(selected);
 		}
 	}

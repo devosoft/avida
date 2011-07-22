@@ -145,7 +145,7 @@ public:
   double CalcMeritRatio();
   
   void HardwareReset(cAvidaContext& ctx);
-  void NotifyDeath();
+  void NotifyDeath(cAvidaContext& ctx);
   
   void PrintStatus(std::ostream& fp, const cString& next_name);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;

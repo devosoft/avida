@@ -165,8 +165,8 @@ public:
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
 
-  void Reset(bool resetResources = true, double deme_energy = 0.0); //! used to pass energy to offspring deme
-  void DivideReset(cDeme& parent_deme, bool resetResources = true, double deme_energy = 0.0);
+  void Reset(cAvidaContext& ctx, bool resetResources = true, double deme_energy = 0.0); //! used to pass energy to offspring deme
+  void DivideReset(cAvidaContext& ctx, cDeme& parent_deme, bool resetResources = true, double deme_energy = 0.0);
 
   //! Kills all organisms currently in this deme.
   void KillAll(cAvidaContext& ctx); 
@@ -261,13 +261,13 @@ public:
   
   const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
   cResourceCount& GetDemeResources() { return deme_resource_count; }
-	void SetResource(int id, double new_level) { deme_resource_count.Set(id, new_level); }
+	void SetResource(cAvidaContext& ctx, int id, double new_level) { deme_resource_count.Set(ctx, id, new_level); }
   double GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const;
-  void AdjustSpatialResource(int rel_cellid, int resource_id, double amount);
-  void AdjustResource(int resource_id, double amount);
+  void AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount);
+  void AdjustResource(cAvidaContext& ctx, int resource_id, double amount);
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
-  void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
+  void ModifyDemeResCount(cAvidaContext& ctx, const tArray<double> & res_change, const int absolute_cell_id);
   double GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const; 
   double GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx); 
   void GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext& ctx); 

@@ -1593,7 +1593,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype* parent_genotype = NULL;
 
-  cTestCPU * test_cpu = m_world->GetHardwareManager().CreateTestCPU();  
+  cTestCPU * test_cpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);  
   while ((parent_genotype = batch_it.Next())) {
     
     // We keep a hash with genome strings as keys
@@ -1641,7 +1641,7 @@ void cAnalyze::CommandPrint(cString cur_string)
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype* genotype = NULL;
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   while ((genotype = batch_it.Next()) != NULL) {
     cString filename(directory);
     
@@ -1708,7 +1708,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     msg.Set("Tracing organisms.");
   m_world->GetDriver().NotifyComment(msg);
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);  
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
@@ -3918,7 +3918,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   int match_fail_count = 0;
   
   // Create a Test CPU
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
   // Loop through all of the tests, picking random organisms each time and
   // performing a random cross test.
@@ -5827,7 +5827,7 @@ void cAnalyze::CommandSpecies(cString cur_string)
   int total_fail = 0;
   int total_count = 0;
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
   tListIterator<cAnalyzeGenotype> list1_it(batch[batch1].List());
   tListIterator<cAnalyzeGenotype> list2_it(batch[batch2].List());
@@ -6493,7 +6493,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       test_count[i] = 0;
     }
     
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
     
     // Loop through all of the combos...
     const int combo_step = total_combos / 79;
@@ -6852,7 +6852,7 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
   // Open the output file...
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
   // Loop through all of the genotypes again, testing mutation reversions.
   cAnalyzeGenotype * prev_genotype = batch_it.Next();
@@ -6941,7 +6941,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     }
   }
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
   ///////////////////////////////////////////////////////
   // Loop through all of the genotypes in this batch...
@@ -7305,7 +7305,7 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
   }
 
   // test cpu
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
   
   // get current batch
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());

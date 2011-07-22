@@ -56,7 +56,7 @@ private:
 
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
-  cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
+  cPopulationInterface& operator=(const cPopulationInterface&); // @not_implemented
   
 public:
   cPopulationInterface(cWorld* world);
@@ -109,8 +109,8 @@ public:
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
-  void UpdateResources(const tArray<double>& res_change);
-  void UpdateDemeResources(const tArray<double>& res_change);
+  void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 

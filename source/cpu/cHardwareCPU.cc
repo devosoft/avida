@@ -4009,7 +4009,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
   {res_change[bin_used] = 0.0;}
 
   // Update resource counts to reflect res_change
-  m_organism->GetOrgInterface().UpdateResources(res_change);
+  m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
   
   return true;
 }
@@ -5388,8 +5388,8 @@ void cHardwareCPU::DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell,
   src_change[resource_id] = -1 * donation;
   dest_change[resource_id] = (1 - decay) * donation;
   
-  m_organism->GetOrgInterface().UpdateResources(src_change);
-  m_world->GetPopulation().UpdateCellResources(dest_change, to_cell);
+  m_organism->GetOrgInterface().UpdateResources(ctx, src_change);
+  m_world->GetPopulation().UpdateCellResources(ctx, dest_change, to_cell);
   
 } //End DoResourceDonateAmount()
 
@@ -5978,9 +5978,9 @@ bool cHardwareCPU::Inst_ResMoveHead(cAvidaContext& ctx)
   int resid = deme_resources.GetResourceByName(resname);
   
   if (resid >= 0) {
-    current_level = deme_resources.Get(resid);
+    current_level = deme_resources.Get(ctx, resid);
   } else if ( (resid = resources.GetResourceByName(resname)) >= 0) {
-    current_level = resources.Get(resid);
+    current_level = resources.Get(ctx, resid);
   } else {
     cout << "Error: Cannot find resource '" << resname << "'" << endl;
     return true;
@@ -6029,9 +6029,9 @@ bool cHardwareCPU::Inst_ResJumpHead(cAvidaContext& ctx)
   int resid = deme_resources.GetResourceByName(resname);
   
   if (resid >= 0) {
-    current_level = deme_resources.Get(resid);
+    current_level = deme_resources.Get(ctx, resid);
   } else if ( (resid = resources.GetResourceByName(resname)) >= 0) {
-    current_level = resources.Get(resid);
+    current_level = resources.Get(ctx, resid);
   } else {
     cout << "Error: Cannot find resource '" << resname << "'" << endl;
     return true;
@@ -7743,7 +7743,7 @@ bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx, tRegisters R
   double pher_amount = 0;
   for (int i = 0; i < deme_resource_count.GetSize(); i++) {
     if (strncmp(deme_resource_count.GetResName(i), "pheromone", 9) == 0) {
-      pher_amount += deme_resource_count.Get(i);
+      pher_amount += deme_resource_count.Get(ctx, i);
     }
   }
   GetRegister(reg_to_set) = (int)floor(pher_amount + 0.5);
@@ -7831,7 +7831,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
@@ -7889,7 +7889,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
@@ -7954,7 +7954,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
@@ -8002,17 +8002,12 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Explore(cAvidaContext& ctx)
 {
-  cPopulation& pop = m_world->GetPopulation();
   int cellid = m_organism->GetCellID();
   
   if (cellid == -1) {
     return true;
   }
-  
-  //  cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  
+    
   // Rotate randomly.  Code taken from tumble.
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   for (unsigned int i = 0; i < ctx.GetRandom().GetUInt(num_neighbors); i++) {
@@ -8087,8 +8082,6 @@ bool cHardwareCPU::Inst_MoveTargetForward5(cAvidaContext& ctx)
   }
   
   cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
   int cell_data;
   
@@ -8141,8 +8134,6 @@ bool cHardwareCPU::Inst_MoveTargetForward3(cAvidaContext& ctx)
   }
   
   cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
   int cell_data;
   
@@ -8193,7 +8184,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
@@ -8295,7 +8286,7 @@ bool cHardwareCPU::Inst_IfPheromone(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
   if (deme_resource_count.GetSize() == 0) return false;
@@ -8329,7 +8320,7 @@ bool cHardwareCPU::Inst_IfNotPheromone(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
   if (deme_resource_count.GetSize() == 0) return false;

@@ -200,8 +200,6 @@ POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
 POP_OUT_FILE(PrintCurrentMeanDemeDensity,  deme_currentMeanDensity.dat  );
 
 
-
-
 class cActionPrintResourceData : public cAction
 {
 private:
@@ -698,7 +696,7 @@ public:
     if (bg) {
       cString filename(m_filename);
       if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
-      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
       testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
       delete testcpu;
     }
@@ -782,7 +780,7 @@ public:
     double max_fitness = -1; // we set this to -1, so that even 0 is larger...
     cBioGroup* max_f_genotype = NULL;
 
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;  // One use organisms.
@@ -1044,7 +1042,7 @@ public:
     int num_bins = static_cast<int>(ceil( (max - min) / step)) + 3;
     max  = min + (num_bins - 3) * step;
     histogram.Resize(num_bins, 0);
-    cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU(ctx);
 
 
     // We calculate the fitness based on the current merit,
@@ -1222,7 +1220,7 @@ public:
     int num_bins = static_cast<int>(ceil( (max - min) / step)) + 3;
     max  = min + (num_bins - 3) * step;
     histogram.Resize(num_bins, 0);
-    cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU(ctx);
 
 
     // We calculate the fitness based on the current merit,
@@ -2198,7 +2196,7 @@ public:
 
       // save into archive
       if (m_save_genotypes) {
-        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->GetProperty("name").AsString())));
         delete testcpu;
       }
@@ -2230,7 +2228,7 @@ public:
     cBioGroup* bg = it->Next();
     Genome genome(bg->GetProperty("genome").AsString());
 
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, genome);
     delete testcpu;
@@ -2270,7 +2268,7 @@ public:
     cDataFile& df = m_world->GetDataFile(filename);
 
     cPopulation& pop = m_world->GetPopulation();
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;
@@ -2539,7 +2537,7 @@ public:
 
     cString con_name;
     con_name.Set("archive/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     testcpu->PrintGenome(ctx, mg, con_name);
 
 
@@ -3173,7 +3171,7 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
 
     cPopulation* pop = &m_world->GetPopulation();
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
 
