@@ -32,23 +32,21 @@
 
 #include <iostream>
 #include <functional>
-//#include <set>
 
-
-#ifndef cResourceCount_h
 #include "cResourceCount.h"
-#endif
-#ifndef cStats_h
 #include "cStats.h"
-#endif
+
+class cAvidaContext;
+
 
 /*! \brief An STL-compatible predicate on movement.  The intent here is to
  provide a straightforward way to track arbitrary movement *wherever* they appear
  in the population.  */
-class cDemePredicate : public std::unary_function<void*, bool> {
+class cDemePredicate : public std::binary_function<cAvidaContext&, void*, bool>
+{
 	public:
 		virtual ~cDemePredicate() { }
-		virtual bool operator()(void* arg=NULL) = 0;
+		virtual bool operator()(cAvidaContext& ctx, void* arg = NULL) = 0;
 		virtual void Print(std::ostream& out) = 0;
 		virtual void Reset() = 0;
 		virtual bool PreviouslySatisfied() = 0;
@@ -71,9 +69,9 @@ public:
 		previouslySatisfied(false)
 		{;}
 	
-	bool operator()(void* arg) {
+	bool operator()(cAvidaContext& ctx, void* arg) {
 		assert(arg != NULL);
-		double resourceLevel = static_cast<cResourceCount*>(arg)->Get(static_cast<cResourceCount*>(arg)->GetResourceCountID(demeResourceName));
+		double resourceLevel = static_cast<cResourceCount*>(arg)->Get(ctx, static_cast<cResourceCount*>(arg)->GetResourceCountID(demeResourceName));
 
 		if(compareOperator == ">=") {
 			if(resourceLevel >= resourceThresholdValue) {

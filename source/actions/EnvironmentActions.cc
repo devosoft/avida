@@ -53,7 +53,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().UpdateResource(res->GetID(), m_res_count);
+    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), m_res_count);
   }
 };
 
@@ -85,7 +85,7 @@ public:
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().UpdateResource(res->GetID(), (m_res_count / ave_merit));
+    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), (m_res_count / ave_merit));
   }
 };
 
@@ -118,11 +118,11 @@ public:
 
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
     
-    double res_level = m_world->GetPopulation().GetResource(res->GetID());
+    double res_level = m_world->GetPopulation().GetResource(ctx, res->GetID());
     double scaled_perc = 1 / (1 + ave_merit * (1 - m_res_percent) / m_res_percent);
     res_level -= res_level * scaled_perc;
     
-    if (res != NULL) m_world->GetPopulation().UpdateResource(res->GetID(), res_level);
+    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), res_level);
   }
 };
 
@@ -146,7 +146,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetResource(m_res_name, m_res_count);
+    m_world->GetPopulation().SetResource(ctx, m_res_name, m_res_count);
   }
 };
 
@@ -170,7 +170,7 @@ class cActionSetDemeResource : public cAction
 		
 		void Process(cAvidaContext& ctx)
 		{    
-      m_world->GetPopulation().SetDemeResource(m_res_name, m_res_count);
+      m_world->GetPopulation().SetDemeResource(ctx, m_res_name, m_res_count);
 		}
 	};
 
@@ -193,7 +193,7 @@ public:
     cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i=0; i < res_lib.GetSize(); i++)  {
       cResource* res = res_lib.GetResource(i);
-      m_world->GetPopulation().SetResource(res->GetID(), 0.0);
+      m_world->GetPopulation().SetResource(ctx, res->GetID(), 0.0);
     }
   }
 };
@@ -765,14 +765,14 @@ public:
       double res_total = 0.0;
       for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
         cDeme& deme = pop.GetDeme(deme_id);
-        res_total += deme.GetDemeResourceCount().Get(deme_res->GetIndex());
+        res_total += deme.GetDemeResourceCount().Get(ctx, deme_res->GetIndex());
       }
       
       // Set global resource to deme sum level
-      pop.SetResource(m_global_res_name, res_total);
+      pop.SetResource(ctx, m_global_res_name, res_total);
       
       // Set deme resource to zero
-      pop.SetDemeResource(m_deme_res_name, 0.0);
+      pop.SetDemeResource(ctx, m_deme_res_name, 0.0);
             
       // Find the total inflow across demes
       double inflow_total = 0.0;
@@ -821,7 +821,7 @@ public:
 		double m_res_count = -1*(0.4*tanh(((double)time-182500.0)/50000.0)+0.5)*(0.5*sin((double)time/58.091)+0.5)+1;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);
 	}
 };
 
@@ -851,7 +851,7 @@ public:
 			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);			
+			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);			
 	}
 };
 
@@ -883,7 +883,7 @@ public:
 			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);			
+			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);			
 	}
 };
 
@@ -920,7 +920,7 @@ public:
     int time = m_world->GetStats().GetUpdate();
     m_res_count = (amplitude * sin(3.14159/frequency * time - phaseShift * 3.14159) + initY) / 2;
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+    if (res != NULL) m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);
 
   }
 };

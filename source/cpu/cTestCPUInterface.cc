@@ -95,9 +95,9 @@ const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 	return m_testcpu->GetCellIdLists();
 }
 
-void cTestCPUInterface::UpdateResources(const tArray<double>& res_change)
+void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
-   m_testcpu->ModifyResources(res_change);
+   m_testcpu->ModifyResources(ctx, res_change);
 }
 
 void cTestCPUInterface::Die(cAvidaContext& ctx) 

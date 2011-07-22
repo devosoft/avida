@@ -618,7 +618,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   const double neut_min = parent_fitness * (1.0 - m_organism->GetNeutralMin());
   const double neut_max = parent_fitness * (1.0 + m_organism->GetNeutralMax());
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
   testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome());
@@ -711,7 +711,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   const double neut_min = parent_fitness * (1.0 - m_organism->GetNeutralMin());
   const double neut_max = parent_fitness * (1.0 + m_organism->GetNeutralMax());
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
   testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome());

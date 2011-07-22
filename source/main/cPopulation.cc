@@ -762,7 +762,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
                 int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
                 if (pc_phenotype) {
                     cCPUTestInfo test_info;
-                    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+                    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
                     test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
                     Genome mg(parent_organism->GetGenome());
                     mg.SetSequence(parent_organism->GetHardware().GetMemory());
@@ -967,7 +967,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
   if (pc_phenotype){
     cCPUTestInfo test_info;
-    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
     Genome mg(in_organism->GetGenome());
     mg.SetSequence(in_organism->GetHardware().GetMemory());
@@ -1296,7 +1296,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 
   int cellID = in_cell.GetID();
 
-  organism->NotifyDeath();
+  organism->NotifyDeath(ctx);
 
   // @TODO @DMB - this should really move to cOrganism::NotifyDeath
   if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
@@ -1339,7 +1339,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // the HGT resource.
   if(m_world->GetConfig().ENABLE_HGT.Get()
 		 && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
-    in_cell.AddGenomeFragments(organism->GetGenome().GetSequence());
+    in_cell.AddGenomeFragments(ctx, organism->GetGenome().GetSequence());
   }
 
   // And clear it!
@@ -1503,7 +1503,7 @@ void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
 //  For ease of use, each organism
 // is setup as if it we just injected into the population.
 
-void cPopulation::CompeteDemes(int competition_type)
+void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
 {
   const int num_demes = deme_array.GetSize();
 
@@ -1715,7 +1715,7 @@ void cPopulation::CompeteDemes(int competition_type)
 
   // Reset all deme stats to zero.
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    deme_array[deme_id].Reset(deme_array[deme_id].GetGeneration()); // increase deme generation by 1
+    deme_array[deme_id].Reset(ctx, deme_array[deme_id].GetGeneration()); // increase deme generation by 1
   }
 }
 
@@ -2013,7 +2013,7 @@ void cPopulation::ReplicateDemes(int rep_trigger, cAvidaContext& ctx)
 
 /*! ReplicateDeme is a helper method for replicating a source deme.
  */
-void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext& ctx) 
+void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx) 
 {
   // Doesn't make sense to try and replicate a deme that *has no organisms*.
   if (source_deme.IsEmpty()) return;
@@ -2056,7 +2056,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext& ctx)
   if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get()) {
     //Reset deme (resources and births, among other things)
     bool source_deme_resource_reset = m_world->GetConfig().DEMES_RESET_RESOURCES.Get() == 0;
-    source_deme.DivideReset(source_deme, source_deme_resource_reset);
+    source_deme.DivideReset(ctx, source_deme, source_deme_resource_reset);
 
     //Reset all organisms in deme, by re-injecting them?
     if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get() == 2) {
@@ -2168,12 +2168,12 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
   // Must reset target first for stats to be correctly updated!
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     // Transfer energy from source to target if we're using the energy model.
-    if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset, offspring_deme_energy);
-    source_deme.DivideReset(source_deme, source_deme_resource_reset, parent_deme_energy);
+    if (target_successfully_seeded) target_deme.DivideReset(ctx2, source_deme, target_deme_resource_reset, offspring_deme_energy);
+    source_deme.DivideReset(ctx2, source_deme, source_deme_resource_reset, parent_deme_energy);
   } else {
     // Default; reset both source and target.
-    if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset);
-    source_deme.DivideReset(source_deme, source_deme_resource_reset);
+    if (target_successfully_seeded) target_deme.DivideReset(ctx2, source_deme, target_deme_resource_reset);
+    source_deme.DivideReset(ctx2, source_deme, source_deme_resource_reset);
   }
 
 
@@ -3664,10 +3664,10 @@ void cPopulation::PrintDemeResource(cAvidaContext& ctx) {
     cDeme & cur_deme = deme_array[deme_id];
 
     cur_deme.UpdateDemeRes(ctx); 
-    cResourceCount res = GetDeme(deme_id).GetDemeResourceCount();
+    const cResourceCount& res = GetDeme(deme_id).GetDemeResourceCount();
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
-      df_resources.Write(res.Get(j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
+      df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
       if ((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL && (res.GetResourcesGeometry())[j] != nGeometry::PARTIAL) {
         PrintDemeSpatialResData(res, j, deme_id, ctx); 
       }
@@ -3698,7 +3698,7 @@ void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) {
 
     for(int r = 0; r < num_res; r++) {
       if (!res.IsSpatial(r)) {
-        df.WriteBlockElement(res.Get(r), r + 1, num_res + 1);
+        df.WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
       }
 
     } //End iterating through resources
@@ -4683,9 +4683,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.SetMinGestationTime(min_gestation_time);
   stats.SetMinGenomeLength(min_genome_length);
 
-  stats.SetResources(resource_count.GetResources(ctx)); 
-  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
-  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry());
+  resource_count.UpdateGlobalResources(ctx); 
 }
 
 
@@ -4712,6 +4710,16 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx);   
 }
+
+
+void cPopulation::UpdateResStats(cAvidaContext& ctx)
+{
+  cStats& stats = m_world->GetStats();
+  stats.SetResources(resource_count.GetResources(ctx)); 
+  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
+  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
+}
+
 
 void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
 {
@@ -5152,31 +5160,29 @@ void cPopulation::InjectParasite(const cString& label, const Sequence& injected_
 }
 
 
-void cPopulation::UpdateResources(const tArray<double> & res_change)
+void cPopulation::UpdateResources(cAvidaContext& ctx, const tArray<double> & res_change)
 {
-  resource_count.Modify(res_change);
+  resource_count.Modify(ctx, res_change);
 }
 
-void cPopulation::UpdateResource(int res_index, double change)
+void cPopulation::UpdateResource(cAvidaContext& ctx, int res_index, double change)
 {
-  resource_count.Modify(res_index, change);
+  resource_count.Modify(ctx, res_index, change);
 }
 
-void cPopulation::UpdateCellResources(const tArray<double> & res_change,
-                                      const int cell_id)
+void cPopulation::UpdateCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id)
 {
-  resource_count.ModifyCell(res_change, cell_id);
+  resource_count.ModifyCell(ctx, res_change, cell_id);
 }
 
-void cPopulation::UpdateDemeCellResources(const tArray<double> & res_change,
-                                          const int cell_id)
+void cPopulation::UpdateDemeCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id)
 {
-  GetDeme(GetCell(cell_id).GetDemeID()).ModifyDemeResCount(res_change, cell_id);
+  GetDeme(GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
 }
 
-void cPopulation::SetResource(int res_index, double new_level)
+void cPopulation::SetResource(cAvidaContext& ctx, int res_index, double new_level)
 {
-  resource_count.Set(res_index, new_level);
+  resource_count.Set(ctx, res_index, new_level);
 }
 
 /* This version of SetResource takes the name of the resource.
@@ -5184,10 +5190,10 @@ void cPopulation::SetResource(int res_index, double new_level)
  * Otherwise, it sets the resource to the new level, 
  * calling the index version of SetResource().
  */
-void cPopulation::SetResource(const cString res_name, double new_level)
+void cPopulation::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
 {
   cResource* res = environment.GetResourceLib().GetResource(res_name);
-  if (res != NULL) SetResource(res->GetIndex(), new_level);
+  if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
 }
 
 /* This method sets the inflow of the named resource.
@@ -5215,14 +5221,14 @@ void cPopulation::SetResourceOutflow(const cString res_name, double new_level)
  * all demes.  If a resource by the given name does not exist,
  * it does nothing.
  */
-void cPopulation::SetDemeResource(const cString res_name, double new_level)
+void cPopulation::SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level)
 {
   cResource* res = environment.GetResourceLib().GetResource(res_name);
   if (res != NULL) {
     int num_demes = GetNumDemes();
     for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
       cDeme& deme = GetDeme(deme_id);
-      deme.SetResource(res->GetIndex(), new_level);
+      deme.SetResource(ctx, res->GetIndex(), new_level);
     }
   }
 }
@@ -6515,10 +6521,10 @@ double cPopulation::CalcGroupAveOwn(int group_id)
 
 /*!	Modify current level of the HGT resource.
  */
-void cPopulation::AdjustHGTResource(double delta)
+void cPopulation::AdjustHGTResource(cAvidaContext& ctx, double delta)
 {
   if (m_hgt_resid != -1) {
-    resource_count.Modify(m_hgt_resid, delta);
+    resource_count.Modify(ctx, m_hgt_resid, delta);
   }
 }
 

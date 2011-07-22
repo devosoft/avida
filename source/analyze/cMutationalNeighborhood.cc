@@ -55,7 +55,7 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
 
     if (cur_site < m_base_genome.GetSize()) {
       // Create test infrastructure
-      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
       cCPUTestInfo test_info;
       
       // Setup One Step Data
@@ -157,7 +157,7 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
 void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
 {
   // Generate base information
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   cCPUTestInfo test_info;
   testcpu->TestGenome(ctx, test_info, m_base_genome);
   

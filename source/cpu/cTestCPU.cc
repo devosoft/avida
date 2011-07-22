@@ -47,15 +47,15 @@ using namespace std;
 using namespace AvidaTools;
 
 
-cTestCPU::cTestCPU(cWorld* world)
+cTestCPU::cTestCPU(cAvidaContext& ctx, cWorld* world)
 {
   m_world = world;
 	m_use_manual_inputs = false;
-  InitResources();
+  InitResources(ctx);
 }  
 
  
-void cTestCPU::InitResources(int res_method, cResourceHistory* res, int update, int cpu_cycle_offset)
+void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistory* res, int update, int cpu_cycle_offset)
 {  
   //FOR DEMES
   m_deme_resource_count.SetSize(0);
@@ -96,36 +96,36 @@ void cTestCPU::InitResources(int res_method, cResourceHistory* res, int update, 
   m_faced_cell_resource_count.SetSize(resource_lib.GetSize());
   m_cell_resource_count.SetSize(resource_lib.GetSize());
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    m_resource_count.Set(i, 0.0);
-    m_faced_cell_resource_count.Set(i, 0.0);
-    m_cell_resource_count.Set(i, 0.0);
+    m_resource_count.Set(ctx, i, 0.0);
+    m_faced_cell_resource_count.Set(ctx, i, 0.0);
+    m_cell_resource_count.Set(ctx, i, 0.0);
   }
     
-  SetResourceUpdate(m_res_update, false);
+  SetResourceUpdate(ctx, m_res_update, false);
   // Round down to the closest update to choose how to initialize resources
 }
 
-void cTestCPU::UpdateResources(int cpu_cycles_used)
+void cTestCPU::UpdateResources(cAvidaContext& ctx, int cpu_cycles_used)
 {
   int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   if ((m_res_method >= RES_UPDATED_DEPLETABLE) && (cpu_cycles_used % ave_time_slice == 0))
-    SetResourceUpdate(m_res_update + 1, true);
+    SetResourceUpdate(ctx, m_res_update + 1, true);
 }
 
-inline void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
+inline void cTestCPU::SetResourceUpdate(cAvidaContext& ctx, int update, bool round_to_closest)
 {
   // No resources defined? -- you can't do this!
   if (!m_res) return;
 
   m_res_update = update;
   
-  m_res->GetResourceCountForUpdate(update, m_resource_count, !round_to_closest);
+  m_res->GetResourceCountForUpdate(ctx, update, m_resource_count, !round_to_closest);
 }
 
-void cTestCPU::ModifyResources(const tArray<double>& res_change)
+void cTestCPU::ModifyResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
   //We only let the testCPU modify the resources if we are using a DEPLETABLE option. @JEB
-  if (m_res_method >= RES_UPDATED_DEPLETABLE) m_resource_count.Modify(res_change);
+  if (m_res_method >= RES_UPDATED_DEPLETABLE) m_resource_count.Modify(ctx, res_change);
 }
 
 
@@ -145,7 +145,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   cur_receive = 0;
 
   // Prepare the resources
-  InitResources(test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
+  InitResources(ctx, test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
 	
 	
   // Determine if we're tracing and what we need to print.
@@ -164,7 +164,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
     // @CAO Need to watch out for parasites.
     
     // Resources will be updated as if each update takes a number of cpu cycles equal to the average time slice
-    UpdateResources(time_used);
+    UpdateResources(ctx, time_used);
     
     // Add extra info to trace files so that we can watch resource changes. 
     // This is a clumsy way to insert it in the trace file, but works for my purposes @JEB
@@ -176,7 +176,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
       // Print out resources
       for(int i=0; i<resource_lib.GetSize(); i++) 
       {     
-         *tracerStream << " " << m_resource_count.Get(i);
+         *tracerStream << " " << m_resource_count.Get(ctx, i);
       }
       *tracerStream << endl;
      }
@@ -194,7 +194,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
     // Print out resources
     for(int i=0; i<resource_lib.GetSize(); i++) 
     {     
-       *tracerStream << " " << m_resource_count.Get(i);
+       *tracerStream << " " << m_resource_count.Get(ctx, i);
     }
     *tracerStream << endl;
    }
@@ -297,7 +297,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 
   
   // Notify the organism that it has died to allow for various cleanup methods to run
-  organism->NotifyDeath();
+  organism->NotifyDeath(ctx);
   
 
   // Must be able to divide twice in order to form a successful colony,
