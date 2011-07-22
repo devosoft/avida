@@ -96,7 +96,6 @@ STATS_OUT_FILE(PrintNewTasksData,           newtasks.dat	);
 STATS_OUT_FILE(PrintNewReactionData,	    newreactions.dat	);
 STATS_OUT_FILE(PrintNewTasksDataPlus,       newtasksplus.dat	);
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
-STATS_OUT_FILE(PrintResourceData,           resource.dat        );
 STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
 STATS_OUT_FILE(PrintReactionExeData,        reactions_exe.dat   );
 STATS_OUT_FILE(PrintCurrentReactionData,    cur_reactions.dat   );
@@ -199,6 +198,27 @@ POP_OUT_FILE(PrintParasitePhenotypeData,  parasite_phenotype_count.dat );
 POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
 POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
 POP_OUT_FILE(PrintCurrentMeanDemeDensity,  deme_currentMeanDensity.dat  );
+
+
+
+
+class cActionPrintResourceData : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintResourceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "resource.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintResourceData(m_filename);
+  }
+};
 
 
 class cActionPrintData : public cAction

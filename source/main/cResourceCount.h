@@ -58,7 +58,6 @@ private:
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
   void DoUpdates(cAvidaContext& ctx) const;         // Update resource count based on update time
-
   // A few constants to describe update process...
   static const double UPDATE_STEP;   // Fraction of an update per step
   static const double EPSILON;       // Tolorance for round off errors

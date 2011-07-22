@@ -246,6 +246,8 @@ public:
   void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
   void SetDemeResourceOutflow(const cString res_name, double new_level);
 
+  void UpdateResStats(cAvidaContext& ctx);
+  
   void ResetInputs(cAvidaContext& ctx);
 
   cEnvironment& GetEnvironment() { return environment; }

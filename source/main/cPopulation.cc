@@ -4683,11 +4683,15 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.SetMinGestationTime(min_gestation_time);
   stats.SetMinGenomeLength(min_genome_length);
 
-  stats.SetResources(resource_count.GetResources(ctx)); 
-  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
-  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry());
 }
 
+void cPopulation::UpdateResStats(cAvidaContext& ctx) 
+{
+  cStats& stats = m_world->GetStats();
+  stats.SetResources(resource_count.GetResources(ctx)); 
+  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
+  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
+}
 
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
@@ -4695,15 +4699,14 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 
   cStats& stats = m_world->GetStats();
 
-
   // Reset the Genebank to prepare it for stat collection.
   m_world->GetClassificationManager().UpdateReset();
 
   stats.SetNumCreatures(GetNumOrganisms());
 
   UpdateDemeStats(ctx); 
-  UpdateOrganismStats(ctx); 
-
+  UpdateOrganismStats(ctx);
+  
   m_world->GetClassificationManager().UpdateStats(stats);
 
   // Have stats calculate anything it now can...
