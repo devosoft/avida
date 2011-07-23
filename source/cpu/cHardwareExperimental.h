@@ -417,7 +417,8 @@ private:
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
-
+  bool Inst_Mult100(cAvidaContext& ctx);
+  
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
   bool Inst_Sub(cAvidaContext& ctx);
@@ -523,9 +524,12 @@ private:
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
   bool Inst_SenseGroupResQuant(cAvidaContext& ctx); 
+  bool Inst_SenseResQuant(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_SenseDiffAhead(cAvidaContext& ctx);
+  bool Inst_LookFor(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);

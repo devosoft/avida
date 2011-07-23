@@ -499,7 +499,6 @@ private:
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
   bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
-  bool Inst_SenseDiffAhead(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   
   // Resources
