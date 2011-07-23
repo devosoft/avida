@@ -3152,7 +3152,6 @@ bool cHardwareExperimental::Inst_LookFor(cAvidaContext& ctx)
     for(int i = 0; i < distance_sought + 1; i++) {
       forward_dist = i;
       tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
       bool found_peak = false;
       for (int j = 0; j < resource_lib.GetSize(); j++) {
         // any postive search_type means stop if we hit a cell with the requested value and of the right habitat
@@ -3169,8 +3168,9 @@ bool cHardwareExperimental::Inst_LookFor(cAvidaContext& ctx)
         if (search_type < 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && (cell_res[j] >= 1)) total_edible_ahead++;
       }
       
-      if (search_type == 0 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && res_id_sought != -1) total_ahead = total_ahead + cell_res[res_id_sought];
-
+      if (search_type == 0 && res_id_sought != -1) {
+        if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0) total_ahead = total_ahead + cell_res[res_id_sought];
+      }
       if (found_peak) break;
       
       // if facing W, SW or NW stop if on edge of world
@@ -3201,8 +3201,9 @@ bool cHardwareExperimental::Inst_LookFor(cAvidaContext& ctx)
         
         if (search_type < 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && (cell_res[j] >= 1)) total_edible_behind++;
       }
-      if (search_type == 0 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && res_id_sought != -1) total_behind = total_behind + cell_res[res_id_sought];
-      
+      if (search_type == 0 && res_id_sought != -1) {
+        if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0)total_behind = total_behind + cell_res[res_id_sought];
+      }
       if (found_back_peak) break;
       
       if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;

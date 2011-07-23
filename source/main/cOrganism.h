@@ -261,6 +261,8 @@ public:
   int GetNumTaskCellsReached() const { return m_interface->GetNumTaskCellsReached(); }
   void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
 
+  void AddLiveOrg() { m_interface->AddLiveOrg(); } //APW
+  void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } //APW
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 

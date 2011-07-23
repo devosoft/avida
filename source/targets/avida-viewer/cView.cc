@@ -270,7 +270,7 @@ bool cView::ProcessKeypress(cAvidaContext& ctx, int keypress)
     break;
   case 'X':
   case 'x':
-    ExtractCreature();
+    ExtractCreature(ctx);
     break;
   case 'z':
   case 'Z':
@@ -339,7 +339,7 @@ void cView::CloneSoup()
   Notify(message);
 }
 
-void cView::ExtractCreature()
+void cView::ExtractCreature(cAvidaContext& ctx)
 {
   cBioGroup* cur_gen = info.GetActiveGenotype();
   cString gen_name = cur_gen->GetProperty("name").AsString();
@@ -349,7 +349,7 @@ void cView::ExtractCreature()
 
   if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", static_cast<const char*>(gen_name));
 
-  cTestCPU* testcpu = info.GetWorld().GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = info.GetWorld().GetHardwareManager().CreateTestCPU(ctx);
   testcpu->PrintGenome(info.GetWorld().GetDefaultContext(), mg, gen_name);
   delete testcpu;
 

@@ -959,6 +959,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
 	target_cell.InsertOrganism(in_organism, ctx); 
+  AddLiveOrg(in_organism); //APW
   
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
@@ -1293,7 +1294,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Statistics...
   cOrganism* organism = in_cell.GetOrganism();
   m_world->GetStats().RecordDeath();
-
+  
+  RemoveLiveOrg(organism); //APW
+  
   int cellID = in_cell.GetID();
 
   organism->NotifyDeath(ctx);
@@ -4546,11 +4549,13 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   int min_gestation_time = INT_MAX;
   int min_genome_length = INT_MAX;
 
-  for (int i = 0; i < cell_array.GetSize(); i++) {
+  for (int i = 0; i < live_org_list.GetSize(); i++) {  //APW
+//  for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
-    if (!cell_array[i].IsOccupied()) continue;
+//    if (!cell_array[i].IsOccupied()) continue;
 
-    cOrganism* organism = cell_array[i].GetOrganism();
+//    cOrganism* organism = cell_array[i].GetOrganism();
+    cOrganism* organism = live_org_list[i];               //APW
     const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
@@ -6304,6 +6309,25 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
 }
 
 
+// Adds an organism to live org list  //APW
+void  cPopulation::AddLiveOrg(cOrganism* org)
+{
+  live_org_list.Push(org);
+}
+
+// Remove an organism from live org list  //APW
+void  cPopulation::RemoveLiveOrg(cOrganism* org)
+{
+  for (int i = 0; i < live_org_list.GetSize(); i++)
+    if (live_org_list[i] == org) {
+      unsigned int last = live_org_list.GetSize() - 1;
+      live_org_list.Swap(i, last);
+      live_org_list.Pop();
+      break;
+    }
+}
+
+
 // Adds an organism to a group
 void  cPopulation::JoinGroup(cOrganism* org, int group_id)
 {
@@ -6317,7 +6341,6 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   m_groups[group_id]++;
   group_list[group_id].Push(org);
 }
-
 
 // Removes an organism from a group
 void  cPopulation::LeaveGroup(cOrganism* org, int group_id)

@@ -200,6 +200,9 @@ protected:
   
   
 public:
+  void AddLiveOrg(); //APW
+  void RemoveLiveOrg();  //APW
+  
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
   int NumberOfOrganismsInGroup(int group_id);

@@ -66,8 +66,12 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
+  //Keeps track of which organisms are in which group.  //APW
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  //std::map<int, std::vector<cOrganism*> > group_list; //Keeps track of which organisms are in which group.
+  //std::map<int, std::vector<cOrganism*> > group_list; 
+  
+  // Keep list of live organisms
+  tSmartArray<cOrganism* > live_org_list; //APW
   
   tVector<pair<int,int> > *sleep_log;
   
@@ -275,10 +279,14 @@ public:
   // Let users change Gradient Resource variables during the run JW
   void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
  
+  // Add an org to live org list
+  void AddLiveOrg(cOrganism* org);  //APW
+  // Remove an org from live org list
+  void RemoveLiveOrg(cOrganism* org); //APW
 	
-    // Adds an organism to a group
+    // Adds an organism to a group  //APW
     void JoinGroup(cOrganism* org, int group_id);
-    // Removes an organism from a group
+    // Removes an organism from a group //APW
     void LeaveGroup(cOrganism* org, int group_id);
     
     //Kill random member of the group (but not self!!!) 

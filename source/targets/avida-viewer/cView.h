@@ -58,7 +58,7 @@ private:
 
   void TogglePause(cAvidaContext& ctx);
   void CloneSoup();
-  void ExtractCreature();
+  void ExtractCreature(cAvidaContext& ctx);
 
   // Input function
   void DoInputs(cAvidaContext& ctx);
