@@ -4687,7 +4687,8 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.SetMinFitness(min_fitness);
   stats.SetMinGestationTime(min_gestation_time);
   stats.SetMinGenomeLength(min_genome_length);
-
+  
+  resource_count.UpdateGlobalResources(ctx);   
 }
 
 void cPopulation::UpdateResStats(cAvidaContext& ctx) 
@@ -4696,8 +4697,6 @@ void cPopulation::UpdateResStats(cAvidaContext& ctx)
   stats.SetResources(resource_count.GetResources(ctx)); 
   stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
-
-  resource_count.UpdateGlobalResources(ctx); 
 }
 
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
