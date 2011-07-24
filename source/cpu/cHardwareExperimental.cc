@@ -273,6 +273,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-diff-ahead", &cHardwareExperimental::Inst_SenseDiffAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-for", &cHardwareExperimental::Inst_LookFor, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-target", &cHardwareExperimental::Inst_SetTarget, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-current-target", &cHardwareExperimental::Inst_GetCurrentTarget),
 
      
     // Grouping instructions
@@ -3370,6 +3372,32 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
     // if no barriers or hills, we return a 0 to indicate clear sailing
     setInternalValue(reg_to_set, 0, true);
     return true;
+}
+ 
+bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
+{
+  int old_target;
+  assert(m_organism != 0);
+	const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  // make sure we use a valid target
+  int prop_target = abs(GetRegister(FindModifiedRegister(rBX))) % resource_lib.GetSize();
+  
+  //return false if org setting target to current one (avoid paying costs for not switching)
+  old_target = m_organism->GetTarget();
+  if (old_target == prop_target) return false;
+  
+  // Set the new target and return the value
+  m_organism->SetTarget(prop_target);
+	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetCurrentTarget(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int group_reg = FindModifiedRegister(rBX);
+    setInternalValue(group_reg, m_organism->GetTarget(), false);
+  return true;
 }
 
 //! An organism joins a group by setting it opinion to the group id. 

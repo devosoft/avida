@@ -88,6 +88,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_tag(make_pair(-1, 0))
   , m_northerly(0)
   , m_easterly(0)
+  , m_target(-1)
 
 {
 	// initializing this here because it may be needed during hardware creation:
@@ -1076,7 +1077,10 @@ void cOrganism::SetOpinion(const Opinion& opinion) {
 	}
 }
 
-
+void cOrganism::SetTarget(int target) {
+  m_target = target;
+}
+  
 /*! Called when an organism receives a flash from a neighbor. */
 void cOrganism::ReceiveFlash() {
   m_hardware->ReceiveFlash();

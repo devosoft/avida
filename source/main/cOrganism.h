@@ -594,6 +594,9 @@ public:
 	void ClearEasterly() {m_easterly = 0; }
 	void ClearNortherly() {m_northerly = 0; }
   
+  int GetTarget() { return m_target; }
+  void SetTarget(int m_target);
+  
 protected:
 	// The organism's own raw materials
 	int m_self_raw_materials; 
@@ -622,6 +625,8 @@ protected:
   //total number of steps taken to east (minus W steps) since birth  
   int m_easterly;
 	
+  int m_target;
+  
   /*! Contains all the different data structures needed to
 	 track strings, production of strings, and donation/trade
 	 of strings. It is inspired by the cMessagingSupport*/

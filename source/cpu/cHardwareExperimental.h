@@ -530,6 +530,8 @@ private:
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_SenseDiffAhead(cAvidaContext& ctx);
   bool Inst_LookFor(cAvidaContext& ctx);
+  bool Inst_SetTarget(cAvidaContext& ctx);
+  bool Inst_GetCurrentTarget(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);

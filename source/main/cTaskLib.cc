@@ -304,6 +304,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "form-group-id") Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
   if (name == "live-on-patch-id") Load_LiveOnPatchRes(name, info, envreqs, feedback);
 	
+  // Feed Specific Tasks
+  if (name == "eat-target") Load_ConsumeTarget(name, info, envreqs, feedback);
+  
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
   else if (name == "royal-road") Load_RoyalRoad(name, info, envreqs, feedback);
@@ -3433,6 +3436,32 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
   
   // If the organism is in the group...
   if (patch_id == des_patch_id) {
+    reward = 1;
+  }
+  
+  return reward;
+}
+
+/* Reward organisms for having found a targeted resource*/
+void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("target_id", 0, 1);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "ConsumeTarget", &cTaskLib::Task_ConsumeTarget, 0, args);
+}
+
+double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
+{
+  int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int target_id = ctx.GetOrganism()->GetTarget();
+  
+  // If the organism is on the right resource...
+  if (target_id == des_target) {
     reward = 1;
   }
   
