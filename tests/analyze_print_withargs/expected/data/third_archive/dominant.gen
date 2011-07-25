@@ -1,0 +1,124 @@
+# Fri Jul 22 11:58:12 2011
+# Filename........: third_archive/dominant.gen
+# Update Output...: N/A
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 182.000000
+# Gestation Time..: 344
+# Fitness.........: 0.529070
+# Errors..........: 5
+# Genome Size.....: 95
+# Copied Size.....: 95
+# Executed Size...: 91
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 1 (1.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+if-n-equ
+nop-A
+if-n-equ
+h-search
+h-copy
+nop-C
+nop-C
+h-alloc
+nop-C
+if-less
+h-divide
+dec
+nop-B
+shift-r
+h-alloc
+sub
+shift-r
+add
+swap-stk
+push
+shift-r
+h-copy
+h-divide
+if-less
+h-copy
+sub
+nop-B
+swap-stk
+nop-A
+jmp-head
+nand
+pop
+shift-r
+h-divide
+pop
+IO
+nop-C
+nop-B
+swap
+inc
+add
+pop
+jmp-head
+nop-C
+nand
+set-flow
+inc
+shift-r
+h-search
+pop
+h-alloc
+dec
+nand
+jmp-head
+shift-r
+nop-C
+add
+h-alloc
+dec
+IO
+nop-C
+nop-B
+shift-r
+h-copy
+push
+nop-A
+sub
+nop-C
+inc
+set-flow
+IO
+nop-C
+swap-stk
+h-alloc
+if-less
+swap
+nop-A
+if-n-equ
+nop-C
+push
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B
