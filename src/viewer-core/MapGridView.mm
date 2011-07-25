@@ -60,6 +60,11 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 - (void) awakeFromNib {
+  map_width = 0;
+  map_height = 0;
+  num_colors = 0;
+  color_cache = [NSMutableArray arrayWithCapacity:255];
+  zoom = -1;
   [self setWantsLayer:YES];
 }
 

@@ -95,10 +95,11 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   [btnRunState setState:NSOffState];
   
   // Replace NSClipView of mapView's scrollView with a CenteringClipView
-  NSClipView* clipView = [[CenteringClipView alloc] initWithFrame:[mapView frame]];
+  NSClipView* clipView = [[CenteringClipView alloc] initWithFrame:[mapScrollView frame]];
   [clipView setBackgroundColor:[NSColor darkGrayColor]];
   [mapScrollView setContentView:clipView];
   [mapScrollView setDocumentView:mapView];
+  [mapScrollView setScrollsDynamically:YES];
 }
 
 

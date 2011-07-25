@@ -29,6 +29,7 @@
 
 #import "CenteringClipView.h"
 
+#include <stdio.h>
 
 @implementation CenteringClipView
 
@@ -40,7 +41,6 @@
     hasVScroll = NO;
     adjustingScrollers = NO;
     [self setAutoresizesSubviews:NO];
-    [(NSScrollView*)[self superview] setAutohidesScrollers:NO];
   }
   return self;
 }
@@ -64,6 +64,10 @@
     clipRect.origin.y = roundf(viewPoint.y * docRect.size.width - (clipRect.size.height / 2.0));
   }
   
+//  printf("-----centerView-----\n");
+//  printf("doc : %f x %f @ %f, %f\n", docRect.size.width, docRect.size.height, docRect.origin.x, docRect.origin.y);
+//  printf("clip: %f x %f @ %f, %f\n", clipRect.size.width, clipRect.size.height, clipRect.origin.x, clipRect.origin.y);
+  
   // Scroll the document to the selected center point
   NSScrollView* scrollView = (NSScrollView*)[self superview];
   [self scrollToPoint:[self constrainScrollPoint:clipRect.origin]];
@@ -75,7 +79,7 @@
     BOOL vScroller = NO;
     
     // Determine scroll view frame dimensions (without scrollers)
-    const CGFloat scrollerWidth = [NSScroller scrollerWidth];
+    const CGFloat scrollerWidth = ([scrollView scrollerStyle] == NSScrollerStyleLegacy) ? [NSScroller scrollerWidth] : 0.0f;
     NSRect frameRect = [super frame];
     CGFloat frameWidth = frameRect.size.width;
     CGFloat frameHeight = frameRect.size.height;
@@ -111,7 +115,9 @@
 			adjustingScrollers = YES;
 			[scrollView setHasVerticalScroller:hasVScroll];
 			adjustingScrollers = NO;
-		}		
+		}
+    
+    [scrollView flashScrollers];
   }
 }
 
@@ -123,6 +129,11 @@
   NSRect clipRect = [self bounds];
   CGFloat maxX = docRect.size.width - clipRect.size.width;
   CGFloat maxY = docRect.size.height - clipRect.size.height;
+  
+//  printf("-----constrainScrollPoint-----\n");
+//  printf("prop: %f, %f\n", proposedNewOrigin.x, proposedNewOrigin.y);
+//  printf("doc : %f x %f @ %f, %f\n", docRect.size.width, docRect.size.height, docRect.origin.x, docRect.origin.y);
+//  printf("clip: %f x %f @ %f, %f\n", clipRect.size.width, clipRect.size.height, clipRect.origin.x, clipRect.origin.y);
   
   clipRect.origin = proposedNewOrigin;
   
@@ -141,6 +152,7 @@
   viewPoint.x = NSMidX(clipRect) / docRect.size.width;
   viewPoint.y = NSMidY(clipRect) / docRect.size.height;
   
+//  printf("orig: %f, %f\n", clipRect.origin.x, clipRect.origin.y);
   return clipRect.origin;
 }
 
@@ -181,6 +193,11 @@
 
 - (void) setFrameRotation:(CGFloat)angle {
   [super setFrameRotation:angle];
+  [self centerView];
+}
+
+- (void) setDocumentView:(NSView*)docView {
+  [super setDocumentView:docView];
   [self centerView];
 }
 

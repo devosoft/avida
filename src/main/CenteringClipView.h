@@ -54,5 +54,6 @@
 - (void) setFrameOrigin:(NSPoint)newOrigin;
 - (void) setFrameSize:(NSSize)newSize;
 - (void) setFrameRotation:(CGFloat)angle;
+- (void) setDocumentView:(NSView*)docView;
 
 @end
