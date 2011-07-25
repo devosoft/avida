@@ -120,7 +120,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
         case -3:  [[NSColor darkGrayColor] set]; break;
         case -2:  [[NSColor grayColor] set]; break;
         case -1:  [[NSColor whiteColor] set]; break;
-        default:  [[color_cache objectAtIndex:color] set]; break;
+        default:  [(NSColor*)[color_cache objectAtIndex:color] set]; break;
       }
       [NSBezierPath fillRect:gridCellRect];
       

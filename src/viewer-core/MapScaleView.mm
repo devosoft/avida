@@ -117,7 +117,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       if (color_count[i + Avida::CoreView::MAP_RESERVED_COLORS] == 0) {
         [[[color_cache objectAtIndex:i] colorWithAlphaComponent:0.3] set];
       } else {
-        [[color_cache objectAtIndex:i] set];
+        [(NSColor*)[color_cache objectAtIndex:i] set];
       }
       [NSBezierPath fillRect:colorRect];
 
