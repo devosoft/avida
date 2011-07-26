@@ -327,6 +327,17 @@ static const float PANEL_MIN_WIDTH = 300.0;
 }
 
 
+- (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point {
+  return YES;
+}
+
+
+- (void) mapViewSelectionChanged:(MapGridView*)mapView {
+  printf("selected (%f, %f)\n", [mapView selectedObject].x, [mapView selectedObject].y);
+}
+
+
+
 - (void) handleData:(AvidaEDPopViewStatViewValues*)values {
   [txtPopSize setIntegerValue:values->organisms];
   [txtFitness setDoubleValue:values->ave_fitness];

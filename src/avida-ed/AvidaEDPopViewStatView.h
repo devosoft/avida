@@ -31,6 +31,7 @@
 
 #include "avida/data/Recorder.h"
 
+#import "MapGridView.h"
 #import "OrgColorBox.h"
 
 @class AvidaRun;
@@ -38,7 +39,7 @@ class AvidaEDPopViewStatViewRecorder;
 @class AvidaEDPopViewStatViewEnvActions;
 
 
-@interface AvidaEDPopViewStatView : NSView {
+@interface AvidaEDPopViewStatView : NSView <MapSelectionDelegate> {
   IBOutlet NSView* popStatsView;
   IBOutlet NSTextField* txtPopSize;
   IBOutlet NSTextField* txtFitness;
@@ -78,6 +79,9 @@ class AvidaEDPopViewStatViewRecorder;
 - (void) clearAvidaRun;
 
 - (void) clearSelectedOrg;
+
+- (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point;
+- (void) mapViewSelectionChanged:(MapGridView*)mapView;
 
 @end
 

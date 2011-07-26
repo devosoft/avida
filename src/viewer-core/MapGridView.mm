@@ -42,31 +42,39 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 
+@interface MapGridView (hidden) {  
+}
+- (void) setup;
+@end
+
+@implementation MapGridView (hidden)
+- (void) setup {
+  map_width = 0;
+  map_height = 0;
+  num_colors = 0;
+  color_cache = [NSMutableArray arrayWithCapacity:255];
+  zoom = -1;
+  [self setWantsLayer:YES];  
+}
+@end
+
+
 
 @implementation MapGridView
 
 - (id) initWithFrame:(NSRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-      // Initialization code here.
-    map_width = 0;
-    map_height = 0;
-    num_colors = 0;
-    color_cache = [NSMutableArray arrayWithCapacity:255];
-    zoom = -1;
-    [self setWantsLayer:YES];
+    [self setup];
   }
   return self;
 }
 
+
 - (void) awakeFromNib {
-  map_width = 0;
-  map_height = 0;
-  num_colors = 0;
-  color_cache = [NSMutableArray arrayWithCapacity:255];
-  zoom = -1;
-  [self setWantsLayer:YES];
+  [self setup];
 }
+
 
 - (void) drawRect:(NSRect)dirtyRect {
   [[NSColor darkGrayColor] set];
@@ -154,6 +162,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   return YES;
 }
 
+
 - (void) updateState:(Avida::CoreView::Map*)state {
   state->Retain();
   
@@ -184,6 +193,31 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   }
 }
 
+
+- (void) mouseDown:(NSEvent*)event {
+  
+  if (selectionDelegate != nil) {
+    // convert the mouse-down location into the view coords
+    NSPoint clickLocation = [self convertPoint:[event locationInWindow] fromView:nil];
+    
+    CGFloat block_size = zoom;
+    
+    NSPoint selectedOrg;
+    selectedOrg.x = floor(clickLocation.x / block_size);
+    selectedOrg.y = floor(clickLocation.y / block_size);
+    if (selected_x != selectedOrg.x || selected_y != selectedOrg.y) {
+      if (selectionDelegate == nil ||
+          ![selectionDelegate respondsToSelector:@selector(mapView:shouldSelectObjectAtPoint:)] ||
+          [selectionDelegate mapView:self shouldSelectObjectAtPoint:selectedOrg]) {
+        selected_x = selectedOrg.x;
+        selected_y = selectedOrg.y;
+        [selectionDelegate mapViewSelectionChanged:self];
+      }
+    }
+  }
+  
+}
+
 @synthesize zoom;
 - (void) setZoom:(double)zval {
   zoom = round(zval);
@@ -199,6 +233,34 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   [self setNeedsDisplay:YES];
 }
+
+@synthesize selectionDelegate;
+
+
+- (NSPoint) selectedObject {
+  return NSMakePoint(selected_x, selected_y);
+}
+
+- (void) setSelectedObject:(NSPoint)point {
+  int new_x = floor(point.x);
+  int new_y = floor(point.y);
+  if (new_x < map_width && new_x >= 0 && new_y < map_height && new_y >= 0) {
+    if (new_x != selected_x || new_y != selected_y) {
+      selected_x = floor(point.x);
+      selected_y = floor(point.y);
+      [selectionDelegate mapViewSelectionChanged:self];
+    }
+  }
+}
+
+- (void) clearSelectedObject {
+  if (selected_x != -1) {
+    selected_x = -1;
+    selected_y = -1;
+    [selectionDelegate mapViewSelectionChanged:self];
+  }
+}
+
 
 - (void) setFrame:(NSRect)frameRect {
   [super setFrame:frameRect];

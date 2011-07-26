@@ -105,6 +105,9 @@
 		if (hScroller != hasHScroll) {
 			hasHScroll = !hasHScroll;
 			adjustingScrollers = YES;
+      NSScroller* horizontalScroller = [scrollView horizontalScroller];
+      [horizontalScroller setKnobProportion:1.0f];
+      [horizontalScroller setDoubleValue:0.0];
 			[scrollView setHasHorizontalScroller:hasHScroll];
 			adjustingScrollers = NO;
 		}
@@ -113,9 +116,15 @@
 		if (vScroller != hasVScroll) {
 			hasVScroll = !hasVScroll;
 			adjustingScrollers = YES;
+      NSScroller* verticalScroller = [scrollView verticalScroller];
+      [verticalScroller setKnobProportion:1.0f];
+      [verticalScroller setDoubleValue:0.0];
 			[scrollView setHasVerticalScroller:hasVScroll];
 			adjustingScrollers = NO;
 		}
+    
+//    NSLog(@"hscroll %@ %d", [scrollView horizontalScroller], [[scrollView horizontalScroller] isHidden]);
+//    NSLog(@"vscroll %@ %d", [scrollView verticalScroller], [[scrollView verticalScroller] isHidden]);
     
     [scrollView flashScrollers];
   }

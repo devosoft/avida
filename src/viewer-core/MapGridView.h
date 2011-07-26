@@ -37,6 +37,14 @@ namespace Avida {
   };
 };
 
+@class MapGridView;
+
+@protocol MapSelectionDelegate <NSObject>
+@optional
+- (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point;
+- (void) mapViewSelectionChanged:(MapGridView*)mapView;
+@end
+
 
 @interface MapGridView : NSView {
   int map_width;
@@ -47,6 +55,10 @@ namespace Avida {
   Apto::Array<int> map_colors;
   Apto::Array<int> map_tags;
   NSMutableArray* color_cache;
+  
+  IBOutlet id<MapSelectionDelegate> selectionDelegate;
+  int selected_x;
+  int selected_y;
 }
 
 - (id) initWithFrame:(NSRect)frame;
@@ -57,6 +69,12 @@ namespace Avida {
 
 - (void) updateState:(Avida::CoreView::Map*)state;
 
+- (void) mouseDown:(NSEvent*)event;
+
 @property (readwrite, nonatomic) double zoom;
+@property (readwrite, retain) id<MapSelectionDelegate> selectionDelegate;
+
+@property (readwrite, nonatomic) NSPoint selectedObject;
+- (void) clearSelectedObject;
 
 @end
