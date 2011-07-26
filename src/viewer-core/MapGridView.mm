@@ -54,6 +54,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   num_colors = 0;
   color_cache = [NSMutableArray arrayWithCapacity:255];
   zoom = -1;
+  selected_x = -1;
+  selected_y = -1;
   [self setWantsLayer:YES];  
 }
 @end
@@ -120,32 +122,34 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   NSRect gridCellRect;
   gridCellRect.size.width = block_size - grid_width;
   gridCellRect.size.height = block_size - grid_width;
-//  NSRect gridTagRect;
-//  gridTagRect.size.width = block_size + grid_width;
-//  gridTagRect.size.height = block_size + grid_width;
 
   for (int i = 0; i < map_width; i++) {
     for (int j = 0; j < map_height; j++) {
       gridCellRect.origin = NSMakePoint(mapRect.origin.x + block_size * i, mapRect.origin.y + block_size * j);
       int color = map_colors[i * map_width + j];
       switch (color) {
-        case -4:  continue;
-        case -3:  [[NSColor darkGrayColor] set]; break;
-        case -2:  [[NSColor grayColor] set]; break;
-        case -1:  [[NSColor whiteColor] set]; break;
-        default:  [(NSColor*)[color_cache objectAtIndex:color] set]; break;
+        case -4:  break;
+        case -3:  [[NSColor darkGrayColor] set]; [NSBezierPath fillRect:gridCellRect]; break;
+        case -2:  [[NSColor grayColor] set]; [NSBezierPath fillRect:gridCellRect]; break;
+        case -1:  [[NSColor whiteColor] set]; [NSBezierPath fillRect:gridCellRect];break;
+        default:  [(NSColor*)[color_cache objectAtIndex:color] set]; [NSBezierPath fillRect:gridCellRect]; break;
       }
-      [NSBezierPath fillRect:gridCellRect];
       
-//      gridTagRect.origin = NSMakePoint(mapRect.origin.x + block_size * i - grid_width, mapRect.origin.y + block_size * j - grid_width);
-      int tag = map_tags[i * map_width + j];
-      switch (tag) {
-        case -4:  continue;
-        case -3:  [[NSColor darkGrayColor] set]; break;
-        case -2:  [[NSColor grayColor] set]; break;
-        case -1:  [[NSColor whiteColor] set]; break;
-        default:  continue;
+      if (i == selected_x && j == selected_y) {
+        // Handle selected cell preferentially to tags
+        [[NSColor greenColor] set];
+      } else {
+        // Handle tag coloration
+        int tag = map_tags[i * map_width + j];
+        switch (tag) {
+          case -4:  continue;
+          case -3:  [[NSColor darkGrayColor] set]; break;
+          case -2:  [[NSColor grayColor] set]; break;
+          case -1:  [[NSColor whiteColor] set]; break;
+          default:  continue;
+        }
       }
+      // Draw tag outline
       [NSGraphicsContext saveGraphicsState];
       NSBezierPath* tagPath = [NSBezierPath bezierPathWithRect:gridCellRect];
       [tagPath setLineWidth:2.0];
