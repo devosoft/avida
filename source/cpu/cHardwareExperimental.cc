@@ -2962,7 +2962,7 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
       // now look to side of center cell
       int num_cells_either_side = 0;
       if (dist > 0) {
-        (dist % 2) ? num_cells_either_side = (dist - 1) * 0.5 : num_cells_either_side = dist * 0.5;   // how many cells do we need to look at on both sides 
+        (dist % 2) ? num_cells_either_side = (int) (dist - 1) * 0.5 : num_cells_either_side = (int) dist * 0.5;   // how many cells do we need to look at on both sides 
       }
       for (int do_lr = 0; do_lr < 2; do_lr++) {
         bool count_side = true;
@@ -3075,7 +3075,7 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
 
   // do output for food resource totals and counts of edible cells
   if (habitat_used == 0) {
-    int total_ahead = 0;
+    double total_ahead = 0;
     int total_edible_ahead = 0;
     for (int dist = 0; dist < valid_cell_list.GetSize(); dist++) {
       for (int cell_num = 0; cell_num < valid_cell_list[dist].GetSize(); cell_num++) {
@@ -3097,7 +3097,7 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
     // if we totalled over distance
     if(search_type == 0) {
       setInternalValue(habitat_reg, habitat_used, true);
-      setInternalValue(search_type, (int) total_ahead + 0.5, true);
+      setInternalValue(search_type, (int) (total_ahead + 0.5), true);
       setInternalValue(distance_reg, dist_used, true);
       if (NUM_REGISTERS > 3 && res_id_sought != -1) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(distance_reg)), res_id_sought, true);
     }
