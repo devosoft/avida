@@ -1,0 +1,30 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Fri Jul 22 11:23:03 2011
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+30009 org:divide (none) 29740 1 1 92 0 0 0 914 9992 -1 203 0 heads_default wzcagccmzvccacexnbwytkcmqokcwevtbqapupakxcecxrfsymwujkwfudkcstqycbkvoatcmjycqwekpcozvfcaxgab 98 124 0 
+29940 org:divide (none) 29607 1 2 97 182 352 0.517045 915 9967 -1 196 0 heads_default wzcagcdcdzvccxcexnsvtkcxqckpuwbtwzavvzhkpacxpeutrmspwujzzpwnufkboccycbkaoatcmjycqwmtrwcozvfcaxgab 87 56 0 
+30032 org:divide (none) 29607 1 1 96 0 0 0 918 9999 -1 196 0 heads_default wzcagcdcdzvccxcexnsvtkcxqckpuwbtwzavvzhkpacxpeutrmsmwujzzpwnufkboccycbkaoatcmjycqwmrwcozvfcaxgab 75 35 0 
+29963 org:divide (none) 29859 2 2 95 182 344 0.52907 918 9975 -1 201 0 heads_default wzcagcdadzvccwcexnbkwtksqokvxevtbqahupkxpycbrmsphcujmkzpwnuhkcswnycbkvoatcmjycqweradcozvfcaxgab 18,29 162,129 0,0 
+29917 org:divide (none) 29767 2 4 96 180 348 0.517241 914 9957 -1 195 0 heads_default wzcagcdcdzvccxcexnsvtkcxqckcuwbtwzavzhkparaxpectrmspwwujzzpwnufkoocycbkaoatcmjycqwmrwcozvfcaxgab 0,10 93,93 0,0 

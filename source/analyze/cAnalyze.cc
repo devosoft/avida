@@ -245,7 +245,7 @@ void cAnalyze::LoadResources(cString cur_string)
   cString filename = "resource.dat";
   if (words >= 1)
 		filename = cur_string.PopWord();
-  if (words >= 2)  // TODO: document this feature!  I would do it, but I don't know what it means. (BEB)
+  if (words >= 2)
 		m_resource_time_spent_offset = cur_string.PopWord().AsInt();
   
   cout << "Loading Resources from: " << filename << endl;
@@ -1638,6 +1638,8 @@ void cAnalyze::CommandPrint(cString cur_string)
   else cout << "Printing organisms..." << endl;
   
   cString directory = PopDirectory(cur_string, "archive/");
+  // Weirdly, PopDirectory() doesn't actually pop, so...
+  cur_string.PopWord();  // There, that actually removes the directory string
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype* genotype = NULL;
