@@ -1014,6 +1014,16 @@ void cStats::PrintThreadsData(const cString& filename)
   df.Write(m_update, "Update");
   df.Write(tot_organisms, "Total Organisms");
   df.Write(m_num_threads, "Total Threads");
+  df.Write(m_world->GetPopulation().GetLiveOrgList().GetSize(), "Total Living Organisms");
+  
+  int num_threads = 0;
+  tSmartArray<cOrganism*> org_list = m_world->GetPopulation().GetLiveOrgList();
+  for (int org = 0; org < m_world->GetPopulation().GetLiveOrgList().GetSize(); org++) {
+    cOrganism* organism = org_list[org];
+    cHardwareBase& hardware = organism->GetHardware();
+    num_threads += hardware.GetNumThreads();
+  }
+  df.Write(num_threads, "Total Living Org Threads");
   df.Endl();
 }
 

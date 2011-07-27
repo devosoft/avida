@@ -283,6 +283,7 @@ public:
   void AddLiveOrg(cOrganism* org);  //APW
   // Remove an org from live org list
   void RemoveLiveOrg(cOrganism* org); //APW
+  tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
 	
     // Adds an organism to a group  //APW
     void JoinGroup(cOrganism* org, int group_id);

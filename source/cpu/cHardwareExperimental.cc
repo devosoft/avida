@@ -2962,7 +2962,7 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
       // now look to side of center cell
       int num_cells_either_side = 0;
       if (dist > 0) {
-        (dist % 2) ? num_cells_either_side = (dist - 1) * 0.5 : num_cells_either_side = dist * 0.5;                    // how many cells do we need to look at on both sides of center
+        (dist % 2) ? num_cells_either_side = (dist - 1) * 0.5 : num_cells_either_side = dist * 0.5;   // how many cells do we need to look at on both sides 
       }
       for (int do_lr = 0; do_lr < 2; do_lr++) {
         bool count_side = true;
