@@ -1,5 +1,5 @@
 # Avida tasks data
-# Sat Jul 23 15:54:13 2011
+# Wed Jul 27 16:38:12 2011
 # First column gives the current update, next columns give the number
 # of organisms that have the particular task as a component of their merit
 #  1: Update
@@ -8,4 +8,4 @@
 0 2 
 10 112 
 20 200 
-30 200 
+30 199 

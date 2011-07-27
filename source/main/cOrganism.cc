@@ -1029,7 +1029,23 @@ bool cOrganism::Move(cAvidaContext& ctx)
     df.WriteRaw(UpdateStr);
   }
   
-  DoOutput(ctx);
+  const cEnvironment& env = m_world->GetEnvironment();
+  const int num_tasks = env.GetNumTasks();
+  for (int i = 0; i < num_tasks; i++) {
+    if (env.GetTask(i).GetDesc() == "move_up_gradient" || \
+        env.GetTask(i).GetDesc() == "move_neutral_gradient" || \
+        env.GetTask(i).GetDesc() == "move_down_gradient" || \
+        env.GetTask(i).GetDesc() == "move_not_up_gradient" || \
+        env.GetTask(i).GetDesc() == "move_to_right_side" || \
+        env.GetTask(i).GetDesc() == "move_to_left_side" || \
+        env.GetTask(i).GetDesc() == "move" || \
+        env.GetTask(i).GetDesc() == "movetotarget" || \
+        env.GetTask(i).GetDesc() == "movetoevent" || \
+        env.GetTask(i).GetDesc() == "movebetweenevent" || \
+        env.GetTask(i).GetDesc() == "move_to_event") {
+      DoOutput(ctx);
+    }
+  }
   
   if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
     // then create new thread and load its registers
