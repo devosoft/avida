@@ -1044,6 +1044,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
         env.GetTask(i).GetDesc() == "movebetweenevent" || \
         env.GetTask(i).GetDesc() == "move_to_event") {
       DoOutput(ctx);
+      break;
     }
   }
   
