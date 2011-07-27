@@ -516,20 +516,14 @@ private:
   bool Inst_RotateUphill(cAvidaContext& ctx);
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
-  bool Inst_RotateRightX(cAvidaContext& ctx);
-  bool Inst_RotateLeftX(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
-  bool Inst_RotateDir(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
-  bool Inst_SenseGroupResQuant(cAvidaContext& ctx); 
   bool Inst_SenseResQuant(cAvidaContext& ctx); 
-  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
-  bool Inst_SenseDiffAhead(cAvidaContext& ctx);
-  bool Inst_LookFor(cAvidaContext& ctx);
+  bool Inst_LookAhead100(cAvidaContext& ctx);
   bool Inst_SetTarget(cAvidaContext& ctx);
   bool Inst_GetCurrentTarget(cAvidaContext& ctx);
   

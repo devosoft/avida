@@ -258,21 +258,15 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-right-x", &cHardwareExperimental::Inst_RotateRightX, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-left-x", &cHardwareExperimental::Inst_RotateLeftX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-dir", &cHardwareExperimental::Inst_RotateDir, nInstFlag::STALL),
 
       
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("sense-group-res-quant", &cHardwareExperimental::Inst_SenseGroupResQuant, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-diff-ahead", &cHardwareExperimental::Inst_SenseDiffAhead, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-for", &cHardwareExperimental::Inst_LookFor, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-ahead100", &cHardwareExperimental::Inst_LookAhead100, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-target", &cHardwareExperimental::Inst_SetTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-current-target", &cHardwareExperimental::Inst_GetCurrentTarget),
 
@@ -2763,44 +2757,6 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateRightX(cAvidaContext& ctx)
-{
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  
-  // If this organism has no neighbors, ignore rotate.
-  if (num_neighbors == 0) return false;
-  
-  const int reg_used = FindModifiedRegister(rBX);
-  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
-  // If this org has no trailing nop, rotate once.
-  const cCodeLabel& search_label = GetLabel();
-  if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times
-  if (rot_num > 7) rot_num = rot_num % 8;
-  for (int i = 0; i < rot_num; i++) m_organism->Rotate(-1);
-  setInternalValue(reg_used, rot_num, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RotateLeftX(cAvidaContext& ctx)
-{
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  
-  // If this organism has no neighbors, ignore rotate.
-  if (num_neighbors == 0) return false;
-  
-  const int reg_used = FindModifiedRegister(rBX);
-  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
-  // If this org has no trailing nop, rotate once.
-  const cCodeLabel& search_label = GetLabel();
-  if (search_label.GetSize() == 0) rot_num = 1;
-  // Else rotate the nop number of times
-  if (rot_num > 7) rot_num = rot_num % 8;
-  for (int i = 0; i < rot_num; i++) m_organism->Rotate(1);
-  setInternalValue(reg_used, rot_num, true);
-  return true;
-}
-
 bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
@@ -2826,28 +2782,6 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  int rot_dir = m_threads[m_cur_thread].reg[reg_used].value;
-  // If this org has no trailing nop, rotate once in random direction.
-  const cCodeLabel& search_label = GetLabel();
-  if (search_label.GetSize() == 0) {
-    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
-    m_organism->Rotate(rot_dir);
-  }
-  // Else rotate to the mod nop dir
-  else {
-    if (rot_dir < 0 || rot_dir > 7) rot_dir = abs(rot_dir) % 8;
-    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
-      m_organism->Rotate(1);
-      if (m_organism->GetFacing() == rot_dir) break;
-    }
-  }  
-  setInternalValue(reg_used, rot_dir, true);
-  return true;
-}
-
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
@@ -2860,19 +2794,6 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
             setInternalValue(reg_to_set, i, true);
         }
     }    
-    return true;
-}
-
-bool cHardwareExperimental::Inst_SenseGroupResQuant(cAvidaContext& ctx)
-{
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
-    // check if this is a valid group
-    if(m_organism->HasOpinion()) {
-        int group = m_organism->GetOpinion().first;
-        int res_group = (int) (res_count[group] * 100 + 0.5);
-        int reg_to_set = FindModifiedRegister(rBX);
-        setInternalValue(reg_to_set, res_group, true);
-    }
     return true;
 }
 
@@ -2896,20 +2817,6 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   const int res_tot_reg = FindModifiedNextRegister(FindModifiedRegister(rBX));
   setInternalValue(res_tot_reg, res_amount, true);
   return true;
-}
-
-bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
-{
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
-    if(m_organism->HasOpinion()) {
-        int group = m_organism->GetOpinion().first;
-        int reg_to_set = FindModifiedRegister(rBX);
-        double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[group];  
-        // return % change
-        int res_diff = (int) (((faced_res - res_count[group])/res_count[group]) * 100 + 0.5);
-        setInternalValue(reg_to_set, res_diff, true);
-    }
-    return true;
 }
 
 bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx) 
@@ -2943,403 +2850,264 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx) 
-{
-  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
-  // temp check on world geometry until code can handle other geometries
-  if (geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
-  
-  // If this organism has no neighboring cells, ignore instruction.
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  if (num_neighbors == 0) return false;
-  
-  if(m_organism->HasOpinion()) {
-    int group = m_organism->GetOpinion().first;
-    // fail if the org is trying to sense a nest/hidden habitat
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    if(resource_lib.GetResource(group)->GetHabitat() == 3) return true;
-    
-    const int reg_used = FindModifiedRegister(rBX);
-    const int sense_dist = m_threads[m_cur_thread].reg[reg_used].value;
-    // a second reg can be used to further control how the orgs sensing works, but this only operates for specific values
-    const int control_reg = FindModifiedNextRegister(reg_used);
-    int sense_value = 0;
-    const cCodeLabel& search_label = GetLabel();
-    if (search_label.GetSize() > 1) sense_value = m_threads[m_cur_thread].reg[control_reg].value;
-    
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
-    int forward_dist = 0;
-    int backward_dist = 0;
-    
-    int faced_cell = m_organism->GetFacedCellID();
-    int cell = m_organism->GetCellID();
-    
-    int ahead_dir = cell - faced_cell;
-    int behind_dir = ahead_dir * - 1;
-    
-    double total_ahead = 0;
-    double total_behind = 0;
-    
-    // look ahead (don't worry about current org cell as this will cancel out)
-    double prev_cell = 0;
-    bool starting_uphill = true;
-    int forward_val = 0;
-    for(int i = 0; i < sense_dist + 1; i++) {
-      forward_dist = i;
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      // sense-value of -1 means look for peaks
-      if (sense_value == -1) {
-        // if facing downhill from start, look all the way until we get to a slope peak (e.g. look all the way across any valley)
-        if (i == 1 && (cell_res[group] - prev_cell < 0)) starting_uphill = false;
-        if (!starting_uphill) {
-          if (cell_res[group] > prev_cell) starting_uphill = true;
-        }
-        // if facing uphill or across a plain, stop if we reached a peak 
-        // (don't allow orgs to look up a hill and down the other side, just to the max height in front of them) 
-        if (starting_uphill && (cell_res[group] < prev_cell) && i > 0) { 
-          forward_val = (int) (prev_cell + 0.5); 
-          break;
-        }
-        prev_cell = cell_res[group];
-      }
-      total_ahead = total_ahead + cell_res[group];
-      
-      // any postive sense-value means stop if we hit a cell with the requested value
-      if (sense_value > 0 && (cell_res[group] == sense_value)) break;
-      
-      // sense-value of 0 (or none) means look as far as possible without being sensitive to hills and valleys
-      // if facing W, SW or NW stop if on edge of world
-      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + ahead_dir;
-      // if facing E, SE, or NE check if next cell is off edge of world
-      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir == worldx + 1) || (ahead_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      // if cell is less than 0 or greater than max cell (in grid), don't do it.
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    
-    // look behind
-    starting_uphill = true;
-    prev_cell = 0;
-    int backward_val = 0;
-    cell = m_organism->GetCellID();
-    for(int j = 0; j < sense_dist + 1; j++) {
-      backward_dist = j;
-      // for sense_value of 0 look forward as far as you can, but only look backward as far as we look forward or to edge of world
-      if (sense_value == 0 && (forward_dist < backward_dist)) break;
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      // sense-value of -1 means look for peaks
-      if (sense_value == -1) {
-        // if backward is downhill from start, look all the way until we get to a slope peak (e.g. look all the way across any valley)
-        if (j == 1 && (cell_res[group] - prev_cell < 0)) starting_uphill = false;
-        if (!starting_uphill) {
-          if (cell_res[group] > prev_cell) starting_uphill = true;
-        }
-        // if backward is uphill or across a plain, stop if we reached a peak 
-        if (starting_uphill && (cell_res[group] < prev_cell) && j > 0) {
-          backward_val = (int) (prev_cell + 0.5);
-          break;
-        }
-        prev_cell = cell_res[group];
-      }
-      
-      total_behind = total_behind + cell_res[group];
-      
-      // any postive sense-value means stop if we hit a cell with the requested value
-      if (sense_value > 0 && cell_res[group] == sense_value) break;
-      
-      // if facing W, SW or NW stop if on edge of world
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      // if facing E, SE, or NE check if next cell is off edge of world
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      // if cell is less than 0 or greater than max cell (in grid), don't do it.
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    
-    // our nop values affect what we return
-    setInternalValue(reg_used, forward_dist, true);
-    // for sense_value = 0 return actual forward sense distance used and total diff
-    if (sense_value == 0) {
-      int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
-      setInternalValue(control_reg, res_diff, true);
-    }
-    // for sense_value > 0 or -1 also return the backward distance found, skipping the control register
-    else if (sense_value > 0 || sense_value == -1) {
-      const int back_dist = FindModifiedNextRegister(control_reg);
-      setInternalValue(back_dist, backward_dist, true);
-      // for sense_value = -1, return the values at the peaks (note this now uses 5 registers!)
-      if (sense_value == -1) {
-        if (NUM_REGISTERS > 3) {
-          const int for_val = FindModifiedNextRegister(back_dist);
-          setInternalValue(for_val, forward_val, true);
-          if (NUM_REGISTERS > 4) {
-            const int back_val = FindModifiedNextRegister(for_val);
-            setInternalValue(back_val, backward_val, true);
-          }
-        }
-      }
-    }
-  }
-  return true;
-}
 
-bool cHardwareExperimental::Inst_LookFor(cAvidaContext& ctx) 
+bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx) 
 {
   const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   // temp check on world geometry until code can handle other geometries
-  if (geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction sense-diff-ahead only written to work in bounded grids");
+  if (geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead only written to work in bounded grids");
   
   // If this organism has no neighboring cells, ignore instruction.
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   if (num_neighbors == 0) return false;
   
+  // get the resource library
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   
-  int faced_cell = m_organism->GetFacedCellID();
-  int cell = m_organism->GetCellID();
-  
-  int ahead_dir = cell - faced_cell;
-  int behind_dir = ahead_dir * - 1;
-  
-  double total_ahead = 0;
-  double total_behind = 0;
-  
   // first reg gives habitat type sought
+  // if sensing food resource (default), habitat = 0 (gradients)
+  // if sensing topography, habitat = 1 (hills)
+  // if sensing objects, habitat = 2 (walls)    
+  int habitat_used = 0;
   const int habitat_reg = FindModifiedRegister(rBX);
   const int habitat_sought = m_threads[m_cur_thread].reg[habitat_reg].value;
   
   // fail if the org is trying to sense a nest/hidden habitat
   if(abs(habitat_sought) % 32 == 3 || abs(habitat_sought) == 3) return true;
   
-  // second reg gives distance sought  
-  int distance_sought = 1;
+  if (abs(habitat_sought) % 32 == 0 || abs(habitat_sought) == 0 || abs(habitat_sought) % 32 > 3) habitat_used = 0;
+  if (abs(habitat_sought) % 32 == 1 || abs(habitat_sought) == 1) habitat_used = 1;
+  if (abs(habitat_sought) % 32 == 2 || abs(habitat_sought) == 2) habitat_used = 2;
+
+  // second reg gives distance sought--arbitrarily capped at 100 cells  
+  int distance_sought = 10;
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
   const cCodeLabel& search_label = GetLabel();
-  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  if (search_label.GetSize() > 1) {
+/*    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > (int) (worldx * 0.5 + 0.5)) ? \
+    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % (int) (worldx * 0.5 + 0.5)) : \
+    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value);*/
+    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > 100) ? distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % 100) : \
+    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value);
+  }
   
-  // third register gives type of search used for food resources (habitat 0); see search_type below
+  // third register gives type of search used for food resources (habitat 0)
+  // search_type_reg: 0 = total res in cells as far as distance sought;
+  // > 0 = look for closest resource cell with requested food res height value (default @ 1)
+  // < 0 = count cells to distance sought with edible (>=1) res 
+  const int search_type_reg = FindModifiedNextRegister(distance_reg);  
+  int search_type = 1;
+  if (search_label.GetSize() > 2) search_type = abs(m_threads[m_cur_thread].reg[search_type_reg].value);
+  
   // fourth register gives specific instance of food resources sought
-  
-  // if sensing food resource (default), habitat = 0 (gradients)
-  // if sensing topography, habitat = 1 (hills)
-  // if sensing objects, habitat = 2 (walls)
-  
-  // get the resource library
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  
-  int habitat_used = 0;
-  // if sensing resource (0's), are we looking for a specific value or just totals (totals = default)
-  if (abs(habitat_sought) % 32 == 0 || abs(habitat_sought) > 2 || abs(habitat_sought) % 10 > 2) {
-    int forward_dist = 1;
-    int backward_dist = 1;
-    // search_type_reg: 0 = total res in cells as far as distance sought;
-    // > 0 = look for resource cell with requested food res height value
-    // < 0 = count cells to distance sought with edible (>=1) res
-    int search_type = 0;
-    const int search_type_reg = FindModifiedNextRegister(distance_reg);  
-    if (search_label.GetSize() > 2) search_type = abs(m_threads[m_cur_thread].reg[search_type_reg].value);
-    
-    int res_id_sought = -1;
-    if (NUM_REGISTERS > 3) {
-      if (search_label.GetSize() > 3) {
-        const int res_id_reg = FindModifiedNextRegister(search_type_reg);
-        res_id_sought = abs(m_threads[m_cur_thread].reg[res_id_reg].value) % resource_lib.GetSize();
-      }
+  const int res_id_reg = FindModifiedNextRegister(search_type_reg);
+  int res_id_sought = -1;
+  if (NUM_REGISTERS > 3) {
+    if (search_label.GetSize() > 3) {
+      res_id_sought = abs(m_threads[m_cur_thread].reg[res_id_reg].value) % resource_lib.GetSize();
     }
+  }
+  
+  // build an array of valid cells at every distance
+  int facing = m_organism->GetFacing();
+  int faced_cell = m_organism->GetFacedCellID();
+  int cell = m_organism->GetCellID();
+  
+  int ahead_dir = cell - faced_cell;
+  int dist_used = 0;
+  
+  int center_cell = cell;
+  int this_cell = cell;
+  bool count_center = true;
+  
+  bool found_edible = false; 
+  bool found_feature = false;
+  
+  tArrayMap<int, tSmartArray<int> > valid_cell_list;
+  tArray<double> cell_res;
+  
+  for (int dist = 0; dist < distance_sought + 1; dist++) {
     
-    // look ahead (don't worry about current org cell as this will cancel out)
-    int total_edible_ahead = 0;
-    for(int i = 0; i < distance_sought + 1; i++) {
-      forward_dist = i;
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      bool found_peak = false;
-      for (int j = 0; j < resource_lib.GetSize(); j++) {
-        // any postive search_type means stop if we hit a cell with the requested value and of the right habitat
-        // we don't calc res totals for this type of search
-        if (search_type > 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && (cell_res[j] == search_type)) {
-          found_peak = true;
-          break;
+    // get out of here if we were looking for an edible resource and found the first instance
+    if (search_type > 0 && habitat_used == 0) {
+      cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
+      for (int k = 0; k < resource_lib.GetSize(); k++) {
+        if (resource_lib.GetResource(k)->GetHabitat() == 0) {
+          if (cell_res[k] >= 1) {
+            found_edible = true;
+            break;
+          }
         }
-        // search_type of 0 (or none) means total res in cells as far as distance_sought
-        // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
-        if (search_type == 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && res_id_sought == -1) total_ahead = total_ahead + cell_res[j];
-        
-        // search type < 0 means count edible cells
-        if (search_type < 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && (cell_res[j] >= 1)) total_edible_ahead++;
       }
-      
-      if (search_type == 0 && res_id_sought != -1) {
-        if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0) total_ahead = total_ahead + cell_res[res_id_sought];
-      }
-      if (found_peak) break;
-      
-      // if facing W, SW or NW stop if on edge of world
-      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + ahead_dir;
-      // if facing E, SE, or NE check if next cell is off edge of world
-      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir == worldx + 1) || (ahead_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      // if cell is less than 0 or greater than max cell (in grid), don't do it.
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-   
-    // look behind
-    int total_edible_behind = 0;
-    cell = m_organism->GetCellID();
-    for(int j = 0; j < distance_sought + 1; j++) {
-      backward_dist = j;
-      // for search_type of 0 look forward as far as you can, but only look backward as far as we look forward (or to edge of world)
-      if (search_type == 0 && (forward_dist < backward_dist)) break;
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      bool found_back_peak = false;
-      for (int j = 0; j < resource_lib.GetSize(); j++) {
-        if (search_type > 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && (cell_res[j] == search_type)) {
-          found_back_peak = true;
-          break;
-        }
-        if (search_type == 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && res_id_sought == -1) total_behind = total_behind + cell_res[j];
-        
-        if (search_type < 0 && resource_lib.GetResource(j)->GetHabitat() == 0 && (cell_res[j] >= 1)) total_edible_behind++;
-      }
-      if (search_type == 0 && res_id_sought != -1) {
-        if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0)total_behind = total_behind + cell_res[res_id_sought];
-      }
-      if (found_back_peak) break;
-      
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
     }
 
+    // get out of here if we were looking topo features or walls/objects and found the first instance
+    if (habitat_used == 1 | habitat_used == 2) {
+      cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
+      for (int k = 0; k < resource_lib.GetSize(); k++) {
+        if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
+          if (cell_res[k] > 0) {
+            found_feature = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!found_edible && !found_feature) {
+      // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)
+      if (count_center) valid_cell_list[dist].Push(center_cell);
+      
+      // now look to side of center cell
+      int num_cells_either_side = 0;
+      if (dist > 0) {
+        (dist % 2) ? num_cells_either_side = (dist - 1) * 0.5 : num_cells_either_side = dist * 0.5;                    // how many cells do we need to look at on both sides of center
+      }
+      for (int do_lr = 0; do_lr < 2; do_lr++) {
+        bool count_side = true;
+        int prev_cell = center_cell;
+        for (int j = 0; j < num_cells_either_side + 1; j++) {
+          
+          if (facing == 0 && do_lr == 1) this_cell = center_cell + (-1 * j);
+          else if (facing == 2 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 4 && do_lr == 1) this_cell = center_cell + j;
+          else if (facing == 6 && do_lr == 1) this_cell = center_cell + (j * worldx);
+          
+          else if (facing == 0 && do_lr == 2) this_cell = center_cell + j;
+          else if (facing == 2 && do_lr == 2) this_cell = center_cell + (j * worldx);
+          else if (facing == 4 && do_lr == 2) this_cell = center_cell + (-1 * j);
+          else if (facing == 6 && do_lr == 2) this_cell = center_cell + (-1 * j * worldx);
+          
+          // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
+          else if (facing == 1 && do_lr == 1) this_cell = center_cell + (-1 * j);
+          else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 5 && do_lr == 1) this_cell = center_cell + j;
+          else if (facing == 7 && do_lr == 1) this_cell = center_cell + (j * worldx);
+          
+          else if (facing == 1 && do_lr == 2) this_cell = center_cell + (j * worldx);
+          else if (facing == 3 && do_lr == 2) this_cell = center_cell + (-1 * j);
+          else if (facing == 5 && do_lr == 2) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 7 && do_lr == 2) this_cell = center_cell + j; 
+          
+          // test if the side cell is still on world, if it isn't do the other side
+          if(this_cell < 0 || this_cell > (worldx * (m_world->GetConfig().WORLD_Y.Get() - 1))) count_side = false; 
+          else if((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
+          else if((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+          
+          prev_cell = this_cell;
+          if (count_side) {
+            // get out of here if we were looking for an edible resource and found the first instance
+            if (search_type > 0 && habitat_used == 0) {
+              cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
+              for (int k = 0; k < resource_lib.GetSize(); k++) {
+                if (resource_lib.GetResource(k)->GetHabitat() == 0) {
+                  if (cell_res[k] >= 1) {
+                    found_edible = true;
+                    break;
+                  }
+                }
+              }
+            }
+            // get out of here if we were looking topo features or walls/objects and found the first instance
+            if (habitat_used == 1 || habitat_used == 2) {
+              cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
+              for (int k = 0; k < resource_lib.GetSize(); k++) {
+                if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
+                  if (cell_res[k] > 0) {
+                    found_feature = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!found_edible && !found_feature) valid_cell_list[dist].Push(this_cell);
+          }
+          if (found_feature || found_edible || !count_side) break;
+        }
+        if (found_edible || found_feature) break;
+      }
+      // return if we are looking for a specific food value and we found the nearest
+      if (found_edible && search_type > 0 && habitat_used == 0) {
+        setInternalValue(habitat_reg, habitat_used, true);
+        setInternalValue(distance_reg, dist, true);
+        setInternalValue(search_type_reg, search_type, true);
+        return true;
+      }
+      
+      // return if we are looking topo features or walls/objects and we found the nearest
+      if (found_feature && (habitat_used == 1 || habitat_used == 2)) {
+        setInternalValue(habitat_reg, habitat_used, true);
+        setInternalValue(distance_reg, dist, true);
+        return true;
+      }
+
+      // if facing W, SW or NW stop if center cell now standing on edge of world
+      if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
+      center_cell = center_cell + ahead_dir;
+      // if facing E, SE, or NE check if next center cell is going to be off edge of world
+      if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
+      // if next center cell is going to be less than 0 or greater than max cell (in grid), don't do it.
+      if(center_cell < 0 || center_cell > (worldx * (m_world->GetConfig().WORLD_Y.Get() - 1))) count_center = false;
+      
+      // stop moving forward if we never found any valid cells at this distance
+      if (valid_cell_list[dist].GetSize() == 0) {
+        dist_used = dist - 1;
+        break;
+      }
+    }    
+  } // End build valid cell array
+  
+  // return now if we never found the specific food value we were looking for
+  if (search_type > 0 && !found_edible && habitat_used == 0) {
+    setInternalValue(habitat_reg, habitat_used, true);
+    setInternalValue(distance_reg, -1, true);
+    setInternalValue(search_type_reg, search_type, true);
+    return true;
+  }
+
+  // return now if we never found the topo features or walls/objects we were looking for
+  if (!found_feature && (habitat_used == 1 || habitat_used == 2)) {
+    setInternalValue(habitat_reg, habitat_used, true);
+    setInternalValue(distance_reg, -1, true);
+    return true;
+  }
+
+  // do output for food resource totals and counts of edible cells
+  if (habitat_used == 0) {
+    int total_ahead = 0;
+    int total_edible_ahead = 0;
+    for (int dist = 0; dist < valid_cell_list.GetSize(); dist++) {
+      for (int cell_num = 0; cell_num < valid_cell_list[dist].GetSize(); cell_num++) {
+        cell_res = m_organism->GetOrgInterface().GetCellResources(valid_cell_list[dist][cell_num], ctx);
+        for (int k = 0; k < resource_lib.GetSize(); k++) {
+          // search type < 0 means just count # edible cells
+          if (search_type < 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1) && (dist < (distance_sought + 1))) total_edible_ahead++;
+          
+          // search_type of 0 (or none) means total res in cells as far as distance_sought
+          // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
+          else if (search_type == 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && res_id_sought == -1 && (dist < (distance_sought + 1))) total_ahead = total_ahead + cell_res[k];
+          else if (search_type == 0 && res_id_sought != -1) {
+            if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (dist < (distance_sought + 1))) total_ahead = total_ahead + cell_res[res_id_sought];
+          }   
+        }
+      }
+    }
     setInternalValue(habitat_reg, habitat_used, true);
     // if we totalled over distance
     if(search_type == 0) {
-      int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5); 
-      setInternalValue(search_type, res_diff, true);
-      setInternalValue(distance_reg, forward_dist, true);
+      setInternalValue(habitat_reg, habitat_used, true);
+      setInternalValue(search_type, (int) total_ahead + 0.5, true);
+      setInternalValue(distance_reg, dist_used, true);
       if (NUM_REGISTERS > 3 && res_id_sought != -1) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(distance_reg)), res_id_sought, true);
     }
-    // if we looked for a specific resource value/peak height
-    else if (search_type > 0) {
-      setInternalValue(distance_reg, forward_dist - backward_dist, true);
-      setInternalValue(search_type_reg, search_type, true);
-    }
-    // if we looked for all edible
+    // if we counted all edible cells
     else if (search_type < 0) {
-      setInternalValue(distance_reg, total_edible_ahead - total_edible_behind, true);
+      setInternalValue(habitat_reg, habitat_used, true);
+      setInternalValue(distance_reg, total_edible_ahead, true);
       setInternalValue(search_type_reg, search_type, true);
     }
-  } // End finding gradient food resources
-  
-  
-  
-  // sense_type of 1 means look for topographic features (habitat = 1)--at the moment we don't worry about any slopes (since hills don't have them yet)
-  if (abs(habitat_sought) % 32 == 1 || abs(habitat_sought) == 1) {
-    habitat_used = 1;
-    // look ahead
-    cell = m_organism->GetCellID();
-    int forward_topo_steps = 0;
-    for(int i = 0; i < distance_sought + 1; i++) {
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      bool found_topo = false;
-      for (int j = 0; j < resource_lib.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 1 && cell_res[j] > 0) {
-          found_topo = true;
-          break;
-        }
-      }
-      if (!found_topo) forward_topo_steps++;
-      else break;
-      
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-   
-    // look behind
-    cell = m_organism->GetCellID();
-    int backward_topo_steps = 0;
-    for(int i = 0; i < distance_sought + 1; i++) {
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      bool found_topo = false;
-      for (int j = 0; j < resource_lib.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 1 && cell_res[j] > 0) {
-          found_topo = true;
-          break;
-        }
-      }
-      if (!found_topo) backward_topo_steps++;
-      else break;
-      
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, forward_topo_steps, true);
-    setInternalValue(FindModifiedNextRegister(distance_reg), backward_topo_steps, true);
-  } // End sensing topography features
-    
-  
-    
-  // sense_type of 2 means look for objects/barriers--this operates the same as searching for hills until hills actual have slopes
-  if (abs(habitat_sought) % 32 == 2 || abs(habitat_sought) == 2) {
-    habitat_used = 2;
-    // look ahead
-    cell = m_organism->GetCellID();
-    int forward_object_steps = 0;
-    for(int i = 0; i < distance_sought + 1; i++) {
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      bool found_object = false;
-      for (int j = 0; j < resource_lib.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 2 && cell_res[j] > 0) {
-          found_object = true;
-          break;
-        }
-      }
-      if (!found_object) forward_object_steps++;
-      else break;
-      
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    
-    // look behind
-    cell = m_organism->GetCellID();
-    int backward_object_steps = 0;
-    for(int i = 0; i < distance_sought + 1; i++) {
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      
-      bool found_object = false;
-      for (int j = 0; j < resource_lib.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 2 && cell_res[j] > 0) {
-          found_object = true;
-          break;
-        }
-      }
-      if (!found_object) backward_object_steps++;
-      else break;
-      
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, forward_object_steps, true);
-    setInternalValue(FindModifiedNextRegister(distance_reg), backward_object_steps, true);
-  } // End sensing objects and barriers
+  } // End food resource output
     
   return true;
 }
