@@ -3109,19 +3109,6 @@ void cStats::PrintGroupTolerance(const cString& filename)
     }
 }
 
-/*	df.WriteComment("Current member information for all possible groups (first group is the default)");
-	
-	const tArraySet<int>& possible_groups = m_world->GetEnvironment().GetGroupIDs();
-  
-	df.WriteTimeStamp();
-  
-  df.Write(m_update, "Update");
-  
-  for (int i = 0; i < possible_groups.GetSize(); i++) {
-    df.Write(possible_groups[i], "Group ID");
-    df.Write(groups[possible_groups[i]],"Number of current group members");
-*/
-
 
 /*! Track named network stats.
  */

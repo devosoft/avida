@@ -266,7 +266,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-ahead100", &cHardwareExperimental::Inst_LookAhead100, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-target", &cHardwareExperimental::Inst_SetTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-current-target", &cHardwareExperimental::Inst_GetCurrentTarget),
 
@@ -2851,7 +2851,7 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
 }
 
 
-bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx) 
+bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx) 
 {
   const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   // temp check on world geometry until code can handle other geometries
@@ -2864,12 +2864,14 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
   // get the resource library
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
   
   // we use label size to restrict what inputs the org provides...
   // this favors the defaults, but also avoids 'unintentional' changes
   const cCodeLabel& search_label = GetLabel();
   
   // first reg gives habitat type sought
+  // we've arbitrarily allowed for 32 habitat types in the world
   // if sensing food resource (default), habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)    
@@ -2886,12 +2888,14 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
     if (abs(habitat_sought) % 32 == 2 || abs(habitat_sought) == 2) habitat_used = 2;
   }
   
-  // second reg gives distance sought--arbitrarily capped at half world size (default)  
-  int distance_sought = 50;
+  // second reg gives distance sought--arbitrarily capped at half long axis of world (default)  
+  const int default_distance = 50;
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);
+  int distance_sought = min(default_distance, long_axis);
   if (search_label.GetSize() > 1 && search_label.GetSize() < 5) {
-    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > (int) (worldx * 0.5 + 0.5)) ? \
-    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % (int) (worldx * 0.5 + 0.5)) : \
+    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > long_axis) ? \
+    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % long_axis) : \
     distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value);
   }
   
@@ -2907,12 +2911,20 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
   const int res_id_reg = FindModifiedNextRegister(search_type_reg);
   int res_id_sought = -1;
   if (NUM_REGISTERS > 3) {
-    if (search_label.GetSize() > 3 && search_label.GetSize() < 5) {
+    if (search_label.GetSize() == 4) {
       res_id_sought = abs(m_threads[m_cur_thread].reg[res_id_reg].value) % resource_lib.GetSize();
     }
   }
   
-  // build an array of valid cells at every distance
+  // if an org is trying to do totals for a specific non-food resource, this is invalid and we can exit now
+  if (search_type == 0 && res_id_sought != -1) {
+    if (resource_lib.GetResource(res_id_sought)->GetHabitat() != 0) {
+      return true;
+    }
+  }
+  
+  
+  // start the real work of walking through cells
   int facing = m_organism->GetFacing();
   int faced_cell = m_organism->GetFacedCellID();
   int cell = m_organism->GetCellID();
@@ -2922,47 +2934,72 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
   
   int center_cell = cell;
   int this_cell = cell;
+  
   bool count_center = true;
+  bool any_valid_side_cells = false;
   
   bool found_edible = false; 
   bool found_feature = false;
   
-  tArrayMap<int, tSmartArray<int> > valid_cell_list;
+  double total_ahead = 0;
+  int total_edible_ahead = 0;
+
   tArray<double> cell_res;
   
   for (int dist = 0; dist < distance_sought + 1; dist++) {
-    
-    // get out of here if we were looking for an edible resource and found the first instance
-    if (search_type > 0 && habitat_used == 0) {
-      cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
-      for (int k = 0; k < resource_lib.GetSize(); k++) {
-        if (resource_lib.GetResource(k)->GetHabitat() == 0) {
-          if (cell_res[k] >= 1) {
-            found_edible = true;
-            break;
+    // work on CENTER cell for this dist
+
+    // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
+    if (count_center) {
+      // get out of here if we were looking for a specific resource height and found the first instance
+      if (habitat_used == 0 && search_type > 0) {
+        cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
+        for (int k = 0; k < resource_lib.GetSize(); k++) {
+          if (resource_lib.GetResource(k)->GetHabitat() == 0) {
+            if (cell_res[k] >= 1) {
+              found_edible = true;
+              break;
+            }
           }
         }
       }
-    }
-
-    // get out of here if we were looking topo features or walls/objects and found the first instance
-    if (habitat_used == 1 || habitat_used == 2) {
-      cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
-      for (int k = 0; k < resource_lib.GetSize(); k++) {
-        if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
-          if (cell_res[k] > 0) {
-            found_feature = true;
-            break;
-          }
-        }
-      }
-    }
-
-    if (!found_edible && !found_feature) {
-      // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)
-      if (count_center) valid_cell_list[dist].Push(center_cell);
       
-      // now look to side of center cell
+      // for food resource totals and counts of edible cells
+      if (habitat_used == 0 && search_type <= 0) {
+        cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
+        for (int k = 0; k < resource_lib.GetSize(); k++) {
+          // search type < 0 means just count # edible cells
+          if (search_type < 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
+            total_edible_ahead++;
+          }
+          // search_type of 0 (or none) means total res in cells as far as distance_sought
+          // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
+          else if (search_type == 0 && res_id_sought == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
+            total_ahead += cell_res[k];
+          }
+          else if (search_type == 0 && res_id_sought != -1) {
+            total_ahead += cell_res[res_id_sought];
+          }   
+        }
+      }
+      
+      // get out of here if we were looking topo features or walls/objects and found the first instance
+      else if (habitat_used == 1 || habitat_used == 2) {
+        cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
+        for (int k = 0; k < resource_lib.GetSize(); k++) {
+          if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
+            if (cell_res[k] > 0) {
+              found_feature = true;
+              break;
+            }
+          }
+        }
+      }  
+    } // end work on CENTER cell for this dist
+    
+    // work on SIDE of center cells for this dist
+    if (!found_edible && !found_feature) {
+      
       int num_cells_either_side = 0;
       if (dist > 0) {
         (dist % 2) ? num_cells_either_side = (int) ((dist - 1) * 0.5) : num_cells_either_side = (int) (dist * 0.5);   // how many cells do we need to look at on both sides 
@@ -2971,7 +3008,6 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
         bool count_side = true;
         int prev_cell = center_cell;
         for (int j = 0; j < num_cells_either_side + 1; j++) {
-          
           if (facing == 0 && do_lr == 1) this_cell = center_cell + (-1 * j);
           else if (facing == 2 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
           else if (facing == 4 && do_lr == 1) this_cell = center_cell + j;
@@ -2994,13 +3030,14 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
           else if (facing == 7 && do_lr == 2) this_cell = center_cell + j; 
           
           // test if the side cell is still on world, if it isn't do the other side
-          if(this_cell < 0 || this_cell > (worldx * (m_world->GetConfig().WORLD_Y.Get() - 1))) count_side = false; 
-          else if((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
-          else if((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+          if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
+          else if ((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
+          else if ((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+          else any_valid_side_cells = true;
           
           prev_cell = this_cell;
           if (count_side) {
-            // get out of here if we were looking for an edible resource and found the first instance
+            // get out of here if we were looking for a specific resource height and found the first instance
             if (search_type > 0 && habitat_used == 0) {
               cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
               for (int k = 0; k < resource_lib.GetSize(); k++) {
@@ -3012,8 +3049,26 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
                 }
               }
             }
+            // for food resource totals and counts of edible cells
+            if (habitat_used == 0 && search_type <= 0) {
+              cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
+              for (int k = 0; k < resource_lib.GetSize(); k++) {
+                // search type < 0 means just count # edible cells
+                if (search_type < 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
+                  total_edible_ahead++;
+                }
+                // search_type of 0 (or none) means total res in cells as far as distance_sought
+                // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
+                else if (search_type == 0 && res_id_sought == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
+                  total_ahead += cell_res[k];
+                }
+                else if (search_type == 0 && res_id_sought != -1) {
+                  total_ahead += cell_res[res_id_sought];
+                }   
+              }
+            }
             // get out of here if we were looking topo features or walls/objects and found the first instance
-            if (habitat_used == 1 || habitat_used == 2) {
+            else if (habitat_used == 1 || habitat_used == 2) {
               cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
               for (int k = 0; k < resource_lib.GetSize(); k++) {
                 if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
@@ -3024,13 +3079,15 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
                 }
               }
             }
-            if (!found_edible && !found_feature) valid_cell_list[dist].Push(this_cell);
           }
           if (found_feature || found_edible || !count_side) break;
         }
         if (found_edible || found_feature) break;
       }
-      // return if we are looking for a specific food value and we found the nearest
+      
+      // before we do the next side cell...
+      
+      // return now if we were looking for a specific resource height and found the nearest
       if (found_edible && search_type > 0 && habitat_used == 0) {
         setInternalValue(habitat_reg, habitat_used, true);
         setInternalValue(distance_reg, dist, true);
@@ -3038,80 +3095,70 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
         return true;
       }
       
-      // return if we are looking topo features or walls/objects and we found the nearest
-      if (found_feature && (habitat_used == 1 || habitat_used == 2)) {
+      // return now if we are looking topo features or walls/objects and we found the nearest
+      else if (found_feature && (habitat_used == 1 || habitat_used == 2)) {
         setInternalValue(habitat_reg, habitat_used, true);
         setInternalValue(distance_reg, dist, true);
         return true;
       }
 
-      // if facing W, SW or NW stop if center cell now standing on edge of world
-      if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
-      center_cell = center_cell + ahead_dir;
-      // if facing E, SE, or NE check if next center cell is going to be off edge of world
-      if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
-      // if next center cell is going to be less than 0 or greater than max cell (in grid), don't do it.
-      if(center_cell < 0 || center_cell > (worldx * (m_world->GetConfig().WORLD_Y.Get() - 1))) count_center = false;
-      
-      // stop moving forward if we never found any valid cells at this distance
-      if (valid_cell_list[dist].GetSize() == 0) {
+      // stop if we never found any valid cells at the current distance
+      else if (!any_valid_side_cells && !count_center) {
         dist_used = dist - 1;
         break;
       }
+
+      // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
+      if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
+      
+      // figure out the what the next center cell is about to be
+      center_cell = center_cell + ahead_dir;
+      
+      // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
+      if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
+      // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
+      else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;
     }    
-  } // End build valid cell array
+  } // End getting values
   
-  // return now if we never found the specific food value we were looking for
-  if (search_type > 0 && !found_edible && habitat_used == 0) {
+  // begin reached end output 
+    
+  // return -1 if we looking for a specific food value and never found it
+  if (!found_edible && habitat_used == 0 && search_type > 0) {
     setInternalValue(habitat_reg, habitat_used, true);
     setInternalValue(distance_reg, -1, true);
     setInternalValue(search_type_reg, search_type, true);
     return true;
   }
-
-  // return now if we never found the topo features or walls/objects we were looking for
-  if (!found_feature && (habitat_used == 1 || habitat_used == 2)) {
+  
+  // do output for food resource totals and counts of edible cells--where and what we return is affected by # registers available
+  else if (habitat_used == 0 && habitat_used == 0 && search_type <= 0) {
+    setInternalValue(habitat_reg, habitat_used, true);
+    setInternalValue(distance_reg, dist_used, true);
+    
+    if (NUM_REGISTERS == 3) {
+      // if we totalled over distance
+      if (search_type == 0) setInternalValue(search_type_reg, (int) (total_ahead + 0.5), true);
+      // if we counted all edible cells
+      else if (search_type < 0) setInternalValue(search_type_reg, total_edible_ahead, true);
+    }
+    
+    else if (NUM_REGISTERS > 3) {
+      setInternalValue(search_type_reg, search_type, true);
+      if (search_type == 0) setInternalValue(FindModifiedNextRegister(search_type_reg), (int) (total_ahead + 0.5), true);
+      else if (search_type < 0) {
+        setInternalValue(FindModifiedNextRegister(search_type_reg), total_edible_ahead, true);
+        if (NUM_REGISTERS > 4) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(search_type_reg)), res_id_sought, true);
+      }
+    }
+  }
+      
+  // return -1 if we never found the topo features or walls/objects we were looking for
+  else if (!found_feature && (habitat_used == 1 || habitat_used == 2)) {
     setInternalValue(habitat_reg, habitat_used, true);
     setInternalValue(distance_reg, -1, true);
     return true;
   }
-
-  // do output for food resource totals and counts of edible cells
-  if (habitat_used == 0) {
-    double total_ahead = 0;
-    int total_edible_ahead = 0;
-    for (int dist = 0; dist < valid_cell_list.GetSize(); dist++) {
-      for (int cell_num = 0; cell_num < valid_cell_list[dist].GetSize(); cell_num++) {
-        cell_res = m_organism->GetOrgInterface().GetCellResources(valid_cell_list[dist][cell_num], ctx);
-        for (int k = 0; k < resource_lib.GetSize(); k++) {
-          // search type < 0 means just count # edible cells
-          if (search_type < 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1) && (dist < (distance_sought + 1))) total_edible_ahead++;
-          
-          // search_type of 0 (or none) means total res in cells as far as distance_sought
-          // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
-          else if (search_type == 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && res_id_sought == -1 && (dist < (distance_sought + 1))) total_ahead = total_ahead + cell_res[k];
-          else if (search_type == 0 && res_id_sought != -1) {
-            if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (dist < (distance_sought + 1))) total_ahead = total_ahead + cell_res[res_id_sought];
-          }   
-        }
-      }
-    }
-    setInternalValue(habitat_reg, habitat_used, true);
-    // if we totalled over distance
-    if(search_type == 0) {
-      setInternalValue(habitat_reg, habitat_used, true);
-      setInternalValue(search_type, (int) (total_ahead + 0.5), true);
-      setInternalValue(distance_reg, dist_used, true);
-      if (NUM_REGISTERS > 3 && res_id_sought != -1) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(distance_reg)), res_id_sought, true);
-    }
-    // if we counted all edible cells
-    else if (search_type < 0) {
-      setInternalValue(habitat_reg, habitat_used, true);
-      setInternalValue(distance_reg, total_edible_ahead, true);
-      setInternalValue(search_type_reg, search_type, true);
-    }
-  } // End food resource output
-    
   return true;
 }
 

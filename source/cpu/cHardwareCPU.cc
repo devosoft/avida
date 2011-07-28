@@ -9464,36 +9464,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
     
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
-    
-/*	//test @JJB
-	if (m_world->GetStats().GetUpdate() >= 1000) { 
-		string tolerance_type;
-		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
-		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
-		else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
-        double cell = m_organism->GetCellID();
-		int opinion = m_organism->GetOpinion().first;
-		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-		double res_opinion = res_count[opinion];
         
-		double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
-		double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
-		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-        
-		// update instruction_executed tolerance_type opinion group_size group_res_level
-		// tolerance_immigrants tolerance_own tolerance_others update_window  
-        // tolerance_max res_inflow res_outflow org_ID
-		static ofstream fp("./data/inc_tolerance.dat");
-		fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
-        << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
-        << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-        << update_window << " " << tolerance_max << " " \
-        << res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
-	}//*/
-    
 	return true;
 }
 
@@ -9549,36 +9520,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
     
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
-    
-/*	//PrintToleranceData @JJB
-	if (m_world->GetStats().GetUpdate() >= 1000) { 
-		string tolerance_type;
-		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
-		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
-		else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
-        double cell = m_organism->GetCellID();
-		int opinion = m_organism->GetOpinion().first;
-		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-		double res_opinion = res_count[opinion];
         
-		double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
-		double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
-		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();     
-        
-		// update instruction_executed tolerance_type opinion group_size group_res_level 
-		// tolerance_immigrants tolerance_own tolerance_others update_window  
-        // tolerance_max res_inflow res_outflow org_ID
-		static ofstream fp("./data/dec_tolerance.dat");
-		fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
-        << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
-        << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-        << update_window << " " << tolerance_max << " " \
-        << res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
-	}//*/
-    
 	return true;
 }
 
@@ -9630,10 +9572,6 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             }
             // If the parent is not the only group member            
             if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id) > 1){
-                // using 50-50 vote split
-                // their vote counts for half the total and the rest of the group the other half
-                //total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
-                // using parent vote before group vote
                 total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
             }
             

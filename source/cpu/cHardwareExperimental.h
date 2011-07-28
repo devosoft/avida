@@ -523,7 +523,7 @@ private:
   bool Inst_SenseResQuant(cAvidaContext& ctx); 
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
-  bool Inst_LookAhead100(cAvidaContext& ctx);
+  bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_SetTarget(cAvidaContext& ctx);
   bool Inst_GetCurrentTarget(cAvidaContext& ctx);
   
