@@ -1029,6 +1029,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
     df.WriteRaw(UpdateStr);
   }
   
+  // don't trigger reactions on move if you're not supposed to! 
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
   for (int i = 0; i < num_tasks; i++) {

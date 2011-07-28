@@ -2865,30 +2865,33 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   
+  // we use label size to restrict what inputs the org provides...
+  // this favors the defaults, but also avoids 'unintentional' changes
+  const cCodeLabel& search_label = GetLabel();
+  
   // first reg gives habitat type sought
   // if sensing food resource (default), habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)    
   int habitat_used = 0;
   const int habitat_reg = FindModifiedRegister(rBX);
-  const int habitat_sought = m_threads[m_cur_thread].reg[habitat_reg].value;
+  if (search_label.GetSize() > 0 && search_label.GetSize() < 5) {
+    const int habitat_sought = m_threads[m_cur_thread].reg[habitat_reg].value;
+    
+    // fail if the org is trying to sense a nest/hidden habitat
+    if(abs(habitat_sought) % 32 == 3 || abs(habitat_sought) == 3) return true;
+    
+    if (abs(habitat_sought) % 32 == 0 || abs(habitat_sought) == 0 || abs(habitat_sought) % 32 > 3) habitat_used = 0;
+    if (abs(habitat_sought) % 32 == 1 || abs(habitat_sought) == 1) habitat_used = 1;
+    if (abs(habitat_sought) % 32 == 2 || abs(habitat_sought) == 2) habitat_used = 2;
+  }
   
-  // fail if the org is trying to sense a nest/hidden habitat
-  if(abs(habitat_sought) % 32 == 3 || abs(habitat_sought) == 3) return true;
-  
-  if (abs(habitat_sought) % 32 == 0 || abs(habitat_sought) == 0 || abs(habitat_sought) % 32 > 3) habitat_used = 0;
-  if (abs(habitat_sought) % 32 == 1 || abs(habitat_sought) == 1) habitat_used = 1;
-  if (abs(habitat_sought) % 32 == 2 || abs(habitat_sought) == 2) habitat_used = 2;
-
-  // second reg gives distance sought--arbitrarily capped at 100 cells  
-  int distance_sought = 10;
+  // second reg gives distance sought--arbitrarily capped at half world size (default)  
+  int distance_sought = 50;
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
-  const cCodeLabel& search_label = GetLabel();
-  if (search_label.GetSize() > 1) {
-/*    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > (int) (worldx * 0.5 + 0.5)) ? \
+  if (search_label.GetSize() > 1 && search_label.GetSize() < 5) {
+    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > (int) (worldx * 0.5 + 0.5)) ? \
     distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % (int) (worldx * 0.5 + 0.5)) : \
-    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value);*/
-    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > 100) ? distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % 100) : \
     distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value);
   }
   
@@ -2896,15 +2899,15 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
   // search_type_reg: 0 = total res in cells as far as distance sought;
   // > 0 = look for closest resource cell with requested food res height value (default @ 1)
   // < 0 = count cells to distance sought with edible (>=1) res 
-  const int search_type_reg = FindModifiedNextRegister(distance_reg);  
   int search_type = 1;
-  if (search_label.GetSize() > 2) search_type = abs(m_threads[m_cur_thread].reg[search_type_reg].value);
+  const int search_type_reg = FindModifiedNextRegister(distance_reg);  
+  if (search_label.GetSize() > 2 && search_label.GetSize() < 5) search_type = abs(m_threads[m_cur_thread].reg[search_type_reg].value);
   
   // fourth register gives specific instance of food resources sought
   const int res_id_reg = FindModifiedNextRegister(search_type_reg);
   int res_id_sought = -1;
   if (NUM_REGISTERS > 3) {
-    if (search_label.GetSize() > 3) {
+    if (search_label.GetSize() > 3 && search_label.GetSize() < 5) {
       res_id_sought = abs(m_threads[m_cur_thread].reg[res_id_reg].value) % resource_lib.GetSize();
     }
   }
@@ -2943,7 +2946,7 @@ bool cHardwareExperimental::Inst_LookAhead100(cAvidaContext& ctx)
     }
 
     // get out of here if we were looking topo features or walls/objects and found the first instance
-    if (habitat_used == 1 | habitat_used == 2) {
+    if (habitat_used == 1 || habitat_used == 2) {
       cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
       for (int k = 0; k < resource_lib.GetSize(); k++) {
         if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
