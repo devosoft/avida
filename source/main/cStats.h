@@ -784,6 +784,7 @@ public:
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintGroupTolerance(const cString& filename); // @JJB
+  void PrintTargets(const cString& filename);
 
   // deme predicate stats
   void IncEventCount(int x, int y);

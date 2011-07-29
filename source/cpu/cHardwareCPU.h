@@ -889,8 +889,6 @@ public:
   bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); 
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
   bool Inst_AttackFacedOrg(cAvidaContext& ctx); 
-  bool Inst_AttackRandomOrg(cAvidaContext& ctx); 
-  bool Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx);
   bool Inst_GetAttackOdds(cAvidaContext& ctx);
 	
 private:

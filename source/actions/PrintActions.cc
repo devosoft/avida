@@ -173,6 +173,7 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,         groupids.dat);
 STATS_OUT_FILE(PrintGroupTolerance,           grouptolerance.dat); // @JJB
+STATS_OUT_FILE(PrintTargets,                  targets.dat);
 
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
@@ -3016,7 +3017,6 @@ public:
     if (filename == "") filename.Set("vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
   
-  //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3025,11 +3025,43 @@ public:
       }
       fp << endl;
     }
-       //   fp << "];" << endl;
     m_world->GetDataFileManager().Remove(filename);
   }
 };
 
+class cActionDumpTargetGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpTargetGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    int predator_target = resource_lib.GetSize() + 1;
+
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetTarget() : -1;
+        if (target == -2) target = predator_target;
+        fp << target << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
 //DumpMaxResGrid intended for creating single output file of spatial resources, recording the max value (of any resource) when resources overlap
 class cActionDumpMaxResGrid : public cAction
@@ -3805,7 +3837,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
 
-
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
@@ -3895,6 +3926,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpIDGrid>("DumpIDGrid");
   action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
+  action_lib->Register<cActionDumpTargetGrid>("DumpTargetGrid");
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
@@ -3921,8 +3953,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
 	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-    action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
+  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
+  action_lib->Register<cActionPrintTargets>("PrintTargets");
+  
+  action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");

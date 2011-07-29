@@ -781,6 +781,7 @@ public:
   // -------- Opinion-setting config options --------
   CONFIG_ADD_GROUP(OPINION_GROUP, "Organism opinion settings");
   CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
+  CONFIG_ADD_VAR(ALLOW_PRED_PREY_SWITCH, int, 1, "Allow organisms to switch from being a predator to being a prey (prey to pred always allowed)");
 	
 
   // -------- Alarm config options --------
