@@ -3250,16 +3250,16 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
  
 bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
 {
-  int old_target;
   assert(m_organism != 0);
 	const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  // make sure we use a valid target
   int prop_target = GetRegister(FindModifiedRegister(rBX));
-  // -2 target means setting to predator, otherwise we are targeting a resource
-  if (prop_target != -2) prop_target = abs(GetRegister(FindModifiedRegister(rBX))) % resource_lib.GetSize();
+
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator
+  if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
   
   //return false if org setting target to current one (avoid paying costs for not switching)
-  old_target = m_organism->GetTarget();
+  int old_target = m_organism->GetTarget();
   if (old_target == prop_target) return false;
   
   // return false if predator trying to become prey and this has been disallowed
@@ -3380,8 +3380,8 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   }
     
   // add prey's merit to predator's
-  const double target_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-  double attacker_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   attacker_merit += target_merit;
   m_organism->UpdateMerit(attacker_merit);
   

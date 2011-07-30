@@ -3124,10 +3124,11 @@ void cStats::PrintTargets(const cString& filename)
   df.Write(m_update, "Update");
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  const int num_targets = resource_lib.GetSize() + 1;
+  // +2 for predators (-2) and default (-1) targets
+  const int num_targets = resource_lib.GetSize() + 2;
   
   tArray<int> target_list;
-  target_list.Resize(num_targets + 1);
+  target_list.Resize(num_targets);
   target_list.SetAll(0);
   
   tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
