@@ -596,6 +596,8 @@ public:
   
   int GetTarget() { return m_target; }
   void SetTarget(int m_target);
+  bool IsTeacher() { return m_teach; }
+  void Teach(bool m_teach);
   
 protected:
 	// The organism's own raw materials
@@ -626,6 +628,7 @@ protected:
   int m_easterly;
 	
   int m_target;
+  bool m_teach;
   
   /*! Contains all the different data structures needed to
 	 track strings, production of strings, and donation/trade

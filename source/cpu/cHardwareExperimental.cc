@@ -280,6 +280,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
 
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
@@ -2861,8 +2862,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   if (geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead only written to work in bounded grids");
   
   // If this organism has no neighboring cells, ignore instruction.
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  if (num_neighbors == 0) return false;
+  if (m_organism->GetNeighborhoodSize() == 0) return false;
   
   // get the resource library
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -2873,26 +2873,21 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // this favors the defaults, but also avoids 'unintentional' changes
   const cCodeLabel& search_label = GetLabel();
   
-  // first reg gives habitat type sought
-  // we've arbitrarily allowed for 32 habitat types in the world
+  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource (default), habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)  
   // habitat 3 = hidden resources (hidden from a distance)
-  // habitat 4 = organisms
+  // habitat -2 = organisms
   
   int habitat_used = 0;
   const int habitat_reg = FindModifiedRegister(rBX);
   if (search_label.GetSize() > 0 && search_label.GetSize() < 5) {
     const int habitat_sought = m_threads[m_cur_thread].reg[habitat_reg].value;
     
-    // fail if the org is trying to sense a nest/hidden habitat
-    if(abs(habitat_sought) % 32 == 3 || abs(habitat_sought) == 3) return true;
-    
-    if (abs(habitat_sought) % 32 == 0 || abs(habitat_sought) == 0 || abs(habitat_sought) % 32 > 4) habitat_used = 0;
-    if (abs(habitat_sought) % 32 == 1 || abs(habitat_sought) == 1) habitat_used = 1;
-    if (abs(habitat_sought) % 32 == 2 || abs(habitat_sought) == 2) habitat_used = 2;
-    if (abs(habitat_sought) % 32 == 4 || abs(habitat_sought) == 4) habitat_used = 4;    
+    // fail if the org is trying to sense a nest/hidden habitat or invalid habitat (and not seeking orgs)
+    if (habitat_sought != 3 && habitat_sought != -1 && habitat_sought >= -2 && habitat_sought < 5) habitat_used = habitat_sought;
+    else return false;    
   }
   
   // second reg gives distance sought--arbitrarily capped at half long axis of world (default)  
@@ -2907,15 +2902,16 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   }
   
   // third register gives type of search used for food resources (habitat 0) and org hunting
-  // search_type_reg: 0 = total res in cells as far as distance sought;
+  // env res search_types: 0 = total res in cells as far as distance sought;
   // > 0 = look for closest resource cell with requested food res height value (default @ 1)
   // < 0 = count cells to distance sought with edible (>=1) res 
-  // org hunting: 0 = any org, < 0 = predators, > 0 = prey only
+  // org hunting search types: 0 = any org, < 0 = predators, > 0 = prey only
   int search_type = 1;
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
   if (search_label.GetSize() > 2 && search_label.GetSize() < 5) search_type = abs(m_threads[m_cur_thread].reg[search_type_reg].value);
+  
   // reassign search_type for finding orgs
-  if (habitat_used == 4) {
+  if (habitat_used == -2) {
     if (search_type == 1) search_type = 0;        // use look for all orgs as default
     else if (search_type > 0) search_type = 1;
     else if (search_type < 0) search_type = -1;
@@ -3014,7 +3010,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       }
       
       // get out of here if we are hunting other organisms and found the closest one of the right type
-      else if (habitat_used == 4) {
+      else if (habitat_used == -2) {
         const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
         if (target_cell.IsOccupied()) {
           type_seen = target_cell.GetOrganism()->GetTarget();
@@ -3110,7 +3106,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
               }
             }
             // get out of here if we are hunting other organisms and found the closest one of the right type
-            else if (habitat_used == 4) {
+            else if (habitat_used == -2) {
               const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(this_cell);
               if (target_cell.IsOccupied()) {
                 type_seen = target_cell.GetOrganism()->GetTarget();
@@ -3145,7 +3141,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       }
       
       // return now if we were hunting orgs and found the nearest one
-      else if (found_creature && habitat_used == 4) {
+      else if (found_creature && habitat_used == -2) {
         setInternalValue(habitat_reg, habitat_used, true);
         setInternalValue(distance_reg, dist, true);
         return true;        
@@ -3203,7 +3199,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   }
   
   // return -1 if we were hunting orgs and never found one
-  else if (!found_creature && habitat_used == 4) {
+  else if (!found_creature && habitat_used == -2) {
     setInternalValue(habitat_reg, habitat_used, true);
     setInternalValue(distance_reg, -1, true);
     return true;        
@@ -3255,7 +3251,7 @@ bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
   int prop_target = GetRegister(FindModifiedRegister(rBX));
 
   // make sure we use a valid (resource) target
-  // -2 target means setting to predator
+  // -2 target means setting to predator; -1 (nothing) is default
   if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
   
   //return false if org setting target to current one (avoid paying costs for not switching)
@@ -3370,13 +3366,13 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
-  // prevent killing other carnivores
-  if (target->GetTarget() == -2) return false;
+  // prevent killing other carnivores -- that should be handled differently using vitality
+  if (target->GetTarget() == -2) return true;
   
   // prevent killing on nests/safe havens
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
+    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return true;
   }
     
   // add prey's merit to predator's
@@ -3385,7 +3381,19 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   attacker_merit += target_merit;
   m_organism->UpdateMerit(attacker_merit);
   
+  // if you weren't a predator before, you are now!
+  m_organism->SetTarget(-2);
+  
   target->Die(ctx);
   
   return true;
 } 		
+
+//Teach offspring learned targeting/foraging behavior
+bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->Teach(true);
+  
+  return true;
+}

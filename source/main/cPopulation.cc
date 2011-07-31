@@ -604,9 +604,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
               JoinGroup(offspring_array[i], group);
           }
       }
+    // if parent org has executed teach_offspring intruction, teach the offspring the parent's learned foraging/targeting behavior
+    if (parent_organism->IsTeacher()) offspring_array[i]->SetTarget(parent_organism->GetTarget());
   }
     
-    
+  
     // If we're not about to kill the parent, do some extra work on it.
     if (parent_alive == true) {
         if (parent_phenotype.GetMerit().GetDouble() <= 0.0) {
