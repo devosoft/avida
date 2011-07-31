@@ -1662,6 +1662,7 @@ void cZoomScreen::DrawMiniMap()
   else if (info.GetMapMode() == MAP_AGE)        Print(name_y, name_x, "   Age   ");
   else if (info.GetMapMode() == MAP_BREED_TRUE) Print(name_y, name_x, "BreedTrue");
   else if (info.GetMapMode() == MAP_PARASITE)   Print(name_y, name_x, "Parasites");
+  else if (info.GetMapMode() == MAP_FORAGER)    Print(name_y, name_x, "Foragers");
   else if (info.GetMapMode() == MAP_MUTATIONS)  Print(name_y, name_x, "Mutations");
   else if (info.GetMapMode() == MAP_THREAD)     Print(name_y, name_x, " Threads ");
   else if (info.GetMapMode() == MAP_LINEAGE)    Print(name_y, name_x, " Lineage ");

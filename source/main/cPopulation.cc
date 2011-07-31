@@ -821,7 +821,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
 	target_cell.InsertOrganism(in_organism, ctx); 
-  AddLiveOrg(in_organism); //APW
+  AddLiveOrg(in_organism); 
   
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
@@ -1076,7 +1076,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   cOrganism* organism = in_cell.GetOrganism();
   m_world->GetStats().RecordDeath();
   
-  RemoveLiveOrg(organism); //APW
+  RemoveLiveOrg(organism); 
   
   int cellID = in_cell.GetID();
 
@@ -6089,13 +6089,13 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
 }
 
 
-// Adds an organism to live org list  //APW
+// Adds an organism to live org list  
 void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
 }
 
-// Remove an organism from live org list  //APW
+// Remove an organism from live org list  
 void  cPopulation::RemoveLiveOrg(cOrganism* org)
 {
   for (int i = 0; i < live_org_list.GetSize(); i++)

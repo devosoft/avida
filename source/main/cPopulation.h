@@ -66,12 +66,12 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
-  //Keeps track of which organisms are in which group.  //APW
+  //Keeps track of which organisms are in which group.  
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
   //std::map<int, std::vector<cOrganism*> > group_list; 
   
   // Keep list of live organisms
-  tSmartArray<cOrganism* > live_org_list; //APW
+  tSmartArray<cOrganism* > live_org_list; 
   
   tVector<pair<int,int> > *sleep_log;
   
@@ -280,14 +280,14 @@ public:
   void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
  
   // Add an org to live org list
-  void AddLiveOrg(cOrganism* org);  //APW
+  void AddLiveOrg(cOrganism* org);  
   // Remove an org from live org list
-  void RemoveLiveOrg(cOrganism* org); //APW
+  void RemoveLiveOrg(cOrganism* org); 
   tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
 	
-    // Adds an organism to a group  //APW
+    // Adds an organism to a group  
     void JoinGroup(cOrganism* org, int group_id);
-    // Removes an organism from a group //APW
+    // Removes an organism from a group 
     void LeaveGroup(cOrganism* org, int group_id);
     
     //Kill random member of the group (but not self!!!) 

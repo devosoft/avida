@@ -261,8 +261,8 @@ public:
   int GetNumTaskCellsReached() const { return m_interface->GetNumTaskCellsReached(); }
   void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
 
-  void AddLiveOrg() { m_interface->AddLiveOrg(); } //APW
-  void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } //APW
+  void AddLiveOrg() { m_interface->AddLiveOrg(); } 
+  void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 
@@ -594,9 +594,9 @@ public:
 	void ClearEasterly() {m_easterly = 0; }
 	void ClearNortherly() {m_northerly = 0; }
   
-  int GetTarget() { return m_target; }
+  int GetTarget() const { return m_target; }
   void SetTarget(int m_target);
-  bool IsTeacher() { return m_teach; }
+  bool IsTeacher() const { return m_teach; }
   void Teach(bool m_teach);
   
 protected:

@@ -88,6 +88,19 @@ char cSymbolUtil::GetParasiteSymbol(const cPopulationCell & cell)
   return '-';
 }
 
+char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
+{
+  if (cell.IsOccupied() == false) return ' ';
+  const int org_target = cell.GetOrganism()->GetTarget();
+  
+  if (org_target == -2) return 'P';
+  else if (org_target == -1) return '-';
+  else if (org_target < 10) return '0' + org_target;
+  // switch to lower case letters after digits
+  else if (org_target >= 10 && org_target <= 35) return 'a' + org_target - 10;
+  else return '!';
+}
+
 char cSymbolUtil::GetMutSymbol(const cPopulationCell & cell)
 {
   if (cell.IsOccupied() == false) return ' ';

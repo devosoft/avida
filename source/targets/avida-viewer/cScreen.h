@@ -37,17 +37,18 @@ class cOrganism;
 // #define MAP_SPECIES    1
 // #define MAP_BREED_TRUE 2
 // #define MAP_PARASITE   3
-// #define MAP_MUTATIONS  4
-// #define MAP_THREAD     5
-// #define MAP_INJECT     6
-// #define MAP_LINEAGE    7
-// #define NUM_MAPS       8
+// #define MAP_FORAGER    4
+// #define MAP_MUTATIONS  5
+// #define MAP_THREAD     6
+// #define MAP_INJECT     7
+// #define MAP_LINEAGE    8
+// #define NUM_MAPS       9
 
 // // Other map modes currently inactive...
-// #define MAP_COMBO      9
-// #define MAP_RESOURCE  10
-// #define MAP_AGE       11
-// #define NUM_MAP_MODES 12
+// #define MAP_COMBO      10
+// #define MAP_RESOURCE  11
+// #define MAP_AGE       12
+// #define NUM_MAP_MODES 13
 
 class cScreen : public cTextWindow {
 protected:
