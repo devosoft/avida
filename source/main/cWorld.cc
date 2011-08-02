@@ -147,8 +147,9 @@ bool cWorld::setup(cUserFeedback* feedback)
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
   const bool revert_pos = m_conf->REVERT_BENEFICIAL.Get() > 0.0;
   const bool revert_taskloss = m_conf->REVERT_TASKLOSS.Get() > 0.0;
+  const bool revert_equals = m_conf->REVERT_EQUALS.Get() > 0.0;
   const bool sterilize_unstable = m_conf->STERILIZE_UNSTABLE.Get() > 0;
-  m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || revert_taskloss || sterilize_unstable);
+  m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || revert_taskloss || revert_equals || sterilize_unstable);
   
   const bool sterilize_fatal = m_conf->STERILIZE_FATAL.Get() > 0.0;
   const bool sterilize_neg = m_conf->STERILIZE_DETRIMENTAL.Get() > 0.0;
