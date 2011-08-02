@@ -3057,7 +3057,7 @@ public:
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
         int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetTarget() : -1;
         if (target == -2) target = predator_target;
-        else if (target == -1) target = no_target;
+        else if (target == -1 && cell.IsOccupied()) target = no_target;
         fp << target << " ";
       }
       fp << endl;

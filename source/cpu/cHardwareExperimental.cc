@@ -36,7 +36,7 @@
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
-#include "cPopulation.h"
+#include "cPopulation.h"  //APW--get this out of the hardware
 
 #include "tInstLibEntry.h"
 
@@ -2866,80 +2866,70 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // get the resource library
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  
-  // we use label size to restrict what inputs the org provides...
-  // this favors the defaults, but also avoids 'unintentional' changes
-  const cCodeLabel& search_label = GetLabel();
-  
+    
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
-  // if sensing food resource (default), habitat = 0 (gradients)
+  // if sensing food resource, habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)  
   // habitat 3 = hidden resources (hidden from a distance)
   // habitat -2 = organisms
   
-  int habitat_used = 0;
   const int habitat_reg = FindModifiedRegister(rBX);
-  if (search_label.GetSize() > 0 && search_label.GetSize() < 5) {
-    const int habitat_sought = m_threads[m_cur_thread].reg[habitat_reg].value;
-    
-    // fail if the org is trying to sense a nest/hidden habitat or invalid habitat (and not seeking orgs)
-    if (habitat_sought != 3 && habitat_sought != -1 && habitat_sought >= -2 && habitat_sought < 5) habitat_used = habitat_sought;
-    else return false;    
-  }
+  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  // fail if the org is trying to sense a nest/hidden habitat
+  if (habitat_used == 3) return false;
+  // default to 0 if invalid habitat
+  else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
   
-  // second reg gives distance sought--arbitrarily capped at half long axis of world (default)  
-  const int default_distance = 50;
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if invalid number  
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
-  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);
-  int distance_sought = min(default_distance, long_axis);
-  if (search_label.GetSize() > 1 && search_label.GetSize() < 5) {
-    (abs(m_threads[m_cur_thread].reg[distance_reg].value) > long_axis) ? \
-    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value % long_axis) : \
-    distance_sought = abs(m_threads[m_cur_thread].reg[distance_reg].value);
-  }
-  
+  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  if (distance_sought < 0) distance_sought = 1;
+  else if (distance_sought > long_axis) distance_sought = long_axis;
+   
   // third register gives type of search used for food resources (habitat 0) and org hunting
-  // env res search_types: 0 = total res in cells as far as distance sought;
-  // > 0 = look for closest resource cell with requested food res height value (default @ 1)
-  // < 0 = count cells to distance sought with edible (>=1) res 
-  // org hunting search types: 0 = any org, < 0 = predators, > 0 = prey only
-  int search_type = 1;
+  // env res search_types: 
+  // 0 = look for closest edible res (>=1) or closest hill/wall (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
+  // org hunting search types: 
+  // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
-  if (search_label.GetSize() > 2 && search_label.GetSize() < 5) search_type = abs(m_threads[m_cur_thread].reg[search_type_reg].value);
+  int search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
+  if (habitat_used != -2 && (search_type < -1 || search_type > 1)) search_type = 0;
+  else if (habitat_used == -2 && (search_type < -2 || search_type > 2)) search_type = 0;
   
-  // reassign search_type for finding orgs
-  if (habitat_used == -2) {
-    if (search_type == 1) search_type = 0;        // use look for all orgs as default
-    else if (search_type > 0) search_type = 1;
-    else if (search_type < 0) search_type = -1;
-  }
-  
-  // fourth register gives specific instance of food resources sought
-  const int res_id_reg = FindModifiedNextRegister(search_type_reg);
+  // fourth register gives specific instance of FOOD resources sought (default to none)
   int res_id_sought = -1;
+  const int res_id_reg = FindModifiedNextRegister(search_type_reg);
   if (NUM_REGISTERS > 3) {
-    if (search_label.GetSize() == 4) {
-      res_id_sought = abs(m_threads[m_cur_thread].reg[res_id_reg].value) % resource_lib.GetSize();
-    }
+    res_id_sought = m_threads[m_cur_thread].reg[res_id_reg].value;
+    if (res_id_sought < 0 || res_id_sought >= lib_size) res_id_sought = -1;
   }
   
-  // if an org is trying to do totals for a specific non-food resource, this is invalid and we can exit now
-  if (search_type == 0 && res_id_sought != -1) {
+  // if an org is trying to do totals for a specific resource that is not actually food, this is invalid and we can exit now
+  if (habitat_used != -2 && search_type == -1 && res_id_sought != -1) {
     if (resource_lib.GetResource(res_id_sought)->GetHabitat() != 0) {
       return true;
     }
   }
-  
-  
+
+/*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
+  int spec_value = -1;
+  const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
+  if (NUM_REGISTERS > 4) {
+    spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
+  }
+*/
+    
   // start the real work of walking through cells
-  int facing = m_organism->GetFacing();
-  int faced_cell = m_organism->GetFacedCellID();
+  const int facing = m_organism->GetFacing();
+  const int faced_cell = m_organism->GetFacedCellID();
   int cell = m_organism->GetCellID();
   
-  int ahead_dir = cell - faced_cell;
+  const int ahead_dir = cell - faced_cell;
   int dist_used = 0;
   
   int center_cell = cell;
@@ -2951,6 +2941,9 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   bool found_edible = false; 
   bool found_feature = false;
   bool found_creature = false;
+  int prey_count = 0;
+  int pred_count = 0;
+  int feature_count = 0;
   
   int type_seen = -1;
   
@@ -2964,46 +2957,64 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     
     // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
     if (count_center) {
-      // get out of here if we were looking for a specific resource height and found the first instance
-      if (habitat_used == 0 && search_type > 0) {
-        cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
-        for (int k = 0; k < resource_lib.GetSize(); k++) {
-          if (resource_lib.GetResource(k)->GetHabitat() == 0) {
-            if (cell_res[k] >= 1) {
+      cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
+      // get out of here if we were looking for first edible and found the first instance
+      if (habitat_used == 0 && search_type == 0) {
+        if (res_id_sought == -1) {
+          for (int k = 0; k < lib_size; k++) {
+            if (resource_lib.GetResource(k)->GetHabitat() == 0 && cell_res[k] >= 1) {
               found_edible = true;
               break;
             }
           }
         }
+        else if (res_id_sought != -1) {
+          if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && cell_res[res_id_sought] >= 1) {
+            found_edible = true;
+            break;
+          }
+        }
       }
-      
+            
       // for food resource totals and counts of edible cells
-      if (habitat_used == 0 && search_type <= 0) {
-        cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
-        for (int k = 0; k < resource_lib.GetSize(); k++) {
-          // search type < 0 means just count # edible cells
-          if (search_type < 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
+      else if (habitat_used == 0 && (search_type == -1 || search_type == 1)) {
+        if (res_id_sought == -1) {
+          for (int k = 0; k < lib_size; k++) {
+            // search type 1 means just count # edible cells
+            if (search_type == 1 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
+              total_edible_ahead++;
+              break;
+            }
+            // search_type of -1 means total res in cells as far as distance_sought
+            else if (search_type == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
+              total_ahead += cell_res[k];
+            }
+          }
+        }
+        else if (res_id_sought != 1) {
+          if (search_type == 1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (cell_res[res_id_sought] >= 1)) {
             total_edible_ahead++;
+            break;
           }
-          // search_type of 0 (or none) means total res in cells as far as distance_sought
-          // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
-          else if (search_type == 0 && res_id_sought == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
-            total_ahead += cell_res[k];
-          }
-          else if (search_type == 0 && res_id_sought != -1) {
+          else if (search_type == -1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0) {
             total_ahead += cell_res[res_id_sought];
           }   
         }
       }
       
-      // get out of here if we were looking topo features or walls/objects and found the first instance
+      // get out of here if we were looking for topo features or walls/objects and found the first instance
       else if (habitat_used == 1 || habitat_used == 2) {
-        cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
-        for (int k = 0; k < resource_lib.GetSize(); k++) {
-          if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
+        for (int k = 0; k < lib_size; k++) {
+          if ((habitat_used == 1 && resource_lib.GetResource(k)->GetHabitat() == 1) || \
+              (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2)) {
             if (cell_res[k] > 0) {
+              if (search_type == 0) {
               found_feature = true;
               break;
+              }
+              else if (search_type == 1) {
+                feature_count++;
+              }
             }
           }
         }
@@ -3014,17 +3025,18 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
         const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
         if (target_cell.IsOccupied()) {
           type_seen = target_cell.GetOrganism()->GetTarget();
-          (type_seen == -2) ? type_seen = -1 : type_seen = 1;
-          if (search_type == 0 || search_type == type_seen) {
-          found_creature = true;
-          break;
+          if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
+            found_creature = true;
+            break;
           }
+          else if (search_type == 2 && type_seen == -2) pred_count++;
+          else if (search_type == -2 && type_seen != -2) prey_count++;
         }
       }
     } // end work on CENTER cell for this dist
     
     // work on SIDE of center cells for this dist
-    if (!found_edible && !found_feature) {
+    if (!found_edible && !found_feature && !found_creature) {
       
       int num_cells_either_side = 0;
       if (dist > 0) {
@@ -3063,58 +3075,80 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
           
           prev_cell = this_cell;
           if (count_side) {
-            // get out of here if we were looking for a specific resource height and found the first instance
-            if (search_type > 0 && habitat_used == 0) {
-              cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
-              for (int k = 0; k < resource_lib.GetSize(); k++) {
-                if (resource_lib.GetResource(k)->GetHabitat() == 0) {
-                  if (cell_res[k] >= 1) {
+            cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
+            // get out of here if we were looking for first edible and found the first instance
+            if (habitat_used == 0 && search_type == 0) {
+              if (res_id_sought == -1) {
+                for (int k = 0; k < lib_size; k++) {
+                  if (resource_lib.GetResource(k)->GetHabitat() == 0 && cell_res[k] >= 1) {
                     found_edible = true;
                     break;
                   }
                 }
               }
+              else if (res_id_sought != -1) {
+                if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && cell_res[res_id_sought] >= 1) {
+                  found_edible = true;
+                  break;
+                }
+              }
             }
+            
             // for food resource totals and counts of edible cells
-            if (habitat_used == 0 && search_type <= 0) {
-              cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
-              for (int k = 0; k < resource_lib.GetSize(); k++) {
-                // search type < 0 means just count # edible cells
-                if (search_type < 0 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
+            else if (habitat_used == 0 && search_type != 0) {
+              if (res_id_sought == -1) {
+                for (int k = 0; k < lib_size; k++) {
+                  // search type 1 means just count # edible cells
+                  if (search_type == 1 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
+                    total_edible_ahead++;
+                    break;
+                  }
+                  // search_type of -1 means total res in cells as far as distance_sought
+                  else if (search_type == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
+                    total_ahead += cell_res[k];
+                  }
+                }
+              }
+              else if (res_id_sought != 1) {
+                if (search_type == 1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (cell_res[res_id_sought] >= 1)) {
                   total_edible_ahead++;
-                }
-                // search_type of 0 (or none) means total res in cells as far as distance_sought
-                // this will total all edible res's unless org specifically requests (via 4th reg) a specific instance of food
-                else if (search_type == 0 && res_id_sought == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
-                  total_ahead += cell_res[k];
-                }
-                else if (search_type == 0 && res_id_sought != -1) {
+                  break;
+               }
+                else if (search_type == -1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0) {
                   total_ahead += cell_res[res_id_sought];
                 }   
               }
             }
-            // get out of here if we were looking topo features or walls/objects and found the first instance
+            
+            // get out of here if we were looking for topo features or walls/objects and found the first instance
             else if (habitat_used == 1 || habitat_used == 2) {
-              cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
-              for (int k = 0; k < resource_lib.GetSize(); k++) {
-                if (resource_lib.GetResource(k)->GetHabitat() == 1 || resource_lib.GetResource(k)->GetHabitat() == 2) {
+              for (int k = 0; k < lib_size; k++) {
+                if ((habitat_used == 1 && resource_lib.GetResource(k)->GetHabitat() == 1) || \
+                    (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2)) {
                   if (cell_res[k] > 0) {
-                    found_feature = true;
-                    break;
+                    if (search_type == 0) {
+                      found_feature = true;
+                      break;
+                    }
+                    else if (search_type == 1) {
+                      feature_count++;
+                    }
                   }
                 }
               }
             }
+            
             // get out of here if we are hunting other organisms and found the closest one of the right type
             else if (habitat_used == -2) {
-              const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(this_cell);
+              const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
               if (target_cell.IsOccupied()) {
                 type_seen = target_cell.GetOrganism()->GetTarget();
-                (type_seen == -2) ? type_seen = -1 : type_seen = 1;
-                if (search_type == 0 || search_type == type_seen) {
+                if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
                   found_creature = true;
                   break;
                 }
+                else if (search_type == 2 && type_seen == -2) pred_count++;
+                else if (search_type == -2 && type_seen != -2) prey_count++;
               }
             }
           }
@@ -3125,8 +3159,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       
       // before we do the next side cell...
       
-      // return now if we were looking for a specific resource height and found the nearest
-      if (found_edible && search_type > 0 && habitat_used == 0) {
+      // return now if we were looking for first edible and found the nearest
+      if (found_edible && search_type == 0 && habitat_used == 0) {
         setInternalValue(habitat_reg, habitat_used, true);
         setInternalValue(distance_reg, dist, true);
         setInternalValue(search_type_reg, search_type, true);
@@ -3166,51 +3200,81 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     }    
   } // End getting values
   
+  
   // begin reached end output 
+  setInternalValue(habitat_reg, habitat_used, true);
   
-  // return -1 if we looking for a specific food value and never found it
-  if (!found_edible && habitat_used == 0 && search_type > 0) {
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, -1, true);
-    setInternalValue(search_type_reg, search_type, true);
-    return true;
-  }
-  
-  // do output for food resource totals and counts of edible cells--where and what we return is affected by # registers available
-  else if (habitat_used == 0 && habitat_used == 0 && search_type <= 0) {
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, dist_used, true);
-    
-    if (NUM_REGISTERS == 3) {
-      // if we totalled over distance
-      if (search_type == 0) setInternalValue(search_type_reg, (int) (total_ahead + 0.5), true);
-      // if we counted all edible cells
-      else if (search_type < 0) setInternalValue(search_type_reg, total_edible_ahead, true);
+  // food based results
+  if (habitat_used == 0) {
+    // return -1 if we looking for edible food and never found it
+    if (search_type == 0 && !found_edible) {
+      setInternalValue(distance_reg, -1, true);
+      setInternalValue(search_type_reg, search_type, true);
+      return true;
     }
     
-    else if (NUM_REGISTERS > 3) {
+    // do output for food resource totals and counts of edible cells--where and what we return is affected by # registers available
+    else if (search_type == -1 || search_type == 1) {
+      setInternalValue(distance_reg, dist_used, true);
+      
+      if (NUM_REGISTERS == 3) {
+        // if we totalled over distance
+        if (search_type == -1) setInternalValue(search_type_reg, (int) (total_ahead + 0.5), true);
+        // if we counted all edible cells
+        else if (search_type == 1) setInternalValue(search_type_reg, total_edible_ahead, true);
+      }
+      
+      else if (NUM_REGISTERS > 3) {
+        setInternalValue(search_type_reg, search_type, true);
+        if (search_type == -1) setInternalValue(FindModifiedNextRegister(search_type_reg), (int) (total_ahead + 0.5), true);
+        else if (search_type == 1) {
+          setInternalValue(FindModifiedNextRegister(search_type_reg), total_edible_ahead, true);
+          if (NUM_REGISTERS > 4) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(search_type_reg)), res_id_sought, true);
+        }
+      }
+    }
+  }
+  
+  // topo results 
+  else if (habitat_used == 1 || habitat_used == 2) {
+    // return -1 if we never found the topo features or walls/objects we were looking for
+    if (search_type == 0 && !found_feature) {
+      setInternalValue(distance_reg, -1, true);
       setInternalValue(search_type_reg, search_type, true);
-      if (search_type == 0) setInternalValue(FindModifiedNextRegister(search_type_reg), (int) (total_ahead + 0.5), true);
-      else if (search_type < 0) {
-        setInternalValue(FindModifiedNextRegister(search_type_reg), total_edible_ahead, true);
-        if (NUM_REGISTERS > 4) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(search_type_reg)), res_id_sought, true);
+      return true;
+    }
+    else if (search_type == 1) {
+      setInternalValue(distance_reg, dist_used, true);
+      if (NUM_REGISTERS == 3) {
+        setInternalValue(search_type_reg, feature_count, true);
+      }
+      else if (NUM_REGISTERS > 3) {
+        setInternalValue(search_type_reg, search_type, true);
+        setInternalValue(FindModifiedNextRegister(search_type_reg), feature_count, true);      
       }
     }
   }
   
   // return -1 if we were hunting orgs and never found one
-  else if (!found_creature && habitat_used == -2) {
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, -1, true);
-    return true;        
-  }
-  
-  // return -1 if we never found the topo features or walls/objects we were looking for
-  else if (!found_feature && (habitat_used == 1 || habitat_used == 2)) {
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, -1, true);
-    return true;
-  }
+  else if (habitat_used == -2) {
+    if ((search_type == 0 || search_type == -1 || search_type == 1) && !found_creature) {
+      setInternalValue(distance_reg, -1, true);
+      setInternalValue(search_type_reg, search_type, true);
+      return true;  
+    }
+    else if (search_type == 2 || search_type == -2) {
+      setInternalValue(distance_reg, dist_used, true);
+      if (NUM_REGISTERS == 3) {
+        if (search_type == 2) setInternalValue(search_type_reg, pred_count, true);
+        if (search_type == -2) setInternalValue(search_type_reg, prey_count, true);
+      }
+      else if (NUM_REGISTERS > 3) {
+        setInternalValue(search_type_reg, search_type, true);
+        if (search_type == 2) setInternalValue(FindModifiedNextRegister(search_type_reg), pred_count, true);
+        if (search_type == -2) setInternalValue(FindModifiedNextRegister(search_type_reg), prey_count, true);
+      }
+    } 
+  }     
   return true;
 }
 
@@ -3248,14 +3312,14 @@ bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
 	const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  int prop_target = GetRegister(FindModifiedRegister(rBX));
+  const int prop_target = GetRegister(FindModifiedRegister(rBX));
 
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
   if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
   
   //return false if org setting target to current one (avoid paying costs for not switching)
-  int old_target = m_organism->GetTarget();
+  const int old_target = m_organism->GetTarget();
   if (old_target == prop_target) return false;
   
   // return false if predator trying to become prey and this has been disallowed
@@ -3270,8 +3334,8 @@ bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_GetCurrentTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  const int group_reg = FindModifiedRegister(rBX);
-    setInternalValue(group_reg, m_organism->GetTarget(), false);
+  const int target_reg = FindModifiedRegister(rBX);
+  setInternalValue(target_reg, m_organism->GetTarget(), false);
   return true;
 }
 
@@ -3357,7 +3421,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
   return true;
 }
 
-//Attack organism faced by this one, if there is non-predator target in front. 
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit and reactions. 
 bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -3384,6 +3448,15 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // if you weren't a predator before, you are now!
   m_organism->SetTarget(-2);
   
+  // now add on the victims reaction counts to your own...
+  tArray<int> target_reactions = target->GetPhenotype().GetCurReactionCount();
+  tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+
+  for (int i = 0; i < org_reactions.GetSize(); i++) {
+    org_reactions[i] += target_reactions[i];
+    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+  }
+    
   target->Die(ctx);
   
   return true;

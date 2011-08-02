@@ -86,7 +86,7 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
       else map_method = &cSymbolUtil::GetParasiteSymbol;
       break;
     case MAP_FORAGER:
-      if (use_color) color_method = &cSymbolUtil::GetForagerSymbol;
+      if (use_color) color_method = &cSymbolUtil::GetForagerColor;
       map_method = &cSymbolUtil::GetForagerSymbol;
       break;
     case MAP_MUTATIONS:

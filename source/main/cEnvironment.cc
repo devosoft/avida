@@ -1379,7 +1379,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const bool on_divide = taskctx.GetOnDivide();
         
     // Examine requisites on this reaction
-    if (TestRequisites(cur_reaction, task_cnt, reaction_count, on_divide) == false) { 
+    if (TestRequisites(taskctx, cur_reaction, task_cnt, reaction_count, on_divide) == false) { 
       if (!skipProcessing){
         continue;
       }
@@ -1442,7 +1442,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
 
 
-bool cEnvironment::TestRequisites(const cReaction* cur_reaction,
+bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction,
                                   int task_count, const tArray<int>& reaction_count, const bool on_divide) const
 {
   const tList<cReactionRequisite>& req_list = cur_reaction->GetRequisites();
@@ -1462,10 +1462,11 @@ bool cEnvironment::TestRequisites(const cReaction* cur_reaction,
     bool satisfied = true;
     
     // Have all reactions been met?     
+    const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); //APW
     tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
     while (reaction_it.Next() != NULL) {
       int react_id = reaction_it.Get()->GetID();
-      if (reaction_count[react_id] == 0) {
+      if (reaction_count[react_id] == 0 && stolen_reactions[react_id] == 0) {   //APW
         satisfied = false;
         break;
       }
