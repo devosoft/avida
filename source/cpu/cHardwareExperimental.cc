@@ -36,7 +36,7 @@
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
-#include "cPopulation.h"  //APW--get this out of the hardware
+#include "cPopulation.h"  //APW TODO -- get this out of the hardware (cur required for lookahead)
 
 #include "tInstLibEntry.h"
 
@@ -2881,7 +2881,9 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
   // fail if the org is trying to sense a nest/hidden habitat
   if (habitat_used == 3) return false;
-  // default to 0 if invalid habitat
+  // default to look for prey if invalid habitat & predator
+  else if (m_organism->GetTarget() == -2 && (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
+  // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
   
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if invalid number  
@@ -3323,7 +3325,10 @@ bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
   if (old_target == prop_target) return false;
   
   // return false if predator trying to become prey and this has been disallowed
-  if (old_target == -2 && m_world->GetConfig().ALLOW_PRED_PREY_SWITCH.Get() == 0) return false;
+  if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
+
+  // return false if trying to become predator and there are none in the experiment
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
 
   // Set the new target and return the value
   m_organism->SetTarget(prop_target);
@@ -3457,6 +3462,8 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
     m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
   }
     
+  //APW TODO
+  // now add the victims internal resource bins to your own
   target->Die(ctx);
   
   return true;
