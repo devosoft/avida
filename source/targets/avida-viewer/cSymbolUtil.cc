@@ -95,7 +95,7 @@ char cSymbolUtil::GetForagerColor(const cPopulationCell & cell)
   
   if (org_target == -2) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
   else if (org_target == -1) return '1';              //no target = bold-white
-  else return 'B' + org_target;                                //other valid targets = colors -> white
+  else return 'B' + org_target;                       //other valid targets = colors -> white
 }
 
 char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)

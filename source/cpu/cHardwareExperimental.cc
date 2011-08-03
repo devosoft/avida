@@ -2925,7 +2925,9 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
   }
 */
-    
+  
+  // tArray<int> results = m_organism->LookAhead(habitat_used, distance_sought, search_type, res_id_sought);
+      
   // start the real work of walking through cells
   const int facing = m_organism->GetFacing();
   const int faced_cell = m_organism->GetFacedCellID();
@@ -3025,7 +3027,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       // get out of here if we are hunting other organisms and found the closest one of the right type
       else if (habitat_used == -2) {
         const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
-        if (target_cell.IsOccupied()) {
+        if (target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
           type_seen = target_cell.GetOrganism()->GetTarget();
           if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
             found_creature = true;
@@ -3143,7 +3145,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
             // get out of here if we are hunting other organisms and found the closest one of the right type
             else if (habitat_used == -2) {
               const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
-              if (target_cell.IsOccupied()) {
+              if (target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
                 type_seen = target_cell.GetOrganism()->GetTarget();
                 if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
                   found_creature = true;
@@ -3257,8 +3259,9 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     }
   }
   
-  // return -1 if we were hunting orgs and never found one
+  // org results
   else if (habitat_used == -2) {
+    // return -1 if we were hunting orgs and never found one
     if ((search_type == 0 || search_type == -1 || search_type == 1) && !found_creature) {
       setInternalValue(distance_reg, -1, true);
       setInternalValue(search_type_reg, search_type, true);
@@ -3450,9 +3453,6 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   attacker_merit += target_merit;
   m_organism->UpdateMerit(attacker_merit);
   
-  // if you weren't a predator before, you are now!
-  m_organism->SetTarget(-2);
-  
   // now add on the victims reaction counts to your own...
   tArray<int> target_reactions = target->GetPhenotype().GetCurReactionCount();
   tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
@@ -3464,7 +3464,16 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
     
   //APW TODO
   // now add the victims internal resource bins to your own
+
+  // if you weren't a predator before, you are now!
+  m_organism->SetTarget(-2);
+  
   target->Die(ctx);
+  
+  m_organism->Move(ctx);
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
   
   return true;
 } 		
