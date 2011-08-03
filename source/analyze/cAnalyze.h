@@ -37,7 +37,9 @@
 #include "tHashMap.h"
 
 
-const int MAX_BATCHES = 2000;
+const int MAX_BATCHES = 50000;
+const int INITIAL_BATCHES = 2000;
+const int NUM_BATCHES_INCREMENT = 2000;
 
 class cAnalyzeCommand;
 class cAnalyzeCommandDefBase;
@@ -73,7 +75,7 @@ private:
   int GetTempNextUpdate(){ return temporary_next_update; }
   int GetTempNextID(){ return temporary_next_id; }
 
-  cGenotypeBatch batch[MAX_BATCHES];
+  tArray<cGenotypeBatch> batch;
   tList<cAnalyzeCommand> command_list;
   tList<cAnalyzeFunction> function_list;
   tList<cAnalyzeCommandDefBase> command_lib;
@@ -131,7 +133,8 @@ public:
   
   int GetCurrentBatchID() { return cur_batch; }
   cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }
-  cGenotypeBatch& GetBatch(int id) { assert(id >= 0 && id < MAX_BATCHES); return batch[id]; }
+  cGenotypeBatch& GetBatch(int id) { assert(id >= 0 && id < batch.GetSize()); return batch[id]; }
+  int GetNumBatches() { return batch.GetSize(); }
   cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
   
   void AlignCurrentBatch() { CommandAlign(""); }

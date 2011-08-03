@@ -166,7 +166,7 @@ void cAnalyzeScreen::UpdateMenu_Genotypes()
   Print(4, 3, "Batch  Count  Flags");
   
   SetBoldColor(COLOR_CYAN);
-  for (int i = 0; i < MAX_BATCHES; i++) {
+  for (int i = 0; i < analyze.GetNumBatches(); i++) {
     cGenotypeBatch & print_batch = analyze.GetBatch(i);
     if (i == cur_batch || print_batch.List().GetSize() > 0) {
       cur_line.Set("%5d  %5d  ", i, print_batch.List().GetSize());
