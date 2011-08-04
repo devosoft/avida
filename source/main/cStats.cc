@@ -3118,7 +3118,7 @@ void cStats::PrintTargets(const cString& filename)
 	cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Targets in use on update boundary.");
   df.WriteComment("-2: is predator, -1: no targets(default), >=0: id of environmental resource targeted).");
-  df.WriteComment("Format is update + target + count + target + count ...");
+  df.WriteComment("Format is update + target0 + count0 + target1 + count1 ...");
 	df.WriteTimeStamp();
 
   df.Write(m_update, "Update");

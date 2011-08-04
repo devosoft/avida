@@ -2926,8 +2926,6 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   }
 */
   
-  // tArray<int> results = m_organism->LookAhead(habitat_used, distance_sought, search_type, res_id_sought);
-      
   // start the real work of walking through cells
   const int facing = m_organism->GetFacing();
   const int faced_cell = m_organism->GetFacedCellID();
@@ -2995,7 +2993,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
             }
           }
         }
-        else if (res_id_sought != 1) {
+        else if (res_id_sought != -1) {
           if (search_type == 1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (cell_res[res_id_sought] >= 1)) {
             total_edible_ahead++;
             break;
@@ -3113,7 +3111,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
                   }
                 }
               }
-              else if (res_id_sought != 1) {
+              else if (res_id_sought != -1) {
                 if (search_type == 1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (cell_res[res_id_sought] >= 1)) {
                   total_edible_ahead++;
                   break;
