@@ -91,7 +91,7 @@ char cSymbolUtil::GetParasiteSymbol(const cPopulationCell & cell)
 char cSymbolUtil::GetForagerColor(const cPopulationCell & cell)
 {
   if (cell.IsOccupied() == false) return ' ';
-  const int org_target = cell.GetOrganism()->GetTarget();
+  const int org_target = cell.GetOrganism()->GetForageTarget();
   
   if (org_target == -2) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
   else if (org_target == -1) return '1';              //no target = bold-white
@@ -101,7 +101,7 @@ char cSymbolUtil::GetForagerColor(const cPopulationCell & cell)
 char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
 {
   if (cell.IsOccupied() == false) return ' ';
-  const int org_target = cell.GetOrganism()->GetTarget();
+  const int org_target = cell.GetOrganism()->GetForageTarget();
   
   if (org_target == -2) return 'P';
   else if (org_target == -1) return '-';

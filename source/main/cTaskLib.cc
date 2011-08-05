@@ -3457,7 +3457,7 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
   int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
   
   double reward = 0.0;
-  int target_res = ctx.GetOrganism()->GetTarget();
+  int target_res = ctx.GetOrganism()->GetForageTarget();
   
   // If the organism is on the right resource...
   if (target_res == des_target) {

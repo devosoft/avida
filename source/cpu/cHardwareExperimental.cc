@@ -269,8 +269,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("set-target", &cHardwareExperimental::Inst_SetTarget, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-current-target", &cHardwareExperimental::Inst_GetCurrentTarget),
+    tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
 
      
     // Grouping instructions
@@ -2804,21 +2804,25 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 {
   const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
-  const cCodeLabel& search_label = GetLabel();
+  const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
-  if (search_label.GetSize()) {
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    const int num_res = resource_lib.GetSize();
-    res_sought = abs(m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value) % num_res; 
+  // are you trying to sense a valid resource?
+  const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
+  if (res_req < cell_res.GetSize() && res_req > 0) {  
+    res_sought = res_req; 
   }
   
   int res_amount = 0;
+  // if you requested a valid resource, we return the value for that res
   if (res_sought != -1) res_amount = (int) (cell_res[res_sought] * 100 + 0.5);
+  // otherwise, we sum across all resources in the cell
   else {
-    for (int i = 0; i < cell_res.GetSize(); i++ ) res_amount += (int) (cell_res[i] * 100 + 0.5);
+    for (int i = 0; i < cell_res.GetSize(); i++) {
+      res_amount += (int) (cell_res[i] * 100 + 0.5);
+    }
   }
-  setInternalValue(FindModifiedRegister(rBX), res_sought, true);
-  const int res_tot_reg = FindModifiedNextRegister(FindModifiedRegister(rBX));
+  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
+  const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
   setInternalValue(res_tot_reg, res_amount, true);
   return true;
 }
@@ -2826,12 +2830,12 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx) 
 {
   const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
-  const cCodeLabel& search_label = GetLabel();
+  const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
-  if (search_label.GetSize()) {
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    const int num_res = resource_lib.GetSize();
-    res_sought = abs(m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value) % num_res; 
+  // are you trying to sense a valid resource?
+  const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
+  if (res_req < cell_res.GetSize() && res_req > 0) {  
+    res_sought = res_req; 
   }
   
   int res_amount = 0;
@@ -2847,10 +2851,9 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
     }
   }
   
-  setInternalValue(FindModifiedRegister(rBX), res_sought, true);
-  const int res_tot_reg = FindModifiedNextRegister(FindModifiedRegister(rBX));
+  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
+  const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
   setInternalValue(res_tot_reg, res_amount - faced_res, true);
-
   return true;
 }
 
@@ -2879,10 +2882,16 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   const int habitat_reg = FindModifiedRegister(rBX);
   int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  bool pred_experiment = false;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) pred_experiment = true;
+  
   // fail if the org is trying to sense a nest/hidden habitat
   if (habitat_used == 3) return false;
+  // default to look for env res if asking for pred in no pred environment
+  else if (!pred_experiment && habitat_used == -2) habitat_used = 0;
   // default to look for prey if invalid habitat & predator
-  else if (m_organism->GetTarget() == -2 && (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
+  else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
+           (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
   
@@ -2900,6 +2909,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
   int search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
+  if (!pred_experiment && (search_type == 1 || search_type == 2)) search_type = 0;
   if (habitat_used != -2 && (search_type < -1 || search_type > 1)) search_type = 0;
   else if (habitat_used == -2 && (search_type < -2 || search_type > 2)) search_type = 0;
   
@@ -3026,7 +3036,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       else if (habitat_used == -2) {
         const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
         if (target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
-          type_seen = target_cell.GetOrganism()->GetTarget();
+          type_seen = target_cell.GetOrganism()->GetForageTarget();
           if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
             found_creature = true;
             break;
@@ -3144,7 +3154,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
             else if (habitat_used == -2) {
               const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
               if (target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
-                type_seen = target_cell.GetOrganism()->GetTarget();
+                type_seen = target_cell.GetOrganism()->GetForageTarget();
                 if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
                   found_creature = true;
                   break;
@@ -3311,7 +3321,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
     return true;
 }
  
-bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
 	const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -3322,7 +3332,7 @@ bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
   if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
   
   //return false if org setting target to current one (avoid paying costs for not switching)
-  const int old_target = m_organism->GetTarget();
+  const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
   
   // return false if predator trying to become prey and this has been disallowed
@@ -3332,16 +3342,16 @@ bool cHardwareExperimental::Inst_SetTarget(cAvidaContext& ctx)
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
 
   // Set the new target and return the value
-  m_organism->SetTarget(prop_target);
+  m_organism->SetForageTarget(prop_target);
 	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetCurrentTarget(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int target_reg = FindModifiedRegister(rBX);
-  setInternalValue(target_reg, m_organism->GetTarget(), false);
+  setInternalValue(target_reg, m_organism->GetForageTarget(), false);
   return true;
 }
 
@@ -3431,13 +3441,16 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
+
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
   // prevent killing other carnivores -- that should be handled differently using vitality
-  if (target->GetTarget() == -2) return true;
+  if (target->GetForageTarget() == -2) return true;
   
   // prevent killing on nests/safe havens
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -3464,7 +3477,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // now add the victims internal resource bins to your own
 
   // if you weren't a predator before, you are now!
-  m_organism->SetTarget(-2);
+  m_organism->SetForageTarget(-2);
   
   target->Die(ctx);
   

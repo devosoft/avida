@@ -605,7 +605,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
           }
       }
     // if parent org has executed teach_offspring intruction, teach the offspring the parent's learned foraging/targeting behavior
-    if (parent_organism->IsTeacher()) offspring_array[i]->SetTarget(parent_organism->GetTarget());
+    if (parent_organism->IsTeacher()) offspring_array[i]->SetForageTarget(parent_organism->GetForageTarget());
   }
     
   

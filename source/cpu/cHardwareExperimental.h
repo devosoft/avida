@@ -524,8 +524,8 @@ private:
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
-  bool Inst_SetTarget(cAvidaContext& ctx);
-  bool Inst_GetCurrentTarget(cAvidaContext& ctx);
+  bool Inst_SetForageTarget(cAvidaContext& ctx);
+  bool Inst_GetForageTarget(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);

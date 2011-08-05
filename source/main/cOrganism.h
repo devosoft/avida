@@ -595,8 +595,8 @@ public:
 	void ClearEasterly() {m_easterly = 0; }
 	void ClearNortherly() {m_northerly = 0; }
   
-  int GetTarget() const { return m_target; }
-  void SetTarget(int m_target);
+  int GetForageTarget() const { return m_forage_target; }
+  void SetForageTarget(int m_forage_target);
   bool IsTeacher() const { return m_teach; }
   void Teach(bool m_teach);
   
@@ -628,7 +628,7 @@ protected:
   //total number of steps taken to east (minus W steps) since birth  
   int m_easterly;
 	
-  int m_target;
+  int m_forage_target;
   bool m_teach;
   
   /*! Contains all the different data structures needed to
