@@ -25,12 +25,48 @@
 #include "cRandom.h"
 #include "tSmartArray.h"
 
+cGenotypeBatch::cGenotypeBatch(const cGenotypeBatch& rhs) : m_name(rhs.m_name), m_list(rhs.m_list), m_is_lineage(rhs.m_is_lineage), m_is_aligned(rhs.m_is_aligned)
+{
+  if (rhs.m_lineage_head) {
+    m_lineage_head = new cAnalyzeGenotype(*(rhs.m_lineage_head));
+  }
+  
+  if (rhs.m_clade_head) {
+    m_clade_head = new cAnalyzeGenotype(*(rhs.m_clade_head));
+  }
+}
 
 cGenotypeBatch::~cGenotypeBatch()
 {
   tListIterator<cAnalyzeGenotype> it(m_list);
   cAnalyzeGenotype* genotype = NULL;
   while ((genotype = it.Next())) delete genotype;
+  
+  delete m_lineage_head;
+  delete m_clade_head;
+}
+
+cGenotypeBatch& cGenotypeBatch::operator=(const cGenotypeBatch& rhs)
+{
+  // check for self-assignment
+  if (this == &rhs) return *this;
+
+  // shallow-copiable or have their own deep copy functionality
+  m_list =       rhs.m_list;
+  m_name =       rhs.m_name;
+  m_is_lineage = rhs.m_is_lineage;
+  m_is_aligned = rhs.m_is_aligned;
+
+  // pointery bits
+  delete m_lineage_head;
+  if (rhs.m_lineage_head) {
+    m_lineage_head = new cAnalyzeGenotype(*(rhs.m_lineage_head));
+  }
+
+  delete m_clade_head;
+  if (rhs.m_clade_head) {
+    m_clade_head = new cAnalyzeGenotype(*(rhs.m_clade_head));
+  }
 }
 
 

@@ -95,6 +95,7 @@ cAnalyze::cAnalyze(cWorld* world)
  */
 , temporary_next_id(0)
 , temporary_next_update(0)
+, batch(INITIAL_BATCHES)
 , variables(26)
 , local_variables(26)
 , arg_variables(26)
@@ -109,7 +110,7 @@ cAnalyze::cAnalyze(cWorld* world)
   random.ResetSeed(m_world->GetConfig().RANDOM_SEED.Get());
   if (m_world->GetDriver().IsInteractive()) exit_on_error = false;
   
-  for (int i = 0; i < MAX_BATCHES; i++) {
+  for (int i = 0; i < GetNumBatches(); i++) {
     batch[i].Name().Set("Batch%d", i);
   }
   
@@ -2115,7 +2116,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   
   
   // Loop through all of the batches...
-  for (int i = 0; i < MAX_BATCHES; i++) {
+  for (int i = 0; i < GetNumBatches(); i++) {
     if (batch[i].List().GetSize() == 0) continue;
     
     if (file_type == FILE_TYPE_HTML) fp << "<tr><td>";
@@ -2718,7 +2719,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   // Loop through all genotypes in all batches and build id vs. genotype map
   
   map<int, cAnalyzeGenotype *> genotype_database;
-  for (int i = 0; i < MAX_BATCHES; ++ i) {
+  for (int i = 0; i < GetNumBatches(); ++ i) {
     tListIterator<cAnalyzeGenotype> batch_it(batch[i].List());
     cAnalyzeGenotype * genotype = NULL;
     while ((genotype = batch_it.Next()) != NULL) {
@@ -8062,9 +8063,23 @@ void cAnalyze::BatchSet(cString cur_string)
     next_batch = cur_string.PopWord().AsInt();
   }
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Setting current batch to " << next_batch << endl;
-  if (next_batch >= MAX_BATCHES) {
-    cerr << "  Error: max batches is " << MAX_BATCHES << endl;
-    if (exit_on_error) exit(1);
+  if (next_batch >= GetNumBatches()) {
+    if (next_batch >= MAX_BATCHES) {
+      cerr << "  Error: max batches is " << MAX_BATCHES << endl;
+      if (exit_on_error) exit(1);
+    } else {
+      int old_num_batches = GetNumBatches();
+      int num_batchsets_needed = ((next_batch - old_num_batches) / NUM_BATCHES_INCREMENT) + 1;
+      int new_num_batches = GetNumBatches() + (num_batchsets_needed * NUM_BATCHES_INCREMENT);
+      if (new_num_batches > MAX_BATCHES) new_num_batches = MAX_BATCHES;
+      
+      cout << "Increasing max batches to " << new_num_batches << endl;
+      
+      batch.Resize(new_num_batches);
+      for (int i = old_num_batches; i < new_num_batches; i++) { 
+        batch[i].Name().Set("Batch%d", i);
+      }
+    } 
   } else {
     cur_batch = next_batch;
   }
@@ -8321,7 +8336,7 @@ void cAnalyze::PrintStatus(cString cur_string)
   (void) cur_string;
   
   cout << "Status Report:" << endl;
-  for (int i = 0; i < MAX_BATCHES; i++) {
+  for (int i = 0; i < GetNumBatches(); i++) {
     if (i == cur_batch || batch[i].List().GetSize() > 0) {
       cout << "  Batch " << i << " -- "
       << batch[i].List().GetSize() << " genotypes.";

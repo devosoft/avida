@@ -44,12 +44,12 @@ private:
   bool m_is_lineage;
   bool m_is_aligned;
   
-  cGenotypeBatch(const cGenotypeBatch&); // @not_implemented
-  cGenotypeBatch& operator=(const cGenotypeBatch&); // @not_implemented
-
 public:
   cGenotypeBatch() : m_name(""), m_lineage_head(NULL), m_clade_head(NULL), m_is_lineage(false), m_is_aligned(false) { ; }
+  cGenotypeBatch(const cGenotypeBatch&);
   ~cGenotypeBatch();
+
+  cGenotypeBatch& operator=(const cGenotypeBatch&);
 
   tListPlus<cAnalyzeGenotype>& List() { return m_list; }
   cString& Name() { return m_name; }
