@@ -35,17 +35,18 @@ class cOrganism;
 #define MAP_BASIC      0
 #define MAP_BREED_TRUE 1
 #define MAP_PARASITE   2
-#define MAP_MUTATIONS  3
-#define MAP_THREAD     4
-#define MAP_INJECT     5
-#define MAP_LINEAGE    6
-#define NUM_MAPS       7
+#define MAP_FORAGER    3
+#define MAP_MUTATIONS  4
+#define MAP_THREAD     5
+#define MAP_INJECT     6
+#define MAP_LINEAGE    7
+#define NUM_MAPS       8
 
 // Other map modes currently inactive...
-#define MAP_COMBO      8
-#define MAP_RESOURCE   9
-#define MAP_AGE       10
-#define NUM_MAP_MODES 11
+#define MAP_COMBO      9
+#define MAP_RESOURCE  10
+#define MAP_AGE       11
+#define NUM_MAP_MODES 12
 
 struct sGenotypeViewInfo
 {

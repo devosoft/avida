@@ -140,8 +140,8 @@ public:
   
   bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
   
-  void AddLiveOrg() { ; }  //APW
-  void RemoveLiveOrg() { ; }  //APW
+  void AddLiveOrg() { ; }  
+  void RemoveLiveOrg() { ; }  
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }

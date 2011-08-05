@@ -261,8 +261,8 @@ public:
   int GetNumTaskCellsReached() const { return m_interface->GetNumTaskCellsReached(); }
   void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
 
-  void AddLiveOrg() { m_interface->AddLiveOrg(); } //APW
-  void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } //APW
+  void AddLiveOrg() { m_interface->AddLiveOrg(); } 
+  void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 
@@ -595,8 +595,10 @@ public:
 	void ClearEasterly() {m_easterly = 0; }
 	void ClearNortherly() {m_northerly = 0; }
   
-  int GetTarget() { return m_target; }
-  void SetTarget(int m_target);
+  int GetForageTarget() const { return m_forage_target; }
+  void SetForageTarget(int m_forage_target);
+  bool IsTeacher() const { return m_teach; }
+  void Teach(bool m_teach);
   
 protected:
 	// The organism's own raw materials
@@ -626,7 +628,8 @@ protected:
   //total number of steps taken to east (minus W steps) since birth  
   int m_easterly;
 	
-  int m_target;
+  int m_forage_target;
+  bool m_teach;
   
   /*! Contains all the different data structures needed to
 	 track strings, production of strings, and donation/trade

@@ -3448,7 +3448,6 @@ void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cE
   cArgSchema schema;
   
   schema.AddEntry("target_id", 0, 1);
-  
   cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "ConsumeTarget", &cTaskLib::Task_ConsumeTarget, 0, args);
 }
@@ -3458,13 +3457,13 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
   int des_target = ctx.GetTaskEntry()->GetArguments().GetInt(0);
   
   double reward = 0.0;
-  int target_id = ctx.GetOrganism()->GetTarget();
+  int target_res = ctx.GetOrganism()->GetForageTarget();
   
   // If the organism is on the right resource...
-  if (target_id == des_target) {
+  if (target_res == des_target) {
     reward = 1;
   }
-  
+
   return reward;
 }
 

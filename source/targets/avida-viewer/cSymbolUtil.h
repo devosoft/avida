@@ -18,6 +18,8 @@ public:
   static char GetAgeSymbol(      const cPopulationCell & cell );
   static char GetBreedSymbol(    const cPopulationCell & cell );
   static char GetParasiteSymbol( const cPopulationCell & cell );
+  static char GetForagerColor(  const cPopulationCell & cell );
+  static char GetForagerSymbol(  const cPopulationCell & cell );
   static char GetMutSymbol(      const cPopulationCell & cell );
   static char GetThreadSymbol(   const cPopulationCell & cell );
   static char GetLineageSymbol(  const cPopulationCell & cell );

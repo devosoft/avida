@@ -50,6 +50,7 @@ void cMapScreen::Update(cAvidaContext& ctx)
   else if (info.GetMapMode() == MAP_AGE)        Print(name_y, name_x, "   Age View    ");
   else if (info.GetMapMode() == MAP_BREED_TRUE) Print(name_y, name_x, "Breed True View");
   else if (info.GetMapMode() == MAP_PARASITE)   Print(name_y, name_x, " Parasite View ");
+  else if (info.GetMapMode() == MAP_FORAGER)    Print(name_y, name_x, " Forager View ");
   else if (info.GetMapMode() == MAP_MUTATIONS)  Print(name_y, name_x, " Mutation View ");
   else if (info.GetMapMode() == MAP_THREAD)     Print(name_y, name_x, "  Thread View  ");
   else if (info.GetMapMode() == MAP_LINEAGE)    Print(name_y, name_x, " Lineage View  ");
