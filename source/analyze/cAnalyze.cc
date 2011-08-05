@@ -8079,6 +8079,7 @@ void cAnalyze::BatchSet(cString cur_string)
       for (int i = old_num_batches; i < new_num_batches; i++) { 
         batch[i].Name().Set("Batch%d", i);
       }
+      cur_batch = next_batch;
     } 
   } else {
     cur_batch = next_batch;
