@@ -2887,21 +2887,19 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // fail if the org is trying to sense a nest/hidden habitat
   if (habitat_used == 3) return false;
-  // default to look for env res if asking for pred in no pred environment
-  else if (!pred_experiment && habitat_used == -2) habitat_used = 0;
-  // default to look for prey if invalid habitat & predator
+  // default to look for orgs if invalid habitat & predator
   else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
            (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
   
-  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if invalid number  
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, 10 if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
   int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > long_axis) distance_sought = long_axis;
-   
+  else if (distance_sought > long_axis) distance_sought = 10;
+  
   // third register gives type of search used for food resources (habitat 0) and org hunting
   // env res search_types: 
   // 0 = look for closest edible res (>=1) or closest hill/wall (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
@@ -2909,19 +2907,23 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
   int search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
-  if (!pred_experiment && (search_type == 1 || search_type == 2)) search_type = 0;
-  if (habitat_used != -2 && (search_type < -1 || search_type > 1)) search_type = 0;
-  else if (habitat_used == -2 && (search_type < -2 || search_type > 2)) search_type = 0;
   
-  // fourth register gives specific instance of FOOD resources sought (default to none)
+  // if looking for env res, default to closest edible
+  if (habitat_used != -2 && (search_type < -1 || search_type > 1)) search_type = 0;
+  // if looking for orgs in predator environment, default to closest org of any type
+  else if (pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  // if looking for orgs in non-predator environment, default to closest org of any type
+  else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
+  
+  // fourth register gives specific instance of env resources sought (default to none)
   int res_id_sought = -1;
   const int res_id_reg = FindModifiedNextRegister(search_type_reg);
-  if (NUM_REGISTERS > 3) {
+  if (NUM_REGISTERS > 3 && habitat_used != -2) {
     res_id_sought = m_threads[m_cur_thread].reg[res_id_reg].value;
     if (res_id_sought < 0 || res_id_sought >= lib_size) res_id_sought = -1;
   }
   
-  // if an org is trying to do totals for a specific resource that is not actually food, this is invalid and we can exit now
+  // if an org is trying to do totals for a specific env resource that is not actually food, this is invalid and we can exit now
   if (habitat_used != -2 && search_type == -1 && res_id_sought != -1) {
     if (resource_lib.GetResource(res_id_sought)->GetHabitat() != 0) {
       return true;
@@ -3331,6 +3333,9 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // -2 target means setting to predator; -1 (nothing) is default
   if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
   
+  // return false if setting to predator in non-predator experiment
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0 && prop_target == -2) return false;
+  
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
@@ -3442,7 +3447,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
 
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
