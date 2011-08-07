@@ -266,6 +266,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-nest", &cHardwareExperimental::Inst_SenseNest, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
@@ -2827,6 +2828,39 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
+{
+  const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const int reg_used = FindModifiedRegister(rBX);
+  const cCodeLabel& search_label = GetLabel();
+
+  int nest_id = -1;
+  int nest_val = 0;
+  
+  // default to opinion res
+  if (m_organism->HasOpinion()) nest_id = m_organism->GetOpinion().first;
+  // override with nop specified res 
+  if (search_label.GetSize() > 0) nest_id = m_threads[m_cur_thread].reg[reg_used].value;
+  
+  // if no nop, invalid nop value, or invalid opinion return the id of the first nest in the cell with val >= 1
+  if (nest_id < 0 || nest_id >= resource_lib.GetSize()) {
+    for (int i = 0; i < cell_res.GetSize(); i++) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 3 && cell_res[i] >= 1) {
+        nest_id = i;
+        nest_val = cell_res[i];
+        break;
+      }
+    }
+  }
+  else nest_val = cell_res[nest_id];  
+
+  setInternalValue(reg_used, nest_id, true);
+  const int val_reg = FindModifiedNextRegister(reg_used);
+  setInternalValue(val_reg, nest_val, true);
+  return true;
+}
+
 bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx) 
 {
   const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
@@ -2873,6 +2907,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
     
+  const cCodeLabel& search_label = GetLabel();
+
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource, habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
@@ -2887,18 +2923,20 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // fail if the org is trying to sense a nest/hidden habitat
   if (habitat_used == 3) return false;
+  
   // default to look for orgs if invalid habitat & predator
   else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
            (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
   
-  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, 10 if high  
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, 100 if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
-  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  int distance_sought = 1;
+  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > long_axis) distance_sought = 10;
+  else if (distance_sought > long_axis) distance_sought = 100;
   
   // third register gives type of search used for food resources (habitat 0) and org hunting
   // env res search_types: 
@@ -2906,7 +2944,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // org hunting search types: 
   // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
-  int search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
+  int search_type = 0;
+  if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
   
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < -1 || search_type > 1)) search_type = 0;
@@ -2915,13 +2954,23 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // if looking for orgs in non-predator environment, default to closest org of any type
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
   
-  // fourth register gives specific instance of env resources sought (default to none)
-  int res_id_sought = -1;
+  // fourth register gives specific instance of env resources sought (default to target, which will be -1 (==any) if org has no target)
+  int res_id_sought = m_organism->GetForageTarget();
+  // if you're a predator, you can't specify a specific res             // APW TODO--allow targeting specific org?
+  if (res_id_sought < 0) res_id_sought = -1;
   const int res_id_reg = FindModifiedNextRegister(search_type_reg);
-  if (NUM_REGISTERS > 3 && habitat_used != -2) {
+  if (NUM_REGISTERS > 3 && habitat_used != -2 && search_label.GetSize() > 3) {
     res_id_sought = m_threads[m_cur_thread].reg[res_id_reg].value;
     if (res_id_sought < 0 || res_id_sought >= lib_size) res_id_sought = -1;
   }
+  
+  /*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
+   int spec_value = -1;
+   const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
+   if (NUM_REGISTERS > 4) {
+   spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
+   }
+   */
   
   // if an org is trying to do totals for a specific env resource that is not actually food, this is invalid and we can exit now
   if (habitat_used != -2 && search_type == -1 && res_id_sought != -1) {
@@ -2930,14 +2979,6 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     }
   }
 
-/*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
-  int spec_value = -1;
-  const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
-  if (NUM_REGISTERS > 4) {
-    spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
-  }
-*/
-  
   // start the real work of walking through cells
   const int facing = m_organism->GetFacing();
   const int faced_cell = m_organism->GetFacedCellID();
@@ -2958,6 +2999,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   int prey_count = 0;
   int pred_count = 0;
   int feature_count = 0;
+  int res_id_found = -1;    
   
   int type_seen = -1;
   
@@ -2978,6 +3020,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
           for (int k = 0; k < lib_size; k++) {
             if (resource_lib.GetResource(k)->GetHabitat() == 0 && cell_res[k] >= 1) {
               found_edible = true;
+              res_id_found = k;
               break;
             }
           }
@@ -3096,6 +3139,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
                 for (int k = 0; k < lib_size; k++) {
                   if (resource_lib.GetResource(k)->GetHabitat() == 0 && cell_res[k] >= 1) {
                     found_edible = true;
+                    res_id_found = k;
                     break;
                   }
                 }
@@ -3178,6 +3222,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
         setInternalValue(habitat_reg, habitat_used, true);
         setInternalValue(distance_reg, dist, true);
         setInternalValue(search_type_reg, search_type, true);
+        if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, res_id_found, true);
         return true;
       }
       
@@ -3224,6 +3269,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     if (search_type == 0 && !found_edible) {
       setInternalValue(distance_reg, -1, true);
       setInternalValue(search_type_reg, search_type, true);
+      if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, -1, true);
       return true;
     }
     
