@@ -116,6 +116,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
     
+    // Threading 
+    tInstLibEntry<tMethod>("fork-thread", &cHardwareExperimental::Inst_ForkThread),
+    tInstLibEntry<tMethod>("exit-thread", &cHardwareExperimental::Inst_ExitThread),
+    tInstLibEntry<tMethod>("id-thread", &cHardwareExperimental::Inst_IdThread),
+
+    
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
@@ -144,6 +150,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("shift-l", &cHardwareExperimental::Inst_ShiftL, 0, "Shift bits in ?BX? left by one (multiply by two)"),
     tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, 0, "Increment ?BX? by one"),
     tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, 0, "Decrement ?BX? by one"),
+    tInstLibEntry<tMethod>("zero", &cHardwareExperimental::Inst_Zero, 0, "Set ?BX? to 0"),
 
     tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, 0, "Add BX to CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, 0, "Subtract CX from BX and place the result in ?BX?"),
@@ -190,8 +197,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, 0, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, 0, "Copy the position of the ?IP? head into ?CX?"),
     
-    
-    
+
     // Replication Instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, 0, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::STALL, "Divide code between read and write heads."),
@@ -208,6 +214,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, nInstFlag::STALL, "Instantly kills the organism"),
 
+    // Thread Execution Control
+    tInstLibEntry<tMethod>("wait-cond-equ", &cHardwareExperimental::Inst_WaitCondition_Equal, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareExperimental::Inst_WaitCondition_Greater, nInstFlag::STALL, ""),
     
     
     // Promoter Model
@@ -232,7 +242,42 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareExperimental::Inst_SGRotateR),
     tInstLibEntry<tMethod>("sg-sense", &cHardwareExperimental::Inst_SGSense),
 
+      
+    // Movement and Navigation instructions
+    tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
+    tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
+    tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
+    tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
+    tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly),    
+    tInstLibEntry<tMethod>("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly),    
     
+    // Rotation
+    tInstLibEntry<tMethod>("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-right-one", &cHardwareExperimental::Inst_RotateRightOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-right-x", &cHardwareExperimental::Inst_RotateRightX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-left-x", &cHardwareExperimental::Inst_RotateLeftX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-dir", &cHardwareExperimental::Inst_RotateDir, nInstFlag::STALL),
+
+      
+    // Resource and Topography Sensing
+    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("sense-group-res-quant", &cHardwareExperimental::Inst_SenseGroupResQuant, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-ahead", &cHardwareExperimental::Inst_SenseDiffAhead, nInstFlag::STALL),
+
+     
+    // Grouping instructions
+    tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
+
+    // Org Interaction instructions
+    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
+
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
   };
@@ -291,8 +336,10 @@ void cHardwareExperimental::internalReset()
   
   // Reset that single thread.
   m_threads[0].Reset(this, 0);
+  m_threads[0].active = true;
   m_thread_id_chart = 1; // Mark only the first thread as taken...
   m_cur_thread = 0;
+  m_waiting_threads = 0;
   
   m_mal_active = false;
   m_executedmatchstrings = false;
@@ -334,6 +381,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   
   reading_label = false;
   reading_seq = false;
+  active = true;
   read_label.Clear();
   next_label.Clear();
 
@@ -369,16 +417,20 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
 
-  const int num_threads = m_threads.GetSize();
-  
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? num_threads : 1;
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
     int last_thread = m_cur_thread++;
-    if (m_cur_thread >= num_threads) m_cur_thread = 0;
+    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+
+    // If the currently selected thread is inactive, proceed to the next thread
+    if (!m_threads[m_cur_thread].active) {
+      if (num_inst_exec == 1) i--;  // When running in non-parallel mode, adjust i so that we will continue to loop
+      continue;
+    }
     
     m_advance_ip = true;
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
@@ -429,7 +481,10 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
       if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
-      
+
+      // Check if the instruction just executed caused premature death, break out of execution if so
+      if (phenotype.GetToDelete()) break;
+
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) ip.Advance();
@@ -482,7 +537,6 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   // Mark the instruction as executed
   getIP().SetFlagExecuted();
 	
-  
   // instruction execution count incremeneted
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
   
@@ -945,7 +999,7 @@ bool cHardwareExperimental::ForkThread()
   // Find the first free bit in m_thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
-  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+  while ((m_thread_id_chart >> new_id) & 1) new_id++;
   m_threads[num_threads].SetID(new_id);
   m_thread_id_chart |= (1 << new_id);
   
@@ -953,10 +1007,10 @@ bool cHardwareExperimental::ForkThread()
 }
 
 
-bool cHardwareExperimental::KillThread()
+bool cHardwareExperimental::ExitThread()
 {
-  // Make sure that there is always at least one thread...
-  if (m_threads.GetSize() == 1) return false;
+  // Make sure that there is always at least one thread awake...
+  if ((m_threads.GetSize() == 1) || (m_waiting_threads == (m_threads.GetSize() - 1))) return false;
   
   // Note the current thread and set the current back one.
   const int kill_thread = m_cur_thread;
@@ -976,6 +1030,13 @@ bool cHardwareExperimental::KillThread()
   
   if (m_cur_thread > kill_thread) m_cur_thread--;
   
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IdThread(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, GetCurThreadID(), false);
   return true;
 }
 
@@ -1183,10 +1244,54 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
 }
 
 
+void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
+{
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != cur_thread && !m_threads[i].active && m_threads[i].wait_reg == reg_num) {
+      int wait_value = m_threads[i].wait_value;
+      int check_value = m_threads[cur_thread].reg[reg_num].value;
+      if ((m_threads[i].wait_greater && check_value > wait_value) ||
+          (m_threads[i].wait_equal && check_value == wait_value) ||
+          (m_threads[i].wait_less && check_value < wait_value)) {
+        
+        // Wake up the thread with matched condition
+        m_threads[i].active = true;
+        m_waiting_threads--;
+        
+        // Set destination register to be the check value
+        sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
+        dest.value = check_value;
+        dest.from_env = false;
+        dest.originated = m_cycle_count;
+        dest.oldest_component = m_threads[cur_thread].reg[reg_num].oldest_component;
+        dest.env_component = m_threads[cur_thread].reg[reg_num].env_component;
+        
+        // Cascade check
+        if (m_waiting_threads) checkWaitingThreads(i, m_threads[i].wait_dst);
+      }
+    }
+  }
+}
+
 
 //////////////////////////
 // And the instructions...
 //////////////////////////
+
+// Multi-threading.
+bool cHardwareExperimental::Inst_ForkThread(cAvidaContext& ctx)
+{
+    getIP().Advance();
+    if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
+{
+    if (!ExitThread()) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+    else m_advance_ip = false;
+    return true;
+}
 
 bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
 {
@@ -1333,7 +1438,7 @@ bool cHardwareExperimental::Inst_Pop(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   sInternalValue pop = stackPop();
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], pop.value, pop);
+  setInternalValue(reg_used, pop.value, pop);
   return true;
 }
 
@@ -1369,16 +1474,14 @@ bool cHardwareExperimental::Inst_Swap(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_ShiftR(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value >> 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 bool cHardwareExperimental::Inst_ShiftL(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value << 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
@@ -1386,29 +1489,32 @@ bool cHardwareExperimental::Inst_ShiftL(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Inc(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value + 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 bool cHardwareExperimental::Inst_Dec(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  setInternalValue(reg, reg.value - 1, reg);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
+bool cHardwareExperimental::Inst_Zero(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, 0, false);
+  return true;
+}
 
 bool cHardwareExperimental::Inst_Add(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, r1.value + r2.value, r1, r2);
+  setInternalValue(dst, r1.value + r2.value, r1, r2);
   return true;
 }
 
@@ -1417,10 +1523,9 @@ bool cHardwareExperimental::Inst_Sub(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, r1.value - r2.value, r1, r2);
+  setInternalValue(dst, r1.value - r2.value, r1, r2);
   return true;
 }
 
@@ -1429,10 +1534,9 @@ bool cHardwareExperimental::Inst_Mult(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, r1.value * r2.value, r1, r2);
+  setInternalValue(dst, r1.value * r2.value, r1, r2);
   return true;
 }
 
@@ -1441,14 +1545,13 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     if (0 - INT_MAX > r1.value && r2.value == -1)
       m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
-      setInternalValue(dreg, r1.value / r2.value, r1, r2);
+      setInternalValue(dst, r1.value / r2.value, r1, r2);
   } else {
     m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
@@ -1461,11 +1564,10 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
-    setInternalValue(dreg, r1.value % r2.value, r1, r2);
+    setInternalValue(dst, r1.value % r2.value, r1, r2);
   } else {
     m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
@@ -1479,10 +1581,9 @@ bool cHardwareExperimental::Inst_Nand(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& dreg = m_threads[m_cur_thread].reg[dst];
   sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
-  setInternalValue(dreg, ~(r1.value & r2.value), r1, r2);
+  setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
   return true;
 }
 
@@ -1494,9 +1595,8 @@ bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate max
   const int cur_size = m_memory.GetSize();
   const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
                              MAX_GENOME_LENGTH - cur_size);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[dst];
   if (Allocate_Main(ctx, alloc_size)) {
-    setInternalValue(reg, cur_size);
+    setInternalValue(dst, cur_size);
     return true;
   } else return false;
 }
@@ -1513,7 +1613,7 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
-  setInternalValue(reg, value_in, true);
+  setInternalValue(reg_used, value_in, true);
   m_organism->DoInput(value_in);
   
   return true;
@@ -1533,7 +1633,7 @@ bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
   
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
-  setInternalValue(reg, value_in, true);
+  setInternalValue(reg_used, value_in, true);
   m_organism->DoInput(value_in);
   
   return true;
@@ -1546,7 +1646,7 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext& ctx)
   
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], value_in, true);
+  setInternalValue(reg_used, value_in, true);
   m_organism->DoInput(value_in);
   
   return true;
@@ -1575,7 +1675,7 @@ bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
   
-  setInternalValue(reg, 0);
+  setInternalValue(reg_used, 0);
   
   return true;
 }
@@ -1700,7 +1800,7 @@ bool cHardwareExperimental::Inst_GetHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg], getHead(head_used).GetPosition());
+  setInternalValue(reg, getHead(head_used).GetPosition());
   return true;
 }
 
@@ -1782,7 +1882,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   } else {
     read_inst = getHead(head_id).GetInst();
   }
-  setInternalValue(m_threads[m_cur_thread].reg[dst], read_inst.GetOp());
+  setInternalValue(dst, read_inst.GetOp());
   ReadInst(read_inst);
   
   if (m_slip_read_head && m_organism->TestCopySlip(ctx))
@@ -1977,6 +2077,96 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
 
 
 
+bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext& ctx)
+{
+  const int wait_value = FindModifiedRegister(rBX);
+  const int check_reg = FindModifiedRegister(rDX);
+  const int wait_dst = FindModifiedRegister(wait_value);
+  
+  // Check if condition has already been met
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value == m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+      return true;
+    }
+  }  
+  // Fail to sleep if this is the last thread awake
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  
+  // Put thread to sleep with appropriate wait condition
+  m_threads[m_cur_thread].active = false;
+  m_waiting_threads++;
+  m_threads[m_cur_thread].wait_equal = true;
+  m_threads[m_cur_thread].wait_less = false;
+  m_threads[m_cur_thread].wait_greater = false;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext& ctx)
+{
+  const int wait_value = FindModifiedRegister(rBX);
+  const int check_reg = FindModifiedRegister(rDX);
+  const int wait_dst = FindModifiedRegister(wait_value);
+  
+  // Check if condition has already been met
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value < m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+      return true;
+    }
+  }
+
+  // Fail to sleep if this is the last thread awake
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  
+  // Put thread to sleep with appropriate wait condition
+  m_threads[m_cur_thread].active = false;
+  m_waiting_threads++;
+  m_threads[m_cur_thread].wait_equal = false;
+  m_threads[m_cur_thread].wait_less = true;
+  m_threads[m_cur_thread].wait_greater = false;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext& ctx)
+{
+  const int wait_value = FindModifiedRegister(rBX);
+  const int check_reg = FindModifiedRegister(rDX);
+  const int wait_dst = FindModifiedRegister(wait_value);
+  
+  // Check if condition has already been met
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value > m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+      return true;
+    }
+  }
+
+  // Fail to sleep if this is the last thread awake
+  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  
+  // Put thread to sleep with appropriate wait condition
+  m_threads[m_cur_thread].active = false;
+  m_waiting_threads++;
+  m_threads[m_cur_thread].wait_equal = false;
+  m_threads[m_cur_thread].wait_less = false;
+  m_threads[m_cur_thread].wait_greater = true;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
+  
+  return true;
+}
+
+
 // --------  Promoter Model  --------
 
 bool cHardwareExperimental::Inst_Promoter(cAvidaContext& ctx)
@@ -2081,7 +2271,7 @@ bool cHardwareExperimental::Do_Numberate(cAvidaContext& ctx, int num_bits)
   m_advance_ip = false;
   
   int num = Numberate(getIP().GetPosition(), +1, num_bits);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], num);
+  setInternalValue(reg_used, num);
   return true;
 }
 
@@ -2167,7 +2357,7 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
         // Set defaults for when no active promoter is found
         m_promoter_index = -1;
         getIP().Set(0);
-        setInternalValue(m_threads[m_cur_thread].reg[promoter_reg_used], 0);
+        setInternalValue(promoter_reg_used, 0);
         break;
         
       case 1: // Death to organisms that refuse to use promoters!
@@ -2186,7 +2376,7 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
     
     // Put its bit code in BX for the organism to have if option is set
     if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
-      setInternalValue(m_threads[m_cur_thread].reg[promoter_reg_used], m_promoters[m_promoter_index].bit_code);
+      setInternalValue(promoter_reg_used, m_promoters[m_promoter_index].bit_code);
   }  
 }
 
@@ -2245,7 +2435,7 @@ bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext& ctx)
   const int op1 = FindModifiedNextRegister(reg_used);
   sInternalValue& val = m_threads[m_cur_thread].reg[op1];
 
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
+  setInternalValue(reg_used, (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
   return true; 
 }
 
@@ -2256,7 +2446,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext& ctx)
   const int op1 = FindModifiedNextRegister(reg_used);
   sInternalValue& val = m_threads[m_cur_thread].reg[op1];
   
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
+  setInternalValue(reg_used, (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
   return true; 
 }
 
@@ -2264,7 +2454,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Execurate(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], m_threads[m_cur_thread].GetExecurate());
+  setInternalValue(reg_used, m_threads[m_cur_thread].GetExecurate());
   return true;
 }
 
@@ -2272,18 +2462,16 @@ bool cHardwareExperimental::Inst_Execurate(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], (MASK24 & m_threads[m_cur_thread].GetExecurate()));
+  setInternalValue(reg_used, (MASK24 & m_threads[m_cur_thread].GetExecurate()));
   return true;
 }
 
 
 bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
-  // const bool viable = Divide_CheckViable(ctx, div_point, child_size);
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
 
-  
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   // Since the divide will now succeed, set up the information to be sent
@@ -2307,7 +2495,10 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Handle Divide Mutations...
   Divide_DoMutations(ctx);
-  
+
+  const bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), m_organism->OffspringGenome().GetSize(), 1);
+  if (viable == false) return false;
+
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
@@ -2422,9 +2613,518 @@ bool cHardwareExperimental::Inst_SGSense(cAvidaContext& ctx)
 {
   const cStateGrid& sg = m_organism->GetStateGrid();
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(m_threads[m_cur_thread].reg[reg_used], sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
+  setInternalValue(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
   return true; 
 }
 
+bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
+{
+    // In TestCPU, movement fails...
+    if (m_organism->GetCellID() == -1) return false;
+    
+    bool move_success = m_organism->Move(ctx);  
+    const int out_reg = FindModifiedRegister(rBX);   
+    setInternalValue(out_reg, move_success, true);   
+    return true;
+}
 
+bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
+  int facing = m_organism->GetFacing();
+  int north_offset = 0;
+  if (facing == 0) north_offset = 0;          //N 
+  else if (facing == 1) north_offset = 7;    //NW
+  else if (facing == 3) north_offset = 6;    //W
+  else if (facing == 2) north_offset = 5;    //SW
+  else if (facing == 6) north_offset = 4;     //S
+  else if (facing == 7) north_offset = 3;     //SE
+  else if (facing == 5) north_offset = 2;     //E
+  else if (facing == 4) north_offset = 1;     //NE
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, north_offset, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetNortherly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetNortherly(), true);
+  return true;  
+}
+
+bool cHardwareExperimental::Inst_GetEasterly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetEasterly(), true);
+  return true;  
+}
+
+bool cHardwareExperimental::Inst_ZeroEasterly(cAvidaContext& ctx) {
+  m_organism->ClearEasterly();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext& ctx) {
+  m_organism->ClearNortherly();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
+{
+    m_organism->Rotate(1);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
+{
+    m_organism->Rotate(-1);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
+{
+    int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
+    int group = 0;
+    
+    if(m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
+    
+    const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);   
+    double max_res = 0;
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+        m_organism->Rotate(1);
+        tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+        if (faced_res[group] > max_res) max_res = faced_res[group];
+    } 
+    
+    if (max_res > current_res[group]) {
+        for(int i = 0; i < actualNeighborhoodSize; i++) {
+            tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+            if (faced_res[group] != max_res) m_organism->Rotate(1);
+        }
+    }
+    // return % change
+    int res_diff = (int) ((max_res - current_res[group])/current_res[group] * 100 + 0.5);
+    int reg_to_set = FindModifiedRegister(rBX);
+    setInternalValue(reg_to_set, res_diff, true);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
+{
+    // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
+    // to face the 'marked' spot where those instructions were executed.
+    int easterly = m_organism->GetEasterly();
+    int northerly = m_organism->GetNortherly();
+    int correct_facing = 0;
+    if (northerly < 0 && easterly == 0) correct_facing = 6; // rotate S
+    
+    else if (northerly < 0 && easterly > 0) correct_facing = 2; // rotate SW
+    else if (northerly == 0 && easterly > 0) correct_facing = 3; // rotate W
+    else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW  
+    else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
+    else if (northerly > 0 && easterly < 0) correct_facing = 4; // rotate NE
+    else if (northerly == 0 && easterly < 0) correct_facing = 5; // rotate E
+    else if (northerly < 0 && easterly < 0) correct_facing = 7; // rotate SE
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+        m_organism->Rotate(1);
+        if (m_organism->GetFacing() == correct_facing) break;
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  
+  for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+    if (!m_organism->IsNeighborCellOccupied()) { 
+      setInternalValue(reg_used, 1, true);      
+      return true;
+    }
+    m_organism->Rotate(1); // continue to rotate
+  }  
+  setInternalValue(reg_used, 0, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateRightX(cAvidaContext& ctx)
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) rot_num = 1;
+  // Else rotate the nop number of times
+  if (rot_num > 7) rot_num = rot_num % 8;
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(-1);
+  setInternalValue(reg_used, rot_num, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateLeftX(cAvidaContext& ctx)
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) rot_num = 1;
+  // Else rotate the nop number of times
+  if (rot_num > 7) rot_num = rot_num % 8;
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(1);
+  setInternalValue(reg_used, rot_num, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  int rot_dir = 1;
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once in random direction.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) {
+    rot_num = 1;
+    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
+  }
+  // Else rotate the nop number of times in the appropriate direction
+  rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
+  rot_num = abs(rot_num);
+  if (rot_num > 7) rot_num = rot_num % 8;
+  for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
+  
+  setInternalValue(reg_used, rot_num * rot_dir, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  int rot_dir = m_threads[m_cur_thread].reg[reg_used].value;
+  // If this org has no trailing nop, rotate once in random direction.
+  const cCodeLabel& search_label = GetLabel();
+  if (search_label.GetSize() == 0) {
+    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
+    m_organism->Rotate(rot_dir);
+  }
+  // Else rotate to the mod nop dir
+  else {
+    if (rot_dir < 0 || rot_dir > 7) rot_dir = abs(rot_dir) % 8;
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+      m_organism->Rotate(1);
+      if (m_organism->GetFacing() == rot_dir) break;
+    }
+  }  
+  setInternalValue(reg_used, rot_dir, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
+{
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    int reg_to_set = FindModifiedRegister(rBX);  
+    double max_resource = 0.0;    
+    // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+    for (int i = 0; i < res_count.GetSize(); i++) {
+        if (res_count[i] > max_resource) {
+            max_resource = res_count[i];
+            setInternalValue(reg_to_set, i, true);
+        }
+    }    
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseGroupResQuant(cAvidaContext& ctx)
+{
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    // check if this is a valid group
+    if(m_organism->HasOpinion()) {
+        int group = m_organism->GetOpinion().first;
+        int res_group = (int) (res_count[group] * 100 + 0.5);
+        int reg_to_set = FindModifiedRegister(rBX);
+        setInternalValue(reg_to_set, res_group, true);
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
+{
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    if(m_organism->HasOpinion()) {
+        int group = m_organism->GetOpinion().first;
+        int reg_to_set = FindModifiedRegister(rBX);
+        double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[group];  
+        // return % change
+        int res_diff = (int) (((faced_res - res_count[group])/res_count[group]) * 100 + 0.5);
+        setInternalValue(reg_to_set, res_diff, true);
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseDiffAhead(cAvidaContext& ctx) 
+{
+  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+  // temp check on world geometry until code can handle other geometries
+  if (geometry != 1) {
+    // Instruction sense-diff-ahead only written to work in bounded grids
+    return false;
+  }
+  
+  // If this organism has no neighboring cells, ignore instruction.
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  if (num_neighbors == 0) return false;
+  
+  if(m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    // fail if the org is trying to sense a nest/hidden habitat
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    if(resource_lib.GetResource(group)->GetHabitat() == 3) return true;
+    
+    const int reg_used = FindModifiedRegister(rBX);
+    const int sense_dist = m_threads[m_cur_thread].reg[reg_used].value;
+    // a second reg can be used to further control how the orgs sensing works, but this only operates for specific values
+    const int control_reg = FindModifiedNextRegister(reg_used);
+    int sense_value = 0;
+    const cCodeLabel& search_label = GetLabel();
+    if (search_label.GetSize() > 1) sense_value = m_threads[m_cur_thread].reg[control_reg].value;
+    
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    int forward_dist = 0;
+    int backward_dist = 0;
+    
+    int faced_cell = m_organism->GetFacedCellID();
+    int cell = m_organism->GetCellID();
+    
+    int ahead_dir = cell - faced_cell;
+    int behind_dir = ahead_dir * - 1;
+    
+    double total_ahead = 0;
+    double total_behind = 0;
+    
+    // look ahead (don't worry about current org cell as this will cancel out)
+    double prev_cell = 0;
+    bool starting_uphill = true;
+    int forward_val = 0;
+    for(int i = 0; i < sense_dist + 1; i++) {
+      forward_dist = i;
+      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      
+      // sense-value of -1 means look for peaks
+      if (sense_value == -1) {
+        // if facing downhill from start, look all the way until we get to a slope peak (e.g. look all the way across any valley)
+        if (i == 1 && (cell_res[group] - prev_cell < 0)) starting_uphill = false;
+        if (!starting_uphill) {
+          if (cell_res[group] > prev_cell) starting_uphill = true;
+        }
+        // if facing uphill or across a plain, stop if we reached a peak 
+        // (don't allow orgs to look up a hill and down the other side, just to the max height in front of them) 
+        if (starting_uphill && (cell_res[group] < prev_cell) && i > 0) { 
+          forward_val = (int) (prev_cell + 0.5); 
+          break;
+        }
+        prev_cell = cell_res[group];
+      }
+      total_ahead = total_ahead + cell_res[group];
+      
+      // any postive sense-value means stop if we hit a cell with the requested value
+      if (sense_value > 0 && (cell_res[group] == sense_value)) break;
+      
+      // sense-value of 0 (or none) means look as far as possible without being sensitive to hills and valleys
+      // if facing W, SW or NW stop if on edge of world
+      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      cell = cell + ahead_dir;
+      // if facing E, SE, or NE check if next cell is off edge of world
+      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir == worldx + 1) || (ahead_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
+      // if cell is less than 0 or greater than max cell (in grid), don't do it.
+      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
+    }
+    
+    // look behind
+    starting_uphill = true;
+    prev_cell = 0;
+    int backward_val = 0;
+    cell = m_organism->GetCellID();
+    for(int j = 0; j < sense_dist + 1; j++) {
+      backward_dist = j;
+      // for sense_value of 0 look forward as far as you can, but only look backward as far as we look forward or to edge of world
+      if (sense_value == 0 && (forward_dist < backward_dist)) break;
+      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      
+      // sense-value of -1 means look for peaks
+      if (sense_value == -1) {
+        // if backward is downhill from start, look all the way until we get to a slope peak (e.g. look all the way across any valley)
+        if (j == 1 && (cell_res[group] - prev_cell < 0)) starting_uphill = false;
+        if (!starting_uphill) {
+          if (cell_res[group] > prev_cell) starting_uphill = true;
+        }
+        // if backward is uphill or across a plain, stop if we reached a peak 
+        if (starting_uphill && (cell_res[group] < prev_cell) && j > 0) {
+          backward_val = (int) (prev_cell + 0.5);
+          break;
+        }
+        prev_cell = cell_res[group];
+      }
+      
+      total_behind = total_behind + cell_res[group];
+      
+      // any postive sense-value means stop if we hit a cell with the requested value
+      if (sense_value > 0 && cell_res[group] == sense_value) break;
+      
+      // if facing W, SW or NW stop if on edge of world
+      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      cell = cell + behind_dir;
+      // if facing E, SE, or NE check if next cell is off edge of world
+      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
+      // if cell is less than 0 or greater than max cell (in grid), don't do it.
+      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
+    }
+    
+    // our nop values affect what we return
+    setInternalValue(reg_used, forward_dist, true);
+    // for sense_value = 0 return actual forward sense distance used and total diff
+    if (sense_value == 0) {
+      int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
+      setInternalValue(control_reg, res_diff, true);
+    }
+    // for sense_value > 0 or -1 also return the backward distance found, skipping the control register
+    else if (sense_value > 0 || sense_value == -1) {
+      const int back_dist = FindModifiedNextRegister(control_reg);
+      setInternalValue(back_dist, backward_dist, true);
+      // for sense_value = -1, return the values at the peaks (note this now uses 5 registers!)
+      if (sense_value == -1) {
+        if (NUM_REGISTERS > 3) {
+          const int for_val = FindModifiedNextRegister(back_dist);
+          setInternalValue(for_val, forward_val, true);
+          if (NUM_REGISTERS > 4) {
+            const int back_val = FindModifiedNextRegister(for_val);
+            setInternalValue(back_val, backward_val, true);
+          }
+        }
+      }
+    }
+  }
+return true;
+}
+
+bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
+{
+    int reg_to_set = FindModifiedRegister(rBX);
+    
+    // get the resource library
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    
+    // get the destination cell resource levels
+    tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+    
+    // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+    // are there any barrier resources in the faced cell    
+    for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
+            setInternalValue(reg_to_set, 2, true);
+            return true;
+        }    
+    }
+    // if no barriers, are there any hills in the faced cell    
+    for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
+            setInternalValue(reg_to_set, 1, true);
+            return true;
+        }
+    }
+    // if no barriers or hills, we return a 0 to indicate clear sailing
+    setInternalValue(reg_to_set, 0, true);
+    return true;
+}
+
+//! An organism joins a group by setting it opinion to the group id. 
+bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
+{
+    int group;
+    // Check if the org is currently part of a group
+    assert(m_organism != 0);
+	
+    int prop_group_id = GetRegister(FindModifiedRegister(rBX));
+    
+    // check if this is a valid group
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
+        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
+    
+    // injected orgs might not have an opinion
+    if (m_organism->HasOpinion()) {
+        group = m_organism->GetOpinion().first;
+        
+        //return false if org setting opinion to current one (avoid paying costs for not switching)
+        if (group == prop_group_id) return false;
+        
+        // If tolerances are on the org must pass immigration chance @JJB
+        if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+            // If there are no members of the target group, automatically successful immigration
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
+                m_organism->LeaveGroup(group);
+            }
+            // Calculate chances based on target group tolerance of another org successfully immigrating
+            else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
+                const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+                const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
+                double probability_immigration = target_group_tolerance / tolerance_max;
+                double rand = m_world->GetRandom().GetDouble();
+                if (rand <= probability_immigration) {
+                    // Org successfully immigrates
+                    m_organism->LeaveGroup(group);
+                }
+                // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
+                else {
+                    return true;
+                }
+            }
+        }
+        else {
+            // otherwise, subtract org from current group
+            m_organism->LeaveGroup(group);
+        }
+    }
+	
+    // Set the opinion
+    m_organism->SetOpinion(prop_group_id);
+	
+    // Add org to group count
+    group = m_organism->GetOpinion().first;	
+    m_organism->JoinGroup(group);
+    
+    return true;
+}
+
+bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
+{
+    assert(m_organism != 0);
+    if (m_organism->HasOpinion()) {
+        const int group_reg = FindModifiedRegister(rBX);
+        
+        setInternalValue(group_reg, m_organism->GetOpinion().first, false);
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
+//Get ID of organism faced by this one, if there is an organism in front.
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead())  return false;  
+  
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, neighbor->GetID(), true);
+  return true;
+}
 

@@ -499,6 +499,8 @@ private:
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
   bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseDiffAhead(cAvidaContext& ctx); 
+  bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   
   // Resources
   int FindModifiedResource(cAvidaContext& ctx, int& spec_id);
@@ -858,9 +860,7 @@ public:
    opinions that can be expressed during the same experiment, and possibly augmented
    with a "strength" of that opinion (but not right now).
    */
-  //! Set this organism's current opinion.
   bool Inst_SetOpinion(cAvidaContext& ctx);
-  //! Retrieve this organism's current opinion.
   bool Inst_GetOpinion(cAvidaContext& ctx);
 	//! Only get opinion.  If none then reg is set to zero
 	bool Inst_GetOpinionOnly_ZeroIfNone(cAvidaContext& ctx);

@@ -220,7 +220,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
   // test deme predicate
   for (int i = 0; i < deme_pred_list.Size(); i++) {
     if (deme_pred_list[i]->GetName() == "cDemeResourceThreshold") {
-      (*deme_pred_list[i])(&deme_resource_count);
+      (*deme_pred_list[i])(ctx, &deme_resource_count);
     }
   }
 
@@ -231,12 +231,14 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
     return;
   }
   
-  for(int i = 0; i < GetSize(); i++) {
-    cPopulationCell& cell = GetCell(i);
-    if(cell.IsOccupied()) {
-      energyUsage.Add(cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio());
+  if (m_world->GetConfig().ENERGY_ENABLED.Get()) {
+    for(int i = 0; i < GetSize(); i++) {
+      cPopulationCell& cell = GetCell(i);
+      if(cell.IsOccupied()) {
+        energyUsage.Add(cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio());
+      }
     }
-  }  
+  }
   
   for(int i = 0; i < cell_events.Size(); i++) {
     cDemeCellEvent& event = cell_events[i];
@@ -257,7 +259,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
           //remove energy from cell... organism might not takeup all of a cell's energy
           tArray<double> cell_resources = deme_resource_count.GetCellResources(eventCell, ctx);  // uses global cell_id; is this a problem
           cell_resources[res->GetID()] *= m_world->GetConfig().ATTACK_DECAY_RATE.Get();
-          deme_resource_count.ModifyCell(cell_resources, eventCell);
+          deme_resource_count.ModifyCell(ctx, cell_resources, eventCell);
         }
         eventCell = event.GetNextEventCellID();
       }
@@ -355,7 +357,7 @@ void cDeme::OrganismDeath(cPopulationCell& cell)
 
 
 
-void cDeme::Reset(bool resetResources, double deme_energy)
+void cDeme::Reset(cAvidaContext& ctx, bool resetResources, double deme_energy)
 {
   double additional_resource = 0.0;
   // Handle energy model
@@ -420,7 +422,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   }
   
   if (resetResources) {
-    deme_resource_count.ReinitializeResources(additional_resource);
+    deme_resource_count.ReinitializeResources(ctx, additional_resource);
   }
 
   // Instead of polluting cDemeNetwork with Resets, we're just going to delete it,
@@ -432,7 +434,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 }
 
 
-void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_energy)
+void cDeme::DivideReset(cAvidaContext& ctx, cDeme& parent_deme, bool resetResources, double deme_energy)
 {
   // the parent might be us, so save this value...
   double old_avg_founder_generation = parent_deme.GetAvgFounderGeneration();
@@ -462,7 +464,7 @@ void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_ene
   last_org_count = parent_deme.GetLastOrgCount(); // Org count was updated upon KillAll()....
   last_birth_count = parent_deme.GetBirthCount();
   
-  Reset(resetResources, deme_energy);
+  Reset(ctx, resetResources, deme_energy);
 }
 
 
@@ -562,10 +564,10 @@ void cDeme::UpdateDemeMerit(cDeme& source) {
 }
 
 
-void cDeme::ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id) {
+void cDeme::ModifyDemeResCount(cAvidaContext& ctx, const tArray<double>& res_change, const int absolute_cell_id) {
   // find relative cell_id in deme resource count
   const int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  deme_resource_count.ModifyCell(res_change, relative_cell_id);
+  deme_resource_count.ModifyCell(ctx, res_change, relative_cell_id);
 }
 
 void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) {               
@@ -599,7 +601,8 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                             res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                             res->GetPlateauInflow(), res->GetPlateauOutflow(),                            
-                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                             ); 
   
   if(res->GetEnergyResource()) {
@@ -645,7 +648,7 @@ double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx)
   }
 
   // set energy resources to zero
-  deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+  deme_resource_count.ModifyCell(ctx, cell_resources, relative_cell_id);
 
   return total_energy;
 }
@@ -664,7 +667,7 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext
   for(int i = 0; i < energy_res_ids.GetSize(); i++) {
     cell_resources[energy_res_ids[i]] += amount_per_resource;
   }
-  deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+  deme_resource_count.ModifyCell(ctx, cell_resources, relative_cell_id);
 }
 
 void cDeme::SetCellEvent(int x1, int y1, int x2, int y2,
@@ -1018,7 +1021,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext& ctx)
   //settign the element to the value I want to add instead of setting the element to the current value plus the amount to add
   // Ask Ben why he does it differently in GiveBackCellEnergy()
   
-  deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+  deme_resource_count.ModifyCell(ctx, cell_resources, relative_cell_id);
   
   // CellData-based version
   //const int newval = pop.GetCell(absolute_cell_id).GetCellData() + (int) round(value);
@@ -1037,7 +1040,7 @@ double cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext&
   return cell_resources[resource_id];
 }
 
-void cDeme::AdjustSpatialResource(int rel_cellid, int resource_id, double amount)
+void cDeme::AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount)
 {
   assert(rel_cellid >= 0);
   assert(rel_cellid < GetSize());
@@ -1048,13 +1051,13 @@ void cDeme::AdjustSpatialResource(int rel_cellid, int resource_id, double amount
   res_change.Resize(deme_resource_count.GetSize(), 0);
   res_change[resource_id] = amount;
   
-  deme_resource_count.ModifyCell(res_change, rel_cellid);  
+  deme_resource_count.ModifyCell(ctx, res_change, rel_cellid);  
 }
 
-void cDeme::AdjustResource(int resource_id, double amount)
+void cDeme::AdjustResource(cAvidaContext& ctx, int resource_id, double amount)
 {
-  double new_amount = deme_resource_count.Get(resource_id) + amount;
-  deme_resource_count.Set(resource_id, new_amount);
+  double new_amount = deme_resource_count.Get(ctx, resource_id) + amount;
+  deme_resource_count.Set(ctx, resource_id, new_amount);
 }
 
 int cDeme::GetSlotFlowRate() const

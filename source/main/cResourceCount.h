@@ -57,7 +57,7 @@ private:
   // Setup the update process to use lazy evaluation...
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
-  void DoUpdates(cAvidaContext& ctx) const;         // Update resource count based on update time
+  void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
 
   // A few constants to describe update process...
   static const double UPDATE_STEP;   // Fraction of an update per step
@@ -95,7 +95,8 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
      const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
      const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, 
      const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
-     const double& in_floor, const bool& isgradient
+     const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
+     const int& in_config, const int& in_count, const double& in_resistance, const bool& isgradient
 	   ); 
              
   int GetResourceCountID(const cString& res_name);
@@ -114,19 +115,21 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
   const tArray<tArray<double> >& GetSpatialRes(cAvidaContext& ctx); 
   const tArray<tArray<int> >& GetCellIdLists() const { return cell_lists; }
-  void Modify(const tArray<double>& res_change);
-  void Modify(int id, double change);
-  void ModifyCell(const tArray<double> & res_change, int cell_id);
-  void Set(int id, double new_level);
-  double Get(int id) const;
+  void Modify(cAvidaContext& ctx, const tArray<double>& res_change);
+  void Modify(cAvidaContext& ctx, int id, double change);
+  void ModifyCell(cAvidaContext& ctx, const tArray<double> & res_change, int cell_id);
+  void Set(cAvidaContext& ctx, int id, double new_level);
+  double Get(cAvidaContext& ctx, int id) const;
   void ResizeSpatialGrids(int in_x, int in_y);
   cSpatialResCount GetSpatialResource(int id) { return *(spatial_resource_count[id]); }
   const cSpatialResCount& GetSpatialResource(int id) const { return *(spatial_resource_count[id]); }
-  void ReinitializeResources(double additional_resource);
+  void ReinitializeResources(cAvidaContext& ctx, double additional_resource);
   double GetInitialResourceValue(int resourceID) const { return resource_initial[resourceID]; }
   const cString& GetResName(int id) const { return resource_name[id]; }
   bool IsSpatial(int id) const { return ((geometry[id] != nGeometry::GLOBAL) && (geometry[id] != nGeometry::PARTIAL)); }
   int GetResourceByName(cString name) const;
+  
+  void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }
 };
 
 #endif

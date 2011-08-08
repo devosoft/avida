@@ -96,9 +96,10 @@ public:
   virtual const tArray<double>& GetResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
+  virtual const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
-  virtual void UpdateResources(const tArray<double>& res_change) = 0;
-  virtual void UpdateDemeResources(const tArray<double>& res_change) = 0;
+  virtual void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
+  virtual void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
   virtual void Kaboom(int distance, cAvidaContext& ctx) = 0; 
@@ -139,7 +140,11 @@ public:
 
   virtual void JoinGroup(int group_id) = 0;
   virtual void LeaveGroup(int group_id) = 0;
-  
+  virtual int NumberOfOrganismsInGroup(int group_id) = 0;
+    
+  virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
+  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) = 0;
+    
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;
 };

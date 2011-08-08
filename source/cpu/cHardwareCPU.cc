@@ -240,6 +240,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-ahead", &cHardwareCPU::Inst_SenseDiffAhead, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareCPU::Inst_SenseFacedHabitat, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
@@ -908,6 +910,9 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
       }
       
+      // Check if the instruction just executed caused premature death, break out of execution if so
+      if (phenotype.GetToDelete()) break;
+      
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) ip.Advance();
@@ -1380,7 +1385,7 @@ bool cHardwareCPU::ForkThread()
   // Find the first free bit in m_thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
-  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+  while ( (m_thread_id_chart >> new_id) & 1) new_id++;
   m_threads[num_threads].SetID(new_id);
   m_thread_id_chart |= (1 << new_id);
   
@@ -3768,9 +3773,112 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(REG_BX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) ((faced_res - res_count[opinion])/res_count[opinion] * 100 + 0.5);
+    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     GetRegister(reg_to_set) = res_diff;
   }
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx) 
+{
+  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+  // temp check on world geometry until code can handle other geometries
+  if ( geometry != 1) {
+    // Instruction sense-diff-ahead only written to work in bounded grids
+    return false;
+  }
+  
+  // If this organism has no neighbors, ignore instruction.
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  if (num_neighbors == 0) return false;
+  
+  if(m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    // fail if the org is trying to sense a nest/hidden habitat
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    if(resource_lib.GetResource(group)->GetHabitat() == 3) return true;
+    
+    const int reg_used = FindModifiedRegister(REG_BX);
+    const int sense_dist = GetRegister(reg_used);
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    int forward_dist = 0;
+    int backward_dist = 0;
+    
+    int faced_cell = m_organism->GetFacedCellID();
+    int cell = m_organism->GetCellID();
+    
+    int ahead_dir = cell - faced_cell;
+    int behind_dir = ahead_dir * - 1;
+    
+    double total_ahead = 0;
+    double total_behind = 0;
+    
+    // look ahead (don't worry about current org cell as this will cancel out)
+    for(int i = 0; i < sense_dist + 1; i++) {
+      forward_dist = i;
+      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      total_ahead = total_ahead + cell_res[group];
+      // if facing W, SW or NW stop if on edge of world
+      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      cell = cell + ahead_dir;
+      // if facing E, SE, or NE check if next cell is off edge of world
+      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir == worldx + 1) || (ahead_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
+      // if cell is less than 0 or greater than max cell (in grid), don't do it.
+      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
+    }
+    
+    // look behind
+    cell = m_organism->GetCellID();
+    for(int j = 0; j < sense_dist + 1; j++) {
+      backward_dist = j;
+      // look forward as far as you can, but only look backward as far as we look forward or to edge of world
+      if (forward_dist < backward_dist) break;
+      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
+      total_behind = total_behind + cell_res[group];
+      // if facing W, SW or NW stop if on edge of world
+      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
+      cell = cell + behind_dir;
+      // if facing E, SE, or NE check if next cell is off edge of world
+      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
+      // if cell is less than 0 or greater than max cell (in grid), don't do it.
+      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
+    }
+    
+    // return total diff and actual forward sense distance used
+    int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
+    GetRegister(reg_used) = forward_dist;
+    GetRegister(FindModifiedNextRegister(reg_used)) = res_diff;
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
+{
+  int reg_to_set = FindModifiedRegister(REG_BX);
+  
+  // get the resource library
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
+  // get the destination cell resource levels
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+
+  // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+  // are there any barrier resources in the faced cell    
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
+      GetRegister(reg_to_set) = 2;
+      return true;
+    }    
+  }
+  // if no barriers, are there any hills in the faced cell    
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
+      GetRegister(reg_to_set) = 1;
+      return true;
+    }
+  }
+  // if no barriers or hills, we return a 0 to indicate clear sailing
+  GetRegister(reg_to_set) = 0;
   return true;
 }
 
@@ -3898,7 +4006,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
   {res_change[bin_used] = 0.0;}
 
   // Update resource counts to reflect res_change
-  m_organism->GetOrgInterface().UpdateResources(res_change);
+  m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
   
   return true;
 }
@@ -5277,8 +5385,8 @@ void cHardwareCPU::DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell,
   src_change[resource_id] = -1 * donation;
   dest_change[resource_id] = (1 - decay) * donation;
   
-  m_organism->GetOrgInterface().UpdateResources(src_change);
-  m_world->GetPopulation().UpdateCellResources(dest_change, to_cell);
+  m_organism->GetOrgInterface().UpdateResources(ctx, src_change);
+  m_world->GetPopulation().UpdateCellResources(ctx, dest_change, to_cell);
   
 } //End DoResourceDonateAmount()
 
@@ -5551,7 +5659,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_RotateHome(cAvidaContext& ctx)
 {
-  // Will rotate organism to face birth cell if org never used zero-easting or zero-northing. Otherwise will rotate org
+  // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
   int easterly = m_organism->GetEasterly();
   int northerly = m_organism->GetNortherly();
@@ -5867,9 +5975,9 @@ bool cHardwareCPU::Inst_ResMoveHead(cAvidaContext& ctx)
   int resid = deme_resources.GetResourceByName(resname);
   
   if (resid >= 0) {
-    current_level = deme_resources.Get(resid);
+    current_level = deme_resources.Get(ctx, resid);
   } else if ( (resid = resources.GetResourceByName(resname)) >= 0) {
-    current_level = resources.Get(resid);
+    current_level = resources.Get(ctx, resid);
   } else {
     cout << "Error: Cannot find resource '" << resname << "'" << endl;
     return true;
@@ -5918,9 +6026,9 @@ bool cHardwareCPU::Inst_ResJumpHead(cAvidaContext& ctx)
   int resid = deme_resources.GetResourceByName(resname);
   
   if (resid >= 0) {
-    current_level = deme_resources.Get(resid);
+    current_level = deme_resources.Get(ctx, resid);
   } else if ( (resid = resources.GetResourceByName(resname)) >= 0) {
-    current_level = resources.Get(resid);
+    current_level = resources.Get(ctx, resid);
   } else {
     cout << "Error: Cannot find resource '" << resname << "'" << endl;
     return true;
@@ -7632,7 +7740,7 @@ bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx, tRegisters R
   double pher_amount = 0;
   for (int i = 0; i < deme_resource_count.GetSize(); i++) {
     if (strncmp(deme_resource_count.GetResName(i), "pheromone", 9) == 0) {
-      pher_amount += deme_resource_count.Get(i);
+      pher_amount += deme_resource_count.Get(ctx, i);
     }
   }
   GetRegister(reg_to_set) = (int)floor(pher_amount + 0.5);
@@ -7720,7 +7828,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
@@ -7778,7 +7886,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
@@ -7843,7 +7951,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
@@ -7891,17 +7999,12 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Explore(cAvidaContext& ctx)
 {
-  cPopulation& pop = m_world->GetPopulation();
   int cellid = m_organism->GetCellID();
   
   if (cellid == -1) {
     return true;
   }
-  
-  //  cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  
+    
   // Rotate randomly.  Code taken from tumble.
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   for (unsigned int i = 0; i < ctx.GetRandom().GetUInt(num_neighbors); i++) {
@@ -7976,8 +8079,6 @@ bool cHardwareCPU::Inst_MoveTargetForward5(cAvidaContext& ctx)
   }
   
   cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
   int cell_data;
   
@@ -8030,8 +8131,6 @@ bool cHardwareCPU::Inst_MoveTargetForward3(cAvidaContext& ctx)
   }
   
   cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
   int cell_data;
   
@@ -8082,7 +8181,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
@@ -8184,7 +8283,7 @@ bool cHardwareCPU::Inst_IfPheromone(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
   if (deme_resource_count.GetSize() == 0) return false;
@@ -8218,7 +8317,7 @@ bool cHardwareCPU::Inst_IfNotPheromone(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
   
   if (deme_resource_count.GetSize() == 0) return false;
@@ -8612,7 +8711,7 @@ bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   //How many valid groups are we dealing with?
-  int num_poss_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+  int num_poss_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
   //Make sure we are using groups and there are resources out there.
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
   m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
@@ -8625,7 +8724,7 @@ bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (!m_organism->IsNeighborCellOccupied()) return false;
   //How many valid groups are we dealing with?
-  int num_poss_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+  int num_poss_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
   //Make sure we are using groups and there are resources out there.
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
   m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
@@ -9299,13 +9398,13 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
         // If tolerances are on the org must pass immigration chance @JJB
         if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
             // If there are no members of the target group, automatically successful immigration
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) == 0) {
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
                 m_organism->LeaveGroup(opinion);
             }
             // Calculate chances based on target group tolerance of another org successfully immigrating
-            else if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) > 0) {
+            else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
                 const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
-                const double target_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
+                const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
                 double probability_immigration = target_group_tolerance / tolerance_max;
                 double rand = m_world->GetRandom().GetDouble();
                 if (rand <= probability_immigration) {
@@ -9361,7 +9460,7 @@ bool cHardwareCPU::Inst_NumberOrgsInMyGroup(cAvidaContext& ctx)
   
   if (m_organism->HasOpinion()) {
     opinion = m_organism->GetOpinion().first;
-    num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion);
+    num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(opinion);
   }
   GetRegister(num_org_reg) = num_orgs;
 
@@ -9377,7 +9476,7 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
   const int group_id = FindModifiedRegister(REG_BX);
   const int num_org_reg = FindModifiedRegister(REG_CX);
   
-  num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+  num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
   
   GetRegister(num_org_reg) = num_orgs;
   return true;
@@ -9587,18 +9686,18 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             // Retrieve the parent's tolerance for its offspring
             double parent_tolerance_own_offspring = (double) m_organism->GetPhenotype().CalcToleranceOffspringOwn();
             // Retrieve the parent group's tolerance for offspring (this does not include the parent's contribution)
-            double parent_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceOffspring(m_organism, group_id);
+            double parent_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceOffspring(m_organism, group_id);
             // Retrieve the parent's tolerance towards other offspring
             double parent_tolerance_other_offspring = (double) m_organism->GetPhenotype().CalcToleranceOffspringOthers();
             
             // Calculate the total group's tolerance towards the parent's offspring
             // If the parent is the only group member their vote counts for everything
             double total_own_offspring_tolerance = 0;
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 1) {
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id) == 1) {
                 total_own_offspring_tolerance = parent_tolerance_own_offspring;
             }
             // If the parent is not the only group member            
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id) > 1){
                 // using 50-50 vote split
                 // their vote counts for half the total and the rest of the group the other half
                 //total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
@@ -9620,7 +9719,7 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             offspring_others_odds =  total_group_tolerance_offspring / tolerance_max;
             
             // Retrieve the group's tolerance towards immigrants
-            double total_group_tolerance_immigrants = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(group_id);
+            double total_group_tolerance_immigrants = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(group_id);
             
             // Calculate probability for immigrants
             immigrant_odds = total_group_tolerance_immigrants / tolerance_max;

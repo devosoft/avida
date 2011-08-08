@@ -56,7 +56,7 @@ private:
 
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
-  cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
+  cPopulationInterface& operator=(const cPopulationInterface&); // @not_implemented
   
 public:
   cPopulationInterface(cWorld* world);
@@ -105,10 +105,11 @@ public:
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
-  void UpdateResources(const tArray<double>& res_change);
-  void UpdateDemeResources(const tArray<double>& res_change);
+  void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
@@ -200,7 +201,11 @@ protected:
 public:
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
+  int NumberOfOrganismsInGroup(int group_id);
   
+  int CalcGroupToleranceImmigrants(int prop_group_id);
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group);
+    
   void BeginSleep();
   void EndSleep();
 };

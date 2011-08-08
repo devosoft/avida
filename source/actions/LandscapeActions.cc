@@ -1043,7 +1043,7 @@ public:
       }
 
       cDataFile& df = m_world->GetDataFile(filename);
-      cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU() : NULL;
+      cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU(ctx) : NULL;
       while ((orgdata = batch.Pop())) {
         cOrganism* organism = orgdata->GetOrganism();
         cPhenotype& phenotype = organism->GetPhenotype();

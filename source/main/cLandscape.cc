@@ -138,7 +138,7 @@ void cLandscape::ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu)
 
 void cLandscape::Process(cAvidaContext& ctx)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
   // Get the info about the base creature.
   ProcessBase(ctx, testcpu);
@@ -203,7 +203,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   df.WriteComment("Detailed dump of the per-site, per-instruction fitness");
   df.WriteComment("values for the entire single-step landscape.");
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
   // Get the info about the base creature.
   ProcessBase(ctx, testcpu);
@@ -241,7 +241,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
 
 void cLandscape::ProcessDelete(cAvidaContext& ctx)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
   // Get the info about the base creature.
   ProcessBase(ctx, testcpu);
@@ -265,7 +265,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
 
 void cLandscape::ProcessInsert(cAvidaContext& ctx)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
   // Get the info about the base creature.
   ProcessBase(ctx, testcpu);
@@ -294,7 +294,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
 // Prediction for a landscape where n sites are _randomized_.
 void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
   distance = 1;
   
@@ -413,7 +413,7 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
 // Prediction for a landscape where n sites are _mutated_.
 void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
   distance = 1;
   
@@ -552,7 +552,7 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
   Genome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
 
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
   
   ProcessBase(ctx, testcpu);
@@ -586,7 +586,7 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
   Genome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
   ProcessBase(ctx, testcpu);
   
@@ -665,7 +665,7 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
 
 void cLandscape::TestPairs(cAvidaContext& ctx)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
   
   ProcessBase(ctx, testcpu);
@@ -704,7 +704,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx)
 
 void cLandscape::TestAllPairs(cAvidaContext& ctx)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
   ProcessBase(ctx, testcpu);
   if (base_fitness == 0.0) return;
@@ -740,7 +740,7 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
 
 void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   Genome cur_genome(base_genome);
   Genome mg(base_genome);
   cCPUMemory mod_genome = mg.GetSequence();

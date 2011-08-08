@@ -36,7 +36,7 @@ using namespace Avida;
 
 cGenomeTestMetrics::cGenomeTestMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg)
 {
-  tAutoRelease<cTestCPU> testcpu(world->GetHardwareManager().CreateTestCPU());
+  tAutoRelease<cTestCPU> testcpu(world->GetHardwareManager().CreateTestCPU(ctx));
   
   cCPUTestInfo test_info;
   testcpu->TestGenome(ctx, test_info, Genome(bg->GetProperty("genome").AsString()));

@@ -38,10 +38,6 @@
 
 using namespace AvidaTools;
 
-#if APTO_PLATFORM(WINDOWS) && defined(LoadString)
-# undef LoadString
-#endif
-
 
 Apto::Mutex cAvidaConfig::global_list_mutex;
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
@@ -104,7 +100,7 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
     while ((cur_entry = entry_it.Next()) != NULL) {
       const tArray<cString> & keywords = cur_entry->GetNames();
       const cString default_val = cur_entry->GetDefault();
-      cur_entry->LoadString( init_file.ReadString(keywords, default_val, warn_default) );
+      cur_entry->LoadStr( init_file.ReadString(keywords, default_val, warn_default) );
     }
   }
   
@@ -128,7 +124,7 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
     
     cBaseConfigFormatEntry* cur_entry;
     if (entry_dict.Find(keyword, cur_entry)) {
-      cur_entry->LoadString(cur_line);
+      cur_entry->LoadStr(cur_line);
       init_file.MarkLineUsed(line_id);
     }
   }
@@ -318,7 +314,7 @@ void cAvidaConfig::GenerateOverides()
       fp << "private:" << endl;
       fp << "  " << cur_type << " value;" << endl;
       fp << "public:" << endl;
-      fp << "  void LoadString(const cString& str_value) {" << endl;
+      fp << "  void LoadStr(const cString& str_value) {" << endl;
       fp << "    value = cStringUtil::Convert(str_value, value);" << endl;
       fp << "  }" << endl;
       fp << "  cEntry_" << cur_name << "() : cBaseConfigEntry(\""
@@ -329,7 +325,7 @@ void cAvidaConfig::GenerateOverides()
         fp << "\\n" << cur_desc.Pop();
       }
       fp << "\") {" << endl;
-      fp << "    LoadString(GetDefault());" << endl;
+      fp << "    LoadStr(GetDefault());" << endl;
       fp << "    global_group_list.GetLast()->AddEntry(this);" << endl;
       fp << "  }" << endl;
       
@@ -394,7 +390,7 @@ bool cAvidaConfig::Set(const cString& entry, const cString& val)
     cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
       if (cur_entry->GetName() == entry) {
-        cur_entry->LoadString(val);
+        cur_entry->LoadStr(val);
         return true;
       }
     }
@@ -406,7 +402,7 @@ bool cAvidaConfig::Set(const cString& entry, const cString& val)
     cBaseConfigFormatEntry* cur_entry;
     while ((cur_entry = entry_it.Next())) {
       if (cur_entry->GetName() == entry) {
-        cur_entry->LoadString(val);
+        cur_entry->LoadStr(val);
         return true;
       }
     }
@@ -429,7 +425,7 @@ void cAvidaConfig::Set(tDictionary<cString>& sets)
     while ((cur_entry = entry_it.Next()) != NULL) {
       for (int i = 0; i < cur_entry->GetNumNames(); i++) {
         if (sets.Find(cur_entry->GetName(i), val)) {
-          cur_entry->LoadString(val);
+          cur_entry->LoadStr(val);
           sets.Remove(cur_entry->GetName(i));
           if (VERBOSITY.Get() > VERBOSE_NORMAL)
             cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;

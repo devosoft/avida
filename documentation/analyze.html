@@ -158,6 +158,11 @@ control commands.
   useful if you need to unzip files before you can use them, or if
   you want to delete files no longer in use.
 </dd>
+<dt><strong>CLOSE_FILE [<span class="cmdarg">filename</span>]</strong></dt>
+  Close a file.  This is useful for instances where your script creates 
+  lots of unique files using command that support reentrant usage, such 
+  as DETAIL_AVERAGE for example.
+<dd>
 <dt><strong>INCLUDE [<span class="cmdarg">filename</span>]</strong></dt>
 <dd>
   Include another file into this one and run its contents immediately.

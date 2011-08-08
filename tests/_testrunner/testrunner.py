@@ -134,6 +134,9 @@ Usage: %(_testrunner_name)s [options] [testname ...]
     -p | --run-perf-tests
       Run available performance tests.
       
+    --reset-expected
+      Reset the expected results for active consistency tests
+    
     --reset-perf-base
       Reset performance test baseline results.  Old baseline results are
       saved in the 'perf' directory.
@@ -556,7 +559,7 @@ class cTest:
           match = True
           
           
-          if os.path.getsize(expectstruct[key][0]) < 1024:
+          if os.path.getsize(expectstruct[key][0]) < 1536:
             # Generate the diff between the two files, ignoring comments and blank lines
             differ = difflib.Differ()
             elines = getStrippedLines(path)

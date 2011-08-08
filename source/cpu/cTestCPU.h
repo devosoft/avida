@@ -78,8 +78,8 @@ private:
   cResourceCount m_resource_count;
   cResourceCount m_faced_cell_resource_count;
   cResourceCount m_deme_resource_count;
-  
-  
+  cResourceCount m_cell_resource_count;
+    
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, int cur_depth);
@@ -90,13 +90,13 @@ private:
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
   // Internal methods for setting up and updating resources
-  void InitResources(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0);
-  void UpdateResources(int cpu_cycles_used);
-  inline void SetResourceUpdate(int update, bool exact = true);
-  inline void SetResource(int id, double new_level);
+  void InitResources(cAvidaContext& ctx, int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0);
+  void UpdateResources(cAvidaContext& ctx, int cpu_cycles_used);
+  inline void SetResourceUpdate(cAvidaContext& ctx, int update, bool exact = true);
+  inline void SetResource(cAvidaContext& ctx, int id, double new_level);
   
 public:
-  cTestCPU(cWorld* world);
+  cTestCPU(cAvidaContext& ctx, cWorld* world);
   ~cTestCPU() { }
   
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome);
@@ -114,10 +114,11 @@ public:
   inline const tArray<double>& GetResources(cAvidaContext& ctx); 
   inline const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
+  inline const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
-  void ModifyResources(const tArray<double>& res_change);
+  void ModifyResources(cAvidaContext& ctx, const tArray<double>& res_change);
   cResourceCount& GetResourceCount() { return m_resource_count; }
 };
 
@@ -157,14 +158,19 @@ inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaConte
     return m_deme_resource_count.GetResources(ctx); 
 }
 
+inline const tArray<double>& cTestCPU::GetCellResources(int cell_id, cAvidaContext& ctx)   
+{
+  return m_cell_resource_count.GetResources(ctx); 
+}
+
 inline const tArray< tArray<int> >& cTestCPU::GetCellIdLists()
 {
 	return m_resource_count.GetCellIdLists();
 }
 
-inline void cTestCPU::SetResource(int id, double new_level)
+inline void cTestCPU::SetResource(cAvidaContext& ctx, int id, double new_level)
 {
-  m_resource_count.Set(id, new_level);
+  m_resource_count.Set(ctx, id, new_level);
 }
 
 #endif

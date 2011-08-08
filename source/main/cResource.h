@@ -123,6 +123,12 @@ private:
   double m_plateau_outflow;
   int m_is_plateau_common;
   double m_floor;
+  int m_habitat;
+  int m_min_size;
+  int m_max_size;
+  int m_config;
+  int m_count; 
+  double m_resistance;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
@@ -197,6 +203,12 @@ public:
   double GetPlateauOutflow() { return m_plateau_outflow; }
   int GetIsPlateauCommon() { return m_is_plateau_common; }
   double GetFloor() { return m_floor; }
+  int GetHabitat() { return m_habitat; }
+  int GetMinSize() { return m_min_size; }
+  int GetMaxSize() { return m_max_size; }
+  int GetConfig() { return m_config; }
+  int GetCount() { return m_count; }
+  double GetResistance() { return m_resistance; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -265,6 +277,12 @@ public:
   void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
   void SetIsPlateauCommon(int _is_plateau_common) { m_is_plateau_common = _is_plateau_common; }
   void SetFloor(double _floor) { m_floor = _floor; }
+  void SetHabitat(int _habitat) { m_habitat = _habitat; }
+  void SetMinSize(int _min_size) { m_min_size = _min_size; }
+  void SetMaxSize(int _max_size) { m_max_size = _max_size; }
+  void SetConfig(int _config) { m_config = _config; }
+  void SetCount(int _count) { m_count = _count; }
+  void SetResistance(double _resistance) { m_resistance = _resistance; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

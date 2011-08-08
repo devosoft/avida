@@ -1,11 +1,11 @@
 # Avida tasks quality data
-# Tue Jun  7 16:06:19 2011
+# Fri Jul 22 16:27:56 2011
 # First column gives the current update, rest give average and max task quality
 #  1: Update
 #  2: LiveOnPatchRes Average
 #  3: LiveOnPatchRes Max
 
 0 1 1 
-10 5.3557 13 
-20 6.29 23 
-30 5.14573 24 
+10 6.1875 15 
+20 2.73 17 
+30 2.36 18 

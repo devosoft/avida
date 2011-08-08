@@ -78,7 +78,7 @@ public:
   double GetAmount(int x) const;
   double GetAmount(int x, int y) const;
   void RateAll(double ratein); 
-  void StateAll();
+  virtual void StateAll();
   void FlowAll(); 
   double SumAll() const;
   void Source(double amount) const;

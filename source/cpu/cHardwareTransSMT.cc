@@ -845,7 +845,7 @@ bool cHardwareTransSMT::DoActualCollect(cAvidaContext& ctx, int bin_used, bool e
   {res_change[bin_used] = 0.0;}
 
   // Update resource counts to reflect res_change
-  m_organism->GetOrgInterface().UpdateResources(res_change);
+  m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
   
   return true;
 }

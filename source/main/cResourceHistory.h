@@ -26,6 +26,7 @@
 #include "tArray.h"
 #endif
 
+class cAvidaContext;
 class cResourceCount;
 class cString;
 template<class T> class tArray;
@@ -51,7 +52,7 @@ private:
 public:
   cResourceHistory() { ; }
   
-  bool GetResourceCountForUpdate(int update, cResourceCount& rc, bool exact = false) const;
+  bool GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResourceCount& rc, bool exact = false) const;
   bool GetResourceLevelsForUpdate(int update, tArray<double>& levels, bool exact = false) const;
   void AddEntry(int update, const tArray<double>& values);
   

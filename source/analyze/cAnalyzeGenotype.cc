@@ -364,9 +364,9 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     return;
   }
   
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  
   cAvidaContext& ctx = m_world->GetDefaultContext();
+  
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time

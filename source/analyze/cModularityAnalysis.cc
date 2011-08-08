@@ -53,7 +53,7 @@ void cModularityAnalysis::Initialize()
 
 void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
 {
-  cTestCPU* testcpu = m_genotype->GetWorld()->GetHardwareManager().CreateTestCPU();
+  cTestCPU* testcpu = m_genotype->GetWorld()->GetHardwareManager().CreateTestCPU(ctx);
   cCPUTestInfo test_info = m_test_info;
   
   const Genome& base_genome = m_genotype->GetGenome();

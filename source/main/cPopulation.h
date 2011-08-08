@@ -129,7 +129,7 @@ public:
 
   // Deme-related methods
   //! Compete all demes with each other based on the given competition type.
-  void CompeteDemes(int competition_type);
+  void CompeteDemes(cAvidaContext& ctx, int competition_type);
   
   //! Compete all demes with each other based on the given vector of fitness values.
   void CompeteDemes(const std::vector<double>& calculated_fitness, cAvidaContext& ctx); 
@@ -203,6 +203,7 @@ public:
 
   // Calculate the statistics from the most recent update.
   void ProcessPostUpdate(cAvidaContext& ctx);
+  void UpdateResStats(cAvidaContext& ctx);
   void ProcessUpdateCellActions(cAvidaContext& ctx);
 
   // Clear all but a subset of cells...
@@ -228,19 +229,19 @@ public:
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
-  void UpdateResources(const tArray<double>& res_change);
-  void UpdateResource(int id, double change);
-  void UpdateCellResources(const tArray<double>& res_change, const int cell_id);
-  void UpdateDemeCellResources(const tArray<double>& res_change, const int cell_id);
+  void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateResource(cAvidaContext& ctx, int id, double change);
+  void UpdateCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id);
+  void UpdateDemeCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id);
   
-  void SetResource(int id, double new_level);
-  void SetResource(const cString res_name, double new_level);
-  double GetResource(int id) const { return resource_count.Get(id); }
+  void SetResource(cAvidaContext& ctx, int id, double new_level);
+  void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);
+  double GetResource(cAvidaContext& ctx, int id) const { return resource_count.Get(ctx, id); }
   cResourceCount& GetResourceCount() { return resource_count; }
   void SetResourceInflow(const cString res_name, double new_level);
   void SetResourceOutflow(const cString res_name, double new_level);
   
-  void SetDemeResource(const cString res_name, double new_level);
+  void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);
   void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);
   void SetDemeResourceInflow(const cString res_name, double new_level);
   void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
@@ -312,7 +313,7 @@ public:
     
     // -------- HGT support --------
     //! Modify current level of the HGT resource.
-    void AdjustHGTResource(double delta);
+    void AdjustHGTResource(cAvidaContext& ctx, double delta);
     
     // -------- Population mixing support --------
     //! Mix all organisms in the population.

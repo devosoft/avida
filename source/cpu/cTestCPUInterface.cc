@@ -85,14 +85,19 @@ const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaCon
   return m_testcpu->GetDemeResources(deme_id, ctx); 
 }
 
+const tArray<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
+{
+  return m_testcpu->GetCellResources(cell_id, ctx); 
+}
+
 const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 {
 	return m_testcpu->GetCellIdLists();
 }
 
-void cTestCPUInterface::UpdateResources(const tArray<double>& res_change)
+void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
-   m_testcpu->ModifyResources(res_change);
+   m_testcpu->ModifyResources(ctx, res_change);
 }
 
 void cTestCPUInterface::Die(cAvidaContext& ctx) 

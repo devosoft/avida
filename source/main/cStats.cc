@@ -1322,7 +1322,7 @@ void cStats::PrintReactionExeData(const cString& filename)
 void cStats::PrintResourceData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
-
+  
   df.WriteComment("Avida resource data");
   df.WriteTimeStamp();
   df.WriteComment("First column gives the current update, all further columns give the quantity");

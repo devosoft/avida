@@ -393,10 +393,10 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 			GetPhenotype().SetToDie();
 		}
   }
-  m_interface->UpdateResources(global_res_change);
+  m_interface->UpdateResources(ctx, global_res_change);
 
   //update deme resources
-  m_interface->UpdateDemeResources(deme_res_change);  
+  m_interface->UpdateDemeResources(ctx, deme_res_change);  
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) 
     m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
@@ -559,7 +559,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     cTaskContext taskctx(this, m_input_buf, m_output_buf, other_input_list, other_output_list,
                          m_hardware->GetExtendedMemory());
     m_phenotype.TestOutput(ctx, taskctx, resource_count, m_phenotype.GetCurRBinsAvail(), res_change, insts_triggered);
-    m_interface->UpdateResources(res_change);
+    m_interface->UpdateResources(ctx, res_change);
     
     for (int i = 0; i < insts_triggered.GetSize(); i++)
       m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
@@ -594,7 +594,7 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
   }
 }
 
-void cOrganism::NotifyDeath()
+void cOrganism::NotifyDeath(cAvidaContext& ctx)
 {
   // Update Sleeping State
   if (m_is_sleeping) {
@@ -604,7 +604,7 @@ void cOrganism::NotifyDeath()
 
   // Return currently stored internal resources to the world
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
-  	m_interface->UpdateResources(GetRBins());
+  	m_interface->UpdateResources(ctx, GetRBins());
   }
   
 	// Make sure the group composition is updated.
@@ -960,30 +960,33 @@ bool cOrganism::Move(cAvidaContext& ctx)
   // Actually perform the move
   if (m_interface->Move(ctx, fromcellID, destcellID)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
-    if (facing == 0) m_northerly = m_northerly - 1;       // N
-    else if (facing == 1) {                           // NW
-      m_northerly = m_northerly - 1; 
-      m_easterly = m_easterly - 1;
-    }  
-    else if (facing == 3) m_easterly = m_easterly - 1;    // W
-    else if (facing == 2) {                           // SW
-      m_northerly = m_northerly + 1; 
-      m_easterly = m_easterly - 1;
-    }
-    else if (facing == 6) m_northerly = m_northerly + 1;  // S
-    else if (facing == 7) {                           // SE
-      m_northerly = m_northerly + 1; 
-      m_easterly = m_easterly + 1;
-    }
-    else if (facing == 5) m_easterly = m_easterly + 1;    // E    
-    else if (facing == 4) {                           // NE
-      m_northerly = m_northerly - 1; 
-      m_easterly = m_easterly + 1;
+    //Skip counting if random < chance of miscounting a step.
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+      if (facing == 0) m_northerly = m_northerly - 1;       // N
+      else if (facing == 1) {                           // NW
+        m_northerly = m_northerly - 1; 
+        m_easterly = m_easterly - 1;
+      }  
+      else if (facing == 3) m_easterly = m_easterly - 1;    // W
+      else if (facing == 2) {                           // SW
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly - 1;
+      }
+      else if (facing == 6) m_northerly = m_northerly + 1;  // S
+      else if (facing == 7) {                           // SE
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly + 1;
+      }
+      else if (facing == 5) m_easterly = m_easterly + 1;    // E    
+      else if (facing == 4) {                           // NE
+        m_northerly = m_northerly - 1; 
+        m_easterly = m_easterly + 1;
+      }
     }
   }
   else return false;              
   
-  // Check to make sure the organism is still alive
+  // Check to make sure the organism is alive after the move
   if (m_phenotype.GetToDelete()) return false;
   
   // updates movement predicates
