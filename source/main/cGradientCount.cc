@@ -164,8 +164,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) return; 
                     
-  // before we move anything, if we have moving depletable resource, we need to get the current plateau cell values 
-  if (m_move_a_scaler > 1 && m_decay == 1) getCurrentPlatValues();
+  // before we move anything, if we have a depletable resource, we need to get the current plateau cell values 
+  if (m_decay == 1) getCurrentPlatValues();
 
   // When the counter matches decay, regenerate resource peak
   if (m_counter == m_decay) generatePeak(ctx);
