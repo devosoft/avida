@@ -2848,12 +2848,12 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
     for (int i = 0; i < cell_res.GetSize(); i++) {
       if (resource_lib.GetResource(i)->GetHabitat() == 3 && cell_res[i] >= 1) {
         nest_id = i;
-        nest_val = cell_res[i];
+        nest_val = (int) cell_res[i];
         break;
       }
     }
   }
-  else nest_val = cell_res[nest_id];  
+  else nest_val = (int) cell_res[nest_id];  
 
   setInternalValue(reg_used, nest_id, true);
   const int val_reg = FindModifiedNextRegister(reg_used);
@@ -2984,7 +2984,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   const int faced_cell = m_organism->GetFacedCellID();
   int cell = m_organism->GetCellID();
   
-  const int ahead_dir = cell - faced_cell;
+  const int ahead_dir = faced_cell - cell;
   int dist_used = 0;
   
   int center_cell = cell;
