@@ -3103,26 +3103,26 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
         bool count_side = true;
         int prev_cell = center_cell;
         for (int j = 0; j < num_cells_either_side + 1; j++) {
-          if (facing == 0 && do_lr == 1) this_cell = center_cell + (-1 * j);
-          else if (facing == 2 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-          else if (facing == 4 && do_lr == 1) this_cell = center_cell + j;
-          else if (facing == 6 && do_lr == 1) this_cell = center_cell + (j * worldx);
+          if (facing == 0 && do_lr == 0) this_cell = center_cell + (-1 * j);
+          else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
+          else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
           
-          else if (facing == 0 && do_lr == 2) this_cell = center_cell + j;
-          else if (facing == 2 && do_lr == 2) this_cell = center_cell + (j * worldx);
-          else if (facing == 4 && do_lr == 2) this_cell = center_cell + (-1 * j);
-          else if (facing == 6 && do_lr == 2) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
+          else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
+          else if (facing == 4 && do_lr == 1) this_cell = center_cell + (-1 * j);
+          else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
           
           // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
-          else if (facing == 1 && do_lr == 1) this_cell = center_cell + (-1 * j);
-          else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-          else if (facing == 5 && do_lr == 1) this_cell = center_cell + j;
-          else if (facing == 7 && do_lr == 1) this_cell = center_cell + (j * worldx);
+          else if (facing == 1 && do_lr == 0) this_cell = center_cell + (-1 * j);
+          else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
+          else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
           
-          else if (facing == 1 && do_lr == 2) this_cell = center_cell + (j * worldx);
-          else if (facing == 3 && do_lr == 2) this_cell = center_cell + (-1 * j);
-          else if (facing == 5 && do_lr == 2) this_cell = center_cell + (-1 * j * worldx);
-          else if (facing == 7 && do_lr == 2) this_cell = center_cell + j; 
+          else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
+          else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
+          else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+          else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
           
           // test if the side cell is still on world, if it isn't do the other side
           if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
