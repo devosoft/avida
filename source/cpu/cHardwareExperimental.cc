@@ -277,10 +277,13 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
+    tInstLibEntry<tMethod>("get-faced-grouping", &cHardwareExperimental::Inst_GetFacedGrouping, nInstFlag::STALL),
 
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-merit-pred", &cHardwareExperimental::Inst_AttackMeritPred, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-pred-attack-odds", &cHardwareExperimental::Inst_GetPredAttackOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
 
     // DEPRECATED Instructions
@@ -3008,7 +3011,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   tArray<double> cell_res;
   
-  for (int dist = 0; dist < distance_sought + 1; dist++) {
+  for (int dist = 0; dist <= distance_sought; dist++) {
     // work on CENTER cell for this dist
     
     // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
@@ -3541,11 +3544,101 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   return true;
 } 		
 
+//Attack organism faced by this one if you are both predators. 
+bool cHardwareExperimental::Inst_AttackMeritPred(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predators
+  if (target->GetForageTarget() != -2) return true;
+  if (m_organism->GetForageTarget() != -2) return true;
+  
+  //Use merit to decide who wins this battle.
+  bool kill_attacker = true;
+  
+  const double attacker_vitality = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_vitality = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+  const double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  
+  const double odds_someone_dies = max(attacker_odds, target_odds);
+  const double odds_target_dies = target_odds * odds_someone_dies;
+  const double decider = ctx.GetRandom().GetDouble(1);
+  
+  if (decider < 1 - odds_someone_dies) return true;
+  else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  
+  if (kill_attacker) {
+    m_organism->Die(ctx);
+    return true;
+  }
+  
+  int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  m_organism->Move(ctx);
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
+  
+  return true;
+} 	
+
+//Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
+bool cHardwareExperimental::Inst_GetPredAttackOdds(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+
+  // allow only for predators
+  if (target->GetForageTarget() != -2) return true;
+  if (m_organism->GetForageTarget() != -2) return true;
+  
+  const double attacker_vitality = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_vitality = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+  const double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  
+  int odds_I_dont_die;
+  // return odds as %
+  if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
+  else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, odds_I_dont_die, true);   
+
+  return true;
+} 	
+
+
 //Teach offspring learned targeting/foraging behavior
 bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
   
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetFacedGrouping(cAvidaContext& ctx)
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead())  return false;  
+  
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, neighbor->GetOpinion().first, true);
   return true;
 }

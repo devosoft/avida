@@ -531,10 +531,13 @@ private:
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_GetGroupID(cAvidaContext& ctx);
+  bool Inst_GetFacedGrouping(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackMeritPrey(cAvidaContext& ctx); 
+  bool Inst_AttackMeritPred(cAvidaContext& ctx); 
+  bool Inst_GetPredAttackOdds(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
 };
 
