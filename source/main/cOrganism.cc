@@ -731,7 +731,8 @@ bool cOrganism::Divide_CheckViable()
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
   const int single_reaction = m_world->GetConfig().REQUIRE_SINGLE_REACTION.Get();
 
-  if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0)   {
+  if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0 && \
+      m_phenotype.GetStolenReactionCount()[required_reaction] == 0)   {
     if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));

@@ -3524,6 +3524,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
     m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
   }
     
+  
   //APW TODO
   // now add the victims internal resource bins to your own
 

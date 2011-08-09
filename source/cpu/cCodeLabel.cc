@@ -40,12 +40,6 @@ void cCodeLabel::ReadString(const cString& label_str)
   
   for (int i = 0; i < lbl.GetSize(); i++) {
     int nop = lbl[i] - 'A';
-    if (nop < 0 || nop >= nHardware::MAX_NOPS) {
-      // on invalid nop, terminate sequence
-      m_size = i;
-      m_nops.Resize(i);
-      break;
-    }
     m_nops[i] =  nop;
   }
 }
