@@ -24,10 +24,20 @@
 
 #include "avida/environment/Manager.h"
 
+#include "avida/core/Archive.h"
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Product.h"
 #include "avida/environment/Reaction.h"
 #include "avida/environment/Resource.h"
+
+
+static Avida::WorldFacetPtr DeserializeEnvironmentManager(Avida::ArchivePtr ar)
+{
+  // @TODO
+  return Avida::WorldFacetPtr();
+}
+bool Avida::Environment::Manager::s_registered_with_facet_factory =
+  Avida::WorldFacet::RegisterFacetType(Avida::Reserved::EnvironmentFacetID, DeserializeEnvironmentManager);
 
 
 
@@ -144,6 +154,13 @@ Avida::Environment::ManagerPtr Avida::Environment::Manager::Of(World* world)
   manager.DynamicCastFrom(facet);
   return manager;
 }
+
+bool Avida::Environment::Manager::Serialize(ArchivePtr ar) const
+{
+  // @TODO
+  return false;
+}
+
 
 Avida::WorldFacetID Avida::Environment::Manager::UpdateBefore() const
 {

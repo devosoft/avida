@@ -51,6 +51,8 @@ namespace Avida {
       
       mutable Apto::Map<DataID, PackagePtr> m_current_values;
       
+      static bool s_registered_with_facet_factory;
+      
     public:
       LIB_EXPORT Manager();
       LIB_EXPORT ~Manager();
@@ -68,10 +70,14 @@ namespace Avida {
       LIB_EXPORT static ManagerPtr Of(World* world);
       
     public:
-      LIB_LOCAL void PerformUpdate(Avida::Context& ctx, Update current_update);
+      LIB_EXPORT bool Serialize(ArchivePtr ar) const;
+      
+    public:
       LIB_LOCAL WorldFacetID UpdateBefore() const;
       LIB_LOCAL WorldFacetID UpdateAfter() const;
+      LIB_LOCAL void PerformUpdate(Avida::Context& ctx, Update current_update);
       
+    public:
       LIB_LOCAL PackagePtr GetCurrentValue(const DataID& data_id) const;
     };
     

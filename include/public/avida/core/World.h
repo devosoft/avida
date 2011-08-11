@@ -45,6 +45,7 @@ namespace Avida {
     
   public:
     LIB_EXPORT World();
+    LIB_EXPORT World(ConstArchivePtr ar);
     
     // General facet methods
     LIB_EXPORT bool AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet);
@@ -56,6 +57,8 @@ namespace Avida {
     
     // Actions
     LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
+    
+    LIB_EXPORT bool Serialize(ArchivePtr ar) const;
   };
   
 
@@ -77,6 +80,11 @@ namespace Avida {
     LIB_EXPORT virtual WorldFacetID UpdateAfter() const = 0;
     
     LIB_EXPORT virtual void PerformUpdate(Context& ctx, Update current_update);
+    
+    LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
+    
+    LIB_EXPORT static WorldFacetPtr Deserialize(ArchivePtr ar);
+    LIB_EXPORT static bool RegisterFacetType(WorldFacetID facet_id, WorldFacetDeserializeFunctor facet_func);
   };
   
   

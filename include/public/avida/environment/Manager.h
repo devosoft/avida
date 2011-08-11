@@ -49,6 +49,8 @@ namespace Avida {
       mutable ReactionIDSetPtr m_reaction_ids;
       mutable ResourceIDSetPtr m_resource_ids;
       
+      static bool s_registered_with_facet_factory;
+      
     public:
       LIB_EXPORT Manager();
       
@@ -69,6 +71,10 @@ namespace Avida {
       LIB_EXPORT bool AttachTo(World* world);
       LIB_EXPORT static ManagerPtr Of(World* world);
       
+    public:
+      LIB_EXPORT bool Serialize(ArchivePtr ar) const;
+      
+    public:
       LIB_LOCAL WorldFacetID UpdateBefore() const;
       LIB_LOCAL WorldFacetID UpdateAfter() const;
     };

@@ -24,6 +24,8 @@
 
 #include "avida/core/World.h"
 
+#include "avida/core/Archive.h"
+
 
 const Avida::WorldFacetID Avida::Reserved::DataManagerFacetID("datamanager");
 const Avida::WorldFacetID Avida::Reserved::EnvironmentFacetID("environment");
@@ -96,4 +98,17 @@ void Avida::World::PerformUpdate(Context& ctx, Update current_update)
 
 void Avida::WorldFacet::PerformUpdate(Context& ctx, Update current_update)
 {
+}
+
+
+Avida::WorldFacetPtr Avida::WorldFacet::Deserialize(ArchivePtr ar)
+{
+  // @TODO
+  return WorldFacetPtr();
+}
+
+bool Avida::WorldFacet::RegisterFacetType(WorldFacetID facet_id, WorldFacetDeserializeFunctor facet_func)
+{
+  // @TODO
+  return false;
 }

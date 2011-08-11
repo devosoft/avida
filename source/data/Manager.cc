@@ -24,11 +24,21 @@
 
 #include "avida/data/Manager.h"
 
+#include "avida/core/Archive.h"
 #include "avida/data/Package.h"
 #include "avida/data/Provider.h"
 #include "avida/data/Recorder.h"
 
 #include <cassert>
+
+
+static Avida::WorldFacetPtr DeserializeDataManager(Avida::ArchivePtr ar)
+{
+  // @TODO
+  return Avida::WorldFacetPtr();
+}
+bool Avida::Data::Manager::s_registered_with_facet_factory =
+  Avida::WorldFacet::RegisterFacetType(Avida::Reserved::DataManagerFacetID, DeserializeDataManager);
 
 
 Avida::Data::Manager::Manager() : m_world(NULL)
@@ -129,6 +139,14 @@ Avida::Data::ManagerPtr Avida::Data::Manager::Of(World* world)
   manager.DynamicCastFrom(facet);
   return manager;
 }
+
+
+bool Avida::Data::Manager::Serialize(ArchivePtr ar) const
+{
+  // @TODO
+  return false;
+}
+
 
 Avida::WorldFacetID Avida::Data::Manager::UpdateBefore() const
 {

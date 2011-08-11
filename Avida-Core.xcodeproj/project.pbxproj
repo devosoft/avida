@@ -317,6 +317,7 @@
 		70A53BCC135B766600C3E661 /* Version.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BBE135B5F2200C3E661 /* Version.cc */; };
 		70A778390D69D5CA00735F1E /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
 		70AD4FA00F194F4D00AA50AC /* cGenotypeData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */; };
+		70B1B1DA13F43016005DDF90 /* Archive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1B1D913F43016005DDF90 /* Archive.cc */; };
 		70B547FD10AB22920013E999 /* cBGGenotypeManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B547FB10AB22920013E999 /* cBGGenotypeManager.cc */; };
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
@@ -639,6 +640,7 @@
 		70100BD7108F8F4F005999F0 /* cRunningStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRunningStats.h; sourceTree = "<group>"; };
 		7010D0E613841BFB00989C16 /* Recorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
 		7010D0E8138425A800989C16 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		7012A4F713F1B0BB002176CE /* Archive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Archive.h; sourceTree = "<group>"; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		70166B8D0B519CFE009533A5 /* cTaskState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskState.h; sourceTree = "<group>"; };
@@ -1061,6 +1063,7 @@
 		70B1A6530B7E238F00067486 /* cHardwareExperimental.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareExperimental.h; sourceTree = "<group>"; };
 		70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-experimental.cfg"; sourceTree = "<group>"; };
 		70B1A7590B7E431F00067486 /* experimental.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = experimental.org; sourceTree = "<group>"; };
+		70B1B1D913F43016005DDF90 /* Archive.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Archive.cc; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
 		70B547FA10AB22920013E999 /* cBGGenotypeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBGGenotypeManager.h; sourceTree = "<group>"; };
 		70B547FB10AB22920013E999 /* cBGGenotypeManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBGGenotypeManager.cc; sourceTree = "<group>"; };
@@ -1419,6 +1422,7 @@
 		703549CD1337BB6C00D3865C /* core */ = {
 			isa = PBXGroup;
 			children = (
+				7012A4F713F1B0BB002176CE /* Archive.h */,
 				7038918F13BBB2A900606079 /* Context.h */,
 				70A53BC2135B6E9D00C3E661 /* Definitions.h */,
 				70ADB20A133A7995000B9C40 /* Feedback.h */,
@@ -1475,6 +1479,7 @@
 		7061AB7F1358BD6F0000B036 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				70B1B1D913F43016005DDF90 /* Archive.cc */,
 				70A53BC3135B704C00C3E661 /* Avida.cc */,
 				70A53BC4135B704C00C3E661 /* Definitions.cc */,
 				7061AB801358BD6F0000B036 /* Genome.cc */,
@@ -2564,6 +2569,7 @@
 				70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */,
 				70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */,
 				70DF729013BE20130085F85E /* World.cc in Sources */,
+				70B1B1DA13F43016005DDF90 /* Archive.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -34,6 +34,9 @@ namespace Avida {
   // Class Declarations
   // --------------------------------------------------------------------------------------------------------------
   
+  class Archive;
+  class ArchiveProperty;
+  template <typename T> struct ArchivePropertyTraits;
   class Context;
   class Feedback;
   class Genome;
@@ -49,8 +52,26 @@ namespace Avida {
   
   typedef int Update; // Discrete unit of activity in Avida
   
+  typedef Apto::SmartPtr<Archive> ArchivePtr;
+  typedef Apto::SmartPtr<const Archive> ConstArchivePtr;
+  
+  typedef Apto::String ArchiveObjectID;
+  typedef Apto::String ArchiveObjectType;
+  typedef Apto::Set<ArchiveObjectID> ArchiveObjectIDSet;
+  typedef Apto::SmartPtr<ArchiveObjectIDSet> ArchiveObjectIDSetPtr;
+  typedef Apto::SmartPtr<const ArchiveObjectIDSet> ConstArchiveObjectIDSetPtr;
+  
+  typedef Apto::String ArchivePropertyID;
+  typedef Apto::String ArchivePropertyType;
+  typedef Apto::Set<ArchivePropertyID> ArchivePropertyIDSet;
+  typedef Apto::SmartPtr<ArchivePropertyIDSet> ArchivePropertyIDSetPtr;
+  typedef Apto::SmartPtr<const ArchivePropertyIDSet> ConstArchivePropertyIDSetPtr;
+  typedef Apto::SmartPtr<ArchiveProperty> ArchivePropertyPtr;
+  typedef Apto::SmartPtr<const ArchiveProperty> ConstArchivePropertyPtr;
+  
   typedef Apto::String WorldFacetID;
   typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;
+  typedef Apto::Functor<WorldFacetPtr, Apto::TL::Create<ArchivePtr> > WorldFacetDeserializeFunctor;
   
   typedef Apto::Functor<void, Apto::TL::Create<DriverEvent> > DriverCallback;
 };
