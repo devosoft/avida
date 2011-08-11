@@ -607,6 +607,8 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
+  // This means you must add a check for your config option to cWorld::setup()
+  // -- search for "m_test_on_div".
   if (m_organism->GetTestOnDivide() == false) return false;
 	
   // If this was a perfect copy, then we don't need to worry about any other
@@ -650,6 +652,8 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
     if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
   }
   
+  // If task loss without gain is to be sterilized or reverted,
+  // check for it and act appropriately.
   int RorS = 0;	// 0 = neither, 1 = revert, 2 = sterilize
   if (ctx.GetRandom().P(m_organism->GetRevertTaskLoss()))
     RorS = 1;
@@ -673,6 +677,21 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
       revert = (del & !added);
     else 
       sterilize = (del & !added);
+  }
+
+  // If mutations granting EQU should be reverted, check for EQU
+  // and flag for reversion.
+  // The probabilistic check is placed under guard so as not to 
+  // affect consistency by using a random number if the feature
+  // is not used.
+  if (m_organism->GetRevertEquals() != 0) {
+    if (ctx.GetRandom().P(m_organism->GetRevertEquals())) {
+      const tArray<int>& child_tasks = test_info.GetTestPhenotype().GetLastTaskCount();
+      if (child_tasks[child_tasks.GetSize() - 1] >= 1) {
+        revert = true;
+        m_world->GetStats().AddNewTaskCount(child_tasks.GetSize() - 1);
+      }
+    }
   }
   
   // Ideally, we won't have reversions and sterilizations turned on at the
@@ -700,6 +719,8 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
+  // This means you must add a check for your config option to cWorld::setup()
+  // -- search for "m_test_on_div".
   if (m_organism->GetTestOnDivide() == false) return false;
 	
   // If this was a perfect copy, then we don't need to worry about any other
@@ -770,6 +791,21 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
 		  revert = (del & !added);
 	  else 
 		  sterilize = (del & !added);
+  }
+  
+  // If mutations granting EQU should be reverted, check for EQU
+  // and flag for reversion.
+  // The probabilistic check is placed under guard so as not to 
+  // affect consistency by using a random number if the feature
+  // is not used.
+  if (m_organism->GetRevertEquals() != 0) {
+    if (ctx.GetRandom().P(m_organism->GetRevertEquals())) {
+      const tArray<int>& child_tasks = test_info.GetTestPhenotype().GetLastTaskCount();
+      if (child_tasks[child_tasks.GetSize() - 1] >= 1) {
+        revert = true;
+        m_world->GetStats().AddNewTaskCount(child_tasks.GetSize() - 1);
+      }
+    }
   }
   
   // Ideally, we won't have reversions and sterilizations turned on at the

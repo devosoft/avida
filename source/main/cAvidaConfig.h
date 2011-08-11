@@ -480,12 +480,13 @@ public:
   CONFIG_ADD_VAR(REVERT_DETRIMENTAL, double, 0.0, "Prob of harmful (but non-lethal) mutations reverting on birth");
   CONFIG_ADD_VAR(REVERT_NEUTRAL, double, 0.0, "Prob of neutral mutations being reverted on birth");
   CONFIG_ADD_VAR(REVERT_BENEFICIAL, double, 0.0, "Prob of beneficial mutations being reverted on birth");
-  CONFIG_ADD_VAR(REVERT_TASKLOSS, double, 0.0, "Prob of mutations that cause task loss (without any gains) being reverted");
+  CONFIG_ADD_VAR(REVERT_TASKLOSS, double, 0.0, "Prob of mutations that cause task loss without any tasks gained being reverted on birth");
+  CONFIG_ADD_VAR(REVERT_EQUALS, double, 0.0, "Prob of mutations which grant EQU being reverted on birth");
   CONFIG_ADD_VAR(STERILIZE_FATAL, double, 0.0, "Prob of lethal mutations steralizing an offspring (typically no effect!)");
-  CONFIG_ADD_VAR(STERILIZE_DETRIMENTAL, double, 0.0, "Prob of harmful (but non-lethal) mutations steralizing an offspring");
-  CONFIG_ADD_VAR(STERILIZE_NEUTRAL, double, 0.0, "Prob of neutral mutations steralizing an offspring");
-  CONFIG_ADD_VAR(STERILIZE_BENEFICIAL, double, 0.0, "Prob of beneficial mutations steralizing an offspring");
-  CONFIG_ADD_VAR(STERILIZE_TASKLOSS, double, 0.0, "Prob of mutations causing task loss steralizing an offspring");
+  CONFIG_ADD_VAR(STERILIZE_DETRIMENTAL, double, 0.0, "Prob of harmful (but non-lethal) mutations sterilizing an offspring");
+  CONFIG_ADD_VAR(STERILIZE_NEUTRAL, double, 0.0, "Prob of neutral mutations sterilizing an offspring");
+  CONFIG_ADD_VAR(STERILIZE_BENEFICIAL, double, 0.0, "Prob of beneficial mutations sterilizing an offspring");
+  CONFIG_ADD_VAR(STERILIZE_TASKLOSS, double, 0.0, "Prob of mutations causing task loss without task gain sterilizing an offspring");
   CONFIG_ADD_VAR(STERILIZE_UNSTABLE, int, 0, "Should genotypes that cannot replicate perfectly not be allowed to replicate?");
   CONFIG_ADD_ALIAS(FAIL_IMPLICIT);
   CONFIG_ADD_VAR(NEUTRAL_MAX,double, 0.0, "Percent benifical change from parent fitness to be considered neutral.");
@@ -779,8 +780,8 @@ public:
   // -------- Opinion-setting config options --------
   CONFIG_ADD_GROUP(OPINION_GROUP, "Organism opinion settings");
   CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
+  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, "# -1: no predators in experiment \n #  0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n#  1: allow predators to switch to being prey");
 	
-
   // -------- Alarm config options --------
   CONFIG_ADD_GROUP(ALARM_GROUP, "Alarm Settings");
   CONFIG_ADD_VAR(BCAST_HOPS, int, 1, "Number of hops to broadcast an alarm");

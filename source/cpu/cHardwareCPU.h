@@ -499,7 +499,6 @@ private:
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
   bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
-  bool Inst_SenseDiffAhead(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   
   // Resources
@@ -890,8 +889,6 @@ public:
   bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); 
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
   bool Inst_AttackFacedOrg(cAvidaContext& ctx); 
-  bool Inst_AttackRandomOrg(cAvidaContext& ctx); 
-  bool Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx);
   bool Inst_GetAttackOdds(cAvidaContext& ctx);
 	
 private:

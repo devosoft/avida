@@ -89,6 +89,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_tag(make_pair(-1, 0))
   , m_northerly(0)
   , m_easterly(0)
+  , m_forage_target(-1)
+  , m_teach(false)
 
 {
 	// initializing this here because it may be needed during hardware creation:
@@ -650,6 +652,7 @@ bool cOrganism::GetRevertNeg() const { return m_world->GetConfig().REVERT_DETRIM
 bool cOrganism::GetRevertNeut() const { return m_world->GetConfig().REVERT_NEUTRAL.Get(); }
 bool cOrganism::GetRevertPos() const { return m_world->GetConfig().REVERT_BENEFICIAL.Get(); }
 bool cOrganism::GetRevertTaskLoss() const { return m_world->GetConfig().REVERT_TASKLOSS.Get(); }
+bool cOrganism::GetRevertEquals() const { return m_world->GetConfig().REVERT_EQUALS.Get(); }
 
 bool cOrganism::GetSterilizeFatal() const { return m_world->GetConfig().STERILIZE_FATAL.Get(); }
 bool cOrganism::GetSterilizeNeg() const { return m_world->GetConfig().STERILIZE_DETRIMENTAL.Get(); }
@@ -729,7 +732,8 @@ bool cOrganism::Divide_CheckViable()
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
   const int single_reaction = m_world->GetConfig().REQUIRE_SINGLE_REACTION.Get();
 
-  if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0)   {
+  if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0 && \
+      m_phenotype.GetStolenReactionCount()[required_reaction] == 0)   {
     if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
@@ -1026,7 +1030,25 @@ bool cOrganism::Move(cAvidaContext& ctx)
     df.WriteRaw(UpdateStr);
   }
   
-  DoOutput(ctx);
+  // don't trigger reactions on move if you're not supposed to! 
+  const cEnvironment& env = m_world->GetEnvironment();
+  const int num_tasks = env.GetNumTasks();
+  for (int i = 0; i < num_tasks; i++) {
+    if (env.GetTask(i).GetDesc() == "move_up_gradient" || \
+        env.GetTask(i).GetDesc() == "move_neutral_gradient" || \
+        env.GetTask(i).GetDesc() == "move_down_gradient" || \
+        env.GetTask(i).GetDesc() == "move_not_up_gradient" || \
+        env.GetTask(i).GetDesc() == "move_to_right_side" || \
+        env.GetTask(i).GetDesc() == "move_to_left_side" || \
+        env.GetTask(i).GetDesc() == "move" || \
+        env.GetTask(i).GetDesc() == "movetotarget" || \
+        env.GetTask(i).GetDesc() == "movetoevent" || \
+        env.GetTask(i).GetDesc() == "movebetweenevent" || \
+        env.GetTask(i).GetDesc() == "move_to_event") {
+      DoOutput(ctx);
+      break;
+    }
+  }
   
   if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
     // then create new thread and load its registers
@@ -1075,6 +1097,13 @@ void cOrganism::SetOpinion(const Opinion& opinion) {
 	}
 }
 
+void cOrganism::SetForageTarget(int forage_target) {
+  m_forage_target = forage_target;
+}
+  
+void cOrganism::Teach(bool teach) {
+  m_teach = teach;
+}
 
 /*! Called when an organism receives a flash from a neighbor. */
 void cOrganism::ReceiveFlash() {

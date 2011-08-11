@@ -76,7 +76,6 @@ public:
 
 
 void cCodeLabel::AddNop(int nop_num) {
-  assert (nop_num < nHardware::MAX_NOPS);
 
   if (m_size < nHardware::MAX_LABEL_SIZE) {
     if (m_size == m_nops.GetSize()) {

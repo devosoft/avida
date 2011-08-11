@@ -50,6 +50,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
+, cur_stolen_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize()) //APW
 , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_sense_count(m_world->GetStats().GetSenseSize())
 , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
@@ -75,6 +76,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_task_id(-1)
 , num_new_unique_reactions(0)
 , res_consumed(0)
+
 {
   if (parent_generation >= 0) {
     generation = parent_generation;
@@ -154,6 +156,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   tolerance_offspring_own       = in_phen.tolerance_offspring_own;     // @JJB
   tolerance_offspring_others    = in_phen.tolerance_offspring_others;  // @JJB
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
+  cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;        //APW    
   
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
@@ -361,6 +364,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_stolen_reaction_count.SetAll(0); //APW
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
@@ -560,6 +564,7 @@ void cPhenotype::SetupInject(const Sequence & _genome)
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_stolen_reaction_count.SetAll(0); //APW
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   sensed_resources.SetAll(0);
@@ -802,6 +807,7 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_stolen_reaction_count.SetAll(0); //APW
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
@@ -997,6 +1003,7 @@ void cPhenotype::TestDivideReset(const Sequence & _genome)
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_stolen_reaction_count.SetAll(0); //APW
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0); 
@@ -1149,6 +1156,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_stolen_reaction_count.SetAll(0); //APW
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
@@ -1912,6 +1920,7 @@ void cPhenotype::NewTrial()
   cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_stolen_reaction_count.SetAll(0); //APW
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);

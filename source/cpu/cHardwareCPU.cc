@@ -240,7 +240,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-diff-ahead", &cHardwareCPU::Inst_SenseDiffAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareCPU::Inst_SenseFacedHabitat, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
@@ -622,8 +621,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("attack-random-org", &cHardwareCPU::Inst_AttackRandomOrg, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("attack-random-when-facing-org", &cHardwareCPU::Inst_AttackRandomWhenFacingOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, nInstFlag::STALL),     
 		
     // Synchronization
@@ -3779,78 +3776,6 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_SenseDiffAhead(cAvidaContext& ctx) 
-{
-  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
-  // temp check on world geometry until code can handle other geometries
-  if ( geometry != 1) {
-    // Instruction sense-diff-ahead only written to work in bounded grids
-    return false;
-  }
-  
-  // If this organism has no neighbors, ignore instruction.
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  if (num_neighbors == 0) return false;
-  
-  if(m_organism->HasOpinion()) {
-    int group = m_organism->GetOpinion().first;
-    // fail if the org is trying to sense a nest/hidden habitat
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    if(resource_lib.GetResource(group)->GetHabitat() == 3) return true;
-    
-    const int reg_used = FindModifiedRegister(REG_BX);
-    const int sense_dist = GetRegister(reg_used);
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
-    int forward_dist = 0;
-    int backward_dist = 0;
-    
-    int faced_cell = m_organism->GetFacedCellID();
-    int cell = m_organism->GetCellID();
-    
-    int ahead_dir = cell - faced_cell;
-    int behind_dir = ahead_dir * - 1;
-    
-    double total_ahead = 0;
-    double total_behind = 0;
-    
-    // look ahead (don't worry about current org cell as this will cancel out)
-    for(int i = 0; i < sense_dist + 1; i++) {
-      forward_dist = i;
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      total_ahead = total_ahead + cell_res[group];
-      // if facing W, SW or NW stop if on edge of world
-      if((geometry == 1) && ((ahead_dir == -1) || (ahead_dir == worldx - 1) || (ahead_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + ahead_dir;
-      // if facing E, SE, or NE check if next cell is off edge of world
-      if((geometry == 1) && ((ahead_dir == 1) || (ahead_dir == worldx + 1) || (ahead_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      // if cell is less than 0 or greater than max cell (in grid), don't do it.
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    
-    // look behind
-    cell = m_organism->GetCellID();
-    for(int j = 0; j < sense_dist + 1; j++) {
-      backward_dist = j;
-      // look forward as far as you can, but only look backward as far as we look forward or to edge of world
-      if (forward_dist < backward_dist) break;
-      tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(cell, ctx);
-      total_behind = total_behind + cell_res[group];
-      // if facing W, SW or NW stop if on edge of world
-      if((geometry == 1) && ((behind_dir == -1) || (behind_dir == worldx - 1) || (behind_dir == (worldx + 1) * -1)) && (cell % worldx == 0)) break;
-      cell = cell + behind_dir;
-      // if facing E, SE, or NE check if next cell is off edge of world
-      if((geometry == 1) && ((behind_dir == 1) || (behind_dir == worldx + 1) || (behind_dir == ((worldx - 1) * - 1))) && (cell % worldx == 0)) break;
-      // if cell is less than 0 or greater than max cell (in grid), don't do it.
-      if(cell < 0 || cell > (worldx * (m_world->GetConfig().WORLD_X.Get() - 1))) break;
-    }
-    
-    // return total diff and actual forward sense distance used
-    int res_diff = (total_ahead - total_behind > 0) ? (int) round (total_ahead - total_behind + 0.5) : (int) round (total_ahead - total_behind - 0.5);
-    GetRegister(reg_used) = forward_dist;
-    GetRegister(FindModifiedNextRegister(reg_used)) = res_diff;
-  }
-  return true;
-}
 
 bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
 {
@@ -8705,32 +8630,6 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   return true;
 } 		
 
-
-//Attack random org in population. This requires all (candidate) orgs to be in a valid group.
-bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  //How many valid groups are we dealing with?
-  int num_poss_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
-  //Make sure we are using groups and there are resources out there.
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
-  m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
-  return true;
-}
-
-//Attack random org in population when facing another org. This requires all (candidate) orgs to be in a valid group.
-bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (!m_organism->IsNeighborCellOccupied()) return false;
-  //How many valid groups are we dealing with?
-  int num_poss_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
-  //Make sure we are using groups and there are resources out there.
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
-  m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
-  return true;
-}
-
 //Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
 bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
 {
@@ -9532,36 +9431,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
     
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
-    
-/*	//test @JJB
-	if (m_world->GetStats().GetUpdate() >= 1000) { 
-		string tolerance_type;
-		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
-		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
-		else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
-        double cell = m_organism->GetCellID();
-		int opinion = m_organism->GetOpinion().first;
-		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-		double res_opinion = res_count[opinion];
         
-		double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
-		double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
-		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-        
-		// update instruction_executed tolerance_type opinion group_size group_res_level
-		// tolerance_immigrants tolerance_own tolerance_others update_window  
-        // tolerance_max res_inflow res_outflow org_ID
-		static ofstream fp("./data/inc_tolerance.dat");
-		fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
-        << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
-        << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-        << update_window << " " << tolerance_max << " " \
-        << res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
-	}//*/
-    
 	return true;
 }
 
@@ -9617,36 +9487,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
     
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
-    
-/*	//PrintToleranceData @JJB
-	if (m_world->GetStats().GetUpdate() >= 1000) { 
-		string tolerance_type;
-		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
-		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
-		else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
-        double cell = m_organism->GetCellID();
-		int opinion = m_organism->GetOpinion().first;
-		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-		double res_opinion = res_count[opinion];
         
-		double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
-		double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
-		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();     
-        
-		// update instruction_executed tolerance_type opinion group_size group_res_level 
-		// tolerance_immigrants tolerance_own tolerance_others update_window  
-        // tolerance_max res_inflow res_outflow org_ID
-		static ofstream fp("./data/dec_tolerance.dat");
-		fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
-        << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
-        << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-        << update_window << " " << tolerance_max << " " \
-        << res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
-	}//*/
-    
 	return true;
 }
 
@@ -9698,10 +9539,6 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             }
             // If the parent is not the only group member            
             if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id) > 1){
-                // using 50-50 vote split
-                // their vote counts for half the total and the rest of the group the other half
-                //total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
-                // using parent vote before group vote
                 total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
             }
             

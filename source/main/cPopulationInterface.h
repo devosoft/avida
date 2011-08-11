@@ -199,6 +199,9 @@ protected:
   
   
 public:
+  void AddLiveOrg(); 
+  void RemoveLiveOrg();  
+  
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
   int NumberOfOrganismsInGroup(int group_id);

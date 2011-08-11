@@ -522,70 +522,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
               // If the parent is the only group member their vote counts for everything
               if (group_list[parent_group].GetSize() == 1) total_offspring_tolerance = parent_tolerance;
               
-    /*//tolerance using 50-50 vote split with attempt to join parent group first
-    // If the parent is not the only group member their vote counts for only half the total
-              if (group_list[parent_group].GetSize() > 1) total_offspring_tolerance = (parent_tolerance / 2) + (parent_group_tolerance / 2);
-              
-              // Calculate the probability the offspring is born into the parent group
-              const double probability_born_parent_group = total_offspring_tolerance / tolerance_max;
-              
-              // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate               
-              // Check if the offspring is successfully born into the parent's group
-              rand = m_world->GetRandom().GetDouble();
-              if (rand <= probability_born_parent_group) {
-                  // Offspring successfully joins parent's group
-                  offspring_array[i]->SetOpinion(parent_group);
-                  JoinGroup(offspring_array[i], parent_group);
-                  // Let the parent know that its offspring was born into its group
-                  parent_organism->GetPhenotype().SetBornParentGroup();
-              }
-              else {
-                  // Let the parent know its offspring was not born into its group
-                  parent_organism->GetPhenotype().ClearBornParentGroup();
-              }  
-              
-              // If the offspring is rejected by the parent group, and there are no other groups, the offspring is doomed
-              const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
-              if ((rand > probability_born_parent_group) && (num_groups == 1)) {
-                  target_cells[i] = 0;
-                  is_doomed = true;
-              }
-              
-              // If the offspring is rejected by the parent group, and there are other groups, the offspring attempts to immigrate
-              if ((rand > probability_born_parent_group) && (num_groups > 1)) {
-                  // Find another group at random, which is not the parent's
-                  int target_group;
-                  do {
-                      target_group = m_world->GetRandom().GetUInt(num_groups);
-                  } while (target_group == parent_group);
-                  
-                  double probability_born_target_group = 1;
-                  // If there are no members currently of the target group, offspring has 100% chance of immigrating
-                  if (group_list[target_group].GetSize() == 0) {
-                      offspring_array[i]->SetOpinion(target_group);
-                      JoinGroup(offspring_array[i], target_group);
-                  }
-                  else {
-                      // If there are group members, retrieve the target group's tolerance to immigrants
-                      double target_group_tolerance = (double) CalcGroupToleranceImmigrants(target_group);
-                      probability_born_target_group = target_group_tolerance / tolerance_max;
-                      rand = m_world->GetRandom().GetDouble();
-                      // Calculate if the offspring successfully immigrates
-                      if (rand <= probability_born_target_group) {
-                          // Offspring joins target group
-                          offspring_array[i]->SetOpinion(target_group);
-                          JoinGroup(offspring_array[i], target_group);
-                      }
-                      else {
-                          // Offspring fails to immigrate and is doomed
-                          target_cells[i] = 0;
-                          is_doomed = true;
-                      }
-                  }
-              }
-               
-    // end tolerance parent-group 50-50 vote with attempt to join parent group first  */   
-              
     // tolerance using parent gets vote then group votes
     // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate              
               const double prob_parent_allows = parent_tolerance / tolerance_max;
@@ -657,82 +593,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
                       }
                   } 
               }
-    // end tolerance parent then group vote with attempt to join parent group first   */
-              
-    /*// offspring first attempt immigrate then attempt to join parent's group 
-    // tolerance using parent gets vote then group votes              
-              // Check if there are other groups, find another group to immigrate to
-              const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
-              int target_group;
-              double target_group_tolerance;
-              double probability_born_target_group = 1;
-              bool immigrated = false;
-              bool join_parent_group = false;
-              rand = m_world->GetRandom().GetDouble();
-              if (num_groups > 1) {
-                  do {
-                      target_group = m_world->GetRandom().GetUInt(num_groups);
-                  } while (target_group == parent_group);
-                  
-                  // If there are no members of the target group, offspring has 100% chance of immigrating
-                  if (group_list[target_group].GetSize() == 0) {
-                      offspring_array[i]->SetOpinion(target_group);
-                      JoinGroup(offspring_array[i], target_group);
-                      immigrated = true;
-                  }
-                  else {
-                      // If there are group members, find the target group's tolerance of immigrants and the probability of immigration
-                      target_group_tolerance = (double) CalcGroupToleranceImmigrants(target_group);
-                      probability_born_target_group = target_group_tolerance / tolerance_max;
-                      if (rand <= probability_born_target_group) {
-                          // Offspring successfully immigrates
-                          offspring_array[i]->SetOpinion(target_group);
-                          JoinGroup(offspring_array[i], target_group);
-                          immigrated = true;
-                          parent_organism->GetPhenotype().ClearBornParentGroup();
-                      }
-                  }
-              }
-              
-              // If no other groups or offspring was rejected as an immigrant, try for parent group
-              if (num_groups == 1 || immigrated == false) {                  
-                  const double prob_parent_allows = parent_tolerance / tolerance_max;
-                  const double prob_group_allows = parent_group_tolerance / tolerance_max;
-                  double rand2 = m_world->GetRandom().GetDouble();
-                  
-                  rand = m_world->GetRandom().GetDouble();
-                  if (rand <= prob_parent_allows) {
-                      //Offspring is handed to the group for their decision
-                      // if there is nobody else in the group, the offspring gets in
-                      join_parent_group = true;
-                      // if there are others in the group, it's their turn
-                      if (group_list[parent_group].GetSize() > 1) {
-                          if (rand2 <= prob_group_allows) {
-                              //Offspring successfully joins parent's group
-                              join_parent_group = true;                       
-                          }
-                          else join_parent_group = false;
-                      }
-                  }
-                  if (join_parent_group) {
-                      offspring_array[i]->SetOpinion(parent_group);
-                      JoinGroup(offspring_array[i], parent_group);  
-                      // Let the parent know that its offspring was born into its group
-                      parent_organism->GetPhenotype().SetBornParentGroup();     
-                  }
-                  else {
-                      // Let the parent know its offspring was not born into its group
-                      parent_organism->GetPhenotype().ClearBornParentGroup();
-                  }
-              }  
-              if (!immigrated && !join_parent_group) {    
-                  // Offspring fails to join any group and is doomed
-                  target_cells[i] = 0;
-                  is_doomed = true;
-                  parent_organism->GetPhenotype().ClearBornParentGroup();
-              }
-              
-    // end tolerance immigrate first with parent vote first */
           }
           else {
               // If not using tolerances, put the offspring in the parent's group.
@@ -742,9 +602,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
               JoinGroup(offspring_array[i], group);
           }
       }
+    // if parent org has executed teach_offspring intruction, teach the offspring the parent's learned foraging/targeting behavior
+    if (parent_organism->IsTeacher()) offspring_array[i]->SetForageTarget(parent_organism->GetForageTarget());
   }
     
-    
+  
     // If we're not about to kill the parent, do some extra work on it.
     if (parent_alive == true) {
         if (parent_phenotype.GetMerit().GetDouble() <= 0.0) {
@@ -957,6 +819,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
 	target_cell.InsertOrganism(in_organism, ctx); 
+  AddLiveOrg(in_organism); 
   
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
@@ -1202,87 +1065,6 @@ void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
   KillOrganism(loser_cell, ctx); 
 }
 
-//Kill random org in population. This requires all (candidate) orgs to be in a valid group.
-void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_groups)
-{
-  //Select and find our target org.  
-  int target_group = 0;
-  int target_pos_in_group = 0;
-  double target_vitality = 0.0;
-  int target_cell_id = 0;
-  //Find the total number of orgs living in groups in the world.
-  int i = 0;
-  int org_list_size = 0;
-  while (i < num_groups) {
-    org_list_size = org_list_size + group_list[i].GetSize();
-    i += 1;
-  }
-  //If nobody else is around, there's no one to kill
-  if (org_list_size == 1) return;
-  //Otherwise, choose a random number for our target org.
-  int trials = 0;
-  while(true) {
-    trials += 1;
-    int target_for_death = ctx.GetRandom().GetUInt(0, org_list_size + 1);
-    //Find out which group that org lives in.
-    int j = 0;
-    int running_count = 0;
-    //Stop searching once we have stepped through to the org we are looking for.
-    while (running_count < target_for_death) {
-      //Otherwise, step through the groups looking for the one that would have our target org.
-      running_count = running_count + group_list[j].GetSize();
-      j = j + 1;
-    }
-    //If we never went through that first loop (j=0), we find our target in the first populated group.
-    if (j == 0) {
-      while (group_list[j].GetSize() == 0) {
-        j = j + 1;
-        target_group = j;
-        target_pos_in_group = target_for_death;
-      }
-    }
-    //Otherwise, if j > 0 and our running count just exceeded the target org num, then our target must be within the last group.
-    else {
-      //subtract 1 from j since we were incrementing after evaluating.
-      target_group = j - 1; 
-      target_pos_in_group = target_for_death - (running_count - group_list[target_group].GetSize()) - 1;
-    }
-    cOrganism* target_org = group_list[target_group][target_pos_in_group];
-    target_cell_id = target_org->GetCellID();
-    target_vitality = target_org->GetVitality();
-    //It's possible that nobody else is actually alive. If so, we need to get out of an infinite loop situation after an arbitrary 1000 tries.
-    if (trials > 1000) break;
-    //Make sure this isn't self and that the target is alive.
-    else if (target_org == org || target_org->IsDead()) continue;
-    else break;
-  }
-  //Use vitality settings to decide who wins this battle.
-  bool kill_attacker = true;
-  int attacker_cell = org->GetCellID();
-  if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 0) 
-    // 50% chance, no modifiers
-      kill_attacker = ctx.GetRandom().P(0.5);
-  else if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 1) {
-    //vitality based
-    double attacker_vitality = org->GetVitality(); 
-    double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-    double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
-    
-    double odds_someone_dies = max(attacker_odds, target_odds);
-    double odds_target_dies = target_odds * odds_someone_dies;
-    double decider = ctx.GetRandom().GetDouble(1);
-    
-    if (decider < 1 - odds_someone_dies) return;
-    else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;
-  }
-  int loser_cell = 0;
-  if (kill_attacker) loser_cell = attacker_cell;
-  else loser_cell = target_cell_id;
-  
-  KillOrganism(cell_array[loser_cell], ctx);
-  return;
-} 
-
 void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx) 
 {
   // do we actually have something to kill?
@@ -1291,7 +1073,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Statistics...
   cOrganism* organism = in_cell.GetOrganism();
   m_world->GetStats().RecordDeath();
-
+  
+  RemoveLiveOrg(organism); 
+  
   int cellID = in_cell.GetID();
 
   organism->NotifyDeath(ctx);
@@ -4545,11 +4329,13 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   int min_gestation_time = INT_MAX;
   int min_genome_length = INT_MAX;
 
-  for (int i = 0; i < cell_array.GetSize(); i++) {
+  for (int i = 0; i < live_org_list.GetSize(); i++) {  //APW
+//  for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
-    if (!cell_array[i].IsOccupied()) continue;
+//    if (!cell_array[i].IsOccupied()) continue;
 
-    cOrganism* organism = cell_array[i].GetOrganism();
+//    cOrganism* organism = cell_array[i].GetOrganism();
+    cOrganism* organism = live_org_list[i];               //APW
     const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
@@ -4681,10 +4467,17 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.SetMinFitness(min_fitness);
   stats.SetMinGestationTime(min_gestation_time);
   stats.SetMinGenomeLength(min_genome_length);
-
-  resource_count.UpdateGlobalResources(ctx); 
+  
+  resource_count.UpdateGlobalResources(ctx);   
 }
 
+void cPopulation::UpdateResStats(cAvidaContext& ctx) 
+{
+  cStats& stats = m_world->GetStats();
+  stats.SetResources(resource_count.GetResources(ctx)); 
+  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
+  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
+}
 
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
@@ -4692,15 +4485,14 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 
   cStats& stats = m_world->GetStats();
 
-
   // Reset the Genebank to prepare it for stat collection.
   m_world->GetClassificationManager().UpdateReset();
 
   stats.SetNumCreatures(GetNumOrganisms());
 
   UpdateDemeStats(ctx); 
-  UpdateOrganismStats(ctx); 
-
+  UpdateOrganismStats(ctx);
+  
   m_world->GetClassificationManager().UpdateStats(stats);
 
   // Have stats calculate anything it now can...
@@ -4709,16 +4501,6 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx);   
 }
-
-
-void cPopulation::UpdateResStats(cAvidaContext& ctx)
-{
-  cStats& stats = m_world->GetStats();
-  stats.SetResources(resource_count.GetResources(ctx)); 
-  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
-  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
-}
-
 
 void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
 {
@@ -6297,6 +6079,25 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
 }
 
 
+// Adds an organism to live org list  
+void  cPopulation::AddLiveOrg(cOrganism* org)
+{
+  live_org_list.Push(org);
+}
+
+// Remove an organism from live org list  
+void  cPopulation::RemoveLiveOrg(cOrganism* org)
+{
+  for (int i = 0; i < live_org_list.GetSize(); i++)
+    if (live_org_list[i] == org) {
+      unsigned int last = live_org_list.GetSize() - 1;
+      live_org_list.Swap(i, last);
+      live_org_list.Pop();
+      break;
+    }
+}
+
+
 // Adds an organism to a group
 void  cPopulation::JoinGroup(cOrganism* org, int group_id)
 {
@@ -6310,7 +6111,6 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   m_groups[group_id]++;
   group_list[group_id].Push(org);
 }
-
 
 // Removes an organism from a group
 void  cPopulation::LeaveGroup(cOrganism* org, int group_id)

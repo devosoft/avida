@@ -1040,7 +1040,8 @@ void cStats::PrintThreadsData(const cString& filename)
   cDataFile& df = m_world->GetDataFile(filename);
   df.Write(m_update, "Update");
   df.Write(tot_organisms, "Total Organisms");
-  df.Write(m_num_threads, "Total Threads");
+  df.Write(m_world->GetPopulation().GetLiveOrgList().GetSize(), "Total Living Organisms");
+  df.Write(m_num_threads, "Total Living Org Threads");
   df.Endl();
 }
 
@@ -3138,19 +3139,41 @@ void cStats::PrintGroupTolerance(const cString& filename)
     }
 }
 
-/*	df.WriteComment("Current member information for all possible groups (first group is the default)");
-	
-	const tArraySet<int>& possible_groups = m_world->GetEnvironment().GetGroupIDs();
-  
+
+/*
+ Print data regarding the living org targets.
+ */
+void cStats::PrintTargets(const cString& filename)
+{
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Targets in use on update boundary.");
+  df.WriteComment("-2: is predator, -1: no targets(default), >=0: id of environmental resource targeted).");
+  df.WriteComment("Format is update + target0 + count0 + target1 + count1 ...");
 	df.WriteTimeStamp();
-  
+
   df.Write(m_update, "Update");
   
-  for (int i = 0; i < possible_groups.GetSize(); i++) {
-    df.Write(possible_groups[i], "Group ID");
-    df.Write(groups[possible_groups[i]],"Number of current group members");
-*/
-
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  // +2 for predators (-2) and default (-1) targets
+  const int num_targets = resource_lib.GetSize() + 2;
+  
+  tArray<int> target_list;
+  target_list.Resize(num_targets);
+  target_list.SetAll(0);
+  
+  tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+    cOrganism* org = live_orgs[i];
+    target_list[org->GetForageTarget() + 2]++;
+  }
+  
+  for (int target = 0; target < num_targets; target++) {
+    df.Write(target - 2, "Target ID");
+    df.Write(target_list[target], "Num Orgs Targeting ID");
+	}
+  
+	df.Endl();
+}
 
 /*! Track named network stats.
  */

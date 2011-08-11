@@ -139,6 +139,9 @@ public:
   
   bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
   
+  void AddLiveOrg() { ; }  
+  void RemoveLiveOrg() { ; }  
+  
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
   int NumberOfOrganismsInGroup(int group_id) {return 0; }

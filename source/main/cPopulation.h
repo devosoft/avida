@@ -66,8 +66,12 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
+  //Keeps track of which organisms are in which group.  
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  //std::map<int, std::vector<cOrganism*> > group_list; //Keeps track of which organisms are in which group.
+  //std::map<int, std::vector<cOrganism*> > group_list; 
+  
+  // Keep list of live organisms
+  tSmartArray<cOrganism* > live_org_list; 
   
   tVector<pair<int,int> > *sleep_log;
   
@@ -195,7 +199,6 @@ public:
   // Print donation stats
   void PrintDonationStats();
 
-
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
   void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);
@@ -246,7 +249,7 @@ public:
   void SetDemeResourceInflow(const cString res_name, double new_level);
   void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
   void SetDemeResourceOutflow(const cString res_name, double new_level);
-
+  
   void ResetInputs(cAvidaContext& ctx);
 
   cEnvironment& GetEnvironment() { return environment; }
@@ -276,18 +279,21 @@ public:
   // Let users change Gradient Resource variables during the run JW
   void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
  
+  // Add an org to live org list
+  void AddLiveOrg(cOrganism* org);  
+  // Remove an org from live org list
+  void RemoveLiveOrg(cOrganism* org); 
+  tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
 	
-    // Adds an organism to a group
+    // Adds an organism to a group  
     void JoinGroup(cOrganism* org, int group_id);
-    // Removes an organism from a group
+    // Removes an organism from a group 
     void LeaveGroup(cOrganism* org, int group_id);
     
     //Kill random member of the group (but not self!!!) 
     void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
     //Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
     void AttackFacedOrg(cAvidaContext& ctx, int loser);
-    //Kill random org in population. This requires all (candidate) orgs to be in a valid group.
-    void AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_groups);
     // Identifies the number of organisms in a group
     int NumberOfOrganismsInGroup(int group_id);
     // Get the group information

@@ -417,7 +417,8 @@ private:
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
-
+  bool Inst_Mult100(cAvidaContext& ctx);
+  
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
   bool Inst_Sub(cAvidaContext& ctx);
@@ -515,17 +516,17 @@ private:
   bool Inst_RotateUphill(cAvidaContext& ctx);
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
-  bool Inst_RotateRightX(cAvidaContext& ctx);
-  bool Inst_RotateLeftX(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
-  bool Inst_RotateDir(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
-  bool Inst_SenseGroupResQuant(cAvidaContext& ctx); 
-  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseResQuant(cAvidaContext& ctx); 
+  bool Inst_SenseNest(cAvidaContext& ctx); 
+  bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
-  bool Inst_SenseDiffAhead(cAvidaContext& ctx);
+  bool Inst_LookAhead(cAvidaContext& ctx);
+  bool Inst_SetForageTarget(cAvidaContext& ctx);
+  bool Inst_GetForageTarget(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
@@ -533,6 +534,8 @@ private:
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
+  bool Inst_AttackMeritPrey(cAvidaContext& ctx); 
+  bool Inst_TeachOffspring(cAvidaContext& ctx);
 };
 
 
