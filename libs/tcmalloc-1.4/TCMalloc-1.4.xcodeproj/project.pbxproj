@@ -245,6 +245,7 @@
 		70FB4E881386EB5100D8F6F0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Michigan State University";
 			};
 			buildConfigurationList = 70FB4E8B1386EB5100D8F6F0 /* Build configuration list for PBXProject "TCMalloc-1.4" */;
