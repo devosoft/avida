@@ -399,9 +399,9 @@ public:
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
-  const tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
-  const tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
-  const tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
+  tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
+  tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
+  tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
   int CalcToleranceImmigrants() const;       // @JJB
   int CalcToleranceOffspringOwn() const;     // @JJB
   int CalcToleranceOffspringOthers() const;  // @JJB
@@ -583,8 +583,7 @@ public:
   void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
-  void SetBornParentGroup() { born_parent_group = true; } // @JJB
-  void ClearBornParentGroup() { born_parent_group = false; } // @JJB
+  bool& SetBornParentGroup() { return born_parent_group; } // @JJB
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
   void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
   void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
@@ -595,10 +594,6 @@ public:
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
-
-  void ModifyToleranceImmigrants(int position, int update) { assert(initialized == true); tolerance_immigrants[position] = update; }            // @JJB
-  void ModifyToleranceOffspringOwn(int position, int update) { assert(initialized == true); tolerance_offspring_own[position] = update; }       // @JJB
-  void ModifyToleranceOffspringOthers(int position, int update) {assert(initialized == true); tolerance_offspring_others[position] = update; }  // @JJB
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }

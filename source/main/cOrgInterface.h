@@ -144,7 +144,13 @@ public:
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
     
   virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
-  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) = 0;
+  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism) = 0;
+  virtual double CalcGroupOddsImmigrants(int group_id) = 0;
+  virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
+  virtual double CalcGroupOddsOffspring(int group_id) = 0;
+  virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
+  virtual void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+                  double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) = 0;
     
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;

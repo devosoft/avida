@@ -1055,9 +1055,35 @@ int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id)
   return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
 }
 
-int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group)
+int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism)
 {
-  return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism, parent_group);
+  return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism);
+}
+
+double cPopulationInterface::CalcGroupOddsImmigrants(int group_id)
+{
+  return m_world->GetPopulation().CalcGroupOddsImmigrants(group_id);
+}
+
+double cPopulationInterface::CalcGroupOddsOffspring(cOrganism* parent)
+{
+  return m_world->GetPopulation().CalcGroupOddsOffspring(parent);
+}
+
+double cPopulationInterface::CalcGroupOddsOffspring(int group_id)
+{
+  return m_world->GetPopulation().CalcGroupOddsOffspring(group_id);
+}
+
+bool cPopulationInterface::AttemptImmigrateGroup(int group_id, cOrganism* org)
+{
+  return m_world->GetPopulation().AttemptImmigrateGroup(group_id, org);
+}
+
+void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
+{
+  m_world->GetStats().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
 void cPopulationInterface::BeginSleep()
