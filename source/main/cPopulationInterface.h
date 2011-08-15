@@ -208,7 +208,13 @@ public:
   int NumberOfOrganismsInGroup(int group_id);
   
   int CalcGroupToleranceImmigrants(int prop_group_id);
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group);
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism);
+  double CalcGroupOddsImmigrants(int group_id);
+  double CalcGroupOddsOffspring(cOrganism* parent);
+  double CalcGroupOddsOffspring(int group_id);
+  bool AttemptImmigrateGroup(int group_id, cOrganism* org);
+  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max);
     
   void BeginSleep();
   void EndSleep();
