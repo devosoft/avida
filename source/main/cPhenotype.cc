@@ -88,6 +88,10 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
   double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
   cur_collect_spec_counts.Resize((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0));
   
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
+    tolerance_offspring_own.Resize(0);
+    tolerance_offspring_others.Resize(0);
+  }
 }
 
 cPhenotype::~cPhenotype()
@@ -1660,19 +1664,19 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
  */
 int cPhenotype::CalcToleranceImmigrants() const
 {
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-    
-	int intolerance_count = 0;
-    
-	for (int n = 0; n < tolerance_max; n++) {
-		if (tolerance_immigrants[n] <= cur_update - update_window) break;
-		intolerance_count++;
-	}
-    
-	const int tolerance = tolerance_max - intolerance_count;
-	return tolerance;
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+
+  int intolerance_count = 0;
+
+  for (int n = 0; n < tolerance_max; n++) {
+    if (tolerance_immigrants[n] <= cur_update - update_window) break;
+    intolerance_count++;
+  }
+
+  const int tolerance = tolerance_max - intolerance_count;
+  return tolerance;
 }
 
 /* Returns the total tolerance for own offspring by counting
@@ -1680,19 +1684,22 @@ int cPhenotype::CalcToleranceImmigrants() const
  */
 int cPhenotype::CalcToleranceOffspringOwn() const
 {
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-    
-	int intolerance_count = 0;
-    
-	for (int n = 0; n < tolerance_max; n++) {
-		if (tolerance_offspring_own[n] <= cur_update - update_window) break;
-		intolerance_count++;
-	}
-    
-	const int tolerance = tolerance_max - intolerance_count;
-	return tolerance;
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  // If offspring tolerances off, skip calculations returning max
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
+
+  int intolerance_count = 0;
+
+  for (int n = 0; n < tolerance_max; n++) {
+    if (tolerance_offspring_own[n] <= cur_update - update_window) break;
+    intolerance_count++;
+  }
+
+  const int tolerance = tolerance_max - intolerance_count;
+  return tolerance;
 }
 
 /* Returns the total tolerance for the offspring of others in the group by counting
@@ -1700,19 +1707,22 @@ int cPhenotype::CalcToleranceOffspringOwn() const
  */
 int cPhenotype::CalcToleranceOffspringOthers() const
 {
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-    
-	int intolerance_count = 0;
-    
-	for (int n = 0; n < tolerance_max; n++) {
-		if (tolerance_offspring_others[n] <= cur_update - update_window) break;
-		intolerance_count++;
-	}
-    
-	const int tolerance = tolerance_max - intolerance_count;
-	return tolerance;
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  // If offspring tolerances off, skip calculations returning max
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
+
+  int intolerance_count = 0;
+
+  for (int n = 0; n < tolerance_max; n++) {
+    if (tolerance_offspring_others[n] <= cur_update - update_window) break;
+    intolerance_count++;
+  }
+
+  const int tolerance = tolerance_max - intolerance_count;
+  return tolerance;
 }
 
 void cPhenotype::ReduceEnergy(const double cost) {

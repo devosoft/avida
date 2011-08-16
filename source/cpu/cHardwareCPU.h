@@ -496,9 +496,12 @@ private:
   bool Inst_SenseFacedResource0(cAvidaContext& ctx);
   bool Inst_SenseFacedResource1(cAvidaContext& ctx);
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
-  bool Inst_SenseResourceID(cAvidaContext& ctx); 
-  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
-  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseResourceID(cAvidaContext& ctx);
+  // Resources of next group +1 or -1, based on positive or negative value in the nop register,
+  // wrapping from the top group back to group 1 (skipping 0). @JJB
+  bool Inst_SenseNextResLevel(cAvidaContext& ctx);
+  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx);
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx);
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   
   // Resources
@@ -932,12 +935,18 @@ public:
 public:
 	//! An organism joins a group by setting it opinion to the group id. 
 	bool Inst_JoinGroup(cAvidaContext& ctx);
+    // Organism joins group +1 or -1 wrapping from the top group back to group 1 (skipping 0)
+    // based on whether the nop register is positive or negative. @JJB
+    bool Inst_JoinNextGroup(cAvidaContext& ctx);
 	//Kill Random Member in Group 
 	bool Inst_KillGroupMember(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
 	bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
 	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
+    // Places in BX register, the number of organisms in the group +1 or -1, wrapping from the top back to group 1
+    // skipping 0, based on whether the nop register is positive or negative. @JJB
+    bool Inst_NumberNextGroup(cAvidaContext& ctx);
 	// Increases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
 	bool Inst_IncTolerance(cAvidaContext& ctx);
 	// Decreases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
@@ -946,6 +955,7 @@ public:
 	bool Inst_GetTolerance(cAvidaContext& ctx);
 	// Get group tolerance levels @JJB
 	bool Inst_GetGroupTolerance(cAvidaContext& ctx);
+    void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx); // @JJB
   
 	// -------- Network creation support --------
 public:

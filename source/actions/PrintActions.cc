@@ -171,9 +171,10 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
-STATS_OUT_FILE(PrintGroupIds,         groupids.dat);
-STATS_OUT_FILE(PrintGroupTolerance,           grouptolerance.dat); // @JJB
+STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
+STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); // @JJB
+STATS_OUT_FILE(PrintToleranceData,            tolerance.dat); // @JJB
 
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
@@ -219,6 +220,23 @@ public:
   }
 };
 
+class cActionPrintGroupTolerance : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintGroupTolerance(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "grouptolerance.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"grouptolerance.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintGroupTolerance(m_filename);
+  }
+};
 
 class cActionPrintData : public cAction
 {
@@ -3956,10 +3974,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
 	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-  action_lib->Register<cActionPrintTargets>("PrintTargets");
-  
-  action_lib->Register<cActionPrintHGTData>("PrintHGTData");
+    action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
+    action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
+    action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
+    action_lib->Register<cActionPrintTargets>("PrintTargets");
+	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");
