@@ -630,25 +630,6 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
     }
   }
 
-  // Handle probabilistic inject failure
-  if (m_world->GetConfig().INJECT_PROB_FROM_TASKS.Get()) {
-    tArray<int> task_counts = target_organism->GetPhenotype().GetCurTaskCount();
-    int last_task_count = target_organism->GetPhenotype().GetLastTaskCount()[0];
-    int total_count;
-    int task_count = last_task_count;
-
-    if (task_count < task_counts[0]) task_count = task_counts[0];
-
-    total_count = task_count;
-
-    if (total_count > 0) {
-      int random_int = m_world->GetRandom().GetUInt(100);
-      if (random_int > (total_count * 11)) return false;
-    }
-    else
-      return false;
-  }
-
 
   // Attempt actual parasite injection
 
