@@ -143,6 +143,10 @@ public:
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
   
+  bool HasOpinion(cOrganism* in_organism) { return false; }
+  void SetOpinion(int opinion, cOrganism* in_organism) { ; }
+  void ClearOpinion(cOrganism* in_organism) { ; }
+
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
   int NumberOfOrganismsInGroup(int group_id) {return 0; }

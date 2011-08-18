@@ -372,7 +372,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   }
   assert(parent_organism != NULL);
   bool is_doomed = false;
-  int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
+  int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1; //Also at the end of cPopulation::ActivateOrganism
   tArray<cOrganism*> offspring_array;
   tArray<cMerit> merit_array;
 
@@ -507,7 +507,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       // no weakling parents either!
       parent_organism->GetPhenotype().SetToDie();
       parent_alive = false;
-    } 
+    }
     else {
       // Reset inputs and re-calculate merit if required
       if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
@@ -561,7 +561,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
     }    
     ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
-  }  
+  }
   return parent_alive;
 }
 
@@ -711,7 +711,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   // Update the contents of the target cell.
   KillOrganism(target_cell, ctx); 
-	target_cell.InsertOrganism(in_organism, ctx); 
+  target_cell.InsertOrganism(in_organism, ctx); 
   AddLiveOrg(in_organism); 
   
   // Setup the inputs in the target cell.
@@ -781,12 +781,24 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // world.  if so, we then migrate this organism out of this world and empty the cell.
   if(m_world->IsWorldBoundary(target_cell)) {
     m_world->MigrateOrganism(in_organism, target_cell, in_organism->GetPhenotype().GetMerit(), in_organism->GetLineageLabel());
-    KillOrganism(target_cell, ctx); 
-      // For tolerance_window, we cheat by dumping doomed offspring into cell 0...now that we updated the stats, we need to 
-      // kill that org.
+    KillOrganism(target_cell, ctx);
   }
-    if(m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0 && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, ctx);
-    
+
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
+    if (!in_organism->HasOpinion()) {
+      if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
+        in_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
+        JoinGroup(in_organism, m_world->GetConfig().DEFAULT_GROUP.Get());
+      }
+    }
+  }
+
+  // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
+  // kill that org. @JJB
+  int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
+  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (in_organism->GetCellID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
+    KillOrganism(target_cell, ctx);
+  }
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
@@ -6208,7 +6220,6 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
     // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate
     const double prob_parent_allows = parent_tolerance / tolerance_max;
     const double prob_group_allows = parent_group_tolerance / tolerance_max;
-    double probability_offspring_allowed = CalcGroupOddsOffspring(parent);
     double rand2 = m_world->GetRandom().GetDouble();
     double rand = m_world->GetRandom().GetDouble();
 
@@ -6277,6 +6288,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       }
     }
   }
+  return false;
 }
 
 // Calculates the average for intra-group tolerance to immigrants

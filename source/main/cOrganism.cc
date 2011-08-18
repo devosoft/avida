@@ -1082,20 +1082,27 @@ void cOrganism::moveIPtoAlarmLabel(int jump_label) {
  */
 void cOrganism::SetOpinion(const Opinion& opinion) {
   InitOpinions();
-	
-	const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
 
-	if(bsize == 0) {
-		m_world->GetDriver().RaiseFatalException(-1, "OPINION_BUFFER_SIZE is set to an invalid value.");
-	}	
-	
-	if((bsize > 0) || (bsize == -1)) {
-		m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
-		// if our buffer is too large, chop off old messages:
-		while((bsize != -1) && (static_cast<int>(m_opinion->opinion_list.size()) > bsize)) {
-			m_opinion->opinion_list.pop_front();
-		}
-	}
+  const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
+
+  if(bsize == 0) {
+    m_world->GetDriver().RaiseFatalException(-1, "OPINION_BUFFER_SIZE is set to an invalid value.");
+  }	
+
+  if((bsize > 0) || (bsize == -1)) {
+    m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
+    // if our buffer is too large, chop off old messages:
+    while((bsize != -1) && (static_cast<int>(m_opinion->opinion_list.size()) > bsize)) {
+      m_opinion->opinion_list.pop_front();
+    }
+  }
+}
+
+// Checks if the organism has an opinion.
+bool cOrganism::HasOpinion() {
+  InitOpinions();
+  if (m_opinion->opinion_list.empty()) return false;
+  else return true;
 }
 
 void cOrganism::SetForageTarget(int forage_target) {
