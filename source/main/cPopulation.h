@@ -114,6 +114,9 @@ public:
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
   
+  // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
+  bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
+  
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
   void InjectParasite(const cString& label, const Sequence& injected_code, int cell_id);

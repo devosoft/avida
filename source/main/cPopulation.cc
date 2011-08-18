@@ -565,6 +565,91 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   return parent_alive;
 }
 
+bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host)
+{
+  //default to failing the interaction
+  bool interaction_fails = true;
+  int infection_mechanism = m_world->GetConfig().INFECTION_MECHANISM.Get();
+  
+  cPhenotype& parent_phenotype = infected_host->GetPhenotype();
+  
+  tArray<int> host_task_counts = target_host->GetPhenotype().GetLastHostTaskCount();
+  tArray<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
+
+  
+  // 1: Parasite must match at least 1 task the host does (Inverse GFG)
+  if(infection_mechanism == 1)
+  {
+    //handle skipping of first task
+    int start = 0;
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+      start += 1;
+    
+    //find if there is a matching task
+    for (int i=start;i<host_task_counts.GetSize();i++)
+    {
+      if(host_task_counts[i] > 0 && parasite_task_counts[i] > 0)
+      {
+        //inject should succeed if there is a matching task
+        interaction_fails = false;
+      }
+    }
+  }
+
+  // 2: Parasite must perform at least one task the host does not (GFG)
+  if(infection_mechanism == 2)
+  {
+    //handle skipping of first task
+    int start = 0;
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+      start += 1;
+    
+    //find if there is a parasite task that the host isn't doing
+    for (int i=start;i<host_task_counts.GetSize();i++)
+    {
+      if(host_task_counts[i] == 0 && parasite_task_counts[i] > 0)
+      {
+        //inject should succeed if there is a matching task
+        interaction_fails = false;
+      }
+    }
+
+  }
+  
+  // 3: Parasite tasks must match host tasks exactly. (Matching Alleles) 
+  if(infection_mechanism == 3)
+  {
+    //handle skipping of first task
+    int start = 0;
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+      start += 1;
+    
+    //This time if we trigger the if statments we DO fail. 
+    interaction_fails = false;
+    for (int i=start;i<host_task_counts.GetSize();i++)
+    {
+      if( (host_task_counts[i] == 0 && parasite_task_counts[i] > 0) || (host_task_counts[i] > 0 && parasite_task_counts[i] == 0) )
+      {
+        //inject should fail if either the host or parasite is doing a task the other isn't.
+        interaction_fails = true;
+      }
+    }
+  }
+  
+  // TODO: Add other infection mechanisms -LZ
+  if(interaction_fails)
+  {
+    double prob_success = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
+    double rand = m_world->GetRandom().GetDouble();
+    
+    if (rand > prob_success)
+      return false;
+  }
+
+  //infection_mechanism == 0
+  return true;
+}
+
 bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
 {
   assert(parent != NULL);
@@ -598,57 +683,9 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
 
   //Handle host specific injection
-  if(m_world->GetConfig().INJECT_IS_TASK_SPECIFIC.Get())
-  {
-    bool noMatchingTasks = true;
-    cPhenotype & parentPhenotype = host->GetPhenotype();
-
-    tArray<int> host_task_counts = target_organism->GetPhenotype().GetLastHostTaskCount();
-    tArray<int> parasite_task_counts = parentPhenotype.GetLastParasiteTaskCount();
-
-    int start = 0;
-
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
-      start += 1;
-
-    for (int i=start;i<host_task_counts.GetSize();i++)
-    {
-      if(host_task_counts[i] > 0 && parasite_task_counts[i] > 0)
-      {
-        //inject should succeed if there is a matching task
-        noMatchingTasks = false;
-      }
-    }
-
-    if(noMatchingTasks)
-    {
-      double probSuccess = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
-      double rand = m_world->GetRandom().GetDouble();
-
-      if (rand > probSuccess)
-        return false;
-    }
-  }
-
-  // Handle probabilistic inject failure
-  if (m_world->GetConfig().INJECT_PROB_FROM_TASKS.Get()) {
-    tArray<int> task_counts = target_organism->GetPhenotype().GetCurTaskCount();
-    int last_task_count = target_organism->GetPhenotype().GetLastTaskCount()[0];
-    int total_count;
-    int task_count = last_task_count;
-
-    if (task_count < task_counts[0]) task_count = task_counts[0];
-
-    total_count = task_count;
-
-    if (total_count > 0) {
-      int random_int = m_world->GetRandom().GetUInt(100);
-      if (random_int > (total_count * 11)) return false;
-    }
-    else
-      return false;
-  }
-
+  if(TestForParasiteInteraction(host, target_organism) == false)
+    return false;
+  
 
   // Attempt actual parasite injection
 
