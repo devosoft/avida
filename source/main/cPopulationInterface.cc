@@ -1049,6 +1049,21 @@ void cPopulationInterface::RemoveLiveOrg()
   m_world->GetPopulation().RemoveLiveOrg(GetOrganism());
 }
 
+bool cPopulationInterface::HasOpinion(cOrganism* in_organism)
+{
+  return in_organism->HasOpinion();
+}
+
+void cPopulationInterface::SetOpinion(int opinion, cOrganism* in_organism)
+{
+  in_organism->SetOpinion(opinion);
+}
+
+void cPopulationInterface::ClearOpinion(cOrganism* in_organism)
+{
+  in_organism->ClearOpinion();
+}
+
 void cPopulationInterface::JoinGroup(int group_id)
 {
   m_world->GetPopulation().JoinGroup(GetOrganism(), group_id);

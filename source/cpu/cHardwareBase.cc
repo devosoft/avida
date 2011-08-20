@@ -159,9 +159,9 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   }
 
   if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
-    if (!m_organism->HasOpinion()) {
+    if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
-        m_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
+        m_organism->GetOrgInterface().SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get(), m_organism);
       } else {
         // No default group, so divide fails (group opinion is required by cPopulation::ActivateOffspring)
         return false;
@@ -169,15 +169,14 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     }
   }
   
-	if (m_organism->Divide_CheckViable() == false) 
-	{
-		if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
-		{
-			internalResetOnFailedDivide();
-		}
-		
-		return false; // (divide fails)
-	}
+  if (m_organism->Divide_CheckViable() == false) 
+  {
+    if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
+    {
+      internalResetOnFailedDivide();
+    }
+    return false; // (divide fails)
+  }
 
   
   // Save the information we collected here...

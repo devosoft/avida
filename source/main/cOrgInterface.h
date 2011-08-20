@@ -143,6 +143,10 @@ public:
   virtual void AddLiveOrg() = 0;
   virtual void RemoveLiveOrg() = 0;
   
+  virtual bool HasOpinion(cOrganism* in_organism) = 0;
+  virtual void SetOpinion(int opinion, cOrganism* in_organism) = 0;
+  virtual void ClearOpinion(cOrganism* in_organism) = 0;
+
   virtual void JoinGroup(int group_id) = 0;
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;

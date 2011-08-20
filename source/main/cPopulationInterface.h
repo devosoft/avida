@@ -201,7 +201,11 @@ protected:
   
 public:
   void AddLiveOrg(); 
-  void RemoveLiveOrg();  
+  void RemoveLiveOrg();
+
+  bool HasOpinion(cOrganism* in_organism);
+  void SetOpinion(int opinion, cOrganism* in_organism);
+  void ClearOpinion(cOrganism* in_organism);
   
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);

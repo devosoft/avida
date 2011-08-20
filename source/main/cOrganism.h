@@ -470,9 +470,9 @@ public:
   //! Retrieve all opinions expressed during this organism's lifetime.
   const DatedOpinionList& GetOpinions() { InitOpinions(); return m_opinion->opinion_list; }
   //! Return whether this organism has an opinion.
-  bool HasOpinion() { InitOpinions(); return m_opinion->opinion_list.size(); }
-	//! remove all opinions
-	void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
+  bool HasOpinion();
+  //! remove all opinions
+  void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
   
 private:
   //! Initialize opinion support.
