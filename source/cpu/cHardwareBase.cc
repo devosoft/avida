@@ -169,7 +169,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     }
   }
   
-  if (m_organism->Divide_CheckViable() == false) 
+  if (m_organism->Divide_CheckViable(ctx) == false) 
   {
     if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
     {

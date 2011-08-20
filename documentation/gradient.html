@@ -95,6 +95,9 @@ Nests <br>
 Nests are standard gradient resources, but by declaring a gradient resource to be a nest, the resource will 'hidden' 
 from long-distance sensing instructions such as look-ahead.
 </p>  
+Dens <br>
+Dens are unhidden nests that are visible to instructions like look-ahead.
+</p>  
 <div align="center">
 <p>&nbsp;</p>
 <h3>Table 1: <span>Gradient Resource Options</span></h3>
@@ -105,7 +108,7 @@ from long-distance sensing instructions such as look-ahead.
 <span class="reslocate"><font color="#9c6800">brown(ish)</font></span> variables apply to halo resources, hills and barriers<br>
 <span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers<br>
 <span class="reshills"><font color="#9C1FFE">purple</font></span> variables apply only to hills<br>
-<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills and barriers)<br>
+<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills, barriers, dens)<br>
 </p>
 <table border="1" cellpadding="2">
 <tr>
@@ -118,7 +121,7 @@ from long-distance sensing instructions such as look-ahead.
   <td>
     Type of gradient resource. This determines most of the behaviors and effects of the resource. 
   </br>
-    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests/hidden. 
+    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests(hidden), 4 = dens(visible). 
   </td>
   <td>0</td>
 </tr>

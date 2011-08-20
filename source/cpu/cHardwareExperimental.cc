@@ -2920,6 +2920,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)  
   // habitat 3 = hidden resources (hidden from a distance)
+  // habitat 4 = unhidden den resource
   // habitat -2 = organisms
   
   const int habitat_reg = FindModifiedRegister(rBX);
@@ -2932,9 +2933,9 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // default to look for orgs if invalid habitat & predator
   else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
-           (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
+           (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
-  else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
+  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
   
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, 100 if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
@@ -2962,7 +2963,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // fourth register gives specific instance of env resources sought (default to target, which will be -1 (==any) if org has no target)
   int res_id_sought = m_organism->GetForageTarget();
-  // if you're a predator, you can't specify a specific res             // APW TODO--allow targeting specific org?
+  // if you're a predator, you can't specify a specific 'org' res (can still look for other things if specify via habitat reg)  
+  // APW TODO--allow targeting specific org?
   if (res_id_sought < 0) res_id_sought = -1;
   const int res_id_reg = FindModifiedNextRegister(search_type_reg);
   if (NUM_REGISTERS > 3 && habitat_used != -2 && search_label.GetSize() > 3) {
@@ -3066,10 +3068,11 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       }
       
       // get out of here if we were looking for topo features or walls/objects and found the first instance
-      else if (habitat_used == 1 || habitat_used == 2) {
+      else if (habitat_used == 1 || habitat_used == 2 || habitat_used == 4) {
         for (int k = 0; k < lib_size; k++) {
           if ((habitat_used == 1 && resource_lib.GetResource(k)->GetHabitat() == 1) || \
-              (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2)) {
+              (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2) || \
+              (habitat_used == 4 && resource_lib.GetResource(k)->GetHabitat() == 4)) {
             if (cell_res[k] > 0) {
               if (search_type == 0) {
               found_feature = true;
@@ -3185,10 +3188,11 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
             }
             
             // get out of here if we were looking for topo features or walls/objects and found the first instance
-            else if (habitat_used == 1 || habitat_used == 2) {
+            else if (habitat_used == 1 || habitat_used == 2 || habitat_used == 4) {
               for (int k = 0; k < lib_size; k++) {
                 if ((habitat_used == 1 && resource_lib.GetResource(k)->GetHabitat() == 1) || \
-                    (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2)) {
+                    (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2) || \
+                    (habitat_used == 4 && resource_lib.GetResource(k)->GetHabitat() == 4)) {
                   if (cell_res[k] > 0) {
                     if (search_type == 0) {
                       found_feature = true;
@@ -3233,7 +3237,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       }
       
       // return now if we are looking topo features or walls/objects and we found the nearest
-      else if (found_feature && (habitat_used == 1 || habitat_used == 2)) {
+      else if (found_feature && (habitat_used == 1 || habitat_used == 2 || habitat_used == 4)) {
         setInternalValue(habitat_reg, habitat_used, true);
         setInternalValue(distance_reg, dist, true);
         return true;
@@ -3302,7 +3306,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   }
   
   // topo results 
-  else if (habitat_used == 1 || habitat_used == 2) {
+  else if (habitat_used == 1 || habitat_used == 2 || habitat_used == 4) {
     // return -1 if we never found the topo features or walls/objects we were looking for
     if (search_type == 0 && !found_feature) {
       setInternalValue(distance_reg, -1, true);

@@ -289,7 +289,7 @@ public:
 
   
   // --------  Divide Methods  --------
-  bool Divide_CheckViable();
+  bool Divide_CheckViable(cAvidaContext& ctx);
   bool ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype = 0);
   
   

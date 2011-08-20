@@ -711,12 +711,29 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
 }
 
 
-bool cOrganism::Divide_CheckViable()
+bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
 {
   // Make sure required task (if any) has been performed...
   const int required_task = m_world->GetConfig().REQUIRED_TASK.Get();
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
-
+  
+  if (m_forage_target == -2) {
+    const int habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
+    if (habitat_required != -1) {
+      const tArray<double>& resource_count = m_interface->GetResources(ctx); 
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const double required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
+      bool has_req_res = false;
+      for (int i = 0; i < resource_count.GetSize(); i ++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required && resource_count[i] >= required_value) {
+          has_req_res = true;
+          break;
+        }
+      }
+      if (!has_req_res) return false;
+    }
+  }
+  
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
     if (immunity_task ==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
