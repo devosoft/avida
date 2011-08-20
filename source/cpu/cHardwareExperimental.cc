@@ -26,12 +26,14 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cSexualAncestry.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
@@ -282,9 +284,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("attack-merit-pred", &cHardwareExperimental::Inst_AttackMeritPred, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("get-pred-attack-odds", &cHardwareExperimental::Inst_GetPredAttackOdds, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
@@ -2939,7 +2942,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   int distance_sought = 1;
   if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > long_axis) distance_sought = 100;
+  else if (distance_sought > long_axis) distance_sought = long_axis;
   
   // third register gives type of search used for food resources (habitat 0) and org hunting
   // env res search_types: 
@@ -3495,7 +3498,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  
+    
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
 
   if (!m_organism->IsNeighborCellOccupied()) return false;
@@ -3503,8 +3506,12 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
-  // prevent killing other carnivores -- that should be handled differently using vitality
-  if (target->GetForageTarget() == -2) return true;
+  // attacking other carnivores is handled differently using fights
+  // (but a prey attacking another prey will become a predator via this instruction)
+  if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
+    Inst_FightMeritOrg(ctx);
+    return true;
+  }
   
   // prevent killing on nests/safe havens
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -3519,7 +3526,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   m_organism->UpdateMerit(attacker_merit);
   
   // now add on the victims reaction counts to your own...
-  tArray<int> target_reactions = target->GetPhenotype().GetCurReactionCount();
+  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
 
   for (int i = 0; i < org_reactions.GetSize(); i++) {
@@ -3536,7 +3543,6 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   
   target->Die(ctx);
   
-  m_organism->Move(ctx);
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, attack_success, true);   
@@ -3545,7 +3551,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 } 		
 
 //Attack organism faced by this one if you are both predators. 
-bool cHardwareExperimental::Inst_AttackMeritPred(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   
@@ -3555,18 +3561,20 @@ bool cHardwareExperimental::Inst_AttackMeritPred(cAvidaContext& ctx)
   
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
-  
-  // allow only for predators
-  if (target->GetForageTarget() != -2) return true;
-  if (m_organism->GetForageTarget() != -2) return true;
-  
+
+  // allow only for predator vs predator or prey vs prey
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+      (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    return false;
+  }
+
   //Use merit to decide who wins this battle.
   bool kill_attacker = true;
   
-  const double attacker_vitality = m_organism->GetPhenotype().GetMerit().GetDouble();
-  const double target_vitality = target->GetPhenotype().GetMerit().GetDouble();
-  const double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-  const double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
   const double odds_someone_dies = max(attacker_odds, target_odds);
   const double odds_target_dies = target_odds * odds_someone_dies;
@@ -3584,7 +3592,6 @@ bool cHardwareExperimental::Inst_AttackMeritPred(cAvidaContext& ctx)
   
   m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
   
-  m_organism->Move(ctx);
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, attack_success, true);   
@@ -3593,7 +3600,7 @@ bool cHardwareExperimental::Inst_AttackMeritPred(cAvidaContext& ctx)
 } 	
 
 //Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
-bool cHardwareExperimental::Inst_GetPredAttackOdds(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (!m_organism->IsNeighborCellOccupied()) return false;
@@ -3601,14 +3608,16 @@ bool cHardwareExperimental::Inst_GetPredAttackOdds(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
 
-  // allow only for predators
-  if (target->GetForageTarget() != -2) return true;
-  if (m_organism->GetForageTarget() != -2) return true;
+  // allow only for predator vs predator or prey vs prey
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+      (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    return false;
+  }
   
-  const double attacker_vitality = m_organism->GetPhenotype().GetMerit().GetDouble();
-  const double target_vitality = target->GetPhenotype().GetMerit().GetDouble();
-  const double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-  const double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
   int odds_I_dont_die;
   // return odds as %
@@ -3636,9 +3645,39 @@ bool cHardwareExperimental::Inst_GetFacedGrouping(cAvidaContext& ctx)
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism * neighbor = m_organism->GetNeighbor();
-  if (neighbor->IsDead())  return false;  
+  if (neighbor->IsDead()) return false;  
   
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, neighbor->GetOpinion().first, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead()) return false;  
+  
+  // If there is no valid max genetic distance, go out to cousins.
+  int gen_dist = GetRegister(FindModifiedRegister(rBX));
+  if (gen_dist > 4 || gen_dist < 0) gen_dist = 4;
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  const int out_reg = FindModifiedNextRegister(rBX);   
+  setInternalValue(out_reg, (int) is_kin, true);    
   return true;
 }

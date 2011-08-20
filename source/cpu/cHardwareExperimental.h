@@ -536,9 +536,10 @@ private:
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackMeritPrey(cAvidaContext& ctx); 
-  bool Inst_AttackMeritPred(cAvidaContext& ctx); 
-  bool Inst_GetPredAttackOdds(cAvidaContext& ctx); 
+  bool Inst_FightMeritOrg(cAvidaContext& ctx); 
+  bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
+  bool Inst_CheckFacedKin(cAvidaContext& ctx);
 };
 
 

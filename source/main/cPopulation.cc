@@ -6133,7 +6133,6 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 {
   assert(parent->HasOpinion());
   const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
-  const int parent_group = parent->GetOpinion().first;
 
   double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn();
   double parent_group_tolerance = (double) CalcGroupToleranceOffspring(parent);
@@ -6192,28 +6191,27 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       return true;
     }
   }
-
+  
   // If using tolerance for migration
   else if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     assert(parent->HasOpinion());
     const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     const int parent_group = parent->GetOpinion().first;
-
+    
     // Retrieve the parent's tolerance for its offspring
     double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn();
     // Retrieve the parent group's tolerance for offspring
     double parent_group_tolerance = (double) CalcGroupToleranceOffspring(parent);
-
+    
     // Offspring first passes parent vote, then must also pass group vote
     // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate
     const double prob_parent_allows = parent_tolerance / tolerance_max;
     const double prob_group_allows = parent_group_tolerance / tolerance_max;
-    double probability_offspring_allowed = CalcGroupOddsOffspring(parent);
     double rand2 = m_world->GetRandom().GetDouble();
     double rand = m_world->GetRandom().GetDouble();
-
+    
     bool join_parent_group = false;
-
+    
     if (rand <= prob_parent_allows) {
       // If there is nobody else in the group, the offspring gets in
       join_parent_group = true;
@@ -6226,7 +6224,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
         else join_parent_group = false;
       }
     }
-
+    
     if (join_parent_group) {
       offspring->SetOpinion(parent_group);
       JoinGroup(offspring, parent_group);  
@@ -6238,13 +6236,13 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       // Let the parent know its offspring was not born into its group
       parent->GetPhenotype().SetBornParentGroup() = false;
     }
-
+    
     // If the offspring is rejected by the parent group, and there are no other groups, the offspring is doomed
     const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
     if (!join_parent_group && num_groups == 1) {
       return false;
     }
-
+    
     // If the offspring is rejected by the parent group, and there are other groups, the offspring attempts to immigrate
     if (!join_parent_group && num_groups > 1) {
       // Find another group at random, which is not the parent's
@@ -6252,7 +6250,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       do {
         target_group = m_world->GetRandom().GetUInt(num_groups);
       } while (target_group == parent_group);
-
+      
       // If there are no members currently of the target group, offspring has 100% chance of immigrating
       if (group_list[target_group].GetSize() == 0) {
         offspring->SetOpinion(target_group);
@@ -6277,6 +6275,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       }
     }
   }
+  return false;
 }
 
 // Calculates the average for intra-group tolerance to immigrants

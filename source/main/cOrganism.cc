@@ -751,6 +751,15 @@ bool cOrganism::Divide_CheckViable()
     
     if(toFail)
     {
+      const tArray<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
+      for (int i = 0; i < stolenReactions.GetSize(); i++)
+      {
+        if (stolenReactions[i] > 0) toFail = false;
+      }
+    }
+
+    if(toFail)
+    {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
             cStringUtil::Stringf("Lacks any reaction required for divide"));
       return false; //  (divide fails)
