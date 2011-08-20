@@ -3065,17 +3065,10 @@ public:
     if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
 
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    // give predators and orgs with no targets a number > 0
-    const int predator_target = resource_lib.GetSize();
-    const int no_target = predator_target + 1;
-
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetForageTarget() : -1;
-        if (target == -2) target = predator_target;
-        else if (target == -1 && cell.IsOccupied()) target = no_target;
+        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetForageTarget() : -99;
         fp << target << " ";
       }
       fp << endl;
