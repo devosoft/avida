@@ -6144,12 +6144,13 @@ double cPopulation::CalcGroupOddsImmigrants(int group_id)
 // Returns true if the org successfully passes immigration tolerance and joins the group @JJB
 bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
 {
-  int opinion;
-  if (org->HasOpinion()) opinion = org->GetOpinion().first;
-
   // If there are no members of the target group, automatic successful immigration
   if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 0) {
-    if (org->HasOpinion()) org->LeaveGroup(opinion);
+    int opinion;
+    if (org->HasOpinion()) {
+      opinion = org->GetOpinion().first;
+      org->LeaveGroup(opinion);
+    }
     org->SetOpinion(group_id);
     opinion = org->GetOpinion().first;
     org->JoinGroup(opinion);
@@ -6161,7 +6162,11 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
     double rand = m_world->GetRandom().GetDouble();
     if (rand <= probability_immigration) {
       // Org successfully immigrates
-      if (org->HasOpinion()) org->LeaveGroup(opinion);
+      int opinion;
+      if (org->HasOpinion()) {
+        opinion = org->GetOpinion().first;
+        org->LeaveGroup(opinion);
+      }
       org->SetOpinion(group_id);
       opinion = org->GetOpinion().first;
       org->JoinGroup(opinion);

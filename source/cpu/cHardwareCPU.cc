@@ -3781,6 +3781,7 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
 {
   // Check for an opinion.
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
   int opinion = m_organism->GetOpinion().first;
 
   const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
@@ -3796,15 +3797,15 @@ bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
   if (opinion == (num_groups - 1)) {
     if (register_value > 0) GetRegister(REG_BX) = (int) (res_count[1] * 100 + 0.5);
-    if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[opinion - 1] * 100 + 0.5);
+    else if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[opinion - 1] * 100 + 0.5);
   }
-  if ((opinion == 1) || (opinion == 0)) {
+  else if ((opinion == 1) || (opinion == 0)) {
     if (register_value > 0) GetRegister(REG_BX) = (int) (res_count[opinion + 1] * 100 + 0.5);
-    if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[num_groups - 1] * 100 + 0.5);
+    else if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[num_groups - 1] * 100 + 0.5);
   }
-  if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
+  else if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
     if (register_value > 0) GetRegister(REG_BX) = (int) (res_count[opinion + 1] * 100 + 0.5);
-    if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[opinion - 1] * 100 + 0.5);
+    else if (register_value < 0) GetRegister(REG_BX) = (int) (res_count[opinion - 1] * 100 + 0.5);
   }
   return true;
 }
@@ -9380,9 +9381,10 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
 {
   // Check for an opinion.
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
-  int opinion = m_organism->GetOpinion().first;
-  int new_opinion;
 
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
+
+  // There must be more than the org's current group and the 0 group, which is skipped.
   const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
   if (num_groups <= 2) return false;
 
@@ -9400,31 +9402,34 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
     double rand = m_world->GetRandom().GetDouble();
     if (rand <= prob_failure) return true;
   }
-
+  
+  int opinion = m_organism->GetOpinion().first;
+  int new_opinion = -1;
   if (opinion == (num_groups - 1)) {
     if (reg_value > 0) {
       new_opinion = 1;
     }
-    if (reg_value < 0) {
+    else if (reg_value < 0) {
       new_opinion = opinion - 1;
     }
   }
-  if ((opinion == 1) || (opinion == 0)) {
+  else if ((opinion == 1) || (opinion == 0)) {
     if (reg_value > 0) {
       new_opinion = opinion + 1;
     }
-    if (reg_value < 0) {
+    else if (reg_value < 0) {
       new_opinion = num_groups - 1;
     }
   }
-  if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
+  else if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
     if (reg_value > 0) {
       new_opinion = opinion + 1;
     }
-    if (reg_value < 0) {
+    else if (reg_value < 0) {
       new_opinion = opinion - 1;
     }
   }
+  if (new_opinion == -1) return false;
 
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     m_organism->GetOrgInterface().AttemptImmigrateGroup(new_opinion, m_organism);
@@ -9446,6 +9451,8 @@ bool cHardwareCPU::Inst_NumberNextGroup(cAvidaContext& ctx)
 {
   // Check for an opinion.
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
   int opinion = m_organism->GetOpinion().first;
 
   const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
@@ -9460,15 +9467,15 @@ bool cHardwareCPU::Inst_NumberNextGroup(cAvidaContext& ctx)
   
   if (opinion == (num_groups - 1)) {
     if (reg_value > 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(1);
-    if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion - 1);
+    else if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion - 1);
   }
-  if ((opinion == 1) || (opinion == 0)) {
+  else if ((opinion == 1) || (opinion == 0)) {
     if (reg_value > 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion + 1);
-    if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(num_groups - 1);
+    else if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(num_groups - 1);
   }
-  if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
+  else if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
     if (reg_value > 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion + 1);
-    if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion - 1);
+    else if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion - 1);
   }
   return true;
 }
