@@ -3222,7 +3222,10 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
           }
           if (found_creature || found_feature || found_edible || !count_side) break;
         }
-        if (found_creature || found_edible || found_feature) break;
+        if (found_creature || found_edible || found_feature) {
+          dist_used = dist;  
+          break;
+        }
       }
       
       // before we do the next side cell...
@@ -3266,7 +3269,11 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
       // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
       else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;
-    }    
+    }  
+    if (found_creature || found_edible || found_feature)  {
+      dist_used = dist;  
+      break;
+    }
   } // End getting values
   
   

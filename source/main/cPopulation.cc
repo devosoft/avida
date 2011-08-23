@@ -892,7 +892,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     
     std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
     if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
-      KillOrganism(src_cell, ctx);
+//      KillOrganism(src_cell, ctx);  //APW
+      src_cell.GetOrganism()->Die(ctx);  //APW
     return false; 
     }
   }    

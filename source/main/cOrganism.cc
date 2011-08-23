@@ -972,7 +972,7 @@ std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
 bool cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
-  
+  if (m_is_dead) return false;  //APW
   /*********************/
   // TEMP.  Remove once movement tasks are implemented.
   if (GetCellData() < GetFacedCellData()) { // move up gradient
