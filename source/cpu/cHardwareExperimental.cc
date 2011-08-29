@@ -274,6 +274,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
+    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
 
      
     // Grouping instructions
@@ -3423,6 +3425,33 @@ bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_SenseOpinionResQuant(cAvidaContext& ctx)
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  // check if this is a valid group
+  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int opinion = m_organism->GetOpinion().first;
+    int res_opinion = (int) (res_count[opinion] * 100 + 0.5);
+    int reg_to_set = FindModifiedRegister(rBX);
+    setInternalValue(reg_to_set, res_opinion, true);
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int opinion = m_organism->GetOpinion().first;
+    int reg_to_set = FindModifiedRegister(rBX);
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
+    // return % change
+    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    setInternalValue(reg_to_set, res_diff, true);
+  }
+  return true;
+}
+
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
@@ -3688,6 +3717,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   assert(nbg);
   if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
   
+  setInternalValue(FindModifiedRegister(rBX), gen_dist, true);
   const int out_reg = FindModifiedNextRegister(rBX);   
   setInternalValue(out_reg, (int) is_kin, true);    
   return true;
