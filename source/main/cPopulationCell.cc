@@ -216,6 +216,21 @@ int cPopulationCell::GetFacing()
   return 0;
 }
 
+int cPopulationCell::GetFacedDir()
+{
+  const int facing = GetFacing();
+  int faced_dir = 0;    
+  if (facing == 0) faced_dir = 0;          //N 
+  else if (facing == 1) faced_dir = 7;    //NW
+  else if (facing == 3) faced_dir = 6;    //W
+  else if (facing == 2) faced_dir = 5;    //SW
+  else if (facing == 6) faced_dir = 4;     //S
+  else if (facing == 7) faced_dir = 3;     //SE
+  else if (facing == 5) faced_dir = 2;     //E
+  else if (facing == 4) faced_dir = 1;     //NE
+  return faced_dir;
+  
+}
 void cPopulationCell::ResetInputs(cAvidaContext& ctx) 
 { 
   m_world->GetEnvironment().SetupInputs(ctx, m_inputs); 

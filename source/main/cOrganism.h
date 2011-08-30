@@ -229,7 +229,8 @@ public:
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
-  int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the facing of this organism.
+  int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the faced cell of this organism.
+  int GetFacedDir() { assert(m_interface); return m_interface->GetFacedDir(); }  // Returns the human interpretable facing of this org.
   int GetNeighborCellContents() const { return m_interface->GetNeighborCellContents(); }
   void Rotate(int direction) { m_interface->Rotate(direction); }
   

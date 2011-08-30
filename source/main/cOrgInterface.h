@@ -87,6 +87,7 @@ public:
   virtual void GetNeighborhoodCellIDs(tArray<int>& list) = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
+  virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
   

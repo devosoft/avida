@@ -987,7 +987,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   int fromcellID = GetCellID();
   int destcellID = GetFacedCellID();
   
-  int facing = GetFacing();
+  int facing = GetFacedDir();
   
   // Actually perform the move
   if (m_interface->Move(ctx, fromcellID, destcellID)) {
@@ -995,25 +995,25 @@ bool cOrganism::Move(cAvidaContext& ctx)
     //Skip counting if random < chance of miscounting a step.
     if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
       if (facing == 0) m_northerly = m_northerly - 1;       // N
-      else if (facing == 1) {                           // NW
+      else if (facing == 1) {                           // NE
         m_northerly = m_northerly - 1; 
-        m_easterly = m_easterly - 1;
+        m_easterly = m_easterly + 1;
       }  
-      else if (facing == 3) m_easterly = m_easterly - 1;    // W
-      else if (facing == 2) {                           // SW
+      else if (facing == 2) m_easterly = m_easterly + 1;    // E
+      else if (facing == 3) {                           // SE
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly + 1;
+      }
+      else if (facing == 4) m_northerly = m_northerly + 1;  // S
+      else if (facing == 5) {                           // SW
         m_northerly = m_northerly + 1; 
         m_easterly = m_easterly - 1;
       }
-      else if (facing == 6) m_northerly = m_northerly + 1;  // S
-      else if (facing == 7) {                           // SE
-        m_northerly = m_northerly + 1; 
-        m_easterly = m_easterly + 1;
-      }
-      else if (facing == 5) m_easterly = m_easterly + 1;    // E    
-      else if (facing == 4) {                           // NE
+      else if (facing == 6) m_easterly = m_easterly - 1;    // W    
+      else if (facing == 7) {                           // NW
         m_northerly = m_northerly - 1; 
-        m_easterly = m_easterly + 1;
-      }
+        m_easterly = m_easterly - 1;
+      }      
     }
   }
   else return false;              

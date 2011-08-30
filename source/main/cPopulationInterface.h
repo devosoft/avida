@@ -98,6 +98,7 @@ public:
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
+  int GetFacedDir(); // Returns the human interpretable facing of this org.
   int GetNeighborCellContents();
   void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }

@@ -166,6 +166,13 @@ int cPopulationInterface::GetFacedCellID()
 	return cell.GetID();
 }
 
+int cPopulationInterface::GetFacedDir()
+{
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	assert(cell.IsOccupied());
+	return cell.GetFacedDir();
+}
+
 int cPopulationInterface::GetNeighborCellContents() {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   return cell.ConnectionList().GetFirst()->GetCellData();

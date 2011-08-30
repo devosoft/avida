@@ -114,6 +114,7 @@ public:
   void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
+  int GetFacedDir(); // Returns the human interpretable facing of this org.
   inline void GetPosition(int& x, int& y) const { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
 	inline std::pair<int,int> GetPosition() const { return std::make_pair(m_x,m_y); }
   inline int GetVisits() { return m_visits; } // @WRE: Retrieves the number of visits for this cell.

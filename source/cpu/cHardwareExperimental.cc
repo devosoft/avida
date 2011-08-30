@@ -2655,18 +2655,8 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
 }
 
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
-  int facing = m_organism->GetFacing();
-  int north_offset = 0;
-  if (facing == 0) north_offset = 0;          //N 
-  else if (facing == 1) north_offset = 7;    //NW
-  else if (facing == 3) north_offset = 6;    //W
-  else if (facing == 2) north_offset = 5;    //SW
-  else if (facing == 6) north_offset = 4;     //S
-  else if (facing == 7) north_offset = 3;     //SE
-  else if (facing == 5) north_offset = 2;     //E
-  else if (facing == 4) north_offset = 1;     //NE
   const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, north_offset, true);
+  setInternalValue(out_reg, m_organism->GetFacedDir(), true);
   return true;
 }
 
@@ -2739,18 +2729,17 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
     int easterly = m_organism->GetEasterly();
     int northerly = m_organism->GetNortherly();
     int correct_facing = 0;
-    if (northerly < 0 && easterly == 0) correct_facing = 6; // rotate S
-    
-    else if (northerly < 0 && easterly > 0) correct_facing = 2; // rotate SW
-    else if (northerly == 0 && easterly > 0) correct_facing = 3; // rotate W
-    else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW  
-    else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
-    else if (northerly > 0 && easterly < 0) correct_facing = 4; // rotate NE
-    else if (northerly == 0 && easterly < 0) correct_facing = 5; // rotate E
-    else if (northerly < 0 && easterly < 0) correct_facing = 7; // rotate SE
+    if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
+    else if (northerly > 0 && easterly < 0) correct_facing = 1; // rotate NE
+    else if (northerly == 0 && easterly < 0) correct_facing = 2; // rotate E
+    else if (northerly < 0 && easterly < 0) correct_facing = 3; // rotate SE
+    else if (northerly < 0 && easterly == 0) correct_facing = 4; // rotate S
+    else if (northerly < 0 && easterly > 0) correct_facing = 5; // rotate SW
+    else if (northerly == 0 && easterly > 0) correct_facing = 6; // rotate W
+    else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
         m_organism->Rotate(1);
-        if (m_organism->GetFacing() == correct_facing) break;
+        if (m_organism->GetFacedDir() == correct_facing) break;
     }
     return true;
 }
@@ -2990,7 +2979,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   }
 
   // start the real work of walking through cells
-  const int facing = m_organism->GetFacing();
+  const int facing = m_organism->GetFacedDir();
   const int faced_cell = m_organism->GetFacedCellID();
   int cell = m_organism->GetCellID();
   
