@@ -403,6 +403,11 @@ public:
   CONFIG_ADD_VAR(SAME_LENGTH_SEX, int, 0, "0 = Recombine with any genome\n1 = Recombine only w/ same length");
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
 
+  // -------- Mating Types and Mate Choice config options --------
+  CONFIG_ADD_GROUP(MATING_TYPES_GROUP, "Mating Types and Mate Choice");
+  CONFIG_ADD_VAR(MATING_TYPES, bool, 0, "Turn on separate mating types (i.e., males/females; off by default; requires instruction set support)");
+  CONFIG_ADD_VAR(LEKKING, bool, 0, "Offspring from males go directly into birth chamber to await female choice (off by default)");
+  CONFIG_ADD_VAR(MAX_GLOBAL_BIRTH_CHAMBER_SIZE, bool, 3600, "Maximum number of waiting that can be stored in the birth chamber in a well-mixed population (3600 by default)");
 	
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
