@@ -199,6 +199,17 @@ enum eBioUnitSource {
   SRC_TEST_CPU
 };
 
+enum eMatingTypes {
+  MATING_TYPE_JUVENILE = -1,
+  MATING_TYPE_FEMALE = 0,
+  MATING_TYPE_MALE = 1
+};
+
+enum eMatePreferences {
+  MATE_PREF_RANDOM,
+  MATE_PREF_HIGHEST_DISPLAY_A,
+  MATE_PREF_HIGHEST_DISPLAY_B
+};
 
 namespace Avida
 {
