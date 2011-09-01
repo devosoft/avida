@@ -985,7 +985,12 @@ public:
 	void IncrementTaskSwitchingCost(int cost);
 	int GetTaskSwitchingCost() { return m_task_switching_cost; }
 
-	
+	// -------- Mating types support support --------
+public:
+	//! Create a link to the currently-faced cell.
+	bool Inst_SetMatingTypeMale(cAvidaContext& ctx);
+	bool Inst_SetMatingTypeFemale(cAvidaContext& ctx);
+	bool Inst_SetMatingTypeJuvenile(cAvidaContext& ctx);
 };
 
 

@@ -9843,4 +9843,30 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
   m_task_switching_cost += cost;
 }
 
+/***
+    Mating type instructions
+***/
 
+bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to female
+  //If so, fail
+  //Otherwise, set the current sex to male
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to female
+  //If so, fail
+  //Otherwise, set the current sex to male
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Set the organism's sex to juvenile
+  //In this way, an organism that has already matured as male or female can change its sex
+  // if this instruction is included in the instruction set
+  return true;
+}

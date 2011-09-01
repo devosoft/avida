@@ -79,6 +79,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_task_id(-1)
 , num_new_unique_reactions(0)
 , res_consumed(0)
+, mating_type(MATING_TYPE_JUVENILE)
+, mate_preference(MATE_PREFERENCE_RANDOM)
 
 { 
   if (parent_generation >= 0) {
@@ -164,6 +166,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   tolerance_offspring_others    = in_phen.tolerance_offspring_others;  // @JJB
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
   cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;  
+  mating_type = in_phen.mating_type; //@CHC
+  mate_preference = in_phen.mate_preference; //@CHC
   
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
@@ -388,6 +392,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   tolerance_offspring_own.SetAll(0);     // @JJB
   tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+  mating_type = MATING_TYPE_JUVENILE; //@CHC
+  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
@@ -586,6 +592,8 @@ void cPhenotype::SetupInject(const Sequence & _genome)
   tolerance_offspring_own.SetAll(0);     // @JJB
   tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+  mating_type = MATING_TYPE_JUVENILE; // @CHC
+  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // New organism has no parent and so cannot use its last values; initialize as needed
   last_merit_base = genome_length;
@@ -1180,6 +1188,8 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   tolerance_offspring_own.SetAll(0);     // @JJB
   tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+  mating_type = MATING_TYPE_JUVENILE; // @CHC
+  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;

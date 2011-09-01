@@ -151,6 +151,9 @@ private:
   tArray<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
+  int mating_type;                            // Organism's phenotypic sex @CHC
+  int mate_preference;                        // Organism's mating preference @CHC
+
   cReactionResult* m_reaction_result;
   
 
@@ -376,6 +379,9 @@ public:
   inline void SetBirthGroupID(int group_id);
   inline void SetBirthForagerType(int forager_type);
 
+  int GetMatingType() const { return mating_type; } //@CHC
+  int GetMatePreference() const { return mate_preference; } //@CHC
+  
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
@@ -568,6 +574,9 @@ public:
   void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
   void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
+
+  void SetMatingType(int _mating_type) { mating_type = _mating_type; } //@CHC
+  void SetMatePreference(int _mate_preference) { mate_preference = _mate_preference; } //@CHC
 
   void SetIsMultiThread() { is_multi_thread = true; }
   void SetIsDonorCur() { is_donor_cur = true; } 

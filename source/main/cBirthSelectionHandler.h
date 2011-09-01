@@ -31,6 +31,9 @@ class cBirthChamber;
 class cBirthEntry;
 class cOrganism;
 
+class cWorld; //@CHC
+class cString; //@CHC
+
 using namespace Avida;
 
 
@@ -41,6 +44,11 @@ public:
   virtual ~cBirthSelectionHandler() = 0;
   
   virtual cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent) = 0;
+  
+  virtual int GetWaitingOffspringNumber(int mating_type) { return -1; } //@CHC
+  virtual void GetWaitingOffspringTaskData(int task_id, float results_array[]) { results_array[0] = results_array[1] = results_array[2] = -1; } //@CHC
+  virtual void PrintWaitingMatingTypeData(cWorld* world, const cString& filename) { return; } //@CHC
+
 };
 
 #endif
