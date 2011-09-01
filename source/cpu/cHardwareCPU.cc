@@ -412,6 +412,13 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-divide0.01", &cHardwareCPU::Inst_HeadDivide0_01, nInstFlag::STALL),
     tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001, nInstFlag::STALL),
     
+    //@CHC Mating type / mate choice instructions
+    tInstLibEntry<tMethod>("set-mating-type-male", &cHardwareCPU::Inst_SetMatingTypeMale),
+    tInstLibEntry<tMethod>("set-mating-type-female", &cHardwareCPU::Inst_SetMatingTypeFemale),
+    tInstLibEntry<tMethod>("set-mating-type-juvenile", &cHardwareCPU::Inst_SetMatingTypeJuvenile), 
+    tInstLibEntry<tMethod>("div-sex-mating-type", &cHardwareCPU::Inst_DivideSexMatingType, nInstFlag::STALL),
+    
+    
     // High-level instructions
 		tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
@@ -9850,16 +9857,26 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
 {
   //Check if the organism has already set its sex to female
-  //If so, fail
-  //Otherwise, set the current sex to male
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to male
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_MALE);
+  }
   return true;
 }
 
 bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
 {
-  //Check if the organism has already set its sex to female
-  //If so, fail
-  //Otherwise, set the current sex to male
+  //Check if the organism has already set its sex to male
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to female
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_FEMALE);
+  }
   return true;
 }
 
@@ -9868,5 +9885,18 @@ bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext& ctx)
   //Set the organism's sex to juvenile
   //In this way, an organism that has already matured as male or female can change its sex
   // if this instruction is included in the instruction set
+  m_organism->GetPhenotype().SetMatingType(MATING_TYPE_JUVENILE);
   return true;
+}
+
+bool cHardwareCPU::Inst_DivideSexMatingType(cAvidaContext& ctx)
+{
+  //Check if the organism is sexually mature
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+    //If not, fail
+    return false;
+  } else {
+    //Otherwise, divide
+    return Inst_HeadDivideSex(ctx);
+  }
 }

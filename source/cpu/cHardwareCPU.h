@@ -987,10 +987,10 @@ public:
 
 	// -------- Mating types support support --------
 public:
-	//! Create a link to the currently-faced cell.
 	bool Inst_SetMatingTypeMale(cAvidaContext& ctx);
 	bool Inst_SetMatingTypeFemale(cAvidaContext& ctx);
 	bool Inst_SetMatingTypeJuvenile(cAvidaContext& ctx);
+	bool Inst_DivideSexMatingType(cAvidaContext& ctx);
 };
 
 

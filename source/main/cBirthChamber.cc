@@ -30,6 +30,7 @@
 #include "cBirthGridLocalHandler.h"
 #include "cBirthMateSelectHandler.h"
 #include "cBirthNeighborhoodHandler.h"
+#include "cBirthMatingTypeGlobalHandler.h"
 #include "cClassificationManager.h"
 #include "cOrganism.h"
 #include "cWorld.h"
@@ -55,7 +56,10 @@ cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
     
     if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
       // Deme local takes priority, and manages the sub handlers
-      handler = new cBirthDemeHandler(m_world, this);    
+      handler = new cBirthDemeHandler(m_world, this);
+    } else if (m_world->GetConfig().MATING_TYPES.Get()) {
+      // @CHC: If separate mating types are turned on, that takes priority and will manage the sub handlers
+      handler = new cBirthMatingTypeGlobalHandler(this);
     } else if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
       if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
@@ -111,6 +115,9 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
   }
   entry.timestamp = m_world->GetStats().GetUpdate();
   entry.groups = parent->GetBioGroups();
+  
+  //@CHC: Set all the mating type properties
+  entry.SetMatingType(parent->GetPhenotype().GetMatingType());
   
   for (int i = 0; i < entry.groups.GetSize(); i++) {
     entry.groups[i]->AddActiveReference();
