@@ -417,6 +417,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("set-mating-type-female", &cHardwareCPU::Inst_SetMatingTypeFemale),
     tInstLibEntry<tMethod>("set-mating-type-juvenile", &cHardwareCPU::Inst_SetMatingTypeJuvenile), 
     tInstLibEntry<tMethod>("div-sex-mating-type", &cHardwareCPU::Inst_DivideSexMatingType, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-mating-type-male", &cHardwareCPU::Inst_IfMatingTypeMale),
+    tInstLibEntry<tMethod>("if-mating-type-female", &cHardwareCPU::Inst_IfMatingTypeFemale),
+    tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
+
     
     
     // High-level instructions
@@ -9899,4 +9903,25 @@ bool cHardwareCPU::Inst_DivideSexMatingType(cAvidaContext& ctx)
     //Otherwise, divide
     return Inst_HeadDivideSex(ctx);
   }
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeMale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is male
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_MALE)  getIP().Advance();
+  return true; 
+} 
+
+bool cHardwareCPU::Inst_IfMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is female
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_FEMALE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism has not matured sexually
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  getIP().Advance();
+  return true; 
 }

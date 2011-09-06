@@ -987,10 +987,13 @@ public:
 
 	// -------- Mating types support support --------
 public:
-	bool Inst_SetMatingTypeMale(cAvidaContext& ctx);
-	bool Inst_SetMatingTypeFemale(cAvidaContext& ctx);
-	bool Inst_SetMatingTypeJuvenile(cAvidaContext& ctx);
-	bool Inst_DivideSexMatingType(cAvidaContext& ctx);
+  bool Inst_SetMatingTypeMale(cAvidaContext& ctx);
+  bool Inst_SetMatingTypeFemale(cAvidaContext& ctx);
+  bool Inst_SetMatingTypeJuvenile(cAvidaContext& ctx);
+  bool Inst_DivideSexMatingType(cAvidaContext& ctx);
+  bool Inst_IfMatingTypeMale(cAvidaContext& ctx);
+  bool Inst_IfMatingTypeFemale(cAvidaContext& ctx);
+  bool Inst_IfMatingTypeJuvenile(cAvidaContext& ctx);
 };
 
 
