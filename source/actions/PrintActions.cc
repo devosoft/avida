@@ -4085,6 +4085,52 @@ public:
   }
 };
 
+//Prints data about the current mate preferences of females in the population
+class cActionPrintFemaleMatePreferenceData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintFemaleMatePreferenceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "female_mate_preference_data.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"female_mate_preference_data.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    //Mating preferences:
+    // 0 = random 
+    // 1 = highest display A
+    // 2 = highest display B
+    //IMPORTANT!: Modify next line according to how many types of mate preferences there are in the population
+    int mate_pref_sums[3] = {0, 0, 0};
+    cPopulation &pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        if (pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+          mate_pref_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatePreference()]++;
+        }
+      }
+    }
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population female mate preference histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(mate_pref_sums[0], "Random");
+    df.Write(mate_pref_sums[1], "Highest display A");
+    df.Write(mate_pref_sums[2], "Highest display B");
+    df.Endl();
+  }
+};
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -4294,4 +4340,5 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   //@CHC: Mating type-related actions	
   action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
   action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
+  action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
 }
