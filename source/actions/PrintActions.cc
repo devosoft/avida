@@ -3990,6 +3990,44 @@ public:
 };
 
 
+//@CHC Mating type-related actions
+//Prints counts of the number of organisms of each mating type alive in the population
+class cActionPrintMatingTypeHistogram : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "mating_type_histogram.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mating_type_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int type_counts[3] = {0,0,0};
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population mating type histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    cPopulation& pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      //Count totals of each mating type
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        type_counts[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
+      }
+    }
+    df.Write(type_counts[0], "Mating type -1 (juvenile)");
+    df.Write(type_counts[1], "Mating type 0 (female)");
+    df.Write(type_counts[2], "Mating type 1 (male)");
+    df.Endl(); 
+  }
+};
 
 
 void RegisterPrintActions(cActionLibrary* action_lib)
@@ -4197,4 +4235,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
 	action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
+
+  //@CHC: Mating type-related actions	
+  action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
 }
