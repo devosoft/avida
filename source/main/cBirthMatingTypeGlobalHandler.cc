@@ -81,7 +81,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::SelectOffspring(cAvidaContext& ctx, 
 //Returns the number of offspring of a specific mating type waiting in the birth chamber
 int cBirthMatingTypeGlobalHandler::GetWaitingOffspringNumber(int which_mating_type)
 {
-  if (which_mating_type == -1) return 0;
+  //if (which_mating_type == -1) return 0;
   int num_waiting = 0;
   
   for (int i = 0; i < m_entries.GetSize(); i++) {
@@ -213,7 +213,6 @@ void cBirthMatingTypeGlobalHandler::storeOffspring(cAvidaContext& ctx, const Gen
   // we'll just have to over-write the oldest one
   int store_index = m_entries.GetSize();
   int max_buffer_size = ctx.GetWorld()->GetConfig().MAX_GLOBAL_BIRTH_CHAMBER_SIZE.Get();
-  
   if (store_index >= max_buffer_size) {
     m_bc->ClearEntry(m_entries[oldest_index]);
     store_index = oldest_index;
@@ -235,6 +234,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     storeOffspring(ctx, offspring, parent);
     return NULL;
   }
+  
   int selected_index = -1;
   
   switch (mate_choice_method) {
@@ -265,16 +265,18 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
       //Then pick one at random
       tArray<int> compatible_entries; //This will hold a list of all the compatible birth entries waiting in the birth chamber
       compatible_entries.Resize(num_waiting, -1);
-      int last_compatible = 0;
+      int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
       for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidBirthEntry(m_entries[i])) {
-          if (m_entries[i].GetMatingType() == which_mating_type) {
-            compatible_entries[last_compatible] = i;
+        if (m_bc->ValidBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+          if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             last_compatible++;
+            compatible_entries[last_compatible] = i;
           }
         }
       }
-      selected_index = compatible_entries[ctx.GetRandom().GetUInt(last_compatible)];
+      if (last_compatible > -1) { //Don't bother picking one if we haven't found any compatible entries
+        selected_index = compatible_entries[ctx.GetRandom().GetUInt(last_compatible+1)];
+      }
       break;
   }
   

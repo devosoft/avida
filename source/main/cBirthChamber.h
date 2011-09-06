@@ -74,6 +74,8 @@ public:
   bool ValidBirthEntry(const cBirthEntry& entry) const;
   void StoreAsEntry(const Genome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const;
   void ClearEntry(cBirthEntry& entry);
+  
+  int GetWaitingOffspringNumber(int which_mating_type, int hw_type);
 
 private:
   cBirthSelectionHandler* getSelectionHandler(int hw_type);

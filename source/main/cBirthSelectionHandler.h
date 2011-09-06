@@ -45,7 +45,7 @@ public:
   
   virtual cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent) = 0;
   
-  virtual int GetWaitingOffspringNumber(int mating_type) { return -1; } //@CHC
+  virtual int GetWaitingOffspringNumber(int which_mating_type) { return -1; } //@CHC
   virtual void GetWaitingOffspringTaskData(int task_id, float results_array[]) { results_array[0] = results_array[1] = results_array[2] = -1; } //@CHC
   virtual void PrintWaitingMatingTypeData(cWorld* world, const cString& filename) { return; } //@CHC
 

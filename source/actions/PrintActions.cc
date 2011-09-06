@@ -4029,6 +4029,44 @@ public:
   }
 };
 
+//Prints counts of the number of organisms of each mating type in the birth chamber
+class cActionPrintBirthChamberMatingTypeHistogram : public cAction
+{
+private:
+  cString m_filename;
+  int m_hw_type;
+  
+public:
+  cActionPrintBirthChamberMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "birth_chamber_mating_type_histogram.dat";
+    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
+    else m_hw_type = 0;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber_mating_type_histogram.dat\"] [int hwtype=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int type_counts[3] = {0,0,0};
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida birth chamber mating type histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    
+    type_counts[0] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(-1, m_hw_type);
+    type_counts[1] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(0, m_hw_type);
+    type_counts[2] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(1, m_hw_type);
+    
+    df.Write(type_counts[0], "Mating type -1 (juvenile)");
+    df.Write(type_counts[1], "Mating type 0 (female)");
+    df.Write(type_counts[2], "Mating type 1 (male)");
+    df.Endl(); 
+  }
+};
 
 //Prints data about the current mating display phenotypes of the population
 class cActionPrintMatingDisplayData : public cAction
@@ -4341,4 +4379,5 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
   action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
   action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
+  action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
 }

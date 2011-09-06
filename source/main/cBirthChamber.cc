@@ -530,3 +530,11 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   return true;
 }
 
+int cBirthChamber::GetWaitingOffspringNumber(int which_mating_type, int hw_type)
+{
+  //Get handler
+  cBirthSelectionHandler* temp_handler = getSelectionHandler(hw_type);
+  //Get offspring number
+  int waiting_num = temp_handler->GetWaitingOffspringNumber(which_mating_type);
+  return waiting_num;
+}
