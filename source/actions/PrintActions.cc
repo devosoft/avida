@@ -4030,6 +4030,61 @@ public:
 };
 
 
+//Prints data about the current mating display phenotypes of the population
+class cActionPrintMatingDisplayData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintMatingDisplayData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "mating_display_data.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mating_display_data.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int display_sums[6] = {0, 0, 0, 0, 0, 0}; //[0-2] = display A values for juvenile/undefined mating type, females, and males
+                                           //[3-5] = display B values for each sex
+    int mating_type_sums[3] = {0, 0, 0}; //How many organisms of each mating type are present in the population
+    double display_avgs[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    
+    //Loop through the population and tally up the count values
+    cPopulation& pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        mating_type_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
+        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayA();
+        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+4 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayB();
+      }
+    }
+    
+    if (mating_type_sums[0] > 0) display_avgs[0] = ((double) display_sums[0]) / ((double) mating_type_sums[0]);
+    if (mating_type_sums[1] > 0) display_avgs[1] = ((double) display_sums[1]) / ((double) mating_type_sums[1]);
+    if (mating_type_sums[2] > 0) display_avgs[2] = ((double) display_sums[2]) / ((double) mating_type_sums[2]); 
+    if (mating_type_sums[0] > 0) display_avgs[3] = ((double) display_sums[3]) / ((double) mating_type_sums[0]); 
+    if (mating_type_sums[1] > 0) display_avgs[4] = ((double) display_sums[4]) / ((double) mating_type_sums[1]); 
+    if (mating_type_sums[2] > 0) display_avgs[5] = ((double) display_sums[5]) / ((double) mating_type_sums[2]); 
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population mating display data");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(display_avgs[0], "Avg mating display A for mating type -1 (undefined)");
+    df.Write(display_avgs[1], "Avg mating display A for mating type 0 (female)");
+    df.Write(display_avgs[2], "Avg mating display A for mating type 1 (male)");
+    df.Write(display_avgs[3], "Avg mating display B for mating type -1 (undefined)");
+    df.Write(display_avgs[4], "Avg mating display B for mating type 0 (female)");
+    df.Write(display_avgs[5], "Avg mating display B for mating type 1 (male)");
+    df.Endl();
+  }
+};
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -4238,4 +4293,5 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   //@CHC: Mating type-related actions	
   action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
+  action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
 }

@@ -420,7 +420,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-mating-type-male", &cHardwareCPU::Inst_IfMatingTypeMale),
     tInstLibEntry<tMethod>("if-mating-type-female", &cHardwareCPU::Inst_IfMatingTypeFemale),
     tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
-
+    tInstLibEntry<tMethod>("increment-mating-display-a", &cHardwareCPU::Inst_IncrementMatingDisplayA),
+    tInstLibEntry<tMethod>("increment-mating-display-b", &cHardwareCPU::Inst_IncrementMatingDisplayB),
     
     
     // High-level instructions
@@ -9924,4 +9925,22 @@ bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext& ctx)
   //Execute the next instruction if the organism has not matured sexually
   if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  getIP().Advance();
   return true; 
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayA();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayA(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayB(counter);
+  return true;
 }

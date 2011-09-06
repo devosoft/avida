@@ -118,6 +118,8 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
   
   //@CHC: Set all the mating type properties
   entry.SetMatingType(parent->GetPhenotype().GetMatingType());
+  entry.SetMatingDisplayA(parent->GetPhenotype().GetLastMatingDisplayA());
+  entry.SetMatingDisplayB(parent->GetPhenotype().GetLastMatingDisplayB());
   
   for (int i = 0; i < entry.groups.GetSize(); i++) {
     entry.groups[i]->AddActiveReference();

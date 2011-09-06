@@ -994,6 +994,8 @@ public:
   bool Inst_IfMatingTypeMale(cAvidaContext& ctx);
   bool Inst_IfMatingTypeFemale(cAvidaContext& ctx);
   bool Inst_IfMatingTypeJuvenile(cAvidaContext& ctx);
+  bool Inst_IncrementMatingDisplayA(cAvidaContext& ctx);
+  bool Inst_IncrementMatingDisplayB(cAvidaContext& ctx);
 };
 
 
