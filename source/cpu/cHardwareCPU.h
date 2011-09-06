@@ -996,6 +996,10 @@ public:
   bool Inst_IfMatingTypeJuvenile(cAvidaContext& ctx);
   bool Inst_IncrementMatingDisplayA(cAvidaContext& ctx);
   bool Inst_IncrementMatingDisplayB(cAvidaContext& ctx);
+  bool Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref);
+  bool Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx);
+  bool Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx);
+  bool Inst_SetMatePreferenceRandom(cAvidaContext& ctx); 
 };
 
 
