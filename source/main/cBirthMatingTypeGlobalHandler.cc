@@ -259,6 +259,17 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
         }
       }
       break;
+      
+    case MATE_PREFERENCE_HIGHEST_MERIT: //Highest value of parent's merit
+      for (int i = 0; i < num_waiting; i++) {
+        if (m_bc->ValidBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+          if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
+            if (selected_index == -1) selected_index = i;
+            else selected_index = ((m_entries[i].merit.GetDouble() > m_entries[selected_index].merit.GetDouble()) ? i : selected_index);
+          }
+        }
+      }
+      break;  
     
     default: //Pick any random potential mate
       //First, get a list of every element of m_entries that contains a waiting offspring (of the compatible sex)

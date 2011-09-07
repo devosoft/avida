@@ -999,7 +999,8 @@ public:
   bool Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref);
   bool Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx);
   bool Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx);
-  bool Inst_SetMatePreferenceRandom(cAvidaContext& ctx); 
+  bool Inst_SetMatePreferenceRandom(cAvidaContext& ctx);
+  bool Inst_SetMatePreferenceHighestMerit(cAvidaContext& ctx);
 };
 
 
