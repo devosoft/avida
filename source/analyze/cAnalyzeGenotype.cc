@@ -90,6 +90,10 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const Genome& genome)
 , knockout_stats(NULL)
 , m_land(NULL)
 , m_phenplast_stats(NULL)
+, m_mating_type(MATING_TYPE_JUVENILE)
+, m_mate_preference(MATE_PREFERENCE_RANDOM)
+, m_mating_display_a(0)
+, m_mating_display_b(0)
 {
   
 }
@@ -135,6 +139,10 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
 , knockout_stats(NULL)
 , m_land(NULL)
 , m_phenplast_stats(NULL)
+, m_mating_type(_gen.m_mating_type)
+, m_mate_preference(_gen.m_mate_preference)
+, m_mating_display_a(_gen.m_mating_display_a)
+, m_mating_display_b(_gen.m_mating_display_b)
 {
   if (_gen.knockout_stats != NULL) {
     knockout_stats = new cAnalyzeKnockouts;
@@ -237,6 +245,11 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(double (),         "frac_pos",     "Fraction Mutations Beneficial", GetFracPos,        SetNULL,       0, 0, 0);
   ADD_GDATA(double (),         "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
   ADD_GDATA(double (),         "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
+  
+  ADD_GDATA(int(),             "mating_type", "Mating type (-1 = juvenile; 0 = female; 1 = male)", GetMatingType, SetMatingType, 0, 0, 0);
+  ADD_GDATA(int(),             "mate_preference", "Mate preference", GetMatePreference, SetMatePreference, 0, 0, 0);
+  ADD_GDATA(int(),             "mating_display_a", "Mating display A", GetMatingDisplayA, SetMatingDisplayA, 0, 0, 0);
+  ADD_GDATA(int(),             "mating_display_b", "Mating display B", GetMatingDisplayB, SetMatingDisplayB, 0, 0, 0);
   
   ADD_GDATA(int (),    "num_phen",           "Number of Plastic Phenotypes",          GetNumPhenotypes,          SetNULL, 0, 0, 0);
   ADD_GDATA(int (),    "num_trials",         "Number of Recalculation Trials",        GetNumTrials,              SetNULL, 0, 0, 0);
@@ -570,6 +583,11 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   rbins_total           = likely_phenotype->GetLastRBinsTotal();
   rbins_avail           = likely_phenotype->GetLastRBinsAvail();
   collect_spec_counts   = likely_phenotype->GetLastCollectSpecCounts();
+  m_mating_type 		= likely_phenotype->GetMatingType(); //@CHC
+  m_mate_preference     = likely_phenotype->GetMatePreference(); //@CHC
+  m_mating_display_a    = likely_phenotype->GetCurMatingDisplayA();
+  m_mating_display_b    = likely_phenotype->GetCurMatingDisplayB();
+
   
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {
