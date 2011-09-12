@@ -287,7 +287,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
@@ -3446,7 +3449,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   return true;
 } 		
 
-//Attack organism faced by this one if you are both predators. 
+//Attack organism faced by this one if you are both predators or both prey. 
 bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -3526,6 +3529,52 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   return true;
 } 	
 
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predator vs predator or prey vs prey
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+      (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    return false;
+  }
+    
+  int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, 1, true);   
+  
+  return true;
+} 	
+
+bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->SetCellData(m_organism->GetID());
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg1 = FindModifiedRegister(rBX);
+  const int out_reg2 = FindModifiedNextRegister(rBX);
+  setInternalValue(out_reg1, m_organism->GetFacedCellDataOrgID(), true);
+  setInternalValue(out_reg2, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
+  
+  return true;
+}
 
 //Teach offspring learned targeting/foraging behavior
 bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
