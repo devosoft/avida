@@ -546,6 +546,7 @@ private:
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
+  bool Inst_FightPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);

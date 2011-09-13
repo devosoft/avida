@@ -291,6 +291,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
@@ -3556,6 +3557,33 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   
   return true;
 } 	
+
+//Attack organism faced by this one if you are both predators. 
+bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predator vs predator
+  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
+    return false;
+  }
+  
+  int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, 1, true);   
+  
+  return true;
+} 
 
 bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
 {
