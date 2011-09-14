@@ -3409,8 +3409,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // attacking other carnivores is handled differently using fights
   // (but a prey attacking another prey will become a predator via this instruction)
   if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-    Inst_FightMeritOrg(ctx);
-    return true;
+    return false;
   }
   
   // prevent killing on nests/safe havens
