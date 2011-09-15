@@ -2917,7 +2917,8 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
     // Looking for edible resources or topological features
     
     // by default, look at every resource ID unless we're looking for a specific one
-    int min_index = 0, max_index = lib_size - 1;
+    int min_index = 0;
+    int max_index = lib_size - 1;
     if(res_id_sought != -1)
       min_index = max_index = res_id_sought;
     
@@ -2988,7 +2989,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
   
-  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, 100 if high  
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
   int distance_sought = 1;
@@ -2998,7 +2999,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // third register gives type of search used for food resources (habitat 0) and org hunting
   // env res search_types: 
-  // 0 = look for closest edible res (>=1) or closest hill/wall (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
+  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
   // org hunting search types: 
   // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
@@ -3176,7 +3177,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     setInternalValue(distance_reg, dist_used, true);
     setInternalValue(res_id_reg, cellResultInfo.resource_id);
     
-    // return now if we were looking for first edible and found the nearest
+    // if we were looking for first edible and found the nearest
     if(search_type == 0 && habitat_used == 0) {
       setInternalValue(search_type_reg, search_type, true);
       if (NUM_REGISTERS > 3)
@@ -3184,15 +3185,14 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       return true;
     }
     else if (stop_at_first_found) {
-      // return now if we are looking topo features or organisms and we found the nearest
+      // if we were looking for topo features or organisms and we found the nearest
       return true;
     }
   }
-  // return now if we never found what we were looking for
+  // if we never found what we were looking for
   if (stop_at_first_found && !found) {
     setInternalValue(distance_reg, -1, true);
     setInternalValue(search_type_reg, search_type, true);
-    setInternalValue(res_id_reg, cellResultInfo.resource_id);
     if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, cellResultInfo.resource_id, true);
     return true;
   }
