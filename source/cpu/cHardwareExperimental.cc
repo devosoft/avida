@@ -3407,7 +3407,6 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   // attacking other carnivores is handled differently using fights
-  // (but a prey attacking another prey will become a predator via this instruction)
   if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
     return false;
   }
@@ -3479,7 +3478,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   const double odds_target_dies = target_odds * odds_someone_dies;
   const double decider = ctx.GetRandom().GetDouble(1);
   
-  if (decider < 1 - odds_someone_dies) return true;
+  if (decider < (1 - odds_someone_dies)) return true;
   else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
   
   if (kill_attacker) {
@@ -3487,7 +3486,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
     return true;
   }
   
-  int target_cell = target->GetCellID();
+  const int target_cell = target->GetCellID();
   
   m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
   
