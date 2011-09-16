@@ -27,6 +27,8 @@
 #include "avida/core/Archive.h"
 
 
+static const int WORLD_ARCHIVE_VERSION = 1;
+
 const Avida::WorldFacetID Avida::Reserved::DataManagerFacetID("datamanager");
 const Avida::WorldFacetID Avida::Reserved::EnvironmentFacetID("environment");
 
@@ -93,6 +95,21 @@ void Avida::World::PerformUpdate(Context& ctx, Update current_update)
   for (int i = 0; i < m_facet_order.GetSize(); i++) {
     m_facet_order[i]->PerformUpdate(ctx, current_update);
   }
+}
+
+
+bool Avida::World::Serialize(ArchivePtr ar) const
+{
+  ar->SetObjectType("core.world");
+  ar->SetVersion(WORLD_ARCHIVE_VERSION);
+  
+  Apto::Map<WorldFacetID, WorldFacetPtr>::KeyIterator kit = m_facets.Keys();
+  while (kit.Next()) {
+    ArchivePtr facet_ar = ar->DefineSubObject(*kit.Get());
+    this->GetFacet(*kit.Get())->Serialize(facet_ar);
+  }
+  
+  return true;
 }
 
 

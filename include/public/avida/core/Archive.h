@@ -26,6 +26,7 @@
 #define AvidaCoreArchive_h
 
 #include "apto/platform.h"
+#include "apto/core/StringUtils.h"
 #include "avida/core/Types.h"
 
 
@@ -62,7 +63,7 @@ namespace Avida {
   template <typename T>
   inline bool Archive::DefineProperty(ArchivePropertyID prop_id, T prop_value)
   {
-    return this->DefineProperty(prop_id, ArchivePropertyTraits<T>::Type, prop_value);
+    return this->DefineProperty(prop_id, ArchivePropertyTraits<T>::Type, Apto::AsStr(prop_value));
   }
   
   
