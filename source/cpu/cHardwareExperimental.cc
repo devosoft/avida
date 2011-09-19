@@ -3453,8 +3453,6 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
-  
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism* target = m_organism->GetNeighbor();
@@ -3497,7 +3495,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   return true;
 } 	
 
-//Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
+//Get odds of winning or tieing in a fight.
 bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -3532,8 +3530,6 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
