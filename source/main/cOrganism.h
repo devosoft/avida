@@ -220,10 +220,12 @@ public:
   int GetCellData() { return m_interface->GetCellData(); }
   int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
   int GetCellDataUpdate() { return m_interface->GetCellDataUpdate(); }
+  int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
   int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
+  int GetFacedCellDataTerritory() { return m_interface->GetFacedCellDataTerritory(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }

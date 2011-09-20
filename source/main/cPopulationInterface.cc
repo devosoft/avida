@@ -86,16 +86,43 @@ cDeme* cPopulationInterface::GetDeme() {
 }
 
 int cPopulationInterface::GetCellData() {
-  return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
+  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
+  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) {
+    return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
+  }
+  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
+  return -1;  
 }
 
 int cPopulationInterface::GetCellDataOrgID() {
-  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataOrgID();
+  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
+  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) {
+    return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataOrgID();
+  }
+  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
+  return -1;  
 }
 
 int cPopulationInterface::GetCellDataUpdate() {
-  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
+  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
+  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) return update_marked;
+  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
+  return -1;
 }
+
+int cPopulationInterface::GetCellDataTerritory() {
+  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
+  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) {
+    return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataTerritory();
+  }
+  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
+  return -1;
+}
+
 
 int cPopulationInterface::GetFacedCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellData();
@@ -109,9 +136,13 @@ int cPopulationInterface::GetFacedCellDataUpdate() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataUpdate();
 }
 
+int cPopulationInterface::GetFacedCellDataTerritory() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataTerritory();
+}
+
 void cPopulationInterface::SetCellData(const int newData) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  cell.SetCellData(cell.GetOrganism()->GetID(), newData);
+  cell.SetCellData(newData, cell.GetOrganism()->GetID());
 }
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)

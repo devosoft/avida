@@ -492,15 +492,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       else {
         // If not using tolerances, put the offspring in the parent's group.
         assert(parent_organism->HasOpinion());
-        int group = parent_organism->GetOpinion().first;
-        offspring_array[i]->SetOpinion(group);
-        JoinGroup(offspring_array[i], group);
+        if (m_world->GetConfig().INHERIT_OPINION.Get()) {
+          int group = parent_organism->GetOpinion().first;
+          offspring_array[i]->SetOpinion(group);
+          JoinGroup(offspring_array[i], group);
+        }
       }
     }
     // if parent org has executed teach_offspring intruction, teach the offspring the parent's learned foraging/targeting behavior
     if (parent_organism->IsTeacher()) offspring_array[i]->SetForageTarget(parent_organism->GetForageTarget());
   }
-
+  
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
     if (parent_phenotype.GetMerit().GetDouble() <= 0.0) {
@@ -821,11 +823,23 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     KillOrganism(target_cell, ctx);
   }
 
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
     if (!in_organism->HasOpinion()) {
       if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
         in_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
         JoinGroup(in_organism, m_world->GetConfig().DEFAULT_GROUP.Get());
+      }
+      else {
+        if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+          const int op = (int) abs(ctx.GetRandom().GetDouble());
+          in_organism->SetOpinion(op);
+          JoinGroup(in_organism, op);                    
+        }
+        else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
+          const int op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
+          in_organism->SetOpinion(op);
+          JoinGroup(in_organism, op);          
+        }
       }
     }
   }

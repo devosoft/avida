@@ -105,6 +105,7 @@ void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_r
   m_cell_data.contents = 0;
   m_cell_data.org_id = -1;
   m_cell_data.update = -1;
+  m_cell_data.territory = -1;
   m_spec_state = 0;
   
   if (m_mut_rates == NULL)
@@ -390,5 +391,16 @@ void cPopulationCell::SetCellData(int data, int org_id)
   m_cell_data.contents = data;
   m_cell_data.org_id = org_id;
   m_cell_data.update = m_world->GetStats().GetUpdate();
+  if (m_organism->HasOpinion()) {
+    m_cell_data.territory = m_organism->GetOpinion().first;
+  }
+}
+
+void cPopulationCell::ClearCellData()
+{
+  m_cell_data.contents = 0;
+  m_cell_data.org_id = -1;
+  m_cell_data.update = -1;
+  m_cell_data.territory = -1;
 }
 

@@ -64,12 +64,14 @@ private:
   tArray<int> m_inputs;                 // Environmental Inputs...
 
   int m_cell_id;           // Unique id for position of cell in population.
-  int m_deme_id;           // ID of the deme that this cell is part of.
+  int m_deme_id;           // ID of the deme that this cell is part of.  
   
   struct {
     int contents;
     int org_id;
     int update;
+    int territory;
+    bool is_marked;
   } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
   
   int m_spec_state;
@@ -133,8 +135,10 @@ public:
   inline int GetCellData() const { return m_cell_data.contents; }
   inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
   inline int GetCellDataUpdate() const { return m_cell_data.update; }
+  inline int GetCellDataTerritory() const { return m_cell_data.territory; }
   void SetCellData(int data, int org_id = -1);
-
+  void ClearCellData();
+  
   inline int GetSpeculativeState() const { return m_spec_state; }
   inline void SetSpeculativeState(int count) { m_spec_state = count; }
   inline void DecSpeculative() { m_spec_state--; }

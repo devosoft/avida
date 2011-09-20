@@ -67,11 +67,13 @@ public:
   virtual int GetCellData() = 0;
   virtual int GetCellDataOrgID() = 0;
   virtual int GetCellDataUpdate() = 0;
+  virtual int GetCellDataTerritory() = 0;
   virtual void SetCellData(const int newData) = 0;
   virtual int GetFacedCellData() = 0;
   virtual int GetFacedCellDataOrgID() = 0;
   virtual int GetFacedCellDataUpdate() = 0;
-
+  virtual int GetFacedCellDataTerritory() = 0;
+  
   virtual int GetPrevSeenCellID() = 0;
   virtual int GetPrevTaskCellID() = 0;
   virtual int GetNumTaskCellsReached() = 0;

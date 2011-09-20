@@ -250,6 +250,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
       
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
+    tInstLibEntry<tMethod>("territory-move", &cHardwareExperimental::Inst_TerritoryMove),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
     tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
@@ -288,6 +289,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("defend-cell", &cHardwareExperimental::Inst_DefendCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
@@ -2658,6 +2660,29 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
     return true;
 }
 
+bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
+{
+  // In TestCPU, movement fails...
+  if (m_organism->GetCellID() == -1) return false;
+  assert(m_organism != 0);
+  
+  bool safe_passage = true;
+  bool move_success = false;
+  
+  if (m_organism->GetFacedCellDataTerritory() != -1 && (m_organism->GetFacedCellDataTerritory() != m_organism->GetOpinion().first) \
+      && (m_organism->GetFacedCellDataUpdate() <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+    safe_passage = false;
+  }
+  if (safe_passage) {
+    move_success = m_organism->Move(ctx);
+  }
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, move_success, true);  
+  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
+  return true;
+}
+
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetFacedDir(), true);
@@ -3515,7 +3540,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
   const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
-  int odds_I_dont_die;
+  int odds_I_dont_die = 1;
   // return odds as %
   if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
   else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
@@ -3587,13 +3612,26 @@ bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_DefendCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
+  m_organism->SetCellData(marking);
+  
+  return true;
+}
+
 bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  const int out_reg1 = FindModifiedRegister(rBX);
-  const int out_reg2 = FindModifiedNextRegister(rBX);
-  setInternalValue(out_reg1, m_organism->GetFacedCellDataOrgID(), true);
-  setInternalValue(out_reg2, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
+  const int marking_reg = FindModifiedRegister(rBX);
+  const int update_reg = FindModifiedNextRegister(rBX);
+  const int org_reg = FindModifiedNextRegister(update_reg);
+  
+  // we don't return the territory ID for the marked cell because orgs would just change their opinion to match this if we use territory move
+  setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
   
   return true;
 }

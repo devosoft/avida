@@ -79,10 +79,12 @@ public:
   int GetCellData();
   int GetCellDataOrgID();
   int GetCellDataUpdate();
+  int GetCellDataTerritory();
   void SetCellData(const int newData);
   int GetFacedCellData();
   int GetFacedCellDataOrgID();
   int GetFacedCellDataUpdate();
+  int GetFacedCellDataTerritory();
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }

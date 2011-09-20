@@ -509,6 +509,7 @@ private:
 
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_TerritoryMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
   bool Inst_GetEasterly(cAvidaContext& ctx);
@@ -548,6 +549,7 @@ private:
   bool Inst_FightOrg(cAvidaContext& ctx); 
   bool Inst_FightPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
+  bool Inst_DefendCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
