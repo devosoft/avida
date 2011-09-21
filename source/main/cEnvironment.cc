@@ -2009,3 +2009,16 @@ bool cEnvironment::IsGroupID(int test_id)
   return val;
 
 }
+
+/*
+ helper function that checks if this is a valid target id. The ids are specified
+ in the environment file as tasks.
+ */
+bool cEnvironment::IsTargetID(int test_id)
+{
+  bool val = false;
+  if (possible_target_ids.find(test_id) != possible_target_ids.end()) {
+    val = true;
+  }
+  return val;
+}

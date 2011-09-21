@@ -3276,12 +3276,11 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-	const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int prop_target = GetRegister(FindModifiedRegister(rBX));
 
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
-  if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
   
   // return false if setting to predator in non-predator experiment
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0 && prop_target == -2) return false;
@@ -3463,7 +3462,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // now add the victims internal resource bins to your own
 
   // if you weren't a predator before, you are now!
-  m_organism->SetForageTarget(-2);
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
   
   target->Die(ctx);
   
