@@ -134,7 +134,7 @@ private:
   tArray<double> cur_rbins_avail;             // Amount of internal resources available
   tArray<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
-  tArray<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.  //APW  
+  tArray<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators. 
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
@@ -386,7 +386,7 @@ public:
   const tArray<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
-  const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}  //APW
+  const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
@@ -551,7 +551,7 @@ public:
   int GetNumEnergyReceptions() { return num_energy_receptions; }
   int GetNumEnergyApplications() { return num_energy_applications; }
   
-  void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; } //APW
+  void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
 
   void SetCurRBinsAvail(const tArray<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const tArray<double>& in_total) { cur_rbins_total = in_total; }

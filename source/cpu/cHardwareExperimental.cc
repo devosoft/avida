@@ -2670,7 +2670,7 @@ bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
   bool move_success = false;
   
   if (m_organism->GetFacedCellDataTerritory() != -1 && (m_organism->GetFacedCellDataTerritory() != m_organism->GetOpinion().first) \
-      && (m_organism->GetFacedCellDataUpdate() <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+      && ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
   if (safe_passage) {
@@ -3345,11 +3345,12 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     assert(m_organism != 0);
 	
     int prop_group_id = GetRegister(FindModifiedRegister(rBX));
-    
+  
     // check if this is a valid group
     if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
-        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
-    
+        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) {
+    return false; 
+    }
     // injected orgs might not have an opinion
     if (m_organism->HasOpinion()) {
         group = m_organism->GetOpinion().first;
@@ -3387,7 +3388,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 	
     // Set the opinion
     m_organism->SetOpinion(prop_group_id);
-	
+  
     // Add org to group count
     group = m_organism->GetOpinion().first;	
     m_organism->JoinGroup(group);

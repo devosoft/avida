@@ -86,41 +86,23 @@ cDeme* cPopulationInterface::GetDeme() {
 }
 
 int cPopulationInterface::GetCellData() {
-  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
-  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
-  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) {
-    return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
-  }
-  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
-  return -1;  
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
 }
 
 int cPopulationInterface::GetCellDataOrgID() {
-  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
-  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
-  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) {
-    return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataOrgID();
-  }
-  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
-  return -1;  
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataOrgID();
 }
 
 int cPopulationInterface::GetCellDataUpdate() {
-  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
-  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
-  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) return update_marked;
-  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
-  return -1;
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
 }
 
 int cPopulationInterface::GetCellDataTerritory() {
-  const int update_marked = m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
-  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
-  if (expiration == -1 || (expiration != -1 && (m_world->GetStats().GetUpdate() - update_marked < expiration))) {
-    return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataTerritory();
-  }
-  else m_world->GetPopulation().GetCell(m_cell_id).ClearCellData();
-  return -1;
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataTerritory();
 }
 
 

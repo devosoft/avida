@@ -4285,13 +4285,8 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   int min_gestation_time = INT_MAX;
   int min_genome_length = INT_MAX;
 
-  for (int i = 0; i < live_org_list.GetSize(); i++) {  //APW
-//  for (int i = 0; i < cell_array.GetSize(); i++) {
-    // Only look at cells with organisms in them.
-//    if (!cell_array[i].IsOccupied()) continue;
-
-//    cOrganism* organism = cell_array[i].GetOrganism();
-    cOrganism* organism = live_org_list[i];               //APW
+  for (int i = 0; i < live_org_list.GetSize(); i++) {  
+    cOrganism* organism = live_org_list[i];
     const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();

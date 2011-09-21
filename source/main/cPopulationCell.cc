@@ -404,3 +404,11 @@ void cPopulationCell::ClearCellData()
   m_cell_data.territory = -1;
 }
 
+void cPopulationCell::UpdateCellDataExpired()
+{
+  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  const int update = m_world->GetStats().GetUpdate();
+  const int ud_marked = m_cell_data.update;
+  // update only if marked, can expire, and enough time has passed
+  if (ud_marked != -1 && expiration != -1 && (expiration < (update - ud_marked))) ClearCellData();    
+}

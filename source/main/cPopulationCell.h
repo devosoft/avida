@@ -71,7 +71,7 @@ private:
     int org_id;
     int update;
     int territory;
-    bool is_marked;
+    int current;
   } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
   
   int m_spec_state;
@@ -136,6 +136,7 @@ public:
   inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
   inline int GetCellDataUpdate() const { return m_cell_data.update; }
   inline int GetCellDataTerritory() const { return m_cell_data.territory; }
+  void UpdateCellDataExpired();
   void SetCellData(int data, int org_id = -1);
   void ClearCellData();
   
