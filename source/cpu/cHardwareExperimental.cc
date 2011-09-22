@@ -3494,11 +3494,11 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   
   const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
-  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
-  const double odds_someone_dies = max(attacker_odds, target_odds);
-  const double odds_target_dies = target_odds * odds_someone_dies;
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
   const double decider = ctx.GetRandom().GetDouble(1);
   
   if (decider < (1 - odds_someone_dies)) return true;
@@ -3537,16 +3537,16 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   
   const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
-  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
-  int odds_I_dont_die = 1;
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  // my win odds are odds nobody dies or someone dies and it's the target
+  const double odds_I_dont_die = (1 - odds_someone_dies) + ((1 - target_win_odds) * odds_someone_dies);
+
   // return odds as %
-  if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
-  else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
-  
   const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, odds_I_dont_die, true);   
+  setInternalValue(out_reg, odds_I_dont_die * 100 + 0.5, true);   
 
   return true;
 } 	

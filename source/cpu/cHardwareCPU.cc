@@ -8647,11 +8647,11 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
     //vitality based
     const double attacker_vitality = m_organism->GetVitality();
     const double target_vitality = target->GetVitality();
-    const double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-    const double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    const double attacker_win_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+    const double target_win_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
     
-    const double odds_someone_dies = max(attacker_odds, target_odds);
-    const double odds_target_dies = target_odds * odds_someone_dies;
+    const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+    const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
     const double decider = ctx.GetRandom().GetDouble(1);
     
     if (decider < (1 - odds_someone_dies)) return true;
@@ -8675,19 +8675,19 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
-  double attacker_vitality = m_organism->GetVitality();
-  double target_vitality = target->GetVitality();
+  const double attacker_vitality = m_organism->GetVitality();
+  const double target_vitality = target->GetVitality();
   
-  double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-  double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  const double attacker_win_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+  const double target_win_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
   
-  int odds_I_dont_die;
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  // my win odds are odds nobody dies or someone dies and it's the target
+  const double odds_I_dont_die = (1 - odds_someone_dies) + ((1 - target_win_odds) * odds_someone_dies);
+  
   // return odds as %
-  if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
-  else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
-  
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = odds_I_dont_die;
+  GetRegister(out_reg) = odds_I_dont_die * 100 + 0.5;
   return true;
 } 	
 

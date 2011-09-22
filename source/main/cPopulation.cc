@@ -1015,7 +1015,7 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   KillOrganism(cell_array[cell_id], ctx); 
 }
 
-// Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+// Attack organism faced by this one, if there is an organism in front.
 void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   cPopulationCell& loser_cell = GetCell(loser);

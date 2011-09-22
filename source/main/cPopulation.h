@@ -295,7 +295,7 @@ public:
     
     //Kill random member of the group (but not self!!!) 
     void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
-    //Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+    //Attack organism faced by this one, if there is an organism in front.
     void AttackFacedOrg(cAvidaContext& ctx, int loser);
     // Identifies the number of organisms in a group
     int NumberOfOrganismsInGroup(int group_id);
