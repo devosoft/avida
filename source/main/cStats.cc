@@ -3261,12 +3261,16 @@ void cStats::PrintTargets(const cString& filename)
     target_list[org->GetForageTarget() + 2]++;
   }
   
-  for (int target = 0; target < num_targets; target++) {
-    df.Write(target - 2, "Target ID");
-    df.Write(target_list[target], "Num Orgs Targeting ID");
-	}
+  for (int target = 0; target < target_list.GetSize(); target++) {
+    // make sure we always have a listing for predators and no-target orgs, but otherwise only print out for possible targets 
+    // (don't count resources having the same target as additional possible targets (no duplicates))
+    if ((m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && target == 0) || target == 1 || m_world->GetEnvironment().IsTargetID(target - 2)) {
+      df.Write(target - 2, "Target ID");
+      df.Write(target_list[target], "Num Orgs Targeting ID");
+    }
+  }
   
-	df.Endl();
+  df.Endl();
 }
 
 /*! Track named network stats.
