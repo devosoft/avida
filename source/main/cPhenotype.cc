@@ -172,13 +172,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;  
   mating_type = in_phen.mating_type; //@CHC
   mate_preference = in_phen.mate_preference; //@CHC
-  
   cur_mating_display_a = in_phen.cur_mating_display_a;
   cur_mating_display_b = in_phen.cur_mating_display_b;
   last_mating_display_a = in_phen.last_mating_display_a;
-  last_mating_display_b = in_phen.last_mating_display_b;
-  
-  
+  last_mating_display_b = in_phen.last_mating_display_b;  
   
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
