@@ -563,7 +563,7 @@ public:
   CONFIG_ADD_GROUP(ORGANISM_MESSAGING_GROUP, "Organism Message-Based Communication");
   CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, int, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
   CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, int, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
-  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
+  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, int, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
   CONFIG_ADD_VAR(ACTIVE_MESSAGES_ENABLED, int, 0, "Enable active messages. \n0 = off\n2 = message creates parallel thread");
   
 

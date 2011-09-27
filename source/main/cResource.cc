@@ -63,7 +63,6 @@ cResource::cResource(const cString & _name, int _id)
   , ygravity(0.0)
   , deme_resource(false)
   , energy_resource(false)
-  , dynamic_resource(false) //JW
   , peaks(0) //JW
   , min_height(0.0) //JW
   , height_range(0.0) //JW

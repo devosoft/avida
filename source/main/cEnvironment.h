@@ -171,7 +171,6 @@ private:
   bool LoadStateGrid(cString desc, Feedback& feedback);
   bool LoadSetActive(cString desc, Feedback& feedback);
   
-  bool LoadDynamicResource(cString desc, Feedback& feedback);
   bool LoadGradientResource(cString desc, Feedback& feedback);
   double GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskctx,
 

@@ -22,7 +22,6 @@
 
 #include "cResourceCount.h"
 #include "cResource.h"
-#include "cDynamicCount.h"
 #include "cGradientCount.h"
 
 #include "nGeometry.h"
@@ -150,7 +149,7 @@ void cResourceCount::SetSize(int num_resources)
   }
   geometry.ResizeClear(num_resources);
   
-  for(int i = 0; i < spatial_resource_count.GetSize(); i++){
+  for (int i = 0; i < spatial_resource_count.GetSize(); i++) {
     delete spatial_resource_count[i]; 
   }
   
@@ -177,7 +176,7 @@ void cResourceCount::SetSize(int num_resources)
 
 cResourceCount::~cResourceCount()
 {
-  for(int i = 0; i < spatial_resource_count.GetSize(); i++){
+  for (int i = 0; i < spatial_resource_count.GetSize(); i++) {
     delete spatial_resource_count[i]; 
   }
 }
@@ -208,7 +207,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
 				const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
 				const int& in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
 				tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
-				const bool& isdynamic, const int& in_peaks,
+				const int& in_peaks,
 				const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
 				const double& in_ah, const double& in_ar,
 				const double& in_acx, const double& in_acy,
@@ -300,15 +299,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   }
   else {
     resource_count[res_index] = 0; 
-    if(isdynamic){ //JW
-      delete spatial_resource_count[res_index];
-      spatial_resource_count[res_index] = new cDynamicCount(in_peaks, in_min_height, in_radius_range, in_min_radius, in_ah, in_ar,
-			    in_acx, in_acy, in_hstepscale, in_rstepscale, in_cstepscalex, in_cstepscaley, in_hstep, in_rstep,
-			    in_cstepx, in_cstepy, tempx, tempy, in_geometry, in_updatestep); 
-      spatial_resource_count[res_index]->RateAll(0);
-    }
-    
-    else if(isgradient){
+    if(isgradient){
       delete spatial_resource_count[res_index];
       spatial_resource_count[res_index] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 

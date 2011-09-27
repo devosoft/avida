@@ -72,9 +72,9 @@ template class Avida::Data::TimeSeriesRecorder<int>;
 template class Avida::Data::TimeSeriesRecorder<double>;
 template class Avida::Data::TimeSeriesRecorder<Apto::String>;
 
-// Explicitly instantiate member functions
-template void Avida::Data::TimeSeriesRecorder<Avida::Data::PackagePtr>::NotifyData(Update, DataRetrievalFunctor);
-template void Avida::Data::TimeSeriesRecorder<bool>::NotifyData(Update, DataRetrievalFunctor);
-template void Avida::Data::TimeSeriesRecorder<int>::NotifyData(Update, DataRetrievalFunctor);
-template void Avida::Data::TimeSeriesRecorder<double>::NotifyData(Update, DataRetrievalFunctor);
-template void Avida::Data::TimeSeriesRecorder<Apto::String>::NotifyData(Update, DataRetrievalFunctor);
+// Explicitly instantiate member functions   @DMB disabled, c++0x extension warning under Apple LLVM 3.0
+//template void Avida::Data::TimeSeriesRecorder<Avida::Data::PackagePtr>::NotifyData(Update, DataRetrievalFunctor);
+//template void Avida::Data::TimeSeriesRecorder<bool>::NotifyData(Update, DataRetrievalFunctor);
+//template void Avida::Data::TimeSeriesRecorder<int>::NotifyData(Update, DataRetrievalFunctor);
+//template void Avida::Data::TimeSeriesRecorder<double>::NotifyData(Update, DataRetrievalFunctor);
+//template void Avida::Data::TimeSeriesRecorder<Apto::String>::NotifyData(Update, DataRetrievalFunctor);

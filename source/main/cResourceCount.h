@@ -82,7 +82,7 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
 	   const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
 	   const int& in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
 	   tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
-	   const bool& isdynamic, const int& in_peaks,
+     const int& in_peaks,
 	   const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
 	   const double& in_ah, const double& in_ar,
 	   const double& in_acx, const double& in_acy,

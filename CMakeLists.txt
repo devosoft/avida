@@ -239,7 +239,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDemeNetwork.cc
   ${MAIN_DIR}/cDemeTopologyNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
-  ${MAIN_DIR}/cDynamicCount.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
   ${MAIN_DIR}/cGenomeUtil.cc

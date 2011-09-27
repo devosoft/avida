@@ -62,6 +62,8 @@ public:
                    double inxdiffuse, double inydiffuse,
                    double inxgravity, double inygravity);
   
+  virtual ~cSpatialResCount() { ; }
+  
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
   void SetPointers();
   void CheckRanges();

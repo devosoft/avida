@@ -82,7 +82,6 @@ private:
   bool deme_resource;
   bool org_resources;
   bool energy_resource;  // only implemented for spacial resource
-  bool dynamic_resource; //JW
   int peaks; //JW
   double min_height; //JW
   double height_range; //JW
@@ -162,7 +161,6 @@ public:
   double GetYGravity() const { return ygravity; }
   bool GetDemeResource() const { return deme_resource; }
   bool GetEnergyResource() const { return energy_resource; }
-  bool GetDynamicResource() const { return dynamic_resource; }
   int GetPeaks() const { return peaks; } //JW
   double GetMinHeight() const { return min_height; } //JW
   double GetHeightRange() const { return height_range; } //JW
@@ -235,8 +233,7 @@ public:
   void SetCollectable(int _collectable) { collectable = _collectable; }
   bool SetDemeResource(cString _deme_resource);
   bool SetOrgResource(cString _org_resource);  
-  bool SetEnergyResource(cString _energy_resource); 
-  void SetDynamicResource(bool _dynamic_resource) { dynamic_resource = _dynamic_resource; } //JW
+  bool SetEnergyResource(cString _energy_resource);
   void SetPeaks(int _peaks) { peaks = _peaks; } //JW
   void SetMinHeight(double _min_height) { min_height = _min_height; } //JW
   void SetHeightRange(double _height_range) { height_range = _height_range; } //JW

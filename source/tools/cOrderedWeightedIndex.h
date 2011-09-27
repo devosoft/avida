@@ -31,13 +31,15 @@
 #define NULL 0
 #endif
 
-using namespace std;
 /**
  * This class allows indecies to be assigned a "weight" and then indexed by
  * that weight.
  **/
 
 #include <fstream>
+
+using namespace std;
+
 
 class cOrderedWeightedIndex
 {

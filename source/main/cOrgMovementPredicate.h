@@ -43,8 +43,9 @@
 /*! \brief An STL-compatible predicate on movement.  The intent here is to
 provide a straightforward way to track arbitrary movement *wherever* they appear
 in the population.  */
-struct cOrgMovementPredicate : public std::unary_function<cOrganism, bool> 
+class cOrgMovementPredicate : public std::unary_function<cOrganism, bool> 
 {
+public:
   virtual ~cOrgMovementPredicate() { }
   virtual bool operator()(cOrganism& org) = 0;
   virtual void Print(std::ostream& out) { }

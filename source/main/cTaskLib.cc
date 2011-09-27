@@ -1926,8 +1926,8 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
       if (string_to_match[j] != '9') {
 	num_real++;
       }
-      if (string_to_match[j] == '0' && temp_buf[j]==0 ||
-	  string_to_match[j] == '1' && temp_buf[j]==1) {
+      if ((string_to_match[j] == '0' && temp_buf[j]==0) ||
+	  (string_to_match[j] == '1' && temp_buf[j]==1)) {
           num_matched++;
       }
     }
@@ -2040,8 +2040,8 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
   else {
     for (int j = 0; j < string_to_match.GetSize(); j++) {
       if (string_to_match[j]!='9') num_real++;
-      if (string_to_match[j]=='0' && temp_buf[j]==0 ||
-	  string_to_match[j]=='1' && temp_buf[j]==1)
+      if ((string_to_match[j]=='0' && temp_buf[j]==0) ||
+	  (string_to_match[j]=='1' && temp_buf[j]==1))
 	num_matched++;
     }
     max_num_matched = num_matched;

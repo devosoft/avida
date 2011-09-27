@@ -925,7 +925,7 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 	// don't store more messages than we're configured to.
 	const int bsize = m_world->GetConfig().MESSAGE_RECV_BUFFER_SIZE.Get();
 	if((bsize != -1) && (bsize <= static_cast<int>(m_msg->received.size()))) {
-		switch(m_world->GetConfig().MESSAGE_RECV_BUFFER_BEHAVIOR.Get()) {
+		switch (m_world->GetConfig().MESSAGE_RECV_BUFFER_BEHAVIOR.Get()) {
 			case 0: // drop oldest message
 				m_msg->received.pop_front();
 				break;
@@ -1321,8 +1321,8 @@ int cOrganism::MatchOutputBuffer(cString string_to_match)
 	int num_matched =0; 
 	for (int j = 0; j < string_to_match.GetSize(); j++)
 	{
-		if (string_to_match[j]=='0' && org_str[j]==0 ||
-				string_to_match[j]=='1' && org_str[j]==1)
+		if ((string_to_match[j]=='0' && org_str[j]==0) ||
+				(string_to_match[j]=='1' && org_str[j]==1))
 			num_matched++;
 	}
 	return num_matched;

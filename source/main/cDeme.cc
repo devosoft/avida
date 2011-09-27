@@ -586,7 +586,7 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetOutflowX2(), res->GetOutflowY1(), 
                             res->GetOutflowY2(), res->GetCellListPtr(),
                             res->GetCellIdListPtr(), verbosity,
-                            res->GetDynamicResource(), res->GetPeaks(), 
+                            res->GetPeaks(), 
                             res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
                             res->GetAh(), res->GetAr(),
                             res->GetAcx(), res->GetAcy(),

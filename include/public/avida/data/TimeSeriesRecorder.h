@@ -47,7 +47,7 @@ namespace Avida {
       LIB_EXPORT TimeSeriesRecorder(const DataID& data_id);
       
       // Data::Recorder Interface
-      LIB_EXPORT inline ConstDataSetPtr GetRequested() const { return m_requested; }
+      LIB_EXPORT ConstDataSetPtr GetRequested() const { return m_requested; }
       LIB_EXPORT void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data);
       
       // Value Access

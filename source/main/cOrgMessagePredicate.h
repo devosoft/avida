@@ -55,8 +55,9 @@ struct apply2nd {
 provide a straightforward way to track arbitrary messages *wherever* they appear
 in the population.  The most utility can be had from message predicates if they're
 installed into cStats (since every message goes through cStats). */
-struct cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool> 
+class cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool> 
 {
+public:
   virtual ~cOrgMessagePredicate() { }
   virtual bool operator()(const cOrgMessage& msg) = 0;
   virtual void Print(int update, std::ostream& out) { }
