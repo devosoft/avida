@@ -48,7 +48,7 @@ public:
   int timestamp; // -1 if empty
   tArray<cBioGroup*> groups;
   
-  inline cBirthEntry() : timestamp(-1) { ; }
+  cBirthEntry();
   
   //Accessor functions
   int GetMatingType() { return m_mating_type; }

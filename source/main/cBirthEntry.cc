@@ -24,6 +24,15 @@
 #include "cString.h"
 #include "cStringUtil.h"
 
+cBirthEntry::cBirthEntry()
+: timestamp(-1)
+, m_mating_type(MATING_TYPE_JUVENILE)
+, m_mate_preference(MATE_PREFERENCE_RANDOM)
+, m_mating_display_a(0)
+, m_mating_display_b(0)
+{
+}
+
 //Returns a string representation of a birth entry's information (primarily used for print actions
 // that output information about the offspring in the birth chamber)
 cString cBirthEntry::GetPhenotypeString()
@@ -60,6 +69,7 @@ cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)
   m_mating_display_a = _birth_entry.m_mating_display_a;
   m_mating_display_b = _birth_entry.m_mating_display_b;
   m_parent_task_count = _birth_entry.m_parent_task_count;
+  m_mate_preference = _birth_entry.m_mate_preference;
   
   genome = _birth_entry.genome;
   energy4Offspring = _birth_entry.energy4Offspring;
