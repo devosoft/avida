@@ -64,12 +64,14 @@ private:
   tArray<int> m_inputs;                 // Environmental Inputs...
 
   int m_cell_id;           // Unique id for position of cell in population.
-  int m_deme_id;           // ID of the deme that this cell is part of.
+  int m_deme_id;           // ID of the deme that this cell is part of.  
   
   struct {
     int contents;
     int org_id;
     int update;
+    int territory;
+    int current;
   } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
   
   int m_spec_state;
@@ -114,6 +116,7 @@ public:
   void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
+  int GetFacedDir(); // Returns the human interpretable facing of this org.
   inline void GetPosition(int& x, int& y) const { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
 	inline std::pair<int,int> GetPosition() const { return std::make_pair(m_x,m_y); }
   inline int GetVisits() { return m_visits; } // @WRE: Retrieves the number of visits for this cell.
@@ -132,8 +135,11 @@ public:
   inline int GetCellData() const { return m_cell_data.contents; }
   inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
   inline int GetCellDataUpdate() const { return m_cell_data.update; }
+  inline int GetCellDataTerritory() const { return m_cell_data.territory; }
+  void UpdateCellDataExpired();
   void SetCellData(int data, int org_id = -1);
-
+  void ClearCellData();
+  
   inline int GetSpeculativeState() const { return m_spec_state; }
   inline void SetSpeculativeState(int count) { m_spec_state = count; }
   inline void DecSpeculative() { m_spec_state--; }

@@ -26,12 +26,14 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cSexualAncestry.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
@@ -248,6 +250,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
       
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
+    tInstLibEntry<tMethod>("territory-move", &cHardwareExperimental::Inst_TerritoryMove),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
     tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
@@ -272,16 +275,27 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
+    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
 
      
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
+    tInstLibEntry<tMethod>("get-faced-grouping", &cHardwareExperimental::Inst_GetFacedGrouping, nInstFlag::STALL),
 
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("defend-cell", &cHardwareExperimental::Inst_DefendCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
@@ -2640,19 +2654,32 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
     return true;
 }
 
+bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
+{
+  // In TestCPU, movement fails...
+  if (m_organism->GetCellID() == -1) return false;
+  assert(m_organism != 0);
+  
+  bool safe_passage = true;
+  bool move_success = false;
+  
+  if (m_organism->GetFacedCellDataTerritory() != -1 && (m_organism->GetFacedCellDataTerritory() != m_organism->GetOpinion().first) \
+      && ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+    safe_passage = false;
+  }
+  if (safe_passage) {
+    move_success = m_organism->Move(ctx);
+  }
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, move_success, true);  
+  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
+  return true;
+}
+
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
-  int facing = m_organism->GetFacing();
-  int north_offset = 0;
-  if (facing == 0) north_offset = 0;          //N 
-  else if (facing == 1) north_offset = 7;    //NW
-  else if (facing == 3) north_offset = 6;    //W
-  else if (facing == 2) north_offset = 5;    //SW
-  else if (facing == 6) north_offset = 4;     //S
-  else if (facing == 7) north_offset = 3;     //SE
-  else if (facing == 5) north_offset = 2;     //E
-  else if (facing == 4) north_offset = 1;     //NE
   const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, north_offset, true);
+  setInternalValue(out_reg, m_organism->GetFacedDir(), true);
   return true;
 }
 
@@ -2725,18 +2752,17 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
     int easterly = m_organism->GetEasterly();
     int northerly = m_organism->GetNortherly();
     int correct_facing = 0;
-    if (northerly < 0 && easterly == 0) correct_facing = 6; // rotate S
-    
-    else if (northerly < 0 && easterly > 0) correct_facing = 2; // rotate SW
-    else if (northerly == 0 && easterly > 0) correct_facing = 3; // rotate W
-    else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW  
-    else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
-    else if (northerly > 0 && easterly < 0) correct_facing = 4; // rotate NE
-    else if (northerly == 0 && easterly < 0) correct_facing = 5; // rotate E
-    else if (northerly < 0 && easterly < 0) correct_facing = 7; // rotate SE
+    if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
+    else if (northerly > 0 && easterly < 0) correct_facing = 1; // rotate NE
+    else if (northerly == 0 && easterly < 0) correct_facing = 2; // rotate E
+    else if (northerly < 0 && easterly < 0) correct_facing = 3; // rotate SE
+    else if (northerly < 0 && easterly == 0) correct_facing = 4; // rotate S
+    else if (northerly < 0 && easterly > 0) correct_facing = 5; // rotate SW
+    else if (northerly == 0 && easterly > 0) correct_facing = 6; // rotate W
+    else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
         m_organism->Rotate(1);
-        if (m_organism->GetFacing() == correct_facing) break;
+        if (m_organism->GetFacedDir() == correct_facing) break;
     }
     return true;
 }
@@ -2885,7 +2911,65 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   return true;
 }
 
-
+/* Tests a cell for the Inst_LookAhead function
+ * 
+ * Parameters:
+ habitat_used    specifies what type of object we're interested in
+ search_type     tells how to search (stop when we've found the closest, count total #, etc)
+ resource_lib    library of available resources
+ target_cell     the cell we're testing
+ * 
+ * Returns:
+ *		If we're looking for the closest resource, return that resource's ID
+ *    otherwise, returns the number of objects we're looking for that are in target_cell
+ *    
+ */
+cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num)
+{
+  int lib_size = resource_lib.GetSize();
+  tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(target_cell_num, ctx);
+  searchInfo returnInfo;
+  returnInfo.amountFound = 0;
+  returnInfo.resource_id = res_id_sought;
+  
+  if(habitat_used == 0 || habitat_used == 1 || habitat_used == 2 || habitat_used == 4){
+    // Looking for edible resources or topological features
+    
+    // by default, look at every resource ID unless we're looking for a specific one
+    int min_index = 0;
+    int max_index = lib_size - 1;
+    if(res_id_sought != -1)
+      min_index = max_index = res_id_sought;
+    
+    for( int k = min_index; k <= max_index; k++) {
+      if(resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
+        returnInfo.amountFound += cell_res[k];
+        returnInfo.resource_id = k;
+      }
+    }
+  }
+  else if ( habitat_used == -2 ) {
+    // we're looking for other organisms
+    
+    const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
+    if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
+      int type_seen = target_cell.GetOrganism()->GetForageTarget();
+      
+      if(search_type == 0)
+        returnInfo.amountFound++;
+      else if (search_type > 0){
+        if(type_seen == -2)
+          returnInfo.amountFound++;
+      }
+      else if (search_type < 0){
+        if(type_seen != -2)
+          returnInfo.amountFound++;
+      }
+    }
+  }
+  
+  return returnInfo;
+}
 bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx) 
 {
   const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
@@ -2903,41 +2987,41 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-    
+  
   const cCodeLabel& search_label = GetLabel();
-
+  
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource, habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)  
   // habitat 3 = hidden resources (hidden from a distance)
+  // habitat 4 = unhidden den resource
   // habitat -2 = organisms
   
   const int habitat_reg = FindModifiedRegister(rBX);
   int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
-  bool pred_experiment = false;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) pred_experiment = true;
+  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
   
   // fail if the org is trying to sense a nest/hidden habitat
   if (habitat_used == 3) return false;
   
   // default to look for orgs if invalid habitat & predator
   else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
-           (habitat_used < -2 || habitat_used > 3 || habitat_used == -1)) habitat_used = -2;
+           (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
-  else if (habitat_used < -2 || habitat_used > 3 || habitat_used == -1) habitat_used = 0;
+  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
   
-  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, 100 if high  
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
   int distance_sought = 1;
   if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > long_axis) distance_sought = 100;
+  else if (distance_sought > long_axis) distance_sought = long_axis;
   
   // third register gives type of search used for food resources (habitat 0) and org hunting
   // env res search_types: 
-  // 0 = look for closest edible res (>=1) or closest hill/wall (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
+  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
   // org hunting search types: 
   // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
@@ -2953,7 +3037,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // fourth register gives specific instance of env resources sought (default to target, which will be -1 (==any) if org has no target)
   int res_id_sought = m_organism->GetForageTarget();
-  // if you're a predator, you can't specify a specific res             // APW TODO--allow targeting specific org?
+  // if you're a predator, you can't specify a specific 'org' res (can still look for other things if specify via habitat reg)  
+  // APW TODO--allow targeting specific org?
   if (res_id_sought < 0) res_id_sought = -1;
   const int res_id_reg = FindModifiedNextRegister(search_type_reg);
   if (NUM_REGISTERS > 3 && habitat_used != -2 && search_label.GetSize() > 3) {
@@ -2971,13 +3056,11 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // if an org is trying to do totals for a specific env resource that is not actually food, this is invalid and we can exit now
   if (habitat_used != -2 && search_type == -1 && res_id_sought != -1) {
-    if (resource_lib.GetResource(res_id_sought)->GetHabitat() != 0) {
-      return true;
-    }
+    if (resource_lib.GetResource(res_id_sought)->GetHabitat() != 0) return true;
   }
-
+  
   // start the real work of walking through cells
-  const int facing = m_organism->GetFacing();
+  const int facing = m_organism->GetFacedDir();
   const int faced_cell = m_organism->GetFacedCellID();
   int cell = m_organism->GetCellID();
   
@@ -2990,349 +3073,170 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   bool count_center = true;
   bool any_valid_side_cells = false;
   
-  bool found_edible = false; 
-  bool found_feature = false;
-  bool found_creature = false;
-  int prey_count = 0;
-  int pred_count = 0;
-  int feature_count = 0;
-  int res_id_found = -1;    
+  bool found = false;
+  int count = 0;
+  double totalAmount = 0;
   
-  int type_seen = -1;
-  
-  double total_ahead = 0;
-  int total_edible_ahead = 0;
+  searchInfo cellResultInfo;
   
   tArray<double> cell_res;
   
+  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type >= -1 && search_type <= 1));
+	
   for (int dist = 0; dist < distance_sought + 1; dist++) {
     // work on CENTER cell for this dist
     
     // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
     if (count_center) {
-      cell_res = m_organism->GetOrgInterface().GetCellResources(center_cell, ctx);
-      // get out of here if we were looking for first edible and found the first instance
-      if (habitat_used == 0 && search_type == 0) {
-        if (res_id_sought == -1) {
-          for (int k = 0; k < lib_size; k++) {
-            if (resource_lib.GetResource(k)->GetHabitat() == 0 && cell_res[k] >= 1) {
-              found_edible = true;
-              res_id_found = k;
-              break;
-            }
-          }
-        }
-        else if (res_id_sought != -1) {
-          if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && cell_res[res_id_sought] >= 1) {
-            found_edible = true;
-            break;
-          }
-        }
-      }
-            
-      // for food resource totals and counts of edible cells
-      else if (habitat_used == 0 && (search_type == -1 || search_type == 1)) {
-        if (res_id_sought == -1) {
-          for (int k = 0; k < lib_size; k++) {
-            // search type 1 means just count # edible cells
-            if (search_type == 1 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
-              total_edible_ahead++;
-              break;
-            }
-            // search_type of -1 means total res in cells as far as distance_sought
-            else if (search_type == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
-              total_ahead += cell_res[k];
-            }
-          }
-        }
-        else if (res_id_sought != -1) {
-          if (search_type == 1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (cell_res[res_id_sought] >= 1)) {
-            total_edible_ahead++;
-            break;
-          }
-          else if (search_type == -1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0) {
-            total_ahead += cell_res[res_id_sought];
-          }   
-        }
-      }
+      cellResultInfo = TestCell(ctx, habitat_used, search_type, res_id_sought, resource_lib, center_cell);
       
-      // get out of here if we were looking for topo features or walls/objects and found the first instance
-      else if (habitat_used == 1 || habitat_used == 2) {
-        for (int k = 0; k < lib_size; k++) {
-          if ((habitat_used == 1 && resource_lib.GetResource(k)->GetHabitat() == 1) || \
-              (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2)) {
-            if (cell_res[k] > 0) {
-              if (search_type == 0) {
-              found_feature = true;
-              break;
-              }
-              else if (search_type == 1) {
-                feature_count++;
-              }
-            }
-          }
-        }
-      }
-      
-      // get out of here if we are hunting other organisms and found the closest one of the right type
-      else if (habitat_used == -2) {
-        const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
-        if (target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
-          type_seen = target_cell.GetOrganism()->GetForageTarget();
-          if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
-            found_creature = true;
-            break;
-          }
-          else if (search_type == 2 && type_seen == -2) pred_count++;
-          else if (search_type == -2 && type_seen != -2) prey_count++;
+      if(cellResultInfo.amountFound >= 1) {
+        // we've found what we're looking for
+        found = true;
+        count ++;
+        totalAmount += cellResultInfo.amountFound;
+        
+        if( stop_at_first_found ){
+          // we were only looking for the first one.
+          // break out of entire search loop
+          dist_used = dist;
+          break;
         }
       }
     } // end work on CENTER cell for this dist
     
     // work on SIDE of center cells for this dist
-    if (!found_edible && !found_feature && !found_creature) {
-      
-      int num_cells_either_side = 0;
-      if (dist > 0) {
-        (dist % 2) ? num_cells_either_side = (int) ((dist - 1) * 0.5) : num_cells_either_side = (int) (dist * 0.5);   // how many cells do we need to look at on both sides 
-      }
-      for (int do_lr = 0; do_lr < 2; do_lr++) {
-        bool count_side = true;
-        int prev_cell = center_cell;
-        for (int j = 0; j < num_cells_either_side + 1; j++) {
-          if (facing == 0 && do_lr == 0) this_cell = center_cell + (-1 * j);
-          else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-          else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
-          else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
+    
+    // how many cells do we need to look at on both sides 
+    int num_cells_either_side = 0;
+    if (dist > 0)
+      num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
+    
+    for (int do_lr = 0; do_lr < 2; do_lr++) {
+      bool count_side = true;
+      int prev_cell = center_cell;
+      for (int j = 1; j < num_cells_either_side + 1; j++) {
+        
+        if (facing == 0 && do_lr == 0) this_cell = center_cell - j;
+        else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
+        else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
+        
+        else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
+        else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
+        else if (facing == 4 && do_lr == 1) this_cell = center_cell - j;
+        else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+        
+        // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
+        else if (facing == 1 && do_lr == 0) this_cell = center_cell - j;
+        else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
+        else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
+        
+        else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
+        else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
+        else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
+        
+        // test if the side cell is still on world, if it isn't do the other side
+        if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
+        else if ((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
+        else if ((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+        else any_valid_side_cells = true;
+        
+        
+        prev_cell = this_cell;
+        if (count_side) {
+          cellResultInfo = TestCell(ctx, habitat_used, search_type, res_id_sought, resource_lib, this_cell);
           
-          else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
-          else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
-          else if (facing == 4 && do_lr == 1) this_cell = center_cell + (-1 * j);
-          else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-          
-          // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
-          else if (facing == 1 && do_lr == 0) this_cell = center_cell + (-1 * j);
-          else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-          else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
-          else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
-          
-          else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
-          else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
-          else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-          else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
-          
-          // test if the side cell is still on world, if it isn't do the other side
-          if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
-          else if ((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
-          else if ((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
-          else any_valid_side_cells = true;
-          
-          prev_cell = this_cell;
-          if (count_side) {
-            cell_res = m_organism->GetOrgInterface().GetCellResources(this_cell, ctx);
-            // get out of here if we were looking for first edible and found the first instance
-            if (habitat_used == 0 && search_type == 0) {
-              if (res_id_sought == -1) {
-                for (int k = 0; k < lib_size; k++) {
-                  if (resource_lib.GetResource(k)->GetHabitat() == 0 && cell_res[k] >= 1) {
-                    found_edible = true;
-                    res_id_found = k;
-                    break;
-                  }
-                }
-              }
-              else if (res_id_sought != -1) {
-                if (resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && cell_res[res_id_sought] >= 1) {
-                  found_edible = true;
-                  break;
-                }
-              }
-            }
+          if(cellResultInfo.amountFound >= 1) {
+            // we've found what we're looking for
+            found = true;
+            count ++;
+            totalAmount += cellResultInfo.amountFound;
             
-            // for food resource totals and counts of edible cells
-            else if (habitat_used == 0 && search_type != 0) {
-              if (res_id_sought == -1) {
-                for (int k = 0; k < lib_size; k++) {
-                  // search type 1 means just count # edible cells
-                  if (search_type == 1 && resource_lib.GetResource(k)->GetHabitat() == 0 && (cell_res[k] >= 1)) {
-                    total_edible_ahead++;
-                    break;
-                  }
-                  // search_type of -1 means total res in cells as far as distance_sought
-                  else if (search_type == -1 && resource_lib.GetResource(k)->GetHabitat() == 0) {
-                    total_ahead += cell_res[k];
-                  }
-                }
-              }
-              else if (res_id_sought != -1) {
-                if (search_type == 1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0 && (cell_res[res_id_sought] >= 1)) {
-                  total_edible_ahead++;
-                  break;
-               }
-                else if (search_type == -1 && resource_lib.GetResource(res_id_sought)->GetHabitat() == 0) {
-                  total_ahead += cell_res[res_id_sought];
-                }   
-              }
-            }
-            
-            // get out of here if we were looking for topo features or walls/objects and found the first instance
-            else if (habitat_used == 1 || habitat_used == 2) {
-              for (int k = 0; k < lib_size; k++) {
-                if ((habitat_used == 1 && resource_lib.GetResource(k)->GetHabitat() == 1) || \
-                    (habitat_used == 2 && resource_lib.GetResource(k)->GetHabitat() == 2)) {
-                  if (cell_res[k] > 0) {
-                    if (search_type == 0) {
-                      found_feature = true;
-                      break;
-                    }
-                    else if (search_type == 1) {
-                      feature_count++;
-                    }
-                  }
-                }
-              }
-            }
-            
-            // get out of here if we are hunting other organisms and found the closest one of the right type
-            else if (habitat_used == -2) {
-              const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(center_cell);
-              if (target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
-                type_seen = target_cell.GetOrganism()->GetForageTarget();
-                if (search_type == 0 || (search_type == 1 && type_seen == -2) || (search_type == -1 && type_seen != -2)) {
-                  found_creature = true;
-                  break;
-                }
-                else if (search_type == 2 && type_seen == -2) pred_count++;
-                else if (search_type == -2 && type_seen != -2) prey_count++;
-              }
+            if( stop_at_first_found ){
+              // we were only looking for the first one.
+              // break out of the side-searching loop
+              dist_used = dist;
+              break;
             }
           }
-          if (found_creature || found_feature || found_edible || !count_side) break;
         }
-        if (found_creature || found_edible || found_feature) break;
+        if ( !count_side) break;
       }
-      
-      // before we do the next side cell...
-      
-      // return now if we were looking for first edible and found the nearest
-      if (found_edible && search_type == 0 && habitat_used == 0) {
-        setInternalValue(habitat_reg, habitat_used, true);
-        setInternalValue(distance_reg, dist, true);
-        setInternalValue(search_type_reg, search_type, true);
-        if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, res_id_found, true);
-        return true;
-      }
-      
-      // return now if we are looking topo features or walls/objects and we found the nearest
-      else if (found_feature && (habitat_used == 1 || habitat_used == 2)) {
-        setInternalValue(habitat_reg, habitat_used, true);
-        setInternalValue(distance_reg, dist, true);
-        return true;
-      }
-      
-      // return now if we were hunting orgs and found the nearest one
-      else if (found_creature && habitat_used == -2) {
-        setInternalValue(habitat_reg, habitat_used, true);
-        setInternalValue(distance_reg, dist, true);
-        return true;        
-      }
-      
-      // stop if we never found any valid cells at the current distance
-      else if (!any_valid_side_cells && !count_center) {
-        dist_used = dist - 1;
-        break;
-      }
-      
-      // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
-      if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
-      
-      // figure out the what the next center cell is about to be
-      center_cell = center_cell + ahead_dir;
-      
-      // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
-      if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
-      // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
-      else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;
-    }    
+      // break out of entire search loop
+      if (stop_at_first_found && found) break;
+    }
+    if (stop_at_first_found && found) break;
+    
+    // before we do the next side cell...
+    
+    // stop if we never found any valid cells at the current distance
+    if (!any_valid_side_cells && !count_center) {
+      dist -= 1;
+      break;
+    }
+    
+    // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
+    if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
+    
+    // figure out the what the next center cell is about to be
+    center_cell = center_cell + ahead_dir;
+    
+    // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
+    if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
+    // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
+    else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;
+    
   } // End getting values
-  
   
   // begin reached end output 
   setInternalValue(habitat_reg, habitat_used, true);
   
-  // food based results
-  if (habitat_used == 0) {
-    // return -1 if we looking for edible food and never found it
-    if (search_type == 0 && !found_edible) {
-      setInternalValue(distance_reg, -1, true);
-      setInternalValue(search_type_reg, search_type, true);
-      if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, -1, true);
-      return true;
-    }
+  if(found){
+    setInternalValue(habitat_reg, habitat_used, true);
+    setInternalValue(distance_reg, dist_used, true);
+    setInternalValue(res_id_reg, cellResultInfo.resource_id);
     
-    // do output for food resource totals and counts of edible cells--where and what we return is affected by # registers available
-    else if (search_type == -1 || search_type == 1) {
-      setInternalValue(distance_reg, dist_used, true);
-      
-      if (NUM_REGISTERS == 3) {
-        // if we totalled over distance
-        if (search_type == -1) setInternalValue(search_type_reg, (int) (total_ahead + 0.5), true);
-        // if we counted all edible cells
-        else if (search_type == 1) setInternalValue(search_type_reg, total_edible_ahead, true);
-      }
-      
-      else if (NUM_REGISTERS > 3) {
-        setInternalValue(search_type_reg, search_type, true);
-        if (search_type == -1) setInternalValue(FindModifiedNextRegister(search_type_reg), (int) (total_ahead + 0.5), true);
-        else if (search_type == 1) {
-          setInternalValue(FindModifiedNextRegister(search_type_reg), total_edible_ahead, true);
-          if (NUM_REGISTERS > 4) setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(search_type_reg)), res_id_sought, true);
-        }
-      }
-    }
-  }
-  
-  // topo results 
-  else if (habitat_used == 1 || habitat_used == 2) {
-    // return -1 if we never found the topo features or walls/objects we were looking for
-    if (search_type == 0 && !found_feature) {
-      setInternalValue(distance_reg, -1, true);
+    // if we were looking for first edible and found the nearest
+    if(search_type == 0 && habitat_used == 0) {
       setInternalValue(search_type_reg, search_type, true);
+      if (NUM_REGISTERS > 3)
+        setInternalValue(res_id_reg, cellResultInfo.resource_id, true);
       return true;
     }
-    else if (search_type == 1) {
-      setInternalValue(distance_reg, dist_used, true);
-      if (NUM_REGISTERS == 3) {
-        setInternalValue(search_type_reg, feature_count, true);
-      }
-      else if (NUM_REGISTERS > 3) {
-        setInternalValue(search_type_reg, search_type, true);
-        setInternalValue(FindModifiedNextRegister(search_type_reg), feature_count, true);      
-      }
+    else if (stop_at_first_found) {
+      // if we were looking for topo features or organisms and we found the nearest
+      return true;
+    }
+  }
+  // if we never found what we were looking for
+  if (stop_at_first_found && !found) {
+    setInternalValue(distance_reg, -1, true);
+    setInternalValue(search_type_reg, search_type, true);
+    if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, cellResultInfo.resource_id, true);
+    return true;
+  }
+  
+  // if we did find what we were looking for, return either the count of cells or the total amount of resources
+  int returnVal = count;
+  if (habitat_used == 0 && search_type == -1)
+    returnVal = (int) (totalAmount + 0.5);
+  
+  if (!stop_at_first_found) {
+    setInternalValue(distance_reg, dist_used, true);
+    if (NUM_REGISTERS == 3)
+      setInternalValue(search_type_reg, returnVal, true);
+    else if(NUM_REGISTERS > 3) {
+      setInternalValue(search_type_reg, search_type, true);
+      setInternalValue(FindModifiedNextRegister(search_type_reg), returnVal, true);
     }
   }
   
-  // org results
-  else if (habitat_used == -2) {
-    // return -1 if we were hunting orgs and never found one
-    if ((search_type == 0 || search_type == -1 || search_type == 1) && !found_creature) {
-      setInternalValue(distance_reg, -1, true);
-      setInternalValue(search_type_reg, search_type, true);
-      return true;  
-    }
-    else if (search_type == 2 || search_type == -2) {
-      setInternalValue(distance_reg, dist_used, true);
-      if (NUM_REGISTERS == 3) {
-        if (search_type == 2) setInternalValue(search_type_reg, pred_count, true);
-        if (search_type == -2) setInternalValue(search_type_reg, prey_count, true);
-      }
-      else if (NUM_REGISTERS > 3) {
-        setInternalValue(search_type_reg, search_type, true);
-        if (search_type == 2) setInternalValue(FindModifiedNextRegister(search_type_reg), pred_count, true);
-        if (search_type == -2) setInternalValue(FindModifiedNextRegister(search_type_reg), prey_count, true);
-      }
-    } 
-  }     
+  if (habitat_used == 0 && NUM_REGISTERS > 4) 
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(search_type_reg)), res_id_sought, true);
+  
   return true;
 }
 
@@ -3369,12 +3273,11 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-	const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int prop_target = GetRegister(FindModifiedRegister(rBX));
 
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
-  if (prop_target >= resource_lib.GetSize() || (prop_target < -2)) return false;
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
   
   // return false if setting to predator in non-predator experiment
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0 && prop_target == -2) return false;
@@ -3403,6 +3306,33 @@ bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_SenseOpinionResQuant(cAvidaContext& ctx)
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  // check if this is a valid group
+  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int opinion = m_organism->GetOpinion().first;
+    int res_opinion = (int) (res_count[opinion] * 100 + 0.5);
+    int reg_to_set = FindModifiedRegister(rBX);
+    setInternalValue(reg_to_set, res_opinion, true);
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int opinion = m_organism->GetOpinion().first;
+    int reg_to_set = FindModifiedRegister(rBX);
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
+    // return % change
+    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    setInternalValue(reg_to_set, res_diff, true);
+  }
+  return true;
+}
+
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
@@ -3411,11 +3341,12 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     assert(m_organism != 0);
 	
     int prop_group_id = GetRegister(FindModifiedRegister(rBX));
-    
+  
     // check if this is a valid group
     if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
-        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
-    
+        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) {
+    return false; 
+    }
     // injected orgs might not have an opinion
     if (m_organism->HasOpinion()) {
         group = m_organism->GetOpinion().first;
@@ -3453,7 +3384,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 	
     // Set the opinion
     m_organism->SetOpinion(prop_group_id);
-	
+  
     // Add org to group count
     group = m_organism->GetOpinion().first;	
     m_organism->JoinGroup(group);
@@ -3489,7 +3420,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  
+    
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
 
   if (!m_organism->IsNeighborCellOccupied()) return false;
@@ -3497,8 +3428,10 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
-  // prevent killing other carnivores -- that should be handled differently using vitality
-  if (target->GetForageTarget() == -2) return true;
+  // attacking other carnivores is handled differently using fights
+  if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
+    return false;
+  }
   
   // prevent killing on nests/safe havens
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -3513,7 +3446,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   m_organism->UpdateMerit(attacker_merit);
   
   // now add on the victims reaction counts to your own...
-  tArray<int> target_reactions = target->GetPhenotype().GetCurReactionCount();
+  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
 
   for (int i = 0; i < org_reactions.GetSize(); i++) {
@@ -3526,11 +3459,10 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // now add the victims internal resource bins to your own
 
   // if you weren't a predator before, you are now!
-  m_organism->SetForageTarget(-2);
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
   
   target->Die(ctx);
   
-  m_organism->Move(ctx);
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, attack_success, true);   
@@ -3538,11 +3470,217 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   return true;
 } 		
 
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+
+  // allow only for predator vs predator or prey vs prey
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+      (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    return false;
+  }
+
+  //Use merit to decide who wins this battle.
+  bool kill_attacker = true;
+  
+  const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  
+  const double odds_someone_dies = max(attacker_odds, target_odds);
+  const double odds_target_dies = target_odds * odds_someone_dies;
+  const double decider = ctx.GetRandom().GetDouble(1);
+  
+  if (decider < (1 - odds_someone_dies)) return true;
+  else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  
+  if (kill_attacker) {
+    m_organism->Die(ctx);
+    return true;
+  }
+  
+  const int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
+  
+  return true;
+} 	
+
+//Get odds of winning or tieing in a fight.
+bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+
+  // allow only for predator vs predator or prey vs prey
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+      (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    return false;
+  }
+  
+  const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  
+  int odds_I_dont_die = 1;
+  // return odds as %
+  if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
+  else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, odds_I_dont_die, true);   
+
+  return true;
+} 	
+
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predator vs predator or prey vs prey
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+      (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    return false;
+  }
+    
+  int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, 1, true);   
+  
+  return true;
+} 	
+
+//Attack organism faced by this one if you are both predators. 
+bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predator vs predator
+  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
+    return false;
+  }
+  
+  int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, 1, true);   
+  
+  return true;
+} 
+
+bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->SetCellData(m_organism->GetID());
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_DefendCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
+  m_organism->SetCellData(marking);
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int marking_reg = FindModifiedRegister(rBX);
+  const int update_reg = FindModifiedNextRegister(rBX);
+  const int org_reg = FindModifiedNextRegister(update_reg);
+  
+  // we don't return the territory ID for the marked cell because orgs would just change their opinion to match this if we use territory move
+  setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
+  
+  return true;
+}
+
 //Teach offspring learned targeting/foraging behavior
 bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
   
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetFacedGrouping(cAvidaContext& ctx)
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead()) return false;  
+  
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, neighbor->GetOpinion().first, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead()) return false;  
+  
+  // If there is no valid max genetic distance, go out to cousins.
+  int gen_dist = GetRegister(FindModifiedRegister(rBX));
+  if (gen_dist > 4 || gen_dist < 0) gen_dist = 4;
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  setInternalValue(FindModifiedRegister(rBX), gen_dist, true);
+  const int out_reg = FindModifiedNextRegister(rBX);   
+  setInternalValue(out_reg, (int) is_kin, true);    
   return true;
 }

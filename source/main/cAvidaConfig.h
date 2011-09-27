@@ -384,6 +384,8 @@ public:
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (checked before divide mutations)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE, int, -1, "ID of resource required in organism's internal bins for successful\n  divide (resource not consumed)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE_LEVEL, double, 0.0, "Level of resource needed for REQUIRED_RESOURCE");  
+  CONFIG_ADD_VAR(REQUIRED_PRED_HABITAT, int, -1, "Required resource habitat type in cell for predators to reproduce");  
+  CONFIG_ADD_VAR(REQUIRED_PRED_HABITAT_VALUE, double, 0, "Level of resource needed for REQUIRED_PRED_HABITAT");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_BONUS, int, 0, "Call Inst_Repro to divide upon achieving this bonus. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_CPU_CYCLES, int, 0, "Call Inst_Repro after this many cpu cycles. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Call Inst_Repro after this time used. 0 = OFF");  
@@ -405,11 +407,12 @@ public:
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
   CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread (for SMT parasites, this must be 1)");
-  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks - 11*numTasks");
+  CONFIG_ADD_VAR(INFECTION_MECHANISM, int, 1, "0: Infection always succeeds. \n1: Infection succeeds if parasite matches at least one host task.\n2: Infection succeeds if parasite does NOT match at least one task.\n3: Parasite tasks must match host tasks exactly (Matching Alleles).");
+  CONFIG_ADD_ALIAS(INJECT_IS_TASK_SPECIFIC);
+  
   CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
   CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence)");
   CONFIG_ADD_VAR(PARASITE_SKIP_REACTIONS, int, 1, "Parasite tasks do not get processed in the environment (1) or they do trigger reactions (0)");
-  CONFIG_ADD_VAR(INJECT_IS_TASK_SPECIFIC, int, 0, "Parasites must match a task done by the host they are trying to infect");
   CONFIG_ADD_VAR(INJECT_SKIP_FIRST_TASK, int, 0, "They cannot match the first task the host is doing to infect");
   CONFIG_ADD_VAR(INJECT_DEFAULT_SUCCESS, double, 0.0, "If injection is task specific, with what probability should non-matching parasites infect the host ");
   CONFIG_ADD_VAR(PARASITE_VIRULENCE, double, -1, "The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment");
@@ -737,13 +740,19 @@ public:
   CONFIG_ADD_VAR(MATCH_ALREADY_PRODUCED, int, 0, "0=off\n1=on");
 	
 
-  // -------- Group formation config options --------
+  // -------- Grouping config options --------
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
   CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
   CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
-  CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of previous updates used to evaluate org's tolerance levels (0 indicates tolarance disabled, values <1 indicate % chance random migration for offspring)"); // @JJB
+  CONFIG_ADD_VAR(INHERIT_OPINION, int, 0, "Should offspring inherit the parent's opinion?");
+  CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
+  CONFIG_ADD_VAR(JOIN_GROUP_FAILURE, int, 0, "Percent chance for failing to switch groups"); // @JJB
+  CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of previous updates used to evaluate org's tolerance levels\n(0 indicates tolarance disabled, values <0 indicate % chance random migration for offspring)"); // @JJB
   CONFIG_ADD_VAR(MAX_TOLERANCE, int, 1, "Maximum tolerance level"); // @JJB
-	
+  CONFIG_ADD_VAR(TOLERANCE_VARIATIONS, int, 0, "0=all tolerance active,\n1=only immigration tolerance active"); // @JJB
+  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey");
+  CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
+		
 
   // -------- Deme network config options --------
   CONFIG_ADD_GROUP(DEME_NETWORK_GROUP, "Deme network settings");
@@ -777,11 +786,6 @@ public:
   CONFIG_ADD_VAR(INST_RES_CEIL, double, 0.0, "Assumed upper level of resource in environment.  Used for probability dist.");
 	
 
-  // -------- Opinion-setting config options --------
-  CONFIG_ADD_GROUP(OPINION_GROUP, "Organism opinion settings");
-  CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
-  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, "# -1: no predators in experiment \n #  0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n#  1: allow predators to switch to being prey");
-	
   // -------- Alarm config options --------
   CONFIG_ADD_GROUP(ALARM_GROUP, "Alarm Settings");
   CONFIG_ADD_VAR(BCAST_HOPS, int, 1, "Number of hops to broadcast an alarm");

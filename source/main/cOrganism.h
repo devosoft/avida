@@ -220,16 +220,19 @@ public:
   int GetCellData() { return m_interface->GetCellData(); }
   int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
   int GetCellDataUpdate() { return m_interface->GetCellDataUpdate(); }
+  int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
   int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
+  int GetFacedCellDataTerritory() { return m_interface->GetFacedCellDataTerritory(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
-  int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the facing of this organism.
+  int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the faced cell of this organism.
+  int GetFacedDir() { assert(m_interface); return m_interface->GetFacedDir(); }  // Returns the human interpretable facing of this org.
   int GetNeighborCellContents() const { return m_interface->GetNeighborCellContents(); }
   void Rotate(int direction) { m_interface->Rotate(direction); }
   
@@ -287,7 +290,7 @@ public:
 
   
   // --------  Divide Methods  --------
-  bool Divide_CheckViable();
+  bool Divide_CheckViable(cAvidaContext& ctx);
   bool ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype = 0);
   
   
@@ -468,9 +471,9 @@ public:
   //! Retrieve all opinions expressed during this organism's lifetime.
   const DatedOpinionList& GetOpinions() { InitOpinions(); return m_opinion->opinion_list; }
   //! Return whether this organism has an opinion.
-  bool HasOpinion() { InitOpinions(); return m_opinion->opinion_list.size(); }
-	//! remove all opinions
-	void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
+  bool HasOpinion();
+  //! remove all opinions
+  void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
   
 private:
   //! Initialize opinion support.

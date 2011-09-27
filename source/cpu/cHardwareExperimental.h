@@ -361,6 +361,11 @@ private:
   inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
 
+  struct searchInfo {
+    double amountFound;
+    int resource_id;
+  };
+  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num);
   
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
@@ -504,6 +509,7 @@ private:
 
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_TerritoryMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
   bool Inst_GetEasterly(cAvidaContext& ctx);
@@ -527,15 +533,26 @@ private:
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
+  bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_GetGroupID(cAvidaContext& ctx);
+  bool Inst_GetFacedGrouping(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackMeritPrey(cAvidaContext& ctx); 
+  bool Inst_FightMeritOrg(cAvidaContext& ctx); 
+  bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
+  bool Inst_FightOrg(cAvidaContext& ctx); 
+  bool Inst_FightPred(cAvidaContext& ctx); 
+  bool Inst_MarkCell(cAvidaContext& ctx); 
+  bool Inst_DefendCell(cAvidaContext& ctx); 
+  bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
+  bool Inst_CheckFacedKin(cAvidaContext& ctx);
 };
 
 

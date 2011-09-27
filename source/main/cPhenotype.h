@@ -134,7 +134,7 @@ private:
   tArray<double> cur_rbins_avail;             // Amount of internal resources available
   tArray<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
-  tArray<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.  //APW  
+  tArray<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators. 
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
@@ -386,7 +386,7 @@ public:
   const tArray<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
-  const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}  //APW
+  const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
@@ -400,9 +400,9 @@ public:
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
-  const tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
-  const tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
-  const tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
+  tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
+  tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
+  tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
   int CalcToleranceImmigrants() const;       // @JJB
   int CalcToleranceOffspringOwn() const;     // @JJB
   int CalcToleranceOffspringOthers() const;  // @JJB
@@ -551,7 +551,7 @@ public:
   int GetNumEnergyReceptions() { return num_energy_receptions; }
   int GetNumEnergyApplications() { return num_energy_applications; }
   
-  void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; } //APW
+  void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
 
   void SetCurRBinsAvail(const tArray<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const tArray<double>& in_total) { cur_rbins_total = in_total; }
@@ -586,8 +586,7 @@ public:
   void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
-  void SetBornParentGroup() { born_parent_group = true; } // @JJB
-  void ClearBornParentGroup() { born_parent_group = false; } // @JJB
+  bool& SetBornParentGroup() { return born_parent_group; } // @JJB
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
   void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
   void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
@@ -598,10 +597,6 @@ public:
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
-
-  void ModifyToleranceImmigrants(int position, int update) { assert(initialized == true); tolerance_immigrants[position] = update; }            // @JJB
-  void ModifyToleranceOffspringOwn(int position, int update) { assert(initialized == true); tolerance_offspring_own[position] = update; }       // @JJB
-  void ModifyToleranceOffspringOthers(int position, int update) {assert(initialized == true); tolerance_offspring_others[position] = update; }  // @JJB
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }

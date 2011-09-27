@@ -111,6 +111,18 @@ char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
   else return '!';
 }
 
+char cSymbolUtil::GetTerritoryColor(const cPopulationCell & cell)
+{
+  if (cell.GetCellDataTerritory() != -1) return 'A' + cell.GetCellDataTerritory();
+  else return ' ';
+}
+
+char cSymbolUtil::GetTerritorySymbol(const cPopulationCell & cell)
+{
+  if (cell.GetCellDataTerritory() != -1) return '0' + cell.GetCellDataTerritory();
+  else return ' ';
+}
+
 char cSymbolUtil::GetMutSymbol(const cPopulationCell & cell)
 {
   if (cell.IsOccupied() == false) return ' ';

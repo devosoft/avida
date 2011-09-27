@@ -70,6 +70,19 @@ struct flow_rate_tuple {
   cIntSum currentSleeping;
 };
 
+struct s_inst_circumstances {
+  int update;
+  int gr_id;
+  int gr_size;
+  double res_level;
+  double odds_immigrants;
+  double odds_offspring_own;
+  double odds_offspring_others;
+  int tol_immigrants;
+  int tol_own;
+  int tol_others;
+  int tol_max;
+}; // @JJB
 
 class cStats : public cBioGroupListener, public Data::Provider
 {
@@ -139,7 +152,7 @@ private:
   // --------  Instruction Counts  ---------
   tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
-
+  tArray<tSmartArray<s_inst_circumstances> > m_is_tolerance_exe_insts; // @JJB
 
   // --------  Calculated Stats  ---------
   double entropy;
@@ -783,8 +796,10 @@ public:
   void PrintMigrationData(const cString& filename);
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
-  void PrintGroupTolerance(const cString& filename); // @JJB
   void PrintTargets(const cString& filename);
+  void PrintGroupTolerance(const cString& filename); // @JJB
+  void PrintToleranceInstructionData(const cString& filename); // @JJB
+  void PrintToleranceData(const cString& filename); // @JJB
 
   // deme predicate stats
   void IncEventCount(int x, int y);
@@ -845,6 +860,12 @@ public:
 protected:
   movement_pred_ptr_list m_movement_predicates;
   // -------- End movement support --------
+
+  // -------- Tolerance support --------
+public:
+  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+              double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max); // @JJB
+  void ZeroToleranceInst(); // @JJB
 
 
   // -------- Deme replication support --------

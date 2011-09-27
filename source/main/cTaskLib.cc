@@ -3450,6 +3450,9 @@ void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cE
   schema.AddEntry("target_id", 0, 1);
   cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "ConsumeTarget", &cTaskLib::Task_ConsumeTarget, 0, args);
+
+  // Add this target id to the list in the instructions file. 
+  m_world->GetEnvironment().AddTargetID(args->GetInt(0));
 }
 
 double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const

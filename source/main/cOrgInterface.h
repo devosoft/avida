@@ -67,11 +67,13 @@ public:
   virtual int GetCellData() = 0;
   virtual int GetCellDataOrgID() = 0;
   virtual int GetCellDataUpdate() = 0;
+  virtual int GetCellDataTerritory() = 0;
   virtual void SetCellData(const int newData) = 0;
   virtual int GetFacedCellData() = 0;
   virtual int GetFacedCellDataOrgID() = 0;
   virtual int GetFacedCellDataUpdate() = 0;
-
+  virtual int GetFacedCellDataTerritory() = 0;
+  
   virtual int GetPrevSeenCellID() = 0;
   virtual int GetPrevTaskCellID() = 0;
   virtual int GetNumTaskCellsReached() = 0;
@@ -87,6 +89,7 @@ public:
   virtual void GetNeighborhoodCellIDs(tArray<int>& list) = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
+  virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
   
@@ -141,12 +144,22 @@ public:
   virtual void AddLiveOrg() = 0;
   virtual void RemoveLiveOrg() = 0;
   
+  virtual bool HasOpinion(cOrganism* in_organism) = 0;
+  virtual void SetOpinion(int opinion, cOrganism* in_organism) = 0;
+  virtual void ClearOpinion(cOrganism* in_organism) = 0;
+
   virtual void JoinGroup(int group_id) = 0;
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
     
   virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
-  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) = 0;
+  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism) = 0;
+  virtual double CalcGroupOddsImmigrants(int group_id) = 0;
+  virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
+  virtual double CalcGroupOddsOffspring(int group_id) = 0;
+  virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
+  virtual void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+                  double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) = 0;
     
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;

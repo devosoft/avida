@@ -50,7 +50,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
-, cur_stolen_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize()) //APW
+, cur_stolen_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_sense_count(m_world->GetStats().GetSenseSize())
 , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
@@ -88,6 +88,10 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
   double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
   cur_collect_spec_counts.Resize((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0));
   
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
+    tolerance_offspring_own.Resize(0);
+    tolerance_offspring_others.Resize(0);
+  }
 }
 
 cPhenotype::~cPhenotype()
@@ -156,7 +160,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   tolerance_offspring_own       = in_phen.tolerance_offspring_own;     // @JJB
   tolerance_offspring_others    = in_phen.tolerance_offspring_others;  // @JJB
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
-  cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;        //APW    
+  cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;  
   
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
@@ -364,7 +368,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
-  cur_stolen_reaction_count.SetAll(0); //APW
+  cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
@@ -564,7 +568,7 @@ void cPhenotype::SetupInject(const Sequence & _genome)
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
-  cur_stolen_reaction_count.SetAll(0); //APW
+  cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   sensed_resources.SetAll(0);
@@ -807,7 +811,7 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
-  cur_stolen_reaction_count.SetAll(0); //APW
+  cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
@@ -1003,7 +1007,7 @@ void cPhenotype::TestDivideReset(const Sequence & _genome)
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
-  cur_stolen_reaction_count.SetAll(0); //APW
+  cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0); 
@@ -1156,7 +1160,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
-  cur_stolen_reaction_count.SetAll(0); //APW
+  cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
@@ -1660,19 +1664,19 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
  */
 int cPhenotype::CalcToleranceImmigrants() const
 {
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-    
-	int intolerance_count = 0;
-    
-	for (int n = 0; n < tolerance_max; n++) {
-		if (tolerance_immigrants[n] <= cur_update - update_window) break;
-		intolerance_count++;
-	}
-    
-	const int tolerance = tolerance_max - intolerance_count;
-	return tolerance;
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+
+  int intolerance_count = 0;
+
+  for (int n = 0; n < tolerance_max; n++) {
+    if (tolerance_immigrants[n] <= cur_update - update_window) break;
+    intolerance_count++;
+  }
+
+  const int tolerance = tolerance_max - intolerance_count;
+  return tolerance;
 }
 
 /* Returns the total tolerance for own offspring by counting
@@ -1680,19 +1684,22 @@ int cPhenotype::CalcToleranceImmigrants() const
  */
 int cPhenotype::CalcToleranceOffspringOwn() const
 {
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-    
-	int intolerance_count = 0;
-    
-	for (int n = 0; n < tolerance_max; n++) {
-		if (tolerance_offspring_own[n] <= cur_update - update_window) break;
-		intolerance_count++;
-	}
-    
-	const int tolerance = tolerance_max - intolerance_count;
-	return tolerance;
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  // If offspring tolerances off, skip calculations returning max
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
+
+  int intolerance_count = 0;
+
+  for (int n = 0; n < tolerance_max; n++) {
+    if (tolerance_offspring_own[n] <= cur_update - update_window) break;
+    intolerance_count++;
+  }
+
+  const int tolerance = tolerance_max - intolerance_count;
+  return tolerance;
 }
 
 /* Returns the total tolerance for the offspring of others in the group by counting
@@ -1700,19 +1707,22 @@ int cPhenotype::CalcToleranceOffspringOwn() const
  */
 int cPhenotype::CalcToleranceOffspringOthers() const
 {
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-    
-	int intolerance_count = 0;
-    
-	for (int n = 0; n < tolerance_max; n++) {
-		if (tolerance_offspring_others[n] <= cur_update - update_window) break;
-		intolerance_count++;
-	}
-    
-	const int tolerance = tolerance_max - intolerance_count;
-	return tolerance;
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  // If offspring tolerances off, skip calculations returning max
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
+
+  int intolerance_count = 0;
+
+  for (int n = 0; n < tolerance_max; n++) {
+    if (tolerance_offspring_others[n] <= cur_update - update_window) break;
+    intolerance_count++;
+  }
+
+  const int tolerance = tolerance_max - intolerance_count;
+  return tolerance;
 }
 
 void cPhenotype::ReduceEnergy(const double cost) {
@@ -1920,7 +1930,7 @@ void cPhenotype::NewTrial()
   cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
-  cur_stolen_reaction_count.SetAll(0); //APW
+  cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);

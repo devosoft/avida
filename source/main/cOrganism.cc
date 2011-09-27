@@ -712,12 +712,29 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
 }
 
 
-bool cOrganism::Divide_CheckViable()
+bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
 {
   // Make sure required task (if any) has been performed...
   const int required_task = m_world->GetConfig().REQUIRED_TASK.Get();
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
-
+  
+  if (m_forage_target == -2) {
+    const int habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
+    if (habitat_required != -1) {
+      const tArray<double>& resource_count = m_interface->GetResources(ctx); 
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const double required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
+      bool has_req_res = false;
+      for (int i = 0; i < resource_count.GetSize(); i ++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required && resource_count[i] >= required_value) {
+          has_req_res = true;
+          break;
+        }
+      }
+      if (!has_req_res) return false;
+    }
+  }
+  
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
     if (immunity_task ==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
@@ -750,6 +767,15 @@ bool cOrganism::Divide_CheckViable()
       if (reactionCounts[i] > 0) toFail = false;
     }
     
+    if(toFail)
+    {
+      const tArray<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
+      for (int i = 0; i < stolenReactions.GetSize(); i++)
+      {
+        if (stolenReactions[i] > 0) toFail = false;
+      }
+    }
+
     if(toFail)
     {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
@@ -944,7 +970,7 @@ std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
 bool cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
-  
+  if (m_is_dead) return false;  
   /*********************/
   // TEMP.  Remove once movement tasks are implemented.
   if (GetCellData() < GetFacedCellData()) { // move up gradient
@@ -959,7 +985,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   int fromcellID = GetCellID();
   int destcellID = GetFacedCellID();
   
-  int facing = GetFacing();
+  int facing = GetFacedDir();
   
   // Actually perform the move
   if (m_interface->Move(ctx, fromcellID, destcellID)) {
@@ -967,25 +993,25 @@ bool cOrganism::Move(cAvidaContext& ctx)
     //Skip counting if random < chance of miscounting a step.
     if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
       if (facing == 0) m_northerly = m_northerly - 1;       // N
-      else if (facing == 1) {                           // NW
+      else if (facing == 1) {                           // NE
         m_northerly = m_northerly - 1; 
-        m_easterly = m_easterly - 1;
+        m_easterly = m_easterly + 1;
       }  
-      else if (facing == 3) m_easterly = m_easterly - 1;    // W
-      else if (facing == 2) {                           // SW
+      else if (facing == 2) m_easterly = m_easterly + 1;    // E
+      else if (facing == 3) {                           // SE
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly + 1;
+      }
+      else if (facing == 4) m_northerly = m_northerly + 1;  // S
+      else if (facing == 5) {                           // SW
         m_northerly = m_northerly + 1; 
         m_easterly = m_easterly - 1;
       }
-      else if (facing == 6) m_northerly = m_northerly + 1;  // S
-      else if (facing == 7) {                           // SE
-        m_northerly = m_northerly + 1; 
-        m_easterly = m_easterly + 1;
-      }
-      else if (facing == 5) m_easterly = m_easterly + 1;    // E    
-      else if (facing == 4) {                           // NE
+      else if (facing == 6) m_easterly = m_easterly - 1;    // W    
+      else if (facing == 7) {                           // NW
         m_northerly = m_northerly - 1; 
-        m_easterly = m_easterly + 1;
-      }
+        m_easterly = m_easterly - 1;
+      }      
     }
   }
   else return false;              
@@ -1080,21 +1106,28 @@ void cOrganism::moveIPtoAlarmLabel(int jump_label) {
  */
 void cOrganism::SetOpinion(const Opinion& opinion) {
   InitOpinions();
-	
-	const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
 
-	if (bsize == 0) {
+  const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
+
+  if(bsize == 0) {
     m_world->GetDriver().Feedback().Error("OPINION_BUFFER_SIZE is set to an invalid value.");
     m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
-	}	
-	
-	if((bsize > 0) || (bsize == -1)) {
-		m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
-		// if our buffer is too large, chop off old messages:
-		while((bsize != -1) && (static_cast<int>(m_opinion->opinion_list.size()) > bsize)) {
-			m_opinion->opinion_list.pop_front();
-		}
-	}
+  }	
+
+  if((bsize > 0) || (bsize == -1)) {
+    m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
+    // if our buffer is too large, chop off old messages:
+    while((bsize != -1) && (static_cast<int>(m_opinion->opinion_list.size()) > bsize)) {
+      m_opinion->opinion_list.pop_front();
+    }
+  }
+}
+
+// Checks if the organism has an opinion.
+bool cOrganism::HasOpinion() {
+  InitOpinions();
+  if (m_opinion->opinion_list.empty()) return false;
+  else return true;
 }
 
 void cOrganism::SetForageTarget(int forage_target) {

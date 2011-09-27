@@ -107,6 +107,7 @@ void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_r
   m_cell_data.contents = 0;
   m_cell_data.org_id = -1;
   m_cell_data.update = -1;
+  m_cell_data.territory = -1;
   m_spec_state = 0;
   
   if (m_mut_rates == NULL)
@@ -218,6 +219,21 @@ int cPopulationCell::GetFacing()
   return 0;
 }
 
+int cPopulationCell::GetFacedDir()
+{
+  const int facing = GetFacing();
+  int faced_dir = 0;    
+  if (facing == 0) faced_dir = 0;          //N 
+  else if (facing == 1) faced_dir = 7;    //NW
+  else if (facing == 3) faced_dir = 6;    //W
+  else if (facing == 2) faced_dir = 5;    //SW
+  else if (facing == 6) faced_dir = 4;     //S
+  else if (facing == 7) faced_dir = 3;     //SE
+  else if (facing == 5) faced_dir = 2;     //E
+  else if (facing == 4) faced_dir = 1;     //NE
+  return faced_dir;
+  
+}
 void cPopulationCell::ResetInputs(cAvidaContext& ctx) 
 { 
   m_world->GetEnvironment().SetupInputs(ctx, m_inputs); 
@@ -377,5 +393,24 @@ void cPopulationCell::SetCellData(int data, int org_id)
   m_cell_data.contents = data;
   m_cell_data.org_id = org_id;
   m_cell_data.update = m_world->GetStats().GetUpdate();
+  if (m_organism->HasOpinion()) {
+    m_cell_data.territory = m_organism->GetOpinion().first;
+  }
 }
 
+void cPopulationCell::ClearCellData()
+{
+  m_cell_data.contents = 0;
+  m_cell_data.org_id = -1;
+  m_cell_data.update = -1;
+  m_cell_data.territory = -1;
+}
+
+void cPopulationCell::UpdateCellDataExpired()
+{
+  const int expiration = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  const int update = m_world->GetStats().GetUpdate();
+  const int ud_marked = m_cell_data.update;
+  // update only if marked, can expire, and enough time has passed
+  if (ud_marked != -1 && expiration != -1 && (expiration < (update - ud_marked))) ClearCellData();    
+}

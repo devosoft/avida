@@ -87,16 +87,25 @@ cDeme* cPopulationInterface::GetDeme() {
 }
 
 int cPopulationInterface::GetCellData() {
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
 }
 
 int cPopulationInterface::GetCellDataOrgID() {
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataOrgID();
 }
 
 int cPopulationInterface::GetCellDataUpdate() {
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
 }
+
+int cPopulationInterface::GetCellDataTerritory() {
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataTerritory();
+}
+
 
 int cPopulationInterface::GetFacedCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellData();
@@ -110,9 +119,13 @@ int cPopulationInterface::GetFacedCellDataUpdate() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataUpdate();
 }
 
+int cPopulationInterface::GetFacedCellDataTerritory() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataTerritory();
+}
+
 void cPopulationInterface::SetCellData(const int newData) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  cell.SetCellData(cell.GetOrganism()->GetID(), newData);
+  cell.SetCellData(newData, cell.GetOrganism()->GetID());
 }
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
@@ -165,6 +178,13 @@ int cPopulationInterface::GetFacedCellID()
 {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced();
 	return cell.GetID();
+}
+
+int cPopulationInterface::GetFacedDir()
+{
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	assert(cell.IsOccupied());
+	return cell.GetFacedDir();
 }
 
 int cPopulationInterface::GetNeighborCellContents() {
@@ -1055,6 +1075,21 @@ void cPopulationInterface::RemoveLiveOrg()
   m_world->GetPopulation().RemoveLiveOrg(GetOrganism());
 }
 
+bool cPopulationInterface::HasOpinion(cOrganism* in_organism)
+{
+  return in_organism->HasOpinion();
+}
+
+void cPopulationInterface::SetOpinion(int opinion, cOrganism* in_organism)
+{
+  in_organism->SetOpinion(opinion);
+}
+
+void cPopulationInterface::ClearOpinion(cOrganism* in_organism)
+{
+  in_organism->ClearOpinion();
+}
+
 void cPopulationInterface::JoinGroup(int group_id)
 {
   m_world->GetPopulation().JoinGroup(GetOrganism(), group_id);
@@ -1075,9 +1110,35 @@ int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id)
   return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
 }
 
-int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group)
+int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism)
 {
-  return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism, parent_group);
+  return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism);
+}
+
+double cPopulationInterface::CalcGroupOddsImmigrants(int group_id)
+{
+  return m_world->GetPopulation().CalcGroupOddsImmigrants(group_id);
+}
+
+double cPopulationInterface::CalcGroupOddsOffspring(cOrganism* parent)
+{
+  return m_world->GetPopulation().CalcGroupOddsOffspring(parent);
+}
+
+double cPopulationInterface::CalcGroupOddsOffspring(int group_id)
+{
+  return m_world->GetPopulation().CalcGroupOddsOffspring(group_id);
+}
+
+bool cPopulationInterface::AttemptImmigrateGroup(int group_id, cOrganism* org)
+{
+  return m_world->GetPopulation().AttemptImmigrateGroup(group_id, org);
+}
+
+void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
+{
+  m_world->GetStats().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
 void cPopulationInterface::BeginSleep()

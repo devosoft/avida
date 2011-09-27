@@ -89,6 +89,10 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
       if (use_color) color_method = &cSymbolUtil::GetForagerColor;
       map_method = &cSymbolUtil::GetForagerSymbol;
       break;
+    case MAP_TERRITORIES:
+      if (use_color) color_method = &cSymbolUtil::GetTerritoryColor;
+      map_method = &cSymbolUtil::GetTerritorySymbol;
+      break;
     case MAP_MUTATIONS:
       if (use_color) color_method = &cSymbolUtil::GetMutSymbol;
       else map_method = &cSymbolUtil::GetMutSymbol;
@@ -109,9 +113,10 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
   color_map.Resize(num_cells);
 
   for (int i = 0; i < num_cells; i++) {
+    if (map_mode == 4) m_world->GetPopulation().GetCell(i).UpdateCellDataExpired();
     if (map_method == 0) map[i] = 0;
     else map[i] = (*map_method)(m_world->GetPopulation().GetCell(i));
-
+    
     if (color_method == 0) color_map[i] = 0;
     else color_map[i] = (*color_method)(m_world->GetPopulation().GetCell(i));
   }

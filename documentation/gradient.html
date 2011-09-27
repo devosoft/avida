@@ -95,6 +95,9 @@ Nests <br>
 Nests are standard gradient resources, but by declaring a gradient resource to be a nest, the resource will 'hidden' 
 from long-distance sensing instructions such as look-ahead.
 </p>  
+Dens <br>
+Dens are unhidden nests that are visible to instructions like look-ahead.
+</p>  
 <div align="center">
 <p>&nbsp;</p>
 <h3>Table 1: <span>Gradient Resource Options</span></h3>
@@ -105,7 +108,7 @@ from long-distance sensing instructions such as look-ahead.
 <span class="reslocate"><font color="#9c6800">brown(ish)</font></span> variables apply to halo resources, hills and barriers<br>
 <span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers<br>
 <span class="reshills"><font color="#9C1FFE">purple</font></span> variables apply only to hills<br>
-<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills and barriers)<br>
+<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills, barriers, dens)<br>
 </p>
 <table border="1" cellpadding="2">
 <tr>
@@ -118,7 +121,7 @@ from long-distance sensing instructions such as look-ahead.
   <td>
     Type of gradient resource. This determines most of the behaviors and effects of the resource. 
   </br>
-    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests/hidden. 
+    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests(hidden), 4 = dens(visible). 
   </td>
   <td>0</td>
 </tr>
@@ -142,7 +145,7 @@ from long-distance sensing instructions such as look-ahead.
   <td>
     Height in terms of resource value of the cone at the peak center.
     This affects values along the slope of the cone where the value of any cell on the slope
-    = height/distance to center. Note that the height of the plateau may supersede the height 
+    = height/(distance to center + 1). Note that the height of the plateau may supersede the height 
     of the cone, lowering or raising all cell resource values within the plateau to the plateau 
     value. Since slope is height/distance, for a cone having a plateau and a height set to 10, 
     the plateau will be the region of cells 10 or fewer cells from the center.
@@ -168,7 +171,11 @@ from long-distance sensing instructions such as look-ahead.
 <tr>
   <td class="resall">spread</td>
   <td>
-  	 Radius of the cone in terms of cells (i.e. extent of cone base).
+  	 Radius of the cone in terms of cells (i.e. extent of cone base). Because the spread starts counting the center cell as 
+     radius == 0, a spread of 4 will have 9 cells along the E-W/N-S axes (center cell + 4 cells either side). However, the 
+     height of this same resource would need to be == 5 to cover the same area with res value >= 1 (since we add 1 to distance 
+     from center cell for height). 
+     
   </td>
   <td>0</td>
 <tr>

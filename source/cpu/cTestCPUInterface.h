@@ -54,10 +54,12 @@ public:
   int GetCellData() { return -1; }
   int GetCellDataOrgID() { return -1; }
   int GetCellDataUpdate() { return -1; }
+  int GetCellDataTerritory() { return -1; }
   void SetCellData(const int newData) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }
   int GetFacedCellDataUpdate() { return -1; }
+  int GetFacedCellDataTerritory() { return -1; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
@@ -97,6 +99,7 @@ public:
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
   int GetFacedCellID() { return -1; }
+  int GetFacedDir() { return 0; }
   bool SendMessage(cOrgMessage& msg) { return false; }
   bool SendMessage(cOrganism* recvr, cOrgMessage& msg) { return false; }
 	bool BroadcastMessage(cOrgMessage& msg, int depth) { return false; }
@@ -142,12 +145,22 @@ public:
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
   
+  bool HasOpinion(cOrganism* in_organism) { return false; }
+  void SetOpinion(int opinion, cOrganism* in_organism) { ; }
+  void ClearOpinion(cOrganism* in_organism) { ; }
+
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
   int NumberOfOrganismsInGroup(int group_id) {return 0; }
     
   int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) {return 0; }
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism) {return 0; }
+  double CalcGroupOddsImmigrants(int group_id) {return 0.0; }
+  double CalcGroupOddsOffspring(cOrganism* parent) {return 0.0; }
+  double CalcGroupOddsOffspring(int group_id) {return 0.0; }
+  bool AttemptImmigrateGroup(int group_id, cOrganism* org) {return false; }
+  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) { ; }
 
   void BeginSleep() { ; }
   void EndSleep() { ; }

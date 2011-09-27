@@ -172,9 +172,10 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
-STATS_OUT_FILE(PrintGroupIds,         groupids.dat);
-STATS_OUT_FILE(PrintGroupTolerance,           grouptolerance.dat); // @JJB
+STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
+STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); // @JJB
+STATS_OUT_FILE(PrintToleranceData,            tolerance.dat); // @JJB
 
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
@@ -220,6 +221,23 @@ public:
   }
 };
 
+class cActionPrintGroupTolerance : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintGroupTolerance(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "grouptolerance.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"grouptolerance.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintGroupTolerance(m_filename);
+  }
+};
 
 class cActionPrintData : public cAction
 {
@@ -3074,17 +3092,10 @@ public:
     if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
 
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    // give predators and orgs with no targets a number > 0
-    const int predator_target = resource_lib.GetSize();
-    const int no_target = predator_target + 1;
-
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetForageTarget() : -1;
-        if (target == -2) target = predator_target;
-        else if (target == -1 && cell.IsOccupied()) target = no_target;
+        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetForageTarget() : -99;
         fp << target << " ";
       }
       fp << endl;
@@ -3120,12 +3131,13 @@ public:
         const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
         // if more than one resource is available, return the resource with the most available in this spot 
         // (note that, with global resources, the GLOBAL total will evaluated)
-        // we build regular resources on top of any hills, but replace any regular resources or hills with any walls 
+        // we build regular resources on top of any hills, but replace any regular resources or hills with any walls or dens 
         double topo_height = 0.0;
         for (int h = 0; h < res_count.GetSize(); h++) {
           int hab_type = resource_lib.GetResource(h)->GetHabitat();
           if ((res_count[h] > max_resource) && (hab_type != 1) && (hab_type !=2)) max_resource = res_count[h];
           else if (hab_type == 1 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
+          else if (hab_type == 4 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
           // allow walls to trump everything else
           else if (hab_type == 2 && res_count[h] > 0) { 
             topo_height = resource_lib.GetResource(h)->GetPlateau();
@@ -3983,10 +3995,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
 	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-  action_lib->Register<cActionPrintTargets>("PrintTargets");
-  
-  action_lib->Register<cActionPrintHGTData>("PrintHGTData");
+    action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
+    action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
+    action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
+    action_lib->Register<cActionPrintTargets>("PrintTargets");
+	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");

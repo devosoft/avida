@@ -1,0 +1,43 @@
+# Avida tolerance instruction executions per update
+# Thu Aug 18 14:32:26 2011
+#  1: Update
+#  2: inc-tolerance_Immigrants
+#  3: inc-tolerance_OffspringOwn
+#  4: inc-tolerance_OffspringOthers
+#  5: dec-tolerance_Immigrants
+#  6: dec-tolerance_OffspringOwn
+#  7: dec-tolerance_OffspringOthers
+#  8: get-tolerance
+#  9: get-group-tolerance
+
+0 0 0 0 0 0 0 1 1 
+1 0 0 0 0 0 0 0 0 
+2 0 0 0 0 0 0 3 3 
+3 0 0 0 0 0 0 5 6 
+4 0 0 0 0 0 0 18 15 
+5 0 0 0 0 0 0 10 11 
+6 0 0 0 0 0 0 37 36 
+7 0 0 0 0 0 0 26 26 
+8 0 0 0 0 0 0 61 51 
+9 0 0 0 0 0 0 55 65 
+10 0 0 0 0 0 0 87 73 
+11 0 0 0 1 0 0 106 88 
+12 2 0 0 2 0 0 132 110 
+13 0 0 0 2 0 0 172 130 
+14 4 0 0 2 0 0 214 182 
+15 7 0 0 1 0 0 247 193 
+16 7 0 0 0 0 0 292 239 
+17 1 0 0 3 0 0 312 239 
+18 20 0 0 6 0 0 319 267 
+19 7 0 0 7 0 0 378 286 
+20 25 0 0 29 0 0 368 272 
+21 14 0 0 10 0 0 330 279 
+22 29 0 0 13 0 0 385 299 
+23 18 0 0 19 0 0 365 316 
+24 21 0 0 16 0 0 359 305 
+25 18 0 0 15 0 0 313 324 
+26 15 0 0 13 0 0 359 342 
+27 25 0 0 30 0 0 344 333 
+28 26 0 0 31 0 0 327 333 
+29 25 0 0 46 0 0 353 343 
+30 21 0 0 53 0 0 321 285 

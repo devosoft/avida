@@ -114,6 +114,9 @@ public:
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
   
+  // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
+  bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
+  
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
   void InjectParasite(const cString& label, const Sequence& injected_code, int cell_id);
@@ -299,23 +302,27 @@ public:
     // Get the group information
     map<int, int> GetFormedGroups() { return m_groups; }
     
+    // -------- Tolerance support --------
 	// Calculate tolerance of group towards immigrants @JJB
 	int CalcGroupToleranceImmigrants(int group_id);
 	// Calculate tolerance of group towards offspring (not including parent) @JJB
-	int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
+	int CalcGroupToleranceOffspring(cOrganism* parent_organism);
     // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
     double CalcGroupOddsImmigrants(int group_id);
-    // Calculates the standard deviation for group tolerance to immigrants
-    double CalcGroupSDevImmigrants(int group_id);
-    double CalcGroupAveImmigrants(int group_id);
+    bool AttemptImmigrateGroup(int group_id, cOrganism* org);
     // Calculates the odds (out of 1) for offspring to be born into the group @JJB
     double CalcGroupOddsOffspring(int group_id);
-    // Calculates the standard deviation for group tolerance to other group offspring
-    double CalcGroupSDevOthers(int group_id);
-    double CalcGroupAveOthers(int group_id);    
+    double CalcGroupOddsOffspring(cOrganism* parent);
+    bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
+    // Calculates the standard deviation for group tolerance to immigrants
+    double CalcGroupAveImmigrants(int group_id);
+    double CalcGroupSDevImmigrants(int group_id);
     // Calculates the standard deviation for group tolerance to their own offspring
+    double CalcGroupAveOwn(int group_id);
     double CalcGroupSDevOwn(int group_id);
-    double CalcGroupAveOwn(int group_id);  
+    // Calculates the standard deviation for group tolerance to other group offspring
+    double CalcGroupAveOthers(int group_id);
+    double CalcGroupSDevOthers(int group_id);
     
     // -------- HGT support --------
     //! Modify current level of the HGT resource.

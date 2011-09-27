@@ -1466,11 +1466,11 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     bool satisfied = true;
     
     // Have all reactions been met?     
-    const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); //APW
+    const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); 
     tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
     while (reaction_it.Next() != NULL) {
       int react_id = reaction_it.Get()->GetID();
-      if (reaction_count[react_id] == 0 && stolen_reactions[react_id] == 0) {   //APW
+      if (reaction_count[react_id] == 0 && stolen_reactions[react_id] == 0) {   
         satisfied = false;
         break;
       }
@@ -2012,4 +2012,17 @@ bool cEnvironment::IsGroupID(int test_id)
   }
   return val;
 
+}
+
+/*
+ helper function that checks if this is a valid target id. The ids are specified
+ in the environment file as tasks.
+ */
+bool cEnvironment::IsTargetID(int test_id)
+{
+  bool val = false;
+  if (possible_target_ids.find(test_id) != possible_target_ids.end()) {
+    val = true;
+  }
+  return val;
 }

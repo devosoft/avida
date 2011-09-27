@@ -3105,40 +3105,164 @@ void cStats::PrintGroupIds(const cString& filename)
 	df.Endl();
 }
 
-/*
-Print data for each group's tolerances. @JJB
-*/
+// Print data for each group's tolerances. @JJB
 void cStats::PrintGroupTolerance(const cString& filename)
 {
-    cDataFile& df = m_world->GetDataFile(filename);
-    df.WriteComment("Group level tolerance data.");
-    df.WriteTimeStamp();
-        
-    map<int, int> groups = m_world->GetPopulation().GetFormedGroups();
-    map<int, int>::iterator itr;
-    
-    for(itr = groups.begin(); itr != groups.end(); itr++) {
-        double cur_size = itr->second;
-        int i = itr->first;
-        df.Write(m_update,                                                  "Update [update]");
-        df.Write(itr->first,                                                "group id [groupid]");
-        df.Write(cur_size,                                                  "size of groups [grsize]");
-        df.Write(resource_count[i],                                         "group resource available [grfood]");
-        df.Write(resource_count[i] / cur_size,                              "per capita group resource available [grfoodper]");
-        if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-            df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i),   "odds for immigrants coming into group [oddsimmigrants]");
-            df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i),    "average intra-group tolerance to immigrants [aveimmigrants]");
-            df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i),   "standard deviation for group tolerance to immigrants [sdevimmigrants]");        
-            df.Write(m_world->GetPopulation().CalcGroupOddsOffspring(i),    "odds for offspring being accepted by group [oddsoffspring]");
-            df.Write(m_world->GetPopulation().CalcGroupAveOthers(i),        "average intra-group tolerance to other offspring being born into group [aveothers]");
-            df.Write(m_world->GetPopulation().CalcGroupSDevOthers(i),       "standard deviation for group tolerance to other offspring being born into the group [sdevothers]");
-            df.Write(m_world->GetPopulation().CalcGroupAveOwn(i),           "average intra-group tolerance to individual's own offspring [aveown]");
-            df.Write(m_world->GetPopulation().CalcGroupSDevOwn(i),          "standard deviation for tolerance to own offspring [sdevown]");
-        }
-        df.Endl();
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Group level tolerance data.");
+  df.WriteTimeStamp();
+
+  map<int, int> groups = m_world->GetPopulation().GetFormedGroups();
+  map<int, int>::iterator itr;
+
+  for(itr = groups.begin(); itr != groups.end(); itr++) {
+    double cur_size = itr->second;
+    int i = itr->first;
+    df.Write(m_update,                                                  "Update [update]");
+    df.Write(itr->first,                                                "group id [groupid]");
+    df.Write(cur_size,                                                  "size of groups [grsize]");
+    df.Write(resource_count[i],"group resource available [grfood]");
+    df.Write(resource_count[i] / cur_size, "per capita group resource available [grfoodper]");
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+      df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i),   "odds for immigrants coming into group [oddsimmigrants]");
+      df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i),    "average intra-group tolerance to immigrants [aveimmigrants]");
+      df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i),   "standard deviation for group tolerance to immigrants [sdevimmigrants]");
+      df.Write(m_world->GetPopulation().CalcGroupOddsOffspring(i),    "odds for offspring being accepted by group [oddsoffspring]");
+      df.Write(m_world->GetPopulation().CalcGroupAveOthers(i),        "average intra-group tolerance to other offspring being born into group [aveothers]");
+      df.Write(m_world->GetPopulation().CalcGroupSDevOthers(i),       "standard deviation for group tolerance to other offspring being born into the group [sdevothers]");
+      df.Write(m_world->GetPopulation().CalcGroupAveOwn(i),           "average intra-group tolerance to individual's own offspring [aveown]");
+      df.Write(m_world->GetPopulation().CalcGroupSDevOwn(i),          "standard deviation for tolerance to own offspring [sdevown]");
     }
+    df.Endl();
+  }
 }
 
+// Prints number of executions within the update of tolerance instructions executed,
+// differentiated between different nop-modifications on each. @JJB
+void cStats::PrintToleranceInstructionData(const cString& filename)
+{
+  const int num_tol_inst = 8;
+  tArray<cString> m_is_tolerance_inst_names(num_tol_inst);
+  m_is_tolerance_inst_names[0] = "inc-tolerance_Immigrants";
+  m_is_tolerance_inst_names[1] = "inc-tolerance_OffspringOwn";
+  m_is_tolerance_inst_names[2] = "inc-tolerance_OffspringOthers";
+  m_is_tolerance_inst_names[3] = "dec-tolerance_Immigrants";
+  m_is_tolerance_inst_names[4] = "dec-tolerance_OffspringOwn";
+  m_is_tolerance_inst_names[5] = "dec-tolerance_OffspringOthers";
+  m_is_tolerance_inst_names[6] = "get-tolerance";
+  m_is_tolerance_inst_names[7] = "get-group-tolerance";
+
+  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
+
+  for (int i = 0; i < num_tol_inst; i++) {
+    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
+      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
+        ZeroToleranceInst();
+      }
+    }
+  }
+
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida tolerance instruction executions per update");
+  df.WriteTimeStamp();
+
+  df.Write(m_update, "Update");
+
+  for (int i = 0; i < num_tol_inst; i++) {
+    df. Write(m_is_tolerance_exe_insts[i].GetSize(), m_is_tolerance_inst_names[i]);
+  }
+
+  df.Endl();
+}
+
+// Prints the circumstances around each tolerance instruction executed within the last update. // @JJB**
+void cStats::PrintToleranceData(const cString& filename)
+{
+  const int num_tol_inst = 8;
+  tArray<cString> m_is_tolerance_inst_names(num_tol_inst);
+  m_is_tolerance_inst_names[0] = "inc-tolerance_Immigrants";
+  m_is_tolerance_inst_names[1] = "inc-tolerance_OffspringOwn";
+  m_is_tolerance_inst_names[2] = "inc-tolerance_OffspringOthers";
+  m_is_tolerance_inst_names[3] = "dec-tolerance_Immigrants";
+  m_is_tolerance_inst_names[4] = "dec-tolerance_OffspringOwn";
+  m_is_tolerance_inst_names[5] = "dec-tolerance_OffspringOthers";
+  m_is_tolerance_inst_names[6] = "get-tolerance";
+  m_is_tolerance_inst_names[7] = "get-group-tolerance";
+
+  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
+
+  for (int i = 0; i < num_tol_inst; i++) {
+    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
+      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
+        ZeroToleranceInst();
+      }
+    }
+  }
+
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida circumstance data for each tolerance instruction pre-execution");
+  df.WriteTimeStamp();
+
+  for (int i = 0; i < num_tol_inst; i++) {
+    for (int n = 0; n < m_is_tolerance_exe_insts[i].GetSize(); n++) {
+      df.Write(m_is_tolerance_exe_insts[i][n].update, "Update [update]");
+      df.Write(m_is_tolerance_inst_names[i], "Tolerance instruction [inst]");
+      df.Write(m_is_tolerance_exe_insts[i][n].gr_id, "group id [groupid]");
+      df.Write(m_is_tolerance_exe_insts[i][n].gr_size, "size of group [grsize]");
+      df.Write(m_is_tolerance_exe_insts[i][n].res_level, "group resource available [grfood]");
+      df.Write(m_is_tolerance_exe_insts[i][n].odds_immigrants, "odds for immigrants coming into the group [oddsimmigrants]");
+      df.Write(m_is_tolerance_exe_insts[i][n].odds_offspring_own, "odds for org's own offspring to stay in group [oddsown]");
+      df.Write(m_is_tolerance_exe_insts[i][n].odds_offspring_others, "odds for offspring in group [oddsothers]");
+      df.Write(m_is_tolerance_exe_insts[i][n].tol_immigrants, "org's tolerance for immigrants [tol-immi]");
+      df.Write(m_is_tolerance_exe_insts[i][n].tol_own, "org's tolerance for own offspring [tol-own]");
+      df.Write(m_is_tolerance_exe_insts[i][n].tol_others, "org's tolerance for other offspring in the group [tol-others]");
+      df.Write(m_is_tolerance_exe_insts[i][n].tol_max, "tolerance max [tol-max]");
+      df.Endl();
+    }
+  }
+}
+
+// Adds a record of a tolerance instruction execution w its circumstances. @JJB
+void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+          double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
+{
+  const int num_tol_inst = 8;
+  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
+
+  for (int i = 0; i < num_tol_inst; i++) {
+    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
+      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
+        ZeroToleranceInst();
+      }
+    }
+  }
+
+  s_inst_circumstances tol_circ;
+  tol_circ.update = m_update;
+  tol_circ.gr_id = group_id;
+  tol_circ.gr_size = group_size;
+  tol_circ.res_level = resource_level;
+  tol_circ.odds_immigrants = odds_immi;
+  tol_circ.odds_offspring_own = odds_own;
+  tol_circ.odds_offspring_others = odds_others;
+  tol_circ.tol_immigrants = tol_immi;
+  tol_circ.tol_own = tol_own;
+  tol_circ.tol_others = tol_others;
+  tol_circ.tol_max = tol_max;
+
+  m_is_tolerance_exe_insts[tol_inst].Push(tol_circ);
+}
+
+// Clears all tolerance execution circumstances. @JJB
+void cStats::ZeroToleranceInst()
+{
+  const int num_tol_inst = 8;
+  for (int i = 0; i < num_tol_inst; i++) {
+    m_is_tolerance_exe_insts[i].ResizeClear(0);
+  }
+}
 
 /*
  Print data regarding the living org targets.

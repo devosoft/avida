@@ -79,10 +79,12 @@ public:
   int GetCellData();
   int GetCellDataOrgID();
   int GetCellDataUpdate();
+  int GetCellDataTerritory();
   void SetCellData(const int newData);
   int GetFacedCellData();
   int GetFacedCellDataOrgID();
   int GetFacedCellDataUpdate();
+  int GetFacedCellDataTerritory();
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }
@@ -98,6 +100,7 @@ public:
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
+  int GetFacedDir(); // Returns the human interpretable facing of this org.
   int GetNeighborCellContents();
   void Rotate(int direction = 1);
   int GetInputAt(int& input_pointer);
@@ -200,14 +203,24 @@ protected:
   
 public:
   void AddLiveOrg(); 
-  void RemoveLiveOrg();  
+  void RemoveLiveOrg();
+
+  bool HasOpinion(cOrganism* in_organism);
+  void SetOpinion(int opinion, cOrganism* in_organism);
+  void ClearOpinion(cOrganism* in_organism);
   
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
   int NumberOfOrganismsInGroup(int group_id);
   
   int CalcGroupToleranceImmigrants(int prop_group_id);
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group);
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism);
+  double CalcGroupOddsImmigrants(int group_id);
+  double CalcGroupOddsOffspring(cOrganism* parent);
+  double CalcGroupOddsOffspring(int group_id);
+  bool AttemptImmigrateGroup(int group_id, cOrganism* org);
+  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
+            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max);
     
   void BeginSleep();
   void EndSleep();

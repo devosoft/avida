@@ -40,7 +40,7 @@ cSexualAncestry::cSexualAncestry(cBioGroup* bg)
   if (genotype->GetParents().GetSize() > 0) {
     cBGGenotype* p1 = genotype->GetParents()[0];
     cSexualAncestry* p1sa = p1->GetData<cSexualAncestry>();
-    if (!p1) {
+    if (!p1sa) {
       p1sa = new cSexualAncestry(p1);
       p1->AttachData(p1sa);
     }
