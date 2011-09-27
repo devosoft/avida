@@ -41,6 +41,8 @@ namespace Avida {
     public:
       LIB_EXPORT virtual ~Provider() { ; }
       
+      LIB_EXPORT virtual void NewArgument(Apto::String arg) { ; }  ???   ActiveArguments???
+      
       LIB_EXPORT virtual ConstDataSetPtr Provides() const = 0;
       LIB_EXPORT virtual void UpdateProvidedValues(Update current_update) = 0;
       

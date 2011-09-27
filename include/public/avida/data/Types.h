@@ -45,7 +45,7 @@ namespace Avida {
 
     typedef Apto::String DataID;
     typedef Apto::SmartPtr<Provider, Apto::ThreadSafeRefCount> ProviderPtr;
-    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<World*> > ProviderActivateFunctor;
+    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<World*, Apto::String> > ProviderActivateFunctor;
     
     typedef Apto::SmartPtr<Recorder, Apto::ThreadSafeRefCount> RecorderPtr;
     
