@@ -353,6 +353,7 @@ private:
 
   // --------  Sexual Selection Stats  ---------
   tArray<cBirthEntry> m_successful_mates;
+  tArray<cBirthEntry> m_choosers;
   int m_num_successful_mates;
 
 public:
@@ -647,7 +648,7 @@ public:
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
   // Sexual selection recording
-  void RecordSuccessfulMate(cBirthEntry successful_mate);
+  void RecordSuccessfulMate(cBirthEntry& successful_mate, cBirthEntry& chooser);
 
   // Information retrieval section...
 

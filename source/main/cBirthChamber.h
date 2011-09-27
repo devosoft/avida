@@ -76,6 +76,7 @@ public:
   void ClearEntry(cBirthEntry& entry);
   
   int GetWaitingOffspringNumber(int which_mating_type, int hw_type);
+  void PrintBirthChamber(const cString& filename, int hw_type);
 
 private:
   cBirthSelectionHandler* getSelectionHandler(int hw_type);

@@ -32,15 +32,26 @@ cString cBirthEntry::GetPhenotypeString()
   //timestamp
   //merit
   //mating_type
+  //mate_preference
   //mating_display_a
   //mating_display_b
-  return genome.GetSequence().AsString() + " " + cStringUtil::Convert(timestamp) + " " + cStringUtil::Convert(merit.GetDouble()) + " " + cStringUtil::Convert(m_mating_type) + " " + cStringUtil::Convert(m_mating_display_a) + " " + cStringUtil::Convert(m_mating_display_b);
+  cString result;
+  
+  result = genome.GetSequence().AsString();
+  result += " "; result += cStringUtil::Convert(timestamp);
+  result += " "; result += cStringUtil::Convert(merit.GetDouble());
+  result += " "; result += cStringUtil::Convert(m_mating_type);
+  result += " "; result += cStringUtil::Convert(m_mate_preference);
+  result += " "; result += cStringUtil::Convert(m_mating_display_a);
+  result += " "; result += cStringUtil::Convert(m_mating_display_b);
+  
+  return result;
 }
 
 //Companion function for GetPhenotypeString() that tells what information is contained in each field
 cString cBirthEntry::GetPhenotypeStringFormat()
 {
-  return "genome timestamp merit mating_type mating_display_a mating_display_b";
+  return "genome timestamp merit mating_type mate_preference mating_display_a mating_display_b";
 }
 
 cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)

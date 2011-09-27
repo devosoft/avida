@@ -53,6 +53,7 @@ public:
   cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent);
   
   int GetWaitingOffspringNumber(int which_mating_type);
+  void PrintBirthChamber(const cString& filename, cWorld* world);
   //void GetWaitingOffspringTaskData(int task_id, float results_array[]); //CHC Note: Overridden functionality still needs to be implemented
 };
 

@@ -319,3 +319,22 @@ int cBirthMatingTypeGlobalHandler::getWaitingOffspringMostTask(int which_mating_
   }
   return selected_index;
 }
+
+//Outputs the entire birth chamber to a file
+void cBirthMatingTypeGlobalHandler::PrintBirthChamber(const cString& filename, cWorld* world)
+{ 
+  cDataFile& df = world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  df.WriteComment(cBirthEntry::GetPhenotypeStringFormat());
+  df.Endl();
+  
+  std::ofstream& df_stream = df.GetOFStream();
+  
+  for (int i = 0; i < m_entries.GetSize(); i++) {
+    if (m_bc->ValidBirthEntry(m_entries[i])) {
+      df_stream << m_entries[i].GetPhenotypeString() << endl;
+    }
+  }
+  
+  world->GetDataFileManager().Remove(filename);
+}

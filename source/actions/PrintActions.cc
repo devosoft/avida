@@ -4196,6 +4196,33 @@ public:
   }
 };
 
+//Prints data about all the 'offspring' waiting in the birth chamber
+class cActionPrintBirthChamber : public cAction
+{
+private:
+  cString m_filename;
+  int m_hw_type;
+  
+public:
+  cActionPrintBirthChamber(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
+    else m_hw_type = 0;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber/bc-XXXX.dat\"] [int hwtype=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set( "birth_chamber/bc-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
+    m_world->GetPopulation().GetBirthChamber(m_hw_type).PrintBirthChamber(filename, m_hw_type);
+  }
+};
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -4408,4 +4435,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
   action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
   action_lib->Register<cActionPrintSuccessfulMates>("PrintSuccessfulMates");
+  action_lib->Register<cActionPrintBirthChamber>("PrintBirthChamber");
+  
 }

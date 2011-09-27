@@ -120,6 +120,7 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
   entry.SetMatingType(parent->GetPhenotype().GetMatingType());
   entry.SetMatingDisplayA(parent->GetPhenotype().GetLastMatingDisplayA());
   entry.SetMatingDisplayB(parent->GetPhenotype().GetLastMatingDisplayB());
+  entry.SetMatePreference(parent->GetPhenotype().GetMatePreference());
   
   for (int i = 0; i < entry.groups.GetSize(); i++) {
     entry.groups[i]->AddActiveReference();
@@ -422,7 +423,11 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   if (old_entry == NULL) return false;
 
   // If we've made it this far, it means we've selected a mate from the birth chamber, so let's record its statistics
-  m_world->GetStats().RecordSuccessfulMate(*old_entry);
+  // Set up a temporary dummy birth entry so we can record information about the "chooser"
+  cBirthEntry temp_entry;
+  StoreAsEntry(offspring, parent, temp_entry);
+  m_world->GetStats().RecordSuccessfulMate(*old_entry, temp_entry);
+  ClearEntry(temp_entry);
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
@@ -540,4 +545,10 @@ int cBirthChamber::GetWaitingOffspringNumber(int which_mating_type, int hw_type)
   //Get offspring number
   int waiting_num = temp_handler->GetWaitingOffspringNumber(which_mating_type);
   return waiting_num;
+}
+
+void cBirthChamber::PrintBirthChamber(const cString& filename, int hw_type)
+{
+  cBirthSelectionHandler* temp_handler = getSelectionHandler(hw_type);
+  temp_handler->PrintBirthChamber(filename, m_world);
 }
