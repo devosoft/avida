@@ -51,6 +51,7 @@
 #include "tIterator.h"
 #include "cUserFeedback.h"
 #include "cParasite.h"
+#include "cBirthEntry.h"
 
 #include <cmath>
 #include <cerrno>
@@ -4171,6 +4172,30 @@ public:
 };
 
 
+//Prints data about the 'offspring' from the birth chamber that were chosen as mates during the current update
+class cActionPrintSuccessfulMates : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintSuccessfulMates(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mates/mates-XXXX.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set( "mates/mates-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
+    m_world->GetStats().PrintSuccessfulMates(filename);
+  }
+};
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -4382,4 +4407,5 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
   action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
   action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
+  action_lib->Register<cActionPrintSuccessfulMates>("PrintSuccessfulMates");
 }

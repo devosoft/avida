@@ -421,6 +421,9 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   // If we couldn't find a waiting entry, this one was saved -- stop here!
   if (old_entry == NULL) return false;
 
+  // If we've made it this far, it means we've selected a mate from the birth chamber, so let's record its statistics
+  m_world->GetStats().RecordSuccessfulMate(*old_entry);
+
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
     bool ret = DoPairAsexBirth(ctx, *old_entry, offspring, *parent, child_array, merit_array);

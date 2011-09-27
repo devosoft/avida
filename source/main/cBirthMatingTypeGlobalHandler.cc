@@ -297,6 +297,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     storeOffspring(ctx, offspring, parent);
     return NULL;
   }
+  //cout << "Selected " << m_entries[selected_index].GetPhenotypeString() << "\n";
   return &(m_entries[selected_index]);
   
 }

@@ -141,6 +141,7 @@ cStats::cStats(cWorld* world)
 	, m_deme_num_repls_untreatable(0)
   , m_donate_to_donor (0)
   , m_donate_to_facing (0)
+  , m_num_successful_mates(0)
 {
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -646,6 +647,8 @@ void cStats::ProcessUpdate()
   m_spec_waste = 0;
 
   num_migrations = 0;
+  
+  m_num_successful_mates = 0;
 }
 
 void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
@@ -3621,4 +3624,33 @@ void cStats::PrintOrganismLocation(const cString& filename) {
 			df.Endl();
 		}
 	}	
+}
+
+// Records information about mates that are chosen from the birth chamber
+void cStats::RecordSuccessfulMate(cBirthEntry successful_mate) {
+  //Check if we need to resize the array of successful mates, and re-size it if needed
+  int array_size = m_successful_mates.GetSize();
+  if (array_size == m_num_successful_mates) {
+    m_successful_mates.Resize(m_num_successful_mates + 1);
+  }
+  
+  m_successful_mates[m_num_successful_mates] = successful_mate;
+  
+  m_num_successful_mates++;
+}
+
+// Records information about mates that are chosen from the birth chamber
+void cStats::PrintSuccessfulMates(cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  df.WriteComment(cBirthEntry::GetPhenotypeStringFormat());
+  df.Endl();
+  
+  std::ofstream& df_stream = df.GetOFStream();
+  
+  for (int i = 0; i < m_num_successful_mates; i++) {
+    df_stream << m_successful_mates[i].GetPhenotypeString() << endl;
+  }
+  
+  m_world->GetDataFileManager().Remove(filename);
 }

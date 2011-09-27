@@ -57,6 +57,7 @@ class cOrgMessagePredicate;
 class cOrgMovementPredicate;
 class cDeme;
 class cGermline;
+class cBirthEntry;
 
 using namespace Avida;
 
@@ -350,6 +351,10 @@ private:
   cStats(const cStats&); // @not_implemented
   cStats& operator=(const cStats&); // @not_implemented
 
+  // --------  Sexual Selection Stats  ---------
+  tArray<cBirthEntry> m_successful_mates;
+  int m_num_successful_mates;
+
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -641,6 +646,9 @@ public:
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
+  // Sexual selection recording
+  void RecordSuccessfulMate(cBirthEntry successful_mate);
+
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
@@ -821,6 +829,11 @@ public:
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
+
+  // ----------- Sexual selection output -----------
+public:
+  void PrintSuccessfulMates(cString& filename);
+  // ----------- End sexual selection output -----------
 
   // -------- Messaging support --------
 public:

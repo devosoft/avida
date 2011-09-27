@@ -228,6 +228,7 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cAvidaConfig.cc
   ${MAIN_DIR}/cBirthChamber.cc
   ${MAIN_DIR}/cBirthDemeHandler.cc
+  ${MAIN_DIR}/cBirthEntry.cc
   ${MAIN_DIR}/cBirthGenomeSizeHandler.cc
   ${MAIN_DIR}/cBirthGlobalHandler.cc
   ${MAIN_DIR}/cBirthGridLocalHandler.cc

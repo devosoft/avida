@@ -60,6 +60,14 @@ public:
   void SetParentTaskCount(tArray<int> _parent_task_count) { m_parent_task_count = _parent_task_count; } //@CHC
   void SetMatingDisplayA(int _mating_display_a) { m_mating_display_a = _mating_display_a; } //@CHC
   void SetMatingDisplayB(int _mating_display_b) { m_mating_display_b = _mating_display_b; } //@CHC
+  
+  //Other functions
+  cString GetPhenotypeString();
+  static cString GetPhenotypeStringFormat();
+  
+  //Operators
+  cBirthEntry& operator=(const cBirthEntry& _birth_entry);
+  
 };
 
 #endif
