@@ -250,8 +250,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
       
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
-    tInstLibEntry<tMethod>("territory-move", &cHardwareExperimental::Inst_TerritoryMove),
+    tInstLibEntry<tMethod>("range-move", &cHardwareExperimental::Inst_RangeMove),
+    tInstLibEntry<tMethod>("range-pred-move", &cHardwareExperimental::Inst_RangeMove),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
+    tInstLibEntry<tMethod>("get-position-offset", &cHardwareExperimental::Inst_GetPositionOffset),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
     tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
     tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly),    
@@ -281,19 +283,26 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
      
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
-    tInstLibEntry<tMethod>("get-faced-grouping", &cHardwareExperimental::Inst_GetFacedGrouping, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID),
+    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  // @JJB
+    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, nInstFlag::STALL),  // @JJB
+    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, nInstFlag::STALL),  // @JJB    
+    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, nInstFlag::STALL),  // @JJB  
 
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("defend-cell", &cHardwareExperimental::Inst_DefendCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-faced-pred-cell", &cHardwareExperimental::Inst_ReadFacedPredCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-merit-pred", &cHardwareExperimental::Inst_FightMeritPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
@@ -2660,7 +2669,7 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
     return true;
 }
 
-bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetCellID() == -1) return false;
@@ -2668,8 +2677,34 @@ bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
   
   bool safe_passage = true;
   bool move_success = false;
+  const int faced_range = m_organism->GetFacedCellDataTerritory();
   
-  if (m_organism->GetFacedCellDataTerritory() != -1 && (m_organism->GetFacedCellDataTerritory() != m_organism->GetOpinion().first) \
+  if (faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
+      ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+    safe_passage = false;
+  }
+  
+  if (safe_passage) {
+    move_success = m_organism->Move(ctx);
+  }
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, move_success, true);  
+  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
+{
+  // In TestCPU, movement fails...
+  if (m_organism->GetCellID() == -1) return false;
+  assert(m_organism != 0);
+  
+  bool safe_passage = true;
+  bool move_success = false;
+  const int faced_range = m_organism->GetFacedCellDataTerritory();
+  
+  if (m_organism->GetForageTarget() == -2 && faced_range != -1 && faced_range != m_organism->GetOpinion().first 
       && ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
@@ -2686,6 +2721,13 @@ bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetFacedDir(), true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetPositionOffset(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetNortherly(), true);
+  setInternalValue(FindModifiedNextRegister(out_reg), m_organism->GetEasterly(), true);
   return true;
 }
 
@@ -3009,7 +3051,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   if (habitat_used == 3) return false;
   
   // default to look for orgs if invalid habitat & predator
-  else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
+  else if (pred_experiment && m_organism->GetForageTarget() == -2 && 
            (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
@@ -3395,6 +3437,25 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     return true;
 }
 
+// A predator can establish a new group, attempt to immigrate into the group that marked the cell in front of them, or become a nomad. 
+bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2) return false;
+  
+  // If ?AX? make a new group.
+  
+  // If ?BX? change to group -1.
+  
+  // If ?CX? read m_organism->GetFacedCellDataTerritory() and attempt immigration into that group.
+
+      
+  // return (new) group ID & change success
+    
+    
+    
+return true;
+}
+
 bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
 {
     assert(m_organism != 0);
@@ -3404,6 +3465,18 @@ bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
         setInternalValue(group_reg, m_organism->GetOpinion().first, false);
     }
     return true;
+}
+
+bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->HasOpinion()) {
+    const int group_reg = FindModifiedRegister(rBX);
+    
+    setInternalValue(group_reg, m_organism->GetOpinion().first, false);
+  }
+  return true;
 }
 
 bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
@@ -3431,7 +3504,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
-  // attacking other carnivores is handled differently using fights
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
     return false;
   }
@@ -3469,6 +3542,8 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, attack_success, true);   
+  setInternalValue(FindModifiedNextRegister(out_reg), target_merit, true);
+  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(out_reg)), attacker_merit, true);
   
   return true;
 } 		
@@ -3484,7 +3559,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
 
   // allow only for predator vs predator or prey vs prey
-  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
       (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
     return false;
   }
@@ -3530,7 +3605,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
 
   // allow only for predator vs predator or prey vs prey
-  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
       (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
     return false;
   }
@@ -3544,9 +3619,9 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   // my win odds are odds nobody dies or someone dies and it's the target
   const double odds_I_dont_die = (1 - odds_someone_dies) + ((1 - target_win_odds) * odds_someone_dies);
 
-  // return odds as %
+  // return odds out of 10
   const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, odds_I_dont_die * 100 + 0.5, true);   
+  setInternalValue(out_reg, odds_I_dont_die * 10 + 0.5, true);   
 
   return true;
 } 	
@@ -3562,7 +3637,7 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator or prey vs prey
-  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
       (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
     return false;
   }
@@ -3604,17 +3679,65 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   return true;
 } 
 
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightMeritPred(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predator vs predator
+  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
+    return false;
+  }
+  
+  //Use merit to decide who wins this battle.
+  bool kill_attacker = true;
+  
+  const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
+  const double decider = ctx.GetRandom().GetDouble(1);
+  
+  if (decider < (1 - odds_someone_dies)) return true;
+  else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  
+  if (kill_attacker) {
+    m_organism->Die(ctx);
+    return true;
+  }
+  
+  const int target_cell = target->GetCellID();
+  
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
+  
+  return true;
+} 	
+
 bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  m_organism->SetCellData(m_organism->GetID());
+  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
+  m_organism->SetCellData(marking);
   
   return true;
 }
 
-bool cHardwareExperimental::Inst_DefendCell(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
   const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
   m_organism->SetCellData(marking);
   
@@ -3628,10 +3751,32 @@ bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
   const int update_reg = FindModifiedNextRegister(rBX);
   const int org_reg = FindModifiedNextRegister(update_reg);
   
-  // we don't return the territory ID for the marked cell because orgs would just change their opinion to match this if we use territory move
   setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
   setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
   setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
+  if (NUM_REGISTERS > 3) {
+    const int group_reg = FindModifiedNextRegister(org_reg);
+    setInternalValue(group_reg, m_organism->GetFacedCellDataTerritory(), true);    
+  }
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  const int marking_reg = FindModifiedRegister(rBX);
+  const int update_reg = FindModifiedNextRegister(rBX);
+  const int org_reg = FindModifiedNextRegister(update_reg);
+  
+  setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
+  if (NUM_REGISTERS > 3) {
+    const int group_reg = FindModifiedNextRegister(org_reg);
+    setInternalValue(group_reg, m_organism->GetFacedCellDataTerritory(), true);    
+  }
   
   return true;
 }
@@ -3642,18 +3787,6 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
   assert(m_organism != 0);
   m_organism->Teach(true);
   
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetFacedGrouping(cAvidaContext& ctx)
-{
-  if (!m_organism->IsNeighborCellOccupied()) return false;
-  
-  cOrganism * neighbor = m_organism->GetNeighbor();
-  if (neighbor->IsDead()) return false;  
-  
-  const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, neighbor->GetOpinion().first, true);
   return true;
 }
 
@@ -3687,3 +3820,240 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   setInternalValue(out_reg, (int) is_kin, true);    
   return true;
 }
+
+/* Increases tolerance towards the addition of members to the group:
+ nop-A: increases tolerance towards immigrants
+ nop-B: increases tolerance towards own offspring
+ nop-C: increases tolerance towards other offspring of the group.
+ Removes the record of a previous update when dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
+bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      // If this instruction is not nop modified it fails to execute and does nothing @JJB
+      if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
+      
+      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();    
+      const int tolerance_to_modify = FindModifiedRegister(rBX);
+      int tolerance_count = 0;
+      
+      // If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
+      if (tolerance_to_modify == rAX) {
+        PushToleranceInstExe(0, ctx);
+        
+        for (int n = 0; n < tolerance_max - 1; n++) {
+          m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n + 1];
+        }
+        m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = 0;
+        // Retrieve modified tolerance total for immigrants.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?BX? move updates of own offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
+      if ((tolerance_to_modify == rBX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(1, ctx);
+        
+        for (int n = 0; n < tolerance_max - 1; n++) {
+          m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n + 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = 0;
+        
+        // Retrieve modified tolerance total for own offspring.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?CX? move updates of others offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
+      if ((tolerance_to_modify == rCX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(2, ctx);
+        
+        for (int n = 0; n < tolerance_max - 1; n++) {
+          m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n + 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = 0;
+        
+        // Retrieve modified tolerance total for other offspring in group.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      } 
+      return false;
+    }
+  }
+  return false;
+}
+
+/* Decreases tolerance towards the addition of members to the group,
+ nop-A: decreases tolerance towards immigrants
+ nop-B: decreases tolerance towards own offspring
+ nop-C: decreases tolerance towards other offspring of the group.
+ Adds to records the update during which dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
+bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      // If this instruction is not nop modified it fails to execute and does nothing @JJB
+      if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
+      
+      const int cur_update = m_world->GetStats().GetUpdate();
+      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+      
+      const int tolerance_to_modify = FindModifiedRegister(rBX);
+      int tolerance_count = 0;
+      
+      // If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+      if (tolerance_to_modify == rAX) {
+        PushToleranceInstExe(3, ctx);
+        
+        for (int n = tolerance_max - 1; n > 0; n--) {
+          m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n - 1];
+        }
+        m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
+        // Retrieve modified tolerance total for immigrants.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?BX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+      if ((tolerance_to_modify == rBX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(4, ctx);
+        
+        for (int n = tolerance_max - 1; n > 0; n--) {
+          m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n - 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
+        
+        // Retrieve modified tolerance total for own offspring.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?CX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+      if ((tolerance_to_modify == rCX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(5, ctx);
+        
+        for (int n = tolerance_max - 1; n > 0; n--) {
+          m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n - 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
+        
+        // Retrieve modified tolerance total for other offspring in the group.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      } 
+      return false;
+    }
+  }
+  return false;
+}
+
+/* Retrieve current tolerance levels, placing each tolerance in a different register.
+ Register AX: tolerance towards immigrants
+ Register BX: tolerance towards own offspring
+ Register CX: tolerance towards other offspring in the group @JJB
+ */
+bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      if (m_organism->GetOpinion().first == -1) return false;
+      PushToleranceInstExe(6, ctx);
+      
+      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+      int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+      setInternalValue(rAX, tolerance_immigrants, true);
+      setInternalValue(rBX, tolerance_own, true);
+      setInternalValue(rCX, tolerance_others, true);  
+      return true;
+    }
+  }
+  return false;
+}  
+
+/* Retrieve group tolerances placing each in a different register.
+ Register AX: group tolerance towards immigrants
+ Register BX: group tolerance towards own offspring
+ Register CX: group tolerance towards offspring @JJB
+ */
+bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  // If groups are used and tolerances are on...
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      PushToleranceInstExe(7, ctx);
+      
+      const int group_id = m_organism->GetOpinion().first;
+      if (group_id == -1) return false;
+      
+      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+      double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
+      double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
+      
+      // Convert all odds to percent
+      double percent_immigrants = immigrant_odds * 100 + 0.5;
+      double percent_offspring_own = offspring_own_odds * 100 + 0.5;
+      double percent_offspring_others = offspring_others_odds * 100 + 0.5;
+      
+      // Truncate percent to integer and place in registers
+      setInternalValue(rAX, (int) percent_immigrants, true);
+      setInternalValue(rBX, (int) percent_offspring_own, true);
+      setInternalValue(rCX, (int) percent_offspring_others, true);
+      return true;
+    }
+  }
+  return false;
+}
+
+// Pushes the circumstances of a tolerance instruction execution to stats. @JJB
+void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  
+  int group_id = m_organism->GetOpinion().first;
+  if (group_id == -1) return;
+  int group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+  double resource_level = res_count[group_id];
+  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+  double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
+  double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
+  
+  double odds_immi = immigrant_odds * 100 + 0.5;
+  double odds_own = offspring_own_odds * 100 + 0.5;
+  double odds_others = offspring_others_odds * 100 + 0.5;
+  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
+  int tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+  int tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+  
+  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
+                                                     odds_others, tol_immi, tol_own, tol_others, tol_max);
+}
+

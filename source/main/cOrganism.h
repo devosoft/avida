@@ -221,6 +221,7 @@ public:
   int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
   int GetCellDataUpdate() { return m_interface->GetCellDataUpdate(); }
   int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
+  int GetCellDataForagerType() { return m_interface->GetCellDataForagerType(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }

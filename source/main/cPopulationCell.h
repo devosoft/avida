@@ -72,6 +72,7 @@ private:
     int update;
     int territory;
     int current;
+    int forager;
   } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
   
   int m_spec_state;
@@ -136,6 +137,7 @@ public:
   inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
   inline int GetCellDataUpdate() const { return m_cell_data.update; }
   inline int GetCellDataTerritory() const { return m_cell_data.territory; }
+  inline int GetCellDataForagerType() const { return m_cell_data.forager; }
   void UpdateCellDataExpired();
   void SetCellData(int data, int org_id = -1);
   void ClearCellData();

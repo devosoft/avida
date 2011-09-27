@@ -90,8 +90,14 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
       map_method = &cSymbolUtil::GetForagerSymbol;
       break;
     case MAP_TERRITORIES:
-      if (use_color) color_method = &cSymbolUtil::GetTerritoryColor;
-      map_method = &cSymbolUtil::GetTerritorySymbol;
+      if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
+        if (use_color) color_method = &cSymbolUtil::GetTerritoryColor;
+        map_method = &cSymbolUtil::GetTerritorySymbol;
+      }
+      else {
+        if (use_color) color_method = &cSymbolUtil::GetMarkedCellColor;
+        map_method = &cSymbolUtil::GetMarkedCellSymbol;        
+      }
       break;
     case MAP_MUTATIONS:
       if (use_color) color_method = &cSymbolUtil::GetMutSymbol;

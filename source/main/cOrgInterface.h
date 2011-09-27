@@ -68,6 +68,7 @@ public:
   virtual int GetCellDataOrgID() = 0;
   virtual int GetCellDataUpdate() = 0;
   virtual int GetCellDataTerritory() = 0;
+  virtual int GetCellDataForagerType() = 0;
   virtual void SetCellData(const int newData) = 0;
   virtual int GetFacedCellData() = 0;
   virtual int GetFacedCellDataOrgID() = 0;

@@ -119,7 +119,33 @@ char cSymbolUtil::GetTerritoryColor(const cPopulationCell & cell)
 
 char cSymbolUtil::GetTerritorySymbol(const cPopulationCell & cell)
 {
-  if (cell.GetCellDataTerritory() != -1) return '0' + cell.GetCellDataTerritory();
+  if (cell.GetCellDataTerritory() != -1) {
+    if (cell.GetCellDataTerritory() >= 0 && cell.GetCellDataTerritory() <= 9) return '0' + cell.GetCellDataTerritory();
+    else if (cell.GetCellDataTerritory() > 9 && cell.GetCellDataTerritory() <= 35) return 'A' + cell.GetCellDataTerritory() - 10;
+    else if (cell.GetCellDataTerritory() > 35 && cell.GetCellDataTerritory() <= 61) return 'a' + cell.GetCellDataTerritory() - 36;
+    else return '!';
+  }
+  else return ' ';
+}
+
+char cSymbolUtil::GetMarkedCellSymbol(const cPopulationCell & cell)
+{
+  if (cell.GetCellData() != 0) {
+    if (cell.GetCellData() >= 0 && cell.GetCellData() <= 9) return '0' + cell.GetCellData();
+    else if (cell.GetCellData() > 9 && cell.GetCellData() <= 35) return 'A' + cell.GetCellData() - 10;
+    else if (cell.GetCellData() > 35 && cell.GetCellData() <= 61) return 'a' + cell.GetCellData() - 36;
+    else return '!';
+  }
+  else return ' ';
+}
+
+char cSymbolUtil::GetMarkedCellColor(const cPopulationCell & cell)
+{
+  if (cell.GetCellData() != 0) {
+    if (cell.GetCellDataForagerType() == -2) return 'A';
+    else if (cell.GetCellDataForagerType() == -1) return '1';
+    else return 'B' + cell.GetCellDataForagerType();
+  }
   else return ' ';
 }
 

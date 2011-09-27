@@ -22,6 +22,8 @@ public:
   static char GetForagerSymbol(  const cPopulationCell & cell );
   static char GetTerritoryColor(  const cPopulationCell & cell );
   static char GetTerritorySymbol(  const cPopulationCell & cell );
+  static char GetMarkedCellSymbol(  const cPopulationCell & cell );
+  static char GetMarkedCellColor(  const cPopulationCell & cell );
   static char GetMutSymbol(      const cPopulationCell & cell );
   static char GetThreadSymbol(   const cPopulationCell & cell );
   static char GetLineageSymbol(  const cPopulationCell & cell );

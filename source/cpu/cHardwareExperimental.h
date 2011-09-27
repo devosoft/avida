@@ -509,8 +509,10 @@ private:
 
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
-  bool Inst_TerritoryMove(cAvidaContext& ctx);
+  bool Inst_RangeMove(cAvidaContext& ctx);
+  bool Inst_RangePredMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);  
+  bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
   bool Inst_GetEasterly(cAvidaContext& ctx);
   bool Inst_ZeroEasterly(cAvidaContext& ctx);
@@ -538,8 +540,14 @@ private:
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
+  bool Inst_ChangePredGroup(cAvidaContext& ctx);
   bool Inst_GetGroupID(cAvidaContext& ctx);
-  bool Inst_GetFacedGrouping(cAvidaContext& ctx);
+  bool Inst_GetPredGroupID(cAvidaContext& ctx);
+  bool Inst_IncPredTolerance(cAvidaContext& ctx);  // @JJB
+  bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
+  bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
+  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB  
+  void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx); // @JJB
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
@@ -548,9 +556,11 @@ private:
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
   bool Inst_FightPred(cAvidaContext& ctx); 
+  bool Inst_FightMeritPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
-  bool Inst_DefendCell(cAvidaContext& ctx); 
+  bool Inst_MarkPredCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
+  bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
 };

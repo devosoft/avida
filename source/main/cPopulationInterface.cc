@@ -105,6 +105,10 @@ int cPopulationInterface::GetCellDataTerritory() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataTerritory();
 }
 
+int cPopulationInterface::GetCellDataForagerType() {
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataForagerType();
+}
 
 int cPopulationInterface::GetFacedCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellData();

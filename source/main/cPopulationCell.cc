@@ -394,6 +394,7 @@ void cPopulationCell::SetCellData(int data, int org_id)
   if (m_organism->HasOpinion()) {
     m_cell_data.territory = m_organism->GetOpinion().first;
   }
+  m_cell_data.forager = m_organism->GetForageTarget();
 }
 
 void cPopulationCell::ClearCellData()
@@ -402,6 +403,7 @@ void cPopulationCell::ClearCellData()
   m_cell_data.org_id = -1;
   m_cell_data.update = -1;
   m_cell_data.territory = -1;
+  m_cell_data.forager = -99;
 }
 
 void cPopulationCell::UpdateCellDataExpired()

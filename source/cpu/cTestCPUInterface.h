@@ -55,6 +55,7 @@ public:
   int GetCellDataOrgID() { return -1; }
   int GetCellDataUpdate() { return -1; }
   int GetCellDataTerritory() { return -1; }
+  int GetCellDataForagerType() { return -99; }
   void SetCellData(const int newData) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }

@@ -80,6 +80,7 @@ public:
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
+  int GetCellDataForagerType();
   void SetCellData(const int newData);
   int GetFacedCellData();
   int GetFacedCellDataOrgID();
