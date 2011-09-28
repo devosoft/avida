@@ -350,7 +350,7 @@ static const float PANEL_MIN_WIDTH = 300.0;
 @end
 
 
-Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::GetRequested()
+Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::GetRequested() const
 {
   if (!m_requested) {
     Avida::Data::DataSetPtr ds(new Avida::Data::DataSet);

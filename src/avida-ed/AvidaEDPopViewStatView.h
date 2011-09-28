@@ -89,13 +89,13 @@ class AvidaEDPopViewStatViewRecorder;
 class AvidaEDPopViewStatViewRecorder : public Avida::Data::Recorder
 {
 private:
-  Avida::Data::ConstDataSetPtr m_requested;
+  mutable Avida::Data::ConstDataSetPtr m_requested;
   AvidaEDPopViewStatView* m_view;
   
 public:
   AvidaEDPopViewStatViewRecorder(AvidaEDPopViewStatView* view) : m_view(view) { ; }
   
-  Avida::Data::ConstDataSetPtr GetRequested();
+  Avida::Data::ConstDataSetPtr GetRequested() const;
   void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data);
 };
 
