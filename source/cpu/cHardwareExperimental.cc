@@ -2861,10 +2861,13 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
   // return true if invalid number or self
-  if (id_sought < 0 || id_sought == m_organism->GetID()) return true;
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org;
@@ -2877,9 +2880,8 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
       break;
     }
   }
-  if (!have_org2use) return true;
+  if (!have_org2use) return false;
   else {
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
     const int target_org_cell = target_org->GetCellID();
     const int target_x = target_org_cell % worldx;
     const int target_y = floor (target_org_cell / worldx);
@@ -2889,8 +2891,10 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     const int x_dist =  searching_x - target_x;
     const int y_dist = searching_y - target_y;
     
+    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (travel_dist > max_dist) return false;
+
     const int facing = m_organism->GetFacedDir();
-    
     int correct_facing = 0;
     if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate N    
     else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate NE
@@ -2913,10 +2917,13 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
   // return true if invalid number or self
-  if (id_sought < 0 || id_sought == m_organism->GetID()) return true;
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org;
@@ -2929,7 +2936,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
       break;
     }
   }
-  if (!have_org2use) return true;
+  if (!have_org2use) return false;
   else {
     const int worldx = m_world->GetConfig().WORLD_X.Get();
     const int target_org_cell = target_org->GetCellID();
@@ -2941,8 +2948,10 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     const int x_dist =  searching_x - target_x;
     const int y_dist = searching_y - target_y;
     
-    const int facing = m_organism->GetFacedDir();
+    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (travel_dist > max_dist) return false;
     
+    const int facing = m_organism->GetFacedDir();
     int correct_facing = 0;
     if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate N    
     else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate NE
@@ -3138,7 +3147,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   const int distance_reg = FindModifiedNextRegister(habitat_reg);
   const int search_type_reg = FindModifiedNextRegister(distance_reg);  
   const int id_sought_reg = FindModifiedNextRegister(search_type_reg);
-  const int count_reg = FindModifiedNextRegister(search_type_reg);
+  const int count_reg = FindModifiedNextRegister(id_sought_reg);
   const int value_reg = FindModifiedNextRegister(count_reg);
   const int group_reg = FindModifiedNextRegister(value_reg);
   const int forage_reg = FindModifiedNextRegister(group_reg);
@@ -3304,8 +3313,10 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
         setInternalValue(search_type_reg, search_type, true);
         setInternalValue(id_sought_reg, id_sought, true);
         setInternalValue(count_reg, 1, true);
-        setInternalValue(value_reg, (int) target_org->GetPhenotype().GetMerit().GetDouble(), true);
-        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+        setInternalValue(value_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
+        if (target_org->HasOpinion()) {
+          setInternalValue(group_reg, target_org->GetOpinion().first, true);
+        }
         setInternalValue(forage_reg, target_org->GetForageTarget(), true);            
       }
       return true;
@@ -3405,8 +3416,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
         
         // test if the side cell is still on world; if it isn't, do the other side
         if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
-        else if ((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
-        else if ((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+        else if ((this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
+        else if ((this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
         else any_valid_side_cells = true;
         
         prev_cell = this_cell;
@@ -3418,7 +3429,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
             found = true;
             count ++;
             totalAmount += cellResultInfo.amountFound;
-            if (first_success_cell == -1) first_success_cell = center_cell;
+            if (first_success_cell == -1) first_success_cell = this_cell;
             if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
             
             if(stop_at_first_found) {
@@ -3447,13 +3458,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     
     // if still good to go (!found || !stop_at_first_found && count_center and/or any_valid_side_cells)...
     // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
-    if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
+    if((facing == 6 || facing == 5 || facing == 7) && (center_cell % worldx == 0)) count_center = false;
     
     // figure out the what the next center cell is about to be
     center_cell = center_cell + ahead_dir;
     
     // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
-    if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
+    if((facing == 2 || facing == 3 || facing == 1) && (center_cell % worldx == 0)) count_center = false;
     // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
     else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;    
   } // End getting values
@@ -3487,14 +3498,12 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
     const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell);
     if (habitat_used == -2) {
-      const int merit = (int) first_good_cell.GetOrganism()->GetPhenotype().GetMerit().GetDouble(); 
-      const int forage_target = first_good_cell.GetOrganism()->GetForageTarget();
-      setInternalValue(value_reg, merit, true);
+      setInternalValue(value_reg, (int) first_good_cell.GetOrganism()->GetPhenotype().GetCurBonus(), true);
       if (first_good_cell.GetOrganism()->HasOpinion()) {
         const int group_id = first_good_cell.GetOrganism()->GetOpinion().first;
         setInternalValue(group_reg, group_id, true);
       }
-      setInternalValue(forage_reg, forage_target, true);                  
+      setInternalValue(forage_reg, first_good_cell.GetOrganism()->GetForageTarget(), true);                  
     }
  
     // if we were looking for resources, return id of nearest
@@ -3599,7 +3608,7 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
-    int group;
+    int group = m_world->GetConfig().DEFAULT_GROUP.Get();
     // Check if the org is currently part of a group
     assert(m_organism != 0);
 	
@@ -3658,19 +3667,29 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 // A predator can establish a new group, attempt to immigrate into the group that marked the cell in front of them, or become a nomad. 
 bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() != -2) return false;
-  
+  assert(m_organism != 0);
   // If ?AX? make a new group.
+  // TEMP CODE FOR PRED JOIN RANDOM GROUP JUST TO START SOME TESTS
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+  int group = m_world->GetConfig().DEFAULT_GROUP.Get();
+  const int prop_group_id = m_world->GetRandom().GetUInt(0,1000);
+  if (m_organism->HasOpinion()) {
+    group = m_organism->GetOpinion().first;
+    if (group == prop_group_id) return false;
+    m_organism->LeaveGroup(group);
+  }
+  m_organism->SetOpinion(prop_group_id);
+  group = m_organism->GetOpinion().first;	
+  m_organism->JoinGroup(group);
+  
   
   // If ?BX? change to group -1.
   
   // If ?CX? read m_organism->GetFacedCellDataTerritory() and attempt immigration into that group.
-
-      
-  // return (new) group ID & change success
-    
-    
-    
+  
+  
+  // return (new) group ID & change success          
 return true;
 }
 
@@ -3710,7 +3729,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
   return true;
 }
 
-//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit and reactions. 
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
 bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -3730,7 +3749,7 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // prevent killing on nests/safe havens
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return true;
+    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
   }
     
   // add prey's merit to predator's
@@ -3742,12 +3761,14 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // now add on the victims reaction counts to your own...
   tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-
   for (int i = 0; i < org_reactions.GetSize(); i++) {
     org_reactions[i] += target_reactions[i];
     m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
   }
     
+  // and add current merit bonus
+  const int target_bonus = target->GetPhenotype().GetCurBonus();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + target_bonus);
   
   //APW TODO
   // now add the victims internal resource bins to your own
@@ -3757,11 +3778,12 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   
   target->Die(ctx);
   
-  bool attack_success = true;  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, attack_success, true);   
-  setInternalValue(FindModifiedNextRegister(out_reg), target_merit, true);
-  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(out_reg)), attacker_merit, true);
+  const int success_reg = FindModifiedRegister(rBX);   
+  const int merit_reg = FindModifiedNextRegister(success_reg);
+  const int bonus_reg = FindModifiedNextRegister(merit_reg);
+  setInternalValue(success_reg, 1, true);   
+  setInternalValue(merit_reg, target_merit, true);
+  setInternalValue(bonus_reg, target_bonus, true);
   
   return true;
 } 		
