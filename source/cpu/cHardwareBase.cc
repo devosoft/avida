@@ -49,11 +49,11 @@ using namespace AvidaTools;
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-, m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts())  
+, m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts()), m_has_execunit_costs(m_inst_set->HasExecUnitCosts()) 
 {
 	m_task_switching_cost=0;
 	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost);
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | m_has_execunit_costs | switch_cost);
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||
@@ -69,6 +69,8 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   m_organism->HardwareReset(ctx);
   
   m_inst_cost = 0;
+  m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
+  m_active_thread_costs.SetAll(0);
   
   const int num_inst_cost = m_inst_set->GetSize();
   
@@ -87,6 +89,11 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
     for (int i = 0; i < num_inst_cost; i++) m_inst_res_cost[i] = m_inst_set->GetResCost(cInstruction(i));
   }
   
+  if (m_has_execunit_costs) {
+    m_inst_execunit_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_execunit_cost[i] = m_inst_set->GetExecUnitCost(cInstruction(i));
+  }
+
   internalReset();
 }
 
@@ -955,7 +962,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
-bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id)
 { 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
@@ -994,12 +1001,27 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   }
   
   // Next, look at the per use cost
-  if (m_has_costs) {
+  if (m_has_costs || m_has_execunit_costs) {
+    // Current active thread-specific execution cost being paid, decrement and return false
+    if (m_has_execunit_costs && m_active_thread_costs[thread_id] > 1) { 
+      m_active_thread_costs[thread_id]--;
+      return false;
+    }
+    
+    if (m_has_execunit_costs && !m_active_thread_costs[thread_id] && m_inst_execunit_cost[cur_inst.GetOp()] > 1) {
+      // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false
+      m_active_thread_costs[thread_id] = m_inst_execunit_cost[cur_inst.GetOp()] - 1;
+      return false;
+    }
+    
+    // If we fall to here, reset the current cost count for the current thread to zero
+    m_active_thread_costs[thread_id] = 0;
+
     if (m_inst_cost > 1) { // Current cost being paid, decrement and return false
       m_inst_cost--;
       return false;
     }
-    
+
     if (!m_inst_cost && m_inst_set->GetCost(cur_inst) > 1) {
       // no current cost, but there are costs active, and this instruction has a cost, setup the counter and return false
       m_inst_cost = m_inst_set->GetCost(cur_inst) - 1;

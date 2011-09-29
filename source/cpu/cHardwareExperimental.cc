@@ -489,7 +489,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst);
+    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
 
     if (m_promoters_enabled) {
       // Constitutive regulation applied here
@@ -2884,10 +2884,10 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   else {
     const int target_org_cell = target_org->GetCellID();
     const int target_x = target_org_cell % worldx;
-    const int target_y = floor (target_org_cell / worldx);
+    const int target_y = target_org_cell / worldx;
     const int searching_org_cell = m_organism->GetCellID();
     const int searching_x = searching_org_cell % worldx;
-    const int searching_y = floor (searching_org_cell / worldx);
+    const int searching_y = searching_org_cell / worldx;
     const int x_dist =  searching_x - target_x;
     const int y_dist = searching_y - target_y;
     
@@ -2941,10 +2941,10 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     const int worldx = m_world->GetConfig().WORLD_X.Get();
     const int target_org_cell = target_org->GetCellID();
     const int target_x = target_org_cell % worldx;
-    const int target_y = floor (target_org_cell / worldx);
+    const int target_y = target_org_cell / worldx;
     const int searching_org_cell = m_organism->GetCellID();
     const int searching_x = searching_org_cell % worldx;
-    const int searching_y = floor (searching_org_cell / worldx);
+    const int searching_y = searching_org_cell / worldx;
     const int x_dist =  searching_x - target_x;
     const int y_dist = searching_y - target_y;
     
@@ -3244,10 +3244,10 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     if (have_org2use && id_sought != -1) {
       const int target_org_cell = target_org->GetCellID();
       const int target_x = target_org_cell % worldx;
-      const int target_y = floor (target_org_cell / worldx);
+      const int target_y = target_org_cell / worldx;
       const int searching_org_cell = m_organism->GetCellID();
       const int searching_x = searching_org_cell % worldx;
-      const int searching_y = floor (searching_org_cell / worldx);
+      const int searching_y = searching_org_cell / worldx;
       const int x_dist = target_x - searching_x;
       const int y_dist = target_y - searching_y;
       // is the target org close enough to see and in my line of sight?

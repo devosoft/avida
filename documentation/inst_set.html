@@ -78,7 +78,8 @@ define how that instruction should be used.  The exact format is as follows:
 <dt><strong>cost</strong></dt>
 <dd>
   The number of CPU cycles required to execute this instruction.  One
-  is the default if this value is not specified.
+  is the default if this value is not specified. For multi-threaded orgs,
+  see execunit_cost.
 </dd>
 <dt><strong>initial_cost</strong></dt>
 <dd>
@@ -114,6 +115,24 @@ define how that instruction should be used.  The exact format is as follows:
   declared in environment file, likely with initial=0). Note that the use of res_cost typically needs to be coupled with 
   RESOURCE_GIVEN_ON_INJECT and RESOURCE_GIVEN_AT_BIRTH in avida.cfg. The default res_cost is 0.
 </dd>
+<dt><strong>execunit_cost</strong>
+<dd>
+The number of CPU cycles for this thread required to execute this instruction. Execution unit costs apply thread-specific 
+cpu costs and track payments of cost specifically for the thread that executed the instruction and is meant to replace
+standard cpu costs in multi-threaded orgs. Execution unit costs will pause the thread that executed the costly instruction, 
+not the whole organism and only decrement the pause counter each time the paused thread attempts to run. If multiple threads 
+execute costly instructions, the costs and pause counts are handled independently (i.e. unique pause count for each thread). 
+Relative to standard cpu cost behavior, execution unit costs prevents potenitial cheating and other oddities in multi-
+threaded orgs. E.g.: <br/>
+-if costly instruction executed by thread 1, all other threads are paused (i.e. entire organism is paused) by standard cpu 
+costs, but each attempted execution, regardless of instruction attempted, decrements the pause count for the instruction 
+that carried the cost <br/>
+-if costly instruction executed by thread 1 and then another costly instruction (same or other) attempted in thread 2, standard
+cpu costs reset the pause count to the cost associated with the second instruction <br/>
+-because standard cpu costs can be reset as in above, standard cpu costs could prevent orgs from becoming multi-threaded 
+(easy to get trapped in situation where costs repeatedly get reset and org never runs) </br>
+In short, standard cpu costs do not function in an intuitive way for multi-threaded orgs, but execunit_cost do.
+<dd>
 </dl>
 
 <p>&nbsp;</p>

@@ -226,7 +226,7 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     const cInstruction& cur_inst = IP().GetInst();
 		
     // Test if costs have been paid and it is okay to execute this now...
-    bool exec = SingleProcess_PayPreCosts(ctx, cur_inst);
+    bool exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
 		
     // Now execute the instruction...
     if (exec == true) {

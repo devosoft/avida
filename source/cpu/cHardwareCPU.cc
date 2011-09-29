@@ -883,7 +883,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst);
+    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
     
     // Constitutive regulation applied here
     if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 

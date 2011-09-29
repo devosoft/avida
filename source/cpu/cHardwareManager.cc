@@ -196,7 +196,7 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
     if (feedback) feedback->Append(file.GetFeedback());
     return false;
   }
-  
+
   str_list.PushRear(cStringUtil::Stringf("INSTSET %s:hw_type=%d", (const char*)filename, m_world->GetConfig().HARDWARE_TYPE.Get()));
   for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
     cString cur_line = file.GetLine(line_id);
@@ -208,11 +208,11 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
     double prob_fail = cur_line.PopWord().AsDouble();
     int addl_time_cost = cur_line.PopWord().AsInt();
     double res_cost = cur_line.PopWord().AsDouble();
-    
-    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d:res_cost=%f",
-                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost, res_cost)); 
-  }
-  
+    int execunit_cost = cur_line.PopWord().AsInt();
+
+    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d:res_cost=%f:execunit_cost=%d",
+                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost, res_cost, execunit_cost)); 
+  }  
   return true;
 }
 
