@@ -34,6 +34,7 @@ namespace Avida {
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------
     
+    class ArgumentedProvider;
     class Manager;
     class Package;
     class Provider;    
@@ -46,6 +47,12 @@ namespace Avida {
     typedef Apto::String DataID;
     typedef Apto::SmartPtr<Provider, Apto::ThreadSafeRefCount> ProviderPtr;
     typedef Apto::Functor<ProviderPtr, Apto::TL::Create<World*, Apto::String> > ProviderActivateFunctor;
+    
+    typedef Apto::String Argument;
+    typedef Apto::Set<Argument> ArgumentSet;
+    typedef Apto::SmartPtr<const ArgumentSet, Apto::ThreadSafeRefCount> ConstArgumentSetPtr;
+    typedef Apto::SmartPtr<ArgumentedProvider, Apto::ThreadSafeRefCount> ArgumentedProviderPtr;
+    typedef Apto::Functor<ArgumentedProviderPtr, Apto::TL::Create<World*, Apto::String> > ArgumentedProviderActivateFunctor;
     
     typedef Apto::SmartPtr<Recorder, Apto::ThreadSafeRefCount> RecorderPtr;
     

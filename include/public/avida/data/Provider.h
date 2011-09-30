@@ -41,13 +41,24 @@ namespace Avida {
     public:
       LIB_EXPORT virtual ~Provider() { ; }
       
-      LIB_EXPORT virtual void NewArgument(Apto::String arg) { ; }  ???   ActiveArguments???
-      
       LIB_EXPORT virtual ConstDataSetPtr Provides() const = 0;
       LIB_EXPORT virtual void UpdateProvidedValues(Update current_update) = 0;
       
       LIB_EXPORT virtual PackagePtr GetProvidedValue(const DataID& data_id) const = 0;
       LIB_EXPORT virtual Apto::String DescribeProvidedValue(const DataID& data_id) const = 0;
+    };
+    
+    
+    class ArgumentedProvided : public Provider
+    {
+      LIB_EXPORT virtual void SetActiveArguments(const DataID& data_id, ConstArgumentSetPtr args) = 0;
+      LIB_EXPORT virtual ConstArgumentSetPtr GetValidArguments() const = 0;
+      LIB_EXPORT virtual bool IsValidArgument(Argument arg) const = 0;
+      
+      LIB_EXPORT virtual PackagePtr GetProvidedValueForArgument(const DataID& data_id, const Argument& arg) const = 0;
+      LIB_EXPORT virtual PackagePtr GetProvidedValuesForArguments(const DataID& data_id, ConstArgumentSetPtr args) const = 0;
+      
+      LIB_EXPORT virtual PackagePtr GetProvidedValue(const DataID& data_id) const;
     };
     
   };
