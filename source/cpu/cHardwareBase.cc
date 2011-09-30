@@ -1001,35 +1001,40 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   }
   
   // Next, look at the per use cost
-  if (m_has_costs || m_has_execunit_costs) {
-    // Current active thread-specific execution cost being paid, decrement and return false
-    if (m_has_execunit_costs && m_active_thread_costs[thread_id] > 1) { 
-      m_active_thread_costs[thread_id]--;
-      return false;
-    }
-    
-    if (m_has_execunit_costs && !m_active_thread_costs[thread_id] && m_inst_execunit_cost[cur_inst.GetOp()] > 1) {
-      // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false
-      m_active_thread_costs[thread_id] = m_inst_execunit_cost[cur_inst.GetOp()] - 1;
-      return false;
-    }
-    
-    // If we fall to here, reset the current cost count for the current thread to zero
-    m_active_thread_costs[thread_id] = 0;
-
-    if (m_inst_cost > 1) { // Current cost being paid, decrement and return false
-      m_inst_cost--;
-      return false;
+  if (m_has_costs || m_has_execunit_costs) {    
+    if (m_has_execunit_costs) {
+      if (m_inst_set->GetCost(cur_inst) > 1 && m_inst_execunit_cost[cur_inst.GetOp()] > 1) {
+        m_world->GetDriver().RaiseFatalException(-1, "Cannot have cpu costs and execution unit costs for same instruction. Behavior undefined.");
+      }
+      // Current active thread-specific execution cost being paid, decrement and return false      
+      if (m_active_thread_costs[thread_id] > 1) { 
+        m_active_thread_costs[thread_id]--;
+        return false;
+      }
+      // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false      
+      if (!m_active_thread_costs[thread_id] && m_inst_execunit_cost[cur_inst.GetOp()] > 1) {
+        m_active_thread_costs[thread_id] = m_inst_execunit_cost[cur_inst.GetOp()] - 1;
+        return false;
+      }      
+      // If we fall to here, reset the current cost count for the current thread to zero
+      m_active_thread_costs[thread_id] = 0;
     }
 
-    if (!m_inst_cost && m_inst_set->GetCost(cur_inst) > 1) {
-      // no current cost, but there are costs active, and this instruction has a cost, setup the counter and return false
-      m_inst_cost = m_inst_set->GetCost(cur_inst) - 1;
-      return false;
+    if (m_has_costs) {
+      if (m_inst_cost > 1) { // Current cost being paid, decrement and return false
+        m_inst_cost--;
+        return false;
+      }
+      
+      if (!m_inst_cost && m_inst_set->GetCost(cur_inst) > 1) {
+        // no current cost, but there are costs active, and this instruction has a cost, setup the counter and return false
+        m_inst_cost = m_inst_set->GetCost(cur_inst) - 1;
+        return false;
+      }
+      
+      // If we fall to here, reset the current cost count to zero
+      m_inst_cost = 0;
     }
-    
-    // If we fall to here, reset the current cost count to zero
-    m_inst_cost = 0;
   }
   
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
