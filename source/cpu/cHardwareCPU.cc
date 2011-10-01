@@ -8687,7 +8687,7 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   
   // return odds as %
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = odds_I_dont_die * 100 + 0.5;
+  GetRegister(out_reg) = (int) odds_I_dont_die * 100 + 0.5;
   return true;
 } 	
 

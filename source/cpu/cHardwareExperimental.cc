@@ -294,7 +294,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, nInstFlag::STALL),
@@ -3730,7 +3730,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 }
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
-bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
     
@@ -3752,13 +3752,15 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
     if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
   }
     
-  // add prey's merit to predator's
-  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-  double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-  attacker_merit += target_merit;
-  m_organism->UpdateMerit(attacker_merit);
-  
-  // now add on the victims reaction counts to your own...
+  // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+    attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+    m_organism->UpdateMerit(attacker_merit);
+  }
+      
+  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
   tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
   for (int i = 0; i < org_reactions.GetSize(); i++) {
@@ -3766,12 +3768,17 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
     m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
   }
     
-  // and add current merit bonus
-  const int target_bonus = target->GetPhenotype().GetCurBonus();
-  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + target_bonus);
+  // and add current merit bonus after adjusting for conversion efficiency
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
   
-  //APW TODO
-  // now add the victims internal resource bins to your own
+  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    tArray<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+    }
+  }
 
   // if you weren't a predator before, you are now!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
@@ -3779,12 +3786,9 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   target->Die(ctx);
   
   const int success_reg = FindModifiedRegister(rBX);   
-  const int merit_reg = FindModifiedNextRegister(success_reg);
-  const int bonus_reg = FindModifiedNextRegister(merit_reg);
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
   setInternalValue(success_reg, 1, true);   
-  setInternalValue(merit_reg, target_merit, true);
-  setInternalValue(bonus_reg, target_bonus, true);
-  
+  setInternalValue(bonus_reg, (int) target_bonus, true);
   return true;
 } 		
 
@@ -3861,7 +3865,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
 
   // return odds out of 10
   const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, odds_I_dont_die * 10 + 0.5, true);   
+  setInternalValue(out_reg, (int) odds_I_dont_die * 10 + 0.5, true);   
 
   return true;
 } 	
