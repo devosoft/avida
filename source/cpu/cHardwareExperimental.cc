@@ -2870,7 +2870,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
-  cOrganism* target_org;
+  cOrganism* target_org = m_organism;
   tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
@@ -2894,7 +2894,6 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     const int travel_dist = max(abs(x_dist), abs(y_dist));
     if (travel_dist > max_dist) return false;
 
-    const int facing = m_organism->GetFacedDir();
     int correct_facing = 0;
     if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate N    
     else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate NE
@@ -2906,7 +2905,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(1);
-      if (facing == correct_facing) break;
+      if (m_organism->GetFacedDir() == correct_facing) break;
     }
     return true;
   }
@@ -2926,7 +2925,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
-  cOrganism* target_org;
+  cOrganism* target_org = m_organism;
   tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
@@ -2951,20 +2950,18 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     const int travel_dist = max(abs(x_dist), abs(y_dist));
     if (travel_dist > max_dist) return false;
     
-    const int facing = m_organism->GetFacedDir();
     int correct_facing = 0;
-    if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate N    
-    else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate NE
-    else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate E
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate SE
-    else if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate S
-    else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate SW
-    else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate W
-    else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate NW  
-    correct_facing += 4;
+    if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate away from NE
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate away from E
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate away from SE
+    else if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate away from S
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate away from SW
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate away from W
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate away from NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(1);
-      if (facing == correct_facing) break;
+      if (m_organism->GetFacedDir() == correct_facing) break;
     }
     return true;
   }
@@ -3175,7 +3172,6 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // fail if the org is trying to sense a nest/hidden habitat
   if (habitat_used == 3) return false;
-  
   // default to look for orgs if invalid habitat & predator
   else if (pred_experiment && m_organism->GetForageTarget() == -2 && 
            (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
@@ -3199,8 +3195,10 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
-  // if looking for orgs in predator environment, default to closest org of any type
-  else if (pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  // if looking for orgs in predator environment and is prey, default to closest org of any type
+  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  // if looking for orgs in predator environment and is predator, default to look for prey
+  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
   // if looking for orgs in non-predator environment, default to closest org of any type
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
   
@@ -3211,33 +3209,35 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   if (habitat_used != -2 && search_label.GetSize() > 3) {
     id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
     if (id_sought < 0 || id_sought >= lib_size) id_sought = -1;
+    // override habitat_used to match that for id_sought
+    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
   } 
   // BEGIN looking for specific org
   else if (habitat_used == -2 && search_label.GetSize() > 3) {
     id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
     bool have_org2use = false;
     
-    // if invalid number or self, we will just search for any org
+    // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
     if (id_sought < 0 || id_sought == m_organism->GetID()) {
       id_sought = -1;
       have_org2use = true;
     }
     
-    // if valid number and had an input register value, does the value represent a living organism
+    // if valid org id number (non-negative & not self) and had an input register value, does the value represent a living organism
     cOrganism* target_org = m_organism;
     if (!have_org2use && id_sought != -1) {
       tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
       for (int i = 0; i < live_orgs.GetSize(); i++) {  
-        cOrganism* org = live_orgs[i];
-        if (id_sought == org->GetID()) {
-          target_org = org;
+        cOrganism* living_org = live_orgs[i];
+        if (id_sought == living_org->GetID()) {
+          target_org = living_org;
           have_org2use = true;
           break;
         }
       }
     }
     
-    // if number didn't represent a living org, we default to searching for anybody and go into cell by cell searches
+    // if number didn't represent a living org, we default to searching for anybody, skipping rest of look for specific org
     if (!have_org2use && id_sought != -1) id_sought = -1;    
     
     // if sought org was is in live org list, we don't have to search for it across cells, we just get the info from that org and return all the data now
@@ -3456,7 +3456,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
       break;
     }
     
-    // if still good to go (!found || !stop_at_first_found && count_center and/or any_valid_side_cells)...
+    // if still good to go ((!found || !stop_at_first_found) && (count_center || any_valid_side_cells))...
     // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
     if((facing == 6 || facing == 5 || facing == 7) && (center_cell % worldx == 0)) count_center = false;
     
@@ -3865,7 +3865,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
 
   // return odds out of 10
   const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, (int) odds_I_dont_die * 10 + 0.5, true);   
+  setInternalValue(out_reg, (int) (odds_I_dont_die * 10 + 0.5), true);   
 
   return true;
 } 	
