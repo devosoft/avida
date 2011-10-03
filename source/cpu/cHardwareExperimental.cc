@@ -2888,23 +2888,23 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     const int searching_org_cell = m_organism->GetCellID();
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
-    const int x_dist =  searching_x - target_x;
-    const int y_dist = searching_y - target_y;
+    const int x_dist =  target_x - searching_x;
+    const int y_dist = target_y - searching_y;
     
     const int travel_dist = max(abs(x_dist), abs(y_dist));
     if (travel_dist > max_dist) return false;
 
     int correct_facing = 0;
-    if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate N    
-    else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate NE
-    else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate E
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate SE
-    else if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate S
-    else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate SW
-    else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate W
-    else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate NW  
+    if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N    
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
+    else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
-      m_organism->Rotate(1);
+      m_organism->Rotate(-1);
       if (m_organism->GetFacedDir() == correct_facing) break;
     }
     return true;
@@ -2944,23 +2944,23 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     const int searching_org_cell = m_organism->GetCellID();
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
-    const int x_dist =  searching_x - target_x;
-    const int y_dist = searching_y - target_y;
+    const int x_dist =  target_x - searching_x;
+    const int y_dist = target_y - searching_y;
     
     const int travel_dist = max(abs(x_dist), abs(y_dist));
     if (travel_dist > max_dist) return false;
     
     int correct_facing = 0;
-    if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
-    else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate away from NE
-    else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate away from E
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate away from SE
-    else if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate away from S
-    else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate away from SW
-    else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate away from W
-    else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate away from NW  
+    if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate away from NE
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate away from E
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate away from SE
+    else if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate away from S
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate away from SW
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate away from W
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
-      m_organism->Rotate(1);
+      m_organism->Rotate(-1);
       if (m_organism->GetFacedDir() == correct_facing) break;
     }
     return true;

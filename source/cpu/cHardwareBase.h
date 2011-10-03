@@ -68,14 +68,13 @@ protected:
   tArray<int> m_inst_ft_cost;
   tArray<double> m_inst_energy_cost;
   tArray<double> m_inst_res_cost; 
-  tArray<int> m_inst_execunit_cost;
+  tArray<int> m_thread_inst_cost;
   tArray<int> m_active_thread_costs;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   bool m_has_res_costs; 
-  bool m_has_execunit_costs;
 	int m_task_switching_cost;
 
   // --------  Base Hardware Feature Support  ---------
