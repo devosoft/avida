@@ -4074,7 +4074,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       // If this instruction is not nop modified it fails to execute and does nothing @JJB
@@ -4148,7 +4148,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       // If this instruction is not nop modified it fails to execute and does nothing @JJB
@@ -4222,7 +4222,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
@@ -4247,7 +4247,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {
-  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if ((m_organism->GetForageTarget() != -2) || (m_organism->GetOpinion().first < 0)) return false;
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
