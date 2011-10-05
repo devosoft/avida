@@ -2985,26 +2985,40 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 {
   const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
   const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
-  // are you trying to sense a valid resource?
+  // are you trying to sense a valid, non-hidden nest resource?
   const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (res_req < cell_res.GetSize() && res_req > 0) {  
+  if (res_req < cell_res.GetSize() && res_req > 0 && resource_lib.GetResource(res_req)->GetHabitat() != 3) {  
     res_sought = res_req; 
   }
   
   int res_amount = 0;
-  // if you requested a valid resource, we return the value for that res
-  if (res_sought != -1) res_amount = (int) (cell_res[res_sought] * 100 + 0.5);
-  // otherwise, we sum across all resources in the cell
+  int faced_res = 0;
+  // if you requested a valid resource, we return values for that res
+  if (res_sought != -1) {
+    res_amount = (int) (cell_res[res_sought] * 100 + 0.5);
+    faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[res_sought] * 10 + 0.5);  
+  }
+  // otherwise, we sum across all the food resources in the cell
   else {
     for (int i = 0; i < cell_res.GetSize(); i++) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 0) {
       res_amount += (int) (cell_res[i] * 100 + 0.5);
+      faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] * 10 + 0.5);  
+      }
     }
   }
-  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
-  const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
+  
+  // return % change
+  const int res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
+
+  setInternalValue(req_reg, res_sought, true);
+  const int res_tot_reg = FindModifiedNextRegister(req_reg);
   setInternalValue(res_tot_reg, res_amount, true);
+  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true);
   return true;
 }
 
