@@ -1093,6 +1093,11 @@ void cPopulationInterface::JoinGroup(int group_id)
   m_world->GetPopulation().JoinGroup(GetOrganism(), group_id);
 }
 
+void cPopulationInterface::MakeGroup()
+{
+  m_world->GetPopulation().MakeGroup(GetOrganism());
+}
+
 void cPopulationInterface::LeaveGroup(int group_id)
 {
   m_world->GetPopulation().LeaveGroup(GetOrganism(), group_id);
