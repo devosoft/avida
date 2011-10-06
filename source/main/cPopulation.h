@@ -118,7 +118,7 @@ public:
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
   
   // Inject an organism from the outside world.
-  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
+  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, int group_id = -1, int forager_target = -1); 
   void InjectParasite(const cString& label, const Sequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)

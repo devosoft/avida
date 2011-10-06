@@ -75,8 +75,11 @@ private:
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
+  int m_group_id;
+  int m_forager_type;
 public:
-  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0),
+  m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1)
   {
     cString largs(args);
     if (!largs.GetSize()) m_filename = "START_ORGANISM";
@@ -85,13 +88,15 @@ public:
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_group_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_forager_type = largs.PopWord().AsInt();
     
     if (m_filename == "START_ORGANISM") {
       m_filename = m_world->GetConfig().START_ORGANISM.Get();
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0] [int group_id=-1] [int forager_type=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -106,7 +111,7 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
+    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
   }
 };
 
@@ -602,8 +607,6 @@ public:
   }
 };
 
-
-
 /*! Injects an organism into all demes in the population. 
  
  Parameters:
@@ -914,7 +917,6 @@ public:
   } //End Process()
   
 }; //End cActionInjectDemesRandom
-
 
 
 /*
@@ -5035,7 +5037,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
-	
+
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");

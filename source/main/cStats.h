@@ -219,7 +219,6 @@ private:
   int tot_lineages;
   int tot_executed;
 
-
   // --------  Parasite Task Stats  ---------
   tArray<int> tasks_host_current;
   tArray<int> tasks_host_last;
@@ -261,7 +260,7 @@ private:
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
 
-
+  tSmartArray<int> m_targets_in_use;
 
   // --------  Resampling Stats  ---------
   int num_resamplings;
@@ -812,6 +811,8 @@ public:
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
+  
+  void ForageTargetsForPrints();
 
   // -------- Messaging support --------
 public:
