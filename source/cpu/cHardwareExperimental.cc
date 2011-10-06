@@ -284,7 +284,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
      
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, nInstFlag::STALL), // @JJB
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
     tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID),
     tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  // @JJB
@@ -3668,10 +3671,14 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  // If ?AX? make a new group.
-  // TEMP CODE FOR PRED JOIN RANDOM GROUP JUST TO START SOME TESTS
   if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+
+  // If not nop-modified, fails to execute.
+  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  const int nop_reg = FindModifiedRegister(rBX);
+
+  /*// TEMP CODE FOR PRED JOIN RANDOM GROUP JUST TO START SOME TESTS
   int group = m_world->GetConfig().DEFAULT_GROUP.Get();
   const int prop_group_id = m_world->GetRandom().GetUInt(0,1000);
   if (m_organism->HasOpinion()) {
@@ -3681,16 +3688,93 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
   }
   m_organism->SetOpinion(prop_group_id);
   group = m_organism->GetOpinion().first;	
-  m_organism->JoinGroup(group);
+  m_organism->JoinGroup(group);*/
   
+  // **If ?AX? make a new group.
+  if (nop_reg == rAX) return Inst_MakePredGroup(ctx);
+  // **If ?BX? change to group -1.
+  else if (nop_reg == rBX) return Inst_LeavePredGroup(ctx);
+  // **If ?CX? read m_organism->GetFacedCellDataTerritory() and attempt immigration into that group.
+  else if (nop_reg == rCX) return Inst_AdoptPredGroup(ctx);
   
-  // If ?BX? change to group -1.
-  
-  // If ?CX? read m_organism->GetFacedCellDataTerritory() and attempt immigration into that group.
-  
-  
-  // return (new) group ID & change success          
-return true;
+  // **return (new) group ID & change success          
+  return false;
+}
+
+// A predator establishes a new group. @JJB
+bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
+{
+  assert(m_organsim != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+
+  // If in a group, leave it.
+  if (m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    m_organism->LeaveGroup(group);
+  }
+
+  // Creates new group and joins as well.
+  m_organism->GetOrgInterface().MakeGroup();
+  return true;
+}
+
+// A predator leaves their group to join the nomads in group -3.
+// Joining the nomads is always successful, they can not exclude others so there is no immigration test. @JJB
+bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
+{
+  // Predator nomad group id
+  const int nomad_group = -3;
+
+  // Confirm the org is a pred and groups are on.
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+
+  // If in a group, leave it.
+  if (m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    // If already in the nomad group, don't move.
+    if (group == nomad_group) return false;
+    m_organism->LeaveGroup(group);
+  }
+
+  // Join the nomads.
+  m_organism->SetOpinion(nomad_group);
+  m_organism->JoinGroup(nomad_group);
+  return true;
+}
+
+// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. @JJB
+bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+
+  // Read target group from the faced marked cell.
+  const int prop_group_id = m_organism->GetFacedCellDataTerritory();
+  if (prop_group_id == -1) return false;
+
+  // Check if the cell marking has expired.
+  int current_update = m_world->GetStats().GetUpdate();
+  int update_marked = m_organism->GetFacedCellDataUpdate();
+  int expire_window = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  if (current_update > (update_marked + expire_window)) return false;
+
+  // If the same as current group, don't move.
+  if (m_organism->HasOpinion()) {
+    if (m_organism->GetOpinion().first == prop_group_id) {
+      return false;
+    }
+  }
+
+  // Check if the target group is now empty, cannot join an empty group must create a new group.
+  if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) return false;
+
+  // Attempt to immigrate to the target group
+  m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)

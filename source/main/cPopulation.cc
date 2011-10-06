@@ -6072,17 +6072,49 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   group_list[group_id].Push(org);
 }
 
+// Makes a new group (highest current group number +1). @JJB
+void cPopulation::MakeGroup(cOrganism* org)
+{
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return;
+
+  int highest_group;
+  if (m_groups.size() > 0) {
+    highest_group = m_groups.rbegin()->first;
+  } else {
+    highest_group = -1;
+  }
+
+  org->SetOpinion(highest_group + 1);
+  JoinGroup(org, highest_group + 1);
+}
+
 // Removes an organism from a group
 void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
 {
   map<int,int>::iterator it = m_groups.find(group_id);
-  if (it != m_groups.end()) m_groups[group_id]--;
-  
+  if (it != m_groups.end()) {
+    m_groups[group_id]--;
+    // If no restrictions on group ids,
+    // removes empty groups so the number of total groups being tracked doesn't become excessive
+    // (Removes the highest group even if empty, causes misstep in marching groups). @JJB
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+      if (m_groups[group_id] <= 0) {
+        m_groups.erase(group_id);
+      }
+    }
+  }
+
   for (int i = 0; i < group_list[group_id].GetSize(); i++) {
-    if (group_list[group_id][i] == org) {  
-      unsigned int last = group_list[group_id].GetSize()-1;
+    if (group_list[group_id][i] == org) {
+      unsigned int last = group_list[group_id].GetSize() - 1;
       group_list[group_id].Swap(i,last);
       group_list[group_id].Pop();
+      // If no restrictions, removes empty groups. @JJB
+      if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+        if (group_list[group_id].GetSize() <= 0) {
+          group_list.Remove(group_id);
+        }
+      }
       break;
     }
   }
