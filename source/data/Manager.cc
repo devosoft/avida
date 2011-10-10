@@ -79,7 +79,50 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
   ConstDataSetPtr requested = recorder->GetRequested();
   
   // Make sure that all requested data values are available
-  for (ConstDataSetIterator it = requested->Begin(); it.Next();) if (!m_provider_map.Has(*it.Get())) return false;
+  for (ConstDataSetIterator it = requested->Begin(); it.Next();) {
+    DataID data_id = *it.Get();
+    
+    // Check for invalid data id
+    if (!data_id.GetSize()) return false;
+    
+    if (data_id[data_id.GetSize() - 1] == ']') {
+      // Handle argumented data value
+      
+      // Find start of argument
+      int start_idx = -1;
+      for (int i = 0; i < data_id.GetSize(); i++) {
+        if (data_id[i] == '[') {
+          start_idx = i + 1;
+          break;
+        }
+      }
+      if (start_idx == -1) return false;  // argument start not found
+      
+      // Separate argument from incoming requested data id
+      Apto::String argument = data_id.Substring(start_idx, data_id.GetSize() - start_idx - 1);
+      DataID raw_id = data_id.Substring(0, start_idx) + "]";
+      
+      // Check if argumented provider exists for requested data
+      if (!m_arg_provider_map.Has(raw_id)) return false;
+      
+      // Check and activate provider if active not currently active
+      if (!m_active_map.Has(raw_id)) {
+        ArgumentedProviderPtr arg_provider = (m_arg_provider_map.Get(raw_id))(m_world);
+        if (!arg_provider) return false;
+        
+        m_active_arg_providers.Push(arg_provider);
+        
+        ConstDataSetPtr provided = arg_provider->Provides();
+        for (ConstDataSetIterator pit = provided->Begin(); pit.Next();) {
+          if (!m_active_map.Has(*pit.Get())) m_active_map[*pit.Get()] = arg_provider; ???
+        }        
+      }
+      
+    } else {
+      // Check for standard data value availability
+      if (!m_provider_map.Has(*it.Get())) return false;
+    }
+  }
   
   // Make sure that all requested data values are active
   for (ConstDataSetIterator it = requested->Begin(); it.Next();) {
@@ -111,10 +154,23 @@ bool Avida::Data::Manager::DetachRecorder(RecorderPtr recorder)
 
 bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunctor functor)
 {
-  if (m_provider_map.Has(data_id)) return false;
+  if (data_id.GetSize() == 0 || data_id[data_id.GetSize() - 1] == ']' || m_provider_map.Has(data_id)) return false;
   
   m_provider_map[data_id] = functor;
   return true;
+}
+
+bool Avida::Data::Manager::Register(const DataID& data_id, ArgumentedProviderActivateFunctor functor)
+{
+  const int id_size = data_id.GetSize();
+  if (id_size > 0 && data_id[id_size - 1] != ']' && m_provider_map.Has(data_id)) {
+    m_provider_map[data_id] = functor;
+    return true;
+  } else if (id_size > 2 && data_id[id_size - 2] == '[' && data_id[id_size - 1] == ']' && m_arg_provider_map.Has(data_id)) {
+    m_arg_provider_map[data_id] = functor;
+    return true;
+  }
+  return false;
 }
 
 bool Avida::Data::Manager::AttachTo(World* world)

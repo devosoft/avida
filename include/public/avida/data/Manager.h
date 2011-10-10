@@ -42,11 +42,13 @@ namespace Avida {
     private:
       World* m_world;
       Apto::Map<DataID, ProviderActivateFunctor> m_provider_map;
+      Apto::Map<DataID, ArgumentedProviderActivateFunctor> m_arg_provider_map;
       mutable DataSetPtr m_available;
       
       Apto::Set<RecorderPtr> m_recorders;
       
       Apto::Array<ProviderPtr> m_active_providers;
+      Apto::Array<ArgumentedProviderPtr> m_active_arg_providers;
       Apto::Map<DataID, ProviderPtr> m_active_map;
       
       mutable Apto::Map<DataID, PackagePtr> m_current_values;

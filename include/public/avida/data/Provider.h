@@ -49,7 +49,7 @@ namespace Avida {
     };
     
     
-    class ArgumentedProvided : public Provider
+    class ArgumentedProvider : public Provider
     {
       LIB_EXPORT virtual void SetActiveArguments(const DataID& data_id, ConstArgumentSetPtr args) = 0;
       LIB_EXPORT virtual ConstArgumentSetPtr GetValidArguments() const = 0;
