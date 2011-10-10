@@ -302,7 +302,7 @@ private:
   // --------  Core Execution Methods  --------
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   void internalReset();
-	void internalResetOnFailedDivide();
+  void internalResetOnFailedDivide();
   
   
   // --------  Stack Manipulation  --------
@@ -542,7 +542,10 @@ private:
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
-  bool Inst_ChangePredGroup(cAvidaContext& ctx);
+  bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_MakePredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_LeavePredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_AdoptPredGroup(cAvidaContext& ctx); // @JJB
   bool Inst_GetGroupID(cAvidaContext& ctx);
   bool Inst_GetPredGroupID(cAvidaContext& ctx);
   bool Inst_IncPredTolerance(cAvidaContext& ctx);  // @JJB

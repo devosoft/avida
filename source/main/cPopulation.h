@@ -66,12 +66,12 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
-  //Keeps track of which organisms are in which group.  
+  //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  //std::map<int, std::vector<cOrganism*> > group_list; 
+  //std::map<int, std::vector<cOrganism*> > group_list;
   
   // Keep list of live organisms
-  tSmartArray<cOrganism* > live_org_list; 
+  tSmartArray<cOrganism* > live_org_list;
   
   tVector<pair<int,int> > *sleep_log;
   
@@ -84,15 +84,15 @@ private:
   // Other data...
   int world_x;                         // Structured population width.
   int world_y;                         // Structured population height.
-	int world_z; //!< Population depth.
+  int world_z;                         //!< Population depth.
   int num_organisms;                   // Cell count with living organisms
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
 	
-	// Group formation information
-	std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
+  // Group formation information
+  std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
 
   int m_hgt_resid; //!< HGT resource ID.
   
@@ -289,49 +289,50 @@ public:
   void RemoveLiveOrg(cOrganism* org); 
   tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
 	
-    // Adds an organism to a group  
-    void JoinGroup(cOrganism* org, int group_id);
-    // Removes an organism from a group 
-    void LeaveGroup(cOrganism* org, int group_id);
-    
-    //Kill random member of the group (but not self!!!) 
-    void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
-    //Attack organism faced by this one, if there is an organism in front.
-    void AttackFacedOrg(cAvidaContext& ctx, int loser);
-    // Identifies the number of organisms in a group
-    int NumberOfOrganismsInGroup(int group_id);
-    // Get the group information
-    map<int, int> GetFormedGroups() { return m_groups; }
-    
-    // -------- Tolerance support --------
-	// Calculate tolerance of group towards immigrants @JJB
-	int CalcGroupToleranceImmigrants(int group_id);
-	// Calculate tolerance of group towards offspring (not including parent) @JJB
-	int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-    // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
-    double CalcGroupOddsImmigrants(int group_id);
-    bool AttemptImmigrateGroup(int group_id, cOrganism* org);
-    // Calculates the odds (out of 1) for offspring to be born into the group @JJB
-    double CalcGroupOddsOffspring(int group_id);
-    double CalcGroupOddsOffspring(cOrganism* parent);
-    bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
-    // Calculates the standard deviation for group tolerance to immigrants
-    double CalcGroupAveImmigrants(int group_id);
-    double CalcGroupSDevImmigrants(int group_id);
-    // Calculates the standard deviation for group tolerance to their own offspring
-    double CalcGroupAveOwn(int group_id);
-    double CalcGroupSDevOwn(int group_id);
-    // Calculates the standard deviation for group tolerance to other group offspring
-    double CalcGroupAveOthers(int group_id);
-    double CalcGroupSDevOthers(int group_id);
-    
-    // -------- HGT support --------
-    //! Modify current level of the HGT resource.
-    void AdjustHGTResource(cAvidaContext& ctx, double delta);
-    
-    // -------- Population mixing support --------
-    //! Mix all organisms in the population.
-    void MixPopulation(cAvidaContext& ctx); 
+  // Adds an organism to a group  
+  void JoinGroup(cOrganism* org, int group_id);
+  void MakeGroup(cOrganism* org);
+  // Removes an organism from a group 
+  void LeaveGroup(cOrganism* org, int group_id);
+
+  //Kill random member of the group (but not self!!!) 
+  void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
+  //Attack organism faced by this one, if there is an organism in front.
+  void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  // Identifies the number of organisms in a group
+  int NumberOfOrganismsInGroup(int group_id);
+  // Get the group information
+  map<int, int> GetFormedGroups() { return m_groups; }
+
+  // -------- Tolerance support --------
+  // Calculate tolerance of group towards immigrants @JJB
+  int CalcGroupToleranceImmigrants(int group_id);
+  // Calculate tolerance of group towards offspring (not including parent) @JJB
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism);
+  // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
+  double CalcGroupOddsImmigrants(int group_id);
+  bool AttemptImmigrateGroup(int group_id, cOrganism* org);
+  // Calculates the odds (out of 1) for offspring to be born into the group @JJB
+  double CalcGroupOddsOffspring(int group_id);
+  double CalcGroupOddsOffspring(cOrganism* parent);
+  bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
+  // Calculates the standard deviation for group tolerance to immigrants
+  double CalcGroupAveImmigrants(int group_id);
+  double CalcGroupSDevImmigrants(int group_id);
+  // Calculates the standard deviation for group tolerance to their own offspring
+  double CalcGroupAveOwn(int group_id);
+  double CalcGroupSDevOwn(int group_id);
+  // Calculates the standard deviation for group tolerance to other group offspring
+  double CalcGroupAveOthers(int group_id);
+  double CalcGroupSDevOthers(int group_id);
+
+  // -------- HGT support --------
+  //! Modify current level of the HGT resource.
+  void AdjustHGTResource(cAvidaContext& ctx, double delta);
+
+  // -------- Population mixing support --------
+  //! Mix all organisms in the population.
+  void MixPopulation(cAvidaContext& ctx); 
 
 private:
   void BuildTimeSlicer(); // Build the schedule object

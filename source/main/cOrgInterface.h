@@ -152,6 +152,7 @@ public:
   virtual void ClearOpinion(cOrganism* in_organism) = 0;
 
   virtual void JoinGroup(int group_id) = 0;
+  virtual void MakeGroup() = 0;
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
     
