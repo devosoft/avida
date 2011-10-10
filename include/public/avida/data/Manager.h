@@ -40,6 +40,10 @@ namespace Avida {
     class Manager : public WorldFacet
     {
     private:
+      typedef Apto::Set<Apto::String, Apto::DefaultHashBTree, Apto::Multi> ArgMultiSet;
+      typedef Apto::SmartPtr<ArgMultiSet> ArgMultiSetPtr;
+      
+    private:
       World* m_world;
       Apto::Map<DataID, ProviderActivateFunctor> m_provider_map;
       Apto::Map<DataID, ArgumentedProviderActivateFunctor> m_arg_provider_map;
@@ -49,7 +53,9 @@ namespace Avida {
       
       Apto::Array<ProviderPtr> m_active_providers;
       Apto::Array<ArgumentedProviderPtr> m_active_arg_providers;
-      Apto::Map<DataID, ProviderPtr> m_active_map;
+      Apto::Map<DataID, ProviderPtr> m_active_provider_map;
+      Apto::Map<DataID, ArgumentedProviderPtr> m_active_arg_provider_map;
+      Apto::Map<DataID, ArgMultiSetPtr> m_active_args;
       
       mutable Apto::Map<DataID, PackagePtr> m_current_values;
       

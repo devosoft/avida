@@ -70,7 +70,8 @@ bool Avida::Data::Manager::IsAvailable(const DataID& data_id) const
 
 bool Avida::Data::Manager::IsActive(const DataID& data_id) const
 {
-  return m_active_map.Has(data_id);
+  if (data_id[data_id.GetSize() - 1] == ']') return m_active_arg_provider_map.Has(data_id);
+  return m_active_provider_map.Has(data_id);
 }
 
 
@@ -106,7 +107,7 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
       if (!m_arg_provider_map.Has(raw_id)) return false;
       
       // Check and activate provider if active not currently active
-      if (!m_active_map.Has(raw_id)) {
+      if (!m_active_arg_provider_map.Has(raw_id)) {
         ArgumentedProviderPtr arg_provider = (m_arg_provider_map.Get(raw_id))(m_world);
         if (!arg_provider) return false;
         
@@ -114,10 +115,16 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
         
         ConstDataSetPtr provided = arg_provider->Provides();
         for (ConstDataSetIterator pit = provided->Begin(); pit.Next();) {
-          if (!m_active_map.Has(*pit.Get())) m_active_map[*pit.Get()] = arg_provider; ???
-        }        
+          const DataID& pdid = *pit.Get();
+          if (pdid[pdid.GetSize() - 1] == ']') {
+            if (!m_active_arg_provider_map.Has(pdid)) m_active_arg_provider_map[pdid] = arg_provider;
+          } else {
+            if (!m_active_provider_map.Has(pdid)) m_active_provider_map[pdid] = arg_provider;
+          }
+        }
       }
       
+      if (!m_active_arg_provider_map[raw_id]->IsValidArgument(raw_id, argument)) return false;
     } else {
       // Check for standard data value availability
       if (!m_provider_map.Has(*it.Get())) return false;
@@ -126,16 +133,65 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
   
   // Make sure that all requested data values are active
   for (ConstDataSetIterator it = requested->Begin(); it.Next();) {
-    if (!m_active_map.Has(*it.Get())) {
+    const DataID& rdid = *it.Get();
+    if (rdid[rdid.GetSize() - 1] == ']') {
+      // Find start of argument
+      int start_idx = -1;
+      for (int i = 0; i < rdid.GetSize(); i++) {
+        if (rdid[i] == '[') {
+          start_idx = i + 1;
+          break;
+        }
+      }
+      if (start_idx == -1) return false;  // argument start not found
+      
+      // Separate argument from incoming requested data id
+      Apto::String argument = rdid.Substring(start_idx, rdid.GetSize() - start_idx - 1);
+      DataID raw_id = rdid.Substring(0, start_idx) + "]";
+
+      if (!m_active_arg_provider_map.Has(raw_id)) return false; // Argumented providers should be activated above, whaa??
+    
+      ArgMultiSetPtr arg_set = m_active_args[raw_id];
+      if (!arg_set) {
+        arg_set = ArgMultiSetPtr(new ArgMultiSet);
+        m_active_args[raw_id] = arg_set;
+      }
+      arg_set->Insert(argument);
+      ArgumentSetPtr basic_arg_set(new ArgumentSet);
+      *basic_arg_set = *arg_set;
+      m_active_arg_provider_map[raw_id]->SetActiveArguments(raw_id, basic_arg_set);
+    } else {
       // Request data not active, instantiate provider and register the values it provides as active
       ProviderPtr provider = (m_provider_map.Get(*it.Get()))(m_world);
-      assert(provider);
+      if (!provider) return false;
       
-      m_active_providers.Push(provider);
+      ArgumentedProviderPtr arg_provider;
+      arg_provider.DynamicCastFrom(provider);
+      
+      if (arg_provider) {
+        m_active_arg_providers.Push(arg_provider);
+        ConstDataSetPtr provided = arg_provider->Provides();
+        for (ConstDataSetIterator pit = provided->Begin(); pit.Next();) {
+          const DataID& pdid = *pit.Get();
+          if (pdid[pdid.GetSize() - 1] == ']') {
+            if (!m_active_arg_provider_map.Has(pdid)) m_active_arg_provider_map[pdid] = arg_provider;
+          } else {
+            if (!m_active_provider_map.Has(pdid)) m_active_provider_map[pdid] = arg_provider;
+          }
+        }        
+      } else {
+        m_active_providers.Push(provider);
 
-      ConstDataSetPtr provided = provider->Provides();
-      for (ConstDataSetIterator pit = provided->Begin(); pit.Next();) {
-        if (!m_active_map.Has(*pit.Get())) m_active_map[*pit.Get()] = provider;
+        ConstDataSetPtr provided = provider->Provides();
+        for (ConstDataSetIterator pit = provided->Begin(); pit.Next();) {
+          const DataID& pdid = *pit.Get();
+          if (pdid[pdid.GetSize() - 1] == ']') {
+            // Argumented data from a non-argumented provider, whaa??
+            continue;
+          } else {
+            if (!m_active_provider_map.Has(pdid)) m_active_provider_map[pdid] = arg_provider;
+          }
+        }
       }
     }
   }
@@ -160,11 +216,20 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunct
   return true;
 }
 
+Avida::Data::ProviderPtr ConvertArgumented(Avida::Data::ArgumentedProviderActivateFunctor functor, Avida::World* world)
+{
+  Avida::Data::ProviderPtr ptr;
+  Avida::Data::ArgumentedProviderPtr aptr(functor(world));
+  ptr = aptr;
+  return ptr;
+}
+
 bool Avida::Data::Manager::Register(const DataID& data_id, ArgumentedProviderActivateFunctor functor)
 {
   const int id_size = data_id.GetSize();
   if (id_size > 0 && data_id[id_size - 1] != ']' && m_provider_map.Has(data_id)) {
-    m_provider_map[data_id] = functor;
+    Apto::Functor<ProviderPtr, Apto::TL::Create<ArgumentedProviderActivateFunctor, World*> > conv_func(ConvertArgumented);
+    m_provider_map[data_id] = Apto::BindFirst(conv_func, functor);
     return true;
   } else if (id_size > 2 && data_id[id_size - 2] == '[' && data_id[id_size - 1] == ']' && m_arg_provider_map.Has(data_id)) {
     m_arg_provider_map[data_id] = functor;
@@ -234,10 +299,32 @@ Avida::Data::PackagePtr Avida::Data::Manager::GetCurrentValue(const DataID& data
   PackagePtr rtn;
   if (m_current_values.Get(data_id, rtn)) return rtn;
   
-  ProviderPtr provider;
-  if (m_active_map.Get(data_id, provider)) {
-    rtn = provider->GetProvidedValue(data_id);
-    if (rtn) m_current_values[data_id] = rtn;
+  if (data_id[data_id.GetSize() - 1] == ']') {
+    // Find start of argument
+    int start_idx = -1;
+    for (int i = 0; i < data_id.GetSize(); i++) {
+      if (data_id[i] == '[') {
+        start_idx = i + 1;
+        break;
+      }
+    }
+    if (start_idx == -1) return rtn;  // argument start not found
+    
+    // Separate argument from incoming requested data id
+    Apto::String argument = data_id.Substring(start_idx, data_id.GetSize() - start_idx - 1);
+    DataID raw_id = data_id.Substring(0, start_idx) + "]";
+    
+    ArgumentedProviderPtr arg_provider;
+    if (m_active_arg_provider_map.Get(raw_id, arg_provider)) {
+      rtn = arg_provider->GetProvidedValueForArgument(raw_id, argument);
+      if (rtn) m_current_values[data_id] = rtn;
+    }
+  } else {
+    ProviderPtr provider;
+    if (m_active_provider_map.Get(data_id, provider)) {
+      rtn = provider->GetProvidedValue(data_id);
+      if (rtn) m_current_values[data_id] = rtn;
+    }
   }
   
   return rtn;
