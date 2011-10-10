@@ -354,7 +354,6 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   cCPUTestInfo test_info;
   TestGenome(ctx, test_info, genome);
   
-  if (for_groups) filename = filename + ".group";
   // Open the file...
   cDataFile& df = m_world->GetDataFile(filename);
   

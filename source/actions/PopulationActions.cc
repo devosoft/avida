@@ -106,7 +106,7 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
+    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false); 
   }
 };
 

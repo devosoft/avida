@@ -4804,7 +4804,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
  * this organism.
  **/
 
-void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_with_group, int group_id, int forager_type) 
+void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_group, int group_id, int forager_type) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -4876,7 +4876,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     deme.ReplaceGermline(genotype);
     genotype->RemoveBioUnit(&unit);
   }
-  if(inject_with_group) {
+  if(inject_group) {
     cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
     cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
     cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
