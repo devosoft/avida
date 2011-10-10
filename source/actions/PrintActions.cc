@@ -722,6 +722,37 @@ public:
   }
 };
 
+class cActionPrintDominantGroupGenotype : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintDominantGroupGenotype(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    cBioGroup* bg = it->Next();
+    if (bg) {
+      cString filename(m_filename);
+      if (filename == "") filename.Set("archive/group-%s.org", (const char*)bg->GetProperty("name").AsString());
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+
+      int last_birth_cell = bg->GetProperty("last_birth_cell").AsInt();
+      int last_group_id = bg->GetProperty("last_group_id").AsInt(); 
+      int last_forager_type = bg->GetProperty("last_forager_type").AsInt(); 
+      testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_group_id, last_forager_type);
+      delete testcpu;
+    }
+  }
+};
 
 
 /*
@@ -3916,6 +3947,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   //  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
   //  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
+  action_lib->Register<cActionPrintDominantGroupGenotype>("PrintDominantGroupGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
   action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
   action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");

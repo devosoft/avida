@@ -347,13 +347,14 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename, int update)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename, int update, bool for_groups, int last_birth_cell, int last_group_id, int last_forager_type)
 {
   if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
     
   cCPUTestInfo test_info;
   TestGenome(ctx, test_info, genome);
   
+  if (for_groups) filename = filename + ".group";
   // Open the file...
   cDataFile& df = m_world->GetDataFile(filename);
   
@@ -387,6 +388,12 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
     df.WriteComment(c.Set("Genome Size.....: %d", organism->GetGenome().GetSize()));
     df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
     df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
+    
+    if (for_groups) {
+      df.WriteComment(c.Set("Group ID........: %d", last_group_id));
+      df.WriteComment(c.Set("Forager Type....: %d", last_forager_type));   
+      df.WriteComment(c.Set("Birth Cell......: %d", last_birth_cell));               
+    }
     
     if (phenotype.GetNumDivides() == 0)
       df.WriteComment("Offspring.......: NONE");

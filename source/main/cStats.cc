@@ -90,6 +90,9 @@ cStats::cStats(cWorld* world)
   , dom_abundance(0)
   , dom_gene_depth(-1)
   , dom_sequence("")
+  , dom_last_birth_cell(0)      //APW
+  , dom_last_forager_type(-1)
+  , dom_last_group_id(-1)
   , coal_depth(0)
   , num_births(0)
   , num_deaths(0)
@@ -217,9 +220,6 @@ cStats::cStats(cWorld* world)
 
   resource_names.Resize( m_world->GetNumResources() );
   
-  m_targets_in_use.Resize(0);
-  ForageTargetsForPrints();
-
   // This block calculates how many slots we need to
   // make for paying attention to different label combinations
   // Require sense instruction to be present then die if not at least 2 NOPs
@@ -411,7 +411,9 @@ void cStats::setupProvidedData()
   m_data_manager.Add("dom_num_cpus",   "Abundance of Dominant Genotype",          &cStats::GetDomAbundance);
   m_data_manager.Add("dom_depth",      "Tree Depth of Dominant Genotype",         &cStats::GetDomGeneDepth);
   m_data_manager.Add("dom_sequence",   "Sequence of Dominant Genotype",           &cStats::GetDomSequence);
-
+  m_data_manager.Add("dom_last_birth_cell", "Birth Cell of Last-Born Dominant Genotype", &cStats::GetDomLastBirthCell);  //APW
+  m_data_manager.Add("dom_last_group_id", "Birth Group ID of Last-Born Dominant Genotype", &cStats::GetDomLastGroup);
+  m_data_manager.Add("dom_last_forager_type", "Birth Forager Type of Last-Born Dominant Genotype", &cStats::GetDomLastForagerType);
 
   // Current Counts...
   m_data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
@@ -3621,9 +3623,9 @@ void cStats::PrintOrganismLocation(const cString& filename) {
 	}	
 }
 
-/*
+/*  APW
  Find out which forage targets are in use and return info to allow print statements to create seperate data files for each.
- */
+ 
 void cStats::ForageTargetsForPrints()
 {
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -3643,3 +3645,4 @@ void cStats::ForageTargetsForPrints()
     if (m_world->GetEnvironment().IsTargetID(target)) m_targets_in_use.Push(target);
   }
 }
+*/

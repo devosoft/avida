@@ -75,11 +75,8 @@ private:
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
-  int m_group_id;
-  int m_forager_type;
 public:
-  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0),
-  m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1)
+  cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
     if (!largs.GetSize()) m_filename = "START_ORGANISM";
@@ -88,15 +85,13 @@ public:
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_group_id = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_forager_type = largs.PopWord().AsInt();
     
     if (m_filename == "START_ORGANISM") {
       m_filename = m_world->GetConfig().START_ORGANISM.Get();
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0] [int group_id=-1] [int forager_type=-1]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -111,7 +106,7 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
+    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -468,6 +463,55 @@ public:
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
+  }
+};
+
+
+/* Inject org into world with specified group_id and forager types */
+class cActionInjectGroup : public cAction
+{
+private:
+  cString m_filename;
+  int m_cell_id;
+  int m_group_id;
+  int m_forager_type;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (!largs.GetSize()) m_filename = "START_ORGANISM";
+    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_group_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_forager_type = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_filename == "START_ORGANISM") {
+      m_filename = m_world->GetConfig().START_ORGANISM.Get();
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [int group_id=-1] [int forager_type=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    Genome genome;
+    cUserFeedback feedback;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+    m_world->GetPopulation().InjectGroup(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
   }
 };
 
@@ -5035,6 +5079,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectDemesFromNest>("InjectDemesFromNest");
   action_lib->Register<cActionInjectDemesRandom>("InjectDemesRandom");
 	
+  action_lib->Register<cActionInjectGroup>("InjectGroup");
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
 

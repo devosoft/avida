@@ -49,6 +49,9 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_num_organisms(1)
   , m_last_num_organisms(0)
   , m_total_organisms(1)
+  , m_last_birth_cell(0)
+  , m_last_group_id(-1)
+  , m_last_forager_type(-1)
 {
   AddActiveReference();
   if (parents) {

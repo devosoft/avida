@@ -823,6 +823,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     KillOrganism(target_cell, ctx);
   }
 
+  int op = m_world->GetConfig().DEFAULT_GROUP.Get();
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
     if (!in_organism->HasOpinion()) {
       if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
@@ -831,23 +832,31 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       }
       else {
         if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
-          const int op = (int) abs(ctx.GetRandom().GetDouble());
+          op = (int) abs(ctx.GetRandom().GetDouble());
           in_organism->SetOpinion(op);
           JoinGroup(in_organism, op);                    
         }
         else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
-          const int op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
+          op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
           in_organism->SetOpinion(op);
           JoinGroup(in_organism, op);          
         }
       }
     }
+    else op = in_organism->GetOpinion().first;
   }
+  
+  cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
+  assert(genotype);
+  
+  genotype->SetLastGroupID(op);
+  genotype->SetLastBirthCell(target_cell.GetID());  //APW
+  genotype->SetLastForagerType(in_organism->GetForageTarget());  
 
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
   int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
-  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (in_organism->GetCellID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
+  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
     KillOrganism(target_cell, ctx);
   }
 }
@@ -4750,10 +4759,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       // and has no parent, we should always take the rate from the environment.
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
 
-
       // Activate the organism in the population...
       ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
-
     }
   }
   sync_events = true;
@@ -4797,7 +4804,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
  * this organism.
  **/
 
-void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
+void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_with_group, int group_id, int forager_type) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -4823,9 +4830,6 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
 
   cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
 
-  cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
-  cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
-	
 	// the following bit of code is required for proper germline support.
 	// even if there's only one deme!!
 	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
@@ -4872,9 +4876,24 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     deme.ReplaceGermline(genotype);
     genotype->RemoveBioUnit(&unit);
   }
+  if(inject_with_group) {
+    cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
+    cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
+    cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
+    
+    cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
+    cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
+    cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
+  }
 }
 
-void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
+
+void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
+{
+  Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type);
+}
+
+  void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
   // target_organism-> target_organism->GetHardware().GetCurThread()

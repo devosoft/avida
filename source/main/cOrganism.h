@@ -267,6 +267,7 @@ public:
 
   void AddLiveOrg() { m_interface->AddLiveOrg(); } 
   void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
+  
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 

@@ -78,7 +78,7 @@ public:
   virtual void RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
   virtual void AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
   virtual void RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
-  
+
   template<typename T> void AttachData(T* data)
   {
     delete m_data.GetWithDefault(cString(typeid(T).name()), NULL);
