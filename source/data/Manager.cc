@@ -134,7 +134,11 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
   // Make sure that all requested data values are active
   for (ConstDataSetIterator it = requested->Begin(); it.Next();) {
     const DataID& rdid = *it.Get();
+    
     if (rdid[rdid.GetSize() - 1] == ']') {
+      
+      // Handle argumented data value      
+      
       // Find start of argument
       int start_idx = -1;
       for (int i = 0; i < rdid.GetSize(); i++) {
@@ -151,20 +155,29 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
 
       if (!m_active_arg_provider_map.Has(raw_id)) return false; // Argumented providers should be activated above, whaa??
     
+      // Record active argument
       ArgMultiSetPtr arg_set = m_active_args[raw_id];
       if (!arg_set) {
+        // No active arguments currently, construct new multiset to track active arguments
         arg_set = ArgMultiSetPtr(new ArgMultiSet);
         m_active_args[raw_id] = arg_set;
       }
       arg_set->Insert(argument);
-      ArgumentSetPtr basic_arg_set(new ArgumentSet);
+      
+      // Notify data provider of currently active arguments
+      ArgumentSetPtr basic_arg_set(new ArgumentSet);  // Active arguments are a basic set, convert as such
       *basic_arg_set = *arg_set;
       m_active_arg_provider_map[raw_id]->SetActiveArguments(raw_id, basic_arg_set);
+      
     } else {
+      
+      // Handle standard data value
+      
       // Request data not active, instantiate provider and register the values it provides as active
       ProviderPtr provider = (m_provider_map.Get(*it.Get()))(m_world);
       if (!provider) return false;
       
+      // Although the data value is standard, it may be provided by a provider that also handles argumented values
       ArgumentedProviderPtr arg_provider;
       arg_provider.DynamicCastFrom(provider);
       
@@ -216,7 +229,7 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunct
   return true;
 }
 
-Avida::Data::ProviderPtr ConvertArgumented(Avida::Data::ArgumentedProviderActivateFunctor functor, Avida::World* world)
+static Avida::Data::ProviderPtr convertArgumentedPtr(Avida::Data::ArgumentedProviderActivateFunctor functor, Avida::World* world)
 {
   Avida::Data::ProviderPtr ptr;
   Avida::Data::ArgumentedProviderPtr aptr(functor(world));
@@ -228,7 +241,7 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ArgumentedProviderAct
 {
   const int id_size = data_id.GetSize();
   if (id_size > 0 && data_id[id_size - 1] != ']' && m_provider_map.Has(data_id)) {
-    Apto::Functor<ProviderPtr, Apto::TL::Create<ArgumentedProviderActivateFunctor, World*> > conv_func(ConvertArgumented);
+    Apto::Functor<ProviderPtr, Apto::TL::Create<ArgumentedProviderActivateFunctor, World*> > conv_func(convertArgumentedPtr);
     m_provider_map[data_id] = Apto::BindFirst(conv_func, functor);
     return true;
   } else if (id_size > 2 && data_id[id_size - 2] == '[' && data_id[id_size - 1] == ']' && m_arg_provider_map.Has(data_id)) {
