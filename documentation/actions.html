@@ -217,6 +217,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintDivideMutData">PrintDivideMutData</a><br>
       <a href="#PrintDominantData">PrintDominantData</a><br>
       <a href="#PrintDominantGenotype">PrintDominantGenotype</a><br>
+      <a href="#PrintDominantGroupGenotypes">PrintDominantGroupGenotypes</a><br>
+      <a href="#PrintDominantForagerGenotypes">PrintDominantForagerGenotypes</a><br>
       <a href="#PrintDonationStats">PrintDonationStats</a><br>
       <a href="#PrintDynamicMaxMinData">PrintDynamicMaxMinData</a><br>
       <a href="#PrintEditDistance">PrintEditDistance</a><br>
@@ -2190,6 +2192,26 @@ a single, complete file for each trigger.
   into the file specified.  If no filename is given, the genotype's assigned name
   is used and the file is placed into the archive subdirectory.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDominantGroupGenotypes">PrintDominantGroupGenotypes</a></strong>
+  <i>[string fname=""]</i>
+  </p>
+  <p>
+  Print the dominant genomes for every active group in the population (and lots of 
+  information about them).  For each group, this will print the most common genotype
+  which has that group id at birth and is above threshold.
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDominantGroupGenotypes">PrintDominantForagerGenotypes</a></strong>
+  <i>[string fname=""]</i>
+  </p>
+  <p>
+  Print the dominant genomes for every active type of forager in the population (and lots of 
+  information about them).  For each forager type, this will print the most common genotype
+  which has that forage target at birth as is above threshold.
   </p>
 </li>
 <li><p>

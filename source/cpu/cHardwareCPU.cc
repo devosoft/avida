@@ -9424,9 +9424,9 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
     m_organism->GetOrgInterface().AttemptImmigrateGroup(new_opinion, m_organism);
   }
   else {
+    m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);
     m_organism->LeaveGroup(opinion);
     m_organism->JoinGroup(new_opinion);
-    m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);
   }
   return true;
 }

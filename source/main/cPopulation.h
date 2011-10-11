@@ -108,7 +108,7 @@ public:
 
   bool InitiatePop(cUserFeedback* errors = NULL);
 
-  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0); 
+  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
@@ -360,7 +360,7 @@ private:
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
-  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
+  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

@@ -746,7 +746,7 @@ public:
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
   CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
   CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
-  CONFIG_ADD_VAR(INHERIT_OPINION, int, 0, "Should offspring inherit the parent's opinion?");
+  CONFIG_ADD_VAR(INHERIT_OPINION, int, 1, "Should offspring inherit the parent's opinion?");
   CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
   CONFIG_ADD_VAR(JOIN_GROUP_FAILURE, int, 0, "Percent chance for failing to switch groups"); // @JJB
   CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of previous updates used to evaluate org's tolerance levels\n(0 indicates tolarance disabled, values <0 indicate % chance random migration for offspring)"); // @JJB

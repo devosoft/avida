@@ -3639,7 +3639,6 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     // injected orgs might not have an opinion
     if (m_organism->HasOpinion()) {
         group = m_organism->GetOpinion().first;
-        
         //return false if org setting opinion to current one (avoid paying costs for not switching)
         if (group == prop_group_id) return false;
         
@@ -3718,7 +3717,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 // A predator establishes a new group. @JJB
 bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 {
-  assert(m_organsim != 0);
+  assert(m_organism != 0);
   if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
 

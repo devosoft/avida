@@ -1108,7 +1108,6 @@ void cOrganism::moveIPtoAlarmLabel(int jump_label) {
  */
 void cOrganism::SetOpinion(const Opinion& opinion) {
   InitOpinions();
-
   const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
 
   if(bsize == 0) {

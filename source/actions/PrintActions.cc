@@ -722,13 +722,13 @@ public:
   }
 };
 
-class cActionPrintDominantGroupGenotype : public cAction
+class cActionPrintDominantGroupGenotypes : public cAction
 {
 private:
   cString m_filename;
   
 public:
-  cActionPrintDominantGroupGenotype(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  cActionPrintDominantGroupGenotypes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -739,17 +739,106 @@ public:
   void Process(cAvidaContext& ctx)
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tSmartArray<int> groups;
+    map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();
+    
+    map <int,int>::iterator itr;    
+    for(itr = groups_formed.begin();itr!=groups_formed.end();itr++) {
+      double cur_size = itr->second;
+      if (cur_size > 0) groups.Push(itr->first); 
+    }
+    
+    tSmartArray<int> birth_groups_checked;
     cBioGroup* bg = it->Next();
-    if (bg) {
-      cString filename(m_filename);
-      if (filename == "") filename.Set("archive/group-%s.org", (const char*)bg->GetProperty("name").AsString());
-      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+    
+    for (int i = 0; i < groups.GetSize(); i++) {
+      bool already_used = false;
+      if (bg && (bg->GetProperty("threshold").AsBool() || i == 0)) {
+        int last_birth_group_id = bg->GetProperty("last_group_id").AsInt(); 
+        int last_birth_cell = bg->GetProperty("last_birth_cell").AsInt();
+        int last_birth_forager_type = bg->GetProperty("last_forager_type").AsInt(); 
+        if (i != 0) {
+          for (int j = 0; j < birth_groups_checked.GetSize(); j++) {
+            if (last_birth_group_id == birth_groups_checked[j]) { 
+              already_used = true; 
+              break; 
+            }
+          }
+        }
+        if (!already_used) birth_groups_checked.Push(last_birth_group_id);
+        if (already_used) {
+          bg = it->Next();
+          continue;
+        }
+        cString filename(m_filename);
+        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->GetProperty("name").AsString());
+        else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+        
+        testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+        delete testcpu;
+        bg = it->Next();
+      }
+    }
+  }
+};
 
-      int last_birth_cell = bg->GetProperty("last_birth_cell").AsInt();
-      int last_group_id = bg->GetProperty("last_group_id").AsInt(); 
-      int last_forager_type = bg->GetProperty("last_forager_type").AsInt(); 
-      testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_group_id, last_forager_type);
-      delete testcpu;
+class cActionPrintDominantForagerGenotypes : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintDominantForagerGenotypes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    // +2 for predators (-2) and default (-1) targets
+    const int num_targets = resource_lib.GetSize() + 2;
+    
+    tArray<int> target_list;
+    target_list.Resize(num_targets);
+    target_list.SetAll(0);
+    
+    tSmartArray<int> birth_forage_types_checked;
+    cBioGroup* bg = it->Next();
+    
+    for (int i = 0; i < target_list.GetSize(); i++) {
+      bool already_used = false;
+      if (bg && (bg->GetProperty("threshold").AsBool() || i == 0)) {
+        int last_birth_group_id = bg->GetProperty("last_group_id").AsInt(); 
+        int last_birth_cell = bg->GetProperty("last_birth_cell").AsInt();
+        int last_birth_forager_type = bg->GetProperty("last_forager_type").AsInt(); 
+        if (i != 0) {
+          for (int j = 0; j < birth_forage_types_checked.GetSize(); j++) {
+            if (last_birth_forager_type == birth_forage_types_checked[j]) { 
+              already_used = true; 
+              break; 
+            }
+          }
+        }
+        if (!already_used) birth_forage_types_checked.Push(last_birth_forager_type);
+        if (already_used) {
+          bg = it->Next();
+          continue;
+        }
+        cString filename(m_filename);
+        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->GetProperty("name").AsString());
+        else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+        
+        testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+        delete testcpu;
+        bg = it->Next();
+      }
     }
   }
 };
@@ -3947,7 +4036,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   //  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
   //  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
-  action_lib->Register<cActionPrintDominantGroupGenotype>("PrintDominantGroupGenotype");
+  action_lib->Register<cActionPrintDominantGroupGenotypes>("PrintDominantGroupGenotypes");
+  action_lib->Register<cActionPrintDominantForagerGenotypes>("PrintDominantForagerGenotypes");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
   action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
   action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");

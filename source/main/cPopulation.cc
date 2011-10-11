@@ -741,7 +741,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   return true;
 }
 
-void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell)
+void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group)
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
@@ -823,36 +823,36 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     KillOrganism(target_cell, ctx);
   }
 
-  int op = m_world->GetConfig().DEFAULT_GROUP.Get();
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
-    if (!in_organism->HasOpinion()) {
-      if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
-        in_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
-        JoinGroup(in_organism, m_world->GetConfig().DEFAULT_GROUP.Get());
-      }
-      else {
-        if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
-          op = (int) abs(ctx.GetRandom().GetDouble());
-          in_organism->SetOpinion(op);
-          JoinGroup(in_organism, op);                    
+  if (assign_group) {
+    int op = m_world->GetConfig().DEFAULT_GROUP.Get();
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
+      if (!in_organism->HasOpinion()) {
+        if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
+          in_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
+          JoinGroup(in_organism, m_world->GetConfig().DEFAULT_GROUP.Get());
         }
-        else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
-          op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
-          in_organism->SetOpinion(op);
-          JoinGroup(in_organism, op);          
+        else {
+          if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+            op = (int) abs(ctx.GetRandom().GetDouble());
+            in_organism->SetOpinion(op);
+            JoinGroup(in_organism, op);                    
+          }
+          else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
+            op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
+            in_organism->SetOpinion(op);
+            JoinGroup(in_organism, op);          
+          }
         }
       }
+      else op = in_organism->GetOpinion().first;
     }
-    else op = in_organism->GetOpinion().first;
+    cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
+    assert(genotype);    
+    genotype->SetLastGroupID(op);
+    genotype->SetLastBirthCell(target_cell.GetID());  //APW
+    genotype->SetLastForagerType(in_organism->GetForageTarget());      
   }
   
-  cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
-  assert(genotype);
-  
-  genotype->SetLastGroupID(op);
-  genotype->SetLastBirthCell(target_cell.GetID());  //APW
-  genotype->SetLastForagerType(in_organism->GetForageTarget());  
-
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
   int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
@@ -4821,7 +4821,10 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_id += m_world->GetConfig().WORLD_X.Get()+1;
   }
 
-  InjectGenome(cell_id, src, genome, ctx, lineage_label); 
+  // if the injected org already has a group we will assign it to, do not assign group id in activate organism
+  if(!inject_group) InjectGenome(cell_id, src, genome, ctx, lineage_label, true);
+  else InjectGenome(cell_id, src, genome, ctx, lineage_label, false);
+  
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
 
@@ -4876,6 +4879,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     deme.ReplaceGermline(genotype);
     genotype->RemoveBioUnit(&unit);
   }
+  
   if(inject_group) {
     cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
     cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
@@ -5189,7 +5193,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx2, int lineage_label) 
+void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx2, int lineage_label, bool assign_group) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -5237,8 +5241,9 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
 
 
   // Activate the organism in the population...
-  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
-
+  if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
+  else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
+    
   // Log the injection of this organism if LOG_INJECT is set to 1 and
   // the current update number is >= INJECT_LOG_START
   if ( (m_world->GetConfig().LOG_INJECT.Get() == 1) &&
