@@ -2790,11 +2790,12 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
             if (faced_res[group] != max_res) m_organism->Rotate(1);
         }
     }
-    // return % change
-    int res_diff = (int) ((max_res - current_res[group])/current_res[group] * 100 + 0.5);
-    int reg_to_set = FindModifiedRegister(rBX);
-    setInternalValue(reg_to_set, res_diff, true);
-    return true;
+  int res_diff = 0;
+  if (current_res[group] == 0) res_diff = (int) max_res;
+  else res_diff = (int) (((max_res - current_res[group])/current_res[group]) * 100 + 0.5);
+  int reg_to_set = FindModifiedRegister(rBX);
+  setInternalValue(reg_to_set, res_diff, true);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
@@ -3016,7 +3017,9 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   }
   
   // return % change
-  const int res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
+  int res_diff = 0;
+  if (res_amount == 0) res_diff = (int) faced_res;
+  else res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
 
   setInternalValue(req_reg, res_sought, true);
   const int res_tot_reg = FindModifiedNextRegister(req_reg);
@@ -3616,7 +3619,9 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(rBX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    int res_diff = 0;
+    if (res_count[opinion] == 0) res_diff = (int) faced_res;
+    else res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     setInternalValue(reg_to_set, res_diff, true);
   }
   return true;

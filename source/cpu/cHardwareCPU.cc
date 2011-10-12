@@ -3818,7 +3818,9 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(REG_BX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    int res_diff = 0;
+    if (res_count[opinion] == 0) res_diff = (int) faced_res;
+    else res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     GetRegister(reg_to_set) = res_diff;
   }
   return true;
@@ -5623,7 +5625,9 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
     }
   }
   // return % change
-  int res_diff = (int) ((max_res - current_res[opinion])/current_res[opinion] * 100 + 0.5);
+  int res_diff = 0;
+  if (current_res[opinion] == 0) res_diff = (int) max_res;
+  else res_diff = (int) (((max_res - current_res[opinion])/current_res[opinion]) * 100 + 0.5);
   int reg_to_set = FindModifiedRegister(REG_BX);
   GetRegister(reg_to_set) = res_diff;
   return true;
@@ -8687,7 +8691,7 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   
   // return odds as %
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = (int) odds_I_dont_die * 100 + 0.5;
+  GetRegister(out_reg) = (int) (odds_I_dont_die * 100 + 0.5);
   return true;
 } 	
 
