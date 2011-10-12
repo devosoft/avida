@@ -482,7 +482,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       // If tolerances are on ... @JJB
-      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 ) {
+      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
           target_cells[i] = doomed_cell;
@@ -4474,9 +4474,11 @@ struct sOrgInfo {
   int cell_id;
   int offset;
   int lineage_label;
+  int curr_group;
+  int curr_forage;
 
   sOrgInfo() { ; }
-  sOrgInfo(int c, int o, int l) : cell_id(c), offset(o), lineage_label(l) { ; }
+  sOrgInfo(int c, int o, int l, int in_group, int in_forage) : cell_id(c), offset(o), lineage_label(l), curr_group(in_group), curr_forage(in_forage) { ; }
 };
 
 struct sGroupInfo {
@@ -4487,7 +4489,7 @@ struct sGroupInfo {
   sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
 };
 
-bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
+bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bool save_groupings)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.SetFileType("genotype_data");
@@ -4509,10 +4511,10 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
 
         sGroupInfo* map_entry = NULL;
         if (genotype_map.Find(pg->GetID(), map_entry)) {
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1));
         } else {
           map_entry = new sGroupInfo(pg, true);
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1));
           genotype_map.Set(pg->GetID(), map_entry);
         }
       }
@@ -4523,13 +4525,22 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
       if (genotype == NULL) continue;
 
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
-
       sGroupInfo* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
+        if (!save_groupings) map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1));
+        else {
+          const int curr_group = org->GetOpinion().first;
+          const int curr_forage = org->GetForageTarget();
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage));
+        }
       } else {
         map_entry = new sGroupInfo(genotype);
-        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
+        if (!save_groupings) map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1));
+        else {
+          const int curr_group = org->GetOpinion().first;
+          const int curr_forage = org->GetForageTarget();
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage));
+        }
         genotype_map.Set(genotype->GetID(), map_entry);
       }
     }
@@ -4547,18 +4558,30 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
     cString cellstr;
     cString offsetstr;
     cString lineagestr;
+    cString groupstr;
+    cString foragestr;
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
     lineagestr.Set("%d", cells[0].lineage_label);
+    groupstr.Set("%d", cells[0].curr_group);
+    foragestr.Set("%d", cells[0].curr_forage);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
       lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
+      if (save_groupings) {
+        groupstr += cStringUtil::Stringf(",%d", cells[cell_i].curr_group);
+        foragestr += cStringUtil::Stringf(",%d", cells[cell_i].curr_forage);
+      }
     }
     df.Write(cellstr, "Occupied Cell IDs", "cells");
     if (genotype_entries[i]->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
     else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
     df.Write(lineagestr, "Lineage Label", "lineage");
+    if (save_groupings) {
+      df.Write(groupstr, "Current Group IDs", "group_id");
+      df.Write(foragestr, "Current Forager Types", "forager_type");
+    }
     df.Endl();
 
     delete genotype_entries[i];
@@ -4582,6 +4605,8 @@ public:
   tArray<int> cells;
   tArray<int> offsets;
   tArray<int> lineage_labels;
+  tArray<int> group_ids;
+  tArray<int> forager_types;
 
   cBioGroup* bg;
 
@@ -4593,8 +4618,7 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset) 
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups) 
 {
   // @TODO - build in support for verifying population dimensions
 
@@ -4654,6 +4678,17 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     while (lineagestr.GetSize()) tmp.lineage_labels.Push(lineagestr.Pop(',').AsInt());
     // @blw preserve compatability with older .spop files that don't have lineage labels
     assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
+    
+    // Group ids and forager types (if given in file)
+    if (load_groups) {
+      cString groupstr(tmp.props->Get("group_id"));
+      while (groupstr.GetSize()) tmp.group_ids.Push(groupstr.Pop(',').AsInt());
+      assert(tmp.group_ids.GetSize() == 0 || tmp.group_ids.GetSize() == tmp.num_cpus);
+      
+      cString foragestr(tmp.props->Get("forager_type"));
+      while (foragestr.GetSize()) tmp.forager_types.Push(foragestr.Pop(',').AsInt());
+      assert(tmp.group_ids.GetSize() == 0 || tmp.forager_types.GetSize() == tmp.num_cpus);
+    }
   }
 
   // Sort genotypes in ascending order according to their id_num
@@ -4760,7 +4795,21 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
 
       // Activate the organism in the population...
-      ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
+      if (!load_groups) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
+      else {
+        // Set up group id and forager type (if loaded)
+        int group_id = -1;
+        int forager_type = -1;
+        if (tmp.group_ids.GetSize() != 0) group_id = tmp.group_ids[cell_i];
+        if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
+        new_organism->SetOpinion(group_id);
+        JoinGroup(new_organism, group_id);
+        new_organism->SetForageTarget(forager_type);  
+        new_organism->GetPhenotype().SetBirthCellID(cell_id);
+        new_organism->GetPhenotype().SetBirthGroupID(group_id);
+        new_organism->GetPhenotype().SetBirthForagerType(forager_type);
+        ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
+      }
     }
   }
   sync_events = true;
@@ -6316,7 +6365,7 @@ double cPopulation::CalcGroupOddsOffspring(int group_id)
 
 bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring)
 {
-  // If joining a non-standard group, atomatic success
+  // If joining a non-standard group, automatic success
   if (parent->GetOpinion().first < 0) {
     int parent_group = parent->GetOpinion().first;
     offspring->SetOpinion(parent_group);

@@ -217,8 +217,8 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic);
-  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0); 
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false);
+  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false); 
   bool DumpMemorySummary(std::ofstream& fp);
 
   int GetSize() const { return cell_array.GetSize(); }

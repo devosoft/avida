@@ -52,25 +52,27 @@ private:
   int m_update;
   int m_cellid_offset;
   int m_lineage_offset;
+  bool m_load_groups;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_update = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cellid_offset = largs.PopWord().AsInt();
     if (largs.GetSize()) m_lineage_offset = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_load_groups = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
     // set the update if requested
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
-    if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset)) { 
+    if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset, m_load_groups)) { 
       m_world->GetDriver().RaiseFatalException(-1, "failed to load population");
     }
   }
@@ -83,10 +85,11 @@ class cActionSavePopulation : public cAction
 private:
   cString m_filename;
   bool m_save_historic;
+  bool m_save_group_info;
   
 public:
   cActionSavePopulation(cWorld* world, const cString& args, Feedback& feedback)
-    : cAction(world, args), m_filename(""), m_save_historic(true)
+    : cAction(world, args), m_filename(""), m_save_historic(true), m_save_group_info(false)
   {
     cArgSchema schema(':','=');
     
@@ -95,23 +98,24 @@ public:
     
     // Integer Entries
     schema.AddEntry("save_historic", 0, 0, 1, 1);
-    
+    schema.AddEntry("save_groups", 0, 0, 1, 0);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
     if (args) {
       m_filename = argc->GetString(0);
       m_save_historic = argc->GetInt(0);
+      m_save_group_info = argc->GetInt(0);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1]"; }
+  static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1] [boolean save_groups=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
     int update = m_world->GetStats().GetUpdate();
     cString filename = cStringUtil::Stringf("%s-%d.spop", (const char*)m_filename, update);
-    m_world->GetPopulation().SavePopulation(filename, m_save_historic);
+    m_world->GetPopulation().SavePopulation(filename, m_save_historic, m_save_group_info);
   }
 };
 

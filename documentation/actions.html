@@ -2896,26 +2896,28 @@ a single, complete file for each trigger.
 <UL>
 <li><p>
   <strong><a name="LoadPopulation">LoadPopulation</a></strong>
-  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0]</i>
+  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0]</i>
   </p>
   <p>
     Sets up a population based on a save file such as written out by
   SavePopulation. It is also possible to append a history file to the
   save file, in order to preserve the history of a previous run.<br>
-  <i>update</i> allows user to set the current update number to a new value
+  <i>update</i> allows user to set the current update number to a new value<br>
+  <i>load_groups</i> allows users to load population files containing individual group ids (opinions) and forager types
 
   </p>
 </li>
 <li><p>
   <strong><a name="SavePopulation">SavePopulation</a></strong>
-  <i>[string fname=""]</i>
+  <i>[string fname=""] [bool save_historic=1] [bool save_groups=0]</i>
   </p>
   <p>
     Save the genotypes and lots of statistics about the population to the
   file specified; if not filename is given, use the name
   <kbd>detail-<em>update</em>.pop</kbd>.  As with clones, the update number
   allows a single event to produce many detail files.  The details are used
-  to collect crossection data about the population.
+  to collect crossection data about the population.<br>
+  <i>save_groups</i> will append data on current group ids and forage targets for each occurence of each genotype
 
   </p>
 </li>
