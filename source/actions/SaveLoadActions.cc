@@ -53,9 +53,10 @@ private:
   int m_cellid_offset;
   int m_lineage_offset;
   bool m_load_groups;
+  bool m_load_birth_cells;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0), m_load_birth_cells(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -63,16 +64,17 @@ public:
     if (largs.GetSize()) m_cellid_offset = largs.PopWord().AsInt();
     if (largs.GetSize()) m_lineage_offset = largs.PopWord().AsInt();
     if (largs.GetSize()) m_load_groups = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_load_birth_cells = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
     // set the update if requested
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
-    if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset, m_load_groups)) { 
+    if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset, m_load_groups, m_load_birth_cells)) { 
       m_world->GetDriver().RaiseFatalException(-1, "failed to load population");
     }
   }

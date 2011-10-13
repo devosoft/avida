@@ -218,7 +218,7 @@ public:
 
   // Saving and loading...
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false);
-  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false); 
+  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false); 
   bool DumpMemorySummary(std::ofstream& fp);
 
   int GetSize() const { return cell_array.GetSize(); }

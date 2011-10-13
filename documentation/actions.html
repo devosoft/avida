@@ -2205,7 +2205,7 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
-  <strong><a name="PrintDominantGroupGenotypes">PrintDominantForagerGenotypes</a></strong>
+  <strong><a name="PrintDominantForagerGenotypes">PrintDominantForagerGenotypes</a></strong>
   <i>[string fname=""]</i>
   </p>
   <p>
@@ -2903,7 +2903,8 @@ a single, complete file for each trigger.
   SavePopulation. It is also possible to append a history file to the
   save file, in order to preserve the history of a previous run.<br>
   <i>update</i> allows user to set the current update number to a new value<br>
-  <i>load_groups</i> allows users to load population files containing individual group ids (opinions) and forager types
+  <i>load_groups</i> allows users to load population files containing individual 
+  group ids (opinions) and forager types (aka saved populations with save_groups = 1)
 
   </p>
 </li>
@@ -2917,7 +2918,8 @@ a single, complete file for each trigger.
   <kbd>detail-<em>update</em>.pop</kbd>.  As with clones, the update number
   allows a single event to produce many detail files.  The details are used
   to collect crossection data about the population.<br>
-  <i>save_groups</i> will append data on current group ids and forage targets for each occurence of each genotype
+  <i>save_groups</i> will append data on current group ids, current forage targets 
+  and the cell orgs were born into for each occurence of each genotype
 
   </p>
 </li>
