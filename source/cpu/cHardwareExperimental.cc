@@ -3223,8 +3223,10 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
   
   // fourth register gives specific instance of resources sought or specific organisms to look for
-  // defaults to any (-1) if input is invalid or absent
+  // defaults to any (-1) if input is invalid or is predator and target is not specified
+  // defaults to current forage target if input is absent and not predator
   int id_sought = -1;
+  if (m_organism->GetForageTarget() !=-2) id_sought = m_organism->GetForageTarget();
   
   if (habitat_used != -2 && search_label.GetSize() > 3) {
     id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
