@@ -202,7 +202,7 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder)
             // Argumented data from a non-argumented provider, whaa??
             continue;
           } else {
-            if (!m_active_provider_map.Has(pdid)) m_active_provider_map[pdid] = arg_provider;
+            if (!m_active_provider_map.Has(pdid)) m_active_provider_map[pdid] = provider;
           }
         }
       }
