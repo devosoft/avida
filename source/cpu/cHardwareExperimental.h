@@ -108,7 +108,7 @@ private:
     inline sInternalValue Pop() { sInternalValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == SIZE) m_sp = 0; return v; }
     inline sInternalValue& Peek() { return m_stack[(int)m_sp]; }
     inline const sInternalValue& Peek() const { return m_stack[(int)m_sp]; }
-    inline const sInternalValue& Get(int d = 0) const { assert(d > 0); int p = d + m_sp; return m_stack[(p >= SIZE) ? (p - SIZE) : p]; }
+    inline const sInternalValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= SIZE) ? (p - SIZE) : p]; }
     inline void Clear() { for (int i = 0; i < SIZE; i++) m_stack[i].Clear(); }
 #undef SIZE
   };

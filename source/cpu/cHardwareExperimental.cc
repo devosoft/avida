@@ -612,6 +612,8 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruct
 void cHardwareExperimental::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << "THREAD:" << m_cur_thread << "  ";
   fp << "IP:" << getIP().GetPosition() << "    ";
   
   
@@ -3227,6 +3229,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // defaults to current forage target if input is absent and not predator
   int id_sought = -1;
   if (m_organism->GetForageTarget() !=-2) id_sought = m_organism->GetForageTarget();
+  // override habitat_used to match that for id_sought
+  if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
   
   if (habitat_used != -2 && search_label.GetSize() > 3) {
     id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
