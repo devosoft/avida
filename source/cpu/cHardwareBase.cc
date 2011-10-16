@@ -29,6 +29,7 @@
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
+#include "cHardwareStatusPrinter.h"
 #include "cHeadCPU.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
@@ -47,7 +48,7 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts()) 
 {
@@ -1076,4 +1077,11 @@ void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
 	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
 	wh.GetMemory().Insert(wh.GetPosition(), fragment);
 	wh.Adjust();
+}
+
+void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id)
+{
+  cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
+  m_minitracer = minitracer; 
+  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id);
 }

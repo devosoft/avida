@@ -159,7 +159,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomGeneDepth(dom_genotype->GetDepth());
   stats.SetDomSequence(dom_genotype->GetGenome().GetSequence().AsString());
   
-  stats.SetDomLastBirthCell(dom_genotype->GetLastBirthCell());   // APW
+  stats.SetDomLastBirthCell(dom_genotype->GetLastBirthCell());
   stats.SetDomLastGroup(dom_genotype->GetLastGroupID());
   stats.SetDomLastForagerType(dom_genotype->GetLastForagerType());
 

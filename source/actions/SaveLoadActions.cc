@@ -80,8 +80,6 @@ public:
   }
 };
 
-
-
 class cActionSavePopulation : public cAction
 {
 private:
@@ -100,14 +98,14 @@ public:
     
     // Integer Entries
     schema.AddEntry("save_historic", 0, 0, 1, 1);
-    schema.AddEntry("save_groups", 0, 0, 1, 0);
+    schema.AddEntry("save_groups", 1, 0, 1, 0);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
     if (args) {
       m_filename = argc->GetString(0);
       m_save_historic = argc->GetInt(0);
-      m_save_group_info = argc->GetInt(0);
+      m_save_group_info = argc->GetInt(1);
     }
   }
   

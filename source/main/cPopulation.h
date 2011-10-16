@@ -77,7 +77,8 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-
+  tSmartArray<cBioGroup*> minitrace_queue;
+  
   // Default organism setups...
   cEnvironment & environment;          // Physics & Chemistry description
 
@@ -221,6 +222,9 @@ public:
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false); 
   bool DumpMemorySummary(std::ofstream& fp);
 
+  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue);
+  tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
+  
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }
@@ -361,6 +365,8 @@ private:
 	
   // Must be called to activate *any* organism in the population.
   void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  void TestForMiniTrace(cOrganism* in_organism);
+  void SetupMiniTrace(cOrganism* in_organism);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

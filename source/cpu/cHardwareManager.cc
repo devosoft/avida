@@ -254,7 +254,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
     cString filename =  cStringUtil::Stringf("trace-%d.trace", org->GetID());
     hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename)));
   }
-  
+    
   assert(hw != 0);
   return hw;
 }

@@ -693,6 +693,16 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   fp << "ABOUT TO EXECUTE: " << next_name << endl;
 }
 
+void cOrganism::PrintMiniTraceStatus(cAvidaContext& ctx, ostream & fp, const cString& next_name)
+{
+  m_hardware->PrintMiniTraceStatus(ctx, fp, next_name);
+}
+
+void cOrganism::PrintMiniTraceSuccess(ostream & fp, const int exec_success)
+{
+  m_hardware->PrintMiniTraceSuccess(fp, exec_success);
+}
+
 void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated) const
 {
   fp << "---------------------------" << endl;

@@ -853,7 +853,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
     assert(genotype);    
     genotype->SetLastGroupID(op);
-    genotype->SetLastBirthCell(target_cell.GetID());  //APW
+    genotype->SetLastBirthCell(target_cell.GetID());
     genotype->SetLastForagerType(in_organism->GetForageTarget());      
   }
   
@@ -863,6 +863,42 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
     KillOrganism(target_cell, ctx);
   }
+  
+  // are there mini traces we need to test for?
+  if (minitrace_queue.GetSize() > 0) TestForMiniTrace(in_organism);
+}
+
+void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
+{
+  // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
+  cBioGroup* org_bg = in_organism->GetBioGroup("genotype");
+  for (int i = 0; i < minitrace_queue.GetSize(); i++)
+  {
+    if (org_bg == minitrace_queue[i]) {
+      unsigned int last = minitrace_queue.GetSize() - 1;
+      minitrace_queue.Swap(i, last);
+      minitrace_queue.Pop();
+      SetupMiniTrace(in_organism);
+      break;
+    }
+  }
+}
+
+void cPopulation::SetupMiniTrace(cOrganism* in_organism)
+{
+  const int target = in_organism->GetForageTarget();
+  const int id = in_organism->GetID();
+  cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trace", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  if (in_organism->HasOpinion()) {
+    filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trace", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  }
+  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+}
+
+void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue)
+{
+  minitrace_queue.Resize(0);
+  for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
@@ -920,7 +956,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
     if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
 //      KillOrganism(src_cell, ctx);  //APW
-      src_cell.GetOrganism()->Die(ctx);  //APW
+      src_cell.GetOrganism()->Die(ctx); 
     return false; 
     }
   }    
@@ -4957,7 +4993,6 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
 }
-
 
 void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
 {

@@ -90,7 +90,7 @@ cStats::cStats(cWorld* world)
   , dom_abundance(0)
   , dom_gene_depth(-1)
   , dom_sequence("")
-  , dom_last_birth_cell(0)      //APW
+  , dom_last_birth_cell(0)
   , dom_last_forager_type(-1)
   , dom_last_group_id(-1)
   , coal_depth(0)
@@ -411,7 +411,7 @@ void cStats::setupProvidedData()
   m_data_manager.Add("dom_num_cpus",   "Abundance of Dominant Genotype",          &cStats::GetDomAbundance);
   m_data_manager.Add("dom_depth",      "Tree Depth of Dominant Genotype",         &cStats::GetDomGeneDepth);
   m_data_manager.Add("dom_sequence",   "Sequence of Dominant Genotype",           &cStats::GetDomSequence);
-  m_data_manager.Add("dom_last_birth_cell", "Birth Cell of Last-Born Dominant Genotype", &cStats::GetDomLastBirthCell);  //APW
+  m_data_manager.Add("dom_last_birth_cell", "Birth Cell of Last-Born Dominant Genotype", &cStats::GetDomLastBirthCell);
   m_data_manager.Add("dom_last_group_id", "Birth Group ID of Last-Born Dominant Genotype", &cStats::GetDomLastGroup);
   m_data_manager.Add("dom_last_forager_type", "Birth Forager Type of Last-Born Dominant Genotype", &cStats::GetDomLastForagerType);
 
@@ -3622,27 +3622,3 @@ void cStats::PrintOrganismLocation(const cString& filename) {
 		}
 	}	
 }
-
-/*  APW
- Find out which forage targets are in use and return info to allow print statements to create seperate data files for each.
- 
-void cStats::ForageTargetsForPrints()
-{
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  // +2 for predators (-2) and default (-1) targets
-  const int num_targets = resource_lib.GetSize() + 2;
-  
-  tArray<int> poss_target_list;
-  poss_target_list.Resize(num_targets);
-  poss_target_list.SetAll(0);
-  // make sure we always have a listing for predators in predator experiments 
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_targets_in_use.Push(-2);
-  // make sure we always have listing for orgs with no forage targets
-  m_targets_in_use.Push(-1);
-  // otherwise only print out for possible targets (don't count resources having the same target as additional possible targets (no duplicates))
-
-  for (int target = 0; target < poss_target_list.GetSize(); target++) {
-    if (m_world->GetEnvironment().IsTargetID(target)) m_targets_in_use.Push(target);
-  }
-}
-*/

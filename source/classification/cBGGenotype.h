@@ -156,7 +156,7 @@ public:
   inline double GetMerit() const { return m_merit.Average(); }
   inline double GetFitness() const { return m_fitness.Average(); }
   
-  inline int GetLastBirthCell() const { return m_last_birth_cell; }   // APW
+  inline int GetLastBirthCell() const { return m_last_birth_cell; }
   inline int GetLastGroupID() const { return m_last_group_id; } 
   inline int GetLastForagerType() const { return m_last_forager_type; } 
 

@@ -369,7 +369,7 @@ public:
   int GetExecTimeBorn() const {return exec_time_born;}
   int GetUpdateBorn() const {return birth_update;}
   
-  int GetBirthCell() const { return birth_cell_id; }  //APW
+  int GetBirthCell() const { return birth_cell_id; }
   int GetBirthGroupID() const { return birth_group_id; }
   int GetBirthForagerType() const { return birth_forager_type; }
   inline void SetBirthCellID(int birth_cell);

@@ -476,7 +476,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
 #endif
     
     // Print the status of this CPU at each step...    
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = ip.GetInst();
@@ -489,15 +489,20 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       m_organism->SetRunning(false);
       return false;
     }
-    
+
+    // Print the short form status of this CPU at each step... 
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
+
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
+    int exec_success = 0;
     if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
-
+    // record any failure due to costs being paid
+    if (!exec) exec_success = -1;
     if (m_promoters_enabled) {
       // Constitutive regulation applied here
       if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
-
+      
       // If there are no active promoters and a certain mode is set, then don't execute any further instructions
       if (m_no_active_promoter_halt && m_promoter_index == -1) exec = false;
     }
@@ -508,28 +513,35 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       //       execution, because this instruction reference may be invalid after
       //       certain classes of instructions (namely divide instructions) @DMB
       const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
-
+      
       // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
-      {
+      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
       //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
-
+      if (exec == true) {
+        if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
+          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          // record execution success
+          exec_success = 1;
+        }
+      }
       // Check if the instruction just executed caused premature death, break out of execution if so
-      if (phenotype.GetToDelete()) break;
-
+      if (phenotype.GetToDelete()) {
+        if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+        break;
+      }
+      
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) ip.Advance();
       
       // Pay the additional death_cost of the instruction now
       phenotype.IncTimeUsed(addl_time_cost);
-
+      
       // In the promoter model, we may force termination after a certain number of inst have been executed
       if (m_promoters_enabled) {
         const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
@@ -539,8 +551,9 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
           PromoterTerminate(ctx);
         }
       }
-    } // if exec
-    
+    }
+    // if using mini traces, report success or failure of execution
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed
@@ -601,7 +614,7 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruct
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -611,7 +624,6 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruct
 
 void cHardwareExperimental::PrintStatus(ostream& fp)
 {
-  fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "THREAD:" << m_cur_thread << "  ";
   fp << "IP:" << getIP().GetPosition() << "    ";
@@ -667,9 +679,107 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp.flush();
 }
 
+void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  cString org_dat("");
+  df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
+  df.WriteComment(org_dat.Set("Org ID: %d", org_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
+  df.WriteComment(" ");
+  df.WriteComment("Exec Stats Columns:");
+  df.WriteComment("CPU Cycle");
+  df.WriteComment("Current Update");
+  df.WriteComment("Register Contents (CPU Cycle Origin of Contents)");
+  df.WriteComment("Current Thread");
+  df.WriteComment("IP Position");
+  df.WriteComment("RH Position");
+  df.WriteComment("WH Position");
+  df.WriteComment("FH Position");
+  df.WriteComment("CPU Cycle of Last Output");
+  df.WriteComment("Current Merit");
+  df.WriteComment("Current Bonus");
+  df.WriteComment("Forager Type");
+  df.WriteComment("Group ID (opinion)");
+  df.WriteComment("Current Cell");
+  df.WriteComment("Faced Direction");
+  df.WriteComment("Faced Cell Occupied?");
+  df.WriteComment("Faced Cell Has Hill?");
+  df.WriteComment("Faced Cell Has Wall?");
+  df.WriteComment("Queued Instruction");
+  df.WriteComment("Trailing NOPs");
+  df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
+  df.Endl();
+}
 
+void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+{
+  // basic status info
+  fp << m_cycle_count << " ";
+  fp << m_world->GetStats().GetUpdate() << " ";
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    fp << GetRegister(i) << " ";
+    fp << "(" << reg.originated << ") ";
+  }    
+  // genome loc info
+  fp << m_cur_thread << " ";
+  fp << getIP().GetPosition() << " ";  
+  fp << getHead(nHardware::HEAD_READ).GetPosition() << " ";
+  fp << getHead(nHardware::HEAD_WRITE).GetPosition()  << " ";
+  fp << getHead(nHardware::HEAD_FLOW).GetPosition()   << " ";
+  // last output
+  fp << m_last_output << " ";
+  // phenotype/org status info
+  fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
+  fp << m_organism->GetPhenotype().GetCurBonus() << " ";
+  fp << m_organism->GetForageTarget() << " ";
+  if (m_organism->HasOpinion()) fp << m_organism->GetOpinion().first << " ";
+  else fp << -99 << " ";
+  // environment info / things that affect movement
+  fp << m_organism->GetCellID() << " ";
+  fp << m_organism->GetFacedDir() << " ";
+  fp << m_organism->IsNeighborCellOccupied() << " ";  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  int wall = 0;
+  int hill = 0;
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
+    if (hill == 1 && wall == 1) break;
+  }
+  fp << hill << " ";
+  fp << wall << " ";
+  // instruction about to be executed
+  fp << next_name << " ";
+  // any trailing nops (up to NUM_REGISTERS)
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  tSmartArray<int> seq;
+  seq.Resize(0);
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
+    else break;
+  }
+  cString mod_string;
+  for (int j = 0; j < seq.GetSize(); j++) {
+    mod_string += (char) seq[j] + 'A';  
+  }  
+  if (mod_string.GetSize() != 0) fp << mod_string << " ";
+  else fp << "NoMods" << " ";
+}
 
-
+void cHardwareExperimental::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
+{
+  fp << exec_sucess;
+  fp << endl;
+  fp.flush();
+}
 
 cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
 {
@@ -3229,8 +3339,6 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   // defaults to current forage target if input is absent and not predator
   int id_sought = -1;
   if (m_organism->GetForageTarget() !=-2) id_sought = m_organism->GetForageTarget();
-  // override habitat_used to match that for id_sought
-  if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
   
   if (habitat_used != -2 && search_label.GetSize() > 3) {
     id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;

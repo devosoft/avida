@@ -190,7 +190,7 @@ private:
   int dom_gene_depth;
   cString dom_sequence;
   
-  int dom_last_birth_cell;    //APW
+  int dom_last_birth_cell;
   int dom_last_forager_type;
   int dom_last_group_id;
 
@@ -392,7 +392,7 @@ public:
   int GetDomGeneDepth() const { return dom_gene_depth; }
   const cString& GetDomSequence() const { return dom_sequence; }
   
-  int GetDomLastBirthCell() const { return dom_last_birth_cell; }   // APW
+  int GetDomLastBirthCell() const { return dom_last_birth_cell; }
   int GetDomLastGroup() const { return dom_last_group_id; }
   int GetDomLastForagerType() const { return dom_last_forager_type; }
 
@@ -417,7 +417,7 @@ public:
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
 
-  void SetDomLastBirthCell(int in_lbc) { dom_last_birth_cell = in_lbc; }   // APW
+  void SetDomLastBirthCell(int in_lbc) { dom_last_birth_cell = in_lbc; }
   void SetDomLastGroup(int in_lg) { dom_last_group_id = in_lg; }
   void SetDomLastForagerType(int in_lfg) { dom_last_forager_type = in_lfg; }
 

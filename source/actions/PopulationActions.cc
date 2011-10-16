@@ -40,6 +40,12 @@
 #include "cOrganism.h"
 #include "cEnvironment.h"
 #include "cUserFeedback.h"
+#include "cArgSchema.h"
+#include "tAutoRelease.h"
+#include "tIterator.h"
+#include "cClassificationManager.h"
+#include "cBioGroup.h"
+#include "cBioGroupManager.h"
 
 #include <map>
 #include <set>
@@ -5064,6 +5070,259 @@ public:
   }
 };
 
+/* Record condensed trace files for particular orgs. */
+class cActionPrintMiniTraces : public cAction
+{
+private:
+  bool m_save_dominants;
+  bool m_save_groups;
+  bool m_save_foragers;
+  int m_orgs_per;
+  int m_max_samples;
+  
+public:
+  cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0)
+  {
+    cArgSchema schema(':','=');
+    
+    // Entries
+    schema.AddEntry("save_dominants", 0, 0, 1, 0);
+    schema.AddEntry("save_groups", 1, 0, 1, 0);
+    schema.AddEntry("save_foragers", 2, 0, 1, 0);
+    schema.AddEntry("orgs_per", 3, 1);
+    schema.AddEntry("max_samples", 4, 0); // recommended if using save_groups and restrict to defined is not set
+    
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (args) {
+      m_save_dominants = argc->GetInt(0);
+      m_save_groups = argc->GetInt(1);
+      m_save_foragers = argc->GetInt(2);
+      m_orgs_per = argc->GetInt(3);
+      m_max_samples = argc->GetInt(4);
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // setup the genotype 'list' which will be checked in activateorg
+    // this should setup a 'list' of genotypes at each event update which should be followed (e.g. if orgs_per = 10, save top 10 prey genotypes + top 10 predator genotypes at this update or one org from top 10 most common genotypes over all)
+    // items should be removed from list once an org of that type is set to be traced
+    // number of items in list should be capped by max_samples, filling the list with the more dominant genotypes first (this is necessary in the case of saving groups because we may not know how many groups there will be at any time during a run and so cannot set orgs_per to function as an absolute cap...should not be neccessary for saving by dominants or saving by foragers)
+    // when we go to check if an org is to be traced, all we need to then do is remove the genotype from the list if the org's genotype is there
+    // so what we really need to do here is build an array of genotypes in the population that we will pop from
+    // this will be processed each event trigger
+    // in activateorganism we can just check the size of this array, 
+    // if it is 0, there is nothing to check, if it is > 0, there are genotypes waiting
+    // this will allow genotypes to wait until the next event (which will overwrite the array contents)
+    // only tracing for orgs within threshold (unless none are, then just use first bg)
+    
+    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    cBioGroup* bg = it->Next();
+    tSmartArray<cBioGroup*> bg_list;
+    tSmartArray<int> fts_to_use;
+    tSmartArray<int> groups_to_use;
+    int num_doms = 0;
+    int fts_left = 0;
+    int groups_left = 0;
+    
+    if (m_save_dominants) num_doms = m_orgs_per;
+    
+    // get forager types in pop
+    tSmartArray<int> ft_check_counts;
+    ft_check_counts.Resize(0);
+    if (m_save_foragers) {
+      if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) fts_to_use.Push(-2);
+      fts_to_use.Push(-1);  // account for -1 default's
+      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+      set <int>::iterator itr;    
+      for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) fts_to_use.Push(*itr);
+      ft_check_counts.Resize(fts_to_use.GetSize());
+      ft_check_counts.SetAll(m_orgs_per);
+      fts_left = m_orgs_per * fts_to_use.GetSize();
+    }
+    
+    // get groups in pop
+    tSmartArray<int> group_check_counts;
+    group_check_counts.Resize(0);
+    if (m_save_groups) {
+      map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();
+      map <int,int>::iterator itr;    
+      for(itr = groups_formed.begin();itr!=groups_formed.end();itr++) {
+        double cur_size = itr->second;
+        if (cur_size > 0) groups_to_use.Push(itr->first);  
+      }
+      group_check_counts.Resize(groups_to_use.GetSize());
+      group_check_counts.SetAll(m_orgs_per);
+      groups_left = m_orgs_per * groups_to_use.GetSize();
+    }
+
+    // this will add biogroup genotypes up to max_bgs with priority on dominants, then forager types, then group ids, without repeats
+    // priority is non-issue if you don't double up on the settings in one go
+    int max_bgs = 1;
+    if (m_max_samples) max_bgs = m_max_samples;
+    else max_bgs = num_doms + (m_orgs_per * fts_to_use.GetSize()) + (m_orgs_per * groups_to_use.GetSize());
+    int num_types = 3;
+    bool doms_done = false;
+    bool fts_done = false;
+    bool grps_done = false;
+    if (!m_save_dominants) doms_done = true;
+    if (!m_save_foragers) fts_done = true;
+    if (!m_save_groups) grps_done = true;
+    for (int i = 0; i < num_types; i++) {
+      if (bg_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
+        if (i == 0 && m_save_dominants && num_doms > 0) {
+          for (int j = 0; j < num_doms; j++) {
+            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
+              bg_list.Push(bg);
+              if (m_save_foragers) {
+                int ft = bg->GetProperty("last_forager_type").AsInt(); 
+                if (fts_left > 0) {
+                  for (int k = 0; k < fts_to_use.GetSize(); k++) {
+                    if (ft == fts_to_use[k]) {
+                      ft_check_counts[k]--;
+                      if (ft_check_counts[k] == 0) {
+                        unsigned int last = fts_to_use.GetSize() - 1;
+                        fts_to_use.Swap(k, last);
+                        fts_to_use.Pop();
+                        ft_check_counts.Swap(k, last);
+                        ft_check_counts.Pop();
+                      }
+                      fts_left--;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (m_save_groups) {
+                int grp = bg->GetProperty("last_group_id").AsInt(); 
+                if (groups_left > 0) {
+                  for (int k = 0; k < groups_to_use.GetSize(); k++) {
+                    if (grp == groups_to_use[k]) {
+                      group_check_counts[k]--;
+                      if (group_check_counts[k] == 0) {
+                        unsigned int last = groups_to_use.GetSize() - 1;
+                        groups_to_use.Swap(k, last);
+                        groups_to_use.Pop();
+                        group_check_counts.Swap(k, last);
+                        group_check_counts.Pop();
+                      }
+                      groups_left--;
+                      break;
+                    }
+                  }
+                }
+              }                 
+              if (bg == it->Next()) { // no more to check
+                doms_done = true; 
+                break; 
+              }
+              else bg = it->Next();
+            }
+            else if (bg && !bg->GetProperty("threshold").AsBool()) {      // no more above threshold
+              doms_done = true; 
+              break; 
+            }
+          }
+          if (doms_done) continue;
+        } // end of dominants
+        
+        else if (i == 1 && m_save_foragers && fts_left > 0) {
+          for (int j = 0; j < fts_left; j++) {
+            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
+              int ft = bg->GetProperty("last_forager_type").AsInt(); 
+              bool found_one = false;
+              for (int k = 0; k < fts_to_use.GetSize(); k++) {
+                if (ft == fts_to_use[k]) {
+                  bg_list.Push(bg);
+                  ft_check_counts[k]--;
+                  if (ft_check_counts[k] == 0) {
+                    unsigned int last = fts_to_use.GetSize() - 1;
+                    fts_to_use.Swap(k, last);
+                    fts_to_use.Pop();
+                    ft_check_counts.Swap(k, last);
+                    ft_check_counts.Pop();
+                  }
+                  found_one = true;
+                  break;
+                }
+              }
+              if (m_save_groups) {
+                int grp = bg->GetProperty("last_group_id").AsInt(); 
+                if (groups_left > 0) {
+                  for (int k = 0; k < groups_to_use.GetSize(); k++) {
+                    if (grp == groups_to_use[k]) {
+                      group_check_counts[k]--;
+                      if (group_check_counts[k] == 0) {
+                        unsigned int last = groups_to_use.GetSize() - 1;
+                        groups_to_use.Swap(k, last);
+                        groups_to_use.Pop();
+                        group_check_counts.Swap(k, last);
+                        group_check_counts.Pop();
+                      }
+                      groups_left--;
+                      break;
+                    }
+                  }
+                }
+              }                 
+              if (bg == it->Next()) { // no more to check
+                fts_done = true; 
+                break; 
+              }
+              else bg = it->Next();
+              if (!found_one) j--;
+            }
+            else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
+              fts_done = true; 
+              break; 
+            }
+          }
+          if (fts_done) continue;
+        } // end of forage types
+        
+        else if (i == 2 && m_save_groups && groups_left > 0) {
+          for (int j = 0; j < groups_left; j++) {
+            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
+              int grp = bg->GetProperty("last_group_id").AsInt(); 
+              bool found_one = false;
+              for (int k = 0; k < groups_to_use.GetSize(); k++) {
+                if (grp == groups_to_use[k]) {
+                  bg_list.Push(bg);
+                  group_check_counts[k]--;
+                  if (group_check_counts[k] == 0) {
+                    unsigned int last = groups_to_use.GetSize() - 1;
+                    groups_to_use.Swap(k, last);
+                    groups_to_use.Pop();
+                    group_check_counts.Swap(k, last);
+                    group_check_counts.Pop();
+                  }
+                  found_one = true;
+                  break;
+                }
+              }
+              if (bg == it->Next()) { // no more to check
+                grps_done = true; 
+                break; 
+              }
+              else bg = it->Next();
+              if (!found_one) j--;
+            }
+            else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
+              grps_done = true; 
+              break; 
+            }
+          }           
+          if (grps_done) break;     // no more of last type we have
+        } // end of group id types
+      } // end of while < max_bgs  
+    }
+    m_world->GetPopulation().SetMiniTraceQueue(bg_list);
+  }
+};
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -5169,4 +5428,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
   action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
+  
+  action_lib->Register<cActionPrintMiniTraces>("PrintMiniTraces");
 }

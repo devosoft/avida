@@ -739,19 +739,18 @@ public:
   void Process(cAvidaContext& ctx)
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    tSmartArray<int> groups;
-    map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();
-    
+    int num_groups = 0;
+    map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();    
     map <int,int>::iterator itr;    
     for(itr = groups_formed.begin();itr!=groups_formed.end();itr++) {
       double cur_size = itr->second;
-      if (cur_size > 0) groups.Push(itr->first); 
+      if (cur_size > 0) num_groups++; 
     }
     
     tSmartArray<int> birth_groups_checked;
     cBioGroup* bg = it->Next();
     
-    for (int i = 0; i < groups.GetSize(); i++) {
+    for (int i = 0; i < num_groups; i++) {
       bool already_used = false;
       if (bg && (bg->GetProperty("threshold").AsBool() || i == 0)) {
         int last_birth_group_id = bg->GetProperty("last_group_id").AsInt(); 
@@ -761,14 +760,18 @@ public:
           for (int j = 0; j < birth_groups_checked.GetSize(); j++) {
             if (last_birth_group_id == birth_groups_checked[j]) { 
               already_used = true; 
+              i--;
               break; 
             }
           }
         }
         if (!already_used) birth_groups_checked.Push(last_birth_group_id);
         if (already_used) {
-          bg = it->Next();
-          continue;
+          if (bg == it->Next()) break; // no more to check
+          else {
+            bg = it->Next();
+            continue;
+          }
         }
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->GetProperty("name").AsString());
@@ -777,7 +780,8 @@ public:
         
         testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
-        bg = it->Next();
+        if (bg == it->Next()) break; // no more to check
+        else bg = it->Next();
       }
     }
   }
@@ -800,18 +804,17 @@ public:
   void Process(cAvidaContext& ctx)
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    // +2 for predators (-2) and default (-1) targets
-    const int num_targets = resource_lib.GetSize() + 2;
-    
-    tArray<int> target_list;
-    target_list.Resize(num_targets);
-    target_list.SetAll(0);
-    
+    int num_fts = 1;
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) num_fts = 2;
+    else num_fts = 1;  // account for -1's
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;    
+    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+
     tSmartArray<int> birth_forage_types_checked;
     cBioGroup* bg = it->Next();
     
-    for (int i = 0; i < target_list.GetSize(); i++) {
+    for (int i = 0; i < num_fts; i++) {
       bool already_used = false;
       if (bg && (bg->GetProperty("threshold").AsBool() || i == 0)) {
         int last_birth_group_id = bg->GetProperty("last_group_id").AsInt(); 
@@ -821,14 +824,18 @@ public:
           for (int j = 0; j < birth_forage_types_checked.GetSize(); j++) {
             if (last_birth_forager_type == birth_forage_types_checked[j]) { 
               already_used = true; 
+              i--;
               break; 
             }
           }
         }
         if (!already_used) birth_forage_types_checked.Push(last_birth_forager_type);
         if (already_used) {
-          bg = it->Next();
-          continue;
+          if (bg == it->Next()) break; // no more to check
+          else {
+            bg = it->Next();
+            continue;
+          }
         }
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->GetProperty("name").AsString());
@@ -837,7 +844,8 @@ public:
         
         testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
-        bg = it->Next();
+        if (bg == it->Next()) break; // no more to check
+        else bg = it->Next();
       }
     }
   }

@@ -62,6 +62,7 @@ protected:
   cOrganism* m_organism;     // Organism using this hardware.
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
+  cHardwareTracer* m_minitracer; // Set this if you want execution traced.
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
@@ -121,7 +122,11 @@ public:
   virtual int GetType() const = 0;
   virtual bool SupportsSpeculative() const = 0;
   virtual void PrintStatus(std::ostream& fp) = 0;
+  virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) = 0;
+  virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
+  void SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id);
+  virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
   
   

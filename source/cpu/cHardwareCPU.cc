@@ -867,7 +867,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 #endif
     
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = ip.GetInst();
@@ -1016,7 +1016,7 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -1081,9 +1081,107 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   fp.flush();
 }
 
+void cHardwareCPU::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  cString org_dat("");
+  df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
+  df.WriteComment(org_dat.Set("Org ID: %d", org_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
+  df.WriteComment(" ");
+  df.WriteComment("Exec Stats Columns:");
+  df.WriteComment("CPU Cycle");
+  df.WriteComment("Current Update");
+  df.WriteComment("Register Contents"); //(CPU Cycle Origin of Contents)");
+  df.WriteComment("Current Thread");
+  df.WriteComment("IP Position");
+  df.WriteComment("RH Position");
+  df.WriteComment("WH Position");
+  df.WriteComment("FH Position");
+//  df.WriteComment("CPU Cycle of Last Output");
+  df.WriteComment("Current Merit");
+  df.WriteComment("Current Bonus");
+  df.WriteComment("Forager Type");
+  df.WriteComment("Group ID (opinion)");
+  df.WriteComment("Current Cell");
+  df.WriteComment("Faced Direction");
+  df.WriteComment("Faced Cell Occupied?");
+  df.WriteComment("Faced Cell Has Hill?");
+  df.WriteComment("Faced Cell Has Wall?");
+  df.WriteComment("Queued Instruction");
+  df.WriteComment("Trailing NOPs");
+  df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
+  df.Endl();
+}
 
+void cHardwareCPU::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+{
+  // basic status info
+  fp << m_cycle_counter << " ";
+  fp << m_world->GetStats().GetUpdate() << " ";
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+//    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    fp << GetRegister(i) << " ";
+//    fp << "(" << reg.originated << ") ";
+  }    
+  // genome loc info
+  fp << m_cur_thread << " ";
+  fp << getIP().GetPosition() << " ";  
+  fp << getHead(nHardware::HEAD_READ).GetPosition() << " ";
+  fp << getHead(nHardware::HEAD_WRITE).GetPosition()  << " ";
+  fp << getHead(nHardware::HEAD_FLOW).GetPosition()   << " ";
+  // last output
+//  fp << m_last_output << " ";
+  // phenotype/org status info
+  fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
+  fp << m_organism->GetPhenotype().GetCurBonus() << " ";
+  fp << m_organism->GetForageTarget() << " ";
+  if (m_organism->HasOpinion()) fp << m_organism->GetOpinion().first << " ";
+  else fp << -99 << " ";
+  // environment info / things that affect movement
+  fp << m_organism->GetCellID() << " ";
+  fp << m_organism->GetFacedDir() << " ";
+  fp << m_organism->IsNeighborCellOccupied() << " ";  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  int wall = 0;
+  int hill = 0;
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
+    if (hill == 1 && wall == 1) break;
+  }
+  fp << hill << " ";
+  fp << wall << " ";
+  // instruction about to be executed
+  fp << next_name << " ";
+  // any trailing nops (up to NUM_REGISTERS)
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  tSmartArray<int> seq;
+  seq.Resize(0);
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
+    else break;
+  }
+  cString mod_string;
+  for (int j = 0; j < seq.GetSize(); j++) {
+    mod_string += (char) seq[j] + 'A';  
+  }  
+  if (mod_string.GetSize() != 0) fp << mod_string << " ";
+  else fp << "NoMods" << " ";
+}
 
-
+void cHardwareCPU::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
+{
+  fp << exec_sucess;
+  fp << endl;
+  fp.flush();
+}
 
 /////////////////////////////////////////////////////////////////////////
 // Method: cHardwareCPU::FindLabel(direction)
