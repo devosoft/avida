@@ -482,7 +482,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       // If tolerances are on ... @JJB
-      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 ) {
+      if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
           target_cells[i] = doomed_cell;
@@ -6159,7 +6159,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   int group_id = parent_organism->GetOpinion().first;
 
-  if (group_id < 0) return tolerance_max;
+  if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return tolerance_max;
 
   int group_intolerance = 0;
   int single_member_intolerance = 0;
@@ -6249,7 +6249,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
   assert(parent->HasOpinion());
 
   // If non-standard group, automatic success
-  if (parent->GetOpinion().first < 0) return 1.0;
+  if ((parent->GetOpinion().first < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return 1.0;
 
   const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
 
@@ -6268,7 +6268,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
   // If non-standard group, automatic success
-  if (group_id < 0) return 1.0;
+  if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return 1.0;
 
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
@@ -6291,7 +6291,7 @@ double cPopulation::CalcGroupOddsOffspring(int group_id)
 bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring)
 {
   // If joining a non-standard group, atomatic success
-  if (parent->GetOpinion().first < 0) {
+  if ((parent->GetOpinion().first < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) {
     int parent_group = parent->GetOpinion().first;
     offspring->SetOpinion(parent_group);
     JoinGroup(offspring, parent_group);

@@ -56,8 +56,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
 , tolerance_immigrants(m_world->GetConfig().MAX_TOLERANCE.Get())        // @JJB
-, tolerance_offspring_own(m_world->GetConfig().MAX_TOLERANCE.Get())     // @JJB
-, tolerance_offspring_others(m_world->GetConfig().MAX_TOLERANCE.Get())  // @JJB
+, tolerance_offspring_own( (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) ? 0 : (m_world->GetConfig().MAX_TOLERANCE.Get()) )     // @JJB
+, tolerance_offspring_others( (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) ? 0 : (m_world->GetConfig().MAX_TOLERANCE.Get()) )  // @JJB
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_para_tasks(m_world->GetEnvironment().GetNumTasks())
@@ -87,11 +87,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
   if (num_resources <= 0 || num_nops <= 0) return;
   double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
   cur_collect_spec_counts.Resize((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0));
-  
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
-    tolerance_offspring_own.Resize(0);
-    tolerance_offspring_others.Resize(0);
-  }
 }
 
 cPhenotype::~cPhenotype()
@@ -381,9 +376,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.SetAll(0);        // @JJB
-  tolerance_offspring_own.SetAll(0);     // @JJB
-  tolerance_offspring_others.SetAll(0);  // @JJB
+  tolerance_immigrants.SetAll(-1);        // @JJB
+  tolerance_offspring_own.SetAll(-1);     // @JJB
+  tolerance_offspring_others.SetAll(-1);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Copy last values from parent
@@ -579,9 +574,9 @@ void cPhenotype::SetupInject(const Sequence & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.SetAll(0);        // @JJB
-  tolerance_offspring_own.SetAll(0);     // @JJB
-  tolerance_offspring_others.SetAll(0);  // @JJB
+  tolerance_immigrants.SetAll(-1);        // @JJB
+  tolerance_offspring_own.SetAll(-1);     // @JJB
+  tolerance_offspring_others.SetAll(-1);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // New organism has no parent and so cannot use its last values; initialize as needed
@@ -914,9 +909,9 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   }
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-	  tolerance_immigrants.SetAll(0);        // @JJB
-	  tolerance_offspring_own.SetAll(0);     // @JJB
-	  tolerance_offspring_others.SetAll(0);  // @JJB
+	  tolerance_immigrants.SetAll(-1);        // @JJB
+	  tolerance_offspring_own.SetAll(-1);     // @JJB
+	  tolerance_offspring_others.SetAll(-1);  // @JJB
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
@@ -1018,9 +1013,9 @@ void cPhenotype::TestDivideReset(const Sequence & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.SetAll(0);        // @JJB
-  tolerance_offspring_own.SetAll(0);     // @JJB
-  tolerance_offspring_others.SetAll(0);  // @JJB
+  tolerance_immigrants.SetAll(-1);        // @JJB
+  tolerance_offspring_own.SetAll(-1);     // @JJB
+  tolerance_offspring_others.SetAll(-1);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Setup other miscellaneous values...
@@ -1173,9 +1168,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.SetAll(0);        // @JJB
-  tolerance_offspring_own.SetAll(0);     // @JJB
-  tolerance_offspring_others.SetAll(0);  // @JJB
+  tolerance_immigrants.SetAll(-1);        // @JJB
+  tolerance_offspring_own.SetAll(-1);     // @JJB
+  tolerance_offspring_others.SetAll(-1);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Copy last values from parent
@@ -1671,7 +1666,7 @@ int cPhenotype::CalcToleranceImmigrants() const
   int intolerance_count = 0;
 
   for (int n = 0; n < tolerance_max; n++) {
-    if (tolerance_immigrants[n] <= cur_update - update_window) break;
+    if ((tolerance_immigrants[n] <= cur_update - update_window) || (tolerance_immigrants[n] == -1)) break;
     intolerance_count++;
   }
 
@@ -1694,7 +1689,7 @@ int cPhenotype::CalcToleranceOffspringOwn() const
   int intolerance_count = 0;
 
   for (int n = 0; n < tolerance_max; n++) {
-    if (tolerance_offspring_own[n] <= cur_update - update_window) break;
+    if ((tolerance_offspring_own[n] <= cur_update - update_window) || (tolerance_offspring_own[n] == -1)) break;
     intolerance_count++;
   }
 
@@ -1717,7 +1712,7 @@ int cPhenotype::CalcToleranceOffspringOthers() const
   int intolerance_count = 0;
 
   for (int n = 0; n < tolerance_max; n++) {
-    if (tolerance_offspring_others[n] <= cur_update - update_window) break;
+    if ((tolerance_offspring_others[n] <= cur_update - update_window) || (tolerance_offspring_others[n] == -1)) break;
     intolerance_count++;
   }
 

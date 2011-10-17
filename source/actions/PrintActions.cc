@@ -220,7 +220,7 @@ public:
   }
 };
 
-class cActionPrintGroupTolerance : public cAction
+class cActionPrintGroupTolerance : public cAction // @JJB
 {
 private:
   cString m_filename;
@@ -3795,7 +3795,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
-	action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
+  action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
   action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
@@ -3814,7 +3814,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintReactionRewardData>("PrintReactionRewardData");
   action_lib->Register<cActionPrintCurrentReactionRewardData>("PrintCurrentReactionRewardData");
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
-	action_lib->Register<cActionPrintExtendedTimeData>("PrintExtendedTimeData");
+  action_lib->Register<cActionPrintExtendedTimeData>("PrintExtendedTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
@@ -3838,16 +3838,16 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
 
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
-	action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
+  action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
 
-	action_lib->Register<cActionPrintDemeResourceThresholdPredicate>("PrintDemeResourceThresholdPredicate");
-	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
-	action_lib->Register<cActionPrintCellData>("PrintCellData");
-	action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
-	action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
-	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
-	action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
-	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
+  action_lib->Register<cActionPrintDemeResourceThresholdPredicate>("PrintDemeResourceThresholdPredicate");
+  action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
+  action_lib->Register<cActionPrintCellData>("PrintCellData");
+  action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
+  action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
+  action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
+  action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
+  action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
 
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
@@ -3864,7 +3864,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
-	action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
+  action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
   action_lib->Register<cActionPrintWinningDeme>("PrintWinningDeme");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
@@ -3872,8 +3872,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 
   action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
-	action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
-	action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
+  action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
+  action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
   action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
@@ -3893,10 +3893,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
-	action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
-	action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
-	action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
-	action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
+  action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
+  action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
+  action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
+  action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
 
 
   //Coalescence Clade Actions
@@ -3945,7 +3945,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
-	action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
+  action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
   action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
@@ -3962,22 +3962,22 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
 
   action_lib->Register<cActionPrintReputationData>("PrintReputationData");
-	action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
+  action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
   action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
-	action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
+  action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
 
-	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
-	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-    action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-    action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
-    action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
-    action_lib->Register<cActionPrintTargets>("PrintTargets");
-	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
+  action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
+  action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
+  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
+  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
+  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
+  action_lib->Register<cActionPrintTargets>("PrintTargets");
+  action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");
 
   action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
-	action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
+  action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
 }

@@ -2859,9 +2859,9 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   return true;
 }
 
+// Will rotate organism to face a specified other org
 bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
 {
-  // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -2869,8 +2869,8 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
-  // return true if invalid number or self
-  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  // return false if invalid number or self
+  if ((id_sought < 0) || (id_sought == m_organism->GetID())) return false;
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org = m_organism;
@@ -2891,21 +2891,21 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     const int searching_org_cell = m_organism->GetCellID();
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
-    const int x_dist =  target_x - searching_x;
+    const int x_dist = target_x - searching_x;
     const int y_dist = target_y - searching_y;
     
     const int travel_dist = max(abs(x_dist), abs(y_dist));
     if (travel_dist > max_dist) return false;
 
     int correct_facing = 0;
-    if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N    
-    else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
-    else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
-    else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
-    else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
-    else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
-    else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
+    if ((y_dist < 0) && (x_dist == 0)) correct_facing = 0; // rotate N    
+    else if ((y_dist < 0) && (x_dist > 0)) correct_facing = 1; // rotate NE
+    else if ((y_dist == 0) && (x_dist > 0)) correct_facing = 2; // rotate E
+    else if ((y_dist > 0) && (x_dist > 0)) correct_facing = 3; // rotate SE
+    else if ((y_dist > 0) && (x_dist == 0)) correct_facing = 4; // rotate S
+    else if ((y_dist > 0) && (x_dist < 0)) correct_facing = 5; // rotate SW
+    else if ((y_dist == 0) && (x_dist < 0)) correct_facing = 6; // rotate W
+    else if ((y_dist < 0) && (x_dist < 0)) correct_facing = 7; // rotate NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(-1);
       if (m_organism->GetFacedDir() == correct_facing) break;
@@ -2914,9 +2914,9 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   }
 }
 
+// Will rotate organism to face away from a specificied other org
 bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
 {
-  // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -2924,8 +2924,8 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
-  // return true if invalid number or self
-  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  // return false if invalid number or self
+  if ((id_sought < 0) || (id_sought == m_organism->GetID())) return false;
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org = m_organism;
@@ -2954,14 +2954,14 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     if (travel_dist > max_dist) return false;
     
     int correct_facing = 0;
-    if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
-    else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate away from NE
-    else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate away from E
-    else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate away from SE
-    else if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate away from S
-    else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate away from SW
-    else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate away from W
-    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
+    if ((y_dist < 0) && (x_dist == 0)) correct_facing = 4; // rotate away from N    
+    else if ((y_dist < 0) && (x_dist > 0)) correct_facing = 5; // rotate away from NE
+    else if ((y_dist == 0) && (x_dist > 0)) correct_facing = 6; // rotate away from E
+    else if ((y_dist > 0) && (x_dist > 0)) correct_facing = 7; // rotate away from SE
+    else if ((y_dist > 0) && (x_dist == 0)) correct_facing = 0; // rotate away from S
+    else if ((y_dist > 0) && (x_dist < 0)) correct_facing = 1; // rotate away from SW
+    else if ((y_dist == 0) && (x_dist < 0)) correct_facing = 2; // rotate away from W
+    else if ((y_dist < 0) && (x_dist < 0)) correct_facing = 3; // rotate away from NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(-1);
       if (m_organism->GetFacedDir() == correct_facing) break;
@@ -4175,7 +4175,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
   if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      // If this instruction is not nop modified it fails to execute and does nothing @JJB
+      // If this instruction is not nop modified it fails to execute and does nothing
       if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
       
       const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();    
@@ -4249,7 +4249,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      // If this instruction is not nop modified it fails to execute and does nothing @JJB
+      // If this instruction is not nop modified it fails to execute and does nothing
       if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
       
       const int cur_update = m_world->GetStats().GetUpdate();
@@ -4385,15 +4385,27 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
   int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   
   double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
-  double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-  double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
+  double offspring_own_odds;
+  double offspring_others_odds;
+  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
+  int tol_own;
+  int tol_others;
   
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
+    offspring_own_odds = 1.0;
+    offspring_others_odds = 1.0;
+    tol_own = tol_max;
+    tol_others = tol_max;
+  } else {
+    offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
+    offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
+    tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+    tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+  }
+
   double odds_immi = immigrant_odds * 100 + 0.5;
   double odds_own = offspring_own_odds * 100 + 0.5;
   double odds_others = offspring_others_odds * 100 + 0.5;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
-  int tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-  int tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
   
   m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
                                                      odds_others, tol_immi, tol_own, tol_others, tol_max);

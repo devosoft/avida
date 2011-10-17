@@ -290,7 +290,7 @@ public:
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);
-  void MakeGroup(cOrganism* org);
+  void MakeGroup(cOrganism* org); // @JJB
   // Removes an organism from a group 
   void LeaveGroup(cOrganism* org, int group_id);
 
