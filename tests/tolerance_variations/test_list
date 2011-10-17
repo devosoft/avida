@@ -13,7 +13,7 @@ createdby = James Bosko  ; Who created the test
 email = boskojam@msu.edu ; Email address for the test's creator
 
 [consistency]
-enabled = no            ; Is this test a consistency test?
+enabled = yes            ; Is this test a consistency test?
 long = no                ; Is this test a long test?
 
 [performance]
