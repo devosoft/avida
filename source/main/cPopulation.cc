@@ -85,6 +85,7 @@ cPopulation::cPopulation(cWorld* world)
 , schedule(NULL)
 //, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
 , birth_chamber(world)
+, print_mini_trace_genomes(true)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
@@ -865,10 +866,10 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   }
   
   // are there mini traces we need to test for?
-  if (minitrace_queue.GetSize() > 0) TestForMiniTrace(in_organism);
+  if (minitrace_queue.GetSize() > 0) TestForMiniTrace(ctx, in_organism);
 }
 
-void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
+void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
   cBioGroup* org_bg = in_organism->GetBioGroup("genotype");
@@ -878,13 +879,13 @@ void cPopulation::TestForMiniTrace(cOrganism* in_organism)
       unsigned int last = minitrace_queue.GetSize() - 1;
       minitrace_queue.Swap(i, last);
       minitrace_queue.Pop();
-      SetupMiniTrace(in_organism);
+      SetupMiniTrace(ctx, in_organism);
       break;
     }
   }
 }
 
-void cPopulation::SetupMiniTrace(cOrganism* in_organism)
+void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 {
   const int target = in_organism->GetForageTarget();
   const int id = in_organism->GetID();
@@ -893,12 +894,28 @@ void cPopulation::SetupMiniTrace(cOrganism* in_organism)
     filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trace", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   }
   in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  
+  if (print_mini_trace_genomes) {
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-ft%d-%s.trgeno", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    if (in_organism->HasOpinion()) {
+      gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trgeno", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    }
+    PrintMiniTraceGenome(ctx, in_organism, gen_file);
+  }
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue)
+void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename)
+{
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+  testcpu->PrintGenome(ctx, Genome(in_organism->GetBioGroup("genotype")->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
+  delete testcpu;
+}
+
+void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, const bool print_genomes)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
+  if (print_genomes) print_mini_trace_genomes = true;
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian

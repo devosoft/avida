@@ -78,6 +78,7 @@ private:
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   tSmartArray<cBioGroup*> minitrace_queue;
+  bool print_mini_trace_genomes;
   
   // Default organism setups...
   cEnvironment & environment;          // Physics & Chemistry description
@@ -222,7 +223,7 @@ public:
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false); 
   bool DumpMemorySummary(std::ofstream& fp);
 
-  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue);
+  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
   tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
@@ -365,8 +366,9 @@ private:
 	
   // Must be called to activate *any* organism in the population.
   void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
-  void TestForMiniTrace(cOrganism* in_organism);
-  void SetupMiniTrace(cOrganism* in_organism);
+  void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
+  void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
+  void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

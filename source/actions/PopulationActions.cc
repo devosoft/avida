@@ -5079,10 +5079,11 @@ private:
   bool m_save_foragers;
   int m_orgs_per;
   int m_max_samples;
+  bool m_print_genomes;
   
 public:
   cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0)
+  : cAction(world, args), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), m_print_genomes(true)
   {
     cArgSchema schema(':','=');
     
@@ -5092,6 +5093,7 @@ public:
     schema.AddEntry("save_foragers", 2, 0, 1, 0);
     schema.AddEntry("orgs_per", 3, 1);
     schema.AddEntry("max_samples", 4, 0); // recommended if using save_groups and restrict to defined is not set
+    schema.AddEntry("print_genomes", 5, 0, 1, 1);
     
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
@@ -5101,10 +5103,11 @@ public:
       m_save_foragers = argc->GetInt(2);
       m_orgs_per = argc->GetInt(3);
       m_max_samples = argc->GetInt(4);
+      m_print_genomes = argc->GetInt(5);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=1]"; }
+  static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=1] [boolean print_genomes=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -5113,8 +5116,6 @@ public:
     // items should be removed from list once an org of that type is set to be traced
     // number of items in list should be capped by max_samples, filling the list with the more dominant genotypes first (this is necessary in the case of saving groups because we may not know how many groups there will be at any time during a run and so cannot set orgs_per to function as an absolute cap...should not be neccessary for saving by dominants or saving by foragers)
     // when we go to check if an org is to be traced, all we need to then do is remove the genotype from the list if the org's genotype is there
-    // so what we really need to do here is build an array of genotypes in the population that we will pop from
-    // this will be processed each event trigger
     // in activateorganism we can just check the size of this array, 
     // if it is 0, there is nothing to check, if it is > 0, there are genotypes waiting
     // this will allow genotypes to wait until the next event (which will overwrite the array contents)
@@ -5320,7 +5321,7 @@ public:
         } // end of group id types
       } // end of while < max_bgs  
     }
-    m_world->GetPopulation().SetMiniTraceQueue(bg_list);
+    m_world->GetPopulation().SetMiniTraceQueue(bg_list, m_print_genomes);
   }
 };
 

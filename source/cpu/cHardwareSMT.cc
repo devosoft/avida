@@ -225,8 +225,14 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
 		
+    // Print the short form status of this CPU at each step... 
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
+
     // Test if costs have been paid and it is okay to execute this now...
+    int exec_success = 0;
     bool exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
+    // record any failure due to costs being paid
+    if (!exec) exec_success = -1;
 		
     // Now execute the instruction...
     if (exec == true) {
@@ -236,12 +242,20 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
-      			
+      if (exec == true) {
+        if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
+          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          // record execution success
+          exec_success = 1;
+        }
+      }    
+      
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
       if (AdvanceIP() == true) IP().Advance();
     }
+    // if using mini traces, report success or failure of execution
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
   }
   
   // Kill creatures who have reached their max num of instructions executed
@@ -373,7 +387,7 @@ void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* 
   df.WriteComment("Faced Cell Has Hill?");
   df.WriteComment("Faced Cell Has Wall?");
   df.WriteComment("Queued Instruction");
-  df.WriteComment("Trailing NOPs");
+//  df.WriteComment("Trailing NOPs");
   df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
   df.Endl();
 }
@@ -420,22 +434,22 @@ void cHardwareSMT::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   // instruction about to be executed
   fp << next_name << " ";
   // any trailing nops (up to NUM_REGISTERS)
-  cCPUMemory& memory = memory;
-  int pos = GetHead(nHardware::HEAD_IP).GetPosition();
-  tSmartArray<int> seq;
-  seq.Resize(0);
-  for (int i = 0; i < GetNumRegisters(); i++) {
-    pos += 1;
-    if (pos >= memory.GetSize()) pos = 0;
-    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
-    else break;
-  }
-  cString mod_string;
-  for (int j = 0; j < seq.GetSize(); j++) {
-    mod_string += (char) seq[j] + 'A';  
-  }  
-  if (mod_string.GetSize() != 0) fp << mod_string << " ";
-  else fp << "NoMods" << " ";
+  //  cCPUMemory& memory = m_memory;
+  //  int pos = GetHead(nHardware::HEAD_IP).GetPosition();
+  //  tSmartArray<int> seq;
+  //  seq.Resize(0);
+  //  for (int i = 0; i < NUM_REGISTERS; i++) {
+  //    pos += 1;
+  //    if (pos >= memory.GetSize()) pos = 0;
+  //    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
+  //    else break;
+  //  }
+  //  cString mod_string;
+  //  for (int j = 0; j < seq.GetSize(); j++) {
+  //    mod_string += (char) seq[j] + 'A';  
+  //  }  
+  //  if (mod_string.GetSize() != 0) fp << mod_string << " ";
+  //  else fp << "NoMods" << " ";
 }
 
 void cHardwareSMT::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
