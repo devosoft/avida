@@ -68,7 +68,7 @@ public:
   virtual cFlexVar GetProperty(const cString& prop) const = 0;
   
   virtual void Save(cDataFile& df) = 0;
-  
+  virtual void DepthSave(cDataFile& df) = 0;  
   
   int GetReferenceCount() const { return m_a_refs + m_p_refs; }
   int GetActiveReferenceCount() const { return m_a_refs; }

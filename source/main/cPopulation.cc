@@ -889,16 +889,16 @@ void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 {
   const int target = in_organism->GetForageTarget();
   const int id = in_organism->GetID();
-  cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trace", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trc", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   if (in_organism->HasOpinion()) {
-    filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trace", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   }
   in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   
   if (print_mini_trace_genomes) {
-    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-ft%d-%s.trgeno", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-ft%d-%s.trcgeno", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
     if (in_organism->HasOpinion()) {
-      gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trgeno", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+      gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
     }
     PrintMiniTraceGenome(ctx, in_organism, gen_file);
   }
@@ -4658,6 +4658,68 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
   return true;
 }
 
+bool cPopulation::SaveFlameData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Flame Data Save");
+  df.WriteTimeStamp();
+  
+  // Build up hash table of all current genotypes
+  tHashMap<int, sGroupInfo*> genotype_map;
+  
+  for (int cell = 0; cell < cell_array.GetSize(); cell++) {
+    if (cell_array[cell].IsOccupied()) {
+      cOrganism* org = cell_array[cell].GetOrganism();
+      
+      // Handle any parasites
+      const tArray<cBioUnit*>& parasites = org->GetParasites();
+      for (int p = 0; p < parasites.GetSize(); p++) {
+        cBioGroup* pg = parasites[p]->GetBioGroup("genotype");
+        if (pg == NULL) continue;
+        
+        sGroupInfo* map_entry = NULL;
+        if (genotype_map.Find(pg->GetID(), map_entry)) {
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0));
+        } else {
+          map_entry = new sGroupInfo(pg, true);
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0));
+          genotype_map.Set(pg->GetID(), map_entry);
+        }
+      }
+      
+      
+      // Handle the organism itself
+      cBioGroup* genotype = org->GetBioGroup("genotype");
+      if (genotype == NULL) continue;
+      
+      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+      sGroupInfo* map_entry = NULL;
+      if (genotype_map.Find(genotype->GetID(), map_entry)) {
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
+      } else {
+        map_entry = new sGroupInfo(genotype);
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
+        genotype_map.Set(genotype->GetID(), map_entry);
+      }
+    }
+  }
+  
+  // Output all current genotypes
+  tArray<sGroupInfo*> genotype_entries;
+  genotype_map.GetValues(genotype_entries);
+  for (int i = 0; i < genotype_entries.GetSize(); i++) {
+    cBioGroup* genotype = genotype_entries[i]->bg;
+    
+    genotype->DepthSave(df);
+    
+    df.Endl();
+    
+    delete genotype_entries[i];
+  }
+  
+  m_world->GetDataFileManager().Remove(filename);
+  return true;
+}
 
 struct sTmpGenotype
 {

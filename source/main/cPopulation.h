@@ -222,7 +222,8 @@ public:
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false); 
   bool DumpMemorySummary(std::ofstream& fp);
-
+  bool SaveFlameData(const cString& filename);
+  
   void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
   tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
   

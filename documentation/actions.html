@@ -300,6 +300,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#ResetDemes">ResetDemes</a><br>
       <a href="#SampleLandscape">SampleLandscape</a><br>
       <a href="#SaveDemeFounders">SaveDemeFounders</a><br>
+      <a href="#SaveFlameData">SaveFlameData</a><br>
       <a href="#SavePopulation">SavePopulation</a><br>
       <a href="#SerialTransfer">SerialTransfer</a><br>
       <a href="#SetCellResource">SetCellResource</a><br>
@@ -2447,7 +2448,7 @@ a single, complete file for each trigger.
 </li>
   <li><p>
     <strong><a name="PrintMiniTraces">PrintMiniTraces</a></strong>
-    <i>[boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=1] [boolean print_genome=1]</i>
+    <i>[boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]</i>
     </p>
     <p>Prints a condensed trace of execution during a lifetime. Who is traced is determined by arguements.
     E.g. with the args <it>save_dominants=1:orgs_per=2</t>, at the specified update(s) a list is
@@ -2457,7 +2458,8 @@ a single, complete file for each trigger.
     be saved without duplicating traces. E.g. <it>save_dominants=1:save_foragers=1:orgs_per=2</t> would
     trace one org from each of the two most dominant genotypes and one org from each of the two most 
     common genotypes for each of the existing forager types if those genotypes were not also one of the
-    two most abundant overall.
+    two most abundant overall. If max_samples is > 0, this will cap the total number of orgs traced with
+    priorities on fullfilling orgs_per quota for: dominants > forager types > group ids.
     </p>
     <p> Minitraces are currently only fully implemented for the experimental hardware and partially for 
     the SMT hardware because of differences in the way some minitrace variables are tracked by the 
@@ -2946,6 +2948,14 @@ a single, complete file for each trigger.
 
   </p>
 </li>
+  <li><p>
+    <strong><a name="SaveFlameData">SaveFlameData</a></strong>
+    <i>[string fname=""]</i>
+    </p>
+    <p>
+    Save only the data needed for generating flame graphs (genotype id, depth, and number of organisms).
+    </p>
+  </li>
 </UL>
 <p>&nbsp;</p>
 <h2><a name="CreateAction">Creating an Action</a></h2>

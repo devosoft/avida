@@ -120,8 +120,40 @@ public:
 };
 
 
+class cActionSaveFlameData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionSaveFlameData(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args), m_filename("")
+  {
+    cArgSchema schema(':','=');
+    
+    // String Entries
+    schema.AddEntry("filename", 0, "flame_data");
+    
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (args) {
+      m_filename = argc->GetString(0);
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string filename='flame']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int update = m_world->GetStats().GetUpdate();
+    cString filename = cStringUtil::Stringf("flamedat/%s-%d.spop", (const char*)m_filename, update);
+    m_world->GetPopulation().SaveFlameData(filename);
+  }
+};
+
 void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
+  action_lib->Register<cActionSaveFlameData>("SaveFlameData");
 }

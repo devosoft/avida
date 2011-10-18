@@ -229,6 +229,12 @@ void cBGGenotype::Save(cDataFile& df)
 }
 
 
+void cBGGenotype::DepthSave(cDataFile& df)
+{
+  df.Write(m_id, "ID", "genotype_id");
+  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
+  df.Write(m_depth, "Phylogenetic Depth", "depth");
+}
 
 bool cBGGenotype::Matches(cBioUnit* bu)
 {

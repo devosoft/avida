@@ -109,6 +109,7 @@ public:
   cFlexVar GetProperty(const cString& prop) const;
   
   void Save(cDataFile& df);
+  void DepthSave(cDataFile& df);
 
   
   // Genotype Specific Methods

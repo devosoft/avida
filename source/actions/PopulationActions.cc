@@ -5107,7 +5107,7 @@ public:
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=1] [boolean print_genomes=1]"; }
+  static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
