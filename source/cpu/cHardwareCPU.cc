@@ -9545,7 +9545,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         }
         m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = -1;
         // Retrieve modified tolerance total for immigrants.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants(true);
 
         // Output tolerance total to BX register.
         GetRegister(REG_BX) = tolerance_count;
@@ -9562,7 +9562,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = -1;
 
         // Retrieve modified tolerance total for own offspring.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn(true);
 
         // Output tolerance total to BX register.
         GetRegister(REG_BX) = tolerance_count;
@@ -9579,7 +9579,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = -1;
 
         // Retrieve modified tolerance total for other offspring in group.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers(true);
 
         // Output tolerance total to BX register.
         GetRegister(REG_BX) = tolerance_count;
@@ -9619,7 +9619,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         }
         m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
         // Retrieve modified tolerance total for immigrants.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants(true);
 
         // Output tolerance total to BX register.
         GetRegister(REG_BX) = tolerance_count;
@@ -9636,7 +9636,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
 
         // Retrieve modified tolerance total for own offspring.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn(true);
 
         // Output tolerance total to BX register.
         GetRegister(REG_BX) = tolerance_count;
@@ -9653,7 +9653,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
 
         // Retrieve modified tolerance total for other offspring in the group.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers(true);
 
         // Output tolerance total to BX register.
         GetRegister(REG_BX) = tolerance_count;
@@ -9676,9 +9676,9 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       PushToleranceInstExe(6, ctx);
 
-      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-      int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants(false);
+      int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn(false);
+      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers(false);
       GetRegister(REG_AX) = tolerance_immigrants;
       GetRegister(REG_BX) = tolerance_own;
       GetRegister(REG_CX) = tolerance_others;  
@@ -9734,7 +9734,7 @@ void cHardwareCPU::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
   double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
   double offspring_own_odds;
   double offspring_others_odds;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
+  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants(false);
   int tol_own;
   int tol_others;
 
@@ -9746,8 +9746,8 @@ void cHardwareCPU::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
   } else {
     offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
     offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-    tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-    tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+    tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn(false);
+    tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers(false);
   }
 
   double odds_immi = immigrant_odds * 100 + 0.5;

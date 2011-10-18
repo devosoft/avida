@@ -149,6 +149,7 @@ private:
   tArray<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants @JJB
   tArray<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
   tArray<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
+  tArray<int> tolerances;                     // caches temporary values of the tolerance and the update @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   cReactionResult* m_reaction_result;
@@ -393,7 +394,7 @@ public:
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
-	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
+  const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
   void  TrialDivideReset(const Sequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
@@ -403,9 +404,10 @@ public:
   tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
   tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
   tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
-  int CalcToleranceImmigrants() const;       // @JJB
-  int CalcToleranceOffspringOwn() const;     // @JJB
-  int CalcToleranceOffspringOthers() const;  // @JJB
+  //tArray<int> GetTolerances() { assert(initialized == true); return tolerances; }
+  int CalcToleranceImmigrants(bool force_update);       // @JJB
+  int CalcToleranceOffspringOwn(bool force_update);     // @JJB
+  int CalcToleranceOffspringOthers(bool force_update);  // @JJB
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }

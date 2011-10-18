@@ -6142,7 +6142,7 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
   int group_intolerance = 0;
   int single_member_intolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants(false);
     group_intolerance += single_member_intolerance;
     if (group_intolerance >= tolerance_max) {
       group_intolerance = tolerance_max;
@@ -6166,7 +6166,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
     // Skip the parent
     if (group_list[group_id][index] != parent_organism) {
-      single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+      single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers(false);
       group_intolerance += single_member_intolerance;
     }
     if (group_intolerance >= tolerance_max) {
@@ -6253,7 +6253,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 
   const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
 
-  double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn();
+  double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn(false);
   double parent_group_tolerance = (double) CalcGroupToleranceOffspring(parent);
 
   const double prob_parent_allows =  parent_tolerance / tolerance_max;
@@ -6275,7 +6275,7 @@ double cPopulation::CalcGroupOddsOffspring(int group_id)
   int group_intolerance = 0;
   int single_member_intolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers(false);
     group_intolerance += single_member_intolerance;
     if (group_intolerance >= tolerance_max) {
       group_intolerance = tolerance_max;
@@ -6329,7 +6329,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
     const int parent_group = parent->GetOpinion().first;
     
     // Retrieve the parent's tolerance for its offspring
-    double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn();
+    double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn(false);
     // Retrieve the parent group's tolerance for offspring
     double parent_group_tolerance = (double) CalcGroupToleranceOffspring(parent);
     
@@ -6414,7 +6414,7 @@ double cPopulation::CalcGroupAveImmigrants(int group_id)
   cDoubleSum immigrant_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants(false);
     immigrant_tolerance.Add(single_member_tolerance);
   }
   double aveimmigrants = immigrant_tolerance.Average();
@@ -6427,7 +6427,7 @@ double cPopulation::CalcGroupSDevImmigrants(int group_id)
   cDoubleSum immigrant_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants(false);
     immigrant_tolerance.Add(single_member_tolerance);
   }
   double sdevimmigrants = immigrant_tolerance.StdDeviation();
@@ -6440,7 +6440,7 @@ double cPopulation::CalcGroupAveOwn(int group_id)
   cDoubleSum own_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOwn();
+    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOwn(false);
     own_tolerance.Add(single_member_tolerance);
   }
   double aveown = own_tolerance.Average();
@@ -6453,7 +6453,7 @@ double cPopulation::CalcGroupSDevOwn(int group_id)
   cDoubleSum own_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOwn();
+    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOwn(false);
     own_tolerance.Add(single_member_tolerance);
   }
   double sdevown = own_tolerance.StdDeviation();
@@ -6466,7 +6466,7 @@ double cPopulation::CalcGroupAveOthers(int group_id)
   cDoubleSum others_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers(false);
     others_tolerance.Add(single_member_tolerance);
   }
   double aveothers = others_tolerance.Average();
@@ -6479,7 +6479,7 @@ double cPopulation::CalcGroupSDevOthers(int group_id)
   cDoubleSum others_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers(false);
     others_tolerance.Add(single_member_tolerance);
   }
   double sdevothers = others_tolerance.StdDeviation();

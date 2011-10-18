@@ -42,7 +42,7 @@ public:
 
   explicit tArray(const int size = 0) : m_data(NULL), m_size(0) { ResizeClear(size); }
   tArray(const int size, const T& init_val) : m_data(NULL), m_size(0) { Resize(size, init_val); }
-	tArray(const tArray& rhs) : m_data(NULL), m_size(0) { this->operator=(rhs); }
+  tArray(const tArray& rhs) : m_data(NULL), m_size(0) { this->operator=(rhs); }
 
   ~tArray() { delete [] m_data; }
   
