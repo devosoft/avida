@@ -3630,7 +3630,7 @@ void cStats::PrintOrganismLocation(const cString& filename) {
 void cStats::RecordSuccessfulMate(cBirthEntry& successful_mate, cBirthEntry& chooser) {
   //Check if we need to resize the array of successful mates, and re-size it if needed
   int array_size = m_successful_mates.GetSize();
-  if (array_size == m_num_successful_mates) {
+  if (array_size <= m_num_successful_mates) {
     m_successful_mates.Resize(m_num_successful_mates + 1);
     m_choosers.Resize(m_num_successful_mates + 1);
   }

@@ -72,6 +72,7 @@ public:
                        tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);  
 
   bool ValidBirthEntry(const cBirthEntry& entry) const;
+  bool ValidateBirthEntry(cBirthEntry& entry); //@CHC: Same as ValidBirthEntry() but may modify the entry if it has died due to old age
   void StoreAsEntry(const Genome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const;
   void ClearEntry(cBirthEntry& entry);
   

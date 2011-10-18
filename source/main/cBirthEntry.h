@@ -29,6 +29,7 @@
 #endif
 
 class cBioGroup;
+class cOrganism;
 
 using namespace Avida;
 
@@ -49,6 +50,7 @@ public:
   tArray<cBioGroup*> groups;
   
   cBirthEntry();
+  cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _timestamp);
   
   //Accessor functions
   int GetMatingType() { return m_mating_type; }

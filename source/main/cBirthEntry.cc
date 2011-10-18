@@ -2,7 +2,6 @@
  *  cBirthEntry.cc
  *  Avida
  *
- *  Called "birth_chamber.cc" prior to 12/2/05.
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
@@ -23,6 +22,8 @@
 #include "cBirthEntry.h"
 #include "cString.h"
 #include "cStringUtil.h"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 
 cBirthEntry::cBirthEntry()
 : timestamp(-1)
@@ -31,6 +32,26 @@ cBirthEntry::cBirthEntry()
 , m_mating_display_a(0)
 , m_mating_display_b(0)
 {
+}
+
+//This instructor is intended to be use to create a temporary birth entry from a parent that is
+// about to divide sexually, just for record-keeping purposes; the birth entry should then be
+// immediately destroyed
+cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _timestamp)
+: genome(_offspring)
+, merit(_parent->GetPhenotype().GetMerit())
+, timestamp(_timestamp)
+, m_mating_type(_parent->GetPhenotype().GetMatingType())
+, m_mating_display_a(_parent->GetPhenotype().GetLastMatingDisplayA())
+, m_mating_display_b(_parent->GetPhenotype().GetLastMatingDisplayB())
+, m_mate_preference(_parent->GetPhenotype().GetMatePreference())
+{
+  // Note: Not checking for energy because we don't want to clear out the parent's energy
+  // for a temporary birth entry, otherwise things may get screwed up when the REAL offspring
+  // is created
+
+  // Similarly, I'm not setting the biogroups here because I don't want to add references to them,
+  // since this birth entry is going to be destroyed anyway
 }
 
 //Returns a string representation of a birth entry's information (primarily used for print actions

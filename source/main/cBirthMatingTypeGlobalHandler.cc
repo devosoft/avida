@@ -85,7 +85,7 @@ int cBirthMatingTypeGlobalHandler::GetWaitingOffspringNumber(int which_mating_ty
   int num_waiting = 0;
   
   for (int i = 0; i < m_entries.GetSize(); i++) {
-    if (m_bc->ValidBirthEntry(m_entries[i])) {
+    if (m_bc->ValidateBirthEntry(m_entries[i])) {
       if (m_entries[i].GetMatingType() == which_mating_type) num_waiting++;
     }
   }
@@ -107,7 +107,7 @@ void cBirthMatingTypeGlobalHandler::GetWaitingOffspringTaskData(int task_id, flo
   if (num_waiting > 0) {
     //Loop through all the offspring and collect stats
     for (int i = 0; i < num_waiting; i++) {
-      if (m_bc->ValidBirthEntry(m_entries_female[i])) {
+      if (m_bc->ValidateBirthEntry(m_entries_female[i])) {
         
         //If the current offspring count is less than the previous min, save it
         if (min == -1) min = m_entries_female[i].GetParentTaskCount()[task_id];
@@ -130,7 +130,7 @@ void cBirthMatingTypeGlobalHandler::GetWaitingOffspringTaskData(int task_id, flo
   if (num_waiting > 0) {
     //Loop through all the offspring and collect stats
     for (int i = 0; i < num_waiting; i++) {
-      if (m_bc->ValidBirthEntry(m_entries_male[i])) {
+      if (m_bc->ValidateBirthEntry(m_entries_male[i])) {
       
         //If the current offspring count is less than the previous min, save it
         if (min == -1) min = m_entries_male[i].GetParentTaskCount()[task_id];
@@ -148,7 +148,7 @@ void cBirthMatingTypeGlobalHandler::GetWaitingOffspringTaskData(int task_id, flo
   }
   
   //Do the undefined mating type offspring
- if (m_bc->ValidBirthEntry(m_entry_undefined)) {      
+ if (m_bc->ValidateBirthEntry(m_entry_undefined)) {      
     //If the current offspring count is less than the previous min, save it
     if (min == -1) min = m_entry_undefined.GetParentTaskCount()[task_id];
     else min = ( (m_entry_undefined.GetParentTaskCount()[task_id] < min) ? m_entry_undefined.GetParentTaskCount()[task_id] : min);
@@ -197,12 +197,13 @@ void cBirthMatingTypeGlobalHandler::storeOffspring(cAvidaContext& ctx, const Gen
   int entry_list_size = m_entries.GetSize();
   //Loop through all the birth entries
   for (int i = 0; i < entry_list_size; i++) {
-    if (m_bc->ValidBirthEntry(m_entries[i])) {
+    if (m_bc->ValidateBirthEntry(m_entries[i])) {
       //Current entry is valid, so let's just keep track of the oldest one
       if (oldest_index == -1) oldest_index = i;
       else oldest_index = (m_entries[i].timestamp < m_entries[oldest_index].timestamp ? i : oldest_index);
     } else {
       //Current entry is empty, so let's use this one
+      m_bc->ClearEntry(m_entries[i]);
       m_bc->StoreAsEntry(offspring, parent, m_entries[i]);
       return;
     }
@@ -214,12 +215,13 @@ void cBirthMatingTypeGlobalHandler::storeOffspring(cAvidaContext& ctx, const Gen
   int store_index = m_entries.GetSize();
   int max_buffer_size = ctx.GetWorld()->GetConfig().MAX_GLOBAL_BIRTH_CHAMBER_SIZE.Get();
   if (store_index >= max_buffer_size) {
-    m_bc->ClearEntry(m_entries[oldest_index]);
+    //m_bc->ClearEntry(m_entries[oldest_index]);
     store_index = oldest_index;
   } else {
     m_entries.Resize(store_index + 1);
   }
   
+  m_bc->ClearEntry(m_entries[store_index]);
   m_bc->StoreAsEntry(offspring, parent, m_entries[store_index]);
 }
 
@@ -240,7 +242,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
   switch (mate_choice_method) {
     case MATE_PREFERENCE_HIGHEST_DISPLAY_A: //Prefers to mate with the organism with the highest value of mating display A
       for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
           if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             if (selected_index == -1) selected_index = i;
             else selected_index = ((m_entries[i].GetMatingDisplayA() > m_entries[selected_index].GetMatingDisplayA()) ? i : selected_index);
@@ -251,7 +253,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     
     case MATE_PREFERENCE_HIGHEST_DISPLAY_B: //Highest value of mating display B
       for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
           if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             if (selected_index == -1) selected_index = i;
             else selected_index = ((m_entries[i].GetMatingDisplayB() > m_entries[selected_index].GetMatingDisplayB()) ? i : selected_index);
@@ -262,7 +264,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
       
     case MATE_PREFERENCE_HIGHEST_MERIT: //Highest value of parent's merit
       for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
           if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             if (selected_index == -1) selected_index = i;
             else selected_index = ((m_entries[i].merit.GetDouble() > m_entries[selected_index].merit.GetDouble()) ? i : selected_index);
@@ -278,7 +280,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
       compatible_entries.Resize(num_waiting, -1);
       int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
       for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
           if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             last_compatible++;
             compatible_entries[last_compatible] = i;
@@ -310,7 +312,7 @@ int cBirthMatingTypeGlobalHandler::getWaitingOffspringMostTask(int which_mating_
   int num_waiting = m_entries.GetSize();
   if (num_waiting == 0) return -1;
   for (int i = 0; i < num_waiting; i++) {
-    if (m_bc->ValidBirthEntry(m_entries[i])) {
+    if (m_bc->ValidateBirthEntry(m_entries[i])) {
       if (m_entries[i].GetMatingType() == which_mating_type) {
         if (selected_index == -1) selected_index = i;
         else selected_index = ((m_entries[i].GetParentTaskCount()[task_id] > m_entries[selected_index].GetParentTaskCount()[task_id]) ? i : selected_index);
@@ -331,7 +333,7 @@ void cBirthMatingTypeGlobalHandler::PrintBirthChamber(const cString& filename, c
   std::ofstream& df_stream = df.GetOFStream();
   
   for (int i = 0; i < m_entries.GetSize(); i++) {
-    if (m_bc->ValidBirthEntry(m_entries[i])) {
+    if (m_bc->ValidateBirthEntry(m_entries[i])) {
       df_stream << m_entries[i].GetPhenotypeString() << endl;
     }
   }

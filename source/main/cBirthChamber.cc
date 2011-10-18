@@ -99,7 +99,33 @@ bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
   const int cur_update = m_world->GetStats().GetUpdate();
   const int max_update = entry.timestamp + max_wait_time;
 
-  if (cur_update > max_update) return false;  // Too many updates...
+  if (cur_update > max_update) return false; // Too many updates...
+
+  return true;
+}
+
+bool cBirthChamber::ValidateBirthEntry(cBirthEntry& entry) 
+{
+  // If there is no organism in the entry, return false.
+  if (entry.timestamp == -1) return false;
+
+  // If there is an organism, determine if it is still alive.
+  const int max_wait_time = m_world->GetConfig().MAX_BIRTH_WAIT_TIME.Get();
+
+  // If the max_wait_time is -1, there is no timeout, so its alive.
+  if (max_wait_time == -1) return true;
+
+  // Otherwise, check if few enough updates have gone by...
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int max_update = entry.timestamp + max_wait_time;
+
+  if (cur_update > max_update) {   // Too many updates...
+    //The birth entry has died, so we need to "Clear" it, to ensure that 
+    // reference counts to its parents are updated, so that the parent genotypes
+    // can be released from memory if necessary
+    ClearEntry(entry);
+    return false;
+  }
 
   return true;
 }
@@ -424,10 +450,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
 
   // If we've made it this far, it means we've selected a mate from the birth chamber, so let's record its statistics
   // Set up a temporary dummy birth entry so we can record information about the "chooser"
-  cBirthEntry temp_entry;
-  StoreAsEntry(offspring, parent, temp_entry);
-  m_world->GetStats().RecordSuccessfulMate(*old_entry, temp_entry);
-  ClearEntry(temp_entry);
+  cBirthEntry temp_entry(offspring, parent, m_world->GetStats().GetUpdate());
+  m_world->GetStats().RecordSuccessfulMate(*old_entry, temp_entry); 
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
