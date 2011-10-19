@@ -1004,7 +1004,7 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   }
   
   //@CHC: If this organism is female, or a choosy female, we may need to impose additional costs for her to execute the instruction
-  int per_use_cost = m_thread_inst_cost[cur_inst.GetOp()]
+  int per_use_cost = m_thread_inst_cost[cur_inst.GetOp()];
   bool add_female_costs = false;
   if (m_has_female_costs) {
     if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
