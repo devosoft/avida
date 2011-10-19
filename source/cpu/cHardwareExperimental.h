@@ -388,7 +388,7 @@ private:
   int  Numberate(int _pos, int _dir, int _num_bits = 0);
   bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
   
-
+  
   // ---------- Instruction Library -----------
   // Multi-threading
   bool Inst_ForkThread(cAvidaContext& ctx);
@@ -570,6 +570,37 @@ private:
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
+  
+  
+  // ---------- Some Instruction Helpers -----------
+  struct lookIn {
+    int habitat;
+    int distance;
+    int search_type;
+    int id_sought;
+    int count;
+    int value;
+    int group;
+    int ft;
+  };
+  struct lookOut {
+    int report_type;
+    int habitat;
+    int distance;
+    int search_type;
+    int id_sought;
+    int count;
+    int value;
+    int group;
+    int forage;
+  }; 
+  
+  lookOut DoLooking(cAvidaContext& ctx, lookIn& lookin_defs);
+  lookOut WalkCells(cAvidaContext& ctx, int habitat_used, int search_type, int distance_sought, int id_sought);
+  lookOut FindOrg(cOrganism* target_org, const int distance, const int search_type);
+  void LookResults(cAvidaContext& ctx, lookIn& lookin_defs, lookOut& look_results);
+  
+  
 };
 
 

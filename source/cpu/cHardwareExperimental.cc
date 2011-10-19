@@ -3203,446 +3203,30 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   return true;
 }
 
-/* Tests a cell for the Inst_LookAhead function
- * 
- * Parameters:
- habitat_used    specifies what type of object we're interested in
- search_type     tells how to search (stop when we've found the closest, count total #, etc)
- resource_lib    library of available resources
- target_cell     the cell we're testing
- * 
- * Returns:
- *		If we're looking for the closest resource, return that resource's ID
- *    otherwise, returns the number of objects we're looking for that are in target_cell
- *    
- */
-cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num)
-{
-  searchInfo returnInfo;
-  returnInfo.amountFound = 0;
-  returnInfo.resource_id = res_id_sought;
-  
-  // if looking for resources or topological features
-  if(habitat_used == 0 || habitat_used == 1 || habitat_used == 2 || habitat_used == 4){
-    int lib_size = resource_lib.GetSize();
-    tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(target_cell_num, ctx);
-    
-    // by default, look at every resource ID unless we're looking for a specific one
-    int min_index = 0;
-    int max_index = lib_size - 1;
-    if(res_id_sought != -1)
-      min_index = max_index = res_id_sought;
-    
-    for( int k = min_index; k <= max_index; k++) {
-      if(resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
-        returnInfo.amountFound += cell_res[k];
-        returnInfo.resource_id = k;
-      }
-    }
-  }
-  // if we're looking for other organisms (looking for specific org already handled inside lookahead)
-  else if (habitat_used == -2) {
-    const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
-    if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
-      int type_seen = target_cell.GetOrganism()->GetForageTarget();
-      
-      if(search_type == 0)
-        returnInfo.amountFound++;
-      else if (search_type > 0){
-        if(type_seen == -2)
-          returnInfo.amountFound++;
-      }
-      else if (search_type < 0){
-        if(type_seen != -2)
-          returnInfo.amountFound++;
-      }
-    }
-  }  
-  return returnInfo;
-}
-
 bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx) 
 {
-  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   // temp check on world geometry until code can handle other geometries
-  if (geometry != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead only written to work in bounded grids");
+  if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead only written to work in bounded grids");
+
   if (NUM_REGISTERS < 8) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead requires at least 8 registers");
-  
-  // If this organism has no neighboring cells, ignore instruction.
   if (m_organism->GetNeighborhoodSize() == 0) return false;
-  
+
   // define our input (4) and output registers (8)
-  const int habitat_reg = FindModifiedRegister(rBX);
-  const int distance_reg = FindModifiedNextRegister(habitat_reg);
-  const int search_type_reg = FindModifiedNextRegister(distance_reg);  
-  const int id_sought_reg = FindModifiedNextRegister(search_type_reg);
-  const int count_reg = FindModifiedNextRegister(id_sought_reg);
-  const int value_reg = FindModifiedNextRegister(count_reg);
-  const int group_reg = FindModifiedNextRegister(value_reg);
-  const int forage_reg = FindModifiedNextRegister(group_reg);
-  
-  // get the resource library
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  const int lib_size = resource_lib.GetSize();
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  
-  const cCodeLabel& search_label = GetLabel();
-  
-  // BEGIN get/set input
-  
-  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
-  // if sensing food resource, habitat = 0 (gradients)
-  // if sensing topography, habitat = 1 (hills)
-  // if sensing objects, habitat = 2 (walls)  
-  // habitat 3 = hidden resources (hidden from a distance)
-  // habitat 4 = unhidden den resource
-  // habitat -2 = organisms
-  
-  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
-  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
-  
+  lookIn reg_defs;
+  reg_defs.habitat = FindModifiedRegister(rBX);
   // fail if the org is trying to sense a nest/hidden habitat
+  int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
   if (habitat_used == 3) return false;
-  // default to look for orgs if invalid habitat & predator
-  else if (pred_experiment && m_organism->GetForageTarget() == -2 && 
-           (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
-  // default to look for env res if invalid habitat & forager
-  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
-  
-  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
-  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
-  int distance_sought = 1;
-  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
-  if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > long_axis) distance_sought = long_axis;
-  
-  // third register gives type of search used for food resources (habitat 0) and org hunting
-  // env res search_types: 
-  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den (default), 1 = count # edible cells/walls/hills & total food res in cells
-  // org hunting search types: 
-  // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
-  int search_type = 0;
-  if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
-  
-  // if looking for env res, default to closest edible
-  if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
-  // if looking for orgs in predator environment and is prey, default to closest org of any type
-  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
-  // if looking for orgs in predator environment and is predator, default to look for prey
-  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
-  // if looking for orgs in non-predator environment, default to closest org of any type
-  else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
-  
-  // fourth register gives specific instance of resources sought or specific organisms to look for
-  // defaults to any (-1) if input is invalid or is predator and target is not specified
-  // defaults to current forage target if input is absent and not predator
-  int id_sought = -1;
-  if (m_organism->GetForageTarget() !=-2) id_sought = m_organism->GetForageTarget();
-  
-  if (habitat_used != -2 && search_label.GetSize() > 3) {
-    id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
-    if (id_sought < 0 || id_sought >= lib_size) id_sought = -1;
-    // override habitat_used to match that for id_sought
-    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
-  } 
-  // BEGIN looking for specific org
-  else if (habitat_used == -2 && search_label.GetSize() > 3) {
-    id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
-    bool have_org2use = false;
-    
-    // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
-    if (id_sought < 0 || id_sought == m_organism->GetID()) {
-      id_sought = -1;
-      have_org2use = true;
-    }
-    
-    // if valid org id number (non-negative & not self) and had an input register value, does the value represent a living organism
-    cOrganism* target_org = m_organism;
-    if (!have_org2use && id_sought != -1) {
-      tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
-      for (int i = 0; i < live_orgs.GetSize(); i++) {  
-        cOrganism* living_org = live_orgs[i];
-        if (id_sought == living_org->GetID()) {
-          target_org = living_org;
-          have_org2use = true;
-          break;
-        }
-      }
-    }
-    
-    // if number didn't represent a living org, we default to searching for anybody, skipping rest of look for specific org
-    if (!have_org2use && id_sought != -1) id_sought = -1;    
-    
-    // if sought org was is in live org list, we don't have to search for it across cells, we just get the info from that org and return all the data now
-    if (have_org2use && id_sought != -1) {
-      const int target_org_cell = target_org->GetCellID();
-      const int target_x = target_org_cell % worldx;
-      const int target_y = target_org_cell / worldx;
-      const int searching_org_cell = m_organism->GetCellID();
-      const int searching_x = searching_org_cell % worldx;
-      const int searching_y = searching_org_cell / worldx;
-      const int x_dist = target_x - searching_x;
-      const int y_dist = target_y - searching_y;
-      // is the target org close enough to see and in my line of sight?
-      bool org_in_sight = true;
-      const int facing = m_organism->GetFacedDir();
-      const int travel_dist = max(abs(x_dist), abs(y_dist));
-      
-      // if too far in any direction regardless of facing
-      if (travel_dist > distance_sought) org_in_sight = false;
-      // if facing Northish
-      else if ((facing == 0 || facing == 7 || facing == 1) && y_dist > 0) org_in_sight = false;
-      // if facing Southish
-      else if ((facing == 4 || facing == 3 || facing == 5) && y_dist < 0) org_in_sight = false;
-      // if facing Eastish
-      else if ((facing == 2 || facing == 1 || facing == 3) && x_dist < 0) org_in_sight = false;
-      // if facing Westish
-      else if ((facing == 6 || facing == 5 || facing == 7) && x_dist > 0) org_in_sight = false;
-      
-      // if not too far in absolute x or y directions, check the distance when we consider offset from center sight line (is it within sight cone?)
-      if (org_in_sight) {
-        const int num_cells_either_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
-        int center_cell_x = 0;
-        int center_cell_y = 0;
-        // facing N or S and target off to E/W of center sight line
-        if ((facing == 0 || facing == 4) && abs(x_dist) > num_cells_either_side) org_in_sight = false;
-        // facing E or W and target off to N/S of center sight line
-        else if ((facing == 2 || facing == 6) && abs(y_dist) > num_cells_either_side) org_in_sight = false;
-        // if facing diagonals and target off to side
-        else if (facing == 1) {
-          center_cell_x = searching_x + abs(x_dist);
-          center_cell_y = searching_y - abs(y_dist);
-          if ((target_x < center_cell_x - num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
-        }
-        else if (facing == 3) {
-          center_cell_x = searching_x + abs(x_dist);
-          center_cell_y = searching_y + abs(y_dist);
-          if ((target_x < center_cell_x - num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
-        }
-        else if (facing == 5) {
-          center_cell_x = searching_x - abs(x_dist);
-          center_cell_y = searching_y + abs(y_dist);
-          if ((target_x > center_cell_x + num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
-        }
-        else if (facing == 7) {
-          center_cell_x = searching_x - abs(x_dist);
-          center_cell_y = searching_y - abs(y_dist);
-          if ((target_x > center_cell_x + num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
-        }
-      }
-      if (!org_in_sight) {
-        setInternalValue(habitat_reg, habitat_used, true);
-        setInternalValue(distance_reg, -1, true);
-        setInternalValue(search_type_reg, search_type, true);
-        setInternalValue(id_sought_reg, id_sought, true);
-        setInternalValue(count_reg, 0, true);
-        setInternalValue(value_reg, 0, true);
-        setInternalValue(group_reg, -9, true);
-        setInternalValue(forage_reg, -9, true);
-      }
-      else {
-        setInternalValue(habitat_reg, habitat_used, true);
-        setInternalValue(distance_reg, travel_dist, true);
-        setInternalValue(search_type_reg, search_type, true);
-        setInternalValue(id_sought_reg, id_sought, true);
-        setInternalValue(count_reg, 1, true);
-        setInternalValue(value_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
-        if (target_org->HasOpinion()) {
-          setInternalValue(group_reg, target_org->GetOpinion().first, true);
-        }
-        setInternalValue(forage_reg, target_org->GetForageTarget(), true);            
-      }
-      return true;
-    }
-  } // END looking for specific org
-    
-  /*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
-   int spec_value = -1;
-   const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
-   spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
-   */
-  
-  // END get/set input  
-  
-  // start the real work of walking through cells
-  const int facing = m_organism->GetFacedDir();
-  const int faced_cell = m_organism->GetFacedCellID();
-  int cell = m_organism->GetCellID();
-  
-  const int ahead_dir = faced_cell - cell;
-  int dist_used = distance_sought;
-  
-  int center_cell = cell;
-  int this_cell = cell;
-  
-  bool count_center = true;
-  bool any_valid_side_cells = false;
-  
-  bool found = false;
-  int count = 0;
-  double totalAmount = 0;
-  int first_success_cell = -1;
-  int first_whole_resource = -1;
-  
-  searchInfo cellResultInfo;
-  
-  tArray<double> cell_res;
-  
-  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
-	
-  for (int dist = 0; dist < distance_sought + 1; dist++) {
-    // work on CENTER cell for this dist
-    
-    // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
-    if (count_center) {
-      cellResultInfo = TestCell(ctx, habitat_used, search_type, id_sought, resource_lib, center_cell);
-      
-      if(cellResultInfo.amountFound >= 1) {
-        // we've found what we're looking for
-        found = true;
-        count ++;
-        totalAmount += cellResultInfo.amountFound;
-        if (first_success_cell == -1) first_success_cell = center_cell;
-        if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
-        
-        if(stop_at_first_found){
-          // we were only looking for the first one.
-          // break out of entire search loop
-          dist_used = dist;
-          break;
-        }
-      }
-    } // end work on CENTER cell for this dist
-    
-    // work on SIDE of center cells for this dist
-    
-    // how many cells do we need to look at on both sides 
-    int num_cells_either_side = 0;
-    if (dist > 0)
-      num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
-    
-    for (int do_lr = 0; do_lr < 2; do_lr++) {
-      bool count_side = true;
-      int prev_cell = center_cell;
-      for (int j = 1; j < num_cells_either_side + 1; j++) {
-        
-        if (facing == 0 && do_lr == 0) this_cell = center_cell - j;
-        else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-        else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
-        else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
-        
-        else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
-        else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
-        else if (facing == 4 && do_lr == 1) this_cell = center_cell - j;
-        else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-        
-        // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
-        else if (facing == 1 && do_lr == 0) this_cell = center_cell - j;
-        else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-        else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
-        else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
-        
-        else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
-        else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
-        else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-        else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
-        
-        // test if the side cell is still on world; if it isn't, do the other side
-        if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
-        else if ((this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
-        else if ((this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
-        else any_valid_side_cells = true;
-        
-        prev_cell = this_cell;
-        if (count_side) {
-          cellResultInfo = TestCell(ctx, habitat_used, search_type, id_sought, resource_lib, this_cell);
-          
-          if(cellResultInfo.amountFound >= 1) {
-            // we've found what we're looking for
-            found = true;
-            count ++;
-            totalAmount += cellResultInfo.amountFound;
-            if (first_success_cell == -1) first_success_cell = this_cell;
-            if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
-            
-            if(stop_at_first_found) {
-              // we were only looking for the first one.
-              // break out of the side-searching loop
-              dist_used = dist;
-              break;
-            }
-          }
-        }
-        if (!count_side) break;
-      }
-      // break out of entire search loop
-      if (stop_at_first_found && found) break;
-    }
-    if (stop_at_first_found && found) break;
-    
-    // before we do the next side cell...
-    
-    // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
-    if (!any_valid_side_cells && !count_center) {
-      dist -= 1;
-      dist_used = dist;
-      break;
-    }
-    
-    // if still good to go ((!found || !stop_at_first_found) && (count_center || any_valid_side_cells))...
-    // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
-    if((facing == 6 || facing == 5 || facing == 7) && (center_cell % worldx == 0)) count_center = false;
-    
-    // figure out the what the next center cell is about to be
-    center_cell = center_cell + ahead_dir;
-    
-    // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
-    if((facing == 2 || facing == 3 || facing == 1) && (center_cell % worldx == 0)) count_center = false;
-    // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
-    else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;    
-  } // End getting values
-  
-  // begin reached end output   
-  // setup default returns for failed to find and return
-  if(!found){
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, -1, true);
-    setInternalValue(search_type_reg, search_type, true);
-    setInternalValue(id_sought_reg, id_sought, true);
-    setInternalValue(count_reg, 0, true);
-    setInternalValue(value_reg, 0, true);
-    setInternalValue(group_reg, -9, true);
-    setInternalValue(forage_reg, -9, true);  
-    return true;
-  }
-  // setup default returns for success
-  else if(found){
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, dist_used, true);
-    setInternalValue(search_type_reg, search_type, true);
-    setInternalValue(id_sought_reg, id_sought, true);
-    setInternalValue(count_reg, count, true);
-    setInternalValue(value_reg, (int) (totalAmount + 0.5), true);
-    setInternalValue(group_reg, -9, true);
-    setInternalValue(forage_reg, -9, true);            
-    
-    // overwrite defaults for more specific search types
-        
-    // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
-    const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell);
-    if (habitat_used == -2) {
-      setInternalValue(value_reg, (int) first_good_cell.GetOrganism()->GetPhenotype().GetCurBonus(), true);
-      if (first_good_cell.GetOrganism()->HasOpinion()) {
-        const int group_id = first_good_cell.GetOrganism()->GetOpinion().first;
-        setInternalValue(group_reg, group_id, true);
-      }
-      setInternalValue(forage_reg, first_good_cell.GetOrganism()->GetForageTarget(), true);                  
-    }
- 
-    // if we were looking for resources, return id of nearest
-    if (habitat_used != -2) setInternalValue(group_reg, first_whole_resource, true);  
-  }
+  reg_defs.distance = FindModifiedNextRegister(reg_defs.habitat);
+  reg_defs.search_type = FindModifiedNextRegister(reg_defs.distance);
+  reg_defs.id_sought = FindModifiedNextRegister(reg_defs.search_type);
+  reg_defs.count = FindModifiedNextRegister(reg_defs.id_sought);
+  reg_defs.value = FindModifiedNextRegister(reg_defs.count);
+  reg_defs.group = FindModifiedNextRegister(reg_defs.value);
+  reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
+
+  lookOut look_results = DoLooking(ctx, reg_defs);
+  LookResults (ctx, reg_defs, look_results);
   return true;
 }
 
@@ -3684,9 +3268,6 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-  
-  // return false if setting to predator in non-predator experiment
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0 && prop_target == -2) return false;
   
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
@@ -4517,3 +4098,459 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
                                                      odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
+cHardwareExperimental::lookOut cHardwareExperimental::DoLooking(cAvidaContext& ctx, lookIn& in_defs)
+{
+  const int habitat_reg = in_defs.habitat;
+  const int distance_reg = in_defs.distance;
+  const int search_reg = in_defs.search_type;
+  const int id_reg = in_defs.id_sought;
+  
+  // get the resource library
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const int lib_size = resource_lib.GetSize();
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  
+  const cCodeLabel& search_label = GetLabel();
+  
+  // BEGIN get/set input
+  
+  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
+  // if sensing food resource, habitat = 0 (gradients)
+  // if sensing topography, habitat = 1 (hills)
+  // if sensing objects, habitat = 2 (walls)  
+  // habitat 3 = hidden resources (hidden from a distance)
+  // habitat 4 = unhidden den resource
+  // habitat -2 = organisms
+  
+  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
+  
+  // default to look for orgs if invalid habitat & predator
+  if (pred_experiment && m_organism->GetForageTarget() == -2 && 
+      (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
+  // default to look for env res if invalid habitat & forager
+  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
+  
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
+  int distance_sought = 1;
+  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  if (distance_sought < 0) distance_sought = 1;
+  else if (distance_sought > long_axis) distance_sought = long_axis;
+  
+  // third register gives type of search used for food resources (habitat 0) and org hunting
+  // env res search_types: 
+  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den (default), 1 = count # edible cells/walls/hills & total food res in cells
+  // org hunting search types: 
+  // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
+  int search_type = 0;
+  if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_reg].value;
+  
+  // if looking for env res, default to closest edible
+  if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
+  // if looking for orgs in predator environment and is prey, default to closest org of any type
+  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  // if looking for orgs in predator environment and is predator, default to look for prey
+  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
+  // if looking for orgs in non-predator environment, default to closest org of any type
+  else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
+  
+  // fourth register gives specific instance of resources sought or specific organisms to look for
+  // defaults to any (-1) if input is invalid or is predator and target is not specified
+  // defaults to current forage target if input is absent and not predator
+  int id_sought = -1;
+  if (m_organism->GetForageTarget() !=-2) id_sought = m_organism->GetForageTarget();
+  
+  if (habitat_used != -2 && search_label.GetSize() > 3) {
+    id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+    if (id_sought < 0 || id_sought >= lib_size) id_sought = -1;
+    // override habitat_used to match that for id_sought
+    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
+  } 
+  // BEGIN looking for specific org
+  else if (habitat_used == -2 && search_label.GetSize() > 3) {
+    id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+    bool have_org2use = false;
+    
+    // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
+    if (id_sought < 0 || id_sought == m_organism->GetID()) {
+      id_sought = -1;
+      have_org2use = true;
+    }
+    // if valid org id number (non-negative & not self) and had an input register value, does the value represent a living organism
+    cOrganism* target_org = m_organism;
+    if (!have_org2use && id_sought != -1) {
+      tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+      for (int i = 0; i < live_orgs.GetSize(); i++) {  
+        cOrganism* living_org = live_orgs[i];
+        if (id_sought == living_org->GetID()) {
+          target_org = living_org;
+          have_org2use = true;
+          break;
+        }
+      }
+    }
+    // if number didn't represent a living org, we default to searching for anybody, skipping rest of look for specific org
+    if (!have_org2use && id_sought != -1) id_sought = -1;    
+    // if sought org was is in live org list, we don't have to search for it across cells, we just get the info from that org and return all the data now
+    if (have_org2use && id_sought != -1) return FindOrg(target_org, distance_sought, search_type);
+  } // END looking for specific org
+  
+  /*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
+   int spec_value = -1;
+   const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
+   spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
+   */
+  
+  return WalkCells(ctx, habitat_used, search_type, distance_sought, id_sought);
+}    
+
+cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought, const int search_type)
+{
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int target_org_cell = target_org->GetCellID();
+  const int target_x = target_org_cell % worldx;
+  const int target_y = target_org_cell / worldx;
+  const int searching_org_cell = m_organism->GetCellID();
+  const int searching_x = searching_org_cell % worldx;
+  const int searching_y = searching_org_cell / worldx;
+  const int x_dist = target_x - searching_x;
+  const int y_dist = target_y - searching_y;
+  // is the target org close enough to see and in my line of sight?
+  bool org_in_sight = true;
+  const int facing = m_organism->GetFacedDir();
+  const int travel_dist = max(abs(x_dist), abs(y_dist));
+  
+  // if too far in any direction regardless of facing
+  if (travel_dist > distance_sought) org_in_sight = false;
+  // if facing Northish
+  else if ((facing == 0 || facing == 7 || facing == 1) && y_dist > 0) org_in_sight = false;
+  // if facing Southish
+  else if ((facing == 4 || facing == 3 || facing == 5) && y_dist < 0) org_in_sight = false;
+  // if facing Eastish
+  else if ((facing == 2 || facing == 1 || facing == 3) && x_dist < 0) org_in_sight = false;
+  // if facing Westish
+  else if ((facing == 6 || facing == 5 || facing == 7) && x_dist > 0) org_in_sight = false;
+  
+  // if not too far in absolute x or y directions, check the distance when we consider offset from center sight line (is it within sight cone?)
+  if (org_in_sight) {
+    const int num_cells_either_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
+    int center_cell_x = 0;
+    int center_cell_y = 0;
+    // facing N or S and target off to E/W of center sight line
+    if ((facing == 0 || facing == 4) && abs(x_dist) > num_cells_either_side) org_in_sight = false;
+    // facing E or W and target off to N/S of center sight line
+    else if ((facing == 2 || facing == 6) && abs(y_dist) > num_cells_either_side) org_in_sight = false;
+    // if facing diagonals and target off to side
+    else if (facing == 1) {
+      center_cell_x = searching_x + abs(x_dist);
+      center_cell_y = searching_y - abs(y_dist);
+      if ((target_x < center_cell_x - num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
+    }
+    else if (facing == 3) {
+      center_cell_x = searching_x + abs(x_dist);
+      center_cell_y = searching_y + abs(y_dist);
+      if ((target_x < center_cell_x - num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
+    }
+    else if (facing == 5) {
+      center_cell_x = searching_x - abs(x_dist);
+      center_cell_y = searching_y + abs(y_dist);
+      if ((target_x > center_cell_x + num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
+    }
+    else if (facing == 7) {
+      center_cell_x = searching_x - abs(x_dist);
+      center_cell_y = searching_y - abs(y_dist);
+      if ((target_x > center_cell_x + num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
+    }
+  }
+  lookOut org_search;
+  org_search.report_type = 1;
+  org_search.habitat = -2;
+  org_search.id_sought = target_org->GetID();
+  org_search.search_type = search_type;
+  
+  if (!org_in_sight) {
+    org_search.distance = -1;
+    org_search.count = 0;
+    org_search.value = 0;
+    org_search.group = -9;
+    org_search.forage = -9;
+  }
+  else {
+    org_search.distance = travel_dist;
+    org_search.count = 1;
+    org_search.value = (int) target_org->GetPhenotype().GetCurBonus();
+    if (target_org->HasOpinion()) {
+      org_search.group = target_org->GetOpinion().first;
+    }
+    else org_search.group = -9;
+    org_search.forage = target_org->GetForageTarget();  
+  }
+  return org_search;
+} 
+
+cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& ctx, int habitat_used, int search_type, int distance_sought, int id_sought)
+{
+  // start the real work of walking through cells
+  lookOut stuff_seen;
+  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  
+  const int facing = m_organism->GetFacedDir();
+  const int faced_cell = m_organism->GetFacedCellID();
+  int cell = m_organism->GetCellID();
+  
+  const int ahead_dir = faced_cell - cell;
+  int dist_used = distance_sought;
+  
+  int center_cell = cell;
+  int this_cell = cell;
+  
+  bool count_center = true;
+  bool any_valid_side_cells = false;
+  
+  bool found = false;
+  int count = 0;
+  double totalAmount = 0;
+  int first_success_cell = -1;
+  int first_whole_resource = -1;
+  
+  searchInfo cellResultInfo;
+  
+  tArray<double> cell_res;
+  
+  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
+	
+  for (int dist = 0; dist < distance_sought + 1; dist++) {
+    // work on CENTER cell for this dist
+    
+    // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
+    if (count_center) {
+      cellResultInfo = TestCell(ctx, habitat_used, search_type, id_sought, resource_lib, center_cell);
+      
+      if(cellResultInfo.amountFound >= 1) {
+        // we've found what we're looking for
+        found = true;
+        count ++;
+        totalAmount += cellResultInfo.amountFound;
+        if (first_success_cell == -1) first_success_cell = center_cell;
+        if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+        
+        if(stop_at_first_found){
+          // we were only looking for the first one.
+          // break out of entire search loop
+          dist_used = dist;
+          break;
+        }
+      }
+    } // end work on CENTER cell for this dist
+    
+    // work on SIDE of center cells for this dist
+    
+    // how many cells do we need to look at on both sides 
+    int num_cells_either_side = 0;
+    if (dist > 0)
+      num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
+    
+    for (int do_lr = 0; do_lr < 2; do_lr++) {
+      bool count_side = true;
+      int prev_cell = center_cell;
+      for (int j = 1; j < num_cells_either_side + 1; j++) {
+        
+        if (facing == 0 && do_lr == 0) this_cell = center_cell - j;
+        else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
+        else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
+        
+        else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
+        else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
+        else if (facing == 4 && do_lr == 1) this_cell = center_cell - j;
+        else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+        
+        // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
+        else if (facing == 1 && do_lr == 0) this_cell = center_cell - j;
+        else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
+        else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
+        
+        else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
+        else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
+        else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
+        
+        // test if the side cell is still on world; if it isn't, do the other side
+        if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
+        else if ((this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
+        else if ((this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+        else any_valid_side_cells = true;
+        
+        prev_cell = this_cell;
+        if (count_side) {
+          cellResultInfo = TestCell(ctx, habitat_used, search_type, id_sought, resource_lib, this_cell);
+          
+          if(cellResultInfo.amountFound >= 1) {
+            // we've found what we're looking for
+            found = true;
+            count ++;
+            totalAmount += cellResultInfo.amountFound;
+            if (first_success_cell == -1) first_success_cell = this_cell;
+            if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+            
+            if(stop_at_first_found) {
+              // we were only looking for the first one.
+              // break out of the side-searching loop
+              dist_used = dist;
+              break;
+            }
+          }
+        }
+        if (!count_side) break;
+      }
+      // break out of entire search loop
+      if (stop_at_first_found && found) break;
+    }
+    if (stop_at_first_found && found) break;
+    
+    // before we do the next side cell...
+    
+    // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
+    if (!any_valid_side_cells && !count_center) {
+      dist -= 1;
+      dist_used = dist;
+      break;
+    }
+    
+    // if still good to go ((!found || !stop_at_first_found) && (count_center || any_valid_side_cells))...
+    // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
+    if((facing == 6 || facing == 5 || facing == 7) && (center_cell % worldx == 0)) count_center = false;
+    
+    // figure out the what the next center cell is about to be
+    center_cell = center_cell + ahead_dir;
+    
+    // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
+    if((facing == 2 || facing == 3 || facing == 1) && (center_cell % worldx == 0)) count_center = false;
+    // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
+    else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;    
+  } // End getting values
+  
+  // begin reached end output   
+  stuff_seen.habitat = habitat_used;
+  stuff_seen.search_type = search_type;
+  stuff_seen.id_sought = id_sought;
+  if(!found){
+    stuff_seen.report_type = 0;
+  }
+  else if(found){
+    stuff_seen.report_type = 1;
+    stuff_seen.distance = dist_used;
+    stuff_seen.count = count;
+    stuff_seen.value = (int) (totalAmount + 0.5);
+    stuff_seen.group = -9;
+    stuff_seen.forage = -9;
+    
+    // overwrite defaults for more specific search types
+    
+    // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
+    const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell);
+    if (habitat_used == -2) {
+      stuff_seen.value = (int) first_good_cell.GetOrganism()->GetPhenotype().GetCurBonus();
+      if (first_good_cell.GetOrganism()->HasOpinion()) {
+        stuff_seen.group = first_good_cell.GetOrganism()->GetOpinion().first;
+      }
+      stuff_seen.forage = first_good_cell.GetOrganism()->GetForageTarget();                  
+    }
+    
+    // if we were looking for resources, return id of nearest
+    if (habitat_used != -2) stuff_seen.group = first_whole_resource;  
+  }
+  return stuff_seen;
+}
+
+/* Tests a cell for the Inst_LookAhead function
+ * 
+ * Parameters:
+ habitat_used    specifies what type of object we're interested in
+ search_type     tells how to search (stop when we've found the closest, count total #, etc)
+ resource_lib    library of available resources
+ target_cell     the cell we're testing
+ * 
+ * Returns:
+ *		If we're looking for the closest resource, return that resource's ID
+ *    otherwise, returns the number of objects we're looking for that are in target_cell
+ *    
+ */
+cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num)
+{
+  searchInfo returnInfo;
+  returnInfo.amountFound = 0;
+  returnInfo.resource_id = res_id_sought;
+  
+  // if looking for resources or topological features
+  if(habitat_used == 0 || habitat_used == 1 || habitat_used == 2 || habitat_used == 4){
+    int lib_size = resource_lib.GetSize();
+    tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(target_cell_num, ctx);
+    
+    // by default, look at every resource ID unless we're looking for a specific one
+    int min_index = 0;
+    int max_index = lib_size - 1;
+    if(res_id_sought != -1)
+      min_index = max_index = res_id_sought;
+    
+    for( int k = min_index; k <= max_index; k++) {
+      if(resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
+        returnInfo.amountFound += cell_res[k];
+        returnInfo.resource_id = k;
+      }
+    }
+  }
+  // if we're looking for other organisms (looking for specific org already handled inside lookahead)
+  else if (habitat_used == -2) {
+    const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
+    if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
+      int type_seen = target_cell.GetOrganism()->GetForageTarget();
+      
+      if(search_type == 0)
+        returnInfo.amountFound++;
+      else if (search_type > 0){
+        if(type_seen == -2)
+          returnInfo.amountFound++;
+      }
+      else if (search_type < 0){
+        if(type_seen != -2)
+          returnInfo.amountFound++;
+      }
+    }
+  }  
+  return returnInfo;
+}
+
+void cHardwareExperimental::LookResults(cAvidaContext& ctx, lookIn& regs, lookOut& results)
+{
+  // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
+  // setup default returns for failed to find
+  if (results.report_type == 0) {
+    setInternalValue(regs.habitat, results.habitat, true);
+    setInternalValue(regs.distance, -1, true);
+    setInternalValue(regs.search_type, results.search_type, true);
+    setInternalValue(regs.id_sought, results.id_sought, true);
+    setInternalValue(regs.count, 0, true);
+    setInternalValue(regs.value, 0, true);
+    setInternalValue(regs.group, -9, true);
+    setInternalValue(regs.ft, -9, true);  
+  }
+  // report results as sent, assuming nothing
+  else if (results.report_type == 1) {
+      setInternalValue(regs.habitat, results.habitat, true);
+      setInternalValue(regs.distance, results.distance, true);
+      setInternalValue(regs.search_type, results.search_type, true);
+      setInternalValue(regs.id_sought, results.id_sought, true);
+      setInternalValue(regs.count, results.count, true);
+      setInternalValue(regs.value, results.value, true);
+      setInternalValue(regs.group, results.group, true);
+      setInternalValue(regs.ft, results.forage, true);  
+  }
+  return;
+}
