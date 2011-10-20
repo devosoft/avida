@@ -363,12 +363,6 @@ private:
   inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
 
-  struct searchInfo {
-    double amountFound;
-    int resource_id;
-  };
-  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num);
-  
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
   
@@ -573,6 +567,13 @@ private:
   
   
   // ---------- Some Instruction Helpers -----------
+  struct searchInfo {
+    double amountFound;
+    int resource_id;
+    bool has_edible;
+  };
+  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num);
+  
   struct lookIn {
     int habitat;
     int distance;
@@ -595,11 +596,11 @@ private:
     int forage;
   }; 
   
-  lookOut DoLooking(cAvidaContext& ctx, lookIn& lookin_defs);
+  lookOut SetLooking(cAvidaContext& ctx, lookIn& lookin_defs);
   lookOut WalkCells(cAvidaContext& ctx, int habitat_used, int search_type, int distance_sought, int id_sought);
   lookOut FindOrg(cOrganism* target_org, const int distance, const int search_type);
   void LookResults(cAvidaContext& ctx, lookIn& lookin_defs, lookOut& look_results);
-  
+  int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
   
 };
 

@@ -91,11 +91,13 @@ public:
                  int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double resistance);
 
-
   void UpdateCount(cAvidaContext& ctx);
 
   void StateAll();
   
+  inline int GetCurrPeakX() { return m_peakx; }
+  inline int GetCurrPeakY() { return m_peaky; }
+
 private:
   void refreshResourceValues();
   void generatePeak(cAvidaContext& ctx);
