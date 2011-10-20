@@ -967,6 +967,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // should proceed.
 bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id)
 { 
+  //cout << "In SingleProcess_PayPreCosts()\n"; //@DEBUG
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
@@ -997,52 +998,72 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
 		return false;
 	}
   
+  //cout << "1\n"; //@DEBUG
   // If first time cost hasn't been paid off...
   if (m_has_ft_costs && m_inst_ft_cost[cur_inst.GetOp()] > 0) {
     m_inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
     return false;
   }
   
+  //cout << "2\n"; //@DEBUG
   //@CHC: If this organism is female, or a choosy female, we may need to impose additional costs for her to execute the instruction
-  int per_use_cost = m_thread_inst_cost[cur_inst.GetOp()];
+  int per_use_cost = 0;
+  if (m_has_costs) {
+    per_use_cost = m_thread_inst_cost[cur_inst.GetOp()]; //*THIS IS THE LINE!!!!
+  }
+  //cout << "2.1\n"; //@DEBUG
   bool add_female_costs = false;
   if (m_has_female_costs) {
+    //cout << "3\n"; //@DEBUG
     if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
       if (m_inst_set->GetFemaleCost(cur_inst)) {
+        //cout << "4\n"; //@DEBUG
         add_female_costs = true;
         per_use_cost += m_inst_set->GetFemaleCost(cur_inst);
       }
     }
   } 
+  //cout << "5\n"; //@DEBUG
   bool add_choosy_female_costs = false;
   if (m_has_choosy_female_costs) {
+    //cout << "6\n"; //@DEBUG
     if ((m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) & (m_organism->GetPhenotype().GetMatePreference() != MATE_PREFERENCE_RANDOM)) {
+      //cout << "7\n"; //@DEBUG
       if (m_inst_set->GetChoosyFemaleCost(cur_inst)) {
+        //cout << "8\n"; //@DEBUG
         add_choosy_female_costs = true;
         per_use_cost += m_inst_set->GetChoosyFemaleCost(cur_inst);
       }
     }
   }
   // Next, look at the per use cost
+  //cout << "9\n"; //@DEBUG
   if (m_has_costs | add_female_costs | add_choosy_female_costs) {    
       // Current active thread-specific execution cost being paid, decrement and return false 
+      //cout << "10\n"; //@DEBUG
       if (m_active_thread_costs[thread_id] > 1) { 
+        //cout << "11\n"; //@DEBUG
         m_active_thread_costs[thread_id]--;
         return false;
       }
       // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false      
-      if (!m_active_thread_costs[thread_id] && m_thread_inst_cost[cur_inst.GetOp()] > 1) {
+      if (!m_active_thread_costs[thread_id] && per_use_cost > 1) { //m_thread_inst_cost[cur_inst.GetOp()] > 1) {
+        //cout << "12\n"; //@DEBUG
         m_active_thread_costs[thread_id] = per_use_cost - 1;
         return false;
       }      
       // If we fall to here, reset the current cost count for the current thread to zero
+      //cout << "13\n"; //@DEBUG
       m_active_thread_costs[thread_id] = 0;
   }
   
+  //cout << "14\n"; //@DEBUG
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
+    //cout << "15\n"; //@DEBUG
     m_inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
   }
 
+  //cout << "16\n"; //@DEBUG
   return true;
 }
 
