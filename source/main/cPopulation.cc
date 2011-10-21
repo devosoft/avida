@@ -24,6 +24,9 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/core/Sequence.h"
+#include "avida/data/Manager.h"
+#include "avida/data/Package.h"
+#include "avida/data/Util.h"
 
 #include "AvidaTools.h"
 
@@ -325,7 +328,109 @@ cPopulation::cPopulation(cWorld* world)
     m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
 
+  Data::ArgumentedProviderActivateFunctor activate(m_world, &cWorld::GetPopulationProvider);
+  m_world->GetDataManager()->Register("core.population.group_id[]", activate);
+
 }
+
+
+
+
+Data::ConstDataSetPtr cPopulation::Provides() const
+{
+  Data::DataSetPtr provides(new Apto::Set<Apto::String>);
+  provides->Insert("core.population.group_id[]");
+  return provides;
+}
+
+void cPopulation::UpdateProvidedValues(Update current_update)
+{
+  // Nothing for now, all handled elsewhere
+}
+
+Data::PackagePtr cPopulation::GetProvidedValueForArgument(const Apto::String& data_id, const Data::Argument& arg) const
+{
+  Data::PackagePtr rtn;
+  
+  if (data_id == "core.population.group_id[]") {
+    if (arg.GetSize() > 11 && arg.Substring(0, 9) == "genotype@") {
+      Apto::String coordstr = arg.Substring(9);
+      int x = Apto::StrAs(coordstr.Pop(','));
+      if (!coordstr.GetSize() || !coordstr.IsNumber(0)) return rtn;
+      int y = Apto::StrAs(coordstr);
+      if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
+        // Valid X and Y coordinates, return genotype ID @ cell if applicable
+        const cPopulationCell& cell = cell_array[world_y * y + x];
+        if (cell.IsOccupied()) {
+          rtn = Data::PackagePtr(new Data::Wrap<int>(cell.GetOrganism()->GetBioGroup("genotype")->GetID()));
+          assert(rtn);
+        }
+      }
+    }
+  }
+  
+  return rtn;
+}
+
+Apto::String cPopulation::DescribeProvidedValue(const Apto::String& data_id) const
+{
+  Apto::String rtn;
+  if (data_id == "core.population.group_id[]") {
+    rtn = "Group ID for specified cell of the specified BioGroup type";
+  }
+  return rtn;
+}
+
+
+void cPopulation::SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args)
+{
+  // Nothing to do here
+}
+
+
+Data::ConstArgumentSetPtr cPopulation::GetValidArguments(const Data::DataID& data_id) const
+{
+  Data::ArgumentSetPtr arg_set;
+  
+  if (Data::IsStandardID(data_id)) return arg_set;
+
+  Apto::String argument;
+  if (data_id == "core.population.group_id[]") {
+    for (int y = 0; y < world_y; y++) {
+      for (int x = 0; x < world_x; x++) {
+        argument = "genotype@";
+        argument += Apto::AsStr(x);
+        argument += ",";
+        argument += Apto::AsStr(y);
+
+        arg_set->Insert(argument);
+      }
+    }
+  }
+  
+  return arg_set;
+}
+
+bool cPopulation::IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const
+{
+  if (Data::IsStandardID(data_id)) return false;
+  
+  if (data_id == "core.population.group_id[]") {
+    if (arg.GetSize() > 11 && arg.Substring(0, 9) == "genotype@") {
+      Apto::String coordstr = arg.Substring(9);
+      int x = Apto::StrAs(coordstr.Pop(','));
+      if (!coordstr.GetSize() || !coordstr.IsNumber(0)) return false;
+      int y = Apto::StrAs(coordstr);
+      if (x >= 0 && x < world_x && y >= 0 && y < world_y) return true;
+    }
+  }
+  
+  return false;
+}
+
+
+
+
 
 bool cPopulation::InitiatePop(cUserFeedback* feedback)
 {

@@ -84,7 +84,7 @@ struct s_inst_circumstances {
   int tol_max;
 }; // @JJB
 
-class cStats : public cBioGroupListener, public Data::Provider
+class cStats : public cBioGroupListener, public Data::ArgumentedProvider
 {
 private:
   cWorld* m_world;
@@ -345,10 +345,6 @@ private:
   int num_migrations;
 
 
-  cStats(); // @not_implemented
-  cStats(const cStats&); // @not_implemented
-  cStats& operator=(const cStats&); // @not_implemented
-
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -360,8 +356,15 @@ public:
   // Data::Provider
   Data::ConstDataSetPtr Provides() const;
   void UpdateProvidedValues(Update current_update);
-  Data::PackagePtr GetProvidedValue(const Apto::String& data_id) const;
   Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
+
+  // Data::ArgumentedProvider
+  void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args);
+  Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const;
+  bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
+  
+  Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
+  Data::PackagePtr GetProvidedValuesForArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args) const;
   
   // cStats
   void ProcessUpdate();

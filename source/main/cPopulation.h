@@ -23,6 +23,8 @@
 #ifndef cPopulation_h
 #define cPopulation_h
 
+#include "avida/data/Provider.h"
+
 #include "cBirthChamber.h"
 #include "cDeme.h"
 #include "cOrgInterface.h"
@@ -55,7 +57,7 @@ class cSaleItem;
 using namespace Avida;
 
 
-class cPopulation
+class cPopulation : public Data::ArgumentedProvider
 {
 private:
   // Components...
@@ -106,6 +108,25 @@ public:
   cPopulation(cWorld* world);
   ~cPopulation();
 
+
+  // Data::Provider
+  Data::ConstDataSetPtr Provides() const;
+  void UpdateProvidedValues(Update current_update);
+  Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
+  
+  // Data::ArgumentedProvider
+  void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args);
+  Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const;
+  bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
+  
+  Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
+  Data::PackagePtr GetProvidedValuesForArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args) const;
+
+  
+  
+  
+  // cPopulation
+  
   bool InitiatePop(cUserFeedback* errors = NULL);
 
   void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0); 

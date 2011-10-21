@@ -1168,6 +1168,7 @@
 		70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimeSeriesRecorder.cc; sourceTree = "<group>"; };
 		70FB4E851386E0B000D8F6F0 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		70FCD96F1451C1DC00558ABE /* Util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		70FEF6231381B04500A9D082 /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70FEF6371381CAB900A9D082 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
 		70FEF6381381CAB900A9D082 /* Provider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Provider.h; sourceTree = "<group>"; };
@@ -1841,6 +1842,7 @@
 				7010D0E613841BFB00989C16 /* Recorder.h */,
 				70FB4E821386B62500D8F6F0 /* TimeSeriesRecorder.h */,
 				7010D0E8138425A800989C16 /* Types.h */,
+				70FCD96F1451C1DC00558ABE /* Util.h */,
 			);
 			path = data;
 			sourceTree = "<group>";

@@ -57,7 +57,7 @@ namespace Avida {
       LIB_EXPORT virtual bool IsValidArgument(const DataID& data_id, Argument arg) const = 0;
       
       LIB_EXPORT virtual PackagePtr GetProvidedValueForArgument(const DataID& data_id, const Argument& arg) const = 0;
-      LIB_EXPORT virtual PackagePtr GetProvidedValuesForArguments(const DataID& data_id, ConstArgumentSetPtr args) const = 0;
+      LIB_EXPORT virtual PackagePtr GetProvidedValuesForArguments(const DataID& data_id, ConstArgumentSetPtr args) const;
       
       LIB_EXPORT virtual PackagePtr GetProvidedValue(const DataID& data_id) const;
     };

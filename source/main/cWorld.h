@@ -65,7 +65,7 @@ protected:
   cEnvironment* m_env;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
-  cPopulation* m_pop;
+  Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount> m_pop;
   Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
   WorldDriver* m_driver;
   
@@ -106,6 +106,7 @@ public:
   Data::ManagerPtr& GetDataManager() { return m_data_mgr; }
   
   Data::ProviderPtr GetStatsProvider(World*);
+  Data::ArgumentedProviderPtr GetPopulationProvider(World*);
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }

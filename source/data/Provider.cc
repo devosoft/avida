@@ -25,14 +25,17 @@
 #include "avida/data/Provider.h"
 
 #include "avida/data/Package.h"
+#include "avida/data/Util.h"
 
 
 Avida::Data::PackagePtr Avida::Data::ArgumentedProvider::GetProvidedValue(const DataID& data_id) const
 {
   PackagePtr pkg;
+  Apto::String argument;
   
-  if (data_id.GetSize() > 2 && data_id[data_id.GetSize() - 1] == ']') {
-    
+  if (IsStandardID(data_id)) {
+    return GetProvidedValueForArgument(data_id, argument);
+  } else if (IsArgumentedID(data_id)) {    
     // Find start of argument
     int start_idx = -1;
     for (int i = 0; i < data_id.GetSize(); i++) {
@@ -43,7 +46,7 @@ Avida::Data::PackagePtr Avida::Data::ArgumentedProvider::GetProvidedValue(const 
     }
     if (start_idx != -1) {
       // Separate argument from incoming requested data id
-      Apto::String argument = data_id.Substring(start_idx, data_id.GetSize() - start_idx - 1);
+      argument = data_id.Substring(start_idx, data_id.GetSize() - start_idx - 1);
       DataID raw_id = data_id.Substring(0, start_idx) + "]";
       return GetProvidedValueForArgument(raw_id, argument);
     }

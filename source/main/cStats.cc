@@ -25,6 +25,7 @@
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
+#include "avida/data/Util.h"
 
 #include "cBioGroup.h"
 #include "cDataFile.h"
@@ -326,14 +327,21 @@ void cStats::UpdateProvidedValues(Update current_update)
   // Nothing for now, all handled by ProcessUpdate()
 }
 
-Data::PackagePtr cStats::GetProvidedValue(const Apto::String& data_id) const
+Data::PackagePtr cStats::GetProvidedValueForArgument(const Apto::String& data_id, const Data::Argument& arg) const
 {
-  ProvidedData data_entry;
   Data::PackagePtr rtn;
-  if (m_provided_data.Get(data_id, data_entry)) {
-    rtn = data_entry.GetData();
+
+  if (Data::IsStandardID(data_id)) {
+    ProvidedData data_entry;
+    if (m_provided_data.Get(data_id, data_entry)) {
+      rtn = data_entry.GetData();
+    }
+    assert(rtn);
+  } else if (Data::IsArgumentedID(data_id)) {
+    // @TODO
+    
   }
-  assert(rtn);
+  
   return rtn;
 }
 
@@ -346,6 +354,32 @@ Apto::String cStats::DescribeProvidedValue(const Apto::String& data_id) const
   }
   assert(rtn != "");
   return rtn;
+}
+
+
+void cStats::SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args)
+{
+  // @TODO
+}
+
+
+Data::ConstArgumentSetPtr cStats::GetValidArguments(const Data::DataID& data_id) const
+{
+  Data::ArgumentSetPtr arg_set;
+
+  if (Data::IsStandardID(data_id)) return arg_set;
+  
+  // @TODO
+  
+  return arg_set;
+}
+
+bool cStats::IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const
+{
+  if (Data::IsStandardID(data_id)) return false;
+  
+  // @TODO
+  return false;
 }
 
 

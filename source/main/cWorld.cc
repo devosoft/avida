@@ -67,7 +67,6 @@ cWorld::~cWorld()
   
   // These must be deleted first
   delete m_analyze; m_analyze = NULL;
-  delete m_pop; m_pop = NULL;
   
   delete m_class_mgr; m_class_mgr = NULL;
   delete m_env; m_env = NULL;
@@ -164,7 +163,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   const bool sterilize_taskloss = m_conf->STERILIZE_TASKLOSS.Get() > 0.0;
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
-  m_pop = new cPopulation(this);
+  m_pop = Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount>(new cPopulation(this));
   if (!m_pop->InitiatePop(feedback)) success = false;
   
   // Setup Event List
@@ -178,6 +177,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
 }
 
 Data::ProviderPtr cWorld::GetStatsProvider(World*) { return m_stats; }
+Data::ArgumentedProviderPtr cWorld::GetPopulationProvider(World*) { return m_pop; }
 
 
 cAnalyze& cWorld::GetAnalyze()
