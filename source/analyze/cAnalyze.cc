@@ -6014,6 +6014,10 @@ void cAnalyze::CommandRecombine(cString cur_string)
         new_genotype1->SetID(0);
         new_genotype0->SetName("noname");
         new_genotype1->SetName("noname");
+        new_genotype0->SetParentID(genotype1->GetID()); //@CHC: Want to keep track of which two parents generated this offspring
+        new_genotype0->SetParent2ID(genotype2->GetID());
+        new_genotype1->SetParentID(genotype1->GetID());
+        new_genotype1->SetParent2ID(genotype2->GetID());
         
         batch[batch3].List().PushRear(new_genotype0);
         batch[batch3].List().PushRear(new_genotype1); 
