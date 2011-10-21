@@ -105,6 +105,8 @@ public:
   void ResetResourceCounts();
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
+  
+  int GetCurrPeakX();
 };
 
 #endif

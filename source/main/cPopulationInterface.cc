@@ -1144,6 +1144,11 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int 
   m_world->GetStats().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
+void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
+{
+  m_world->GetPopulation().AttackFacedOrg(ctx, loser);
+}
+
 void cPopulationInterface::BeginSleep()
 {
   if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)

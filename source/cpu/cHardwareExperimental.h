@@ -574,7 +574,7 @@ private:
   };
   searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num);
   
-  struct lookIn {
+  struct lookRegAssign {
     int habitat;
     int distance;
     int search_type;
@@ -596,10 +596,10 @@ private:
     int forage;
   }; 
   
-  lookOut SetLooking(cAvidaContext& ctx, lookIn& lookin_defs);
+  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs);
   lookOut WalkCells(cAvidaContext& ctx, int habitat_used, int search_type, int distance_sought, int id_sought);
   lookOut FindOrg(cOrganism* target_org, const int distance, const int search_type);
-  void LookResults(cAvidaContext& ctx, lookIn& lookin_defs, lookOut& look_results);
+  void LookResults(cAvidaContext& ctx, lookRegAssign& lookin_defs, lookOut& look_results);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
   
 };

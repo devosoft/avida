@@ -2777,7 +2777,7 @@ bool cHardwareExperimental::Inst_SGSense(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
-  if (m_organism->GetCellID() == -1) return false;
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
   
   bool move_success = m_organism->Move(ctx);  
   const int out_reg = FindModifiedRegister(rBX);   
@@ -2788,15 +2788,16 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
-  if (m_organism->GetCellID() == -1) return false;
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
   assert(m_organism != 0);
   
   bool safe_passage = true;
   bool move_success = false;
-  const int faced_range = m_organism->GetFacedCellDataTerritory();
+  const int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
   
   if (faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
-      ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+      ((m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate()) 
+       <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
   
@@ -2813,15 +2814,16 @@ bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
-  if (m_organism->GetCellID() == -1) return false;
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
   assert(m_organism != 0);
   
   bool safe_passage = true;
   bool move_success = false;
-  const int faced_range = m_organism->GetFacedCellDataTerritory();
+  const int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
   
   if (m_organism->GetForageTarget() == -2 && faced_range != -1 && faced_range != m_organism->GetOpinion().first 
-      && ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+      && ((m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate()) 
+          <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
   if (safe_passage) {
@@ -2836,7 +2838,7 @@ bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, m_organism->GetFacedDir(), true);
+  setInternalValue(out_reg, m_organism->GetOrgInterface().GetFacedDir(), true);
   return true;
 }
 
@@ -2927,7 +2929,7 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
   else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
   for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
     m_organism->Rotate(1);
-    if (m_organism->GetFacedDir() == correct_facing) break;
+    if (m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
   }
   return true;
 }
@@ -3001,7 +3003,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     const int target_org_cell = target_org->GetCellID();
     const int target_x = target_org_cell % worldx;
     const int target_y = target_org_cell / worldx;
-    const int searching_org_cell = m_organism->GetCellID();
+    const int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
     const int x_dist =  target_x - searching_x;
@@ -3021,7 +3023,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(-1);
-      if (m_organism->GetFacedDir() == correct_facing) break;
+      if (m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
     }
     return true;
   }
@@ -3057,7 +3059,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     const int target_org_cell = target_org->GetCellID();
     const int target_x = target_org_cell % worldx;
     const int target_y = target_org_cell / worldx;
-    const int searching_org_cell = m_organism->GetCellID();
+    const int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
     const int searching_x = searching_org_cell % worldx;
     const int searching_y = searching_org_cell / worldx;
     const int x_dist =  target_x - searching_x;
@@ -3077,7 +3079,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
     for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
       m_organism->Rotate(-1);
-      if (m_organism->GetFacedDir() == correct_facing) break;
+      if (m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
     }
     return true;
   }
@@ -3212,7 +3214,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   if (m_organism->GetNeighborhoodSize() == 0) return false;
   
   // define our input (4) and output registers (8)
-  lookIn reg_defs;
+  lookRegAssign reg_defs;
   reg_defs.habitat = FindModifiedRegister(rBX);
   // fail if the org is trying to sense a nest/hidden habitat
   int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
@@ -3407,7 +3409,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
   if (nop_reg == rAX) return Inst_MakePredGroup(ctx);
   // **If ?BX? change to group -1.
   else if (nop_reg == rBX) return Inst_LeavePredGroup(ctx);
-  // **If ?CX? read m_organism->GetFacedCellDataTerritory() and attempt immigration into that group.
+  // **If ?CX? read m_organism->GetOrgInterface().GetFacedCellDataTerritory() and attempt immigration into that group.
   else if (nop_reg == rCX) return Inst_AdoptPredGroup(ctx);
   
   // **return (new) group ID & change success          
@@ -3466,12 +3468,12 @@ bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // Read target group from the faced marked cell.
-  const int prop_group_id = m_organism->GetFacedCellDataTerritory();
+  const int prop_group_id = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
   if (prop_group_id == -1) return false;
   
   // Check if the cell marking has expired.
   int current_update = m_world->GetStats().GetUpdate();
-  int update_marked = m_organism->GetFacedCellDataUpdate();
+  int update_marked = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
   int expire_window = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
   if (current_update > (update_marked + expire_window)) return false;
   
@@ -3518,7 +3520,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 {
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism * neighbor = m_organism->GetNeighbor();
+  cOrganism * neighbor = m_organism->GetOrgInterface().GetNeighbor();
   if (neighbor->IsDead())  return false;  
   
   const int out_reg = FindModifiedRegister(rBX);
@@ -3535,7 +3537,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
@@ -3596,7 +3598,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator or prey vs prey
@@ -3627,7 +3629,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   
   const int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
@@ -3642,7 +3644,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator or prey vs prey
@@ -3674,7 +3676,7 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator or prey vs prey
@@ -3685,7 +3687,7 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   
   int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
@@ -3702,7 +3704,7 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
@@ -3712,7 +3714,7 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   
   int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
@@ -3727,7 +3729,7 @@ bool cHardwareExperimental::Inst_FightMeritPred(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
@@ -3757,7 +3759,7 @@ bool cHardwareExperimental::Inst_FightMeritPred(cAvidaContext& ctx)
   
   const int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
@@ -3792,12 +3794,12 @@ bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
   const int update_reg = FindModifiedNextRegister(rBX);
   const int org_reg = FindModifiedNextRegister(update_reg);
   
-  setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
-  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
-  setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
+  setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
   if (NUM_REGISTERS > 3) {
     const int group_reg = FindModifiedNextRegister(org_reg);
-    setInternalValue(group_reg, m_organism->GetFacedCellDataTerritory(), true);    
+    setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
   }
   
   return true;
@@ -3811,12 +3813,12 @@ bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext& ctx)
   const int update_reg = FindModifiedNextRegister(rBX);
   const int org_reg = FindModifiedNextRegister(update_reg);
   
-  setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
-  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
-  setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
+  setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
   if (NUM_REGISTERS > 3) {
     const int group_reg = FindModifiedNextRegister(org_reg);
-    setInternalValue(group_reg, m_organism->GetFacedCellDataTerritory(), true);    
+    setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
   }
   
   return true;
@@ -3835,7 +3837,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
 {
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism * neighbor = m_organism->GetNeighbor();
+  cOrganism * neighbor = m_organism->GetOrgInterface().GetNeighbor();
   if (neighbor->IsDead()) return false;  
   
   // If there is no valid max genetic distance, go out to cousins.
@@ -4079,7 +4081,7 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
   
   int group_id = m_organism->GetOpinion().first;
   if (group_id == -1) return;
-  int group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+  int group_size = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
   double resource_level = res_count[group_id];
   int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   
@@ -4098,7 +4100,7 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
                                                      odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
-cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookIn& in_defs)
+cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
@@ -4198,6 +4200,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
    const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
    spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
    */
+  
   return WalkCells(ctx, habitat_used, search_type, distance_sought, id_sought);
 }    
 
@@ -4214,7 +4217,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
   const int y_dist = target_y - searching_y;
   // is the target org close enough to see and in my line of sight?
   bool org_in_sight = true;
-  const int facing = m_organism->GetFacedDir();
+  const int facing = m_organism->GetOrgInterface().GetFacedDir();
   const int travel_dist = max(abs(x_dist), abs(y_dist));
   
   // if too far in any direction regardless of facing
@@ -4290,9 +4293,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
   
-  const int facing = m_organism->GetFacedDir();
-  const int faced_cell = m_organism->GetFacedCellID();
-  int cell = m_organism->GetCellID();
+  const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  const int faced_cell = m_organism->GetOrgInterface().GetFacedCellID();
+  int cell = m_organism->GetOrgInterface().GetCellID();
   
   const int ahead_dir = faced_cell - cell;
   int dist_used = distance_sought;
@@ -4489,8 +4492,8 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
       min_index = res_id_sought;
       max_index = res_id_sought;
     }
-    for( int k = min_index; k <= max_index; k++) {
-      if(resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
+    for (int k = min_index; k <= max_index; k++) {
+      if (resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
         returnInfo.amountFound += cell_res[k];
         if (cell_res[k] >= 1) {
           if (!returnInfo.has_edible) returnInfo.resource_id = k;   // get FIRST whole resource id
@@ -4504,23 +4507,28 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
     const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
     if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
       int type_seen = target_cell.GetOrganism()->GetForageTarget();
-      
-      if(search_type == 0)
+      if(search_type == 0) {
         returnInfo.amountFound++;
+        returnInfo.has_edible = true;
+      }
       else if (search_type > 0){
-        if(type_seen == -2)
+        if(type_seen == -2) {
           returnInfo.amountFound++;
+          returnInfo.has_edible = true;
+        }
       }
       else if (search_type < 0){
-        if(type_seen != -2)
+        if(type_seen != -2) {
           returnInfo.amountFound++;
+          returnInfo.has_edible = true;
+        }
       }
     }
   }  
   return returnInfo;
 }
 
-void cHardwareExperimental::LookResults(cAvidaContext& ctx, lookIn& regs, lookOut& results)
+void cHardwareExperimental::LookResults(cAvidaContext& ctx, lookRegAssign& regs, lookOut& results)
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
