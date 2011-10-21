@@ -6030,6 +6030,102 @@ void cAnalyze::CommandRecombine(cString cur_string)
   }
 }
 
+void cAnalyze::CommandRecombineSample(cString cur_string)
+{
+  int batch1 = PopBatch(cur_string.PopWord());
+  int batch2 = PopBatch(cur_string.PopWord());
+  int batch3 = PopBatch(cur_string.PopWord());
+  int num_compare = PopBatch(cur_string.PopWord());
+  
+  
+  if (m_world->GetVerbosity() <= VERBOSE_NORMAL) cout << "Creating recombinants...  " << endl;
+  else cout << "Creating recombinants between batch "
+    << batch1 << " and " << batch2 << endl;
+  
+  // Setup some variables;
+  cAnalyzeGenotype * genotype1 = NULL;
+  cAnalyzeGenotype * genotype2 = NULL;
+
+  //Loop through X number of genotypes
+  for (int i = 1; i <= num_compare; i++) {
+    genotype1 = batch[batch1].FindGenotypeRandom(m_world->GetRandom());
+    genotype2 = batch[batch2].FindGenotypeRandom(m_world->GetRandom());
+    
+    //50% chance of swapping genotype1 and genotype2 so that we don't always end up with 
+    //    the same batch contributing the "ends" of the genome to the offspring
+    if (m_world->GetRandom().P(0.5)) {
+        cAnalyzeGenotype * temp = genotype1;
+        genotype1 = genotype2;
+        genotype2 = genotype1;
+    }
+    
+    int fail_count = 0;
+    
+    Genome test_genome0 = genotype1->GetGenome(); 
+    Genome test_genome1 = genotype2->GetGenome(); 
+        
+    double start_frac = m_world->GetRandom().GetDouble();
+    double end_frac = m_world->GetRandom().GetDouble();
+    if (start_frac > end_frac) Swap(start_frac, end_frac);
+    
+    int start0 = (int) (start_frac * (double) test_genome0.GetSize());
+    int end0   = (int) (end_frac * (double) test_genome0.GetSize());
+    int start1 = (int) (start_frac * (double) test_genome1.GetSize());
+    int end1   = (int) (end_frac * (double) test_genome1.GetSize());
+    assert( start0 >= 0  &&  start0 < test_genome0.GetSize() );
+    assert( end0   >= 0  &&  end0   < test_genome0.GetSize() );
+    assert( start1 >= 0  &&  start1 < test_genome1.GetSize() );
+    assert( end1   >= 0  &&  end1   < test_genome1.GetSize() );
+    
+    // Calculate size of sections crossing over...    
+    int size0 = end0 - start0;
+    int size1 = end1 - start1;
+    
+    int new_size0 = test_genome0.GetSize() - size0 + size1;   
+    int new_size1 = test_genome1.GetSize() - size1 + size0;
+    
+    // Don't Crossover if offspring will be illegal!!!
+    if (new_size0 < MIN_GENOME_LENGTH || new_size0 > MAX_GENOME_LENGTH || 
+        new_size1 < MIN_GENOME_LENGTH || new_size1 > MAX_GENOME_LENGTH) { 
+      fail_count +=2; 
+      break; 
+    } 
+    
+    if (size0 > 0 && size1 > 0) {
+      Sequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
+      Sequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
+      test_genome0.GetSequence().Replace(start0, size0, cross1);
+      test_genome1.GetSequence().Replace(start1, size1, cross0);
+    }
+    else if (size0 > 0) {
+      Sequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
+      test_genome1.GetSequence().Replace(start1, size1, cross0);
+    }
+    else if (size1 > 0) {
+      Sequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
+      test_genome0.GetSequence().Replace(start0, size0, cross1);
+    }
+    
+    cAnalyzeGenotype* new_genotype0 = new cAnalyzeGenotype(m_world, test_genome0); 
+    //cAnalyzeGenotype* new_genotype1 = new cAnalyzeGenotype(m_world, test_genome1); 
+    new_genotype0->SetNumCPUs(1); 
+    //new_genotype1->SetNumCPUs(1); 
+    new_genotype0->SetID(0);
+    //new_genotype1->SetID(0);
+    new_genotype0->SetName("noname");
+    //new_genotype1->SetName("noname");
+    new_genotype0->SetParentID(genotype1->GetID()); //@CHC: Want to keep track of which two parents generated this offspring
+    new_genotype0->SetParent2ID(genotype2->GetID());
+    //new_genotype1->SetParentID(genotype1->GetID());
+    //new_genotype1->SetParent2ID(genotype2->GetID());
+    
+    batch[batch3].List().PushRear(new_genotype0);
+    //batch[batch3].List().PushRear(new_genotype1); 
+    
+  }
+  
+}
+
 void cAnalyze::CommandAlign(cString cur_string)
 {
   // Align does not need any args yet.
@@ -9156,6 +9252,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("LEVENSTEIN", &cAnalyze::CommandLevenstein);
   AddLibraryDef("SPECIES", &cAnalyze::CommandSpecies);
   AddLibraryDef("RECOMBINE", &cAnalyze::CommandRecombine);
+  AddLibraryDef("RECOMBINE_SAMPLE", &cAnalyze::CommandRecombineSample);
   
   // Lineage analysis commands...
   AddLibraryDef("ALIGN", &cAnalyze::CommandAlign);
