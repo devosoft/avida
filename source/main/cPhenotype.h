@@ -421,6 +421,7 @@ public:
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
+  void SetLastTaskCount(tArray<int> tasks) { assert(initialized == true); last_task_count = tasks; }
   const tArray<int>& GetLastHostTaskCount() const { assert(initialized == true); return last_host_tasks; }
   const tArray<int>& GetLastParasiteTaskCount() const { assert(initialized == true); return last_para_tasks; }
   void  SetLastParasiteTaskCount(tArray<int>  oldParaPhenotype);

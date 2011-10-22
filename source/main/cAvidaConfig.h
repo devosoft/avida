@@ -595,6 +595,7 @@ public:
   // -------- Analyze config options --------
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
   CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
+  CONFIG_ADD_VAR(INVIABLE_ORGS_COUNT_TASKS, int, 0, "Output inviable org tasks from analyze mode (Copy cur_task_counts to last_task_counts even if org doesn't call divide");
   CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
   
