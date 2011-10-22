@@ -658,6 +658,10 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   //update the parasites tasks
 	m_organism->GetPhenotype().UpdateParasiteTasks();
   
+  //If running in Analyze mode, reset the organisms last_task_count now so we know what the parasite did
+  if(m_world->GetConfig().INJECT_RESETS_TASKS.Get())
+    m_organism->GetPhenotype().SetLastTaskCount(m_organism->GetPhenotype().GetCurTaskCount());
+  
   m_mem_array[mem_space_used].Resize(end_pos);
   cCPUMemory injected_code = m_mem_array[mem_space_used];
 	

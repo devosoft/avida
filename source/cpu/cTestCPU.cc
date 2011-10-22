@@ -184,9 +184,6 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
      organism.GetHardware().SingleProcess(ctx);
   }
   
-  if(time_used >= time_allocated && m_world->GetConfig().INVIABLE_ORGS_COUNT_TASKS.Get())
-    organism.GetPhenotype().SetLastTaskCount(organism.GetPhenotype().GetCurTaskCount());
-  
   
   // Output final resource information @JEB
   if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
