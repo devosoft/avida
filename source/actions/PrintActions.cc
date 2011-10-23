@@ -3610,6 +3610,90 @@ public:
   }
 };
 
+class cActionDumpGenotypeGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpGenotypeGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_genome.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        cString genome_seq("");
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true)
+        {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          genome_seq = organism->GetGenome().GetSequence().AsString();
+        }
+        else { genome_seq = "-1"; }
+        fp << genome_seq << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+class cActionDumpParasiteGenotypeGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpParasiteGenotypeGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_genome_parasite.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        cString genome_seq("");
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true)
+        {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          if(organism->GetNumParasites() > 0)
+          {
+            tArray<cBioUnit*> parasites = organism->GetParasites();
+            
+            genome_seq = dynamic_cast<cParasite*>(parasites[0])->GetGenome().GetSequence().AsString();
+          }
+          else { genome_seq = "0"; }
+        }
+        else { genome_seq = "-1"; }
+        fp << genome_seq << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 class cActionDumpDonorGrid : public cAction
 {
 private:
@@ -4086,6 +4170,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpCellDataGrid>("DumpCellDataGrid");
   action_lib->Register<cActionDumpSleepGrid>("DumpSleepGrid");
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
+  action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
+  action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");
+
 
 
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");

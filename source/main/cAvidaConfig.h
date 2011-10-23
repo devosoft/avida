@@ -595,6 +595,7 @@ public:
   // -------- Analyze config options --------
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
   CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
+  CONFIG_ADD_VAR(INJECT_RESETS_TASKS, int, 0, "Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count");
   CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
   
