@@ -92,18 +92,15 @@ public:
                  double resistance);
 
   void UpdateCount(cAvidaContext& ctx);
-
   void StateAll();
   
-  inline int GetCurrPeakX() { return m_peakx; }
-  inline int GetCurrPeakY() { return m_peaky; }
-
 private:
   void refreshResourceValues();
   void generatePeak(cAvidaContext& ctx);
   void getCurrentPlatValues();
   void generateBarrier(cAvidaContext& ctx);
   void generateHills(cAvidaContext& ctx);  
+  
 };
 
 #endif

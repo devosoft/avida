@@ -2984,7 +2984,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
-  // return true if invalid number or self
+  // return false if invalid number or self
   if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
@@ -3039,7 +3039,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
-  // return true if invalid number or self
+  // return false if invalid number or self
   if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
@@ -4158,12 +4158,15 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // defaults to any (-1) if input is invalid or is predator and target is not specified
   // defaults to current forage target if input is absent and not predator
   int id_sought = -1;
-  if (m_organism->GetForageTarget() !=-2) id_sought = m_organism->GetForageTarget();
+  if (m_organism->GetForageTarget() !=-2) {
+    id_sought = m_organism->GetForageTarget();
+    if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
+  }
   
   if (search_label.GetSize() > 3) {
     id_sought = m_threads[m_cur_thread].reg[id_reg].value;
     if (habitat_used != -2) {
-      if (id_sought < 0 || id_sought >= lib_size) id_sought = -1;
+      if (id_sought < -1 || id_sought >= lib_size) id_sought = -1;
       // override habitat_used to match that for id_sought
       if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
     } 
@@ -4287,43 +4290,88 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
 
 cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& ctx, int habitat_used, int search_type, int distance_sought, int id_sought)
 {
+  // rather than doing doupdates at every cell check inside TestCell, we just do it once now since we're in a stall
+  // we need this for getfrozenres and getfrozenpeak
+  m_organism->GetOrgInterface().TriggerDoUpdates(ctx);
+  
   lookOut stuff_seen;
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  
-  const int facing = m_organism->GetOrgInterface().GetFacedDir();
-  const int faced_cell = m_organism->GetOrgInterface().GetFacedCellID();
-  int cell = m_organism->GetOrgInterface().GetCellID();
-  
-  const int ahead_dir = faced_cell - cell;
+    
   int dist_used = distance_sought;
-                
+  int start_dist = 0;
+  int end_dist = distance_sought;
+  
+  int cell = m_organism->GetOrgInterface().GetCellID();
   int center_cell = cell;
   int this_cell = cell;
-  
+
+  const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  const int faced_cell = m_organism->GetOrgInterface().GetFacedCellID();  
+  const int ahead_dir = faced_cell - cell;
+                
   bool count_center = true;
   bool any_valid_side_cells = false;
-  
   bool found = false;
   int count = 0;
   double totalAmount = 0;
   int first_success_cell = -1;
   int first_whole_resource = -1;
   
-  searchInfo cellResultInfo;
+  // set bounds and fast forward, if possible
+  tSmartArray<int> val_res;
+  val_res.Resize(0);
+  bool boundable = false;
+  // we can use a check for this common easy case to really speed things up.
+  if ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && search_type == 0 && resource_lib.GetResource(id_sought)->GetGradient()) {
+    boundable = true;
+    val_res.Push(id_sought);
+    start_dist = GetMinDist(ctx, worldx, id_sought, cell, distance_sought);
+    if (start_dist == -1) {       // out of range
+      stuff_seen.report_type = 0;
+      return stuff_seen;
+    }
+    end_dist = GetMaxDist(ctx, worldx, id_sought, cell, distance_sought);
+  }
+  // if not that easy, get the valid resource, set some bounds true for all resources of this type, getting rid of those out of range...
+  else if (!boundable && habitat_used != -2) {
+    for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetHabitat() == habitat_used) val_res.Push(i);
+    if (id_sought == -1 && (habitat_used == 0 || habitat_used == 4) && search_type == 0) {
+      for (int i = 0; i < val_res.GetSize(); i++) {
+        if (resource_lib.GetResource(val_res[i])->GetGradient()) {
+          bool skip_res = false;
+          int this_min = GetMinDist(ctx, worldx, val_res[i], cell, distance_sought);
+          int this_max = GetMaxDist(ctx, worldx, val_res[i], cell, distance_sought);
+          if (this_min == -1) {
+            val_res.Swap(i, val_res.GetSize() - 1);
+            val_res.Pop();
+            skip_res = true;
+            i--;
+          }
+          if (!skip_res && this_min < start_dist) start_dist = this_min;
+          if (!skip_res && this_max > end_dist) end_dist = this_max;
+        }
+      }
+    }
+    if (val_res.GetSize() == 0) {     // nothing in range
+      stuff_seen.report_type = 0;
+      return stuff_seen;      
+    }
+  }
+  center_cell = center_cell + (ahead_dir * start_dist);
   
-  tArray<double> cell_res;
+  searchInfo cellResultInfo;
   
   bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
 	
-  for (int dist = 0; dist < distance_sought + 1; dist++) {
+  for (int dist = start_dist; dist <= end_dist; dist++) {
     // work on CENTER cell for this dist
     
     // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
     if (count_center) {
-      cellResultInfo = TestCell(ctx, habitat_used, search_type, id_sought, resource_lib, center_cell);
+      cellResultInfo = TestCell(ctx, habitat_used, search_type, resource_lib, center_cell, val_res);
       if(cellResultInfo.amountFound >= 0) {
         totalAmount += cellResultInfo.amountFound;
         if (cellResultInfo.has_edible) {
@@ -4331,8 +4379,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
           if (first_success_cell == -1) first_success_cell = center_cell;
           if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
           if(stop_at_first_found) {
-            // we were only looking for the first one.
-            // break out of the side-searching loop
             found = true;
             dist_used = dist;
             break;
@@ -4378,11 +4424,14 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
         if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
         else if ((this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
         else if ((this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
+        // if were in res bound box, but now aren't, safe to say we're done with this side
+        else if (boundable && !WithinResLimits(ctx, worldx, id_sought, this_cell) && 
+                 WithinResLimits(ctx, worldx, id_sought, prev_cell)) count_side = false;
         else any_valid_side_cells = true;
         
         prev_cell = this_cell;
         if (count_side) {
-          cellResultInfo = TestCell(ctx, habitat_used, search_type, id_sought, resource_lib, this_cell);
+          cellResultInfo = TestCell(ctx, habitat_used, search_type, resource_lib, this_cell, val_res);
           if(cellResultInfo.amountFound >= 0) {
             totalAmount += cellResultInfo.amountFound;
             if (cellResultInfo.has_edible) {
@@ -4390,8 +4439,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
               if (first_success_cell == -1) first_success_cell = this_cell;
               if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
               if(stop_at_first_found) {
-                // we were only looking for the first one.
-                // break out of the side-searching loop
                 found = true;
                 dist_used = dist;
                 break;
@@ -4399,17 +4446,18 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
             }
           }
         }
+        // break out of loop for cells on this side
         if (!count_side) break;
       }
-      // break out of entire search loop
+      // break out of entire SIDE cells search loop
       if (stop_at_first_found && found) break;
     }
     if (stop_at_first_found && found) break;
     
-    // before we do the next side cell...
+    // before we check side cells at the next distance...
     // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
     if (!any_valid_side_cells && !count_center) {
-      dist -= 1;
+      dist--;
       dist_used = dist;
       break;
     }
@@ -4424,7 +4472,10 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
     if((facing == 2 || facing == 3 || facing == 1) && (center_cell % worldx == 0)) count_center = false;
     // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
-    else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;    
+    else if(center_cell < 0 || (center_cell > ((worldx * worldy) - 1))) count_center = false;  
+    // if hunting specific res, we're done with the center once we fall off of the res (after having been on it already)
+    else if (boundable && !WithinResLimits(ctx, worldx, id_sought, center_cell) && 
+             WithinResLimits(ctx, worldx, id_sought, center_cell - ahead_dir)) count_center = false; 
   } // End getting values
   
   // begin reached end output   
@@ -4444,18 +4495,17 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     
     // overwrite defaults for more specific search types
     
+    // if we were looking for resources, return id of nearest
+    if (habitat_used != -2) stuff_seen.group = first_whole_resource;  
     // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
-    const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell);
-    if (habitat_used == -2) {
+    else {
+      const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell);
       stuff_seen.value = (int) first_good_cell.GetOrganism()->GetPhenotype().GetCurBonus();
       if (first_good_cell.GetOrganism()->HasOpinion()) {
         stuff_seen.group = first_good_cell.GetOrganism()->GetOpinion().first;
       }
       stuff_seen.forage = first_good_cell.GetOrganism()->GetForageTarget();                  
     }
-    
-    // if we were looking for resources, return id of nearest
-    if (habitat_used != -2) stuff_seen.group = first_whole_resource;  
   }
   return stuff_seen;
 }
@@ -4473,37 +4523,29 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
  *    otherwise, returns the number of objects we're looking for that are in target_cell
  *    
  */
-cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num)
+cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, 
+                                                                  const cResourceLib& resource_lib, int target_cell_num,
+                                                                  tSmartArray<int>& val_res)
 {
   searchInfo returnInfo;
   returnInfo.amountFound = 0;
-  returnInfo.resource_id = res_id_sought;
+  returnInfo.resource_id = -1;
   returnInfo.has_edible = false;
   
   // if looking for resources or topological features
-  if(habitat_used == 0 || habitat_used == 1 || habitat_used == 2 || habitat_used == 4){
-    int lib_size = resource_lib.GetSize();
-    tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(target_cell_num, ctx);
-    
-    // by default, look at every resource ID unless we're looking for a specific one
-    int min_index = 0;
-    int max_index = lib_size - 1;
-    if(res_id_sought != -1) {
-      min_index = res_id_sought;
-      max_index = res_id_sought;
-    }
-    for (int k = min_index; k <= max_index; k++) {
-      if (resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
-        returnInfo.amountFound += cell_res[k];
-        if (cell_res[k] >= 1) {
-          if (!returnInfo.has_edible) returnInfo.resource_id = k;   // get FIRST whole resource id
-          returnInfo.has_edible = true;
-        }
+  if(habitat_used != -2){
+    tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
+    // look at every resource ID of this habitat type in the array of resources of interest that we built
+    for (int k = 0; k < val_res.GetSize(); k++) {
+      returnInfo.amountFound += cell_res[val_res[k]];
+      if (cell_res[val_res[k]] >= 1) {
+        if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   // get FIRST whole resource id
+        returnInfo.has_edible = true;
       }
     }
   }
   // if we're looking for other organisms (looking for specific org already handled)
-  else if (habitat_used == -2) {
+  else {
     const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
     if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
       int type_seen = target_cell.GetOrganism()->GetForageTarget();
@@ -4542,7 +4584,7 @@ void cHardwareExperimental::LookResults(cAvidaContext& ctx, lookRegAssign& regs,
     setInternalValue(regs.group, -9, true);
     setInternalValue(regs.ft, -9, true);  
   }
-  // report results as sent, assuming nothing
+  // report results as sent
   else if (results.report_type == 1) {
     setInternalValue(regs.habitat, results.habitat, true);
     setInternalValue(regs.distance, results.distance, true);
@@ -4554,4 +4596,74 @@ void cHardwareExperimental::LookResults(cAvidaContext& ctx, lookRegAssign& regs,
     setInternalValue(regs.ft, results.forage, true);  
   }
   return;
+}
+
+int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const int worldx, const int res_id, const int cell_id, const int distance_sought)
+{
+  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
+  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
+  const int org_x = cell_id % worldx;
+  const int org_y = cell_id / worldx;
+  int min_dist = 0;
+  
+  // min poss is travel distance on longest minus the width of the area of the food curve that can be >= 1
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  if (resource_lib.GetResource(res_id)->GetFloor() >= 1) {
+    const int spread = resource_lib.GetResource(res_id)->GetSpread();
+    min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - spread;
+  }
+  else {
+    const int height = resource_lib.GetResource(res_id)->GetHeight();
+    min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - height;
+  }
+  min_dist--;
+  if (min_dist < 0) min_dist = 0;       // standing on part of res already
+  if (min_dist > distance_sought) min_dist--;
+  return min_dist;
+}
+
+int cHardwareExperimental::GetMaxDist(cAvidaContext& ctx, const int worldx, const int res_id, const int cell_id, const int distance_sought)
+{
+  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
+  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
+  const int org_x = cell_id % worldx;
+  const int org_y = cell_id / worldx;
+  int max_dist = distance_sought;
+  
+  // max poss is travel distance on longest axis plus the width of the area of the food curve that can be >= 1
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  if (resource_lib.GetResource(res_id)->GetFloor() >= 1) {
+    const int spread = resource_lib.GetResource(res_id)->GetSpread();
+    max_dist = max(abs(peakx - org_x), abs(peaky - org_y)) + spread;
+  }
+  else {
+    const int height = resource_lib.GetResource(res_id)->GetHeight();
+    max_dist = max(abs(peakx - org_x), abs(peaky - org_y)) + height;
+  }
+  return min(max_dist + 1, distance_sought);
+}
+
+bool cHardwareExperimental::WithinResLimits(cAvidaContext& ctx, const int worldx, const int res_id, const int curr_cell)
+{
+  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
+  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
+  const int curr_x = curr_cell % worldx;
+  const int curr_y = curr_cell / worldx;
+  int width = 0;
+
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() : 
+                                                      width = resource_lib.GetResource(res_id)->GetHeight();
+  
+  int max_x = peakx + width;
+  int max_y = peaky + width;
+  int min_x = peakx - width;
+  int min_y = peaky - width;
+  if (min_x < 0) min_x = 0;
+  if (min_y < 0) min_y = 0;
+  if (max_x > m_world->GetConfig().WORLD_X.Get()) max_x =  m_world->GetConfig().WORLD_X.Get();
+  if (max_y > m_world->GetConfig().WORLD_Y.Get()) max_y =  m_world->GetConfig().WORLD_Y.Get();
+
+  if (curr_x > max_x || curr_x < min_x || curr_y > max_y || curr_y < min_y) return false;
+  else return true;
 }

@@ -572,8 +572,6 @@ private:
     int resource_id;
     bool has_edible;
   };
-  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num);
-  
   struct lookRegAssign {
     int habitat;
     int distance;
@@ -596,12 +594,15 @@ private:
     int forage;
   }; 
   
+  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, const cResourceLib& resource_lib, int target_cell_num, tSmartArray<int>& val_res);  
   lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs);
   lookOut WalkCells(cAvidaContext& ctx, int habitat_used, int search_type, int distance_sought, int id_sought);
   lookOut FindOrg(cOrganism* target_org, const int distance, const int search_type);
   void LookResults(cAvidaContext& ctx, lookRegAssign& lookin_defs, lookOut& look_results);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
-  
+  int GetMinDist(cAvidaContext& ctx, const int worldx, const int res_id, const int cell_id, const int distance_sought);
+  int GetMaxDist(cAvidaContext& ctx, const int worldx, const int res_id, const int cell_id, const int distance_sought);
+  bool WithinResLimits(cAvidaContext& ctx, const int worldx, const int res_id, const int curr_cell);
 };
 
 

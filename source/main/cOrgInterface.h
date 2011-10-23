@@ -103,7 +103,13 @@ public:
   virtual const tArray<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
+  virtual const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
+  virtual int GetCurrPeakX(cAvidaContext& ctx, int res_id) = 0; 
+  virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
+  virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
+  virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
+  virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 

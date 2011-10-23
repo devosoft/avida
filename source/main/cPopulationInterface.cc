@@ -236,6 +236,11 @@ const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvida
   return m_world->GetPopulation().GetCellResources(cell_id, ctx); 
 }
 
+const tArray<double>& cPopulationInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
+{
+  return m_world->GetPopulation().GetFrozenResources(ctx, cell_id); 
+}
+
 const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 
@@ -244,6 +249,31 @@ const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvida
 const tArray< tArray<int> >& cPopulationInterface::GetCellIdLists()
 {
 	return m_world->GetPopulation().GetCellIdLists();
+}
+
+int cPopulationInterface::GetCurrPeakX(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetCurrPeakX(ctx, res_id); 
+} 
+
+int cPopulationInterface::GetCurrPeakY(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetCurrPeakY(ctx, res_id); 
+} 
+
+int cPopulationInterface::GetFrozenPeakX(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetFrozenPeakX(ctx, res_id); 
+} 
+
+int cPopulationInterface::GetFrozenPeakY(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetFrozenPeakY(ctx, res_id); 
+} 
+
+void cPopulationInterface::TriggerDoUpdates(cAvidaContext& ctx)
+{
+  m_world->GetPopulation().TriggerDoUpdates(ctx);
 }
 
 void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)

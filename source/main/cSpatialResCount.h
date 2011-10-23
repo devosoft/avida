@@ -51,6 +51,7 @@ private:
   int    outflowX1, outflowX2, outflowY1, outflowY2;
   int    geometry;
   int    world_x, world_y, num_cells;
+  int    curr_peakx, curr_peaky;
   /* instead of creating a new array use the existing one from cResource */
   tArray<cCellResource> *cell_list_ptr;
   bool m_modified;
@@ -106,7 +107,11 @@ public:
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
   
-  int GetCurrPeakX();
+  void SetCurrPeakX(int in_curr_x) { curr_peakx = in_curr_x; }
+  void SetCurrPeakY(int in_curr_y) { curr_peaky = in_curr_y; }
+  int GetCurrPeakX() { return curr_peakx; } 
+  int GetCurrPeakY() { return curr_peaky; }
+  
 };
 
 #endif
