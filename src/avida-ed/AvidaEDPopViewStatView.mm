@@ -138,6 +138,16 @@ static const float PANEL_MIN_WIDTH = 300.0;
 @end
 
 
+@interface AvidaEDPopViewStatViewOrgValues : NSObject {
+@public
+  int genotype_id;
+}
+@end;
+@implementation AvidaEDPopViewStatViewOrgValues
+@end
+
+
+
 @interface AvidaEDPopViewStatView (hidden) <NSTableViewDelegate>
 - (void) setup;
 
@@ -333,7 +343,13 @@ static const float PANEL_MIN_WIDTH = 300.0;
 
 
 - (void) mapViewSelectionChanged:(MapGridView*)mapView {
-  printf("selected (%f, %f)\n", [mapView selectedObject].x, [mapView selectedObject].y);
+  if (org_recorder) {
+    [run detachRecorder:org_recorder];
+  } else {
+    org_recorder = Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewOrgRecorder(self));
+  }
+  org_recorder->SetCoords([mapView selectedObject].x, [mapView selectedObject].y);
+  [run attachRecorder:org_recorder];
 }
 
 
@@ -345,6 +361,10 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [txtGestation setDoubleValue:values->ave_gestation_time];
   [txtAge setDoubleValue:values->ave_age];
   [tblEnvActions reloadData];
+}
+
+- (void) handleOrgData:(AvidaEDPopViewStatViewOrgValues*)values {
+  [txtOrgName setIntegerValue:values->genotype_id];
 }
 
 @end
@@ -392,4 +412,50 @@ void AvidaEDPopViewStatViewRecorder::NotifyData(Avida::Update, Avida::Data::Data
   }
 
   [m_view performSelectorOnMainThread:@selector(handleData:) withObject:values waitUntilDone:NO];
+}
+
+
+
+AvidaEDPopViewStatViewOrgRecorder::AvidaEDPopViewStatViewOrgRecorder(AvidaEDPopViewStatView* view)
+  : m_view(view), m_x(-1), m_y(-1), m_requested(new Avida::Data::DataSet)
+{
+}
+
+
+Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewOrgRecorder::GetRequested() const
+{
+  return m_requested;
+}
+
+void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data)
+{
+  if (m_data_id == "") return;
+  
+  
+  AvidaEDPopViewStatViewOrgValues* values = [[AvidaEDPopViewStatViewOrgValues alloc] init];
+  
+  Avida::Data::PackagePtr package = retrieve_data(m_data_id);
+  if (package) {
+    values->genotype_id = package->IntValue();
+  } else {
+    values->genotype_id = -1;
+  }
+  
+  [m_view performSelectorOnMainThread:@selector(handleOrgData:) withObject:values waitUntilDone:NO];
+}
+
+void AvidaEDPopViewStatViewOrgRecorder::SetCoords(int x, int y)
+{
+  m_x = x;
+  m_y = y;
+  
+  m_data_id = "core.population.group_id[genotype@";
+  m_data_id += Apto::AsStr(x);
+  m_data_id += ",";
+  m_data_id += Apto::AsStr(y);
+  m_data_id += "]";
+  m_requested->Clear();
+  m_requested->Insert(m_data_id);
+
+  printf("%s\n", (const char*)m_data_id);
 }

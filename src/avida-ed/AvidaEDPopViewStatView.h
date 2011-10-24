@@ -36,6 +36,7 @@
 
 @class AvidaRun;
 class AvidaEDPopViewStatViewRecorder;
+class AvidaEDPopViewStatViewOrgRecorder;
 @class AvidaEDPopViewStatViewEnvActions;
 
 
@@ -60,6 +61,7 @@ class AvidaEDPopViewStatViewRecorder;
   
   AvidaRun* run;
   Avida::Data::RecorderPtr recorder;
+  Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::ThreadSafeRefCount> org_recorder;
   AvidaEDPopViewStatViewEnvActions* envActions;
   AvidaEDPopViewStatViewEnvActions* orgEnvActions;
   IBOutlet id envActionChangeDelegate;
@@ -99,3 +101,21 @@ public:
   void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data);
 };
 
+class AvidaEDPopViewStatViewOrgRecorder : public Avida::Data::Recorder
+{
+private:
+  AvidaEDPopViewStatView* m_view;
+
+  int m_x;
+  int m_y;
+  Avida::Data::DataID m_data_id;
+  mutable Avida::Data::DataSetPtr m_requested;
+  
+public:
+  AvidaEDPopViewStatViewOrgRecorder(AvidaEDPopViewStatView* view);
+  
+  Avida::Data::ConstDataSetPtr GetRequested() const;
+  void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retreive_data);
+  
+  void SetCoords(int x, int y);
+};
