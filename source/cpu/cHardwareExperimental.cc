@@ -3207,7 +3207,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     return false;
   }
   
-  if (NUM_REGISTERS < 8) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead requires at least 8 registers");
+  // m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead requires at least 8 registers");
+  if (NUM_REGISTERS < 8) return false;
   if (m_organism->GetNeighborhoodSize() == 0) return false;
   
   // define our input (4) and output registers (8)
@@ -4429,8 +4430,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
 
         // trickier on diagonals...there we can only skip the cell, not the whole side        
         bool valid_cell = true;
-        if ( (facing == 1 || facing == 3 || facing == 5 || facing == 7) &&
-                 (this_cell < 0) || (this_cell > ((worldx * worldy) - 1)) ) valid_cell = false;                                         
+        if ( ((facing == 1 || facing == 3 || facing == 5 || facing == 7) &&
+                 (this_cell < 0)) || (this_cell > ((worldx * worldy) - 1)) ) valid_cell = false;                                         
 
         prev_cell = this_cell;
         if (count_side && valid_cell) {
