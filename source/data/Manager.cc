@@ -240,11 +240,11 @@ static Avida::Data::ProviderPtr convertArgumentedPtr(Avida::Data::ArgumentedProv
 bool Avida::Data::Manager::Register(const DataID& data_id, ArgumentedProviderActivateFunctor functor)
 {
   const int id_size = data_id.GetSize();
-  if (id_size > 0 && data_id[id_size - 1] != ']' && m_provider_map.Has(data_id)) {
+  if (id_size > 0 && data_id[id_size - 1] != ']' && !m_provider_map.Has(data_id)) {
     Apto::Functor<ProviderPtr, Apto::TL::Create<ArgumentedProviderActivateFunctor, World*> > conv_func(convertArgumentedPtr);
     m_provider_map[data_id] = Apto::BindFirst(conv_func, functor);
     return true;
-  } else if (id_size > 2 && data_id[id_size - 2] == '[' && data_id[id_size - 1] == ']' && m_arg_provider_map.Has(data_id)) {
+  } else if (id_size > 2 && data_id[id_size - 2] == '[' && data_id[id_size - 1] == ']' && !m_arg_provider_map.Has(data_id)) {
     m_arg_provider_map[data_id] = functor;
     return true;
   }
