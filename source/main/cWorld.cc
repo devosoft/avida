@@ -68,6 +68,9 @@ cWorld::~cWorld()
   // These must be deleted first
   delete m_analyze; m_analyze = NULL;
   
+  // Forcefully clean up population before classification manager
+  m_pop = Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount>();
+  
   delete m_class_mgr; m_class_mgr = NULL;
   delete m_env; m_env = NULL;
   delete m_event_list; m_event_list = NULL;
