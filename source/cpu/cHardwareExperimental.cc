@@ -4319,54 +4319,45 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   int first_success_cell = -1;
   int first_whole_resource = -1;
   
-  // set bounds and fast forward, if possible
-  tSmartArray<int> val_res;
-  tArray<int> bounds;           // absolute min x, min y, max_x, max_y
-  val_res.Resize(0);
   bool boundable = false;
-  // we can use a check for this common easy case to really speed things up
-  if ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && 
-      search_type == 0 && resource_lib.GetResource(id_sought)->GetGradient()) {
+  if ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && search_type == 0 && resource_lib.GetResource(id_sought)->GetGradient()) {
     boundable = true;
-    val_res.Push(id_sought);
-    start_dist = GetMinDist(ctx, resource_lib, worldx, id_sought, cell, distance_sought);
-    if (start_dist == -1) {       // out of range
-      stuff_seen.report_type = 0;
-      return stuff_seen;
-    }
-    end_dist = GetMaxDist(ctx, resource_lib, worldx, id_sought, cell, distance_sought);
   }
-  // if not that easy, get the valid resources, set some bounds true for all resources of this type, getting rid of those out of range...
-  else if (!boundable && habitat_used != -2) {
-    // res's of this type...
-    for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetHabitat() == habitat_used) val_res.Push(i);
-    // of those, drop any out of range...
-    if (id_sought == -1 && (habitat_used == 0 || habitat_used == 4) && search_type == 0) {
-      for (int i = 0; i < val_res.GetSize(); i++) {
-        if (resource_lib.GetResource(val_res[i])->GetGradient()) {
-          bool skip_res = false;
-          int this_min = GetMinDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought);
-          int this_max = GetMaxDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought);
-          if (this_min == -1) {
-            val_res.Swap(i, val_res.GetSize() - 1);
-            val_res.Pop();
-            skip_res = true;
-            i--;
-          }
-          if (!skip_res && this_min < start_dist) start_dist = this_min;
-          if (!skip_res && this_max > end_dist) end_dist = this_max;
+  
+  tSmartArray<int> val_res;     // resources of this type
+  tArray<int> bounds;           // absolute min x, min y, max_x, max_y
+  if (habitat_used != -2) val_res = BuildResArray(habitat_used, id_sought, resource_lib, boundable); 
+
+  // set geometric bounds, and fast forward, if possible
+  if ((habitat_used == 0 || habitat_used == 4) && search_type == 0) {
+    // drop any out of range...
+    for (int i = 0; i < val_res.GetSize(); i++) {
+      if (resource_lib.GetResource(val_res[i])->GetGradient()) {
+        bool skip_res = false;
+        int this_min = GetMinDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought, facing);
+        int this_max = GetMaxDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought);
+        if (this_min == -1) {          // out of range
+          val_res.Swap(i, val_res.GetSize() - 1);
+          val_res.Pop();
+          skip_res = true;
+          i--;
         }
+        if (!skip_res && this_min < start_dist) start_dist = this_min;
+        if (!skip_res && this_max > end_dist) end_dist = this_max;
       }
     }
     if (val_res.GetSize() == 0) {     // nothing in range
       stuff_seen.report_type = 0;
       return stuff_seen;      
     }
+    bounds = GetTotBounds(ctx, val_res, resource_lib);
   }
-  if ((habitat_used == 0 || habitat_used == 4) && search_type == 0) bounds = GetTotBounds(ctx, val_res, resource_lib);
   center_cell = center_cell + (ahead_dir * start_dist);
   
   searchInfo cellResultInfo;
+  cellResultInfo.amountFound = 0;
+  cellResultInfo.has_edible = false;
+  cellResultInfo.resource_id = -9;
   
   bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
 	
@@ -4387,7 +4378,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
           }
         }
       }
-    }     
+    }
+
     // work on SIDE of center cells for this dist
     // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)        
 
@@ -4421,19 +4413,21 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
         else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
         else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
         
+        
+        /////  THERE'S SOMETHING WRONG HERE...IF CENTER CELL IS OFF WORLD, COORDINATES FOR SIDE CELLS ARE...????
         // test if the side cell is still on world; if it isn't, do the other side
         if ( (facing == 0 || facing == 4) && (this_cell < 0 || (this_cell > ((worldx * worldy) - 1)) ) ) count_side = false; 
         else if (facing == 2 && (this_cell % worldx == 0)) count_side = false;                                               
         else if (facing == 6 && (prev_cell % worldx == 0)) count_side = false;                                          
         // if we were just within res max poss box, but now aren't, safe to say we're done with this side
-        else if ((habitat_used == 0 || habitat_used == 4)  && search_type == 0 && !TestBounds(this_cell, bounds, worldx) && 
+        else if ((habitat_used == 0 || habitat_used == 4) && search_type == 0 && !TestBounds(this_cell, bounds, worldx) && 
                  TestBounds(prev_cell, bounds, worldx)) count_side = false;
         else any_valid_side_cells = true;
 
         // trickier on diagonals...there we can only skip the cell, not the whole side        
         bool valid_cell = true;
         if ( (facing == 1 || facing == 3 || facing == 5 || facing == 7) &&
-                 (this_cell < 0) || (this_cell > ((worldx * worldy) - 1)) ) valid_cell = false;                                         
+                 ( (this_cell < 0) || (this_cell > ((worldx * worldy) - 1)) ) ) valid_cell = false;                                         
 
         prev_cell = this_cell;
         if (count_side && valid_cell) {
@@ -4480,7 +4474,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
     else if ( center_cell < 0 || (center_cell > ((worldx * worldy) - 1)) ) count_center = false;  
     // if hunting specific res, we're done with the center once we fall off of the res (after having been on it already)
-    else if ((habitat_used == 0 || habitat_used == 4)  && search_type == 0 && !TestBounds(center_cell, bounds, worldx) && 
+    else if ((habitat_used == 0 || habitat_used == 4) && search_type == 0 && !TestBounds(center_cell, bounds, worldx) && 
              TestBounds(center_cell - ahead_dir, bounds, worldx)) count_center = false; 
   } // End getting values
   
@@ -4542,7 +4536,6 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
     tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     for (int k = 0; k < val_res.GetSize(); k++) {
-      returnInfo.amountFound += cell_res[val_res[k]];
       if (cell_res[val_res[k]] >= 1 && habitat_used != 1 && habitat_used != 2) {
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   // get FIRST whole resource id
         returnInfo.has_edible = true;
@@ -4551,6 +4544,7 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
         returnInfo.has_edible = true;
       }
+      returnInfo.amountFound += cell_res[val_res[k]];
     }
   }
   // if we're looking for other organisms (looking for specific org already handled)
@@ -4608,7 +4602,7 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
 }
 
 int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, 
-                                      const int cell_id, const int distance_sought)
+                                      const int cell_id, const int distance_sought, const int facing)
 {
   const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
   const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
@@ -4618,12 +4612,34 @@ int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const cResourceLib& re
   int width = 0;
   
   // min poss is travel distance on longest minus the width of the area of the food curve that can be >= 1
-  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() - 1 : 
-                                                      width = resource_lib.GetResource(res_id)->GetHeight() - 1;
+  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() : 
+                                                      width = resource_lib.GetResource(res_id)->GetHeight();
   
-  min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - width;
+  min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - width - 1;
   if (min_dist < 0) min_dist = 0;                   // standing on part of res already
   if (min_dist > distance_sought) min_dist = -1;    // out of range
+  
+  // now for the direction
+  if (min_dist != 0 && min_dist != -1) {
+    int min_x = peakx - width - 1;
+    int min_y = peaky - width - 1;
+    if (min_x < 0) min_x = 0;
+    if (min_y < 0) min_y = 0;
+    
+    int max_x = peakx + width + 1;
+    int max_y = peaky + width + 1;
+    if (max_x > m_world->GetConfig().WORLD_X.Get() - 1) max_x = m_world->GetConfig().WORLD_X.Get() - 1;
+    if (max_y > m_world->GetConfig().WORLD_Y.Get() - 1) max_y = m_world->GetConfig().WORLD_Y.Get() - 1;
+    
+    // if facing Northish
+    if ((facing == 0 || facing == 7 || facing == 1) && min_y > org_y) min_dist = -1;      // can't see it if none of it is in front of you
+    // if facing Southish
+    else if ((facing == 4 || facing == 3 || facing == 5) && max_y < org_y) min_dist = -1;
+    // if facing Eastish
+    else if ((facing == 2 || facing == 1 || facing == 3) && max_x < org_x) min_dist = -1;
+    // if facing Westish
+    else if ((facing == 6 || facing == 5 || facing == 7) && min_x > org_x) min_dist = -1;    
+  }
   return min_dist;
 }
 
@@ -4635,7 +4651,7 @@ int cHardwareExperimental::GetMaxDist(cAvidaContext& ctx, const cResourceLib& re
   const int org_x = cell_id % worldx;
   const int org_y = cell_id / worldx;
   int max_dist = distance_sought;
-  int width = distance_sought;
+  int width = 0;
   
   // max poss is travel distance on longest axis plus the width of the area of the food curve that can be >= 1
   resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() + 1 : 
@@ -4649,10 +4665,10 @@ tArray<int> cHardwareExperimental::GetTotBounds(cAvidaContext& ctx, tSmartArray<
 {
   tArray<int> bounds;
   bounds.Resize(4);
-  int min_x = 0;
-  int min_y = 0;
-  int max_x = m_world->GetConfig().WORLD_X.Get();
-  int max_y = m_world->GetConfig().WORLD_Y.Get();
+  int min_x = m_world->GetConfig().WORLD_X.Get();
+  int min_y = m_world->GetConfig().WORLD_Y.Get();
+  int max_x = 0;
+  int max_y = 0;
   
   for (int i = 0; i < val_res.GetSize(); i++) {
     const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, val_res[i]);
@@ -4661,10 +4677,9 @@ tArray<int> cHardwareExperimental::GetTotBounds(cAvidaContext& ctx, tSmartArray<
     
     resource_lib.GetResource(val_res[i])->GetFloor() >= 1 ? width = resource_lib.GetResource(val_res[i])->GetSpread() : 
                                                             width = resource_lib.GetResource(val_res[i])->GetHeight();
+    // because of the way we walk center cells and deal with side cells when on a diagonal, these bounds can go beyond world bounds
     int this_min_x = peakx - width - 1;
     int this_min_y = peaky - width - 1;
-    if (this_min_x < 0) min_x = 0;
-    if (this_min_y < 0) min_y = 0;
     if (this_min_x < min_x) min_x = this_min_x;
     if (this_min_y < min_y) min_y = this_min_y;
     bounds[0] = min_x;
@@ -4672,8 +4687,6 @@ tArray<int> cHardwareExperimental::GetTotBounds(cAvidaContext& ctx, tSmartArray<
     
     int this_max_x = peakx + width + 1;
     int this_max_y = peaky + width + 1;
-    if (this_max_x > m_world->GetConfig().WORLD_X.Get()) this_max_x =  m_world->GetConfig().WORLD_X.Get();
-    if (this_max_y > m_world->GetConfig().WORLD_Y.Get()) this_max_y =  m_world->GetConfig().WORLD_Y.Get();
     if (this_max_x > max_x) max_x = this_max_x;
     if (this_max_y > max_y) max_y = this_max_y;
     bounds[2] = max_x;
@@ -4686,11 +4699,25 @@ bool cHardwareExperimental::TestBounds(const int cell_id, tArray<int>& bounds, c
 {
   const int curr_x = cell_id % worldx;
   const int curr_y = cell_id / worldx;
-  
-  for (int i = 0; i < bounds.GetSize(); i++) {
-    // min_x, min_y, max_x, max_y
-    if (curr_x < bounds[0] || curr_y < bounds[1] || curr_x > bounds[2] || curr_y > bounds[3]) return false; 
-  }
+  int min_x = bounds[0];
+  int min_y = bounds[1];
+  const int max_x = bounds[2];
+  const int max_y = bounds[3];
+  // wrap around lower world edge
+  // SOMETHING WRONG HERE...CURR_X < MIN_X ISN'T RIGHT IF MIN_X WAS NEGATIVE!!
+  if (min_x < 0) min_x = m_world->GetConfig().WORLD_X.Get() + 1 - min_x;
+  if (min_y < 0) min_y = m_world->GetConfig().WORLD_Y.Get() + 1 - min_y;
+
+  if (curr_x < min_x || curr_y < min_y || curr_x > max_x || curr_y > max_y) return false; 
   return true;  
+}
+
+tSmartArray<int> cHardwareExperimental::BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool boundable)
+{
+  tSmartArray<int> val_res;
+  val_res.Resize(0);
+  if (boundable) val_res.Push(id_sought);
+  else for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetHabitat() == habitat_used) val_res.Push(i);
+  return val_res;
 }
 

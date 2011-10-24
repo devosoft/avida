@@ -600,10 +600,13 @@ private:
   lookOut FindOrg(cOrganism* target_org, const int distance);
   void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
-  int GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, const int distance_sought);
-  int GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, const int distance_sought);
+  int GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
+                 const int distance_sought, const int facing);
+  int GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
+                 const int distance_sought);
   tArray<int> GetTotBounds(cAvidaContext& ctx, tSmartArray<int>& val_res, const cResourceLib& resource_lib);
   bool TestBounds(const int cell_id, tArray<int>& bounds, const int worldx);
+  tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool boundable);
 };
 
 
