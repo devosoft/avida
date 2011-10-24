@@ -439,6 +439,26 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaConte
 
 }
 
+const tArray<double> & cResourceCount::GetFrozenResources(cAvidaContext& ctx, int cell_id) const 
+
+// Get amount of the resource for a given cell in the grid.  If it is a
+// global resource pass out the entire content of that resource.
+// This differs from GetCellResources by leaving out DoUpdates which is
+// useful inside methods that repeatedly call this before cells can change.
+
+{
+  int num_resources = resource_count.GetSize();
+  
+  for (int i = 0; i < num_resources; i++) {
+    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+      curr_grid_res_cnt[i] = resource_count[i];
+    } else {
+      curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
+    }
+  }
+  return curr_grid_res_cnt;
+}
+
 const tArray<int> & cResourceCount::GetResourcesGeometry() const
 {
   return geometry;
@@ -539,6 +559,29 @@ void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
     curr_spatial_res_cnt[i].Resize(in_x * in_y);
   }
 }
+
+int cResourceCount::GetCurrPeakX(cAvidaContext& ctx, int res_id) const
+{ 
+  DoUpdates(ctx);
+  return spatial_resource_count[res_id]->GetCurrPeakX();
+}
+
+int cResourceCount::GetCurrPeakY(cAvidaContext& ctx, int res_id) const
+{ 
+  DoUpdates(ctx);
+  return spatial_resource_count[res_id]->GetCurrPeakY();
+}
+
+int cResourceCount::GetFrozenPeakX(cAvidaContext& ctx, int res_id) const
+{ 
+  return spatial_resource_count[res_id]->GetCurrPeakX();
+}
+
+int cResourceCount::GetFrozenPeakY(cAvidaContext& ctx, int res_id) const
+{ 
+  return spatial_resource_count[res_id]->GetCurrPeakY();
+}
+
 ///// Private Methods /////////
 void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 { 
@@ -625,3 +668,5 @@ int cResourceCount::GetResourceByName(cString name) const
   return result;
   
 }
+
+

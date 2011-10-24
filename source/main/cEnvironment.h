@@ -176,7 +176,7 @@ private:
 
                             const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;
   
-  bool TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction, int task_count,     //APW
+  bool TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction, int task_count,
                       const tArray<int>& reaction_count, const bool on_divide = false) const; 
   bool TestContextRequisites(const cReaction* cur_reaction, int task_count, 
                       const tArray<int>& reaction_count, const bool on_divide = false) const;

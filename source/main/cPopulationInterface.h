@@ -29,6 +29,7 @@
 #include "cWorld.h"
 #include "cGenomeUtil.h"
 #include "cPopulationCell.h"
+#include "cSensing.h"
 
 namespace Avida {
   class Sequence;
@@ -80,6 +81,7 @@ public:
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
+  int GetCellDataForagerType();
   void SetCellData(const int newData);
   int GetFacedCellData();
   int GetFacedCellDataOrgID();
@@ -109,8 +111,14 @@ public:
   const tArray<double>& GetResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
+  int GetCurrPeakX(cAvidaContext& ctx, int res_id); 
+  int GetCurrPeakY(cAvidaContext& ctx, int res_id);
+  int GetFrozenPeakX(cAvidaContext& ctx, int res_id); 
+  int GetFrozenPeakY(cAvidaContext& ctx, int res_id);
+  void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void Die(cAvidaContext& ctx); 
@@ -210,6 +218,7 @@ public:
   void ClearOpinion(cOrganism* in_organism);
   
   void JoinGroup(int group_id);
+  void MakeGroup();
   void LeaveGroup(int group_id);
   int NumberOfOrganismsInGroup(int group_id);
   
@@ -221,9 +230,11 @@ public:
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
   void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
             double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max);
-    
+  void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  
   void BeginSleep();
   void EndSleep();
+  
 };
 
 #endif

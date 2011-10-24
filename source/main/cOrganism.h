@@ -148,6 +148,8 @@ public:
   void NotifyDeath(cAvidaContext& ctx);
   
   void PrintStatus(std::ostream& fp, const cString& next_name);
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
+  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
@@ -221,6 +223,7 @@ public:
   int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
   int GetCellDataUpdate() { return m_interface->GetCellDataUpdate(); }
   int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
+  int GetCellDataForagerType() { return m_interface->GetCellDataForagerType(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
@@ -264,6 +267,7 @@ public:
 
   void AddLiveOrg() { m_interface->AddLiveOrg(); } 
   void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
+  
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 

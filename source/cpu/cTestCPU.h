@@ -102,7 +102,7 @@ public:
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome);
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Genome& genome, std::ofstream& out_fp);
   
-  void PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename = "", int update = -1);
+  void PrintGenome(cAvidaContext& ctx, const Genome& genome, cString filename = "", int update = -1, bool for_groups = false, int last_birth_cell = 0, int last_group_id = -1, int last_forager_type = -1);
   void PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename = "", int update = -1);
 
   inline int GetInput();
@@ -115,6 +115,7 @@ public:
   inline const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   inline const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  inline const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id); 
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -159,6 +160,11 @@ inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaConte
 }
 
 inline const tArray<double>& cTestCPU::GetCellResources(int cell_id, cAvidaContext& ctx)   
+{
+  return m_cell_resource_count.GetResources(ctx); 
+}
+
+inline const tArray<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int cell_id)   
 {
   return m_cell_resource_count.GetResources(ctx); 
 }

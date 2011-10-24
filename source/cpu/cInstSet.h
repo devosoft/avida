@@ -72,7 +72,7 @@ public:
   struct sInstEntry {
     int lib_fun_id;
     int redundancy;           // Weight in instruction set (not impl.)
-    int cost;                 // additional time spent to exectute inst.
+    int cost;                 // additional time spent to exectute inst within the thread that executed the instruction
     int ft_cost;              // time spent first time exec (in add to cost)
     int energy_cost;          // energy required to execute.
     double prob_fail;         // probability of failing to execute inst

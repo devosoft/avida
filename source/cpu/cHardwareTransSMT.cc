@@ -254,13 +254,13 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     IP().Adjust();
 		
     // Print the status of this CPU at each step...
-    if (m_tracer) m_tracer->TraceHardware(*this);
+    if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
 		
     // Test if costs have been paid and it is okay to execute this now...
-    bool exec = SingleProcess_PayPreCosts(ctx, cur_inst);
+    bool exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
 		
     // Now execute the instruction...
     if (exec == true) {
@@ -331,7 +331,7 @@ void cHardwareTransSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction&
   m_organism->SetRunning(true);
 	
   // Print the status of this CPU at each step...
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -376,7 +376,6 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-
 int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
 {
 	if (label.GetSize() == 0) return 0;
@@ -390,7 +389,6 @@ int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_spa
   
   return mem_space;
 }
-
 
 /////////////////////////////////////////////////////////////////////////
 // Method: cHardwareTransSMT::FindLabel(direction)
@@ -654,6 +652,10 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   
   //update the parasites tasks
 	m_organism->GetPhenotype().UpdateParasiteTasks();
+  
+  //If running in Analyze mode, reset the organisms last_task_count now so we know what the parasite did
+  if(m_world->GetConfig().INJECT_RESETS_TASKS.Get())
+    m_organism->GetPhenotype().SetLastTaskCount(m_organism->GetPhenotype().GetCurTaskCount());
   
   m_mem_array[mem_space_used].Resize(end_pos);
   cCPUMemory injected_code = m_mem_array[mem_space_used];

@@ -163,7 +163,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
   bool success = true;
   for (int line_id = 0; line_id < sl.GetSize(); line_id++) {
     cString cur_line = sl.GetLine(line_id);
-    
+
     // Look for the INST keyword at the beginning of each line, and ignore if not found.
     cString inst_name = cur_line.PopWord();
     if (inst_name != "INST") continue;
@@ -216,7 +216,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
     m_lib_name_map[inst_id].addl_time_cost = args->GetInt(3);
     m_lib_name_map[inst_id].res_cost = args->GetDouble(1); 
-    
+
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
     if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;

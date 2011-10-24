@@ -89,6 +89,7 @@ cPopulation::cPopulation(cWorld* world)
 , schedule(NULL)
 //, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
 , birth_chamber(world)
+, print_mini_trace_genomes(true)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
@@ -585,7 +586,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       // If tolerances are on ... @JJB
-      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 ) {
+      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
           target_cells[i] = doomed_cell;
@@ -844,7 +845,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   return true;
 }
 
-void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell)
+void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group)
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
@@ -926,33 +927,98 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     KillOrganism(target_cell, ctx);
   }
 
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
-    if (!in_organism->HasOpinion()) {
-      if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
-        in_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
-        JoinGroup(in_organism, m_world->GetConfig().DEFAULT_GROUP.Get());
-      }
-      else {
-        if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
-          const int op = (int) abs(ctx.GetRandom().GetDouble());
-          in_organism->SetOpinion(op);
-          JoinGroup(in_organism, op);                    
+  if (assign_group) {
+    int op = m_world->GetConfig().DEFAULT_GROUP.Get();
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
+      if (!in_organism->HasOpinion()) {
+        if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
+          in_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
+          JoinGroup(in_organism, m_world->GetConfig().DEFAULT_GROUP.Get());
         }
-        else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
-          const int op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
-          in_organism->SetOpinion(op);
-          JoinGroup(in_organism, op);          
+        else {
+          if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+            op = (int) abs(ctx.GetRandom().GetDouble());
+            in_organism->SetOpinion(op);
+            JoinGroup(in_organism, op);                    
+          }
+          else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
+            op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
+            in_organism->SetOpinion(op);
+            JoinGroup(in_organism, op);          
+          }
         }
       }
+      else op = in_organism->GetOpinion().first;
     }
+    
+    in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
+    in_organism->GetPhenotype().SetBirthGroupID(op);
+    in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
+    cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
+    assert(genotype);    
+    genotype->SetLastGroupID(op);
+    genotype->SetLastBirthCell(target_cell.GetID());
+    genotype->SetLastForagerType(in_organism->GetForageTarget());      
   }
-
+  
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
   int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
-  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (in_organism->GetCellID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
+  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
     KillOrganism(target_cell, ctx);
   }
+  
+  // are there mini traces we need to test for?
+  if (minitrace_queue.GetSize() > 0) TestForMiniTrace(ctx, in_organism);
+}
+
+void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
+{
+  // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
+  cBioGroup* org_bg = in_organism->GetBioGroup("genotype");
+  for (int i = 0; i < minitrace_queue.GetSize(); i++)
+  {
+    if (org_bg == minitrace_queue[i]) {
+      unsigned int last = minitrace_queue.GetSize() - 1;
+      minitrace_queue.Swap(i, last);
+      minitrace_queue.Pop();
+      SetupMiniTrace(ctx, in_organism);
+      break;
+    }
+  }
+}
+
+void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
+{
+  const int target = in_organism->GetForageTarget();
+  const int id = in_organism->GetID();
+  cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trc", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  if (in_organism->HasOpinion()) {
+    filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  }
+  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  
+  if (print_mini_trace_genomes) {
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-ft%d-%s.trcgeno", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    if (in_organism->HasOpinion()) {
+      gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    }
+    PrintMiniTraceGenome(ctx, in_organism, gen_file);
+  }
+}
+
+void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename)
+{
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
+  testcpu->PrintGenome(ctx, Genome(in_organism->GetBioGroup("genotype")->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
+  delete testcpu;
+}
+
+void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, const bool print_genomes)
+{
+  minitrace_queue.Resize(0);
+  for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
+  if (print_genomes) print_mini_trace_genomes = true;
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
@@ -1010,7 +1076,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
     if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
 //      KillOrganism(src_cell, ctx);  //APW
-      src_cell.GetOrganism()->Die(ctx);  //APW
+      src_cell.GetOrganism()->Die(ctx); 
     return false; 
     }
   }    
@@ -1118,7 +1184,7 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   KillOrganism(cell_array[cell_id], ctx); 
 }
 
-// Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+// Attack organism faced by this one, if there is an organism in front.
 void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   cPopulationCell& loser_cell = GetCell(loser);
@@ -4569,9 +4635,12 @@ struct sOrgInfo {
   int cell_id;
   int offset;
   int lineage_label;
+  int curr_group;
+  int curr_forage;
+  int birth_cell;
 
   sOrgInfo() { ; }
-  sOrgInfo(int c, int o, int l) : cell_id(c), offset(o), lineage_label(l) { ; }
+  sOrgInfo(int c, int o, int l, int in_group, int in_forage, int in_bcell) : cell_id(c), offset(o), lineage_label(l), curr_group(in_group), curr_forage(in_forage), birth_cell(in_bcell) { ; }
 };
 
 struct sGroupInfo {
@@ -4582,7 +4651,7 @@ struct sGroupInfo {
   sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
 };
 
-bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
+bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bool save_groupings)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.SetFileType("genotype_data");
@@ -4604,10 +4673,10 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
 
         sGroupInfo* map_entry = NULL;
         if (genotype_map.Find(pg->GetID(), map_entry)) {
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0));
         } else {
           map_entry = new sGroupInfo(pg, true);
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0));
           genotype_map.Set(pg->GetID(), map_entry);
         }
       }
@@ -4618,13 +4687,24 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
       if (genotype == NULL) continue;
 
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
-
       sGroupInfo* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
+        if (!save_groupings) map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
+        else {
+          const int curr_group = org->GetOpinion().first;
+          const int curr_forage = org->GetForageTarget();
+          const int birth_cell = org->GetPhenotype().GetBirthCell();
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell));
+        }
       } else {
         map_entry = new sGroupInfo(genotype);
-        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
+        if (!save_groupings) map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
+        else {
+          const int curr_group = org->GetOpinion().first;
+          const int curr_forage = org->GetForageTarget();
+          const int birth_cell = org->GetPhenotype().GetBirthCell();
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell));
+        }
         genotype_map.Set(genotype->GetID(), map_entry);
       }
     }
@@ -4642,18 +4722,34 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
     cString cellstr;
     cString offsetstr;
     cString lineagestr;
+    cString groupstr;
+    cString foragestr;
+    cString birthstr;
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
     lineagestr.Set("%d", cells[0].lineage_label);
+    groupstr.Set("%d", cells[0].curr_group);
+    foragestr.Set("%d", cells[0].curr_forage);
+    birthstr.Set("%d", cells[0].birth_cell);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
       lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
+      if (save_groupings) {
+        groupstr += cStringUtil::Stringf(",%d", cells[cell_i].curr_group);
+        foragestr += cStringUtil::Stringf(",%d", cells[cell_i].curr_forage);
+        birthstr += cStringUtil::Stringf(",%d", cells[cell_i].birth_cell);
+      }
     }
     df.Write(cellstr, "Occupied Cell IDs", "cells");
     if (genotype_entries[i]->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
     else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
     df.Write(lineagestr, "Lineage Label", "lineage");
+    if (save_groupings) {
+      df.Write(groupstr, "Current Group IDs", "group_id");
+      df.Write(foragestr, "Current Forager Types", "forager_type");
+      df.Write(birthstr, "Birth Cells", "birth_cell");
+    }
     df.Endl();
 
     delete genotype_entries[i];
@@ -4666,6 +4762,68 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
   return true;
 }
 
+bool cPopulation::SaveFlameData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Flame Data Save");
+  df.WriteTimeStamp();
+  
+  // Build up hash table of all current genotypes
+  tHashMap<int, sGroupInfo*> genotype_map;
+  
+  for (int cell = 0; cell < cell_array.GetSize(); cell++) {
+    if (cell_array[cell].IsOccupied()) {
+      cOrganism* org = cell_array[cell].GetOrganism();
+      
+      // Handle any parasites
+      const tArray<cBioUnit*>& parasites = org->GetParasites();
+      for (int p = 0; p < parasites.GetSize(); p++) {
+        cBioGroup* pg = parasites[p]->GetBioGroup("genotype");
+        if (pg == NULL) continue;
+        
+        sGroupInfo* map_entry = NULL;
+        if (genotype_map.Find(pg->GetID(), map_entry)) {
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0));
+        } else {
+          map_entry = new sGroupInfo(pg, true);
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0));
+          genotype_map.Set(pg->GetID(), map_entry);
+        }
+      }
+      
+      
+      // Handle the organism itself
+      cBioGroup* genotype = org->GetBioGroup("genotype");
+      if (genotype == NULL) continue;
+      
+      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+      sGroupInfo* map_entry = NULL;
+      if (genotype_map.Find(genotype->GetID(), map_entry)) {
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
+      } else {
+        map_entry = new sGroupInfo(genotype);
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
+        genotype_map.Set(genotype->GetID(), map_entry);
+      }
+    }
+  }
+  
+  // Output all current genotypes
+  tArray<sGroupInfo*> genotype_entries;
+  genotype_map.GetValues(genotype_entries);
+  for (int i = 0; i < genotype_entries.GetSize(); i++) {
+    cBioGroup* genotype = genotype_entries[i]->bg;
+    
+    genotype->DepthSave(df);
+    
+    df.Endl();
+    
+    delete genotype_entries[i];
+  }
+  
+  m_world->GetDataFileManager().Remove(filename);
+  return true;
+}
 
 struct sTmpGenotype
 {
@@ -4677,6 +4835,9 @@ public:
   tArray<int> cells;
   tArray<int> offsets;
   tArray<int> lineage_labels;
+  tArray<int> group_ids;
+  tArray<int> forager_types;
+  tArray<int> birth_cells;
 
   cBioGroup* bg;
 
@@ -4688,8 +4849,7 @@ public:
   inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };
 
-
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset) 
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, bool load_birth_cells) 
 {
   // @TODO - build in support for verifying population dimensions
 
@@ -4739,6 +4899,21 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     while (lineagestr.GetSize()) tmp.lineage_labels.Push(lineagestr.Pop(',').AsInt());
     // @blw preserve compatability with older .spop files that don't have lineage labels
     assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
+    
+    // Group ids and forager types (if given in file)
+    if (load_groups) {
+      cString groupstr(tmp.props->Get("group_id"));
+      while (groupstr.GetSize()) tmp.group_ids.Push(groupstr.Pop(',').AsInt());
+      assert(tmp.group_ids.GetSize() == 0 || tmp.group_ids.GetSize() == tmp.num_cpus);
+      
+      cString foragestr(tmp.props->Get("forager_type"));
+      while (foragestr.GetSize()) tmp.forager_types.Push(foragestr.Pop(',').AsInt());
+      assert(tmp.group_ids.GetSize() == 0 || tmp.forager_types.GetSize() == tmp.num_cpus);
+
+      cString birthstr(tmp.props->Get("birth_cell"));
+      while (birthstr.GetSize()) tmp.birth_cells.Push(birthstr.Pop(',').AsInt());
+      assert(tmp.group_ids.GetSize() == 0 || tmp.birth_cells.GetSize() == tmp.num_cpus);
+    }
   }
 
   // Sort genotypes in ascending order according to their id_num
@@ -4778,8 +4953,10 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     sTmpGenotype& tmp = genotypes[gen_i];
     // otherwise, we insert as many organisms as we need
     for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
-      int cell_id = (structured) ? (tmp.cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
-
+      int cell_id = 0;
+      if (!load_birth_cells) cell_id = (structured) ? (tmp.cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
+      else cell_id = (structured) ? (tmp.birth_cells[cell_i] + cellid_offset) : (u_cell_id++ + cellid_offset);
+      
       // Set up lineage, including lineage label (0 if not loaded)
       int lineage_label = 0;
       if (tmp.lineage_labels.GetSize() != 0) {
@@ -4844,10 +5021,22 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       // and has no parent, we should always take the rate from the environment.
       new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
 
-
       // Activate the organism in the population...
-      ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
-
+      if (!load_groups) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
+      else {
+        // Set up group id and forager type (if loaded)
+        int group_id = -1;
+        int forager_type = -1;
+        if (tmp.group_ids.GetSize() != 0) group_id = tmp.group_ids[cell_i];
+        if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
+        new_organism->SetOpinion(group_id);
+        JoinGroup(new_organism, group_id);
+        new_organism->SetForageTarget(forager_type);  
+        new_organism->GetPhenotype().SetBirthCellID(cell_id);
+        new_organism->GetPhenotype().SetBirthGroupID(group_id);
+        new_organism->GetPhenotype().SetBirthForagerType(forager_type);
+        ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
+      }
     }
   }
   sync_events = true;
@@ -4891,7 +5080,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
  * this organism.
  **/
 
-void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral) 
+void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_group, int group_id, int forager_type) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -4908,7 +5097,10 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_id += m_world->GetConfig().WORLD_X.Get()+1;
   }
 
-  InjectGenome(cell_id, src, genome, ctx, lineage_label); 
+  // if the injected org already has a group we will assign it to, do not assign group id in activate organism
+  if(!inject_group) InjectGenome(cell_id, src, genome, ctx, lineage_label, true);
+  else InjectGenome(cell_id, src, genome, ctx, lineage_label, false);
+  
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
 
@@ -4917,7 +5109,6 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
 
   cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
 
-	
 	// the following bit of code is required for proper germline support.
 	// even if there's only one deme!!
 	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
@@ -4964,9 +5155,24 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     deme.ReplaceGermline(genotype);
     genotype->RemoveBioUnit(&unit);
   }
+  
+  if(inject_group) {
+    cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
+    cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
+    cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
+    
+    cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
+    cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
+    cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
+  }
 }
 
-void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
+void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
+{
+  Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type);
+}
+
+  void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
   // target_organism-> target_organism->GetHardware().GetCurThread()
@@ -5262,7 +5468,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label) 
+void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label, bool assign_group) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -5310,8 +5516,9 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
 
 
   // Activate the organism in the population...
-  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
-
+  if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
+  else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
+    
   // Log the injection of this organism if LOG_INJECT is set to 1 and
   // the current update number is >= INJECT_LOG_START
   if ( (m_world->GetConfig().LOG_INJECT.Get() == 1) &&
@@ -6167,17 +6374,49 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   group_list[group_id].Push(org);
 }
 
+// Makes a new group (highest current group number +1). @JJB
+void cPopulation::MakeGroup(cOrganism* org)
+{
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return;
+
+  int highest_group;
+  if (m_groups.size() > 0) {
+    highest_group = m_groups.rbegin()->first;
+  } else {
+    highest_group = -1;
+  }
+
+  org->SetOpinion(highest_group + 1);
+  JoinGroup(org, highest_group + 1);
+}
+
 // Removes an organism from a group
 void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
 {
   map<int,int>::iterator it = m_groups.find(group_id);
-  if (it != m_groups.end()) m_groups[group_id]--;
-  
+  if (it != m_groups.end()) {
+    m_groups[group_id]--;
+    // If no restrictions on group ids,
+    // removes empty groups so the number of total groups being tracked doesn't become excessive
+    // (Removes the highest group even if empty, causes misstep in marching groups). @JJB
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+      if (m_groups[group_id] <= 0) {
+        m_groups.erase(group_id);
+      }
+    }
+  }
+
   for (int i = 0; i < group_list[group_id].GetSize(); i++) {
-    if (group_list[group_id][i] == org) {  
-      unsigned int last = group_list[group_id].GetSize()-1;
+    if (group_list[group_id][i] == org) {
+      unsigned int last = group_list[group_id].GetSize() - 1;
       group_list[group_id].Swap(i,last);
       group_list[group_id].Pop();
+      // If no restrictions, removes empty groups. @JJB
+      if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
+        if (group_list[group_id].GetSize() <= 0) {
+          group_list.Remove(group_id);
+        }
+      }
       break;
     }
   }
@@ -6200,6 +6439,8 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
 {
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
+  if (group_id < 0) return tolerance_max;
+
   int group_intolerance = 0;
   int single_member_intolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
@@ -6219,6 +6460,8 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
 {
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   int group_id = parent_organism->GetOpinion().first;
+
+  if (group_id < 0) return tolerance_max;
 
   int group_intolerance = 0;
   int single_member_intolerance = 0;
@@ -6240,6 +6483,8 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
 // Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
 double cPopulation::CalcGroupOddsImmigrants(int group_id)
 {
+  if (group_id < 0) return 1.0;
+
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   int group_tolerance = CalcGroupToleranceImmigrants(group_id);
   double immigrant_odds = (double) group_tolerance / (double) tolerance_max;
@@ -6249,6 +6494,19 @@ double cPopulation::CalcGroupOddsImmigrants(int group_id)
 // Returns true if the org successfully passes immigration tolerance and joins the group @JJB
 bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
 {
+  // If non-standard group, automatic success
+  if (group_id < 0) {
+    int opinion;
+    if (org->HasOpinion()) {
+      opinion = org->GetOpinion().first;
+      org->LeaveGroup(opinion);
+    }
+    org->SetOpinion(group_id);
+    opinion = org->GetOpinion().first;
+    org->JoinGroup(opinion);
+    return true;
+  }
+
   // If there are no members of the target group, automatic successful immigration
   if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 0) {
     int opinion;
@@ -6291,6 +6549,10 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
 double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 {
   assert(parent->HasOpinion());
+
+  // If non-standard group, automatic success
+  if (parent->GetOpinion().first < 0) return 1.0;
+
   const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
 
   double parent_tolerance = (double) parent->GetPhenotype().CalcToleranceOffspringOwn();
@@ -6307,6 +6569,9 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 // Calculates the odds (out of 1) for offspring to be born into the group @JJB
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
+  // If non-standard group, automatic success
+  if (group_id < 0) return 1.0;
+
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
   int group_intolerance = 0;
@@ -6327,6 +6592,14 @@ double cPopulation::CalcGroupOddsOffspring(int group_id)
 
 bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring)
 {
+  // If joining a non-standard group, automatic success
+  if (parent->GetOpinion().first < 0) {
+    int parent_group = parent->GetOpinion().first;
+    offspring->SetOpinion(parent_group);
+    JoinGroup(offspring, parent_group);
+    return true;
+  }
+
   // If using % chance of random migration
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() < 0) {
     const int parent_group = parent->GetOpinion().first;

@@ -60,7 +60,7 @@ public:
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 6;
+  static const int NUM_REGISTERS = 8;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX};
   static const int NUM_NOPS = NUM_REGISTERS;
@@ -108,7 +108,7 @@ private:
     inline sInternalValue Pop() { sInternalValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == SIZE) m_sp = 0; return v; }
     inline sInternalValue& Peek() { return m_stack[(int)m_sp]; }
     inline const sInternalValue& Peek() const { return m_stack[(int)m_sp]; }
-    inline const sInternalValue& Get(int d = 0) const { assert(d > 0); int p = d + m_sp; return m_stack[(p >= SIZE) ? (p - SIZE) : p]; }
+    inline const sInternalValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= SIZE) ? (p - SIZE) : p]; }
     inline void Clear() { for (int i = 0; i < SIZE; i++) m_stack[i].Clear(); }
 #undef SIZE
   };
@@ -238,8 +238,10 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-
-
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id);
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
+  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
+  
   // --------  Stack Manipulation  --------
   inline int GetStack(int depth=0, int stack_id = -1, int in_thread = -1) const;
   inline int GetNumStacks() const { return 2; }
@@ -302,7 +304,7 @@ private:
   // --------  Core Execution Methods  --------
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   void internalReset();
-	void internalResetOnFailedDivide();
+  void internalResetOnFailedDivide();
   
   
   // --------  Stack Manipulation  --------
@@ -361,12 +363,6 @@ private:
   inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
 
-  struct searchInfo {
-    double amountFound;
-    int resource_id;
-  };
-  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num);
-  
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
   
@@ -386,7 +382,7 @@ private:
   int  Numberate(int _pos, int _dir, int _num_bits = 0);
   bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
   
-
+  
   // ---------- Instruction Library -----------
   // Multi-threading
   bool Inst_ForkThread(cAvidaContext& ctx);
@@ -509,8 +505,10 @@ private:
 
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
-  bool Inst_TerritoryMove(cAvidaContext& ctx);
+  bool Inst_RangeMove(cAvidaContext& ctx);
+  bool Inst_RangePredMove(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);  
+  bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
   bool Inst_GetEasterly(cAvidaContext& ctx);
   bool Inst_ZeroEasterly(cAvidaContext& ctx);
@@ -523,6 +521,8 @@ private:
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateOrgID(cAvidaContext& ctx);
+  bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
@@ -538,21 +538,72 @@ private:
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
+  bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_MakePredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_LeavePredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_AdoptPredGroup(cAvidaContext& ctx); // @JJB
   bool Inst_GetGroupID(cAvidaContext& ctx);
-  bool Inst_GetFacedGrouping(cAvidaContext& ctx);
+  bool Inst_GetPredGroupID(cAvidaContext& ctx);
+  bool Inst_IncPredTolerance(cAvidaContext& ctx);  // @JJB
+  bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
+  bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
+  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB  
+  void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx); // @JJB
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
-  bool Inst_AttackMeritPrey(cAvidaContext& ctx); 
+  bool Inst_AttackPrey(cAvidaContext& ctx); 
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
   bool Inst_FightPred(cAvidaContext& ctx); 
+  bool Inst_FightMeritPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
-  bool Inst_DefendCell(cAvidaContext& ctx); 
+  bool Inst_MarkPredCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
+  bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
+  
+  
+  // ---------- Some Instruction Helpers -----------
+  struct searchInfo {
+    double amountFound;
+    int resource_id;
+    bool has_edible;
+  };
+  struct lookRegAssign {
+    int habitat;
+    int distance;
+    int search_type;
+    int id_sought;
+    int count;
+    int value;
+    int group;
+    int ft;
+  };
+  struct lookOut {
+    int report_type;
+    int habitat;
+    int distance;
+    int search_type;
+    int id_sought;
+    int count;
+    int value;
+    int group;
+    int forage;
+  }; 
+  
+  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int target_cell_num, tSmartArray<int>& val_res);  
+  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs);
+  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought);
+  lookOut FindOrg(cOrganism* target_org, const int distance);
+  void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
+  int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
+  int GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, const int distance_sought);
+  int GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, const int distance_sought);
+  tArray<int> GetTotBounds(cAvidaContext& ctx, tSmartArray<int>& val_res, const cResourceLib& resource_lib);
+  bool TestBounds(const int cell_id, tArray<int>& bounds, const int worldx);
 };
 
 

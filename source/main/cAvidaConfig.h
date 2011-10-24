@@ -593,6 +593,7 @@ public:
   // -------- Analyze config options --------
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
   CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
+  CONFIG_ADD_VAR(INJECT_RESETS_TASKS, int, 0, "Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count");
   CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
   
@@ -744,13 +745,14 @@ public:
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
   CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
   CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
-  CONFIG_ADD_VAR(INHERIT_OPINION, int, 0, "Should offspring inherit the parent's opinion?");
+  CONFIG_ADD_VAR(INHERIT_OPINION, int, 1, "Should offspring inherit the parent's opinion?");
   CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
   CONFIG_ADD_VAR(JOIN_GROUP_FAILURE, int, 0, "Percent chance for failing to switch groups"); // @JJB
   CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of previous updates used to evaluate org's tolerance levels\n(0 indicates tolarance disabled, values <0 indicate % chance random migration for offspring)"); // @JJB
   CONFIG_ADD_VAR(MAX_TOLERANCE, int, 1, "Maximum tolerance level"); // @JJB
   CONFIG_ADD_VAR(TOLERANCE_VARIATIONS, int, 0, "0=all tolerance active,\n1=only immigration tolerance active"); // @JJB
   CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey");
+  CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
   CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
 		
 

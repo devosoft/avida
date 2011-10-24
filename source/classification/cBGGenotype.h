@@ -80,6 +80,9 @@ private:
   cDoubleSum m_merit;
   cDoubleSum m_fitness;
     
+  int m_last_birth_cell;
+  int m_last_group_id;
+  int m_last_forager_type;
   
   cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents);
   cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props, cWorld* world);
@@ -106,6 +109,7 @@ public:
   cFlexVar GetProperty(const cString& prop) const;
   
   void Save(cDataFile& df);
+  void DepthSave(cDataFile& df);
 
   
   // Genotype Specific Methods
@@ -135,7 +139,6 @@ public:
   
   inline int GetTotalOrganisms() const { return m_total_organisms; }
   
-
   inline int GetLastBirths() const { return m_births.GetLast(); }
   inline int GetLastBreedIn() const { return m_breed_in.GetLast(); }
   inline int GetLastBreedTrue() const { return m_breed_true.GetLast(); }
@@ -154,7 +157,14 @@ public:
   inline double GetMerit() const { return m_merit.Average(); }
   inline double GetFitness() const { return m_fitness.Average(); }
   
+  inline int GetLastBirthCell() const { return m_last_birth_cell; }
+  inline int GetLastGroupID() const { return m_last_group_id; } 
+  inline int GetLastForagerType() const { return m_last_forager_type; } 
 
+  inline void SetLastBirthCell(int birth_cell) { m_last_birth_cell = birth_cell; }
+  inline void SetLastGroupID(int group_id) { m_last_group_id = group_id; }
+  inline void SetLastForagerType(int forager_type) { m_last_forager_type = forager_type; }
+  
   bool Matches(cBioUnit* bu);
   void NotifyNewBioUnit(cBioUnit* bu);
   void UpdateReset();

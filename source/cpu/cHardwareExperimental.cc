@@ -70,7 +70,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     cString name;
     int nop_mod;
     cNOPEntry(const cString &name, int nop_mod)
-      : name(name), nop_mod(nop_mod) {}
+    : name(name), nop_mod(nop_mod) {}
   };
   static const cNOPEntry s_n_array[] = {
     cNOPEntry("nop-A", rAX),
@@ -81,7 +81,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     cNOPEntry("nop-F", rFX),
     cNOPEntry("nop-G", rGX),
     cNOPEntry("nop-H", rHX),
-
+    
     cNOPEntry("nop-I", rIX),
     cNOPEntry("nop-J", rJX),
     cNOPEntry("nop-K", rKX),
@@ -106,7 +106,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-G", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-H", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
-
+    
     tInstLibEntry<tMethod>("nop-I", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-J", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-K", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
@@ -118,13 +118,13 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     
     tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
-
+    
     
     // Threading 
     tInstLibEntry<tMethod>("fork-thread", &cHardwareExperimental::Inst_ForkThread),
     tInstLibEntry<tMethod>("exit-thread", &cHardwareExperimental::Inst_ExitThread),
     tInstLibEntry<tMethod>("id-thread", &cHardwareExperimental::Inst_IdThread),
-
+    
     
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
@@ -135,14 +135,14 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("if-less-0", &cHardwareExperimental::Inst_IfLessThanZero, 0, "Execute next instruction if ?BX? < 0, else skip it"),
     tInstLibEntry<tMethod>("if-gtr-x", &cHardwareExperimental::Inst_IfGtrX),
     tInstLibEntry<tMethod>("if-equ-x", &cHardwareExperimental::Inst_IfEquX),
-
+    
     tInstLibEntry<tMethod>("if-cons", &cHardwareExperimental::Inst_IfConsensus, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
     tInstLibEntry<tMethod>("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
     tInstLibEntry<tMethod>("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
-
+    
     tInstLibEntry<tMethod>("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, 0, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
-
+    
     // Core ALU Operations
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, 0, "Remove top number from stack and place into ?BX?"),
     tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, 0, "Copy number from ?BX? and place it into the stack"),
@@ -156,7 +156,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, 0, "Decrement ?BX? by one"),
     tInstLibEntry<tMethod>("zero", &cHardwareExperimental::Inst_Zero, 0, "Set ?BX? to 0"),
     tInstLibEntry<tMethod>("mult100", &cHardwareExperimental::Inst_Mult100, 0, "Mult ?BX? by 100"),
-
+    
     tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, 0, "Add BX to CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, 0, "Subtract CX from BX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, 0, "Nand BX by CX and place the result in ?BX?"),
@@ -188,11 +188,11 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("search-seq-direct-s", &cHardwareExperimental::Inst_Search_Seq_Direct_S, 0, "Find direct template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-f", &cHardwareExperimental::Inst_Search_Seq_Direct_F, 0, "Find direct template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareExperimental::Inst_Search_Seq_Direct_B, 0, "Find direct template backward and move the flow head"),
-
+    
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, 0, "Move head ?IP? to the flow head"),
     tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareExperimental::Inst_MoveHeadIfNEqu, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
     tInstLibEntry<tMethod>("mov-head-if-less", &cHardwareExperimental::Inst_MoveHeadIfLess, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
-
+    
     tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
     tInstLibEntry<tMethod>("goto-if-n-equ", &cHardwareExperimental::Inst_GotoIfNEqu, 0, "Move IP to labeled position if BX != CX"),
     tInstLibEntry<tMethod>("goto-if-less", &cHardwareExperimental::Inst_GotoIfLess, 0, "Move IP to labeled position if BX < CX"),
@@ -202,7 +202,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, 0, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, 0, "Copy the position of the ?IP? head into ?CX?"),
     
-
+    
     // Replication Instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, 0, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::STALL, "Divide code between read and write heads."),
@@ -214,11 +214,11 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("if-copied-lbl-direct", &cHardwareExperimental::Inst_IfCopiedDirectLabel, 0, "Execute next if we copied direct match of the attached label"),
     tInstLibEntry<tMethod>("if-copied-seq-comp", &cHardwareExperimental::Inst_IfCopiedCompSeq, 0, "Execute next if we copied complement of attached sequence"),
     tInstLibEntry<tMethod>("if-copied-seq-direct", &cHardwareExperimental::Inst_IfCopiedDirectSeq, 0, "Execute next if we copied direct match of the attached sequence"),
-
+    
     tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro, nInstFlag::STALL, "Instantly reproduces the organism"),
-
+    
     tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, nInstFlag::STALL, "Instantly kills the organism"),
-
+    
     // Thread Execution Control
     tInstLibEntry<tMethod>("wait-cond-equ", &cHardwareExperimental::Inst_WaitCondition_Equal, nInstFlag::STALL, ""),
     tInstLibEntry<tMethod>("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, nInstFlag::STALL, ""),
@@ -239,19 +239,21 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24),
     tInstLibEntry<tMethod>("execurate", &cHardwareExperimental::Inst_Execurate),
     tInstLibEntry<tMethod>("execurate-24", &cHardwareExperimental::Inst_Execurate24),
-
+    
     
     // State Grid instructions
     tInstLibEntry<tMethod>("sg-move", &cHardwareExperimental::Inst_SGMove),
     tInstLibEntry<tMethod>("sg-rotate-l", &cHardwareExperimental::Inst_SGRotateL),
     tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareExperimental::Inst_SGRotateR),
     tInstLibEntry<tMethod>("sg-sense", &cHardwareExperimental::Inst_SGSense),
-
-      
+    
+    
     // Movement and Navigation instructions
-    tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
-    tInstLibEntry<tMethod>("territory-move", &cHardwareExperimental::Inst_TerritoryMove),
+    tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("range-move", &cHardwareExperimental::Inst_RangeMove, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("range-pred-move", &cHardwareExperimental::Inst_RangePredMove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
+    tInstLibEntry<tMethod>("get-position-offset", &cHardwareExperimental::Inst_GetPositionOffset),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
     tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
     tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly),    
@@ -264,8 +266,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
-
-      
+    tInstLibEntry<tMethod>("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, nInstFlag::STALL),
+    
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, nInstFlag::STALL),
@@ -277,26 +280,36 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
-
-     
+    
+    
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, nInstFlag::STALL), // @JJB
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
-    tInstLibEntry<tMethod>("get-faced-grouping", &cHardwareExperimental::Inst_GetFacedGrouping, nInstFlag::STALL),
-
+    tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID),
+    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  // @JJB
+    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, nInstFlag::STALL),  // @JJB
+    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, nInstFlag::STALL),  // @JJB    
+    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, nInstFlag::STALL),  // @JJB  
+    
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-merit-prey", &cHardwareExperimental::Inst_AttackMeritPrey, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("defend-cell", &cHardwareExperimental::Inst_DefendCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-faced-pred-cell", &cHardwareExperimental::Inst_ReadFacedPredCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-merit-pred", &cHardwareExperimental::Inst_FightMeritPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
-
+    
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
   };
@@ -314,7 +327,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
   static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
-
+  
 	const int def = 0;
   const int null_inst = 16;
   
@@ -322,12 +335,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 }
 
 cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-  : cHardwareBase(world, in_organism, in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set)
 {
   m_functions = s_inst_slib->GetFunctions();
   
   m_spec_die = false;
-
+  
   m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
@@ -369,7 +382,7 @@ void cHardwareExperimental::internalReset()
     m_promoter_offset = 0;
     
     m_promoters.Resize(0);
-
+    
     for (int i=0; i < m_memory.GetSize(); i++) {
       if (m_inst_set->IsPromoter(m_memory[i])) {
         int code = Numberate(i - 1, -1, m_world->GetConfig().PROMOTER_CODE_SIZE.Get());
@@ -403,7 +416,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   active = true;
   read_label.Clear();
   next_label.Clear();
-
+  
   // Promoter model
   m_execurate = 0;
   m_promoter_inst_executed = 0;
@@ -427,7 +440,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   }
   
   cPhenotype& phenotype = m_organism->GetPhenotype();
-
+  
   // First instruction - check whether we should be starting at a promoter, when enabled.
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
@@ -435,7 +448,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
-
+  
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
   const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
@@ -444,7 +457,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     // Setup the hardware for the next instruction to be executed.
     int last_thread = m_cur_thread++;
     if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
-
+    
     // If the currently selected thread is inactive, proceed to the next thread
     if (!m_threads[m_cur_thread].active) {
       if (num_inst_exec == 1) i--;  // When running in non-parallel mode, adjust i so that we will continue to loop
@@ -457,7 +470,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     
    
     // Print the status of this CPU at each step...    
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = ip.GetInst();
@@ -471,14 +484,19 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       return false;
     }
     
+    // Print the short form status of this CPU at each step... 
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
+    
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst);
-
+    int exec_success = 0;
+    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
+    // record any failure due to costs being paid
+    if (!exec) exec_success = -1;
     if (m_promoters_enabled) {
       // Constitutive regulation applied here
       if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
-
+      
       // If there are no active promoters and a certain mode is set, then don't execute any further instructions
       if (m_no_active_promoter_halt && m_promoter_index == -1) exec = false;
     }
@@ -489,28 +507,35 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       //       execution, because this instruction reference may be invalid after
       //       certain classes of instructions (namely divide instructions) @DMB
       const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
-
+      
       // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
-      {
+      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
       //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
-
+      if (exec == true) {
+        if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
+          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          // record execution success
+          exec_success = 1;
+        }
+      }
       // Check if the instruction just executed caused premature death, break out of execution if so
-      if (phenotype.GetToDelete()) break;
-
+      if (phenotype.GetToDelete()) {
+        if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+        break;
+      }
+      
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) ip.Advance();
       
       // Pay the additional death_cost of the instruction now
       phenotype.IncTimeUsed(addl_time_cost);
-
+      
       // In the promoter model, we may force termination after a certain number of inst have been executed
       if (m_promoters_enabled) {
         const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
@@ -520,8 +545,9 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
           PromoterTerminate(ctx);
         }
       }
-    } // if exec
-    
+    }
+    // if using mini traces, report success or failure of execution
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed
@@ -534,7 +560,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   m_organism->SetRunning(false);
   CheckImplicitRepro(ctx);
-        
+  
   return !m_spec_die;
 }
 
@@ -561,12 +587,12 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
-
+  
 	if (exec_success) {
     int code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
     m_threads[m_cur_thread].UpdateExecurate(code_len, m_inst_set->GetInstructionCode(actual_inst));
   }
-
+  
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
@@ -582,7 +608,7 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruct
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -592,7 +618,8 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruct
 
 void cHardwareExperimental::PrintStatus(ostream& fp)
 {
-  fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << "THREAD:" << m_cur_thread << "  ";
   fp << "IP:" << getIP().GetPosition() << "    ";
   
   
@@ -612,12 +639,12 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp << endl;
   
   fp << "  R-Head:" << getHead(nHardware::HEAD_READ).GetPosition() << " "
-    << "W-Head:" << getHead(nHardware::HEAD_WRITE).GetPosition()  << " "
-    << "F-Head:" << getHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
-    << "RL:" << GetReadLabel().AsString() << "   "
-    << "Ex:" << m_last_output
-    << endl;
-    
+  << "W-Head:" << getHead(nHardware::HEAD_WRITE).GetPosition()  << " "
+  << "F-Head:" << getHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
+  << "RL:" << GetReadLabel().AsString() << "   "
+  << "Ex:" << m_last_output
+  << endl;
+  
   int number_of_stacks = GetNumStacks();
   for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
     fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
@@ -626,8 +653,8 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   }
   
   fp << "  Mem (" << m_memory.GetSize() << "):"
-		  << "  " << m_memory.AsString()
-		  << endl;
+  << "  " << m_memory.AsString()
+  << endl;
   
   
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
@@ -642,13 +669,111 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
     fp << endl;    
     fp << setfill(' ') << setbase(10) << endl;
   }    
-
+  
   fp.flush();
 }
 
+void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  cString org_dat("");
+  df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
+  df.WriteComment(org_dat.Set("Org ID: %d", org_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
+  df.WriteComment(" ");
+  df.WriteComment("Exec Stats Columns:");
+  df.WriteComment("CPU Cycle");
+  df.WriteComment("Current Update");
+  df.WriteComment("Register Contents (CPU Cycle Origin of Contents)");
+  df.WriteComment("Current Thread");
+  df.WriteComment("IP Position");
+  df.WriteComment("RH Position");
+  df.WriteComment("WH Position");
+  df.WriteComment("FH Position");
+  df.WriteComment("CPU Cycle of Last Output");
+  df.WriteComment("Current Merit");
+  df.WriteComment("Current Bonus");
+  df.WriteComment("Forager Type");
+  df.WriteComment("Group ID (opinion)");
+  df.WriteComment("Current Cell");
+  df.WriteComment("Faced Direction");
+  df.WriteComment("Faced Cell Occupied?");
+  df.WriteComment("Faced Cell Has Hill?");
+  df.WriteComment("Faced Cell Has Wall?");
+  df.WriteComment("Queued Instruction");
+  df.WriteComment("Trailing NOPs");
+  df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
+  df.Endl();
+}
 
+void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+{
+  // basic status info
+  fp << m_cycle_count << " ";
+  fp << m_world->GetStats().GetUpdate() << " ";
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    fp << GetRegister(i) << " ";
+    fp << "(" << reg.originated << ") ";
+  }    
+  // genome loc info
+  fp << m_cur_thread << " ";
+  fp << getIP().GetPosition() << " ";  
+  fp << getHead(nHardware::HEAD_READ).GetPosition() << " ";
+  fp << getHead(nHardware::HEAD_WRITE).GetPosition()  << " ";
+  fp << getHead(nHardware::HEAD_FLOW).GetPosition()   << " ";
+  // last output
+  fp << m_last_output << " ";
+  // phenotype/org status info
+  fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
+  fp << m_organism->GetPhenotype().GetCurBonus() << " ";
+  fp << m_organism->GetForageTarget() << " ";
+  if (m_organism->HasOpinion()) fp << m_organism->GetOpinion().first << " ";
+  else fp << -99 << " ";
+  // environment info / things that affect movement
+  fp << m_organism->GetCellID() << " ";
+  fp << m_organism->GetFacedDir() << " ";
+  fp << m_organism->IsNeighborCellOccupied() << " ";  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  int wall = 0;
+  int hill = 0;
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
+    if (hill == 1 && wall == 1) break;
+  }
+  fp << hill << " ";
+  fp << wall << " ";
+  // instruction about to be executed
+  fp << next_name << " ";
+  // any trailing nops (up to NUM_REGISTERS)
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  tSmartArray<int> seq;
+  seq.Resize(0);
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
+    else break;
+  }
+  cString mod_string;
+  for (int j = 0; j < seq.GetSize(); j++) {
+    mod_string += (char) seq[j] + 'A';  
+  }  
+  if (mod_string.GetSize() != 0) fp << mod_string << " ";
+  else fp << "NoMods" << " ";
+}
 
-
+void cHardwareExperimental::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
+{
+  fp << exec_sucess;
+  fp << endl;
+  fp.flush();
+}
 
 cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
 {
@@ -657,7 +782,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
   
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
-
+  
   cCPUMemory& memory = m_memory;
   int pos = 0;
   
@@ -691,7 +816,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
     }
     pos++;
   }
-         
+  
   // Return start point if not found
   return ip;
 }
@@ -769,13 +894,13 @@ cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
       if (size_matched == search_label.GetSize()) {
         pos--;
         const int found_pos = pos.GetPosition();
-
+        
         if (mark_executed) {
           pos.Set(label_start);
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
           for (int i = 0; i < size_matched && i < max; i++, pos++) pos.SetFlagExecuted();
         }
-
+        
         // Return Head pointed at last NOP of label sequence
         return cHeadCPU(this, found_pos, ip.GetMemSpace());
       }
@@ -866,7 +991,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
       }
       
       // Check that the label matches and has examined the full sequence of nops
-       if (size_matched == search_label.GetSize()) {
+      if (size_matched == search_label.GetSize()) {
         pos--;
         const int found_pos = pos.GetPosition();
         
@@ -1157,7 +1282,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   }
   if (allocated_size < 1) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Allocate of %d too small", allocated_size));
+                      cStringUtil::Stringf("Allocate of %d too small", allocated_size));
     return false;
   }
   
@@ -1167,25 +1292,25 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   // Make sure that the new size is in range.
   if (new_size > MAX_GENOME_LENGTH  ||  new_size < MIN_GENOME_LENGTH) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Invalid post-allocate size (%d)",
-                               new_size));
+                      cStringUtil::Stringf("Invalid post-allocate size (%d)",
+                                           new_size));
     return false;
   }
   
   const int max_alloc_size = (int) (old_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Allocate too large (%d > %d)",
-                               allocated_size, max_alloc_size));
+                      cStringUtil::Stringf("Allocate too large (%d > %d)",
+                                           allocated_size, max_alloc_size));
     return false;
   }
   
   const int max_old_size =
-    (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
+  (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Allocate too small (%d > %d)",
-                               old_size, max_old_size));
+                      cStringUtil::Stringf("Allocate too small (%d > %d)",
+                                           old_size, max_old_size));
     return false;
   }
   
@@ -1253,7 +1378,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Activate the child
   bool parent_alive = m_organism->ActivateDivide(ctx);
-
+  
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
@@ -1300,16 +1425,16 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
 // Multi-threading.
 bool cHardwareExperimental::Inst_ForkThread(cAvidaContext& ctx)
 {
-    getIP().Advance();
-    if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
-    return true;
+  getIP().Advance();
+  if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
 {
-    if (!ExitThread()) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-    else m_advance_ip = false;
-    return true;
+  if (!ExitThread()) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+  else m_advance_ip = false;
+  return true;
 }
 
 bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
@@ -1716,7 +1841,7 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
-
+  
   return true;
 }
 
@@ -1865,7 +1990,7 @@ bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
 {
   m_organism->GetPhenotype().SetDivideSex(false);
   m_organism->GetPhenotype().SetCrossNum(0);
-
+  
   AdjustHeads();
   const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
   int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
@@ -2145,7 +2270,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext& ctx)
       return true;
     }
   }
-
+  
   // Fail to sleep if this is the last thread awake
   if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
@@ -2175,7 +2300,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext& ctx)
       return true;
     }
   }
-
+  
   // Fail to sleep if this is the last thread awake
   if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
@@ -2234,7 +2359,7 @@ bool cHardwareExperimental::Inst_Regulate(cAvidaContext& ctx)
   int regulation_code = GetRegister(reg_used);
   
   for (int i = 0; i < m_promoters.GetSize(); i++) m_promoters[i].regulation = regulation_code;
-
+  
   return true;
 }
 
@@ -2243,7 +2368,7 @@ bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   const int reg_promoter = FindModifiedNextRegister(reg_used);
-
+  
   int regulation_code = GetRegister(reg_used);
   int regulation_promoter = GetRegister(reg_promoter);
   
@@ -2460,7 +2585,7 @@ bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(rBX);
   const int op1 = FindModifiedNextRegister(reg_used);
   sInternalValue& val = m_threads[m_cur_thread].reg[op1];
-
+  
   setInternalValue(reg_used, (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
   return true; 
 }
@@ -2497,7 +2622,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
-
+  
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   // Since the divide will now succeed, set up the information to be sent
@@ -2506,7 +2631,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   m_organism->GetPhenotype().SetLinesCopied(m_memory.GetSize());
-
+  
   int lines_executed = 0;
   for (int i = 0; i < m_memory.GetSize(); i++) if (m_memory.FlagExecuted(i)) lines_executed++;
   m_organism->GetPhenotype().SetLinesExecuted(lines_executed);
@@ -2521,10 +2646,10 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Handle Divide Mutations...
   Divide_DoMutations(ctx);
-
+  
   const bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), m_organism->OffspringGenome().GetSize(), 1);
   if (viable == false) return false;
-
+  
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
@@ -2645,26 +2770,54 @@ bool cHardwareExperimental::Inst_SGSense(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
 {
-    // In TestCPU, movement fails...
-    if (m_organism->GetCellID() == -1) return false;
-    
-    bool move_success = m_organism->Move(ctx);  
-    const int out_reg = FindModifiedRegister(rBX);   
-    setInternalValue(out_reg, move_success, true);   
-    return true;
+  // In TestCPU, movement fails...
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
+  
+  bool move_success = m_organism->Move(ctx);  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, move_success, true);   
+  return true;
 }
 
-bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
-  if (m_organism->GetCellID() == -1) return false;
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
   assert(m_organism != 0);
   
   bool safe_passage = true;
   bool move_success = false;
+  const int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
   
-  if (m_organism->GetFacedCellDataTerritory() != -1 && (m_organism->GetFacedCellDataTerritory() != m_organism->GetOpinion().first) \
-      && ((m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate()) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+  if (faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
+      ((m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate()) 
+       <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
+    safe_passage = false;
+  }
+  
+  if (safe_passage) {
+    move_success = m_organism->Move(ctx);
+  }
+  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, move_success, true);  
+  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
+{
+  // In TestCPU, movement fails...
+  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
+  assert(m_organism != 0);
+  
+  bool safe_passage = true;
+  bool move_success = false;
+  const int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
+  
+  if (m_organism->GetForageTarget() == -2 && faced_range != -1 && faced_range != m_organism->GetOpinion().first 
+      && ((m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate()) 
+          <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
   if (safe_passage) {
@@ -2679,7 +2832,14 @@ bool cHardwareExperimental::Inst_TerritoryMove(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, m_organism->GetFacedDir(), true);
+  setInternalValue(out_reg, m_organism->GetOrgInterface().GetFacedDir(), true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetPositionOffset(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetNortherly(), true);
+  setInternalValue(FindModifiedNextRegister(out_reg), m_organism->GetEasterly(), true);
   return true;
 }
 
@@ -2707,64 +2867,65 @@ bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext& ctx) {
 
 bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
-    m_organism->Rotate(1);
-    return true;
+  m_organism->Rotate(1);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
 {
-    m_organism->Rotate(-1);
-    return true;
+  m_organism->Rotate(-1);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
 {
-    int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-    int group = 0;
-    
-    if(m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
-    
-    const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);   
-    double max_res = 0;
+  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
+  int group = 0;
+  
+  if(m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
+  
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);   
+  double max_res = 0;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    m_organism->Rotate(1);
+    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+    if (faced_res[group] > max_res) max_res = faced_res[group];
+  } 
+  
+  if (max_res > current_res[group]) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-        m_organism->Rotate(1);
-        tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-        if (faced_res[group] > max_res) max_res = faced_res[group];
-    } 
-    
-    if (max_res > current_res[group]) {
-        for(int i = 0; i < actualNeighborhoodSize; i++) {
-            tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-            if (faced_res[group] != max_res) m_organism->Rotate(1);
-        }
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+      if (faced_res[group] != max_res) m_organism->Rotate(1);
     }
-    // return % change
-    int res_diff = (int) ((max_res - current_res[group])/current_res[group] * 100 + 0.5);
-    int reg_to_set = FindModifiedRegister(rBX);
-    setInternalValue(reg_to_set, res_diff, true);
-    return true;
+  }
+  int res_diff = 0;
+  if (current_res[group] == 0) res_diff = (int) max_res;
+  else res_diff = (int) (((max_res - current_res[group])/current_res[group]) * 100 + 0.5);
+  int reg_to_set = FindModifiedRegister(rBX);
+  setInternalValue(reg_to_set, res_diff, true);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
 {
-    // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
-    // to face the 'marked' spot where those instructions were executed.
-    int easterly = m_organism->GetEasterly();
-    int northerly = m_organism->GetNortherly();
-    int correct_facing = 0;
-    if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
-    else if (northerly > 0 && easterly < 0) correct_facing = 1; // rotate NE
-    else if (northerly == 0 && easterly < 0) correct_facing = 2; // rotate E
-    else if (northerly < 0 && easterly < 0) correct_facing = 3; // rotate SE
-    else if (northerly < 0 && easterly == 0) correct_facing = 4; // rotate S
-    else if (northerly < 0 && easterly > 0) correct_facing = 5; // rotate SW
-    else if (northerly == 0 && easterly > 0) correct_facing = 6; // rotate W
-    else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
-    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
-        m_organism->Rotate(1);
-        if (m_organism->GetFacedDir() == correct_facing) break;
-    }
-    return true;
+  // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
+  // to face the 'marked' spot where those instructions were executed.
+  int easterly = m_organism->GetEasterly();
+  int northerly = m_organism->GetNortherly();
+  int correct_facing = 0;
+  if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
+  else if (northerly > 0 && easterly < 0) correct_facing = 1; // rotate NE
+  else if (northerly == 0 && easterly < 0) correct_facing = 2; // rotate E
+  else if (northerly < 0 && easterly < 0) correct_facing = 3; // rotate SE
+  else if (northerly < 0 && easterly == 0) correct_facing = 4; // rotate S
+  else if (northerly < 0 && easterly > 0) correct_facing = 5; // rotate SW
+  else if (northerly == 0 && easterly > 0) correct_facing = 6; // rotate W
+  else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
+  for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+    m_organism->Rotate(1);
+    if (m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
+  }
+  return true;
 }
 
 bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
@@ -2807,44 +2968,171 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
+{
+  // Will rotate organism to face a specificied other org
+  const int id_sought_reg = FindModifiedRegister(rBX);
+  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
+  bool have_org2use = false;
+  
+  // return false if invalid number or self
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  
+  // if valid number, does the value represent a living organism?
+  cOrganism* target_org = m_organism;
+  tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+    cOrganism* org = live_orgs[i];
+    if (id_sought == org->GetID()) {
+      target_org = org;
+      have_org2use = true;
+      break;
+    }
+  }
+  if (!have_org2use) return false;
+  else {
+    const int target_org_cell = target_org->GetCellID();
+    const int target_x = target_org_cell % worldx;
+    const int target_y = target_org_cell / worldx;
+    const int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
+    const int searching_x = searching_org_cell % worldx;
+    const int searching_y = searching_org_cell / worldx;
+    const int x_dist =  target_x - searching_x;
+    const int y_dist = target_y - searching_y;
+    
+    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (travel_dist > max_dist) return false;
+    
+    int correct_facing = 0;
+    if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N    
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
+    else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+      m_organism->Rotate(-1);
+      if (m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
+    }
+    return true;
+  }
+}
+
+bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
+{
+  // Will rotate organism to face a specificied other org
+  const int id_sought_reg = FindModifiedRegister(rBX);
+  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
+  bool have_org2use = false;
+  
+  // return false if invalid number or self
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  
+  // if valid number, does the value represent a living organism?
+  cOrganism* target_org = m_organism;
+  tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+    cOrganism* org = live_orgs[i];
+    if (id_sought == org->GetID()) {
+      target_org = org;
+      have_org2use = true;
+      break;
+    }
+  }
+  if (!have_org2use) return false;
+  else {
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    const int target_org_cell = target_org->GetCellID();
+    const int target_x = target_org_cell % worldx;
+    const int target_y = target_org_cell / worldx;
+    const int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
+    const int searching_x = searching_org_cell % worldx;
+    const int searching_y = searching_org_cell / worldx;
+    const int x_dist =  target_x - searching_x;
+    const int y_dist = target_y - searching_y;
+    
+    const int travel_dist = max(abs(x_dist), abs(y_dist));
+    if (travel_dist > max_dist) return false;
+    
+    int correct_facing = 0;
+    if (y_dist < 0 && x_dist == 0) correct_facing = 4; // rotate away from N    
+    else if (y_dist < 0 && x_dist > 0) correct_facing = 5; // rotate away from NE
+    else if (y_dist == 0 && x_dist > 0) correct_facing = 6; // rotate away from E
+    else if (y_dist > 0 && x_dist > 0) correct_facing = 7; // rotate away from SE
+    else if (y_dist > 0 && x_dist == 0) correct_facing = 0; // rotate away from S
+    else if (y_dist > 0 && x_dist < 0) correct_facing = 1; // rotate away from SW
+    else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate away from W
+    else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+      m_organism->Rotate(-1);
+      if (m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
+    }
+    return true;
+  }
+}
+
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
-    int reg_to_set = FindModifiedRegister(rBX);  
-    double max_resource = 0.0;    
-    // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
-    for (int i = 0; i < res_count.GetSize(); i++) {
-        if (res_count[i] > max_resource) {
-            max_resource = res_count[i];
-            setInternalValue(reg_to_set, i, true);
-        }
-    }    
-    return true;
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  int reg_to_set = FindModifiedRegister(rBX);  
+  double max_resource = 0.0;    
+  // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+  for (int i = 0; i < res_count.GetSize(); i++) {
+    if (res_count[i] > max_resource) {
+      max_resource = res_count[i];
+      setInternalValue(reg_to_set, i, true);
+    }
+  }    
+  return true;
 }
 
 bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 {
   const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
   const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
-  // are you trying to sense a valid resource?
+  // are you trying to sense a valid, non-hidden nest resource?
   const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (res_req < cell_res.GetSize() && res_req > 0) {  
+  if (res_req < cell_res.GetSize() && res_req > 0 && resource_lib.GetResource(res_req)->GetHabitat() != 3) {  
     res_sought = res_req; 
   }
   
   int res_amount = 0;
-  // if you requested a valid resource, we return the value for that res
-  if (res_sought != -1) res_amount = (int) (cell_res[res_sought] * 100 + 0.5);
-  // otherwise, we sum across all resources in the cell
+  int faced_res = 0;
+  // if you requested a valid resource, we return values for that res
+  if (res_sought != -1) {
+    res_amount = (int) (cell_res[res_sought] * 100 + 0.5);
+    faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[res_sought] * 10 + 0.5);  
+  }
+  // otherwise, we sum across all the food resources in the cell
   else {
     for (int i = 0; i < cell_res.GetSize(); i++) {
-      res_amount += (int) (cell_res[i] * 100 + 0.5);
+      if (resource_lib.GetResource(i)->GetHabitat() == 0) {
+        res_amount += (int) (cell_res[i] * 100 + 0.5);
+        faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] * 10 + 0.5);  
+      }
     }
   }
-  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
-  const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
+  
+  // return % change
+  int res_diff = 0;
+  if (res_amount == 0) res_diff = (int) faced_res;
+  else res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
+  
+  setInternalValue(req_reg, res_sought, true);
+  const int res_tot_reg = FindModifiedNextRegister(req_reg);
   setInternalValue(res_tot_reg, res_amount, true);
+  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true);
   return true;
 }
 
@@ -2854,7 +3142,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
   const cCodeLabel& search_label = GetLabel();
-
+  
   int nest_id = -1;
   int nest_val = 0;
   
@@ -2874,7 +3162,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
     }
   }
   else nest_val = (int) cell_res[nest_id];  
-
+  
   setInternalValue(reg_used, nest_id, true);
   const int val_reg = FindModifiedNextRegister(reg_used);
   setInternalValue(val_reg, nest_val, true);
@@ -2911,376 +3199,74 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   return true;
 }
 
-/* Tests a cell for the Inst_LookAhead function
- * 
- * Parameters:
- habitat_used    specifies what type of object we're interested in
- search_type     tells how to search (stop when we've found the closest, count total #, etc)
- resource_lib    library of available resources
- target_cell     the cell we're testing
- * 
- * Returns:
- *		If we're looking for the closest resource, return that resource's ID
- *    otherwise, returns the number of objects we're looking for that are in target_cell
- *    
- */
-cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int res_id_sought, const cResourceLib& resource_lib, int target_cell_num)
-{
-  int lib_size = resource_lib.GetSize();
-  tArray<double> cell_res = m_organism->GetOrgInterface().GetCellResources(target_cell_num, ctx);
-  searchInfo returnInfo;
-  returnInfo.amountFound = 0;
-  returnInfo.resource_id = res_id_sought;
-  
-  if(habitat_used == 0 || habitat_used == 1 || habitat_used == 2 || habitat_used == 4){
-    // Looking for edible resources or topological features
-    
-    // by default, look at every resource ID unless we're looking for a specific one
-    int min_index = 0;
-    int max_index = lib_size - 1;
-    if(res_id_sought != -1)
-      min_index = max_index = res_id_sought;
-    
-    for( int k = min_index; k <= max_index; k++) {
-      if(resource_lib.GetResource(k)->GetHabitat() == habitat_used) {
-        returnInfo.amountFound += cell_res[k];
-        returnInfo.resource_id = k;
-      }
-    }
-  }
-  else if ( habitat_used == -2 ) {
-    // we're looking for other organisms
-    
-    const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
-    if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
-      int type_seen = target_cell.GetOrganism()->GetForageTarget();
-      
-      if(search_type == 0)
-        returnInfo.amountFound++;
-      else if (search_type > 0){
-        if(type_seen == -2)
-          returnInfo.amountFound++;
-      }
-      else if (search_type < 0){
-        if(type_seen != -2)
-          returnInfo.amountFound++;
-      }
-    }
-  }
-  
-  return returnInfo;
-}
 bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx) 
 {
-  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   // temp check on world geometry until code can handle other geometries
-  if (geometry != 1) {
+  if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
     // Instruction sense-diff-ahead only written to work in bounded grids
     return false;
   }
   
-  // If this organism has no neighboring cells, ignore instruction.
+  if (NUM_REGISTERS < 8) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead requires at least 8 registers");
   if (m_organism->GetNeighborhoodSize() == 0) return false;
   
-  // get the resource library
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  const int lib_size = resource_lib.GetSize();
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  
-  const cCodeLabel& search_label = GetLabel();
-  
-  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
-  // if sensing food resource, habitat = 0 (gradients)
-  // if sensing topography, habitat = 1 (hills)
-  // if sensing objects, habitat = 2 (walls)  
-  // habitat 3 = hidden resources (hidden from a distance)
-  // habitat 4 = unhidden den resource
-  // habitat -2 = organisms
-  
-  const int habitat_reg = FindModifiedRegister(rBX);
-  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
-  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
-  
+  // define our input (4) and output registers (8)
+  lookRegAssign reg_defs;
+  reg_defs.habitat = FindModifiedRegister(rBX);
   // fail if the org is trying to sense a nest/hidden habitat
+  int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
   if (habitat_used == 3) return false;
+  reg_defs.distance = FindModifiedNextRegister(reg_defs.habitat);
+  reg_defs.search_type = FindModifiedNextRegister(reg_defs.distance);
+  reg_defs.id_sought = FindModifiedNextRegister(reg_defs.search_type);
+  reg_defs.count = FindModifiedNextRegister(reg_defs.id_sought);
+  reg_defs.value = FindModifiedNextRegister(reg_defs.count);
+  reg_defs.group = FindModifiedNextRegister(reg_defs.value);
+  reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
   
-  // default to look for orgs if invalid habitat & predator
-  else if (pred_experiment && m_organism->GetForageTarget() == -2 && \
-           (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
-  // default to look for env res if invalid habitat & forager
-  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
-  
-  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
-  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
-  const int distance_reg = FindModifiedNextRegister(habitat_reg);
-  int distance_sought = 1;
-  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
-  if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > long_axis) distance_sought = long_axis;
-  
-  // third register gives type of search used for food resources (habitat 0) and org hunting
-  // env res search_types: 
-  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den (default), 1 = count # edible cells/walls/hills, -1 = total food res in cells
-  // org hunting search types: 
-  // 0 = closest any org (default), 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
-  const int search_type_reg = FindModifiedNextRegister(distance_reg);  
-  int search_type = 0;
-  if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_type_reg].value;
-  
-  // if looking for env res, default to closest edible
-  if (habitat_used != -2 && (search_type < -1 || search_type > 1)) search_type = 0;
-  // if looking for orgs in predator environment, default to closest org of any type
-  else if (pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 2)) search_type = 0;
-  // if looking for orgs in non-predator environment, default to closest org of any type
-  else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
-  
-  // fourth register gives specific instance of env resources sought (default to target, which will be -1 (==any) if org has no target)
-  int res_id_sought = m_organism->GetForageTarget();
-  // if you're a predator, you can't specify a specific 'org' res (can still look for other things if specify via habitat reg)  
-  // APW TODO--allow targeting specific org?
-  if (res_id_sought < 0) res_id_sought = -1;
-  const int res_id_reg = FindModifiedNextRegister(search_type_reg);
-  if (NUM_REGISTERS > 3 && habitat_used != -2 && search_label.GetSize() > 3) {
-    res_id_sought = m_threads[m_cur_thread].reg[res_id_reg].value;
-    if (res_id_sought < 0 || res_id_sought >= lib_size) res_id_sought = -1;
-  }
-  
-  /*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
-   int spec_value = -1;
-   const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
-   if (NUM_REGISTERS > 4) {
-   spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
-   }
-   */
-  
-  // if an org is trying to do totals for a specific env resource that is not actually food, this is invalid and we can exit now
-  if (habitat_used != -2 && search_type == -1 && res_id_sought != -1) {
-    if (resource_lib.GetResource(res_id_sought)->GetHabitat() != 0) return true;
-  }
-  
-  // start the real work of walking through cells
-  const int facing = m_organism->GetFacedDir();
-  const int faced_cell = m_organism->GetFacedCellID();
-  int cell = m_organism->GetCellID();
-  
-  const int ahead_dir = faced_cell - cell;
-  int dist_used = 0;
-  
-  int center_cell = cell;
-  int this_cell = cell;
-  
-  bool count_center = true;
-  bool any_valid_side_cells = false;
-  
-  bool found = false;
-  int count = 0;
-  double totalAmount = 0;
-  
-  searchInfo cellResultInfo;
-  
-  tArray<double> cell_res;
-  
-  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type >= -1 && search_type <= 1));
-	
-  for (int dist = 0; dist < distance_sought + 1; dist++) {
-    // work on CENTER cell for this dist
-    
-    // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)    
-    if (count_center) {
-      cellResultInfo = TestCell(ctx, habitat_used, search_type, res_id_sought, resource_lib, center_cell);
-      
-      if(cellResultInfo.amountFound >= 1) {
-        // we've found what we're looking for
-        found = true;
-        count ++;
-        totalAmount += cellResultInfo.amountFound;
-        
-        if( stop_at_first_found ){
-          // we were only looking for the first one.
-          // break out of entire search loop
-          dist_used = dist;
-          break;
-        }
-      }
-    } // end work on CENTER cell for this dist
-    
-    // work on SIDE of center cells for this dist
-    
-    // how many cells do we need to look at on both sides 
-    int num_cells_either_side = 0;
-    if (dist > 0)
-      num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
-    
-    for (int do_lr = 0; do_lr < 2; do_lr++) {
-      bool count_side = true;
-      int prev_cell = center_cell;
-      for (int j = 1; j < num_cells_either_side + 1; j++) {
-        
-        if (facing == 0 && do_lr == 0) this_cell = center_cell - j;
-        else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-        else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
-        else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
-        
-        else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
-        else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
-        else if (facing == 4 && do_lr == 1) this_cell = center_cell - j;
-        else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-        
-        // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
-        else if (facing == 1 && do_lr == 0) this_cell = center_cell - j;
-        else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-        else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
-        else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
-        
-        else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
-        else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
-        else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-        else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
-        
-        // test if the side cell is still on world, if it isn't do the other side
-        if (this_cell < 0 || this_cell > (worldx * (worldy - 1))) count_side = false; 
-        else if ((geometry == 1) && (this_cell - prev_cell == 1) && (this_cell % worldx == 0)) count_side = false; 
-        else if ((geometry == 1) && (this_cell - prev_cell == -1) && (prev_cell % worldx == 0)) count_side = false; 
-        else any_valid_side_cells = true;
-        
-        
-        prev_cell = this_cell;
-        if (count_side) {
-          cellResultInfo = TestCell(ctx, habitat_used, search_type, res_id_sought, resource_lib, this_cell);
-          
-          if(cellResultInfo.amountFound >= 1) {
-            // we've found what we're looking for
-            found = true;
-            count ++;
-            totalAmount += cellResultInfo.amountFound;
-            
-            if( stop_at_first_found ){
-              // we were only looking for the first one.
-              // break out of the side-searching loop
-              dist_used = dist;
-              break;
-            }
-          }
-        }
-        if ( !count_side) break;
-      }
-      // break out of entire search loop
-      if (stop_at_first_found && found) break;
-    }
-    if (stop_at_first_found && found) break;
-    
-    // before we do the next side cell...
-    
-    // stop if we never found any valid cells at the current distance
-    if (!any_valid_side_cells && !count_center) {
-      dist -= 1;
-      break;
-    }
-    
-    // if facing W, SW or NW check if center cell now standing on edge of world, only do side cells from now on
-    if((geometry == 1) && ((facing == 6) || (facing == 5) || (facing == 7)) && (center_cell % worldx == 0)) count_center = false;
-    
-    // figure out the what the next center cell is about to be
-    center_cell = center_cell + ahead_dir;
-    
-    // if facing E, SE, or NE check if next center cell is going to be off edge of world, only do side cells from now on
-    if((geometry == 1) && ((facing == 2) || (facing == 3) || (facing == 1)) && (center_cell % worldx == 0)) count_center = false;
-    // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
-    else if(center_cell < 0 || center_cell > (worldx * (worldy - 1))) count_center = false;
-    
-  } // End getting values
-  
-  // begin reached end output 
-  setInternalValue(habitat_reg, habitat_used, true);
-  
-  if(found){
-    setInternalValue(habitat_reg, habitat_used, true);
-    setInternalValue(distance_reg, dist_used, true);
-    setInternalValue(res_id_reg, cellResultInfo.resource_id);
-    
-    // if we were looking for first edible and found the nearest
-    if(search_type == 0 && habitat_used == 0) {
-      setInternalValue(search_type_reg, search_type, true);
-      if (NUM_REGISTERS > 3)
-        setInternalValue(res_id_reg, cellResultInfo.resource_id, true);
-      return true;
-    }
-    else if (stop_at_first_found) {
-      // if we were looking for topo features or organisms and we found the nearest
-      return true;
-    }
-  }
-  // if we never found what we were looking for
-  if (stop_at_first_found && !found) {
-    setInternalValue(distance_reg, -1, true);
-    setInternalValue(search_type_reg, search_type, true);
-    if (NUM_REGISTERS > 3) setInternalValue(res_id_reg, cellResultInfo.resource_id, true);
-    return true;
-  }
-  
-  // if we did find what we were looking for, return either the count of cells or the total amount of resources
-  int returnVal = count;
-  if (habitat_used == 0 && search_type == -1)
-    returnVal = (int) (totalAmount + 0.5);
-  
-  if (!stop_at_first_found) {
-    setInternalValue(distance_reg, dist_used, true);
-    if (NUM_REGISTERS == 3)
-      setInternalValue(search_type_reg, returnVal, true);
-    else if(NUM_REGISTERS > 3) {
-      setInternalValue(search_type_reg, search_type, true);
-      setInternalValue(FindModifiedNextRegister(search_type_reg), returnVal, true);
-    }
-  }
-  
-  if (habitat_used == 0 && NUM_REGISTERS > 4) 
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(search_type_reg)), res_id_sought, true);
-  
+  lookOut look_results = SetLooking(ctx, reg_defs);
+  LookResults (reg_defs, look_results);
   return true;
 }
 
 bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
 {
-    int reg_to_set = FindModifiedRegister(rBX);
-    
-    // get the resource library
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    
-    // get the destination cell resource levels
-    tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
-    
-    // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
-    // are there any barrier resources in the faced cell    
-    for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
-            setInternalValue(reg_to_set, 2, true);
-            return true;
-        }    
+  int reg_to_set = FindModifiedRegister(rBX);
+  
+  // get the resource library
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
+  // get the destination cell resource levels
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  
+  // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+  // are there any barrier resources in the faced cell    
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) {
+      setInternalValue(reg_to_set, 2, true);
+      return true;
+    }    
+  }
+  // if no barriers, are there any hills in the faced cell    
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
+      setInternalValue(reg_to_set, 1, true);
+      return true;
     }
-    // if no barriers, are there any hills in the faced cell    
-    for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) {
-            setInternalValue(reg_to_set, 1, true);
-            return true;
-        }
-    }
-    // if no barriers or hills, we return a 0 to indicate clear sailing
-    setInternalValue(reg_to_set, 0, true);
-    return true;
+  }
+  // if no barriers or hills, we return a 0 to indicate clear sailing
+  setInternalValue(reg_to_set, 0, true);
+  return true;
 }
- 
+
 bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int prop_target = GetRegister(FindModifiedRegister(rBX));
-
+  
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-  
-  // return false if setting to predator in non-predator experiment
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0 && prop_target == -2) return false;
   
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
@@ -3288,10 +3274,10 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   
   // return false if predator trying to become prey and this has been disallowed
   if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
-
+  
   // return false if trying to become predator and there are none in the experiment
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
-
+  
   // Set the new target and return the value
   m_organism->SetForageTarget(prop_target);
 	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
@@ -3327,7 +3313,9 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(rBX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    int res_diff = 0;
+    if (res_count[opinion] == 0) res_diff = (int) faced_res;
+    else res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     setInternalValue(reg_to_set, res_diff, true);
   }
   return true;
@@ -3336,71 +3324,192 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
-    int group;
-    // Check if the org is currently part of a group
-    assert(m_organism != 0);
+  int group = m_world->GetConfig().DEFAULT_GROUP.Get();
+  // Check if the org is currently part of a group
+  assert(m_organism != 0);
 	
-    int prop_group_id = GetRegister(FindModifiedRegister(rBX));
+  int prop_group_id = GetRegister(FindModifiedRegister(rBX));
   
-    // check if this is a valid group
-    if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
-        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) {
+  // check if this is a valid group
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
+      !(m_world->GetEnvironment().IsGroupID(prop_group_id))) {
     return false; 
-    }
-    // injected orgs might not have an opinion
-    if (m_organism->HasOpinion()) {
-        group = m_organism->GetOpinion().first;
-        
-        //return false if org setting opinion to current one (avoid paying costs for not switching)
-        if (group == prop_group_id) return false;
-        
-        // If tolerances are on the org must pass immigration chance @JJB
-        if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-            // If there are no members of the target group, automatically successful immigration
-            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
-                m_organism->LeaveGroup(group);
-            }
-            // Calculate chances based on target group tolerance of another org successfully immigrating
-            else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
-                const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
-                const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
-                double probability_immigration = target_group_tolerance / tolerance_max;
-                double rand = m_world->GetRandom().GetDouble();
-                if (rand <= probability_immigration) {
-                    // Org successfully immigrates
-                    m_organism->LeaveGroup(group);
-                }
-                // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
-                else {
-                    return true;
-                }
-            }
-        }
-        else {
-            // otherwise, subtract org from current group
-            m_organism->LeaveGroup(group);
-        }
-    }
-	
-    // Set the opinion
-    m_organism->SetOpinion(prop_group_id);
-  
-    // Add org to group count
-    group = m_organism->GetOpinion().first;	
-    m_organism->JoinGroup(group);
+  }
+  // injected orgs might not have an opinion
+  if (m_organism->HasOpinion()) {
+    group = m_organism->GetOpinion().first;
+    //return false if org setting opinion to current one (avoid paying costs for not switching)
+    if (group == prop_group_id) return false;
     
-    return true;
+    // If tolerances are on the org must pass immigration chance @JJB
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+      // If there are no members of the target group, automatically successful immigration
+      if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
+        m_organism->LeaveGroup(group);
+      }
+      // Calculate chances based on target group tolerance of another org successfully immigrating
+      else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
+        const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+        const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
+        double probability_immigration = target_group_tolerance / tolerance_max;
+        double rand = m_world->GetRandom().GetDouble();
+        if (rand <= probability_immigration) {
+          // Org successfully immigrates
+          m_organism->LeaveGroup(group);
+        }
+        // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
+        else {
+          return true;
+        }
+      }
+    }
+    else {
+      // otherwise, subtract org from current group
+      m_organism->LeaveGroup(group);
+    }
+  }
+	
+  // Set the opinion
+  m_organism->SetOpinion(prop_group_id);
+  
+  // Add org to group count
+  group = m_organism->GetOpinion().first;	
+  m_organism->JoinGroup(group);
+  
+  return true;
+}
+
+// A predator can establish a new group, attempt to immigrate into the group that marked the cell in front of them, or become a nomad. 
+bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+  
+  // If not nop-modified, fails to execute.
+  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  const int nop_reg = FindModifiedRegister(rBX);
+  
+  /*// TEMP CODE FOR PRED JOIN RANDOM GROUP JUST TO START SOME TESTS
+   int group = m_world->GetConfig().DEFAULT_GROUP.Get();
+   const int prop_group_id = m_world->GetRandom().GetUInt(0,1000);
+   if (m_organism->HasOpinion()) {
+   group = m_organism->GetOpinion().first;
+   if (group == prop_group_id) return false;
+   m_organism->LeaveGroup(group);
+   }
+   m_organism->SetOpinion(prop_group_id);
+   group = m_organism->GetOpinion().first;	
+   m_organism->JoinGroup(group);*/
+  
+  // **If ?AX? make a new group.
+  if (nop_reg == rAX) return Inst_MakePredGroup(ctx);
+  // **If ?BX? change to group -1.
+  else if (nop_reg == rBX) return Inst_LeavePredGroup(ctx);
+  // **If ?CX? read m_organism->GetOrgInterface().GetFacedCellDataTerritory() and attempt immigration into that group.
+  else if (nop_reg == rCX) return Inst_AdoptPredGroup(ctx);
+  
+  // **return (new) group ID & change success          
+  return false;
+}
+
+// A predator establishes a new group. @JJB
+bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+  
+  // If in a group, leave it.
+  if (m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    m_organism->LeaveGroup(group);
+  }
+  
+  // Creates new group and joins as well.
+  m_organism->GetOrgInterface().MakeGroup();
+  return true;
+}
+
+// A predator leaves their group to join the nomads in group -3.
+// Joining the nomads is always successful, they can not exclude others so there is no immigration test. @JJB
+bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
+{
+  // Predator nomad group id
+  const int nomad_group = -3;
+  
+  // Confirm the org is a pred and groups are on.
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+  
+  // If in a group, leave it.
+  if (m_organism->HasOpinion()) {
+    int group = m_organism->GetOpinion().first;
+    // If already in the nomad group, don't move.
+    if (group == nomad_group) return false;
+    m_organism->LeaveGroup(group);
+  }
+  
+  // Join the nomads.
+  m_organism->SetOpinion(nomad_group);
+  m_organism->JoinGroup(nomad_group);
+  return true;
+}
+
+// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. @JJB
+bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
+  
+  // Read target group from the faced marked cell.
+  const int prop_group_id = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
+  if (prop_group_id == -1) return false;
+  
+  // Check if the cell marking has expired.
+  int current_update = m_world->GetStats().GetUpdate();
+  int update_marked = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
+  int expire_window = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
+  if (current_update > (update_marked + expire_window)) return false;
+  
+  // If the same as current group, don't move.
+  if (m_organism->HasOpinion()) {
+    if (m_organism->GetOpinion().first == prop_group_id) {
+      return false;
+    }
+  }
+  
+  // Check if the target group is now empty, cannot join an empty group must create a new group.
+  if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) return false;
+  
+  // Attempt to immigrate to the target group
+  m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
+  return true;
 }
 
 bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
 {
-    assert(m_organism != 0);
-    if (m_organism->HasOpinion()) {
-        const int group_reg = FindModifiedRegister(rBX);
-        
-        setInternalValue(group_reg, m_organism->GetOpinion().first, false);
-    }
-    return true;
+  assert(m_organism != 0);
+  if (m_organism->HasOpinion()) {
+    const int group_reg = FindModifiedRegister(rBX);
+    
+    setInternalValue(group_reg, m_organism->GetOpinion().first, false);
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->HasOpinion()) {
+    const int group_reg = FindModifiedRegister(rBX);
+    
+    setInternalValue(group_reg, m_organism->GetOpinion().first, false);
+  }
+  return true;
 }
 
 bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
@@ -3408,7 +3517,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 {
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism * neighbor = m_organism->GetNeighbor();
+  cOrganism * neighbor = m_organism->GetOrgInterface().GetNeighbor();
   if (neighbor->IsDead())  return false;  
   
   const int out_reg = FindModifiedRegister(rBX);
@@ -3416,19 +3525,19 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
   return true;
 }
 
-//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit and reactions. 
-bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
+bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-    
+  
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
-
+  
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
-  // attacking other carnivores is handled differently using fights
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
     return false;
   }
@@ -3436,37 +3545,46 @@ bool cHardwareExperimental::Inst_AttackMeritPrey(cAvidaContext& ctx)
   // prevent killing on nests/safe havens
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return true;
+    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
   }
-    
-  // add prey's merit to predator's
-  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-  double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-  attacker_merit += target_merit;
-  m_organism->UpdateMerit(attacker_merit);
   
-  // now add on the victims reaction counts to your own...
+  // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+    attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+    m_organism->UpdateMerit(attacker_merit);
+  }
+  
+  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
   tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
   tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-
   for (int i = 0; i < org_reactions.GetSize(); i++) {
     org_reactions[i] += target_reactions[i];
     m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
   }
-    
   
-  //APW TODO
-  // now add the victims internal resource bins to your own
-
+  // and add current merit bonus after adjusting for conversion efficiency
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+  
+  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    tArray<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+    }
+  }
+  
   // if you weren't a predator before, you are now!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
   
   target->Die(ctx);
   
-  bool attack_success = true;  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, attack_success, true);   
-  
+  const int success_reg = FindModifiedRegister(rBX);   
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  setInternalValue(success_reg, 1, true);   
+  setInternalValue(bonus_reg, (int) target_bonus, true);
   return true;
 } 		
 
@@ -3477,25 +3595,25 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
-
+  
   // allow only for predator vs predator or prey vs prey
-  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
       (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
     return false;
   }
-
+  
   //Use merit to decide who wins this battle.
   bool kill_attacker = true;
   
   const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
-  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
-  const double odds_someone_dies = max(attacker_odds, target_odds);
-  const double odds_target_dies = target_odds * odds_someone_dies;
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
   const double decider = ctx.GetRandom().GetDouble(1);
   
   if (decider < (1 - odds_someone_dies)) return true;
@@ -3508,7 +3626,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   
   const int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   bool attack_success = true;  
   const int out_reg = FindModifiedRegister(rBX);   
@@ -3523,28 +3641,28 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
-
+  
   // allow only for predator vs predator or prey vs prey
-  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
       (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
     return false;
   }
   
   const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-  const double attacker_odds = ((attacker_merit) / (attacker_merit + target_merit));
-  const double target_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
   
-  int odds_I_dont_die = 1;
-  // return odds as %
-  if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
-  else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  // my win odds are odds nobody dies or someone dies and it's the target
+  const double odds_I_dont_die = (1 - odds_someone_dies) + ((1 - target_win_odds) * odds_someone_dies);
   
+  // return odds out of 10
   const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, odds_I_dont_die, true);   
-
+  setInternalValue(out_reg, (int) (odds_I_dont_die * 10 + 0.5), true);   
+  
   return true;
 } 	
 
@@ -3555,18 +3673,18 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator or prey vs prey
-  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || \
+  if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
       (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
     return false;
   }
-    
+  
   int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
@@ -3583,7 +3701,7 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism* target = m_organism->GetNeighbor();
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
@@ -3593,7 +3711,7 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   
   int target_cell = target->GetCellID();
   
-  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
   
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
@@ -3601,17 +3719,65 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   return true;
 } 
 
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightMeritPred(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  // allow only for predator vs predator
+  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
+    return false;
+  }
+  
+  //Use merit to decide who wins this battle.
+  bool kill_attacker = true;
+  
+  const double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+  const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+  const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
+  const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
+  const double decider = ctx.GetRandom().GetDouble(1);
+  
+  if (decider < (1 - odds_someone_dies)) return true;
+  else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  
+  if (kill_attacker) {
+    m_organism->Die(ctx);
+    return true;
+  }
+  
+  const int target_cell = target->GetCellID();
+  
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
+  
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
+  
+  return true;
+} 	
+
 bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  m_organism->SetCellData(m_organism->GetID());
+  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
+  m_organism->SetCellData(marking);
   
   return true;
 }
 
-bool cHardwareExperimental::Inst_DefendCell(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
   const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
   m_organism->SetCellData(marking);
   
@@ -3625,10 +3791,32 @@ bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
   const int update_reg = FindModifiedNextRegister(rBX);
   const int org_reg = FindModifiedNextRegister(update_reg);
   
-  // we don't return the territory ID for the marked cell because orgs would just change their opinion to match this if we use territory move
-  setInternalValue(marking_reg, m_organism->GetFacedCellData(), true);
-  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate(), true);
-  setInternalValue(org_reg, m_organism->GetFacedCellDataOrgID(), true);
+  setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
+  if (NUM_REGISTERS > 3) {
+    const int group_reg = FindModifiedNextRegister(org_reg);
+    setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
+  }
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetForageTarget() != -2) return false;
+  const int marking_reg = FindModifiedRegister(rBX);
+  const int update_reg = FindModifiedNextRegister(rBX);
+  const int org_reg = FindModifiedNextRegister(update_reg);
+  
+  setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
+  setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
+  setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
+  if (NUM_REGISTERS > 3) {
+    const int group_reg = FindModifiedNextRegister(org_reg);
+    setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
+  }
   
   return true;
 }
@@ -3642,23 +3830,11 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetFacedGrouping(cAvidaContext& ctx)
-{
-  if (!m_organism->IsNeighborCellOccupied()) return false;
-  
-  cOrganism * neighbor = m_organism->GetNeighbor();
-  if (neighbor->IsDead()) return false;  
-  
-  const int out_reg = FindModifiedRegister(rBX);
-  setInternalValue(out_reg, neighbor->GetOpinion().first, true);
-  return true;
-}
-
 bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
 {
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  cOrganism * neighbor = m_organism->GetNeighbor();
+  cOrganism * neighbor = m_organism->GetOrgInterface().GetNeighbor();
   if (neighbor->IsDead()) return false;  
   
   // If there is no valid max genetic distance, go out to cousins.
@@ -3684,3 +3860,834 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   setInternalValue(out_reg, (int) is_kin, true);    
   return true;
 }
+
+/* Increases tolerance towards the addition of members to the group:
+ nop-A: increases tolerance towards immigrants
+ nop-B: increases tolerance towards own offspring
+ nop-C: increases tolerance towards other offspring of the group.
+ Removes the record of a previous update when dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
+bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      // If this instruction is not nop modified it fails to execute and does nothing @JJB
+      if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
+      
+      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();    
+      const int tolerance_to_modify = FindModifiedRegister(rBX);
+      int tolerance_count = 0;
+      
+      // If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
+      if (tolerance_to_modify == rAX) {
+        PushToleranceInstExe(0, ctx);
+        
+        for (int n = 0; n < tolerance_max - 1; n++) {
+          m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n + 1];
+        }
+        m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = 0;
+        // Retrieve modified tolerance total for immigrants.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?BX? move updates of own offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
+      if ((tolerance_to_modify == rBX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(1, ctx);
+        
+        for (int n = 0; n < tolerance_max - 1; n++) {
+          m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n + 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = 0;
+        
+        // Retrieve modified tolerance total for own offspring.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?CX? move updates of others offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
+      if ((tolerance_to_modify == rCX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(2, ctx);
+        
+        for (int n = 0; n < tolerance_max - 1; n++) {
+          m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n + 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = 0;
+        
+        // Retrieve modified tolerance total for other offspring in group.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      } 
+      return false;
+    }
+  }
+  return false;
+}
+
+/* Decreases tolerance towards the addition of members to the group,
+ nop-A: decreases tolerance towards immigrants
+ nop-B: decreases tolerance towards own offspring
+ nop-C: decreases tolerance towards other offspring of the group.
+ Adds to records the update during which dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
+bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      // If this instruction is not nop modified it fails to execute and does nothing @JJB
+      if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
+      
+      const int cur_update = m_world->GetStats().GetUpdate();
+      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+      
+      const int tolerance_to_modify = FindModifiedRegister(rBX);
+      int tolerance_count = 0;
+      
+      // If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+      if (tolerance_to_modify == rAX) {
+        PushToleranceInstExe(3, ctx);
+        
+        for (int n = tolerance_max - 1; n > 0; n--) {
+          m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n - 1];
+        }
+        m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
+        // Retrieve modified tolerance total for immigrants.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?BX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+      if ((tolerance_to_modify == rBX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(4, ctx);
+        
+        for (int n = tolerance_max - 1; n > 0; n--) {
+          m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n - 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
+        
+        // Retrieve modified tolerance total for own offspring.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      }
+      
+      // If ?CX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+      if ((tolerance_to_modify == rCX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
+        PushToleranceInstExe(5, ctx);
+        
+        for (int n = tolerance_max - 1; n > 0; n--) {
+          m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n - 1];
+        }
+        m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
+        
+        // Retrieve modified tolerance total for other offspring in the group.
+        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        
+        // Output tolerance total to BX register.
+        setInternalValue(rBX, tolerance_count, true);
+        return true;
+      } 
+      return false;
+    }
+  }
+  return false;
+}
+
+/* Retrieve current tolerance levels, placing each tolerance in a different register.
+ Register AX: tolerance towards immigrants
+ Register BX: tolerance towards own offspring
+ Register CX: tolerance towards other offspring in the group @JJB
+ */
+bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
+{
+  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      if (m_organism->GetOpinion().first == -1) return false;
+      PushToleranceInstExe(6, ctx);
+      
+      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+      int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+      setInternalValue(rAX, tolerance_immigrants, true);
+      setInternalValue(rBX, tolerance_own, true);
+      setInternalValue(rCX, tolerance_others, true);  
+      return true;
+    }
+  }
+  return false;
+}  
+
+/* Retrieve group tolerances placing each in a different register.
+ Register AX: group tolerance towards immigrants
+ Register BX: group tolerance towards own offspring
+ Register CX: group tolerance towards offspring @JJB
+ */
+bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
+{
+  if ((m_organism->GetForageTarget() != -2) || (m_organism->GetOpinion().first < 0)) return false;
+  // If groups are used and tolerances are on...
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      PushToleranceInstExe(7, ctx);
+      
+      const int group_id = m_organism->GetOpinion().first;
+      if (group_id == -1) return false;
+      
+      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+      double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
+      double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
+      
+      // Convert all odds to percent
+      double percent_immigrants = immigrant_odds * 100 + 0.5;
+      double percent_offspring_own = offspring_own_odds * 100 + 0.5;
+      double percent_offspring_others = offspring_others_odds * 100 + 0.5;
+      
+      // Truncate percent to integer and place in registers
+      setInternalValue(rAX, (int) percent_immigrants, true);
+      setInternalValue(rBX, (int) percent_offspring_own, true);
+      setInternalValue(rCX, (int) percent_offspring_others, true);
+      return true;
+    }
+  }
+  return false;
+}
+
+// Pushes the circumstances of a tolerance instruction execution to stats. @JJB
+void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+  
+  int group_id = m_organism->GetOpinion().first;
+  if (group_id == -1) return;
+  int group_size = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
+  double resource_level = res_count[group_id];
+  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+  double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
+  double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
+  
+  double odds_immi = immigrant_odds * 100 + 0.5;
+  double odds_own = offspring_own_odds * 100 + 0.5;
+  double odds_others = offspring_others_odds * 100 + 0.5;
+  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
+  int tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+  int tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+  
+  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
+                                                     odds_others, tol_immi, tol_own, tol_others, tol_max);
+}
+
+cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs)
+{
+  const int habitat_reg = in_defs.habitat;
+  const int distance_reg = in_defs.distance;
+  const int search_reg = in_defs.search_type;
+  const int id_reg = in_defs.id_sought;
+  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const int lib_size = resource_lib.GetSize();
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
+    
+  const cCodeLabel& search_label = GetLabel();
+  
+  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
+  // if sensing food resource, habitat = 0 (gradients)
+  // if sensing topography, habitat = 1 (hills)
+  // if sensing objects, habitat = 2 (walls)  
+  // habitat 4 = unhidden den resource
+  // habitat -2 = organisms
+  // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
+
+  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  // default to look for orgs if invalid habitat & predator
+  if (pred_experiment && m_organism->GetForageTarget() == -2 && 
+      (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
+  // default to look for env res if invalid habitat & forager
+  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
+  
+  // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
+  const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
+  int distance_sought = 1;
+  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  if (distance_sought < 0) distance_sought = 1;
+  else if (distance_sought > long_axis) distance_sought = long_axis;
+  
+  // third register gives type of search used for food resources (habitat 0) and org hunting (habitat -2)
+  // env res search_types (habitat 0): 0 or 1
+  // 0 (default) = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
+  // org hunting search types (habitat -2): -2 -1 0 1 2
+  // 0 (default) = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
+  int search_type = 0;
+  if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_reg].value;
+  
+  // if looking for env res, default to closest edible
+  if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
+  // if looking for orgs in predator environment and is prey, default to closest org of any type
+  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  // if looking for orgs in predator environment and is predator, default to look for prey
+  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
+  // if looking for orgs in non-predator environment, default to closest org of any type
+  else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
+  
+  // fourth register gives specific instance of resources sought or specific organisms to look for
+  // default to any (-1) if predator and target not specified
+  int id_sought = -1;
+  // default to current forage target if prey and input is absent
+  if (m_organism->GetForageTarget() !=-2) {
+    id_sought = m_organism->GetForageTarget();
+    if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();    
+  }
+  // if specified...
+  if (search_label.GetSize() > 3) {
+    id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+    // if looking for specific res...
+    if (habitat_used != -2) {
+      if (id_sought < -1 || id_sought >= lib_size) id_sought = -1;
+      // if specified resource to find, override habitat_used to match that for id_sought
+      if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
+    } 
+    // if looking for specific org...
+    else {
+      bool done_setting_org = false;
+      cOrganism* target_org = m_organism;
+      // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
+      if (id_sought < 0 || id_sought == m_organism->GetID()) {
+        id_sought = -1;
+        done_setting_org = true;
+      }
+      // if valid org id number, does the value represent a living organism
+      else if (id_sought != -1) {
+        tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+        for (int i = 0; i < live_orgs.GetSize(); i++) {  
+          cOrganism* living_org = live_orgs[i];
+          if (id_sought == living_org->GetID()) {
+            target_org = living_org;
+            done_setting_org = true;
+            break;
+          }
+        }
+      }
+      // if number didn't represent a living org, we default to WalkCells searching for anybody, skipping FindOrg
+      if (!done_setting_org && id_sought != -1) id_sought = -1;    
+      // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
+      if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought);
+    }
+  }  
+  /*  // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
+   int spec_value = -1;
+   const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
+   spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
+   */
+  return WalkCells(ctx, resource_lib, habitat_used, search_type, distance_sought, id_sought);
+}    
+
+cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought)
+{
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int target_org_cell = target_org->GetCellID();
+  const int target_x = target_org_cell % worldx;
+  const int target_y = target_org_cell / worldx;
+  const int searching_org_cell = m_organism->GetCellID();
+  const int searching_x = searching_org_cell % worldx;
+  const int searching_y = searching_org_cell / worldx;
+  const int x_dist = target_x - searching_x;
+  const int y_dist = target_y - searching_y;
+  // is the target org close enough to see and in my line of sight?
+  bool org_in_sight = true;
+  const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  const int travel_dist = max(abs(x_dist), abs(y_dist));
+  
+  // if too far in any direction regardless of facing
+  if (travel_dist > distance_sought) org_in_sight = false;
+  // if facing Northish
+  else if ((facing == 0 || facing == 7 || facing == 1) && y_dist > 0) org_in_sight = false;
+  // if facing Southish
+  else if ((facing == 4 || facing == 3 || facing == 5) && y_dist < 0) org_in_sight = false;
+  // if facing Eastish
+  else if ((facing == 2 || facing == 1 || facing == 3) && x_dist < 0) org_in_sight = false;
+  // if facing Westish
+  else if ((facing == 6 || facing == 5 || facing == 7) && x_dist > 0) org_in_sight = false;
+  
+  // if not too far in absolute x or y directions, check the distance when we consider offset from center sight line (is it within sight cone?)
+  if (org_in_sight) {
+    const int num_cells_either_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
+    int center_cell_x = 0;
+    int center_cell_y = 0;
+    // facing N or S and target off to E/W of center sight line
+    if ((facing == 0 || facing == 4) && abs(x_dist) > num_cells_either_side) org_in_sight = false;
+    // facing E or W and target off to N/S of center sight line
+    else if ((facing == 2 || facing == 6) && abs(y_dist) > num_cells_either_side) org_in_sight = false;
+    // if facing diagonals and target off to side
+    else if (facing == 1) {
+      center_cell_x = searching_x + abs(x_dist);
+      center_cell_y = searching_y - abs(y_dist);
+      if ((target_x < center_cell_x - num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
+    }
+    else if (facing == 3) {
+      center_cell_x = searching_x + abs(x_dist);
+      center_cell_y = searching_y + abs(y_dist);
+      if ((target_x < center_cell_x - num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
+    }
+    else if (facing == 5) {
+      center_cell_x = searching_x - abs(x_dist);
+      center_cell_y = searching_y + abs(y_dist);
+      if ((target_x > center_cell_x + num_cells_either_side) || (target_y < center_cell_y - num_cells_either_side)) org_in_sight = false;
+    }
+    else if (facing == 7) {
+      center_cell_x = searching_x - abs(x_dist);
+      center_cell_y = searching_y - abs(y_dist);
+      if ((target_x > center_cell_x + num_cells_either_side) || (target_y > center_cell_y + num_cells_either_side)) org_in_sight = false;
+    }
+  }
+  lookOut org_search;
+  org_search.report_type = 1;
+  org_search.habitat = -2;
+  org_search.id_sought = target_org->GetID();
+  org_search.search_type = -9;
+  org_search.distance = -1;
+  org_search.count = 0;
+  org_search.value = 0;
+  org_search.group = -9;
+  org_search.forage = -9;
+  
+  if (org_in_sight) {
+    org_search.distance = travel_dist;
+    org_search.count = 1;
+    org_search.value = (int) target_org->GetPhenotype().GetCurBonus();
+    if (target_org->HasOpinion()) {
+      org_search.group = target_org->GetOpinion().first;
+    }
+    org_search.forage = target_org->GetForageTarget();  
+  }
+  return org_search;
+} 
+
+cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, 
+                                                                const int search_type, const int distance_sought, const int id_sought)
+{
+  // rather than doing doupdates at every cell check inside TestCell, we just do it once now since we're in a stall
+  // we need to do this before getfrozenres and getfrozenpeak
+  m_organism->GetOrgInterface().TriggerDoUpdates(ctx);
+  
+  lookOut stuff_seen;
+  
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+    
+  int dist_used = distance_sought;
+  int start_dist = 0;
+  int end_dist = distance_sought;
+  
+  const int cell = m_organism->GetOrgInterface().GetCellID();
+  int center_cell = cell;
+  int this_cell = cell;
+
+  const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  const int faced_cell = m_organism->GetOrgInterface().GetFacedCellID();  
+  const int ahead_dir = faced_cell - cell;
+                
+  bool count_center = true;
+  bool any_valid_side_cells = false;
+  bool found = false;
+  int count = 0;
+  double totalAmount = 0;
+  int first_success_cell = -1;
+  int first_whole_resource = -1;
+  
+  // set bounds and fast forward, if possible
+  tSmartArray<int> val_res;
+  tArray<int> bounds;           // absolute min x, min y, max_x, max_y
+  val_res.Resize(0);
+  bool boundable = false;
+  // we can use a check for this common easy case to really speed things up
+  if ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && 
+      search_type == 0 && resource_lib.GetResource(id_sought)->GetGradient()) {
+    boundable = true;
+    val_res.Push(id_sought);
+    start_dist = GetMinDist(ctx, resource_lib, worldx, id_sought, cell, distance_sought);
+    if (start_dist == -1) {       // out of range
+      stuff_seen.report_type = 0;
+      return stuff_seen;
+    }
+    end_dist = GetMaxDist(ctx, resource_lib, worldx, id_sought, cell, distance_sought);
+  }
+  // if not that easy, get the valid resources, set some bounds true for all resources of this type, getting rid of those out of range...
+  else if (!boundable && habitat_used != -2) {
+    // res's of this type...
+    for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetHabitat() == habitat_used) val_res.Push(i);
+    // of those, drop any out of range...
+    if (id_sought == -1 && (habitat_used == 0 || habitat_used == 4) && search_type == 0) {
+      for (int i = 0; i < val_res.GetSize(); i++) {
+        if (resource_lib.GetResource(val_res[i])->GetGradient()) {
+          bool skip_res = false;
+          int this_min = GetMinDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought);
+          int this_max = GetMaxDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought);
+          if (this_min == -1) {
+            val_res.Swap(i, val_res.GetSize() - 1);
+            val_res.Pop();
+            skip_res = true;
+            i--;
+          }
+          if (!skip_res && this_min < start_dist) start_dist = this_min;
+          if (!skip_res && this_max > end_dist) end_dist = this_max;
+        }
+      }
+    }
+    if (val_res.GetSize() == 0) {     // nothing in range
+      stuff_seen.report_type = 0;
+      return stuff_seen;      
+    }
+  }
+  if ((habitat_used == 0 || habitat_used == 4) && search_type == 0) bounds = GetTotBounds(ctx, val_res, resource_lib);
+  center_cell = center_cell + (ahead_dir * start_dist);
+  
+  searchInfo cellResultInfo;
+  
+  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
+	
+  for (int dist = start_dist; dist <= end_dist; dist++) {
+    // work on CENTER cell for this dist
+    if (count_center) {
+      cellResultInfo = TestCell(ctx, habitat_used, search_type, center_cell, val_res);
+      if(cellResultInfo.amountFound >= 0) {
+        totalAmount += cellResultInfo.amountFound;
+        if (cellResultInfo.has_edible) {
+          count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
+          if (first_success_cell == -1) first_success_cell = center_cell;
+          if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+          if(stop_at_first_found) {
+            found = true;
+            dist_used = dist;
+            break;
+          }
+        }
+      }
+    }     
+    // work on SIDE of center cells for this dist
+    // while side cells will always be valid if center is valid, center cell can be invalid when side cells are still valid (on diagonals)        
+
+    // how many cells do we need to look at on both sides 
+    int num_cells_either_side = 0;
+    if (dist > 0) num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
+    
+    for (int do_lr = 0; do_lr < 2; do_lr++) {
+      bool count_side = true;
+      int prev_cell = center_cell;
+      for (int j = 1; j < num_cells_either_side + 1; j++) {
+        
+        if (facing == 0 && do_lr == 0) this_cell = center_cell - j;
+        else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
+        else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
+        
+        else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
+        else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
+        else if (facing == 4 && do_lr == 1) this_cell = center_cell - j;
+        else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+        
+        // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
+        else if (facing == 1 && do_lr == 0) this_cell = center_cell - j;
+        else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
+        else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
+        
+        else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
+        else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
+        else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
+        else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
+        
+        // test if the side cell is still on world; if it isn't, do the other side
+        if ( (facing == 0 || facing == 4) && (this_cell < 0 || (this_cell > ((worldx * worldy) - 1)) ) ) count_side = false; 
+        else if (facing == 2 && (this_cell % worldx == 0)) count_side = false;                                               
+        else if (facing == 6 && (prev_cell % worldx == 0)) count_side = false;                                          
+        // if we were just within res max poss box, but now aren't, safe to say we're done with this side
+        else if ((habitat_used == 0 || habitat_used == 4)  && search_type == 0 && !TestBounds(this_cell, bounds, worldx) && 
+                 TestBounds(prev_cell, bounds, worldx)) count_side = false;
+        else any_valid_side_cells = true;
+
+        // trickier on diagonals...there we can only skip the cell, not the whole side        
+        bool valid_cell = true;
+        if ( (facing == 1 || facing == 3 || facing == 5 || facing == 7) &&
+                 (this_cell < 0) || (this_cell > ((worldx * worldy) - 1)) ) valid_cell = false;                                         
+
+        prev_cell = this_cell;
+        if (count_side && valid_cell) {
+          cellResultInfo = TestCell(ctx, habitat_used, search_type, this_cell, val_res);
+          if(cellResultInfo.amountFound >= 0) {
+            totalAmount += cellResultInfo.amountFound;
+            if (cellResultInfo.has_edible) {
+              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
+              if (first_success_cell == -1) first_success_cell = this_cell;
+              if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+              if(stop_at_first_found) {
+                found = true;
+                dist_used = dist;
+                break;
+              }
+            }
+          }
+        }
+        // break out of loop for cells on this side
+        if (!count_side) break;
+      }
+      // break out of entire SIDE cells search loop
+      if (stop_at_first_found && found) break;
+    }
+    if (stop_at_first_found && found) break;
+    
+    // before we check side cells at the next distance...
+    // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
+    if (!any_valid_side_cells && !count_center) {
+      dist--;
+      dist_used = dist;
+      break;
+    }
+    
+    // if still good to go ((!found || !stop_at_first_found) && (count_center || any_valid_side_cells))...
+    // if facing W, SW or NW check if center cell now standing on edge of world; if so, only do side cells from now on
+    if ( (facing == 6 || facing == 5 || facing == 7) && (center_cell % worldx == 0) ) count_center = false;
+    
+    // figure out the what the next center cell is about to be
+    center_cell = center_cell + ahead_dir;
+    
+    // if facing E, SE, or NE check if next center cell is going to be off edge of world; if so, only do side cells from now on
+    if ( (facing == 2 || facing == 3 || facing == 1) && (center_cell % worldx == 0) ) count_center = false;
+    // if next center cell is going to be less than 0 or greater than max cell (in grid), only do side cells from now on
+    else if ( center_cell < 0 || (center_cell > ((worldx * worldy) - 1)) ) count_center = false;  
+    // if hunting specific res, we're done with the center once we fall off of the res (after having been on it already)
+    else if ((habitat_used == 0 || habitat_used == 4)  && search_type == 0 && !TestBounds(center_cell, bounds, worldx) && 
+             TestBounds(center_cell - ahead_dir, bounds, worldx)) count_center = false; 
+  } // End getting values
+  
+  // begin reached end output   
+  stuff_seen.habitat = habitat_used;
+  stuff_seen.search_type = search_type;
+  stuff_seen.id_sought = id_sought;
+  if(!found){
+    stuff_seen.report_type = 0;
+  }
+  else if(found){
+    stuff_seen.report_type = 1;
+    stuff_seen.distance = dist_used;
+    stuff_seen.count = count;
+    stuff_seen.value = (int) (totalAmount + 0.5);
+    stuff_seen.group = -9;
+    stuff_seen.forage = -9;
+    
+    // overwrite defaults for more specific search types
+    
+    // if we were looking for resources, return id of nearest
+    if (habitat_used != -2) stuff_seen.group = first_whole_resource;  
+    // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
+    else {
+      const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell);
+      stuff_seen.value = (int) first_good_cell.GetOrganism()->GetPhenotype().GetCurBonus();
+      if (first_good_cell.GetOrganism()->HasOpinion()) {
+        stuff_seen.group = first_good_cell.GetOrganism()->GetOpinion().first;
+      }
+      stuff_seen.forage = first_good_cell.GetOrganism()->GetForageTarget();                  
+    }
+  }
+  return stuff_seen;
+}
+
+/* Tests a cell for the Inst_LookAhead function
+ * 
+ * Parameters:
+ habitat_used    specifies what type of object we're interested in
+ search_type     tells how to search (stop when we've found the closest, count total #, etc)
+ resource_lib    library of available resources
+ target_cell     the cell we're testing
+ * 
+ * Returns:
+ *		If we're looking for the closest resource, return that resource's ID
+ *    otherwise, returns the number of objects we're looking for that are in target_cell
+ *    
+ */
+cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int target_cell_num, 
+                                                                  tSmartArray<int>& val_res)
+{
+  searchInfo returnInfo;
+  returnInfo.amountFound = 0;
+  returnInfo.resource_id = -9;
+  returnInfo.has_edible = false;
+  
+  // if looking for resources or topological features
+  if (habitat_used != -2) {
+    tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
+    // look at every resource ID of this habitat type in the array of resources of interest that we built
+    for (int k = 0; k < val_res.GetSize(); k++) {
+      returnInfo.amountFound += cell_res[val_res[k]];
+      if (cell_res[val_res[k]] >= 1 && habitat_used != 1 && habitat_used != 2) {
+        if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   // get FIRST whole resource id
+        returnInfo.has_edible = true;
+      }
+      else if (cell_res[val_res[k]] > 0 && (habitat_used == 1 || habitat_used == 2)) {
+        if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
+        returnInfo.has_edible = true;
+      }
+    }
+  }
+  // if we're looking for other organisms (looking for specific org already handled)
+  else {
+    const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
+    if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
+      int type_seen = target_cell.GetOrganism()->GetForageTarget();
+      if(search_type == 0) {
+        returnInfo.amountFound++;
+        returnInfo.has_edible = true;
+      }
+      else if (search_type > 0){
+        if(type_seen == -2) {
+          returnInfo.amountFound++;
+          returnInfo.has_edible = true;
+        }
+      }
+      else if (search_type < 0){
+        if(type_seen != -2) {
+          returnInfo.amountFound++;
+          returnInfo.has_edible = true;
+        }
+      }
+    }
+  }  
+  return returnInfo;
+}
+
+void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
+{
+  // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
+  // return defaults for failed to find
+  if (results.report_type == 0) {
+    setInternalValue(regs.habitat, results.habitat, true);
+    setInternalValue(regs.distance, -1, true);
+    setInternalValue(regs.search_type, results.search_type, true);
+    setInternalValue(regs.id_sought, results.id_sought, true);
+    setInternalValue(regs.count, 0, true);
+    setInternalValue(regs.value, 0, true);
+    setInternalValue(regs.group, -9, true);
+    setInternalValue(regs.ft, -9, true);  
+  }
+  // report results as sent
+  else if (results.report_type == 1) {
+    setInternalValue(regs.habitat, results.habitat, true);
+    setInternalValue(regs.distance, results.distance, true);
+    setInternalValue(regs.search_type, results.search_type, true);
+    setInternalValue(regs.id_sought, results.id_sought, true);
+    setInternalValue(regs.count, results.count, true);
+    setInternalValue(regs.value, results.value, true);
+    setInternalValue(regs.group, results.group, true);
+    setInternalValue(regs.ft, results.forage, true);  
+  }
+  return;
+}
+
+int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, 
+                                      const int cell_id, const int distance_sought)
+{
+  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
+  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
+  const int org_x = cell_id % worldx;
+  const int org_y = cell_id / worldx;
+  int min_dist = 0;
+  int width = 0;
+  
+  // min poss is travel distance on longest minus the width of the area of the food curve that can be >= 1
+  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() - 1 : 
+                                                      width = resource_lib.GetResource(res_id)->GetHeight() - 1;
+  
+  min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - width;
+  if (min_dist < 0) min_dist = 0;                   // standing on part of res already
+  if (min_dist > distance_sought) min_dist = -1;    // out of range
+  return min_dist;
+}
+
+int cHardwareExperimental::GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, 
+                                      const int cell_id, const int distance_sought)
+{
+  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
+  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
+  const int org_x = cell_id % worldx;
+  const int org_y = cell_id / worldx;
+  int max_dist = distance_sought;
+  int width = distance_sought;
+  
+  // max poss is travel distance on longest axis plus the width of the area of the food curve that can be >= 1
+  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() + 1 : 
+                                                      width = resource_lib.GetResource(res_id)->GetHeight() + 1;
+
+  max_dist = max(abs(peakx - org_x), abs(peaky - org_y)) + width;
+  return min(max_dist, distance_sought);
+}
+
+tArray<int> cHardwareExperimental::GetTotBounds(cAvidaContext& ctx, tSmartArray<int>& val_res, const cResourceLib& resource_lib)
+{
+  tArray<int> bounds;
+  bounds.Resize(4);
+  int min_x = 0;
+  int min_y = 0;
+  int max_x = m_world->GetConfig().WORLD_X.Get();
+  int max_y = m_world->GetConfig().WORLD_Y.Get();
+  
+  for (int i = 0; i < val_res.GetSize(); i++) {
+    const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, val_res[i]);
+    const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, val_res[i]);
+    int width = 0;
+    
+    resource_lib.GetResource(val_res[i])->GetFloor() >= 1 ? width = resource_lib.GetResource(val_res[i])->GetSpread() : 
+                                                            width = resource_lib.GetResource(val_res[i])->GetHeight();
+    int this_min_x = peakx - width - 1;
+    int this_min_y = peaky - width - 1;
+    if (this_min_x < 0) min_x = 0;
+    if (this_min_y < 0) min_y = 0;
+    if (this_min_x < min_x) min_x = this_min_x;
+    if (this_min_y < min_y) min_y = this_min_y;
+    bounds[0] = min_x;
+    bounds[1] = min_y;
+    
+    int this_max_x = peakx + width + 1;
+    int this_max_y = peaky + width + 1;
+    if (this_max_x > m_world->GetConfig().WORLD_X.Get()) this_max_x =  m_world->GetConfig().WORLD_X.Get();
+    if (this_max_y > m_world->GetConfig().WORLD_Y.Get()) this_max_y =  m_world->GetConfig().WORLD_Y.Get();
+    if (this_max_x > max_x) max_x = this_max_x;
+    if (this_max_y > max_y) max_y = this_max_y;
+    bounds[2] = max_x;
+    bounds[3] = max_y;    
+  }
+  return bounds;
+}
+
+bool cHardwareExperimental::TestBounds(const int cell_id, tArray<int>& bounds, const int worldx)
+{
+  const int curr_x = cell_id % worldx;
+  const int curr_y = cell_id / worldx;
+  
+  for (int i = 0; i < bounds.GetSize(); i++) {
+    // min_x, min_y, max_x, max_y
+    if (curr_x < bounds[0] || curr_y < bounds[1] || curr_x > bounds[2] || curr_y > bounds[3]) return false; 
+  }
+  return true;  
+}
+

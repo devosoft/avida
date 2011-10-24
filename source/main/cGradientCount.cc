@@ -490,6 +490,8 @@ void cGradientCount::refreshResourceValues()
       Element(jj * GetX() + ii).SetAmount(thisheight);
     }
   }         
+  SetCurrPeakX(m_peakx);
+  SetCurrPeakY(m_peaky);
   m_just_reset = false;
 }
 

@@ -90,6 +90,11 @@ const tArray<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaCon
   return m_testcpu->GetCellResources(cell_id, ctx); 
 }
 
+const tArray<double>& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
+{
+  return m_testcpu->GetFrozenResources(ctx, cell_id); 
+}
+
 const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 {
 	return m_testcpu->GetCellIdLists();

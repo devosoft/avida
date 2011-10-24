@@ -189,8 +189,12 @@ private:
   int dom_abundance;
   int dom_gene_depth;
   cString dom_sequence;
-  int coal_depth;
+  
+  int dom_last_birth_cell;
+  int dom_last_forager_type;
+  int dom_last_group_id;
 
+  int coal_depth;
 
   // --------  Population Stats  ---------
   int num_births;
@@ -218,7 +222,6 @@ private:
   int tot_threshold;
   int tot_lineages;
   int tot_executed;
-
 
   // --------  Parasite Task Stats  ---------
   tArray<int> tasks_host_current;
@@ -260,8 +263,6 @@ private:
   tArray<cString> task_names;
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
-
-
 
   // --------  Resampling Stats  ---------
   int num_resamplings;
@@ -392,6 +393,10 @@ public:
   int GetDomAbundance() const { return dom_abundance; }
   int GetDomGeneDepth() const { return dom_gene_depth; }
   const cString& GetDomSequence() const { return dom_sequence; }
+  
+  int GetDomLastBirthCell() const { return dom_last_birth_cell; }
+  int GetDomLastGroup() const { return dom_last_group_id; }
+  int GetDomLastForagerType() const { return dom_last_forager_type; }
 
   int GetSenseSize() const { return sense_size; }
 
@@ -413,6 +418,10 @@ public:
   void SetDomAbundance(int in_abund) { dom_abundance = in_abund; }
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
+
+  void SetDomLastBirthCell(int in_lbc) { dom_last_birth_cell = in_lbc; }
+  void SetDomLastGroup(int in_lg) { dom_last_group_id = in_lg; }
+  void SetDomLastForagerType(int in_lfg) { dom_last_forager_type = in_lfg; }
 
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
 

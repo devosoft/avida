@@ -29,7 +29,7 @@
 #include "cHardwareTracer.h"
 #endif
 
-
+class cAvidaContext;
 class cHardwareStatusPrinter : public cHardwareTracer
 {
 protected:
@@ -43,7 +43,7 @@ private:
 public:
   cHardwareStatusPrinter(std::ostream& trace_fp) : m_trace_fp(trace_fp) { ; }
 
-  virtual void TraceHardware(cHardwareBase& hardware, bool bonus);
+  virtual void TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool mini, int exec_success);
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
   virtual std::ostream * GetStream() { return &m_trace_fp; }  
 };

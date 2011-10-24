@@ -91,9 +91,7 @@ public:
                  int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double resistance);
 
-
   void UpdateCount(cAvidaContext& ctx);
-
   void StateAll();
   
 private:
@@ -102,6 +100,7 @@ private:
   void getCurrentPlatValues();
   void generateBarrier(cAvidaContext& ctx);
   void generateHills(cAvidaContext& ctx);  
+  
 };
 
 #endif

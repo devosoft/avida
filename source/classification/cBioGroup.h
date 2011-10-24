@@ -68,7 +68,7 @@ public:
   virtual cFlexVar GetProperty(const cString& prop) const = 0;
   
   virtual void Save(cDataFile& df) = 0;
-  
+  virtual void DepthSave(cDataFile& df) = 0;  
   
   int GetReferenceCount() const { return m_a_refs + m_p_refs; }
   int GetActiveReferenceCount() const { return m_a_refs; }
@@ -78,7 +78,7 @@ public:
   virtual void RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
   virtual void AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
   virtual void RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
-  
+
   template<typename T> void AttachData(T* data)
   {
     delete m_data.GetWithDefault(cString(typeid(T).name()), NULL);

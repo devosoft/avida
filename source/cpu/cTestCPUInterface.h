@@ -55,6 +55,7 @@ public:
   int GetCellDataOrgID() { return -1; }
   int GetCellDataUpdate() { return -1; }
   int GetCellDataTerritory() { return -1; }
+  int GetCellDataForagerType() { return -99; }
   void SetCellData(const int newData) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }
@@ -82,7 +83,13 @@ public:
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   const tArray< tArray<int> >& GetCellIdLists();  
+  int GetCurrPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
+  int GetCurrPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
+  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
+  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
+  void TriggerDoUpdates(cAvidaContext& ctx) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) {;}
   void Die(cAvidaContext& ctx); 
@@ -150,6 +157,7 @@ public:
   void ClearOpinion(cOrganism* in_organism) { ; }
 
   void JoinGroup(int group_id) { ; }
+  void MakeGroup() { ; }
   void LeaveGroup(int group_id) { ; }
   int NumberOfOrganismsInGroup(int group_id) {return 0; }
     
@@ -162,6 +170,8 @@ public:
   void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
             double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) { ; }
 
+  void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
+  
   void BeginSleep() { ; }
   void EndSleep() { ; }
 };

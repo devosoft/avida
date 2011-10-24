@@ -159,6 +159,10 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomGeneDepth(dom_genotype->GetDepth());
   stats.SetDomSequence(dom_genotype->GetGenome().GetSequence().AsString());
   
+  stats.SetDomLastBirthCell(dom_genotype->GetLastBirthCell());
+  stats.SetDomLastGroup(dom_genotype->GetLastGroupID());
+  stats.SetDomLastForagerType(dom_genotype->GetLastForagerType());
+
 }
 
 
@@ -454,6 +458,9 @@ void cBGGenotypeManager::buildDataCommandManager() const
   ADD_PROP("last_breed_true", int (), GetLastBreedTrue, "Breed True (during last update)");
   ADD_PROP("last_breed_in", int (), GetLastBreedIn, "Breed In (during last update)");
   ADD_PROP("last_breed_out", int (), GetLastBreedOut, "Breed Out (during last update)");
+  ADD_PROP("last_birth_cell", int (), GetLastBirthCell, "Last birth cell");
+  ADD_PROP("last_group_id", int (), GetLastGroupID, "Last birth group");
+  ADD_PROP("last_forager_type", int (), GetLastForagerType, "Last birth forager type");
 }
 
 cBioGroup* cBGGenotypeManager::cGenotypeIterator::Get() { return m_it->Get(); }

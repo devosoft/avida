@@ -112,6 +112,7 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
   const tArray<double>& ReadResources(void) const { return resource_count; }
   const tArray<double>& GetResources(cAvidaContext& ctx) const; 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
+  const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const;
   const tArray<int>& GetResourcesGeometry() const;
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
   const tArray<tArray<double> >& GetSpatialRes(cAvidaContext& ctx); 
@@ -129,6 +130,11 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
   const cString& GetResName(int id) const { return resource_name[id]; }
   bool IsSpatial(int id) const { return ((geometry[id] != nGeometry::GLOBAL) && (geometry[id] != nGeometry::PARTIAL)); }
   int GetResourceByName(cString name) const;
+  
+  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const;
+  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const;
+  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const;
+  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const;
   
   void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }
 };

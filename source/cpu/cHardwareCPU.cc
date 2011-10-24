@@ -861,7 +861,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = ip.GetInst();
@@ -877,7 +877,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst);
+    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
     
     // Constitutive regulation applied here
     if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
@@ -1010,7 +1010,7 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -1074,10 +1074,6 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   }    
   fp.flush();
 }
-
-
-
-
 
 /////////////////////////////////////////////////////////////////////////
 // Method: cHardwareCPU::FindLabel(direction)
@@ -3812,7 +3808,9 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(REG_BX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    int res_diff = 0;
+    if (res_count[opinion] == 0) res_diff = (int) faced_res;
+    else res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     GetRegister(reg_to_set) = res_diff;
   }
   return true;
@@ -5618,7 +5616,9 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
     }
   }
   // return % change
-  int res_diff = (int) ((max_res - current_res[opinion])/current_res[opinion] * 100 + 0.5);
+  int res_diff = 0;
+  if (current_res[opinion] == 0) res_diff = (int) max_res;
+  else res_diff = (int) (((max_res - current_res[opinion])/current_res[opinion]) * 100 + 0.5);
   int reg_to_set = FindModifiedRegister(REG_BX);
   GetRegister(reg_to_set) = res_diff;
   return true;
@@ -8642,11 +8642,11 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
     //vitality based
     const double attacker_vitality = m_organism->GetVitality();
     const double target_vitality = target->GetVitality();
-    const double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-    const double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    const double attacker_win_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+    const double target_win_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
     
-    const double odds_someone_dies = max(attacker_odds, target_odds);
-    const double odds_target_dies = target_odds * odds_someone_dies;
+    const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+    const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
     const double decider = ctx.GetRandom().GetDouble(1);
     
     if (decider < (1 - odds_someone_dies)) return true;
@@ -8670,19 +8670,19 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
   
-  double attacker_vitality = m_organism->GetVitality();
-  double target_vitality = target->GetVitality();
+  const double attacker_vitality = m_organism->GetVitality();
+  const double target_vitality = target->GetVitality();
   
-  double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-  double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  const double attacker_win_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+  const double target_win_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
   
-  int odds_I_dont_die;
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  // my win odds are odds nobody dies or someone dies and it's the target
+  const double odds_I_dont_die = (1 - odds_someone_dies) + ((1 - target_win_odds) * odds_someone_dies);
+  
   // return odds as %
-  if (attacker_odds > target_odds) odds_I_dont_die = (int) ((1 - target_odds) * 100 + 0.5);
-  else odds_I_dont_die = (int) ((1 - attacker_odds) * 100 + 0.5);
-  
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = odds_I_dont_die;
+  GetRegister(out_reg) = (int) (odds_I_dont_die * 100 + 0.5);
   return true;
 } 	
 
@@ -9419,9 +9419,9 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
     m_organism->GetOrgInterface().AttemptImmigrateGroup(new_opinion, m_organism);
   }
   else {
+    m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);
     m_organism->LeaveGroup(opinion);
     m_organism->JoinGroup(new_opinion);
-    m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);
   }
   return true;
 }

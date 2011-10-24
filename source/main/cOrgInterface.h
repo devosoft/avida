@@ -68,6 +68,7 @@ public:
   virtual int GetCellDataOrgID() = 0;
   virtual int GetCellDataUpdate() = 0;
   virtual int GetCellDataTerritory() = 0;
+  virtual int GetCellDataForagerType() = 0;
   virtual void SetCellData(const int newData) = 0;
   virtual int GetFacedCellData() = 0;
   virtual int GetFacedCellDataOrgID() = 0;
@@ -100,7 +101,13 @@ public:
   virtual const tArray<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
+  virtual const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
+  virtual int GetCurrPeakX(cAvidaContext& ctx, int res_id) = 0; 
+  virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
+  virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
+  virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
+  virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 
@@ -149,6 +156,7 @@ public:
   virtual void ClearOpinion(cOrganism* in_organism) = 0;
 
   virtual void JoinGroup(int group_id) = 0;
+  virtual void MakeGroup() = 0;
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
     
@@ -161,6 +169,8 @@ public:
   virtual void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
                   double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) = 0;
     
+  virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
+
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;
 };

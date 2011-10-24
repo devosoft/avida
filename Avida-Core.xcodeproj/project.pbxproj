@@ -45,6 +45,8 @@
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EEA1332B6590037A393 /* cGradientCount.cc */; };
 		4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EEB1332B6590037A393 /* cGradientCount.h */; };
+		4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cSensing.cc */; };
+		4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cSensing.h */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -616,6 +618,8 @@
 		4A587EEA1332B6590037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
 		4A587EEB1332B6590037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
 		4ABC70211350AF3000EB56AA /* gradient.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = gradient.html; sourceTree = "<group>"; };
+		4AC3D9F2144E087000CAEA62 /* cSensing.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSensing.cc; sourceTree = "<group>"; };
+		4AC3D9F3144E087000CAEA62 /* cSensing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSensing.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -2042,6 +2046,8 @@
 				70B0872508F5E82D00FC65FE /* cResourceLib.cc */,
 				70B0871508F5E81000FC65FE /* cResourceLib.h */,
 				706C6F480B83E69D003174C1 /* cSaleItem.h */,
+				4AC3D9F3144E087000CAEA62 /* cSensing.h */,
+				4AC3D9F2144E087000CAEA62 /* cSensing.cc */,
 				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
 				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
 				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
@@ -2210,6 +2216,7 @@
 				70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */,
 				7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */,
 				4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */,
+				4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2572,6 +2579,7 @@
 				70B1B1DA13F43016005DDF90 /* Archive.cc in Sources */,
 				7095867914439E5E00243303 /* Provider.cc in Sources */,
 				70D3AD0A1455DFB4000FAB0F /* Package.cc in Sources */,
+				4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

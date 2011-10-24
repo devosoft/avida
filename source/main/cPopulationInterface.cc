@@ -106,6 +106,10 @@ int cPopulationInterface::GetCellDataTerritory() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataTerritory();
 }
 
+int cPopulationInterface::GetCellDataForagerType() {
+  m_world->GetPopulation().GetCell(m_cell_id).UpdateCellDataExpired();
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataForagerType();
+}
 
 int cPopulationInterface::GetFacedCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellData();
@@ -233,6 +237,11 @@ const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvida
   return m_world->GetPopulation().GetCellResources(cell_id, ctx); 
 }
 
+const tArray<double>& cPopulationInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
+{
+  return m_world->GetPopulation().GetFrozenResources(ctx, cell_id); 
+}
+
 const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 
@@ -241,6 +250,31 @@ const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvida
 const tArray< tArray<int> >& cPopulationInterface::GetCellIdLists()
 {
 	return m_world->GetPopulation().GetCellIdLists();
+}
+
+int cPopulationInterface::GetCurrPeakX(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetCurrPeakX(ctx, res_id); 
+} 
+
+int cPopulationInterface::GetCurrPeakY(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetCurrPeakY(ctx, res_id); 
+} 
+
+int cPopulationInterface::GetFrozenPeakX(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetFrozenPeakX(ctx, res_id); 
+} 
+
+int cPopulationInterface::GetFrozenPeakY(cAvidaContext& ctx, int res_id) 
+{ 
+  return m_world->GetPopulation().GetFrozenPeakY(ctx, res_id); 
+} 
+
+void cPopulationInterface::TriggerDoUpdates(cAvidaContext& ctx)
+{
+  m_world->GetPopulation().TriggerDoUpdates(ctx);
 }
 
 void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
@@ -1095,6 +1129,11 @@ void cPopulationInterface::JoinGroup(int group_id)
   m_world->GetPopulation().JoinGroup(GetOrganism(), group_id);
 }
 
+void cPopulationInterface::MakeGroup()
+{
+  m_world->GetPopulation().MakeGroup(GetOrganism());
+}
+
 void cPopulationInterface::LeaveGroup(int group_id)
 {
   m_world->GetPopulation().LeaveGroup(GetOrganism(), group_id);
@@ -1139,6 +1178,11 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int 
             double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
 {
   m_world->GetStats().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
+}
+
+void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
+{
+  m_world->GetPopulation().AttackFacedOrg(ctx, loser);
 }
 
 void cPopulationInterface::BeginSleep()

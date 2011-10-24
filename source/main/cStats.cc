@@ -91,6 +91,9 @@ cStats::cStats(cWorld* world)
   , dom_abundance(0)
   , dom_gene_depth(-1)
   , dom_sequence("")
+  , dom_last_birth_cell(0)
+  , dom_last_forager_type(-1)
+  , dom_last_group_id(-1)
   , coal_depth(0)
   , num_births(0)
   , num_deaths(0)
@@ -217,7 +220,7 @@ cStats::cStats(cWorld* world)
   for (int i = 0; i < num_reactions; i++) reaction_names[i] = env.GetReactionName(i);
 
   resource_names.Resize( m_world->GetNumResources() );
-
+  
   // This block calculates how many slots we need to
   // make for paying attention to different label combinations
   // Require sense instruction to be present then die if not at least 2 NOPs
@@ -447,7 +450,9 @@ void cStats::setupProvidedData()
   m_data_manager.Add("dom_num_cpus",   "Abundance of Dominant Genotype",          &cStats::GetDomAbundance);
   m_data_manager.Add("dom_depth",      "Tree Depth of Dominant Genotype",         &cStats::GetDomGeneDepth);
   m_data_manager.Add("dom_sequence",   "Sequence of Dominant Genotype",           &cStats::GetDomSequence);
-
+  m_data_manager.Add("dom_last_birth_cell", "Birth Cell of Last-Born Dominant Genotype", &cStats::GetDomLastBirthCell);
+  m_data_manager.Add("dom_last_group_id", "Birth Group ID of Last-Born Dominant Genotype", &cStats::GetDomLastGroup);
+  m_data_manager.Add("dom_last_forager_type", "Birth Forager Type of Last-Born Dominant Genotype", &cStats::GetDomLastForagerType);
 
   // Current Counts...
   m_data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
@@ -3325,12 +3330,16 @@ void cStats::PrintTargets(const cString& filename)
     target_list[org->GetForageTarget() + 2]++;
   }
   
-  for (int target = 0; target < num_targets; target++) {
-    df.Write(target - 2, "Target ID");
-    df.Write(target_list[target], "Num Orgs Targeting ID");
-	}
+  for (int target = 0; target < target_list.GetSize(); target++) {
+    // make sure we always have a listing for predators and no-target orgs, but otherwise only print out for possible targets 
+    // (don't count resources having the same target as additional possible targets (no duplicates))
+    if ((m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && target == 0) || target == 1 || m_world->GetEnvironment().IsTargetID(target - 2)) {
+      df.Write(target - 2, "Target ID");
+      df.Write(target_list[target], "Num Orgs Targeting ID");
+    }
+  }
   
-	df.Endl();
+  df.Endl();
 }
 
 /*! Track named network stats.

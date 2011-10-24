@@ -78,7 +78,11 @@ define how that instruction should be used.  The exact format is as follows:
 <dt><strong>cost</strong></dt>
 <dd>
   The number of CPU cycles required to execute this instruction.  One
-  is the default if this value is not specified.
+  is the default if this value is not specified. CPU costs will pause the 
+  thread that executed the costly instruction, not the whole organism and 
+  only decrement the pause counter each time the paused thread attempts 
+  to run. If multiple threads execute costly instructions, the costs and 
+  pause counts are handled independently (i.e. unique pause count for each thread). 
 </dd>
 <dt><strong>initial_cost</strong></dt>
 <dd>
