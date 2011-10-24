@@ -79,7 +79,8 @@
     BOOL vScroller = NO;
     
     // Determine scroll view frame dimensions (without scrollers)
-    const CGFloat scrollerWidth = ([scrollView scrollerStyle] == NSScrollerStyleLegacy) ? [NSScroller scrollerWidth] : 0.0f;
+//    const CGFloat scrollerWidth = ([scrollView scrollerStyle] == NSScrollerStyleLegacy) ? [NSScroller scrollerWidth] : 0.0f;
+    const CGFloat scrollerWidth = [NSScroller scrollerWidth];
     NSRect frameRect = [super frame];
     CGFloat frameWidth = frameRect.size.width;
     CGFloat frameHeight = frameRect.size.height;
@@ -126,7 +127,7 @@
 //    NSLog(@"hscroll %@ %d", [scrollView horizontalScroller], [[scrollView horizontalScroller] isHidden]);
 //    NSLog(@"vscroll %@ %d", [scrollView verticalScroller], [[scrollView verticalScroller] isHidden]);
     
-    [scrollView flashScrollers];
+//    [scrollView flashScrollers];
   }
 }
 
