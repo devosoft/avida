@@ -364,7 +364,6 @@ public:
   bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const;
   
   Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
-  Data::PackagePtr GetProvidedValuesForArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args) const;
   
   // cStats
   void ProcessUpdate();

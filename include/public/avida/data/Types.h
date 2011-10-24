@@ -63,6 +63,7 @@ namespace Avida {
     typedef Apto::Set<Apto::String>::ConstIterator ConstDataSetIterator;
     
     typedef Apto::SmartPtr<Package, Apto::ThreadSafeRefCount> PackagePtr;
+    typedef Apto::SmartPtr<const Package, Apto::ThreadSafeRefCount> ConstPackagePtr;
     
     typedef Apto::Functor<PackagePtr, Apto::TL::Create<const DataID&> > DataRetrievalFunctor;
     

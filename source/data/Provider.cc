@@ -28,6 +28,18 @@
 #include "avida/data/Util.h"
 
 
+Avida::Data::PackagePtr Avida::Data::ArgumentedProvider::GetProvidedValuesForArguments(const DataID& data_id,
+                                                                                       ConstArgumentSetPtr args) const
+{
+  Apto::SmartPtr<ArrayPackage, Apto::ThreadSafeRefCount> package(new ArrayPackage);
+  for (ArgumentSet::ConstIterator it = args->Begin(); it.Next();) {
+    PackagePtr comp = this->GetProvidedValueForArgument(data_id, *it.Get());
+    if (!comp) continue;
+    package->AddComponent(comp);
+  }
+  return package;
+}
+
 Avida::Data::PackagePtr Avida::Data::ArgumentedProvider::GetProvidedValue(const DataID& data_id) const
 {
   PackagePtr pkg;

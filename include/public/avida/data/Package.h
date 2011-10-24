@@ -28,25 +28,34 @@
 #include "apto/core/String.h"
 #include "apto/core/StringUtils.h"
 #include "apto/platform.h"
+#include "avida/data/Types.h"
 
 
 namespace Avida {
   namespace Data {
+    
+    // Data::Package - base class for data provider value packages
+    // --------------------------------------------------------------------------------------------------------------
     
     class Package
     {
     public:
       LIB_EXPORT virtual ~Package() { ; }
       
-//      LIB_EXPORT virtual bool IsAggregate() const = 0;
-//      LIB_EXPORT virtual Apto::String GetAggregateDescriptor() const = 0;
-      
       LIB_EXPORT virtual bool BoolValue() const = 0;
       LIB_EXPORT virtual int IntValue() const = 0;
       LIB_EXPORT virtual double DoubleValue() const = 0;
       LIB_EXPORT virtual Apto::String StringValue() const = 0;
+
+      LIB_EXPORT virtual bool IsAggregate() const;
+      LIB_EXPORT virtual Apto::String GetAggregateDescriptor() const;
+      LIB_EXPORT virtual PackagePtr GetComponent(int index);
+      LIB_EXPORT virtual ConstPackagePtr GetComponent(int index) const;
     };
     
+    
+    // Data::Wrap - basic type wrappers
+    // --------------------------------------------------------------------------------------------------------------
     
     template <class T> class Wrap : public Package
     {
@@ -74,6 +83,31 @@ namespace Avida {
       int IntValue() const { return Apto::StrAs(m_value); }
       double DoubleValue() const { return Apto::StrAs(m_value); }
       Apto::String StringValue() const { return m_value; }
+    };
+        
+    
+    // Data::ArrayPackage - basic array aggregate
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class ArrayPackage : public Package
+    {
+    private:
+      Apto::Array<PackagePtr> m_entries;
+      
+    public:
+      inline ArrayPackage() { ; }
+      
+      bool BoolValue() const;
+      int IntValue() const;
+      double DoubleValue() const;
+      Apto::String StringValue() const;
+      
+      bool IsAggregate() const;
+      Apto::String GetAggregateDescriptor() const;
+      PackagePtr GetComponent(int index);
+      ConstPackagePtr GetComponent(int index) const;
+      
+      inline void AddComponent(PackagePtr comp) { m_entries.Push(comp); }
     };
   };
 };
