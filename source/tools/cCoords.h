@@ -30,16 +30,22 @@ public:
   cCoords(int _x, int _y) : m_x(_x), m_y(_y) { ; }
   cCoords(const cCoords & _coords) : m_x(_coords.m_x), m_y(_coords.m_y) { ; }
   ~cCoords() { ; }
-
+  
   void Translate(int _x, int _y) { m_x += _x, m_y += _y; }
-
+  
   void operator=(const cCoords & _coords) { m_x = _coords.m_x, m_y = _coords.m_y; }
   int operator==(const cCoords & _c) { return (m_x == _c.m_x && m_y == _c.m_y); }
   int operator!=(const cCoords & _c) { return !operator==(_c); }
-
-  int GetX() { return m_x; }
-  int GetY() { return m_y; }
-
+  
+  cCoords operator+(const cCoords & _c) const { return cCoords( m_x + _c.m_x, m_y + _c.m_y); }
+  cCoords operator-(const cCoords & _c) const { return cCoords( m_x - _c.m_x, m_y - _c.m_y); }
+  cCoords operator*(const int n) const { return cCoords(m_x * n, m_y * n); };
+  
+  cCoords& operator+=(const cCoords & _c) { m_x += _c.m_x; m_y += _c.m_y; return *this; }
+  
+  int GetX() const { return m_x; }
+  int GetY() const { return m_y; }
+  
   void Set(int _x, int _y) { m_x = _x; m_y = _y; }
 };
 

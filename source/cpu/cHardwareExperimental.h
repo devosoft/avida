@@ -37,6 +37,7 @@
 #include "tManagedPointerArray.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
+#include "cCoords.h"
 
 #include <cstring>
 #include <iomanip>
@@ -112,8 +113,8 @@ private:
     inline void Clear() { for (int i = 0; i < SIZE; i++) m_stack[i].Clear(); }
 #undef SIZE
   };
-
-
+  
+  
   struct cLocalThread
   {
   private:
@@ -173,13 +174,13 @@ private:
     inline ~cPromoter() { ; }
   };
   
-    
+  
   // --------  Member Variables  --------
   const tMethod* m_functions;
-
+  
   cCPUMemory m_memory;          // Memory...
   cLocalStack m_global_stack;     // A stack that all threads share.
-
+  
   tArray<cLocalThread> m_threads;
   int m_thread_id_chart;
   int m_cur_thread;
@@ -188,7 +189,7 @@ private:
     unsigned int m_cycle_count:16;
     unsigned int m_last_output:16;
   };
-
+  
   // Flags
   struct {
     bool m_mal_active:1;         // Has an allocate occured since last divide?
@@ -204,22 +205,22 @@ private:
     bool m_no_active_promoter_halt:1;
     
     bool m_slip_read_head:1;
-
+    
     bool m_io_expire:1;
     
     unsigned int m_waiting_threads:4;
   };
   
-
+  
   // Promoter model
   int m_promoter_index;       // site to begin looking for the next active promoter from
   int m_promoter_offset;      // bit offset when testing whether a promoter is on
   tManagedPointerArray<cPromoter> m_promoters;
-
+  
   
   cHardwareExperimental(const cHardwareExperimental&); // @not_implemented
   cHardwareExperimental& operator=(const cHardwareExperimental&); // @not_implemented
-
+  
   
 public:
   cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
@@ -227,12 +228,12 @@ public:
   
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }
-
-
+  
+  
   // --------  Core Execution Methods  --------
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
-
+  
   
   // --------  Helper Methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
@@ -245,8 +246,8 @@ public:
   // --------  Stack Manipulation  --------
   inline int GetStack(int depth=0, int stack_id = -1, int in_thread = -1) const;
   inline int GetNumStacks() const { return 2; }
-
-
+  
+  
   // --------  Head Manipulation (including IP)  --------
   const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
   cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
@@ -273,7 +274,7 @@ public:
   // --------  Register Manipulation  --------
   int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
-
+  
   
   // --------  Thread Manipulation  --------
   bool ThreadSelect(const int thread_num);
@@ -289,16 +290,16 @@ public:
   // interrupt current thread
   bool InterruptThread(int interruptType) { return false; }
   int GetThreadMessageTriggerType(int _index) { return -1; }
-
+  
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu) { return false; }
-
+  
   
   // --------  Non-Standard Methods  --------  
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
   bool GetMalActive() const   { return m_mal_active; }
   
-
+  
 private:
   
   // --------  Core Execution Methods  --------
@@ -404,7 +405,7 @@ private:
   bool Inst_IfLessConsensus24(cAvidaContext& ctx);
   bool Inst_IfStackGreater(cAvidaContext& ctx);
   bool Inst_Label(cAvidaContext& ctx);
-    
+
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);
   bool Inst_Push(cAvidaContext& ctx);
@@ -594,7 +595,7 @@ private:
     int forage;
   }; 
   
-  searchInfo TestCell(cAvidaContext& ctx, int habitat_used, int search_type, int target_cell_num, tSmartArray<int>& val_res);  
+  searchInfo TestCell(cAvidaContext& ctx, const int habitat_used, const int search_type, const cCoords target_cell_coords, const tSmartArray<int>& val_res);  
   lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs);
   lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought);
   lookOut FindOrg(cOrganism* target_org, const int distance);
@@ -604,8 +605,7 @@ private:
                  const int distance_sought, const int facing);
   int GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
                  const int distance_sought);
-  tArray<int> GetTotBounds(cAvidaContext& ctx, tSmartArray<int>& val_res, const cResourceLib& resource_lib);
-  bool TestBounds(const int cell_id, tArray<int>& bounds, const int worldx);
+  bool TestBounds(const cCoords cell_id, tArray<int>& bounds);
   tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool boundable);
 };
 
