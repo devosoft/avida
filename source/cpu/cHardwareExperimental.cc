@@ -46,7 +46,6 @@
 #include <climits>
 #include <fstream>
 
-
 using namespace std;
 using namespace Avida;
 using namespace AvidaTools;
@@ -4114,7 +4113,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
-  
+    
   const cCodeLabel& search_label = GetLabel();
   
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
@@ -4124,7 +4123,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // habitat 4 = unhidden den resource
   // habitat -2 = organisms
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
-  
+
   int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
   // default to look for orgs if invalid habitat & predator
   if (pred_experiment && m_organism->GetForageTarget() == -2 && 
@@ -4300,19 +4299,21 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  
+    
   int dist_used = distance_sought;
   int start_dist = 0;
   int end_dist = distance_sought;
   
   const int cell = m_organism->GetOrgInterface().GetCellID();
-  cCoords center_cell( cell%worldx, cell/worldx );
+  cCoords center_cell(cell % worldx, cell / worldx);
   cCoords this_cell = center_cell;
   
   const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  bool diagonal = true;
+  if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
   const int faced_cell_int = m_organism->GetOrgInterface().GetFacedCellID();
-  cCoords faced_cell( faced_cell_int % worldx, faced_cell_int / worldx );
+  cCoords faced_cell(faced_cell_int % worldx, faced_cell_int / worldx);
   const cCoords ahead_dir(faced_cell.GetX() - this_cell.GetX(), faced_cell.GetY() - this_cell.GetY());
   
   bool count_center = true;
@@ -4320,26 +4321,81 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   bool found = false;
   int count = 0;
   double totalAmount = 0;
-  cCoords first_success_cell(-1,-1);
+  cCoords first_success_cell(-1, -1);
   int first_whole_resource = -1;
   
   bool boundable = false;
-  if ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && search_type == 0 && resource_lib.GetResource(id_sought)->GetGradient()) {
-    boundable = true;
+  if ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && search_type == 0 && resource_lib.GetResource(id_sought)->GetGradient()) boundable = true;
+  
+  searchInfo cellResultInfo;
+  cellResultInfo.amountFound = 0;
+  cellResultInfo.has_edible = false;
+  cellResultInfo.resource_id = -9;
+  
+  tArray<int> worldBounds;
+  worldBounds.Resize(4);
+  worldBounds[0] = 0;
+  worldBounds[1] = 0;
+  worldBounds[2] = worldx - 1;
+  worldBounds[3] = worldy - 1;
+  
+  // Key for facing variable
+  // 7 0 1
+  // 6 * 2
+  // 5 4 3
+  cCoords left(0, 0);
+  cCoords right(0, 0);
+  switch (facing) {
+    case 0:
+    case 4:
+      // Facing North or South
+      left.Set(-1, 0);
+      right.Set(1, 0);
+      break;
+      
+    case 2:
+    case 6:
+      // Facing East or West
+      left.Set(0, -1);
+      right.Set(0, 1);
+      break;
+      
+    case 1:
+      //Facing NorthEast
+      left.Set(-1, 0);
+      right.Set(0, 1);
+      break;
+    case 3:
+      // Facing SouthEast
+      left.Set(0, -1);
+      right.Set(-1, 0);
+      break;
+    case 5:
+      // Facing SouthWest
+      left.Set(1, 0);
+      right.Set(0, -1);
+      break;
+    case 7:
+      // Facing NorthWest
+      left.Set(0, 1);
+      right.Set(1, 0);
+      break;
   }
   
-  tSmartArray<int> val_res;     // resources of this type
-  tArray<int> bounds;           // absolute min x, min y, max_x, max_y
+  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
+  // END definitions
+  
+  tSmartArray<int> val_res;                                                     // resources of this type
   if (habitat_used != -2) val_res = BuildResArray(habitat_used, id_sought, resource_lib, boundable); 
   
   // set geometric bounds, and fast forward, if possible
-  if ((habitat_used == 0 || habitat_used == 4) && search_type == 0) {
+  if (habitat_used == 0 || habitat_used == 4) {
     // drop any out of range...
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
         bool skip_res = false;
-        int this_min = GetMinDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought, facing);
-        int this_max = GetMaxDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought);
+        int this_min = GetMinDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought, facing, search_type);
+        int this_max = GetMaxDist(ctx, resource_lib, worldx, val_res[i], cell, distance_sought, search_type);
         if (this_min == -1) {          // out of range
           val_res.Swap(i, val_res.GetSize() - 1);
           val_res.Pop();
@@ -4356,64 +4412,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     }
   }
   center_cell += (ahead_dir * start_dist);
+	// END set distances
   
-  searchInfo cellResultInfo;
-  cellResultInfo.amountFound = 0;
-  cellResultInfo.has_edible = false;
-  cellResultInfo.resource_id = -9;
-  
-  tArray<int> worldBounds;
-  worldBounds.Resize(4);
-  worldBounds[0] = 0;
-  worldBounds[1] = 0;
-  worldBounds[2] = worldx - 1;
-  worldBounds[3] = worldy - 1 ;
-  
-  // Key for facing variable
-  // 7 0 1
-  // 6 * 2
-  // 5 4 3
-  cCoords left(0,0);
-  cCoords right(0,0);
-  switch (facing) {
-    case 0:
-    case 4:
-      // Facing North or South
-      left.Set(-1,0);
-      right.Set(1,0);
-      break;
-      
-    case 2:
-    case 6:
-      // Facing East or West
-      left.Set(0, -1);
-      right.Set(0, 1);
-      break;
-      
-    case 1:
-      //Facing NorthEast
-      left.Set(-1,0);
-      right.Set(0,1);
-      break;
-    case 3:
-      // Facing SouthEast
-      left.Set(0,-1);
-      right.Set(-1, 0);
-      break;
-    case 5:
-      // Facing SouthWest
-      left.Set(1,0);
-      right.Set(0,-1);
-      break;
-    case 7:
-      // Facing NorthWest
-      left.Set(0,-1);
-      right.Set(1, 0);
-      break;
-  }
-  
-  bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
-	
   for (int dist = start_dist; dist <= end_dist; dist++) {
     // work on SIDE of center cells for this distance
     // while side cells will always be valid if center is valid,
@@ -4423,142 +4423,81 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     int num_cells_either_side = 0;
     if (dist > 0) num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
     
-    // Walk in from the farthest cell to the side towards the center
+    // Walk in from the farthest cell on side towards the center
     for (int j = num_cells_either_side; j > 0; j--) {
       // Look left then right
-      for (int do_lr = 0; do_lr <=1; do_lr++) {
-        cCoords direction(0,0);
-        
-        if (do_lr == 0) direction = left;
-        else direction = right;
-        
+      cCoords direction = left;
+      for (int do_lr = 0; do_lr <= 1; do_lr++) {
+        if (do_lr == 1) direction = right;
         this_cell = center_cell + direction * j;
-        if(!TestBounds(this_cell, worldBounds) ){ 
-          // this_cell is outside of the world.
-          //Stop looking in the current direction, and continue with the other directions.
-          continue;
-        }
+        bool valid_cell = true;
         
-        // Now we can look at the current cell because we know it's in the world.
-        cellResultInfo = TestCell(ctx, habitat_used, search_type, center_cell, val_res);
-        if(cellResultInfo.amountFound >= 0) {
-          totalAmount += cellResultInfo.amountFound;
-          if (cellResultInfo.has_edible) {
-            count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
-            if (first_success_cell == cCoords(-1,-1)) first_success_cell = center_cell;
-            if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
-            if(stop_at_first_found) {
-              found = true;
-              dist_used = dist;
-              break;
-            }
+        if(!TestBounds(this_cell, worldBounds)) { 
+          // if looking l,r,u,d and this_cell is outside of the world -- stop this side of center, and continue with the other side
+          if (!diagonal) continue;
+          // trickier on diagonals...
+          else {
+            const int cx = center_cell.GetX();
+            const int cy = center_cell.GetY();
+            if (facing == 1 && ((cx > worldx - 1 && direction == right) || (cy < 0 && direction == left))) continue;
+            else if (facing == 3 && ((cx > worldx - 1 && direction == left) || (cy > worldy - 1 && direction == right))) continue;
+            else if (facing == 5 && ((cx < 0 && direction == right) || (cy > worldy - 1 && direction == left))) continue;
+            else if (facing == 7 && ((cx < 0 && direction == left) || (cy < 0 && direction == right))) continue;
+            else valid_cell = false;
           }
         }
+        else any_valid_side_cells = true;
+        
+        // Now we can look at the current cell because we know it's in the world.
+        if (valid_cell) {
+          cellResultInfo = TestCell(ctx, habitat_used, search_type, center_cell, val_res);
+          if(cellResultInfo.amountFound >= 0) {
+            found = true;
+            totalAmount += cellResultInfo.amountFound;
+            if (cellResultInfo.has_edible) {
+              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
+              if (first_success_cell == cCoords(-1, -1)) first_success_cell = center_cell;
+              if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+              if(stop_at_first_found) {
+                dist_used = dist;
+                break;                                                          // end search this side 
+              }
+            }
+          }
+        }  
       }
-      if (stop_at_first_found && found) break;
+      if (stop_at_first_found && cellResultInfo.has_edible) break;              // end both side searches
     }
-    
+    if (stop_at_first_found && cellResultInfo.has_edible) break;                // end side and center searches (found on side)
     
     // work on CENTER cell for this dist
+    if (count_center && !TestBounds(center_cell, worldBounds)) count_center = false;           
     if (count_center) {
       cellResultInfo = TestCell(ctx, habitat_used, search_type, center_cell, val_res);
       if(cellResultInfo.amountFound >= 0) {
+        found = true;
         totalAmount += cellResultInfo.amountFound;
         if (cellResultInfo.has_edible) {
-          count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
-          if (first_success_cell == cCoords(-1,-1)) first_success_cell = center_cell;
+          count ++;                                                             // count cells with individual edible resources (not sum of res in cell >=1)
+          if (first_success_cell == cCoords(-1, -1)) first_success_cell = center_cell;
           if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
           if(stop_at_first_found) {
-            found = true;
             dist_used = dist;
-            break;
+            break;                                                              // end side and center searches (found in center)
           }
         }
       }
     }
-    
-    
-    /*
-     for (int do_lr = 0; do_lr < 2; do_lr++) {
-     bool count_side = true;
-     cCoords prev_cell = center_cell;
-     for (int j = 1; j < num_cells_either_side + 1; j++) {
-     
-     if (facing == 0 && do_lr == 0) this_cell = center_cell - j;
-     else if (facing == 2 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-     else if (facing == 4 && do_lr == 0) this_cell = center_cell + j;
-     else if (facing == 6 && do_lr == 0) this_cell = center_cell + (j * worldx);
-     
-     else if (facing == 0 && do_lr == 1) this_cell = center_cell + j;
-     else if (facing == 2 && do_lr == 1) this_cell = center_cell + (j * worldx);
-     else if (facing == 4 && do_lr == 1) this_cell = center_cell - j;
-     else if (facing == 6 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-     
-     // since avida is a grid, diagonal facings work off of actual travel distance (sense radius draws a box)
-     else if (facing == 1 && do_lr == 0) this_cell = center_cell - j;
-     else if (facing == 3 && do_lr == 0) this_cell = center_cell + (-1 * j * worldx);
-     else if (facing == 5 && do_lr == 0) this_cell = center_cell + j;
-     else if (facing == 7 && do_lr == 0) this_cell = center_cell + (j * worldx);
-     
-     else if (facing == 1 && do_lr == 1) this_cell = center_cell + (j * worldx);
-     else if (facing == 3 && do_lr == 1) this_cell = center_cell + (-1 * j);
-     else if (facing == 5 && do_lr == 1) this_cell = center_cell + (-1 * j * worldx);
-     else if (facing == 7 && do_lr == 1) this_cell = center_cell + j; 
-     
-     
-     /////  THERE'S SOMETHING WRONG HERE...IF CENTER CELL IS OFF WORLD, COORDINATES FOR SIDE CELLS ARE...????
-     // test if the side cell is still on world; if it isn't, do the other side
-     if ( (facing == 0 || facing == 4) && (this_cell < 0 || (this_cell > ((worldx * worldy) - 1)) ) ) count_side = false; 
-     else if (facing == 2 && (this_cell % worldx == 0)) count_side = false;                                               
-     else if (facing == 6 && (prev_cell % worldx == 0)) count_side = false;                                          
-     // if we were just within res max poss box, but now aren't, safe to say we're done with this side
-     else if ((habitat_used == 0 || habitat_used == 4) && search_type == 0 && !TestBounds(this_cell, bounds, worldx) && 
-     TestBounds(prev_cell, bounds, worldx)) count_side = false;
-     else any_valid_side_cells = true;
-     
-     // trickier on diagonals...there we can only skip the cell, not the whole side        
-     bool valid_cell = true;
-     if ( (facing == 1 || facing == 3 || facing == 5 || facing == 7) &&
-     ( (this_cell < 0) || (this_cell > ((worldx * worldy) - 1)) ) ) valid_cell = false;                                         
-     
-     prev_cell = this_cell;
-     if (count_side && valid_cell) {
-     cellResultInfo = TestCell(ctx, habitat_used, search_type, this_cell, val_res);
-     if(cellResultInfo.amountFound >= 0) {
-     totalAmount += cellResultInfo.amountFound;
-     if (cellResultInfo.has_edible) {
-     count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
-     if (first_success_cell == cCoords(-1,-1)) first_success_cell = this_cell;
-     if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
-     if(stop_at_first_found) {
-     found = true;
-     dist_used = dist;
-     break;
-     }
-     }
-     }
-     }
-     // break out of loop for cells on this side
-     if (!count_side) break;
-     }
-     // break out of entire SIDE cells search loop
-     if (stop_at_first_found && found) break;
-     }
-     */
-    if (stop_at_first_found && found) break;
-    
-    // before we check side cells at the next distance...
+
+    // before we check cells at the next distance...
     // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
-    // TODO change to work with the new cCoords system
     if (!any_valid_side_cells && !count_center) {
       dist--;
       dist_used = dist;
       break;
     }
     
-    // figure out the what the next center cell is about to be
     center_cell = center_cell + ahead_dir;
-    
   } // End getting values
   
   // begin reached end output   
@@ -4620,20 +4559,26 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
   if (habitat_used != -2) {
     tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
     // look at every resource ID of this habitat type in the array of resources of interest that we built
-    for (int k = 0; k < val_res.GetSize(); k++) {
-      if (cell_res[val_res[k]] >= 1 && habitat_used != 1 && habitat_used != 2) {
-        if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   // get FIRST whole resource id
-        returnInfo.has_edible = true;
+    for (int k = 0; k < val_res.GetSize(); k++) { 
+      if (habitat_used != 1 && habitat_used != 2) {
+        if (cell_res[val_res[k]] >= 1) {
+          if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   // get FIRST whole resource id
+          returnInfo.has_edible = true;
+          returnInfo.amountFound += cell_res[val_res[k]];
+        }
+        else if (search_type == 1 && cell_res[val_res[k]] < 1 && cell_res[val_res[k]] > 0) {
+          returnInfo.amountFound += cell_res[val_res[k]];
+        } 
       }
-      else if (cell_res[val_res[k]] > 0 && (habitat_used == 1 || habitat_used == 2)) {
+      else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
         returnInfo.has_edible = true;
+        returnInfo.amountFound += cell_res[val_res[k]];
       }
-      returnInfo.amountFound += cell_res[val_res[k]];
     }
   }
   // if we're looking for other organisms (looking for specific org already handled)
-  else {
+  else if (habitat_used == -2) {
     const cPopulationCell& target_cell = m_world->GetPopulation().GetCell(target_cell_num);
     if(target_cell.IsOccupied() && !target_cell.GetOrganism()->IsDead()) {
       int type_seen = target_cell.GetOrganism()->GetForageTarget();
@@ -4687,7 +4632,7 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
 }
 
 int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, 
-                                      const int cell_id, const int distance_sought, const int facing)
+                                      const int cell_id, const int distance_sought, const int facing, const int search_type)
 {
   const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
   const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
@@ -4696,9 +4641,10 @@ int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const cResourceLib& re
   int min_dist = 0;
   int width = 0;
   
-  // min poss is travel distance on longest minus the width of the area of the food curve that can be >= 1
-  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() : 
-                                                      width = resource_lib.GetResource(res_id)->GetHeight() - 1;
+  // min poss is travel distance on longest minus the width of the area of the food curve that can be >= 1 or 0, depending on search type
+  width = resource_lib.GetResource(res_id)->GetHeight() - 1;
+  if (search_type == 1 || resource_lib.GetResource(res_id)->GetFloor() >= 1) width = resource_lib.GetResource(res_id)->GetSpread(); 
+                                                                            
   min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - width - 1;
   if (min_dist < 0) min_dist = 0;                   // standing on part of res already
   if (min_dist > distance_sought) min_dist = -1;    // out of range
@@ -4728,7 +4674,7 @@ int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const cResourceLib& re
 }
 
 int cHardwareExperimental::GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, 
-                                      const int cell_id, const int distance_sought)
+                                      const int cell_id, const int distance_sought, const int search_type)
 {
   const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
   const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
@@ -4737,11 +4683,11 @@ int cHardwareExperimental::GetMaxDist(cAvidaContext& ctx, const cResourceLib& re
   int max_dist = distance_sought;
   int width = 0;
   
-  // max poss is travel distance on longest axis plus the width of the area of the food curve that can be >= 1
-  resource_lib.GetResource(res_id)->GetFloor() >= 1 ? width = resource_lib.GetResource(res_id)->GetSpread() : 
-                                                      width = resource_lib.GetResource(res_id)->GetHeight() - 1;
-  max_dist = max(abs(peakx - org_x), abs(peaky - org_y)) + width + 1;
+  // max poss is travel distance on longest axis plus the width of the area of the food curve that can be >= 1 or 0, depending on search type
+  width = resource_lib.GetResource(res_id)->GetHeight() - 1;
+  if (search_type == 1 || resource_lib.GetResource(res_id)->GetFloor() >= 1) width = resource_lib.GetResource(res_id)->GetSpread(); 
 
+  max_dist = max(abs(peakx - org_x), abs(peaky - org_y)) + width + 1;
   return min(max_dist, distance_sought);
 }
 

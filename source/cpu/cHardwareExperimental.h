@@ -602,9 +602,9 @@ private:
   void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
   int GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
-                 const int distance_sought, const int facing);
+                 const int distance_sought, const int facing, const int search_type);
   int GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
-                 const int distance_sought);
+                 const int distance_sought, const int search_type);
   bool TestBounds(const cCoords cell_id, tArray<int>& bounds);
   tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool boundable);
 };
