@@ -594,6 +594,12 @@ private:
     int group;
     int forage;
   }; 
+  struct bounds {
+    int min_x;
+    int min_y;
+    int max_x;
+    int max_y;
+  };
   
   searchInfo TestCell(cAvidaContext& ctx, const int habitat_used, const int search_type, const cCoords target_cell_coords, const tSmartArray<int>& val_res);  
   lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs);
@@ -601,12 +607,13 @@ private:
   lookOut FindOrg(cOrganism* target_org, const int distance);
   void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
-  int GetMinDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
+  bool testInFront(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
                  const int distance_sought, const int facing, const int search_type);
-  int GetMaxDist(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
-                 const int distance_sought, const int search_type);
-  bool TestBounds(const cCoords cell_id, tArray<int>& bounds);
-  tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool boundable);
+  int GetMinDist(const int worldx, const int cell_id, bounds& res_bounds, const int facing);
+  int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& res_bounds, const int facing);
+  bounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
+  bool TestBounds(const cCoords cell_id, bounds& bounds_set);
+  tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
 };
 
 

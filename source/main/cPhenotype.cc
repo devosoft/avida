@@ -80,7 +80,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , num_new_unique_reactions(0)
 , res_consumed(0)
 
-{
+{ 
   if (parent_generation >= 0) {
     generation = parent_generation;
     if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
