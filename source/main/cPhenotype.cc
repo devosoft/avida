@@ -1664,13 +1664,13 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
 /* Returns the total tolerance for immigrants by counting
  the total number of updates within the update window that dec-tolerance has been executed. @JJB
  */
-int cPhenotype::CalcToleranceImmigrants(bool force_update)
+int cPhenotype::CalcToleranceImmigrants()
 {
   const int cur_update = m_world->GetStats().GetUpdate();
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
   // Check if cached value is up-to-date
-  if (!force_update && tolerances[0].first == cur_update) return tolerances[0].second;
+  if (tolerances[0].first == cur_update) return tolerances[0].second;
 
   int intolerance_count = 0;
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
@@ -1690,7 +1690,7 @@ int cPhenotype::CalcToleranceImmigrants(bool force_update)
 /* Returns the total tolerance for own offspring by counting
  the total number of updates within the update window that dec-tolerance has been executed. @JJB
  */
-int cPhenotype::CalcToleranceOffspringOwn(bool force_update)
+int cPhenotype::CalcToleranceOffspringOwn()
 {
   const int cur_update = m_world->GetStats().GetUpdate();
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -1699,7 +1699,7 @@ int cPhenotype::CalcToleranceOffspringOwn(bool force_update)
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
 
   // Check if cached value is up-to-date
-  if (!force_update && tolerances[1].first == cur_update) return tolerances[1].second;
+  if (tolerances[1].first == cur_update) return tolerances[1].second;
 
   int intolerance_count = 0;
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
@@ -1719,7 +1719,7 @@ int cPhenotype::CalcToleranceOffspringOwn(bool force_update)
 /* Returns the total tolerance for the offspring of others in the group by counting
  the total number of updates within the update window that dec-tolerance has been executed. @JJB
  */
-int cPhenotype::CalcToleranceOffspringOthers(bool force_update)
+int cPhenotype::CalcToleranceOffspringOthers()
 {
   const int cur_update = m_world->GetStats().GetUpdate();
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -1728,7 +1728,7 @@ int cPhenotype::CalcToleranceOffspringOthers(bool force_update)
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
 
   // Check if cached value is up-to-date
-  if (!force_update && tolerances[2].first == cur_update) return tolerances[2].second;
+  if (tolerances[2].first == cur_update) return tolerances[2].second;
 
   int intolerance_count = 0;
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();

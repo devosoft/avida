@@ -404,9 +404,10 @@ public:
   tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
   tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
   tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
-  int CalcToleranceImmigrants(bool force_update);       // @JJB
-  int CalcToleranceOffspringOwn(bool force_update);     // @JJB
-  int CalcToleranceOffspringOthers(bool force_update);  // @JJB
+  tArray<pair<int,int> >& GetTolerances() { assert(initialized == true); return tolerances; }                    // @JJB
+  int CalcToleranceImmigrants();       // @JJB
+  int CalcToleranceOffspringOwn();     // @JJB
+  int CalcToleranceOffspringOthers();  // @JJB
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
