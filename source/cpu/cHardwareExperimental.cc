@@ -3229,8 +3229,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
   
   lookOut look_results = SetLooking(ctx, reg_defs);
+<<<<<<< HEAD
 /*  cout << look_results.habitat << " " << look_results.distance << " " << look_results.search_type << " " << look_results.id_sought << " " << look_results.count << " " <<
   look_results.value << " " << look_results.group << " " << look_results.forage << endl;*/
+=======
+  cout << look_results.habitat << " " << look_results.distance << " " << look_results.search_type << " " << look_results.id_sought << " " << look_results.count << " " <<
+  look_results.value << " " << look_results.group << " " << look_results.ft << endl;
+>>>>>>> 7aba5c2421ac1231fe20332c8c3bd22abd2d8cc4
   LookResults (reg_defs, look_results);
   return true;
 }
