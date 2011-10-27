@@ -593,6 +593,11 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
     m_net->sent.Resize(0);
     m_net->seq.Resize(0);
   }
+  
+  if (!m_world->GetConfig().INHERIT_OPINION.Get()) {
+    ClearOpinion();
+  }
+  
 }
 
 void cOrganism::NotifyDeath(cAvidaContext& ctx)
@@ -901,8 +906,9 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   InitMessaging();
 
   // check to see if we've performed any tasks:
-  DoOutput(ctx, static_cast<int>(msg.GetData()));
-
+  if (m_world->GetConfig().CHECK_TASK_ON_SEND.Get()) {
+    DoOutput(ctx, static_cast<int>(msg.GetData()));
+  }
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {
 		MessageSent(ctx, msg);
