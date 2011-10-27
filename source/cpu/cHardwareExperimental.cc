@@ -3229,6 +3229,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
   
   lookOut look_results = SetLooking(ctx, reg_defs);
+/*  cout << look_results.habitat << " " << look_results.distance << " " << look_results.search_type << " " << look_results.id_sought << " " << look_results.count << " " <<
+  look_results.value << " " << look_results.group << " " << look_results.forage << endl;*/
   LookResults (reg_defs, look_results);
   return true;
 }
@@ -4113,7 +4115,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
-    
+  int forage = m_organism->GetForageTarget();
   const cCodeLabel& search_label = GetLabel();
   
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
@@ -4126,7 +4128,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
 
   int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
   // default to look for orgs if invalid habitat & predator
-  if (pred_experiment && m_organism->GetForageTarget() == -2 && 
+  if (pred_experiment && forage == -2 && 
       (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
@@ -4149,18 +4151,19 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
   // if looking for orgs in predator environment and is prey, default to closest org of any type
-  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  else if (pred_experiment && habitat_used == -2 && forage != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
   // if looking for orgs in predator environment and is predator, default to look for prey
-  else if (pred_experiment && habitat_used == -2 && m_organism->GetForageTarget() == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
+  else if (pred_experiment && habitat_used == -2 && forage == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
   // if looking for orgs in non-predator environment, default to closest org of any type
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
   
   // fourth register gives specific instance of resources sought or specific organisms to look for
   // default to any (-1) if predator and target not specified
   int id_sought = -1;
+  if ((forage < -2 || forage >= lib_size) && habitat_used != -2) forage = -1;
   // default to current forage target if prey and input is absent
-  if (m_organism->GetForageTarget() !=-2) {
-    if (m_organism->GetForageTarget() < lib_size) id_sought = m_organism->GetForageTarget();
+  if (forage !=-2) {
+    id_sought = forage;
     if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();    
   }
   // if specified...
@@ -4170,10 +4173,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     if (habitat_used != -2) {
       // default to current forage target if input is invalid
       if (id_sought < -1 || id_sought >= lib_size) {  
-        if (m_organism->GetForageTarget() !=-2) {
-          if (m_organism->GetForageTarget() < lib_size) id_sought = m_organism->GetForageTarget();
-          else id_sought = -1;
-        }
+        if (forage !=-2) id_sought = m_organism->GetForageTarget();
+        else id_sought = -1;                  // e.g. predators looking for res
       }
       // if specified resource to find, override habitat_used to match that for id_sought
       if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
@@ -4233,14 +4234,14 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
   
   // if simply too far or behind you
   if (travel_dist > distance_sought) org_in_sight = false;
-  // if facing Northish
-  else if ((facing == 0 || facing == 7 || facing == 1) && y_dist > 0) org_in_sight = false;
-  // if facing Southish
-  else if ((facing == 4 || facing == 3 || facing == 5) && y_dist < 0) org_in_sight = false;
-  // if facing Eastish
-  else if ((facing == 2 || facing == 1 || facing == 3) && x_dist < 0) org_in_sight = false;
-  // if facing Westish
-  else if ((facing == 6 || facing == 5 || facing == 7) && x_dist > 0) org_in_sight = false;
+  else if (facing == 0 && y_dist > 0) org_in_sight = false;
+  else if (facing == 4 && y_dist < 0) org_in_sight = false;
+  else if (facing == 2 && x_dist < 0) org_in_sight = false;
+  else if (facing == 6 && x_dist > 0) org_in_sight = false;
+  else if (facing == 1 && (y_dist > 0 || x_dist < 0)) org_in_sight = false;
+  else if (facing == 3 && (y_dist < 0 || x_dist < 0)) org_in_sight = false;
+  else if (facing == 5 && (y_dist < 0 || x_dist > 0)) org_in_sight = false;
+  else if (facing == 7 && (y_dist > 0 || x_dist > 0)) org_in_sight = false;
   
   // if not too far in absolute x or y directions, check the distance when we consider offset from center sight line (is it within sight cone?)
   if (org_in_sight) {
@@ -4407,19 +4408,21 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   if (habitat_used == 0 || habitat_used == 4) {    
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
-        bounds res_bounds;
-        if (testInFront(ctx, resource_lib, worldx, val_res[i], cell, distance_sought, facing, search_type)) {
-          res_bounds = GetBounds(ctx, resource_lib, val_res[i], search_type);          
+        int this_start_dist = distance_sought;
+        bounds res_bounds = GetBounds(ctx, resource_lib, val_res[i], search_type);          
+        this_start_dist = GetMinDist(ctx, worldx, res_bounds, cell, distance_sought, facing);
+        // drop any out of range...
+        if (this_start_dist == -1) {
+          val_res.Swap(i, val_res.GetSize() - 1);
+          val_res.Pop();
+          i--;
+        }
+        else {
           if (res_bounds.min_x < tot_bounds.min_x) tot_bounds.min_x = res_bounds.min_x;
           if (res_bounds.min_y < tot_bounds.min_y) tot_bounds.min_y = res_bounds.min_y;
           if (res_bounds.max_x > tot_bounds.max_x) tot_bounds.max_x = res_bounds.max_x;
           if (res_bounds.max_y > tot_bounds.max_y) tot_bounds.max_y = res_bounds.max_y;
-        }
-        // drop any out of range...
-        else {                                                                // out of range
-          val_res.Swap(i, val_res.GetSize() - 1);
-          val_res.Pop();
-          i--;
+          if (this_start_dist < start_dist) start_dist = this_start_dist;
         }
       }
     }
@@ -4427,19 +4430,16 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
       stuff_seen.report_type = 0;
       return stuff_seen;      
     }
-    start_dist = GetMinDist(worldx, cell, tot_bounds, facing);
-    end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds, facing);
+    end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds);
     
 /*    cout << endl;
-    cout << cell % worldx << " " << cell / worldx  << " " << facing << endl;
-    cout <<  m_organism->GetOrgInterface().GetFrozenPeakX(ctx, 0) << " " << m_organism->GetOrgInterface().GetFrozenPeakY(ctx, 0) << endl;
-    cout << val_res[0] << " "  << id_sought << " " << habitat_used << " " << distance_sought << endl;
-    cout << tot_bounds.min_x << " " << tot_bounds.min_y << " " << tot_bounds.max_x  << " " << tot_bounds.max_y  << " " << start_dist  << " " << end_dist << endl;
+    cout << "org:" << cell % worldx << " " << cell / worldx  << " " << facing << endl;
+    cout << "res: " << tot_bounds.min_x << " " << tot_bounds.max_x  << " " << tot_bounds.min_y << " " << tot_bounds.max_y << endl ;
+    cout << "dist_sought: " << distance_sought << " start_dist: " << start_dist  << " end_dist: " << end_dist << endl;
 */
     center_cell += (ahead_dir * start_dist);
   } // END set bounds & fast-forward
   
-  int waist_count = 0;
   // START WALKING
   for (int dist = start_dist; dist <= end_dist; dist++) {
     if (!TestBounds(center_cell, worldBounds) || !TestBounds(center_cell, tot_bounds)) count_center = false;        
@@ -4466,22 +4466,22 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
             const int tcx = this_cell.GetX();
             const int tcy = this_cell.GetY();
             if (direction == left) {
-              if ( (facing == 1 && tcy < 0) || (facing == 3 && (tcx > (worldx - 1))) || (facing == 5 && (tcy > (worldy - 1))) || (facing == 7 && tcx < 0) ) { 
-                do_left = false;                         // this cell is off world, and any cells this side of center at any walk dist greater than this will be too
-              }
-              else if ( (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) || (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) { 
-                do_left = false;                         // this cell is off world, and any cells this side of center at any walk dist greater than this will be too
+              if ( (facing == 1 && tcy < worldBounds.min_y) || (facing == 3 && tcx > worldBounds.max_x) || 
+                  (facing == 5 && tcy > worldBounds.max_y) || (facing == 7 && tcx < worldBounds.min_x) || 
+                  (facing == 1 && tcy < tot_bounds.min_y) || (facing == 3 && tcx > tot_bounds.max_x) || 
+                  (facing == 5 && tcy > tot_bounds.max_y) || (facing == 7 && tcx < tot_bounds.min_x) ) { 
+                do_left = false;                         // this cell is out of bounds, and any cells this side of center at any walk dist greater than this will be too
               }
             }
             else if (direction == right) {
-              if ( (facing == 1 && (tcx > (worldx - 1))) || (facing == 3 && (tcy > (worldy - 1))) ||  (facing == 5 && tcx < 0) || (facing == 7 && tcy < 0) ) { 
-                do_right = false;                        // this cell is off world, and any cells this side of center at any walk dist greater than this will be too
-              }
-              else if ( (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||  (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) { 
-                do_right = false;                        // this cell is off world, and any cells this side of center at any walk dist greater than this will be too
+              if ( (facing == 1 && tcx > worldBounds.max_x) || (facing == 3 && tcy > worldBounds.max_y) || 
+                  (facing == 5 && tcx < worldBounds.min_x) || (facing == 7 && tcy < worldBounds.min_y) || 
+                  (facing == 1 && tcx > tot_bounds.max_x) || (facing == 3 && tcy > tot_bounds.max_y) ||  
+                  (facing == 5 && tcx < tot_bounds.min_x) || (facing == 7 && tcy < tot_bounds.min_y) ) { 
+                do_right = false;                        // this cell is out of bounds, and any cells this side of center at any walk dist greater than this will be too
               }
             }
-            break;                                       // this cell is off world, and any cells on this line closer than this to center will be too at this distance
+            break;                                       // if not !do_left or !do_right, any cells on this side closer than this to center will be too at this distance, but not greater dist
           }
           else if (!diagonal) valid_cell = false;        // when not on diagonal, center cell and cells close(r) to center can still be valid even if this side cell is not
         }
@@ -4504,12 +4504,11 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
               }
             }
           }
-          if (habitat_used == 0 && id_sought == 0 && !found_edible) waist_count++; 
         }
       }
-      if (stop_at_first_found && found_edible) break;                         // end both side searches
+      if (stop_at_first_found && found_edible) break;                           // end both side searches
     }
-    if (stop_at_first_found && found_edible) break;                           // end side and center searches (found on side)
+    if (stop_at_first_found && found_edible) break;                             // end side and center searches (found on side)
     
     // work on CENTER cell for this dist
     if (count_center) {
@@ -4528,7 +4527,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
           }
         }
       }
-      if (habitat_used == 0 && id_sought == 0 && !found_edible) waist_count++; 
     }
     // before we check cells at the next distance...
     // stop if we never found any valid cells at the current distance; valid dist_used was previous set of cells checked
@@ -4539,7 +4537,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     }
     
     center_cell = center_cell + ahead_dir;
-  } // End getting values
+  } // END WALKING
   
   // begin reached end output   
   stuff_seen.habitat = habitat_used;
@@ -4570,7 +4568,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
       stuff_seen.forage = first_good_cell.GetOrganism()->GetForageTarget();                  
     }
   }
-//  if (waist_count > 20) cout << "reporting that you are still looking at too many cells: " << waist_count << endl;
 
   return stuff_seen;
 }
@@ -4684,88 +4681,108 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
   return;
 }
 
-bool cHardwareExperimental::testInFront(cAvidaContext& ctx, const cResourceLib& resource_lib, const int worldx, const int res_id, const int cell_id, 
-                 const int distance_sought, const int facing, const int search_type)
+int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, const int distance_sought, const int facing)
 {
-  bool res_in_front = true;
-  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
-  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
   const int org_x = cell_id % worldx;
   const int org_y = cell_id / worldx;
-  int min_dist = 0;
-  
-  // min poss is travel distance on longest minus the width of the area of the food curve that can be >= 1 or 0, depending on search type
-  int width = resource_lib.GetResource(res_id)->GetHeight() - 1;                          // width beyond center peak cell
-  if (search_type == 1 || resource_lib.GetResource(res_id)->GetFloor() >= 1) width = resource_lib.GetResource(res_id)->GetSpread(); 
-  
-  min_dist = max(abs(peakx - org_x), abs(peaky - org_y)) - width;                     
-  if (min_dist < 0) return true;                                                  // standing on part of res already
-  if (min_dist > distance_sought) return false;                                   // out of range
-  
+
+  if (org_x <= bounds.max_x && org_x >= bounds.min_x && org_y <= bounds.max_y && org_y >= bounds.min_y) return 0; // standing on it                     
+
   // now for the direction
-  int min_x = peakx - width;
-  int min_y = peaky - width;
+  int min_x = bounds.min_x;
+  int min_y = bounds.min_y;
   if (min_x < 0) min_x = 0;
   if (min_y < 0) min_y = 0;
   
-  int max_x = peakx + width;
-  int max_y = peaky + width;
+  int max_x = bounds.max_x;
+  int max_y = bounds.max_y;
   if (max_x > m_world->GetConfig().WORLD_X.Get() - 1) max_x = m_world->GetConfig().WORLD_X.Get() - 1;
   if (max_y > m_world->GetConfig().WORLD_Y.Get() - 1) max_y = m_world->GetConfig().WORLD_Y.Get() - 1;
   
-  // if facing Northish
-  if ((facing == 0 || facing == 7 || facing == 1) && min_y > org_y) res_in_front = false;      // can't see it if none of it is in front of you
-  // if facing Southish
-  else if ((facing == 4 || facing == 3 || facing == 5) && max_y < org_y) res_in_front = false;
-  // if facing Eastish
-  else if ((facing == 2 || facing == 1 || facing == 3) && max_x < org_x) res_in_front = false;
-  // if facing Westish
-  else if ((facing == 6 || facing == 5 || facing == 7) && min_x > org_x) res_in_front = false;    
-  return res_in_front;  
-}
-
-int cHardwareExperimental::GetMinDist(const int worldx, const int cell_id, bounds& bounds, const int facing)
-{
-  const int org_x = cell_id % worldx;
-  const int org_y = cell_id / worldx;
-  int min_dist = 0;
-  int min_x_disp = 0;
-  int min_y_disp = 0;
+  // if completely behind you
+  if (facing == 0 && min_y > org_y) return -1;
+  else if (facing == 4 && max_y < org_y) return -1;
+  else if (facing == 2 && max_x < org_x) return -1;
+  else if (facing == 6 && min_x > org_x) return -1;
   
-  if (org_x < bounds.max_x && org_x > bounds.min_x && org_y < bounds.max_y && org_y > bounds.min_y) min_dist = 0; // standing on it
-  else {
-    int x1 = org_x - bounds.max_x;
-    int x2 = org_x - bounds.min_x;
-    min_x_disp = min(abs(x1), abs(x2));
-    
-    int y1 = org_y - bounds.max_y;
-    int y2 = org_y - bounds.min_y;
-    min_y_disp = min(abs(y1), abs(y2));
-    
-    if (facing == 0 || facing == 4) min_dist = min_y_disp;
-    else if (facing == 2 || facing == 6) min_dist = min_x_disp;
-    else min_dist = min(min_x_disp, min_y_disp);
+  else if (facing == 1 && (min_y > org_y || max_x < org_x)) return -1;
+  else if (facing == 3 && (max_y < org_y || max_x < org_x)) return -1;
+  else if (facing == 5 && (max_y < org_y || min_x > org_x)) return -1;
+  else if (facing == 7 && (min_y > org_y || min_x > org_x)) return -1;
+  
+  // if not completely behind you, get min travel distance
+  int travel_dist = 0;
+  if (facing == 0) travel_dist = org_y - max_y;
+  else if (facing == 4) travel_dist = min_y - org_y;
+  else if (facing == 2) travel_dist = min_x - org_x;
+  else if (facing == 6) travel_dist = org_x - max_x;
+  else if (facing == 1) {
+    if (org_x > min_x && org_x < max_x) travel_dist = org_y - max_y;
+    else if (org_y > min_y && org_y < max_y) travel_dist = min_x - org_x;
+    else travel_dist = max(abs(org_x - min_x), abs(org_y - max_y));
   }
-  return min_dist;
+  else if (facing == 3) {
+    if (org_x > min_x && org_x < max_x) travel_dist = min_y - org_y;
+    else if (org_y > min_y && org_y < max_y) travel_dist = min_x - org_x;
+    else travel_dist = max(abs(org_x - min_x), abs(org_y - min_y));
+  }
+  else if (facing == 5) {
+    if (org_x > min_x && org_x < max_x) travel_dist = min_y - org_y;
+    else if (org_y > min_y && org_y < max_y) travel_dist = org_x - max_x;
+    else travel_dist = max(abs(org_x - max_x), abs(org_y - min_y));
+  }
+  else if (facing == 7) {
+    if (org_x > min_x && org_x < max_x) travel_dist = org_y - max_y;
+    else if (org_y > min_y && org_y < max_y) travel_dist = org_x - max_x;
+    else travel_dist = max(abs(org_x - max_x), abs(org_y - max_y));
+  }
+  if (travel_dist > distance_sought) return -1;
+  
+  // check the distance when we consider offset from center sight line (is it within sight cone?)
+  int center_cell_x = 0;
+  int center_cell_y = 0;
+  const int num_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
+  
+  if ((facing == 0 || facing == 4) && (min_x > org_x + num_side || max_x < org_x - num_side)) return -1;
+  else if ((facing == 2 || facing == 6) && (min_y > org_y + num_side || max_y < org_y - num_side)) return -1;
+  else if (facing == 1) {
+    center_cell_x = org_x + travel_dist;
+    center_cell_y = org_y - travel_dist;
+    if ((max_x < center_cell_x - num_side) || (min_y > center_cell_y + num_side)) return -1;
+  }
+  else if (facing == 3) {
+    center_cell_x = org_x + travel_dist;
+    center_cell_y = org_y + travel_dist;
+    if ((max_x < center_cell_x - num_side) || (max_y < center_cell_y - num_side)) return -1;
+  }
+  else if (facing == 5) {
+    center_cell_x = org_x - travel_dist;
+    center_cell_y = org_y + travel_dist;
+    if ((min_x > center_cell_x + num_side) || (max_y < center_cell_y - num_side)) return -1;
+  }
+  else if (facing == 7) {
+    center_cell_x = org_x - travel_dist;
+    center_cell_y = org_y - travel_dist;
+    if ((min_x > center_cell_x + num_side) || (min_y > center_cell_y + num_side)) return -1;
+  }
+  return travel_dist;  
 }
 
-int cHardwareExperimental::GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& bounds, const int facing)
+int cHardwareExperimental::GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& bounds)
 {
+  // this will simply return the maximum possible distance to the farthest boundary
   const int org_x = cell_id % worldx;
   const int org_y = cell_id / worldx;
-  int max_dist = 0;
-  int max_x_disp = 0;
-  int max_y_disp = 0;
   
   int x1 = org_x - bounds.max_x;
   int x2 = org_x - bounds.min_x;
-  max_x_disp = max(abs(x1), abs(x2));
+  int max_x_disp = max(abs(x1), abs(x2));
   
   int y1 = org_y - bounds.max_y;
   int y2 = org_y - bounds.min_y;
-  max_y_disp = max(abs(y1), abs(y2));
-  // travel dist to farthest line/side
-  max_dist = min(max_x_disp, max_y_disp);
+  int max_y_disp = max(abs(y1), abs(y2));
+  
+  int max_dist = max(max_x_disp, max_y_disp);
   
   return min(max_dist, distance_sought);
 }
@@ -4784,7 +4801,7 @@ cHardwareExperimental::bounds cHardwareExperimental::GetBounds(cAvidaContext& ct
   res_bounds.min_x = peakx - width;
   res_bounds.min_y = peaky - width;
   res_bounds.max_x = peakx + width;
-  res_bounds.max_y = peaky + width;    
+  res_bounds.max_y = peaky + width;   
   return res_bounds;
 }
 
