@@ -1610,13 +1610,14 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
       // **single** winner of the tournament to proceed to the next generation.
 
       // construct a list of all possible deme ids that could participate in a tournament,
-      // pruning out sterile demes:
+      // pruning out sterile and empty demes:
       std::vector<int> deme_ids;
       for (int i=0; i<deme_array.GetSize(); ++i) {
-        if (!m_world->GetConfig().DEMES_PREVENT_STERILE.Get() ||
-            (deme_array[i].GetBirthCount() > 0)) {
-          deme_ids.push_back(i);
-        }
+        if ((deme_array[i].GetOrgCount() > 0) && 
+            (!m_world->GetConfig().DEMES_PREVENT_STERILE.Get() ||
+             (deme_array[i].GetBirthCount() > 0))) {
+              deme_ids.push_back(i);
+            }
       }
 
       // better have more than deme tournament size, otherwise something is *really* screwed up:
