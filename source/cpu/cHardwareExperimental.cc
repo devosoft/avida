@@ -3228,9 +3228,18 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   reg_defs.group = FindModifiedNextRegister(reg_defs.value);
   reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
   
-  lookOut look_results = SetLooking(ctx, reg_defs);
-/*  cout << look_results.habitat << " " << look_results.distance << " " << look_results.search_type << " " << look_results.id_sought << " " << look_results.count << " " <<
-  look_results.value << " " << look_results.group << " " << look_results.forage << endl;*/
+  lookOut look_results;
+  look_results.report_type = 0;
+  look_results.habitat = 0;
+  look_results.distance = -1;
+  look_results.search_type = 0;
+  look_results.id_sought = -1;
+  look_results.count = 0;
+  look_results.value = 0;
+  look_results.group = -9;
+  look_results.forage = -9;
+  
+  look_results = SetLooking(ctx, reg_defs);
   LookResults (reg_defs, look_results);
   return true;
 }
@@ -4306,7 +4315,16 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   
   // START definitions
   lookOut stuff_seen;
-  
+  stuff_seen.report_type = 0;
+  stuff_seen.habitat = habitat_used;
+  stuff_seen.distance = -1;
+  stuff_seen.search_type = search_type;
+  stuff_seen.id_sought = id_sought;
+  stuff_seen.count = 0;
+  stuff_seen.value = 0;
+  stuff_seen.group = -9;
+  stuff_seen.forage = -9;
+
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
     
@@ -4335,7 +4353,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   int count = 0;
   double totalAmount = 0;
   cCoords first_success_cell(-1, -1);
-  int first_whole_resource = -1;
+  int first_whole_resource = -9;
   
   bool single_bound = ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
   bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
@@ -4432,10 +4450,10 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     }
     end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds);
     
-/*    cout << endl;
-    cout << "org:" << cell % worldx << " " << cell / worldx  << " " << facing << endl;
-    cout << "res: " << tot_bounds.min_x << " " << tot_bounds.max_x  << " " << tot_bounds.min_y << " " << tot_bounds.max_y << endl ;
-    cout << "dist_sought: " << distance_sought << " start_dist: " << start_dist  << " end_dist: " << end_dist << endl;
+/*    if(start_dist == 0) cout << endl;
+     if(start_dist == 0) cout << "org:" << cell % worldx << " " << cell / worldx  << " " << facing << endl;
+     if(start_dist == 0) cout << "res: " << tot_bounds.min_x << " " << tot_bounds.max_x  << " " << tot_bounds.min_y << " " << tot_bounds.max_y << endl ;
+     if(start_dist == 0) cout << "dist_sought: " << distance_sought << " start_dist: " << start_dist  << " end_dist: " << end_dist << endl;
 */
     center_cell += (ahead_dir * start_dist);
   } // END set bounds & fast-forward
@@ -4497,7 +4515,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
               count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
               found_edible = true;
               if (first_success_cell == cCoords(-1, -1)) first_success_cell = this_cell;
-              if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+              if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
               if(stop_at_first_found) {
                 dist_used = dist;
                 break;                                                          // end search this side 
@@ -4520,7 +4538,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
           count ++;                                                             // count cells with individual edible resources (not sum of res in cell >=1)
           found_edible = true;
           if (first_success_cell == cCoords(-1, -1)) first_success_cell = center_cell;
-          if (first_whole_resource == -1) first_whole_resource = cellResultInfo.resource_id;
+          if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
           if(stop_at_first_found) {
             dist_used = dist;
             break;                                                              // end side and center searches (found in center)
@@ -4553,7 +4571,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     stuff_seen.value = (int) (totalAmount + 0.5);
     stuff_seen.group = -9;
     stuff_seen.forage = -9;
-    
+
     // overwrite defaults for more specific search types
     
     // if we were looking for resources, return id of nearest
@@ -4568,7 +4586,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
       stuff_seen.forage = first_good_cell.GetOrganism()->GetForageTarget();                  
     }
   }
-
   return stuff_seen;
 }
 
@@ -4594,7 +4611,7 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
   returnInfo.amountFound = 0;
   returnInfo.resource_id = -9;
   returnInfo.has_edible = false;
-  
+
   // if looking for resources or topological features
   if (habitat_used != -2) {
     tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
