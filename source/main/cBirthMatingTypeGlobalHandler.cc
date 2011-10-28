@@ -225,6 +225,53 @@ void cBirthMatingTypeGlobalHandler::storeOffspring(cAvidaContext& ctx, const Gen
   m_bc->StoreAsEntry(offspring, parent, m_entries[store_index]);
 }
 
+//Compares two birth entries and decides which one is preferred
+//Returns true if the first one is "better"
+//Returns false if the second one is
+bool cBirthMatingTypeGlobalHandler::compareBirthEntries(cAvidaContext& ctx, int mate_choice_method, const cBirthEntry& entry1, const cBirthEntry& entry2)
+{
+  assert(mate_choice_method != MATE_PREFERENCE_RANDOM);
+  
+  double cv = ctx.GetWorld()->GetConfig().MATE_ASSESSMENT_CV.Get();
+  double value1;
+  double value2;
+  
+  switch (mate_choice_method) {
+    case MATE_PREFERENCE_HIGHEST_DISPLAY_A: //Prefers to mate with the organism with the highest value of mating display A
+      value1 = (double) entry1.GetMatingDisplayA();
+      value2 = (double) entry2.GetMatingDisplayA();
+      if (ctx.GetWorld()->GetConfig().NOISY_MATE_ASSESSMENT.Get()) {
+        value1 += ctx.GetRandom().GetRandNormal(0, value1*cv);
+        value2 += ctx.GetRandom().GetRandNormal(0, value2*cv);
+      }
+      return (value1 > value2);
+      break;
+    
+    case MATE_PREFERENCE_HIGHEST_DISPLAY_B: //Prefers to mate with the organism with the highest value of mating display B
+      value1 = (double) entry1.GetMatingDisplayB();
+      value2 = (double) entry2.GetMatingDisplayB();
+      if (ctx.GetWorld()->GetConfig().NOISY_MATE_ASSESSMENT.Get()) {
+        value1 += ctx.GetRandom().GetRandNormal(0, value1*cv);
+        value2 += ctx.GetRandom().GetRandNormal(0, value2*cv);
+      }
+      return (value1 > value2);
+      break;
+      
+    case MATE_PREFERENCE_HIGHEST_MERIT:
+      value1 = (double) entry1.GetMatingDisplayB();
+      value2 = (double) entry2.GetMatingDisplayB();
+      if (ctx.GetWorld()->GetConfig().NOISY_MATE_ASSESSMENT.Get()) {
+        value1 += ctx.GetRandom().GetRandNormal(0, value1*cv);
+        value2 += ctx.GetRandom().GetRandNormal(0, value2*cv);
+      }
+      return (value1 > value2);
+      break;
+  }
+  
+  //If we're still here... just decide randomly since we need to give some return value...
+  return ctx.GetRandom().P(0.5);
+}
+
 //Selects a mate for the current offspring/gamete
 //If none is found, it returns NULL
 cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent, int which_mating_type, int mate_choice_method)
@@ -239,6 +286,37 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
   
   int selected_index = -1;
   
+  if (mate_choice_method == MATE_PREFERENCE_RANDOM) {
+    //This is a non-choosy individual, so pick a mate randomly!
+    //First, get a list of every element of m_entries that contains a waiting offspring (of the compatible sex)
+    //Then pick one at random
+    tArray<int> compatible_entries; //This will hold a list of all the compatible birth entries waiting in the birth chamber
+    compatible_entries.Resize(num_waiting, -1);
+    int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
+    for (int i = 0; i < num_waiting; i++) {
+      if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
+          last_compatible++;
+          compatible_entries[last_compatible] = i;
+        }
+      }
+    }
+    if (last_compatible > -1) { //Don't bother picking one if we haven't found any compatible entries
+      selected_index = compatible_entries[ctx.GetRandom().GetUInt(last_compatible+1)];
+    }    
+  } else {
+    //This is a choosy female, so go through all the mates and pick the "best" one!
+    for (int i = 0; i < num_waiting; i++) {
+      if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
+          if (selected_index == -1) selected_index = i;
+          else selected_index = compareBirthEntries(ctx, mate_choice_method, m_entries[selected_index], m_entries[i]) ? selected_index : i;
+        }
+      }
+    }
+  }
+  
+  /*
   switch (mate_choice_method) {
     case MATE_PREFERENCE_HIGHEST_DISPLAY_A: //Prefers to mate with the organism with the highest value of mating display A
       for (int i = 0; i < num_waiting; i++) {
@@ -292,7 +370,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
       }
       break;
   }
-  
+  */
   
   if (selected_index == -1) {
     //None found: Store the current one and return NULL

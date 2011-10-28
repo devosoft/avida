@@ -56,8 +56,8 @@ public:
   int GetMatingType() { return m_mating_type; }
   int GetParentTaskCount(int which_task) { return m_parent_task_count[which_task]; }
   const tArray<int>& GetParentTaskCount() const { return m_parent_task_count; }
-  int GetMatingDisplayA() const { return m_mating_display_a; }
-  int GetMatingDisplayB() const { return m_mating_display_b; }
+  int GetMatingDisplayA() const { return m_mating_display_a; } 
+  int GetMatingDisplayB() const { return m_mating_display_b; } 
   int GetMatePreference() const { return m_mate_preference; }
   
   void SetMatingType(int _mating_type) { m_mating_type = _mating_type; } //@CHC
