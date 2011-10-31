@@ -4429,9 +4429,9 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
     tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
   }
 
-  double odds_immi = immigrant_odds * 100 + 0.5;
-  double odds_own = offspring_own_odds * 100 + 0.5;
-  double odds_others = offspring_others_odds * 100 + 0.5;
+  double odds_immi = immigrant_odds * 100;
+  double odds_own = offspring_own_odds * 100;
+  double odds_others = offspring_others_odds * 100;
   
   m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
                                                      odds_others, tol_immi, tol_own, tol_others, tol_max);

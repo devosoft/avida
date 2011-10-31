@@ -176,7 +176,7 @@ public:
   // Deme-related stats methods
   void PrintDemeAllStats(cAvidaContext& ctx); 
   void PrintDemeTestamentStats(const cString& filename);
-	void PrintCurrentMeanDemeDensity(const cString& filename);
+  void PrintCurrentMeanDemeDensity(const cString& filename);
   void PrintDemeEnergySharingStats();
   void PrintDemeEnergyDistributionStats(cAvidaContext& ctx); 
   void PrintDemeOrganismEnergyDistributionStats();
@@ -194,7 +194,7 @@ public:
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
-	void PrintDemeTotalAvgEnergy(cAvidaContext& ctx); 
+  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx); 
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);
