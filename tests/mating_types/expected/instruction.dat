@@ -1,0 +1,41 @@
+# Avida instruction execution data
+# Tue Nov  1 09:55:05 2011
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: if-label
+#  8: mov-head
+#  9: jmp-head
+# 10: get-head
+# 11: set-flow
+# 12: shift-r
+# 13: shift-l
+# 14: inc
+# 15: dec
+# 16: push
+# 17: pop
+# 18: swap-stk
+# 19: swap
+# 20: add
+# 21: sub
+# 22: nand
+# 23: h-copy
+# 24: h-alloc
+# 25: set-mating-type-male
+# 26: set-mating-type-female
+# 27: div-sex-mating-type
+# 28: if-mating-type-juvenile
+# 29: if-mating-type-male
+# 30: if-mating-type-female
+# 31: set-mate-preference-random
+# 32: set-mate-preference-highest-display-a
+# 33: set-mate-preference-highest-merit
+# 34: increment-mating-display-a
+# 35: IO
+# 36: h-search
+
+100 3498 166 294979 164 290 371901 373668 171 237 112 280 300 235 236 113 189 272 248 131 153 162 373557 3600 1310 2481 3600 163 112 411 225 1233 798 10632 220 7746 
+200 6685 352 280700 576 399 368889 371884 307 761 337 390 345 935 372 402 643 498 510 386 466 1032 371809 3600 1664 2296 3600 378 369 362 330 1318 854 8844 333 8263 
