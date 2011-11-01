@@ -308,6 +308,9 @@
 		7070E46D12104A660056BE1E /* cDemePlaceholderUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7070E46B12104A660056BE1E /* cDemePlaceholderUnit.h */; };
 		7070E6BF12109C1D0056BE1E /* cBioGroupListener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7070E6BE12109C1D0056BE1E /* cBioGroupListener.cc */; };
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
+		7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073ADEC14609BF600FECC56 /* cBirthEntry.cc */; };
+		7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */; };
+		7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
@@ -869,6 +872,9 @@
 		70731663097C6DF500815164 /* cASLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASLibrary.cc; sourceTree = "<group>"; };
 		7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSemanticASTVisitor.cc; sourceTree = "<group>"; };
 		7073972D0D725B9D003855D3 /* cSemanticASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSemanticASTVisitor.h; sourceTree = "<group>"; };
+		7073ADEC14609BF600FECC56 /* cBirthEntry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthEntry.cc; sourceTree = "<group>"; };
+		7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthMatingTypeGlobalHandler.cc; sourceTree = "<group>"; };
+		7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthMatingTypeGlobalHandler.h; sourceTree = "<group>"; };
 		707415C70AA7E4100064A546 /* main.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.css; sourceTree = "<group>"; };
 		7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_CumulativeStemminess.cc; sourceTree = "<group>"; };
 		7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_Gamma.cc; sourceTree = "<group>"; };
@@ -1937,6 +1943,9 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				7073ADEC14609BF600FECC56 /* cBirthEntry.cc */,
+				7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */,
+				7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */,
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
 				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
 				701D51CB09C645F50009B4F8 /* cAvidaContext.h */,
@@ -2206,6 +2215,7 @@
 				4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */,
 				4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */,
 				4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */,
+				7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2566,6 +2576,8 @@
 				70FEF65E1382C48900A9D082 /* Manager.cc in Sources */,
 				70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */,
 				4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */,
+				7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */,
+				7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

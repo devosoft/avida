@@ -31,6 +31,7 @@
 #include "avida/data/Provider.h"
 
 #include "cBioGroupListener.h"
+#include "cBirthEntry.h"
 #include "cDoubleSum.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
@@ -57,7 +58,6 @@ class cOrgMessagePredicate;
 class cOrgMovementPredicate;
 class cDeme;
 class cGermline;
-class cBirthEntry;
 
 using namespace Avida;
 

@@ -26,11 +26,11 @@
 #include "cPhenotype.h"
 
 cBirthEntry::cBirthEntry()
-: timestamp(-1)
-, m_mating_type(MATING_TYPE_JUVENILE)
-, m_mate_preference(MATE_PREFERENCE_RANDOM)
+: m_mating_type(MATING_TYPE_JUVENILE)
 , m_mating_display_a(0)
 , m_mating_display_b(0)
+, m_mate_preference(MATE_PREFERENCE_RANDOM)
+, timestamp(-1)
 {
 }
 
@@ -38,13 +38,13 @@ cBirthEntry::cBirthEntry()
 // about to divide sexually, just for record-keeping purposes; the birth entry should then be
 // immediately destroyed
 cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _timestamp)
-: genome(_offspring)
-, merit(_parent->GetPhenotype().GetMerit())
-, timestamp(_timestamp)
-, m_mating_type(_parent->GetPhenotype().GetMatingType())
+: m_mating_type(_parent->GetPhenotype().GetMatingType())
 , m_mating_display_a(_parent->GetPhenotype().GetLastMatingDisplayA())
 , m_mating_display_b(_parent->GetPhenotype().GetLastMatingDisplayB())
 , m_mate_preference(_parent->GetPhenotype().GetMatePreference())
+, genome(_offspring)
+, merit(_parent->GetPhenotype().GetMerit())
+, timestamp(_timestamp)
 {
   // Note: Not checking for energy because we don't want to clear out the parent's energy
   // for a temporary birth entry, otherwise things may get screwed up when the REAL offspring

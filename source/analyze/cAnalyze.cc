@@ -6056,7 +6056,7 @@ void cAnalyze::CommandRecombineSample(cString cur_string)
     if (m_world->GetRandom().P(0.5)) {
         cAnalyzeGenotype * temp = genotype1;
         genotype1 = genotype2;
-        genotype2 = genotype1;
+        genotype2 = temp;
     }
     
     int fail_count = 0;

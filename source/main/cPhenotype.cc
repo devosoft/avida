@@ -58,6 +58,10 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , tolerance_immigrants(m_world->GetConfig().MAX_TOLERANCE.Get())        // @JJB
 , tolerance_offspring_own(m_world->GetConfig().MAX_TOLERANCE.Get())     // @JJB
 , tolerance_offspring_others(m_world->GetConfig().MAX_TOLERANCE.Get())  // @JJB
+, mating_type(MATING_TYPE_JUVENILE)
+, mate_preference(MATE_PREFERENCE_RANDOM)
+, cur_mating_display_a(0)
+, cur_mating_display_b(0)
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_para_tasks(m_world->GetEnvironment().GetNumTasks())
@@ -72,6 +76,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
+, last_mating_display_a(0)
+, last_mating_display_b(0)
 , generation(0)
 , birth_cell_id(0)
 , birth_group_id(0)
@@ -79,12 +85,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_task_id(-1)
 , num_new_unique_reactions(0)
 , res_consumed(0)
-, mating_type(MATING_TYPE_JUVENILE)
-, mate_preference(MATE_PREFERENCE_RANDOM)
-, cur_mating_display_a(0)
-, cur_mating_display_b(0)
-, last_mating_display_a(0)
-, last_mating_display_b(0)
 
 { 
   if (parent_generation >= 0) {
