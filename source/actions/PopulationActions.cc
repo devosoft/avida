@@ -3213,6 +3213,7 @@ public:
           int des =  atoi(&curp);
           int react = (int) reactions[j];
           total_dist += abs(des - react);
+          if (des > react) total_dist += 1;
         }
       }
       else {
