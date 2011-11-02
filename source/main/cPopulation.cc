@@ -926,6 +926,19 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
   
   // check for habitat effects on movement
+  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
+    int absolute_cell_ID = src_cell.GetOrganism()->GetCellID();
+    int deme_id = src_cell.GetOrganism()->GetDemeID();
+    // Fail if we're running in the test CPU.
+    if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+    
+    std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+    if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
+      //      KillOrganism(src_cell, ctx);  //APW
+      src_cell.GetOrganism()->Die(ctx); 
+      return false; 
+    }
+  }    
   // get the resource library
   const cResourceLib & resource_lib = environment.GetResourceLib();
   // get the destination cell resource levels
@@ -964,19 +977,6 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      
   }      
   
-  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
-    int absolute_cell_ID = src_cell.GetOrganism()->GetCellID();
-    int deme_id = src_cell.GetOrganism()->GetDemeID();
-    // Fail if we're running in the test CPU.
-    if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
-    
-    std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
-    if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
-//      KillOrganism(src_cell, ctx);  //APW
-      src_cell.GetOrganism()->Die(ctx); 
-    return false; 
-    }
-  }    
   if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
     if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return false;
     bool kill_source = true;
