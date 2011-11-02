@@ -537,8 +537,16 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
     // generate number barriers equal to count 
     for (int i = 0; i < m_count; i++) {
       // drop the anchor/first block for current barrier
-      const int start_randx = ctx.GetRandom().GetUInt(0, GetX());
-      const int start_randy = ctx.GetRandom().GetUInt(0, GetY());   
+      int start_randx = 0;
+      int start_randy = 0;   
+      if (m_config == 3 || m_config == 4) { 
+        start_randx = m_peakx;
+        start_randy = m_peaky;
+      }
+      else {
+        start_randx = ctx.GetRandom().GetUInt(0, GetX());
+        start_randy = ctx.GetRandom().GetUInt(0, GetY());  
+      }
       Element(start_randy * GetX() + start_randx).SetAmount(m_plateau);
 
       int randx = start_randx;
@@ -600,6 +608,10 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           if (direction == 0) randx = randx - 1;
           else randx = randx + 1;
         }       
+        // if config == 3, build vertical walls from north to south
+        else if (m_config == 3) randy = randy + 1;
+        // if config == 4, build horizontal walls from west to east
+        else if (m_config == 4) randx = randx + 1;
         bool count_block = true;
         // place the new block if not off edge of world
         if (randy < GetY() && randy >= 0 && randx < GetX() && randx >= 0) {
