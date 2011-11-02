@@ -3205,14 +3205,21 @@ public:
     double total_dist = 0.0;
     for(int i=0; i<deme.GetSize(); ++i) {
 			cOrganism* org = deme.GetOrganism(i);
+      string p = desired_phenotypes[i];
 			if(org != 0) {
         tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
-        string p = desired_phenotypes[i];
 				for(int j=0; j<reactions.GetSize(); ++j) {
           char curp= p[j];
           int des =  atoi(&curp);
           int react = (int) reactions[j];
           total_dist += abs(des - react);
+        }
+      }
+      else {
+        for(unsigned long j=0; j<p.size(); ++j) {
+          char curp= p[j];
+          int des =  atoi(&curp);
+          total_dist += des;
         }
       }
     }
