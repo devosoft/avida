@@ -79,6 +79,8 @@ public:
     int addl_time_cost;       // additional time added to age for executing instruction
     int inst_code;            // instruction binary code
     double res_cost;          // resources (from bins) required to execute inst (this is the 7th column after instname)
+    int female_cost;          // additional cost paid by females to execute the instruction @CHC
+    int choosy_female_cost;   // additional cost paid by females to execute the instruction (on top of female_cost) @CHC
   };
   tSmartArray<sInstEntry> m_lib_name_map;
   
@@ -90,13 +92,16 @@ public:
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   bool m_has_res_costs;
+  bool m_has_female_costs;
+  bool m_has_choosy_female_costs;
   
   cInstSet(); // @not_implemented
 
 public:
   inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib)
     : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL), 
-      m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false) { ; }
+      m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false),
+      m_has_female_costs(false), m_has_choosy_female_costs(false) { ; }
   cInstSet(const cInstSet&); 
   cInstSet& operator=(const cInstSet&); 
   inline ~cInstSet() { if (m_mutation_index != NULL) delete m_mutation_index; }
@@ -117,6 +122,10 @@ public:
   int GetInstructionCode(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
   double GetResCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].res_cost; }
   
+  int GetFemaleCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].female_cost; } //@CHC
+  int GetChoosyFemaleCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].choosy_female_cost; } //@CHC
+
+  
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
 
   int GetNopMod(const cInstruction& inst) const
@@ -135,6 +144,8 @@ public:
   bool HasFTCosts() const { return m_has_ft_costs; }
   bool HasEnergyCosts() const { return m_has_energy_costs; }
   bool HasResCosts() const { return m_has_res_costs; }
+  bool HasFemaleCosts() const { return m_has_female_costs; }
+  bool HasChoosyFemaleCosts() const { return m_has_choosy_female_costs; }
   
   // Instruction Analysis.
   int IsNop(const cInstruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }

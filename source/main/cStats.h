@@ -31,6 +31,7 @@
 #include "avida/data/Provider.h"
 
 #include "cBioGroupListener.h"
+#include "cBirthEntry.h"
 #include "cDoubleSum.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
@@ -350,6 +351,11 @@ private:
   cStats(const cStats&); // @not_implemented
   cStats& operator=(const cStats&); // @not_implemented
 
+  // --------  Sexual Selection Stats  ---------
+  tArray<cBirthEntry> m_successful_mates;
+  tArray<cBirthEntry> m_choosers;
+  int m_num_successful_mates;
+
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -641,6 +647,9 @@ public:
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
+  // Sexual selection recording
+  void RecordSuccessfulMate(cBirthEntry& successful_mate, cBirthEntry& chooser);
+
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
@@ -821,6 +830,11 @@ public:
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
+
+  // ----------- Sexual selection output -----------
+public:
+  void PrintSuccessfulMates(cString& filename);
+  // ----------- End sexual selection output -----------
 
   // -------- Messaging support --------
 public:

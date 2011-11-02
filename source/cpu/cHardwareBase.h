@@ -66,6 +66,7 @@ protected:
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
+  int m_female_cost;
   tArray<int> m_inst_ft_cost;
   tArray<double> m_inst_energy_cost;
   tArray<double> m_inst_res_cost; 
@@ -77,6 +78,8 @@ protected:
   bool m_has_energy_costs;
   bool m_has_res_costs; 
 	int m_task_switching_cost;
+  bool m_has_female_costs;
+  bool m_has_choosy_female_costs;
 
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;

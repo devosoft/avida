@@ -151,6 +151,12 @@ private:
   tArray<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
+  int mating_type;                            // Organism's phenotypic sex @CHC
+  int mate_preference;                        // Organism's mating preference @CHC
+  
+  int cur_mating_display_a;                   // value of organism's current mating display A trait
+  int cur_mating_display_b;                   // value of organism's current mating display B trait
+
   cReactionResult* m_reaction_result;
   
 
@@ -179,6 +185,8 @@ private:
   int last_cpu_cycles_used;
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
   
+  int last_mating_display_a;                   // value of organism's last mating display A trait
+  int last_mating_display_b;                   // value of organism's last mating display B trait
   
 
   // 4. Records from this organism's life...
@@ -376,6 +384,14 @@ public:
   inline void SetBirthGroupID(int group_id);
   inline void SetBirthForagerType(int forager_type);
 
+  int GetMatingType() const { return mating_type; } //@CHC
+  int GetMatePreference() const { return mate_preference; } //@CHC
+
+  int GetCurMatingDisplayA() const { return cur_mating_display_a; } //@CHC
+  int GetCurMatingDisplayB() const { return cur_mating_display_b; } //@CHC
+  int GetLastMatingDisplayA() const { return last_mating_display_a; } //@CHC
+  int GetLastMatingDisplayB() const { return last_mating_display_b; } //@CHC
+
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
@@ -521,6 +537,7 @@ public:
   int CrossNum() const  { assert(initialized == true); return cross_num; }
   bool ChildFertile() const { assert(initialized == true); return child_fertile;}
   int GetChildCopiedSize() const { assert(initialized == true); return child_copied_size; }
+  
 
 
   ////////////////////  Accessors -- Modifying  ///////////////////
@@ -568,6 +585,9 @@ public:
   void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
   void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
+
+  void SetMatingType(int _mating_type) { mating_type = _mating_type; } //@CHC
+  void SetMatePreference(int _mate_preference) { mate_preference = _mate_preference; } //@CHC
 
   void SetIsMultiThread() { is_multi_thread = true; }
   void SetIsDonorCur() { is_donor_cur = true; } 
@@ -617,6 +637,11 @@ public:
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
+  
+  void SetCurMatingDisplayA(int _cur_mating_display_a) { cur_mating_display_a = _cur_mating_display_a; } //@CHC
+  void SetCurMatingDisplayB(int _cur_mating_display_b) { cur_mating_display_b = _cur_mating_display_b; } //@CHC
+  void SetLastMatingDisplayA(int _last_mating_display_a) { last_mating_display_a = _last_mating_display_a; } //@CHC
+  void SetLastMatingDisplayB(int _last_mating_display_b) { last_mating_display_b = _last_mating_display_b; } //@CHC
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }

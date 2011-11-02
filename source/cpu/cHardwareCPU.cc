@@ -412,6 +412,22 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-divide0.01", &cHardwareCPU::Inst_HeadDivide0_01, nInstFlag::STALL),
     tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001, nInstFlag::STALL),
     
+    //@CHC Mating type / mate choice instructions
+    tInstLibEntry<tMethod>("set-mating-type-male", &cHardwareCPU::Inst_SetMatingTypeMale),
+    tInstLibEntry<tMethod>("set-mating-type-female", &cHardwareCPU::Inst_SetMatingTypeFemale),
+    tInstLibEntry<tMethod>("set-mating-type-juvenile", &cHardwareCPU::Inst_SetMatingTypeJuvenile), 
+    tInstLibEntry<tMethod>("div-sex-mating-type", &cHardwareCPU::Inst_DivideSexMatingType, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-mating-type-male", &cHardwareCPU::Inst_IfMatingTypeMale),
+    tInstLibEntry<tMethod>("if-mating-type-female", &cHardwareCPU::Inst_IfMatingTypeFemale),
+    tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
+    tInstLibEntry<tMethod>("increment-mating-display-a", &cHardwareCPU::Inst_IncrementMatingDisplayA),
+    tInstLibEntry<tMethod>("increment-mating-display-b", &cHardwareCPU::Inst_IncrementMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mate-preference-random", &cHardwareCPU::Inst_SetMatePreferenceRandom),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-display-a", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-display-b", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-merit", &cHardwareCPU::Inst_SetMatePreferenceHighestMerit),
+    
+    
     // High-level instructions
 		tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
@@ -9843,4 +9859,102 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
   m_task_switching_cost += cost;
 }
 
+/***
+    Mating type instructions
+***/
 
+bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to female
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to male
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_MALE);
+  }
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to male
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to female
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_FEMALE);
+  }
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Set the organism's sex to juvenile
+  //In this way, an organism that has already matured as male or female can change its sex
+  // if this instruction is included in the instruction set
+  m_organism->GetPhenotype().SetMatingType(MATING_TYPE_JUVENILE);
+  return true;
+}
+
+bool cHardwareCPU::Inst_DivideSexMatingType(cAvidaContext& ctx)
+{
+  //Check if the organism is sexually mature
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+    //If not, fail
+    return false;
+  } else {
+    //Otherwise, divide
+    return Inst_HeadDivideSex(ctx);
+  }
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeMale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is male
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_MALE)  getIP().Advance();
+  return true; 
+} 
+
+bool cHardwareCPU::Inst_IfMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is female
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_FEMALE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism has not matured sexually
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayA();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayA(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayB(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref)
+{
+  m_organism->GetPhenotype().SetMatePreference(mate_pref);
+  return true;
+}
+bool cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_DISPLAY_A); }
+bool cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_DISPLAY_B); }
+bool cHardwareCPU::Inst_SetMatePreferenceRandom(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_RANDOM); }
+bool cHardwareCPU::Inst_SetMatePreferenceHighestMerit(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_MERIT); }

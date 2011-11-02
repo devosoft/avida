@@ -51,6 +51,7 @@
 #include "tIterator.h"
 #include "cUserFeedback.h"
 #include "cParasite.h"
+#include "cBirthEntry.h"
 
 #include <cmath>
 #include <cerrno>
@@ -3990,7 +3991,237 @@ public:
 };
 
 
+//@CHC Mating type-related actions
+//Prints counts of the number of organisms of each mating type alive in the population
+class cActionPrintMatingTypeHistogram : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "mating_type_histogram.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mating_type_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int type_counts[3] = {0,0,0};
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population mating type histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    cPopulation& pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      //Count totals of each mating type
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        type_counts[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
+      }
+    }
+    df.Write(type_counts[0], "Mating type -1 (juvenile)");
+    df.Write(type_counts[1], "Mating type 0 (female)");
+    df.Write(type_counts[2], "Mating type 1 (male)");
+    df.Endl(); 
+  }
+};
 
+//Prints counts of the number of organisms of each mating type in the birth chamber
+class cActionPrintBirthChamberMatingTypeHistogram : public cAction
+{
+private:
+  cString m_filename;
+  int m_hw_type;
+  
+public:
+  cActionPrintBirthChamberMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "birth_chamber_mating_type_histogram.dat";
+    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
+    else m_hw_type = 0;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber_mating_type_histogram.dat\"] [int hwtype=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int type_counts[3] = {0,0,0};
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida birth chamber mating type histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    
+    type_counts[0] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(-1, m_hw_type);
+    type_counts[1] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(0, m_hw_type);
+    type_counts[2] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(1, m_hw_type);
+    
+    df.Write(type_counts[0], "Mating type -1 (juvenile)");
+    df.Write(type_counts[1], "Mating type 0 (female)");
+    df.Write(type_counts[2], "Mating type 1 (male)");
+    df.Endl(); 
+  }
+};
+
+//Prints data about the current mating display phenotypes of the population
+class cActionPrintMatingDisplayData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintMatingDisplayData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "mating_display_data.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mating_display_data.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int display_sums[6] = {0, 0, 0, 0, 0, 0}; //[0-2] = display A values for juvenile/undefined mating type, females, and males
+                                           //[3-5] = display B values for each sex
+    int mating_type_sums[3] = {0, 0, 0}; //How many organisms of each mating type are present in the population
+    double display_avgs[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    
+    //Loop through the population and tally up the count values
+    cPopulation& pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        mating_type_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
+        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayA();
+        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+4 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayB();
+      }
+    }
+    
+    if (mating_type_sums[0] > 0) display_avgs[0] = ((double) display_sums[0]) / ((double) mating_type_sums[0]);
+    if (mating_type_sums[1] > 0) display_avgs[1] = ((double) display_sums[1]) / ((double) mating_type_sums[1]);
+    if (mating_type_sums[2] > 0) display_avgs[2] = ((double) display_sums[2]) / ((double) mating_type_sums[2]); 
+    if (mating_type_sums[0] > 0) display_avgs[3] = ((double) display_sums[3]) / ((double) mating_type_sums[0]); 
+    if (mating_type_sums[1] > 0) display_avgs[4] = ((double) display_sums[4]) / ((double) mating_type_sums[1]); 
+    if (mating_type_sums[2] > 0) display_avgs[5] = ((double) display_sums[5]) / ((double) mating_type_sums[2]); 
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population mating display data");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(display_avgs[0], "Avg mating display A for mating type -1 (undefined)");
+    df.Write(display_avgs[1], "Avg mating display A for mating type 0 (female)");
+    df.Write(display_avgs[2], "Avg mating display A for mating type 1 (male)");
+    df.Write(display_avgs[3], "Avg mating display B for mating type -1 (undefined)");
+    df.Write(display_avgs[4], "Avg mating display B for mating type 0 (female)");
+    df.Write(display_avgs[5], "Avg mating display B for mating type 1 (male)");
+    df.Endl();
+  }
+};
+
+//Prints data about the current mate preferences of females in the population
+class cActionPrintFemaleMatePreferenceData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintFemaleMatePreferenceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "female_mate_preference_data.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"female_mate_preference_data.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    //Mating preferences:
+    // 0 = random 
+    // 1 = highest display A
+    // 2 = highest display B
+    // 3 = highest merit
+    //IMPORTANT!: Modify next line according to how many types of mate preferences there are in the population
+    int mate_pref_sums[4] = {0, 0, 0, 0};
+    cPopulation &pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        if (pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+          mate_pref_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatePreference()]++;
+        }
+      }
+    }
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population female mate preference histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(mate_pref_sums[0], "Random");
+    df.Write(mate_pref_sums[1], "Highest display A");
+    df.Write(mate_pref_sums[2], "Highest display B");
+    df.Write(mate_pref_sums[3], "Highest merit");
+    df.Endl();
+  }
+};
+
+
+//Prints data about the 'offspring' from the birth chamber that were chosen as mates during the current update
+class cActionPrintSuccessfulMates : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintSuccessfulMates(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mates/mates-XXXX.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set( "mates/mates-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
+    m_world->GetStats().PrintSuccessfulMates(filename);
+  }
+};
+
+//Prints data about all the 'offspring' waiting in the birth chamber
+class cActionPrintBirthChamber : public cAction
+{
+private:
+  cString m_filename;
+  int m_hw_type;
+  
+public:
+  cActionPrintBirthChamber(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
+    else m_hw_type = 0;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber/bc-XXXX.dat\"] [int hwtype=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set( "birth_chamber/bc-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
+    m_world->GetPopulation().GetBirthChamber(m_hw_type).PrintBirthChamber(filename, m_hw_type);
+  }
+};
 
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
@@ -4197,4 +4428,13 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
 	action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
+
+  //@CHC: Mating type-related actions	
+  action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
+  action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
+  action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
+  action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
+  action_lib->Register<cActionPrintSuccessfulMates>("PrintSuccessfulMates");
+  action_lib->Register<cActionPrintBirthChamber>("PrintBirthChamber");
+  
 }

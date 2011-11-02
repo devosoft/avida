@@ -30,6 +30,7 @@
 #include "cBirthGridLocalHandler.h"
 #include "cBirthMateSelectHandler.h"
 #include "cBirthNeighborhoodHandler.h"
+#include "cBirthMatingTypeGlobalHandler.h"
 #include "cClassificationManager.h"
 #include "cOrganism.h"
 #include "cWorld.h"
@@ -55,7 +56,10 @@ cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
     
     if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
       // Deme local takes priority, and manages the sub handlers
-      handler = new cBirthDemeHandler(m_world, this);    
+      handler = new cBirthDemeHandler(m_world, this);
+    } else if (m_world->GetConfig().MATING_TYPES.Get()) {
+      // @CHC: If separate mating types are turned on, that takes priority and will manage the sub handlers
+      handler = new cBirthMatingTypeGlobalHandler(this);
     } else if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
       if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
@@ -95,7 +99,33 @@ bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
   const int cur_update = m_world->GetStats().GetUpdate();
   const int max_update = entry.timestamp + max_wait_time;
 
-  if (cur_update > max_update) return false;  // Too many updates...
+  if (cur_update > max_update) return false; // Too many updates...
+
+  return true;
+}
+
+bool cBirthChamber::ValidateBirthEntry(cBirthEntry& entry) 
+{
+  // If there is no organism in the entry, return false.
+  if (entry.timestamp == -1) return false;
+
+  // If there is an organism, determine if it is still alive.
+  const int max_wait_time = m_world->GetConfig().MAX_BIRTH_WAIT_TIME.Get();
+
+  // If the max_wait_time is -1, there is no timeout, so its alive.
+  if (max_wait_time == -1) return true;
+
+  // Otherwise, check if few enough updates have gone by...
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int max_update = entry.timestamp + max_wait_time;
+
+  if (cur_update > max_update) {   // Too many updates...
+    //The birth entry has died, so we need to "Clear" it, to ensure that 
+    // reference counts to its parents are updated, so that the parent genotypes
+    // can be released from memory if necessary
+    ClearEntry(entry);
+    return false;
+  }
 
   return true;
 }
@@ -111,6 +141,12 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
   }
   entry.timestamp = m_world->GetStats().GetUpdate();
   entry.groups = parent->GetBioGroups();
+  
+  //@CHC: Set all the mating type properties
+  entry.SetMatingType(parent->GetPhenotype().GetMatingType());
+  entry.SetMatingDisplayA(parent->GetPhenotype().GetLastMatingDisplayA());
+  entry.SetMatingDisplayB(parent->GetPhenotype().GetLastMatingDisplayB());
+  entry.SetMatePreference(parent->GetPhenotype().GetMatePreference());
   
   for (int i = 0; i < entry.groups.GetSize(); i++) {
     entry.groups[i]->AddActiveReference();
@@ -412,6 +448,11 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   // If we couldn't find a waiting entry, this one was saved -- stop here!
   if (old_entry == NULL) return false;
 
+  // If we've made it this far, it means we've selected a mate from the birth chamber, so let's record its statistics
+  // Set up a temporary dummy birth entry so we can record information about the "chooser"
+  cBirthEntry temp_entry(offspring, parent, m_world->GetStats().GetUpdate());
+  m_world->GetStats().RecordSuccessfulMate(*old_entry, temp_entry); 
+
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
     bool ret = DoPairAsexBirth(ctx, *old_entry, offspring, *parent, child_array, merit_array);
@@ -521,3 +562,17 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   return true;
 }
 
+int cBirthChamber::GetWaitingOffspringNumber(int which_mating_type, int hw_type)
+{
+  //Get handler
+  cBirthSelectionHandler* temp_handler = getSelectionHandler(hw_type);
+  //Get offspring number
+  int waiting_num = temp_handler->GetWaitingOffspringNumber(which_mating_type);
+  return waiting_num;
+}
+
+void cBirthChamber::PrintBirthChamber(const cString& filename, int hw_type)
+{
+  cBirthSelectionHandler* temp_handler = getSelectionHandler(hw_type);
+  temp_handler->PrintBirthChamber(filename, m_world);
+}

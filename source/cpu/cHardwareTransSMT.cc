@@ -110,7 +110,8 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 48
     tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 49
     tInstLibEntry<tMethod>("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 50
-    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 51
+    tInstLibEntry<tMethod>("Divide-Sex", &cHardwareTransSMT::Inst_Divide_Sex), // 51
+    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 52
     
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -1753,6 +1754,14 @@ bool cHardwareTransSMT::Inst_Divide_Sex_Erase(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetCrossNum(1);
   
   return Inst_Divide_Erase(ctx);
+}
+
+bool cHardwareTransSMT::Inst_Divide_Sex(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().SetDivideSex(true);
+  m_organism->GetPhenotype().SetCrossNum(1);
+  
+  return Inst_Divide(ctx);
 }
 
 bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)

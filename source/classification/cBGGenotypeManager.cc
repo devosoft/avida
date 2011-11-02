@@ -270,7 +270,13 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   
   // No matching genotype (hinted or otherwise), so create a new one
   if (!found) {
-    found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
+    //@CHC: If genotype classification is disabled, we don't want to keep track of the parents, or else
+    //      we won't end up saving any memory
+    if (!m_world->GetConfig().DISABLE_GENOTYPE_CLASSIFICATION.Get()) { //It's enabled, so keep the parents
+      found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
+    } else { //It's disabled, so toss the parents
+      found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), NULL);
+    }
     m_active_hash[list_num].Push(found);
     resizeActiveList(found->GetNumUnits());
     m_active_sz[found->GetNumUnits()].PushRear(found, &found->m_handle);
@@ -384,7 +390,13 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
     int list_num = hashGenome(genotype->GetGenome().GetSequence());
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_world->GetStats().GetUpdate());
-    m_historic.Push(genotype, &genotype->m_handle);
+    //@CHC: If classification of historical genotypes is turned off, then we'll
+    //      just skip the step of adding a removed genotype to the historic list.
+    //      Note: the list will stay empty and the reported total number of genotypes
+    //      will not be correct
+    if (!m_world->GetConfig().DISABLE_GENOTYPE_CLASSIFICATION.Get()) {
+      m_historic.Push(genotype, &genotype->m_handle);
+    }
   }
 
   if (genotype->IsThreshold()) {
