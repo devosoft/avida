@@ -3220,7 +3220,7 @@ public:
         for(unsigned long j=0; j<p.size(); ++j) {
           char curp= p[j];
           int des =  atoi(&curp);
-          total_dist += des;
+          total_dist += des + 1;
         }
       }
     }
