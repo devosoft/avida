@@ -4329,7 +4329,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
     
   int dist_used = distance_sought;
-  int start_dist = distance_sought;
+  int start_dist = 0;
   int end_dist = 0;
   
   const int cell = m_organism->GetOrgInterface().GetCellID();
@@ -4423,10 +4423,11 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   tot_bounds.min_y = worldy;    
   tot_bounds.max_x = -1 * worldx;
   tot_bounds.max_y = -1 * worldy;
-  if (habitat_used == 0 || habitat_used == 4) {    
+  if (habitat_used == 0 || habitat_used == 4) { 
+    int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
-        int this_start_dist = distance_sought;
+        int this_start_dist = 0;
         bounds res_bounds = GetBounds(ctx, resource_lib, val_res[i], search_type);          
         this_start_dist = GetMinDist(ctx, worldx, res_bounds, cell, distance_sought, facing);
         // drop any out of range...
@@ -4440,10 +4441,11 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
           if (res_bounds.min_y < tot_bounds.min_y) tot_bounds.min_y = res_bounds.min_y;
           if (res_bounds.max_x > tot_bounds.max_x) tot_bounds.max_x = res_bounds.max_x;
           if (res_bounds.max_y > tot_bounds.max_y) tot_bounds.max_y = res_bounds.max_y;
-          if (this_start_dist < start_dist) start_dist = this_start_dist;
+          if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
         }
       }
     }
+    start_dist = temp_start_dist;
     if (val_res.GetSize() == 0) {     // nothing in range
       stuff_seen.report_type = 0;
       return stuff_seen;      
