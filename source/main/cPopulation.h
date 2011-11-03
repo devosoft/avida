@@ -69,6 +69,7 @@ private:
   //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
   //std::map<int, std::vector<cOrganism*> > group_list;
+  tArrayMap<int, tArray<pair<int,int> > > group_intolerances;
   
   // Keep list of live organisms
   tSmartArray<cOrganism* > live_org_list;
@@ -324,6 +325,7 @@ public:
   // Calculates the standard deviation for group tolerance to other group offspring
   double CalcGroupAveOthers(int group_id);
   double CalcGroupSDevOthers(int group_id);
+  int& GetGroupIntolerances(int group_id, int tol_num);
 
   // -------- HGT support --------
   //! Modify current level of the HGT resource.

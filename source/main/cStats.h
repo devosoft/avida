@@ -72,6 +72,7 @@ struct flow_rate_tuple {
 
 struct s_inst_circumstances {
   int update;
+  int inst;
   int gr_id;
   int gr_size;
   double res_level;
@@ -152,7 +153,8 @@ private:
   // --------  Instruction Counts  ---------
   tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
-  tArray<tSmartArray<s_inst_circumstances> > m_is_tolerance_exe_insts; // @JJB
+  tArray<pair<int,int> > m_is_tolerance_exe_counts;
+  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; // @JJB
 
   // --------  Calculated Stats  ---------
   double entropy;

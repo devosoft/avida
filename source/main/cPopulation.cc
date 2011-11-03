@@ -6067,9 +6067,18 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
     m_groups[group_id] = 0;
     tSmartArray<cOrganism*> temp;
     group_list.Set(group_id, temp);
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+      tArray<pair<int,int> > temp_array(2);
+      temp_array[0], temp_array[1] = make_pair(-1,-1);
+      group_intolerances.Set(group_id, temp_array);
+    }
   }
   m_groups[group_id]++;
   group_list[group_id].Push(org);
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+    group_intolerances[group_id][0].first = -1;
+    group_intolerances[group_id][1].first = -1;
+  }
 }
 
 // Makes a new group (highest current group number +1). @JJB
@@ -6102,6 +6111,11 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
         m_groups.erase(group_id);
       }
     }
+  }
+
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+    group_intolerances[group_id][0].first = -1;
+    group_intolerances[group_id][1].first = -1;
   }
 
   for (int i = 0; i < group_list[group_id].GetSize(); i++) {
@@ -6138,19 +6152,19 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
   if (group_id < 0) return tolerance_max;
+  if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
+  int cur_update = m_world->GetStats().GetUpdate();
   int group_intolerance = 0;
   int single_member_intolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
     single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
     group_intolerance += single_member_intolerance;
-    if (group_intolerance >= tolerance_max) {
-      group_intolerance = tolerance_max;
-      break;
-    }
   }
+  group_intolerances[group_id][0].first = cur_update;
+  group_intolerances[group_id][0].second = group_intolerance;
   int group_tolerance = tolerance_max - group_intolerance;
-  return group_tolerance;
+  return max(0, group_tolerance);
 }
 
 // Calculates group tolerance towards offspring (not including parent) @JJB
@@ -6160,22 +6174,24 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   int group_id = parent_organism->GetOpinion().first;
 
   if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return tolerance_max;
+  if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
+  int cur_update = m_world->GetStats().GetUpdate();
+  int parent_intolerance;
   int group_intolerance = 0;
   int single_member_intolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    // Skip the parent
-    if (group_list[group_id][index] != parent_organism) {
-      single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
-      group_intolerance += single_member_intolerance;
-    }
-    if (group_intolerance >= tolerance_max) {
-      group_intolerance = tolerance_max;
-      break;
-    }
+    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+    group_intolerance += single_member_intolerance;
   }
+
+  group_intolerances[group_id][1].first = cur_update;
+  group_intolerances[group_id][1].second = group_intolerance;
+  // Remove the parent intolerance
+  parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
+  group_intolerance -= parent_intolerance;
   int group_tolerance = tolerance_max - group_intolerance;
-  return group_tolerance;
+  return max(0, group_tolerance);
 }
 
 // Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
@@ -6197,11 +6213,10 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
     int opinion;
     if (org->HasOpinion()) {
       opinion = org->GetOpinion().first;
-      org->LeaveGroup(opinion);
+      LeaveGroup(org, opinion);
     }
     org->SetOpinion(group_id);
-    opinion = org->GetOpinion().first;
-    org->JoinGroup(opinion);
+    JoinGroup(org, group_id);
     return true;
   }
 
@@ -6210,11 +6225,10 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
     int opinion;
     if (org->HasOpinion()) {
       opinion = org->GetOpinion().first;
-      org->LeaveGroup(opinion);
+      LeaveGroup(org, opinion);
     }
     org->SetOpinion(group_id);
-    opinion = org->GetOpinion().first;
-    org->JoinGroup(opinion);
+    JoinGroup(org, group_id);
     return true;
   }
   // Calculate chances based on target group tolerance of another org successfully immigrating
@@ -6226,11 +6240,10 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
       int opinion;
       if (org->HasOpinion()) {
         opinion = org->GetOpinion().first;
-        org->LeaveGroup(opinion);
+        LeaveGroup(org, opinion);
       }
       org->SetOpinion(group_id);
-      opinion = org->GetOpinion().first;
-      org->JoinGroup(opinion);
+      JoinGroup(org, group_id);
       return true;
     }
     // If the org fails to immigrate it stays in its current group
@@ -6484,6 +6497,12 @@ double cPopulation::CalcGroupSDevOthers(int group_id)
   }
   double sdevothers = others_tolerance.StdDeviation();
   return sdevothers;
+}
+
+// @JJB
+int& cPopulation::GetGroupIntolerances(int group_id, int tol_num)
+{
+  return group_intolerances[group_id][tol_num].second;
 }
 
 /*!	Modify current level of the HGT resource.

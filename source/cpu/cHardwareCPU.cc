@@ -9546,6 +9546,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         }
         m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = -1;
 
+        // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetTolerances()[0].second != tolerance_max) {
           m_organism->GetPhenotype().GetTolerances()[0].second++;
         }
@@ -9566,7 +9567,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
           m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n + 1];
         }
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = -1;
-
+        
+        // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetTolerances()[1].second != tolerance_max) {
           m_organism->GetPhenotype().GetTolerances()[1].second++;
         }
@@ -9587,7 +9589,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
           m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n + 1];
         }
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = -1;
-
+        
+        // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetTolerances()[2].second != tolerance_max) {
           m_organism->GetPhenotype().GetTolerances()[2].second++;
         }
@@ -9632,7 +9635,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
           m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n - 1];
         }
         m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
-
+        
+        // If not at min tolerance, decrease the cache
         if (m_organism->GetPhenotype().GetTolerances()[0].second != 0) {
           m_organism->GetPhenotype().GetTolerances()[0].second--;
         }
@@ -9653,7 +9657,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
           m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n - 1];
         }
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
-
+        
+        // If not at min tolerance, decrease the cache
         if (m_organism->GetPhenotype().GetTolerances()[1].second != 0) {
           m_organism->GetPhenotype().GetTolerances()[1].second--;
         }
@@ -9674,7 +9679,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
           m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n - 1];
         }
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
-
+        
+        // If not at min tolerance, decrease the cache
         if (m_organism->GetPhenotype().GetTolerances()[2].second != 0) {
           m_organism->GetPhenotype().GetTolerances()[2].second--;
         }

@@ -3122,15 +3122,7 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
   m_is_tolerance_inst_names[6] = "get-tolerance";
   m_is_tolerance_inst_names[7] = "get-group-tolerance";
 
-  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
-
-  for (int i = 0; i < num_tol_inst; i++) {
-    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
-      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
-        ZeroToleranceInst();
-      }
-    }
-  }
+  if (m_is_tolerance_exe_counts.GetSize() != num_tol_inst) m_is_tolerance_exe_counts.Resize(num_tol_inst);
 
   cDataFile& df = m_world->GetDataFile(filename);
 
@@ -3140,7 +3132,7 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
   df.Write(m_update, "Update");
 
   for (int i = 0; i < num_tol_inst; i++) {
-    df. Write(m_is_tolerance_exe_insts[i].GetSize(), m_is_tolerance_inst_names[i]);
+    df. Write((m_is_tolerance_exe_counts[i].first == m_update) ? m_is_tolerance_exe_counts[i].second : 0 , m_is_tolerance_inst_names[i]);
   }
 
   df.Endl();
@@ -3160,35 +3152,25 @@ void cStats::PrintToleranceData(const cString& filename)
   m_is_tolerance_inst_names[6] = "get-tolerance";
   m_is_tolerance_inst_names[7] = "get-group-tolerance";
 
-  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
-
-  for (int i = 0; i < num_tol_inst; i++) {
-    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
-      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
-        ZeroToleranceInst();
-      }
-    }
-  }
-
   cDataFile& df = m_world->GetDataFile(filename);
 
   df.WriteComment("Avida circumstance data for each tolerance instruction pre-execution");
   df.WriteTimeStamp();
 
-  for (int i = 0; i < num_tol_inst; i++) {
-    for (int n = 0; n < m_is_tolerance_exe_insts[i].GetSize(); n++) {
-      df.Write(m_is_tolerance_exe_insts[i][n].update, "Update [update]");
-      df.Write(m_is_tolerance_inst_names[i], "Tolerance instruction [inst]");
-      df.Write(m_is_tolerance_exe_insts[i][n].gr_id, "group id [groupid]");
-      df.Write(m_is_tolerance_exe_insts[i][n].gr_size, "size of group [grsize]");
-      df.Write(m_is_tolerance_exe_insts[i][n].res_level, "group resource available [grfood]");
-      df.Write(m_is_tolerance_exe_insts[i][n].odds_immigrants, "odds for immigrants coming into the group [oddsimmigrants]");
-      df.Write(m_is_tolerance_exe_insts[i][n].odds_offspring_own, "odds for org's own offspring to stay in group [oddsown]");
-      df.Write(m_is_tolerance_exe_insts[i][n].odds_offspring_others, "odds for offspring in group [oddsothers]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_immigrants, "org's tolerance for immigrants [tol-immi]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_own, "org's tolerance for own offspring [tol-own]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_others, "org's tolerance for other offspring in the group [tol-others]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_max, "tolerance max [tol-max]");
+  for (int n = 0; n < m_is_tolerance_exe_insts.GetSize(); n++) {
+    if (m_is_tolerance_exe_insts[n].update == m_update) {
+      df.Write(m_is_tolerance_exe_insts[n].update, "Update [update]");
+      df.Write(m_is_tolerance_inst_names[m_is_tolerance_exe_insts[n].inst], "Tolerance instruction [inst]");
+      df.Write(m_is_tolerance_exe_insts[n].gr_id, "group id [groupid]");
+      df.Write(m_is_tolerance_exe_insts[n].gr_size, "size of group [grsize]");
+      df.Write(m_is_tolerance_exe_insts[n].res_level, "group resource available [grfood]");
+      df.Write(m_is_tolerance_exe_insts[n].odds_immigrants, "odds for immigrants coming into the group [oddsimmigrants]");
+      df.Write(m_is_tolerance_exe_insts[n].odds_offspring_own, "odds for org's own offspring to stay in group [oddsown]");
+      df.Write(m_is_tolerance_exe_insts[n].odds_offspring_others, "odds for offspring in group [oddsothers]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_immigrants, "org's tolerance for immigrants [tol-immi]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_own, "org's tolerance for own offspring [tol-own]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_others, "org's tolerance for other offspring in the group [tol-others]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_max, "tolerance max [tol-max]");
       df.Endl();
     }
   }
@@ -3199,18 +3181,24 @@ void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, do
           double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
 {
   const int num_tol_inst = 8;
-  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
+  if (m_is_tolerance_exe_counts.GetSize() != num_tol_inst) m_is_tolerance_exe_counts.Resize(num_tol_inst);
 
-  for (int i = 0; i < num_tol_inst; i++) {
-    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
-      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
-        ZeroToleranceInst();
-      }
+  if (m_is_tolerance_exe_insts.GetSize() > 0) {
+    if (m_is_tolerance_exe_insts[0].update != m_update) {
+      m_is_tolerance_exe_insts.ResizeClear(0);
     }
+  }
+
+  if (m_is_tolerance_exe_counts[tol_inst].first == m_update) {
+    m_is_tolerance_exe_counts[tol_inst].second++;
+  } else {
+    m_is_tolerance_exe_counts[tol_inst].first = m_update;
+    m_is_tolerance_exe_counts[tol_inst].second = 1;
   }
 
   s_inst_circumstances tol_circ;
   tol_circ.update = m_update;
+  tol_circ.inst = tol_inst;
   tol_circ.gr_id = group_id;
   tol_circ.gr_size = group_size;
   tol_circ.res_level = resource_level;
@@ -3222,7 +3210,7 @@ void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, do
   tol_circ.tol_others = tol_others;
   tol_circ.tol_max = tol_max;
 
-  m_is_tolerance_exe_insts[tol_inst].Push(tol_circ);
+  m_is_tolerance_exe_insts.Push(tol_circ);
 }
 
 // Clears all tolerance execution circumstances. @JJB
@@ -3230,8 +3218,9 @@ void cStats::ZeroToleranceInst()
 {
   const int num_tol_inst = 8;
   for (int i = 0; i < num_tol_inst; i++) {
-    m_is_tolerance_exe_insts[i].ResizeClear(0);
+    m_is_tolerance_exe_counts[i] = make_pair(-1,-1);
   }
+  m_is_tolerance_exe_insts.ResizeClear(0);
 }
 
 /*
