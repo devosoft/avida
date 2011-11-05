@@ -2999,6 +2999,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
       break;
     }
   }
+
   if (!have_org2use) return false;
   else {
     const int target_org_cell = target_org->GetCellID();
@@ -4141,7 +4142,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
       (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
-  
+
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   int distance_sought = 1;
@@ -4155,8 +4156,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // org hunting search types (habitat -2): -2 -1 0 1 2
   // 0 (default) = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   int search_type = 0;
+  if (pred_experiment && habitat_used == -2 && forage == -2) search_type = -1;
   if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_reg].value;
-  
+
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
   // if looking for orgs in predator environment and is prey, default to closest org of any type
@@ -4165,7 +4167,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   else if (pred_experiment && habitat_used == -2 && forage == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
   // if looking for orgs in non-predator environment, default to closest org of any type
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
-  
+
   // fourth register gives specific instance of resources sought or specific organisms to look for
   // default to any (-1) if predator and target not specified
   int id_sought = -1;
@@ -4330,7 +4332,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     
   int dist_used = distance_sought;
   int start_dist = 0;
-  int end_dist = 0;
+  int end_dist = distance_sought;
   
   const int cell = m_organism->GetOrgInterface().GetCellID();
   cCoords center_cell(cell % worldx, cell / worldx);
@@ -4444,6 +4446,11 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
           if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
         }
       }
+      else {                                      // if any is not gradient type resource, use world bounds and break
+        tot_bounds = worldBounds;
+        temp_start_dist = 0;
+        break;
+      }
     }
     start_dist = temp_start_dist;
     if (val_res.GetSize() == 0) {     // nothing in range
@@ -4452,17 +4459,12 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     }
     end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds);
     
-/*    if(start_dist == 0) cout << endl;
-     if(start_dist == 0) cout << "org:" << cell % worldx << " " << cell / worldx  << " " << facing << endl;
-     if(start_dist == 0) cout << "res: " << tot_bounds.min_x << " " << tot_bounds.max_x  << " " << tot_bounds.min_y << " " << tot_bounds.max_y << endl ;
-     if(start_dist == 0) cout << "dist_sought: " << distance_sought << " start_dist: " << start_dist  << " end_dist: " << end_dist << endl;
-*/
     center_cell += (ahead_dir * start_dist);
   } // END set bounds & fast-forward
   
   // START WALKING
   for (int dist = start_dist; dist <= end_dist; dist++) {
-    if (!TestBounds(center_cell, worldBounds) || !TestBounds(center_cell, tot_bounds)) count_center = false;        
+    if (!TestBounds(center_cell, worldBounds) || ((habitat_used == 0 || habitat_used == 4) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
     // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
     if (!diagonal && !count_center) break;
 
@@ -4480,7 +4482,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
       for (int j = num_cells_either_side; j > 0; j--) {
         bool valid_cell = true;
         this_cell = center_cell + direction * j;
-        if(!TestBounds(this_cell, worldBounds) || !TestBounds(this_cell, tot_bounds)) { 
+        if(!TestBounds(this_cell, worldBounds) || ((habitat_used == 0 || habitat_used == 4) && !TestBounds(center_cell, tot_bounds))) { 
           // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
           if (diagonal) {
             const int tcx = this_cell.GetX();
@@ -4581,6 +4583,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     // if searching for orgs, return info on closest one we encountered (==only one if stop_at_first_found)
     else if (habitat_used == -2 && found_edible) {
       const cPopulationCell& first_good_cell = m_world->GetPopulation().GetCell(first_success_cell.GetY() * worldx + first_success_cell.GetX());
+      stuff_seen.id_sought = first_good_cell.GetOrganism()->GetID();
       stuff_seen.value = (int) first_good_cell.GetOrganism()->GetPhenotype().GetCurBonus();
       if (first_good_cell.GetOrganism()->HasOpinion()) {
         stuff_seen.group = first_good_cell.GetOrganism()->GetOpinion().first;
