@@ -9534,6 +9534,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 
       const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();    
       const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+      int group_id = m_organism->GetOpinion().first;
       int tolerance_count = 0;
 
       // If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
@@ -9546,9 +9547,10 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         }
         m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = -1;
 
-        // If not at max tolerance, increase the cache
-        if (m_organism->GetPhenotype().GetTolerances()[0].second != tolerance_max) {
-          m_organism->GetPhenotype().GetTolerances()[0].second++;
+        // If not at individual's max tolerance, adjust both caches
+        if (m_organism->GetPhenotype().GetIntolerances()[0].second != 0) {
+          m_organism->GetPhenotype().GetIntolerances()[0].second--;
+          m_organism->GetOrgInterface().GetGroupIntolerances(group_id, 0)--;
         }
         // Retrieve modified tolerance total for immigrants.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
@@ -9569,8 +9571,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = -1;
         
         // If not at max tolerance, increase the cache
-        if (m_organism->GetPhenotype().GetTolerances()[1].second != tolerance_max) {
-          m_organism->GetPhenotype().GetTolerances()[1].second++;
+        if (m_organism->GetPhenotype().GetIntolerances()[1].second != 0) {
+          m_organism->GetPhenotype().GetIntolerances()[1].second--;
         }
         // Retrieve modified tolerance total for own offspring.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
@@ -9591,8 +9593,9 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = -1;
         
         // If not at max tolerance, increase the cache
-        if (m_organism->GetPhenotype().GetTolerances()[2].second != tolerance_max) {
-          m_organism->GetPhenotype().GetTolerances()[2].second++;
+        if (m_organism->GetPhenotype().GetIntolerances()[2].second != 0) {
+          m_organism->GetPhenotype().GetIntolerances()[2].second--;
+          m_organism->GetOrgInterface().GetGroupIntolerances(group_id, 1)--;
         }
         // Retrieve modified tolerance total for other offspring in group.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
@@ -9624,6 +9627,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
       const int cur_update = m_world->GetStats().GetUpdate();
       const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
       const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+      int group_id = m_organism->GetOpinion().first;
       int tolerance_count = 0;
 
       // If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
@@ -9637,8 +9641,9 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
         
         // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetTolerances()[0].second != 0) {
-          m_organism->GetPhenotype().GetTolerances()[0].second--;
+        if (m_organism->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
+          m_organism->GetPhenotype().GetIntolerances()[0].second++;
+          m_organism->GetOrgInterface().GetGroupIntolerances(group_id, 0)++;
         }
         // Retrieve modified tolerance total for immigrants.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
@@ -9659,8 +9664,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
         
         // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetTolerances()[1].second != 0) {
-          m_organism->GetPhenotype().GetTolerances()[1].second--;
+        if (m_organism->GetPhenotype().GetIntolerances()[1].second != tolerance_max) {
+          m_organism->GetPhenotype().GetIntolerances()[1].second++;
         }
         // Retrieve modified tolerance total for own offspring.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
@@ -9681,8 +9686,9 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
         
         // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetTolerances()[2].second != 0) {
-          m_organism->GetPhenotype().GetTolerances()[2].second--;
+        if (m_organism->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
+          m_organism->GetPhenotype().GetIntolerances()[2].second++;
+          m_organism->GetOrgInterface().GetGroupIntolerances(group_id, 1)++;
         }
         // Retrieve modified tolerance total for other offspring in the group.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
@@ -9713,7 +9719,7 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
       int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
       GetRegister(REG_AX) = tolerance_immigrants;
       GetRegister(REG_BX) = tolerance_own;
-      GetRegister(REG_CX) = tolerance_others;  
+      GetRegister(REG_CX) = tolerance_others;
       return true;
     }
   }

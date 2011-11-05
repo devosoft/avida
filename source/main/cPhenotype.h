@@ -149,7 +149,7 @@ private:
   tArray<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants @JJB
   tArray<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
   tArray<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
-  tArray<pair<int,int> > tolerances;          // caches temporary values of the tolerance and the update @JJB
+  tArray<pair<int,int> > intolerances;        // caches temporary values of the intolerance and the update @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   cReactionResult* m_reaction_result;
@@ -404,7 +404,7 @@ public:
   tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
   tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
   tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
-  tArray<pair<int,int> >& GetTolerances() { assert(initialized == true); return tolerances; }                    // @JJB
+  tArray<pair<int,int> >& GetIntolerances() { assert(initialized == true); return intolerances; }                // @JJB
   int CalcToleranceImmigrants();       // @JJB
   int CalcToleranceOffspringOwn();     // @JJB
   int CalcToleranceOffspringOthers();  // @JJB

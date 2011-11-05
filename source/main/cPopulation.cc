@@ -6067,15 +6067,16 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
     m_groups[group_id] = 0;
     tSmartArray<cOrganism*> temp;
     group_list.Set(group_id, temp);
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
       tArray<pair<int,int> > temp_array(2);
-      temp_array[0], temp_array[1] = make_pair(-1,-1);
+      temp_array[0] = make_pair(-1,-1);
+      temp_array[1] = make_pair(-1,-1);
       group_intolerances.Set(group_id, temp_array);
     }
   }
   m_groups[group_id]++;
   group_list[group_id].Push(org);
-  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
     group_intolerances[group_id][0].first = -1;
     group_intolerances[group_id][1].first = -1;
   }
@@ -6113,7 +6114,7 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
     }
   }
 
-  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
     group_intolerances[group_id][0].first = -1;
     group_intolerances[group_id][1].first = -1;
   }
@@ -6155,14 +6156,31 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
   int cur_update = m_world->GetStats().GetUpdate();
+  //if (group_intolerances[group_id][0].first == cur_update) {
+  //  return max(0 , tolerance_max - group_intolerances[group_id][0].second);
+  //}
+
   int group_intolerance = 0;
   int single_member_intolerance = 0;
+  // Sum the total group intolerance
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
     single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
     group_intolerance += single_member_intolerance;
   }
+
+  if (group_intolerances[group_id][0].first == cur_update) {
+    if (group_intolerances[group_id][0].second != group_intolerance) {
+      cout << "Actual  Cache" << endl;
+      cout << cur_update << "       " << group_intolerances[group_id][0].first << endl;
+      cout << group_intolerance << "       " << group_intolerances[group_id][0].second << endl;
+      cout << "group_id " << group_id << endl;
+    }
+  }
+
+  // Save current update and current intolerance to cache
   group_intolerances[group_id][0].first = cur_update;
   group_intolerances[group_id][0].second = group_intolerance;
+
   int group_tolerance = tolerance_max - group_intolerance;
   return max(0, group_tolerance);
 }
@@ -6177,18 +6195,23 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
   int cur_update = m_world->GetStats().GetUpdate();
-  int parent_intolerance;
+  int parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
   int group_intolerance = 0;
-  int single_member_intolerance = 0;
-  for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
-    group_intolerance += single_member_intolerance;
+  if (false) { //(group_intolerances[group_id][1].first == cur_update) {
+    group_intolerance = group_intolerances[group_id][1].second;
+  } else {
+    int single_member_intolerance = 0;
+    // Sum the total group intolerance
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+      single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+      group_intolerance += single_member_intolerance;
+    }
+    // Save current update and current intolerance to cache
+    group_intolerances[group_id][1].first = cur_update;
+    group_intolerances[group_id][1].second = group_intolerance;
   }
 
-  group_intolerances[group_id][1].first = cur_update;
-  group_intolerances[group_id][1].second = group_intolerance;
   // Remove the parent intolerance
-  parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
   group_intolerance -= parent_intolerance;
   int group_tolerance = tolerance_max - group_intolerance;
   return max(0, group_tolerance);

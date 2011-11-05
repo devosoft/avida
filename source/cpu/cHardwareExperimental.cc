@@ -4193,8 +4193,8 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = -1;
 
         // If not at max tolerance, increase the cache
-        if (m_organism->GetPhenotype().GetTolerances()[0].second != tolerance_max) {
-          m_organism->GetPhenotype().GetTolerances()[0].second++;
+        if (m_organism->GetPhenotype().GetIntolerances()[0].second != 0) {
+          m_organism->GetPhenotype().GetIntolerances()[0].second--;
         }
         // Retrieve modified tolerance total for immigrants.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
@@ -4215,8 +4215,8 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = -1;
         
         // If not at max tolerance, increase the cache
-        if (m_organism->GetPhenotype().GetTolerances()[1].second != tolerance_max) {
-          m_organism->GetPhenotype().GetTolerances()[1].second++;
+        if (m_organism->GetPhenotype().GetIntolerances()[1].second != 0) {
+          m_organism->GetPhenotype().GetIntolerances()[1].second--;
         }
         // Retrieve modified tolerance total for own offspring.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
@@ -4237,8 +4237,8 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = -1;
         
         // If not at max tolerance, increase the cache
-        if (m_organism->GetPhenotype().GetTolerances()[2].second != tolerance_max) {
-          m_organism->GetPhenotype().GetTolerances()[2].second++;
+        if (m_organism->GetPhenotype().GetIntolerances()[2].second != 0) {
+          m_organism->GetPhenotype().GetIntolerances()[2].second--;
         }
         // Retrieve modified tolerance total for other offspring in group.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
@@ -4285,8 +4285,8 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
 
         // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetTolerances()[0].second != 0) {
-          m_organism->GetPhenotype().GetTolerances()[0].second--;
+        if (m_organism->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
+          m_organism->GetPhenotype().GetIntolerances()[0].second++;
         }
         // Retrieve modified tolerance total for immigrants.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
@@ -4307,8 +4307,8 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
         
         // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetTolerances()[1].second != 0) {
-          m_organism->GetPhenotype().GetTolerances()[1].second--;
+        if (m_organism->GetPhenotype().GetIntolerances()[1].second != tolerance_max) {
+          m_organism->GetPhenotype().GetIntolerances()[1].second++;
         }
         // Retrieve modified tolerance total for own offspring.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
@@ -4329,8 +4329,8 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
         m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
         
         // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetTolerances()[2].second != 0) {
-          m_organism->GetPhenotype().GetTolerances()[2].second--;
+        if (m_organism->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
+          m_organism->GetPhenotype().GetIntolerances()[2].second++;
         }
         // Retrieve modified tolerance total for other offspring in the group.
         tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
