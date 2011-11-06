@@ -4216,14 +4216,37 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
       // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
       if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought);
     }
-  }  
+  } 
+
   /*  APW TODO
    // add ability to specify minimum distances
    // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
    int spec_value = -1;
    const int spec_value_reg = FindModifiedNextRegister(res_id_reg);  
    spec_value = m_threads[m_cur_thread].reg[spec_value_reg].value;
+   // add ability to target specific forager type
    */
+  
+  // habitat is 0 and any of the resources are non-gradient types, are we dealing with global resources and can just use the global val
+  if (habitat_used == 0) {
+    if (id_sought != -1 && resource_lib.GetResource(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
+      return GlobalVal(ctx, habitat_used, id_sought, search_type);
+    }
+    else if (id_sought == -1) {
+      bool all_global = true;
+      for (int i = 0; i < lib_size; i++) {
+        if (resource_lib.GetResource(i)->GetGeometry() == nGeometry::GLOBAL) {
+          lookOut globalval = GlobalVal(ctx, habitat_used, i, search_type);
+          if (globalval.value >= 1 && search_type == 0) return globalval;
+        }
+        else if (resource_lib.GetResource(i)->GetGeometry() != nGeometry::GLOBAL && resource_lib.GetResource(i)->GetHabitat() == 0) { 
+          all_global = false; 
+          if (search_type == 1) break;
+        }
+      }
+      if (all_global) return GlobalVal(ctx, habitat_used, -1, search_type);       // if all global, but none edible
+    }
+  }
   return WalkCells(ctx, resource_lib, habitat_used, search_type, distance_sought, id_sought);
 }    
 
@@ -4307,6 +4330,35 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
   }
   return org_search;
 } 
+
+cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type) 
+{
+  int val = 0;
+  if (id_sought != -1) {
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    val = res_count[id_sought];
+  }
+  
+  lookOut stuff_seen;
+  stuff_seen.report_type = 1;
+  stuff_seen.habitat = habitat_used;
+  stuff_seen.distance = -1;
+  stuff_seen.search_type = search_type;
+  stuff_seen.id_sought = id_sought;
+  stuff_seen.count = 0;
+  stuff_seen.value = 0;
+  stuff_seen.group = -9;    
+  stuff_seen.forage = -9;
+  
+  if (val >= 1) {
+  stuff_seen.distance = 0;
+  stuff_seen.count = 1;
+  stuff_seen.value = val;
+  stuff_seen.group = id_sought;
+  }
+  
+  return stuff_seen;
+}
 
 cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, 
                                                                 const int search_type, const int distance_sought, const int id_sought)
@@ -4461,8 +4513,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     
     center_cell += (ahead_dir * start_dist);
   } // END set bounds & fast-forward
-  
+
   // START WALKING
+  bool first_step = true;
   for (int dist = start_dist; dist <= end_dist; dist++) {
     if (!TestBounds(center_cell, worldBounds) || ((habitat_used == 0 || habitat_used == 4) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
     // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
@@ -4511,8 +4564,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
         
         // Now we can look at the current side cell because we know it's in the world.
         if (valid_cell) {
-          cellResultInfo = TestCell(ctx, habitat_used, search_type, this_cell, val_res);
-          if(cellResultInfo.amountFound >= 0) {
+          cellResultInfo = TestCell(ctx, resource_lib, habitat_used, search_type, this_cell, val_res, first_step);
+          first_step = false;
+          if(cellResultInfo.amountFound > 0) {
             found = true;
             totalAmount += cellResultInfo.amountFound;
             if (cellResultInfo.has_edible) {
@@ -4534,8 +4588,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     
     // work on CENTER cell for this dist
     if (count_center) {
-      cellResultInfo = TestCell(ctx, habitat_used, search_type, center_cell, val_res);
-      if(cellResultInfo.amountFound >= 0) {
+      cellResultInfo = TestCell(ctx, resource_lib, habitat_used, search_type, center_cell, val_res, first_step);
+      first_step = false;
+      if(cellResultInfo.amountFound > 0) {
         found = true;
         totalAmount += cellResultInfo.amountFound;
         if (cellResultInfo.has_edible) {
@@ -4607,8 +4662,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
  *    otherwise, returns the number of objects we're looking for that are in target_cell
  *    
  */
-cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx, const int habitat_used, const int search_type, const cCoords target_cell_coords, 
-                                                                  const tSmartArray<int>& val_res)
+cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx,  const cResourceLib& resource_lib, const int habitat_used, const int search_type,
+                                                                  const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step)
 {
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   int target_cell_num = target_cell_coords.GetX() + (target_cell_coords.GetY() * worldx);
@@ -4616,7 +4671,7 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
   returnInfo.amountFound = 0;
   returnInfo.resource_id = -9;
   returnInfo.has_edible = false;
-
+  
   // if looking for resources or topological features
   if (habitat_used != -2) {
     tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
@@ -4626,10 +4681,14 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
         if (search_type == 0 && cell_res[val_res[k]] >= 1) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
-          returnInfo.amountFound += cell_res[val_res[k]];
+          if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
+            returnInfo.amountFound += cell_res[val_res[k]];                                                         
+          }
         }
         else if (search_type == 1 && cell_res[val_res[k]] < 1 && cell_res[val_res[k]] > 0) {                        // only get sum amounts when < 1 if search = get counts
-          returnInfo.amountFound += cell_res[val_res[k]];
+          if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
+            returnInfo.amountFound += cell_res[val_res[k]];                                                         
+          }
         } 
       }
       else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0
