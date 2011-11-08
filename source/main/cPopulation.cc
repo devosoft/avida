@@ -864,6 +864,15 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
     KillOrganism(target_cell, ctx);
   }
+  // Kill org born on deadly world boundaries
+  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && target_cell.GetID() >= 0) {
+    int dest_x = target_cell.GetID() % m_world->GetConfig().WORLD_X.Get();  
+    int dest_y = target_cell.GetID() / m_world->GetConfig().WORLD_X.Get();
+    if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
+      KillOrganism(target_cell, ctx);
+    }
+  }    
+
   
   // are there mini traces we need to test for?
   if (minitrace_queue.GetSize() > 0) TestForMiniTrace(ctx, in_organism);
