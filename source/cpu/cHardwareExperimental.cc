@@ -2966,9 +2966,11 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
     m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
   }
   // Else rotate the nop number of times in the appropriate direction
+  else {
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
   if (rot_num > 7) rot_num = rot_num % 8;
+  }
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   
   setInternalValue(reg_used, rot_num * rot_dir, true);
