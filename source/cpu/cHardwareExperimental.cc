@@ -147,6 +147,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Core ALU Operations
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, 0, "Remove top number from stack and place into ?BX?"),
     tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, 0, "Copy number from ?BX? and place it into the stack"),
+    tInstLibEntry<tMethod>("pop-all", &cHardwareExperimental::Inst_PopAll, 0, "Remove top numbers from stack and place into ?BX?"),
+    tInstLibEntry<tMethod>("push-all", &cHardwareExperimental::Inst_PushAll, 0, "Copy number from all registers and place into the stack"),
     tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, 0, "Toggle which stack is currently being used"),
     tInstLibEntry<tMethod>("swap-stk-top", &cHardwareExperimental::Inst_SwapStackTop, 0, "Swap the values at the top of both stacks"),
     tInstLibEntry<tMethod>("swap", &cHardwareExperimental::Inst_Swap, 0, "Swap the contents of ?BX? with ?CX?"),
@@ -1600,6 +1602,28 @@ bool cHardwareExperimental::Inst_Push(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_PopAll(cAvidaContext& ctx)
+{
+  int reg_used = FindModifiedRegister(rBX);
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    sInternalValue pop = stackPop();
+    setInternalValue(reg_used, pop.value, pop);
+    reg_used++;
+    if (reg_used == NUM_REGISTERS) reg_used = 0;
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_PushAll(cAvidaContext& ctx)
+{
+  int reg_used = FindModifiedRegister(rBX);
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
+    reg_used++;
+    if (reg_used == NUM_REGISTERS) reg_used = 0;
+  }
+  return true;
+}
 
 bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext& ctx) { switchStack(); return true;}
 
@@ -2967,9 +2991,9 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   }
   // Else rotate the nop number of times in the appropriate direction
   else {
-  rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
-  rot_num = abs(rot_num);
-  if (rot_num > 7) rot_num = rot_num % 8;
+    rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
+    rot_num = abs(rot_num);
+    if (rot_num > 7) rot_num = rot_num % 8;
   }
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   
@@ -4690,7 +4714,7 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
         else if (search_type == 1 && cell_res[val_res[k]] < 1 && cell_res[val_res[k]] > 0) {                        // only get sum amounts when < 1 if search = get counts
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res[val_res[k]];                                                         
-          }
+           }
         } 
       }
       else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0
@@ -4706,7 +4730,7 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
         }
         else if (search_type == 1 && cell_res[val_res[k]] < m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get() && cell_res[val_res[k]] > 0) {
           returnInfo.amountFound += cell_res[val_res[k]];        
-        }
+       }
       }
     }
   }
