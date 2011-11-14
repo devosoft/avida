@@ -4346,7 +4346,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& c
   int val = 0;
   if (id_sought != -1) {
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
-    val = res_count[id_sought];
+    val = (int) (res_count[id_sought] + 0.5);
   }
   
   lookOut stuff_seen;
