@@ -3168,12 +3168,10 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
   
-  int nest_id = -1;
+  int nest_id = m_threads[m_cur_thread].reg[reg_used].value;
   int nest_val = 0;
   
-  nest_id = m_threads[m_cur_thread].reg[reg_used].value;
-  
-  // if no nop, invalid nop value, or invalid opinion return the id of the first nest in the cell with val >= 1
+  // if invalid nop value, return the id of the first nest in the cell with val >= 1
   if (nest_id < 0 || nest_id >= resource_lib.GetSize()) {
     for (int i = 0; i < cell_res.GetSize(); i++) {
       if (resource_lib.GetResource(i)->GetHabitat() == 3 && cell_res[i] >= 1) {
@@ -4158,19 +4156,16 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
 
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
-  int distance_sought = 1;
-  distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
   else if (distance_sought > long_axis) distance_sought = long_axis;
+  
   // third register gives type of search used for food resources (habitat 0) and org hunting (habitat -2)
   // env res search_types (habitat 0): 0 or 1
-  // 0 (default) = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
+  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
   // org hunting search types (habitat -2): -2 -1 0 1 2
-  // 0 (default) = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
-  int search_type = 0;
-  if (pred_experiment && habitat_used == -2 && forage == -2) search_type = -1;
-  search_type = m_threads[m_cur_thread].reg[search_reg].value;
-
+  // 0 = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
+  int search_type = m_threads[m_cur_thread].reg[search_reg].value;
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
   // if looking for orgs in predator environment and is prey, default to closest org of any type
@@ -4181,26 +4176,16 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
 
   // fourth register gives specific instance of resources sought or specific organisms to look for
-  // default to any (-1) if predator and target not specified
-  int id_sought = -1;
-  if ((forage < -2 || forage >= lib_size) && habitat_used != -2) forage = -1;
-  // default to current forage target if prey and input is absent
-  if (forage !=-2) {
-    id_sought = forage;
-    if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();    
-  }
-  // if specified...
-  id_sought = m_threads[m_cur_thread].reg[id_reg].value;
-  // if looking for res...
-  if (habitat_used != -2) {
-    // default to current forage target if input is invalid
-    if (id_sought < -1 || id_sought >= lib_size) {  
-      if (forage !=-2) id_sought = m_organism->GetForageTarget();
-      else id_sought = -1;                  // e.g. predators looking for res
+  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  // if resource search...
+  if (habitat_used != -2) { 
+    // if invalid res id...
+    if (id_sought < 0 || id_sought >= lib_size) {
+      if (forage < 0 || forage >= lib_size) id_sought = -1;                             // e.g. predators looking for res or wacky forage target
+      else id_sought = forage;
     }
-    // if specified resource to find, override habitat_used to match that for id_sought
-    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
-  } 
+    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();    
+  }
   // if looking for org...
   else if (habitat_used == -2) {
     bool done_setting_org = false;
