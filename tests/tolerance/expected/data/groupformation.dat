@@ -1,5 +1,5 @@
 # Information about the groups joined and used by the organisms
-# Mon Nov 14 19:38:24 2011
+# Mon Nov 14 20:46:57 2011
 #  1: Update [update]
 #  2: number of groups [num]
 #  3: average size of groups [avgsize]
@@ -9,6 +9,6 @@
 #  7: active groups [actgroup]
 #  8: groups per org life [groupsperorg]
 
-10 10 18.2 18.2 26 15 10 0.4525 
-20 10 40 40 102 29 10 0.9975 
-30 10 40 40 54 31 10 0.9975 
+10 10 20.9 20.9 25 16 10 0.5225 
+20 10 39.9 39.9 55 28 10 0.9975 
+30 10 39.9 39.9 53 25 10 0.9975 
