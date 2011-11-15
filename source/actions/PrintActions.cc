@@ -685,6 +685,68 @@ public:
 //};
 
 
+//LHZ - slower version that doesn't need "lineage support"
+class cActionPrintLineageCounts : public cAction
+{
+private:
+  cString m_filename;
+  int m_verbose;
+public:
+  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
+  }
+
+  static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat']\n  WARNING: This will only have the appropriate header if all lineages are present before this action is run for the first time."; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    const int update = m_world->GetStats().GetUpdate();
+    const double generation = m_world->GetStats().SumGeneration().Average();
+    
+    //only loop through living organisms
+    tSmartArray<cOrganism*> living_orgs = m_world->GetPopulation().GetLiveOrgList();
+    
+    tHashMap<int, int> lineage_label_counts;
+    
+    //build hash of lineage_label -> count
+    for(int i = 0; i < living_orgs.GetSize(); i++)
+    {
+      const int cur_lineage_label = living_orgs[i]->GetLineageLabel();
+      if (lineage_label_counts.HasEntry(cur_lineage_label))
+      {
+        int cur_count;
+        lineage_label_counts.Find(cur_lineage_label, cur_count);
+        
+        lineage_label_counts.Set(cur_lineage_label, cur_count + 1);
+      }
+      else
+      {
+        lineage_label_counts.Set(cur_lineage_label, 1);
+      }
+    }
+    
+    tArray<int> lineage_labels;
+    lineage_label_counts.GetKeys(lineage_labels);
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(update, "Update");
+    df.Write(generation, "Generation");
+    
+    //for each lineage label, output the counts
+    for(int i=0;i<lineage_labels.GetSize();i++)
+    {
+      int count;
+      lineage_label_counts.Find(lineage_labels[i], count);
+      df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
+    }
+    
+    df.Endl();
+  }
+};
+
+
 /*
  Write the currently dominant genotype to disk.
 
@@ -4357,7 +4419,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
   //  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
   //  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
-  //  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
+  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantGroupGenotypes>("PrintDominantGroupGenotypes");
   action_lib->Register<cActionPrintDominantForagerGenotypes>("PrintDominantForagerGenotypes");

@@ -2983,17 +2983,9 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
   
   const int reg_used = FindModifiedRegister(rBX);
   int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
-  // If this org has no trailing nop, rotate once in random direction.
-  const cCodeLabel& search_label = GetLabel();
-  if (search_label.GetSize() == 0) {
-    rot_num = 1;
-    m_world->GetRandom().GetInt(0,2) ? rot_dir = -1 : rot_dir = 1; 
-  }
-  // Else rotate the nop number of times in the appropriate direction
-  else {
-    rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
-    rot_num = abs(rot_num);
-  }
+  // rotate the nop number of times in the appropriate direction
+  rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
+  rot_num = abs(rot_num);
   if (rot_num > 7) rot_num = rot_num % 8;
   for (int i = 0; i < rot_num; i++) m_organism->Rotate(rot_dir);
   
@@ -3175,15 +3167,11 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   const tArray<double> cell_res = m_organism->GetOrgInterface().GetResources(ctx); 
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
-  const cCodeLabel& search_label = GetLabel();
   
   int nest_id = -1;
   int nest_val = 0;
   
-  // default to opinion res
-  if (m_organism->HasOpinion()) nest_id = m_organism->GetOpinion().first;
-  // override with nop specified res 
-  if (search_label.GetSize() > 0) nest_id = m_threads[m_cur_thread].reg[reg_used].value;
+  nest_id = m_threads[m_cur_thread].reg[reg_used].value;
   
   // if no nop, invalid nop value, or invalid opinion return the id of the first nest in the cell with val >= 1
   if (nest_id < 0 || nest_id >= resource_lib.GetSize()) {
@@ -4152,7 +4140,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
   int forage = m_organism->GetForageTarget();
-  const cCodeLabel& search_label = GetLabel();
   
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource, habitat = 0 (gradients)
@@ -4172,10 +4159,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high  
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   int distance_sought = 1;
-  if (search_label.GetSize() > 1) distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
   else if (distance_sought > long_axis) distance_sought = long_axis;
-  
   // third register gives type of search used for food resources (habitat 0) and org hunting (habitat -2)
   // env res search_types (habitat 0): 0 or 1
   // 0 (default) = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
@@ -4183,7 +4169,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // 0 (default) = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   int search_type = 0;
   if (pred_experiment && habitat_used == -2 && forage == -2) search_type = -1;
-  if (search_label.GetSize() > 2) search_type = m_threads[m_cur_thread].reg[search_reg].value;
+  search_type = m_threads[m_cur_thread].reg[search_reg].value;
 
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
@@ -4204,45 +4190,43 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     if (id_sought != -1 && habitat_used != -2) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();    
   }
   // if specified...
-  if (search_label.GetSize() > 3) {
-    id_sought = m_threads[m_cur_thread].reg[id_reg].value;
-    // if looking for res...
-    if (habitat_used != -2) {
-      // default to current forage target if input is invalid
-      if (id_sought < -1 || id_sought >= lib_size) {  
-        if (forage !=-2) id_sought = m_organism->GetForageTarget();
-        else id_sought = -1;                  // e.g. predators looking for res
-      }
-      // if specified resource to find, override habitat_used to match that for id_sought
-      if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
-    } 
-    // if looking for org...
-    else if (habitat_used == -2) {
-      bool done_setting_org = false;
-      cOrganism* target_org = m_organism;
-      // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
-      if (id_sought < 0 || id_sought == m_organism->GetID()) {
-        id_sought = -1;
-        done_setting_org = true;
-      }
-      // if valid org id number, does the value represent a living organism
-      else if (id_sought != -1) {
-        tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
-        for (int i = 0; i < live_orgs.GetSize(); i++) {  
-          cOrganism* living_org = live_orgs[i];
-          if (id_sought == living_org->GetID()) {
-            target_org = living_org;
-            done_setting_org = true;
-            break;
-          }
+  id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  // if looking for res...
+  if (habitat_used != -2) {
+    // default to current forage target if input is invalid
+    if (id_sought < -1 || id_sought >= lib_size) {  
+      if (forage !=-2) id_sought = m_organism->GetForageTarget();
+      else id_sought = -1;                  // e.g. predators looking for res
+    }
+    // if specified resource to find, override habitat_used to match that for id_sought
+    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();
+  } 
+  // if looking for org...
+  else if (habitat_used == -2) {
+    bool done_setting_org = false;
+    cOrganism* target_org = m_organism;
+    // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
+    if (id_sought < 0 || id_sought == m_organism->GetID()) {
+      id_sought = -1;
+      done_setting_org = true;
+    }
+    // if valid org id number, does the value represent a living organism
+    else if (id_sought != -1) {
+      tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+      for (int i = 0; i < live_orgs.GetSize(); i++) {  
+        cOrganism* living_org = live_orgs[i];
+        if (id_sought == living_org->GetID()) {
+          target_org = living_org;
+          done_setting_org = true;
+          break;
         }
       }
-      // if number didn't represent a living org, we default to WalkCells searching for anybody, skipping FindOrg
-      if (!done_setting_org && id_sought != -1) id_sought = -1;    
-      // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
-      if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought);
     }
-  } 
+    // if number didn't represent a living org, we default to WalkCells searching for anybody, skipping FindOrg
+    if (!done_setting_org && id_sought != -1) id_sought = -1;    
+    // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
+    if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought);
+  }
 
   /*  APW TODO
    // add ability to specify minimum distances
@@ -4362,7 +4346,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& c
   int val = 0;
   if (id_sought != -1) {
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
-    val = res_count[id_sought];
+    val = (int) (res_count[id_sought] + 0.5);
   }
   
   lookOut stuff_seen;
