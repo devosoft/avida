@@ -858,6 +858,9 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     genotype->SetLastForagerType(in_organism->GetForageTarget());      
   }
   
+  // are there mini traces we need to test for?
+  if (minitrace_queue.GetSize() > 0) TestForMiniTrace(ctx, in_organism);
+
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
   int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
@@ -872,10 +875,6 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       KillOrganism(target_cell, ctx);
     }
   }    
-
-  
-  // are there mini traces we need to test for?
-  if (minitrace_queue.GetSize() > 0) TestForMiniTrace(ctx, in_organism);
 }
 
 void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
