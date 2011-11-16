@@ -1,0 +1,104 @@
+#inst_set instset
+#hw_type 3 
+
+IO
+nop-G		# scramble G register
+zero
+nop-B		# habitat -2
+dec
+nop-B
+dec
+nop-B
+set-forage-target
+nop-B
+inc
+nop-C		# search distance  25
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+inc
+nop-C
+zero
+nop-D		# search type: closest prey
+dec
+nop-D
+zero		
+nop-E		# id_sought: find org #1
+inc
+nop-E
+look-ahead
+nop-B
+nop-C
+nop-D
+nop-E
+dec
+nop-G		# value output reg
+if-equ-0
+nop-G
+rotate-org-id	# rotate org, if seen
+nop-C
+if-equ-0
+nop-G
+move
+if-equ-0	# get out of way if collision
+nop-B
+IO
+nop-A		# random number
+if-equ-0	
+nop-B
+rotate-x
+nop-A
+if-equ-0	
+nop-B
+move
+if-not-0
+nop-G
+IO			# if not seen, get random number
+nop-A
+if-not-0
+nop-G
+rotate-x	# rotate randomly
+nop-A
