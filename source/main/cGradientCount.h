@@ -80,6 +80,8 @@ private:
   double m_current_height;
   double m_ave_plat_cell_loss;
   double m_common_plat_height;
+  int m_skip_moves;
+  int m_skip_counter;
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
   
