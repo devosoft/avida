@@ -92,6 +92,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_current_height(0.0)
   , m_ave_plat_cell_loss(0.0)
   , m_common_plat_height(0.0)
+  , m_skip_moves(0)
+  , m_skip_counter(0)
 
 {
   if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
@@ -100,6 +102,10 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   }
   if (m_halo == 1 && (m_halo_width < (2 * m_height) && plateau >= 0)) {
     m_world->GetDriver().RaiseFatalException(-1, "Halo width < 2 * height (aka plateau radius)");
+  }
+  if (m_move_speed < 0) {
+    m_skip_moves = abs(m_move_speed);
+    m_move_speed = 1;
   }
   m_plateau_array.Resize(int(4 * m_height * m_height + 0.5));
   m_plateau_array.SetAll(0);
@@ -176,170 +182,174 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // for halo peaks, find current orbit. Add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;
   
-  // if we are working with moving resources and it's time to update direction
-  if (m_move_counter == m_updatestep && m_move_a_scaler > 1) { 
-    m_move_counter = 1;
-    // move cones by moving m_peakx & m_peaky 
-    // halo resources orbit at a fixed org walking distance from an anchor point
-    // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
-    // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
-    //    between the anchor point and any orbit
-    if (m_halo == 1) {    //choose to change orbit (0) or direction (1)    
-      int old_peakx = m_peakx;
-      int old_peaky = m_peaky;
-      int random_shift = ctx.GetRandom().GetUInt(0,2);
-      // if changing orbit, choose to go in or out one orbit
-      // then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
-      int temp_height = 0;
-      if (m_plateau < 0) temp_height = 1;
-      else temp_height = m_height;
-      if (random_shift == 0) {
-        //do nothing unless there's room to change orbit
-        if (m_halo_width > (temp_height * 2)) {
-          int orbit_shift = ctx.GetRandom().GetUInt(0,2); 
-          if (orbit_shift == 0) {
-            current_orbit = current_orbit - 1; 
-            if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-              m_peaky = old_peaky - 1;
-            else 
-              m_peakx = old_peakx - 1;
+  // if working with moving resources, check if we are moving once per update or less frequently
+  if (m_skip_counter == m_skip_moves) {
+    // if we are working with moving resources and it's time to update direction
+    if (m_move_counter == m_updatestep && m_move_a_scaler > 1) { 
+      m_move_counter = 1;
+      // move cones by moving m_peakx & m_peaky 
+      // halo resources orbit at a fixed org walking distance from an anchor point
+      // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
+      // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
+      //    between the anchor point and any orbit
+      if (m_halo == 1) {    //choose to change orbit (0) or direction (1)    
+        int old_peakx = m_peakx;
+        int old_peaky = m_peaky;
+        int random_shift = ctx.GetRandom().GetUInt(0,2);
+        // if changing orbit, choose to go in or out one orbit
+        // then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
+        int temp_height = 0;
+        if (m_plateau < 0) temp_height = 1;
+        else temp_height = m_height;
+        if (random_shift == 0) {
+          //do nothing unless there's room to change orbit
+          if (m_halo_width > (temp_height * 2)) {
+            int orbit_shift = ctx.GetRandom().GetUInt(0,2); 
+            if (orbit_shift == 0) {
+              current_orbit = current_orbit - 1; 
+              if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
+                m_peaky = old_peaky - 1;
+              else 
+                m_peakx = old_peakx - 1;
+            }
+            else if (orbit_shift == 1) {
+              current_orbit = current_orbit + 1;  
+              if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
+                m_peaky = old_peaky + 1;
+              else 
+                m_peakx = old_peakx + 1;
+            }
+            // we have to check that we are still going to be within the halo after an orbit change       
+            if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2)) {
+              // if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
+              current_orbit = current_orbit - 2;
+              if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
+                m_peaky = old_peaky + 1;
+              else 
+                m_peakx = old_peakx + 1;
+            }
+            else if (current_orbit < (m_halo_inner_radius + temp_height + 2)) {
+              current_orbit = current_orbit + 2;
+              if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
+                m_peaky = old_peaky - 1;
+              else 
+                m_peakx = old_peakx - 1;          
+            }
           }
-          else if (orbit_shift == 1) {
-            current_orbit = current_orbit + 1;  
-            if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-              m_peaky = old_peaky + 1;
-            else 
-              m_peakx = old_peakx + 1;
-          }
-          // we have to check that we are still going to be within the halo after an orbit change       
-          if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2)) {
-            // if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
-            current_orbit = current_orbit - 2;
-            if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
-              m_peaky = old_peaky + 1;
-            else 
-              m_peakx = old_peakx + 1;
-          }
-          else if (current_orbit < (m_halo_inner_radius + temp_height + 2)) {
-            current_orbit = current_orbit + 2;
-            if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
-              m_peaky = old_peaky - 1;
-            else 
-              m_peakx = old_peakx - 1;          
-          }
+          // if there was no room to change orbit, change the direction instead of the orbit
+          else random_shift = 1;
         }
-        // if there was no room to change orbit, change the direction instead of the orbit
-        else random_shift = 1;
+        // if changing direction of rotation, we just switch sign of rotation
+        else if (random_shift == 1) {
+          m_halo_dir = m_halo_dir * -1; 
+        }
       }
-      // if changing direction of rotation, we just switch sign of rotation
-      else if (random_shift == 1) {
-        m_halo_dir = m_halo_dir * -1; 
+      // for non-halo peaks
+      else {
+        int choosesign = ctx.GetRandom().GetInt(1,3);
+        if (choosesign == 1) {
+          if (m_movesignx == -1) m_movesignx = ctx.GetRandom().GetInt(-1,1); 
+          else if (m_movesignx == 1) m_movesignx = ctx.GetRandom().GetInt(0,2);
+          else m_movesignx = ctx.GetRandom().GetInt(-1,2);
+        }      
+        else if (choosesign == 2){ 
+          if (m_movesigny == -1) m_movesigny = ctx.GetRandom().GetInt(-1,1); 
+          else if (m_movesigny == 1) m_movesigny = ctx.GetRandom().GetInt(0,2);
+          else m_movesigny = ctx.GetRandom().GetInt(-1,2);
+        }
       }
-    }
-    // for non-halo peaks
+    } 
     else {
-      int choosesign = ctx.GetRandom().GetInt(1,3);
-      if (choosesign == 1) {
-        if (m_movesignx == -1) m_movesignx = ctx.GetRandom().GetInt(-1,1); 
-        else if (m_movesignx == 1) m_movesignx = ctx.GetRandom().GetInt(0,2);
-        else m_movesignx = ctx.GetRandom().GetInt(-1,2);
-      }      
-      else if (choosesign == 2){ 
-        if (m_movesigny == -1) m_movesigny = ctx.GetRandom().GetInt(-1,1); 
-        else if (m_movesigny == 1) m_movesigny = ctx.GetRandom().GetInt(0,2);
-        else m_movesigny = ctx.GetRandom().GetInt(-1,2);
-      }
+      m_move_counter++;
     }
-  } 
-  else {
-    m_move_counter++;
-  }
-  
-  if (m_halo == 1 && m_move_a_scaler > 1) { 
-    // what quadrant we are in determines whether we are changing x's or y's (= changling)
-    // if we are on a corner, we just stick with the current changling
-    if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-      m_changling = 1;
-    else if (abs(m_halo_anchor_y - m_peaky) < abs(m_halo_anchor_x - m_peakx))
-      m_changling = -1;
     
-    if (m_changling == 1) {
-      // check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
-      // if it will go beyond the bounds of the orbit, turn the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
-      int next_posx = m_peakx + (m_halo_dir * m_move_speed);
-      int max_orbit_x = m_halo_anchor_x + current_orbit - 1;
-      int min_orbit_x = m_halo_anchor_x - current_orbit + 1;
-      int current_x = m_peakx;
-      if (next_posx > max_orbit_x) {
-        m_peakx = max_orbit_x;
-        if (m_peaky > m_halo_anchor_y) {      
-          // turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
-          m_halo_dir *= -1;
-          m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
-        } else {
-          m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x));
-        }
-        m_changling *= -1;
-      }
-      else if (next_posx < min_orbit_x) { 
-        m_peakx = min_orbit_x;          
-        if (m_peaky > m_halo_anchor_y) {
-          m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x));
-        } else {
-          m_halo_dir *= -1;
-          m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x));
-        }
-        m_changling *= -1;          
-      }
-      else m_peakx = m_peakx + (m_halo_dir * m_move_speed);   
-    } else {
-      int next_posy = m_peaky + (m_halo_dir * m_move_speed);
-      int max_orbit_y = m_halo_anchor_y + current_orbit - 1;
-      int min_orbit_y = m_halo_anchor_y - current_orbit + 1;
-      int current_y = m_peaky;
+    if (m_halo == 1 && m_move_a_scaler > 1) { 
+      // what quadrant we are in determines whether we are changing x's or y's (= changling)
+      // if we are on a corner, we just stick with the current changling
+      if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
+        m_changling = 1;
+      else if (abs(m_halo_anchor_y - m_peaky) < abs(m_halo_anchor_x - m_peakx))
+        m_changling = -1;
       
-      if (next_posy > max_orbit_y) {
-        m_peaky = max_orbit_y;
-        if (m_peakx < m_halo_anchor_x) {
-          m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
-        } else {
-          m_halo_dir *= -1;
-          m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
+      if (m_changling == 1) {
+        // check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
+        // if it will go beyond the bounds of the orbit, turn the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
+        int next_posx = m_peakx + (m_halo_dir * m_move_speed);
+        int max_orbit_x = m_halo_anchor_x + current_orbit - 1;
+        int min_orbit_x = m_halo_anchor_x - current_orbit + 1;
+        int current_x = m_peakx;
+        if (next_posx > max_orbit_x) {
+          m_peakx = max_orbit_x;
+          if (m_peaky > m_halo_anchor_y) {      
+            // turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
+            m_halo_dir *= -1;
+            m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
+          } else {
+            m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x));
+          }
+          m_changling *= -1;
         }
-        m_changling *= -1;      
-      } else if (next_posy < min_orbit_y) { 
-        m_peaky = min_orbit_y;          
-        if (m_peakx < m_halo_anchor_x) { 
-          m_halo_dir *= -1;
-          m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
-        } else {
-          m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
+        else if (next_posx < min_orbit_x) { 
+          m_peakx = min_orbit_x;          
+          if (m_peaky > m_halo_anchor_y) {
+            m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x));
+          } else {
+            m_halo_dir *= -1;
+            m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x));
+          }
+          m_changling *= -1;          
         }
-        m_changling *= -1;
+        else m_peakx = m_peakx + (m_halo_dir * m_move_speed);   
       } else {
-        m_peaky = m_peaky + (m_halo_dir * m_move_speed);
+        int next_posy = m_peaky + (m_halo_dir * m_move_speed);
+        int max_orbit_y = m_halo_anchor_y + current_orbit - 1;
+        int min_orbit_y = m_halo_anchor_y - current_orbit + 1;
+        int current_y = m_peaky;
+        
+        if (next_posy > max_orbit_y) {
+          m_peaky = max_orbit_y;
+          if (m_peakx < m_halo_anchor_x) {
+            m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
+          } else {
+            m_halo_dir *= -1;
+            m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
+          }
+          m_changling *= -1;      
+        } else if (next_posy < min_orbit_y) { 
+          m_peaky = min_orbit_y;          
+          if (m_peakx < m_halo_anchor_x) { 
+            m_halo_dir *= -1;
+            m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
+          } else {
+            m_peakx = m_peakx + m_halo_dir * (m_move_speed - abs(m_peaky - current_y));
+          }
+          m_changling *= -1;
+        } else {
+          m_peaky = m_peaky + (m_halo_dir * m_move_speed);
+        }
       }
-    }
-  } else {
+    } else {
       // for non-halo peaks keep cones inside their bounding boxes, bouncing them if they hit the edge 
       int temp_height = 0;
       if (m_plateau < 0) temp_height = 1;
       else temp_height = m_height;
       if (m_move_a_scaler > 1) {
-          int temp_peakx = m_peakx + (int)(m_move_y_scaler + 0.5) * m_movesignx;
-          int temp_peaky = m_peaky + (int)(m_move_y_scaler + 0.5) * m_movesigny;
-          
-          if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
-          if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1; 
-          
-          if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
-          if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
-          
-          m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
-          m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
+        int temp_peakx = m_peakx + (int)(m_move_y_scaler + 0.5) * m_movesignx;
+        int temp_peaky = m_peaky + (int)(m_move_y_scaler + 0.5) * m_movesigny;
+        
+        if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
+        if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1; 
+        
+        if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
+        if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
+        
+        m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
+        m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
       }  
-  } 
-
+    } 
+    m_skip_counter = 0;
+  }
+  else m_skip_counter++;
   // to speed things up, we only check cells within the possible spread of the peak
   // and we only do this if the resource is set to actually move, has inflow/outflow to update, or
   // we just reset a non-moving resource
@@ -350,54 +360,55 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 
 void cGradientCount::generatePeak(cAvidaContext& ctx)
 {
-    // Get initial peak cell x, y coordinates and movement directions.
-    cRandom& rng = ctx.GetRandom();
-    int temp_height = 0;
-    if (m_plateau < 0) temp_height = 1;
-    else temp_height = m_height;
-    // If we are not moving the resource we default to the config input m_peakx and m_peaky for 'normal' gradient resources
-    // for non-moving halo's we generate a random location on the orbit,
-    //   otherwise we get a random location and direction.
-    if (m_move_a_scaler > 1) {
-        if (!m_halo) {
-            m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
-            m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
-            // Get a random direction for movement on the x-axis  
-            m_movesignx = rng.GetInt(-1,2);
-            // If x-axis movement is 0, we want to make sure y-axis movement is not also 0  
-            if (m_movesignx == 0) {
-                m_movesigny = (rng.GetUInt(0,2) == 1) ? -1 : 1;
-            } else {
-                m_movesigny = rng.GetInt(-1,2);
-            }
-        } else if (m_halo) {
-            m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
-            m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
-        }
+  // Get initial peak cell x, y coordinates and movement directions.
+  cRandom& rng = ctx.GetRandom();
+  int temp_height = 0;
+  if (m_plateau < 0) temp_height = 1;
+  else temp_height = m_height;
+  // If we are not moving the resource we default to the config input m_peakx and m_peaky for 'normal' gradient resources
+  // for non-moving halo's we generate a random location on the orbit,
+  //   otherwise we get a random location and direction.
+  if (m_move_a_scaler > 1) {
+    if (!m_halo) {
+      m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
+      m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
+      // Get a random direction for movement on the x-axis  
+      m_movesignx = rng.GetInt(-1,2);
+      // If x-axis movement is 0, we want to make sure y-axis movement is not also 0  
+      if (m_movesignx == 0) {
+        m_movesigny = (rng.GetUInt(0,2) == 1) ? -1 : 1;
+      } else {
+        m_movesigny = rng.GetInt(-1,2);
+      }
+    } else if (m_halo) {
+      m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
+      m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
     }
-    if (m_halo) {
-            int chooseEW = rng.GetUInt(0,2);
-            if (chooseEW == 0) {
-                m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
-                                      m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
-            } else {
-                m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
-                                      m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
-            }
-            int chooseNS = rng.GetUInt(0,2);
-            if (chooseNS == 0) { 
-                m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
-                                      m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
-            } else {
-                m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
-                                      m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
-            }
-        }
-
-    SetModified(false);
-    m_counter = 0;
-    m_just_reset = true;
-    refreshResourceValues();
+  }
+  if (m_halo) {
+    int chooseEW = rng.GetUInt(0,2);
+    if (chooseEW == 0) {
+      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
+                            m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
+    } else {
+      m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
+                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+    }
+    int chooseNS = rng.GetUInt(0,2);
+    if (chooseNS == 0) { 
+      m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+                            m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
+    } else {
+      m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
+                            m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
+    }
+  }
+  
+  SetModified(false);
+  m_counter = 0;
+  m_skip_counter = 0;
+  m_just_reset = true;
+  refreshResourceValues();
 }
 
 void cGradientCount::refreshResourceValues()
