@@ -538,6 +538,7 @@ private:
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
   bool Inst_SenseDiffFaced(cAvidaContext& ctx);
+  bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);

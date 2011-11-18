@@ -283,7 +283,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
-    
+    tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, nInstFlag::STALL),    
     
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
@@ -3347,6 +3347,47 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
     setInternalValue(reg_to_set, res_diff, true);
   }
   return true;
+}
+
+bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx) 
+{
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  // If this organism has no neighbors, ignore instruction.
+  if (num_neighbors == 0) return false;
+  const int reg_used = FindModifiedRegister(rBX);
+  
+  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int org_x = m_organism->GetCellID() % worldx;
+  const int org_y = m_organism->GetCellID() / worldx;
+  int max_x = org_x + 5;
+  if (max_x >= worldx - 1) max_x = worldx - 1;
+  int min_x = org_x - 5;
+  if (min_x <= 0) min_x = 0;
+  int max_y = org_y + 5;
+  if (max_y >= worldy - 1) max_y = worldy - 1;
+  int min_y = org_y - 5;
+  if (min_y <= 0) min_y = 0;
+  
+  const int x_dist = max_x - min_x + 1;
+  const int y_dist = max_y - min_y + 1;
+  const int ul = min_y * worldx + min_x;
+  int prey_count = 0;
+  int pred_count = 0;
+  for (int i = 0; i < x_dist; i++) {
+    for (int j = 0; j < y_dist; j++) {
+      int cellid = ul + i + (j * worldx);
+      const cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+      if(cell.IsOccupied() && !cell.GetOrganism()->IsDead() && cellid != m_organism->GetCellID()) { 
+        if (cell.GetOrganism()->GetForageTarget() > -2) prey_count++;
+        if (cell.GetOrganism()->GetForageTarget() == -2) pred_count++;
+      }
+    }
+  }
+  
+  setInternalValue(reg_used, prey_count, true);
+  setInternalValue(FindModifiedNextRegister(reg_used), pred_count, true);
+  return true;  
 }
 
 //! An organism joins a group by setting it opinion to the group id. 
