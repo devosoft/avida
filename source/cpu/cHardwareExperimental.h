@@ -521,6 +521,7 @@ private:
   bool Inst_RotateLeftOne(cAvidaContext& ctx);
   bool Inst_RotateRightOne(cAvidaContext& ctx);
   bool Inst_RotateUphill(cAvidaContext& ctx);
+  bool Inst_RotateUpFtHill(cAvidaContext& ctx);
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);

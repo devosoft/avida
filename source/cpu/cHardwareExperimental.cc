@@ -266,6 +266,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-right-one", &cHardwareExperimental::Inst_RotateRightOne, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-up-ft-hill", &cHardwareExperimental::Inst_RotateUpFtHill, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
@@ -2932,6 +2933,33 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
   int res_diff = 0;
   if (current_res[group] == 0) res_diff = (int) max_res;
   else res_diff = (int) (((max_res - current_res[group])/current_res[group]) * 100 + 0.5);
+  int reg_to_set = FindModifiedRegister(rBX);
+  setInternalValue(reg_to_set, res_diff, true);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
+{
+  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
+  int ft = m_organism->GetForageTarget(); 
+  
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);   
+  double max_res = 0;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    m_organism->Rotate(1);
+    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+    if (faced_res[ft] > max_res) max_res = faced_res[ft];
+  } 
+  
+  if (max_res > current_res[ft]) {
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+      if (faced_res[ft] != max_res) m_organism->Rotate(1);
+    }
+  }
+  int res_diff = 0;
+  if (current_res[ft] == 0) res_diff = (int) max_res;
+  else res_diff = (int) (((max_res - current_res[ft])/current_res[ft]) * 100 + 0.5);
   int reg_to_set = FindModifiedRegister(rBX);
   setInternalValue(reg_to_set, res_diff, true);
   return true;
