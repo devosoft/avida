@@ -691,11 +691,14 @@ class cActionPrintLineageCounts : public cAction
 private:
   cString m_filename;
   int m_verbose;
+  bool first_run;
+  tArray<int> lineage_labels;
 public:
   cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
+    first_run = false;
   }
 
   static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat']\n  WARNING: This will only have the appropriate header if all lineages are present before this action is run for the first time."; }
@@ -727,18 +730,27 @@ public:
       }
     }
     
-    tArray<int> lineage_labels;
-    lineage_label_counts.GetKeys(lineage_labels);
+    //setup lineage labels in the first pass
+    if(first_run == false)
+    {
+      lineage_label_counts.GetKeys(lineage_labels);
+      first_run = true;
+    }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(update, "Update");
     df.Write(generation, "Generation");
     
     //for each lineage label, output the counts
+    //@LZ - handle dead lineages appropriately
     for(int i=0;i<lineage_labels.GetSize();i++)
     {
-      int count;
-      lineage_label_counts.Find(lineage_labels[i], count);
+      //default to 0 in case this lineage is dead
+      int count = 0;
+      
+      if (lineage_label_counts.HasEntry(lineage_labels[i]))
+        lineage_label_counts.Find(lineage_labels[i], count);
+    
       df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
     }
     
