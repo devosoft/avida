@@ -580,7 +580,7 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   tArray<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
 
   
-  // 1: Parasite must match at least 1 task the host does (Inverse GFG)
+  // 1: Parasite must match at least 1 task the host does (Overlap)
   if(infection_mechanism == 1)
   {
     //handle skipping of first task
@@ -599,7 +599,7 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
     }
   }
 
-  // 2: Parasite must perform at least one task the host does not (GFG)
+  // 2: Parasite must perform at least one task the host does not (Inverse Overlap)
   if(infection_mechanism == 2)
   {
     //handle skipping of first task
@@ -639,7 +639,40 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
     }
   }
   
+  // 4: Parasite tasks must overcome hosts. (GFG) 
+  if(infection_mechanism == 4)
+  {
+    //handle skipping of first task
+    int start = 0;
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+      start += 1;
+    
+    //This time if we trigger the if statments we DO fail. 
+    interaction_fails = false;
+    bool parasite_overcomes = false;
+    for (int i=start;i<host_task_counts.GetSize();i++)
+    {
+      if( host_task_counts[i] > 0 && parasite_task_counts[i] == 0 )
+      {
+        //inject should fail if the host overcomes the parasite.
+        interaction_fails = true;
+      }
+      
+      //check if parasite overcomes at least one task
+      if (parasite_task_counts[i] > 0 && host_task_counts[i] == 0)
+        parasite_overcomes = true;
+    }
+    
+    //if host doesn't overcome, infection may still fail if the parasite doesn't overcome the host
+    if(interaction_fails == false && parasite_overcomes == false)
+      interaction_fails = true;
+  }
+  
   // TODO: Add other infection mechanisms -LZ
+  // 5: Probabilistic infection based on overlap. (GFG) 
+  // 6: Multiplicative GFG (special case of above?)
+  // 7: Randomization of tasks that match between hosts and parasites? 
+  // 8: ??
   if(interaction_fails)
   {
     double prob_success = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
