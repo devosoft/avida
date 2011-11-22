@@ -539,6 +539,7 @@ private:
   bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
   bool Inst_SenseDiffFaced(cAvidaContext& ctx);
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
+  bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
@@ -557,6 +558,7 @@ private:
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackPrey(cAvidaContext& ctx); 
+  bool Inst_AttackFTPrey(cAvidaContext& ctx); 
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 

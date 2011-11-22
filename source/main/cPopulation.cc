@@ -501,7 +501,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       }
     }
     // if parent org has executed teach_offspring intruction, teach the offspring the parent's learned foraging/targeting behavior
-    if (parent_organism->IsTeacher()) offspring_array[i]->SetForageTarget(parent_organism->GetForageTarget());
+    if (parent_organism->IsTeacher()) {
+      if (parent_organism->GetForageTarget() == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) offspring_array[i]->SetForageTarget(-1);
+      else offspring_array[i]->SetForageTarget(parent_organism->GetForageTarget());
+    }
   }
   
   // If we're not about to kill the parent, do some extra work on it.
