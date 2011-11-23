@@ -111,7 +111,8 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 49
     tInstLibEntry<tMethod>("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 50
     tInstLibEntry<tMethod>("Divide-Sex", &cHardwareTransSMT::Inst_Divide_Sex), // 51
-    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 52
+    tInstLibEntry<tMethod>("Divide-Asex-Wait", &cHardwareTransSMT::Inst_Divide_Asex_Wait), // 52
+    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 53
     
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -1760,6 +1761,17 @@ bool cHardwareTransSMT::Inst_Divide_Sex(cAvidaContext& ctx)
 {
   m_organism->GetPhenotype().SetDivideSex(true);
   m_organism->GetPhenotype().SetCrossNum(1);
+  
+  return Inst_Divide(ctx);
+}
+
+bool cHardwareTransSMT::Inst_Divide_Asex_Wait(cAvidaContext& ctx)
+{
+  //pretend like it is sexual...
+  m_organism->GetPhenotype().SetDivideSex(true);
+  
+  //but don't do any recombination
+  m_organism->GetPhenotype().SetCrossNum(0);
   
   return Inst_Divide(ctx);
 }
