@@ -3766,7 +3766,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     }
     KillOrganism(cell_array[cell_id], ctx);
   }
-	
+  	
 	// increment the number of births in the **parent deme**.  in the case of a
 	// migration, only the origin has its birth count incremented.
   if (deme_array.GetSize() > 0) {
@@ -4629,7 +4629,8 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
         if (!save_groupings) map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
         else {
-          const int curr_group = org->GetOpinion().first;
+          int curr_group = -1;
+          if (org->HasOpinion()) curr_group = org->GetOpinion().first;
           const int curr_forage = org->GetForageTarget();
           const int birth_cell = org->GetPhenotype().GetBirthCell();
           map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell));
@@ -4638,7 +4639,8 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         map_entry = new sGroupInfo(genotype);
         if (!save_groupings) map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0));
         else {
-          const int curr_group = org->GetOpinion().first;
+          int curr_group = -1;
+          if (org->HasOpinion()) curr_group = org->GetOpinion().first;
           const int curr_forage = org->GetForageTarget();
           const int birth_cell = org->GetPhenotype().GetBirthCell();
           map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell));
