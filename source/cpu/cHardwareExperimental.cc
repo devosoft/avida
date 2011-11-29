@@ -3331,8 +3331,14 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
   set <int>::iterator itr;    
   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-  if (abs(prop_target) >= num_fts && prop_target != -2) prop_target = abs(prop_target) % num_fts;
-  
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
+    // ft's may not be sequentially numbered
+    int ft_num = abs(prop_target) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    prop_target = *itr;
+  }
+
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
 //  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
@@ -3801,7 +3807,13 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
   set <int>::iterator itr;    
   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-  if (abs(target_org_type) >= num_fts && target_org_type != -1) target_org_type = abs(target_org_type) % num_fts;
+  if (!m_world->GetEnvironment().IsTargetID(target_org_type) && target_org_type != -1) {
+    // ft's may not be sequentially numbered
+    int ft_num = abs(target_org_type) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    target_org_type = *itr;
+  }
   
   if (target_org_type != target->GetForageTarget()) return false;
 
