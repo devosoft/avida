@@ -3718,7 +3718,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 // A predator establishes a new group. @JJB
 bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 {
-  assert(m_organsim != 0);
+  assert(m_organism != 0);
   if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
 
