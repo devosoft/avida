@@ -3338,11 +3338,27 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
     for (int i = 0; i < ft_num; i++) itr++;
     prop_target = *itr;
   }
-
+  
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
-//  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+  //  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+
+  /*  int prop_target = GetRegister(FindModifiedRegister(rBX));
+   
+   // a little mod help...can't set to -1, that's for juevniles only
+   int num_fts = 0;
+   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+   set <int>::iterator itr;    
+   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+   if (abs(prop_target) >= num_fts && prop_target != -2) prop_target = abs(prop_target) % num_fts;
+
+   */
+//  const int prop_target = GetRegister(FindModifiedRegister(rBX));
   
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator; -1 (nothing) is default
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
@@ -4584,7 +4600,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& c
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
   stuff_seen.count = 0;
-  stuff_seen.value = 0;
+  stuff_seen.value = -9;
   stuff_seen.group = -9;    
   stuff_seen.forage = -9;
   
@@ -4613,7 +4629,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
   stuff_seen.count = 0;
-  stuff_seen.value = 0;
+  stuff_seen.value = -9;
   stuff_seen.group = -9;
   stuff_seen.forage = -9;
 
@@ -4865,7 +4881,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
     stuff_seen.count = count;
-    stuff_seen.value = (int) (totalAmount + 0.5);
+    stuff_seen.value = totalAmount;
     stuff_seen.group = -9;
     stuff_seen.forage = -9;
 

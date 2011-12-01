@@ -2932,7 +2932,7 @@ a single, complete file for each trigger.
 <UL>
 <li><p>
   <strong><a name="LoadPopulation">LoadPopulation</a></strong>
-  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0]</i>
+  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0]</i>
   </p>
   <p>
     Sets up a population based on a save file such as written out by
@@ -2940,8 +2940,10 @@ a single, complete file for each trigger.
   save file, in order to preserve the history of a previous run.<br>
   <i>update</i> allows user to set the current update number to a new value<br>
   <i>load_groups</i> allows users to load population files containing individual 
-  group ids (opinions) and forager types (aka saved populations with save_groups = 1)
-
+  group ids (opinions) and forager types (aka saved populations with save_groups = 1)<br>
+  <i>load_birth_cells</i> allows users to drop each org into it's original birth cell. This
+  can be important for populations in spatial environments where state information
+  would have been collected as the org moved around the world.
   </p>
 </li>
 <li><p>

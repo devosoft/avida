@@ -5046,6 +5046,15 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   if(m_world->IsWorldBoundary(GetCell(cell_id))) {
     cell_id += m_world->GetConfig().WORLD_X.Get()+1;
   }
+  // Can't inject onto deadly world edges either
+  if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1) {
+    const int dest_x = cell_id % m_world->GetConfig().WORLD_X.Get();  
+    if (dest_x == 0) cell_id += 1;
+    else if (dest_x == m_world->GetConfig().WORLD_X.Get() - 1) cell_id -= 1;
+    const int dest_y = cell_id / m_world->GetConfig().WORLD_X.Get();
+    if (dest_y == 0) cell_id += m_world->GetConfig().WORLD_X.Get();
+    else if (dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) cell_id -= m_world->GetConfig().WORLD_X.Get();
+  }
 
   // if the injected org already has a group we will assign it to, do not assign group id in activate organism
   if(!inject_group) InjectGenome(cell_id, src, genome, ctx, lineage_label, true);
