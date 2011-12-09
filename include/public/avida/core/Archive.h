@@ -47,59 +47,19 @@ namespace Avida {
     LIB_EXPORT virtual void SetObjectType(ArchiveObjectType obj_type) = 0;
     LIB_EXPORT virtual void SetVersion(int version) = 0;
     
-    LIB_EXPORT virtual ConstArchivePropertyIDSetPtr PropertyIDs() const = 0;
-    LIB_EXPORT virtual ConstArchivePropertyPtr Property(ArchivePropertyID prop_id) const = 0;
+    LIB_EXPORT virtual ConstPropertyMapPtr Properties() const = 0;
+    LIB_EXPORT virtual ConstPropertyIDSetPtr PropertyIDs() const = 0;
+    LIB_EXPORT virtual PropertyTypeID PropertyType() const = 0;
+    LIB_EXPORT virtual Apto::String PropertyValue(PropertyID prop_id) const = 0;
     
-    template <typename T>
-    LIB_EXPORT inline bool DefineProperty(ArchivePropertyID prop_id, T prop_value);
-    LIB_EXPORT virtual bool DefineProperty(ArchivePropertyID prop_id, ArchivePropertyType prop_type, Apto::String prop_value) = 0;
+    LIB_EXPORT virtual bool AttachProperty(const Property& prop) = 0;
     
     LIB_EXPORT virtual ConstArchiveObjectIDSetPtr SubObjectIDs() const = 0;
     LIB_EXPORT virtual ConstArchivePtr SubObject(ArchiveObjectID) const = 0;
     
     LIB_EXPORT virtual ArchivePtr DefineSubObject(ArchiveObjectID obj_id) = 0;
   };
-  
-  template <typename T>
-  inline bool Archive::DefineProperty(ArchivePropertyID prop_id, T prop_value)
-  {
-    return this->DefineProperty(prop_id, ArchivePropertyTraits<T>::Type, Apto::AsStr(prop_value));
-  }
-  
-  
-  // ArchiveProperty
-  // --------------------------------------------------------------------------------------------------------------
-  
-  class ArchiveProperty
-  {
-  public:
-    LIB_EXPORT virtual ~ArchiveProperty() { ; }
     
-    LIB_EXPORT virtual ArchivePropertyID PropertyID() const = 0;
-    LIB_EXPORT virtual ArchivePropertyType Type() const = 0;
-    LIB_EXPORT virtual Apto::String Value() const = 0;
-  };
-  
-  
-  
-  // ArchivePropertyTraits Specializations
-  // --------------------------------------------------------------------------------------------------------------
-  
-  template <> struct ArchivePropertyTraits<int>
-  {
-    static const ArchivePropertyType Type;
-  };
-  
-  template <> struct ArchivePropertyTraits<double>
-  {
-    static const ArchivePropertyType Type;
-  };
-  
-  template <> struct ArchivePropertyTraits<Apto::String>
-  {
-    static const ArchivePropertyType Type;
-  };
-  
 };
 
 #endif

@@ -35,13 +35,15 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------
   
   class Archive;
-  class ArchiveProperty;
-  template <typename T> struct ArchivePropertyTraits;
   class Context;
   class Feedback;
+  class GeneticRepresentation;
   class Genome;
   class GlobalObject;
-  class Sequence;
+  class Instruction;
+  class InstructionSequence;
+  class Property;
+  template <typename T> struct PropertyTraits;
   class World;
   class WorldDriver;
   class WorldFacet;
@@ -61,13 +63,27 @@ namespace Avida {
   typedef Apto::SmartPtr<ArchiveObjectIDSet> ArchiveObjectIDSetPtr;
   typedef Apto::SmartPtr<const ArchiveObjectIDSet> ConstArchiveObjectIDSetPtr;
   
-  typedef Apto::String ArchivePropertyID;
-  typedef Apto::String ArchivePropertyType;
-  typedef Apto::Set<ArchivePropertyID> ArchivePropertyIDSet;
-  typedef Apto::SmartPtr<ArchivePropertyIDSet> ArchivePropertyIDSetPtr;
-  typedef Apto::SmartPtr<const ArchivePropertyIDSet> ConstArchivePropertyIDSetPtr;
-  typedef Apto::SmartPtr<ArchiveProperty> ArchivePropertyPtr;
-  typedef Apto::SmartPtr<const ArchiveProperty> ConstArchivePropertyPtr;
+  typedef Apto::SmartPtr<GeneticRepresentation> GeneticRepresentationPtr;
+  typedef Apto::SmartPtr<const GeneticRepresentation> ConstGeneticRepresentationPtr;
+  
+  typedef Apto::Functor<bool, Apto::TL::Create<GeneticRepresentationPtr> > GeneticRepresentationProcessFunctor;
+  typedef Apto::Functor<bool, Apto::TL::Create<ConstGeneticRepresentationPtr> > ConstGeneticRepresentationProcessFunctor;
+  typedef Apto::Map<Apto::String, GeneticRepresentationProcessFunctor> GeneticRepresentationDispatchTable;
+  typedef Apto::Map<Apto::String, ConstGeneticRepresentationProcessFunctor> ConstGeneticRepresentationDispatchTable;
+  
+  typedef Apto::SmartPtr<Genome> GenomePtr;
+  typedef Apto::SmartPtr<const Genome> ConstGenomePtr;
+  
+  typedef int HardwareTypeID;
+  
+  typedef Apto::String PropertyID;
+  typedef Apto::String PropertyTypeID;
+  typedef Apto::Set<PropertyID> PropertyIDSet;
+  typedef Apto::SmartPtr<PropertyIDSet> PropertyIDSetPtr;
+  typedef Apto::SmartPtr<const PropertyIDSet> ConstPropertyIDSetPtr;
+  typedef Apto::Map<PropertyID, Property> PropertyMap;
+  typedef Apto::SmartPtr<PropertyMap> PropertyMapPtr;
+  typedef Apto::SmartPtr<const PropertyMap> ConstPropertyMapPtr;
   
   typedef Apto::String WorldFacetID;
   typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;

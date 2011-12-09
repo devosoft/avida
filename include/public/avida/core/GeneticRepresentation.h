@@ -1,8 +1,8 @@
 /*
- *  core/Archive.cc
+ *  core/GeneticRepresentation.h
  *  avida-core
  *
- *  Created by David on 8/11/11.
+ *  Created by David on 12/8/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,8 +22,31 @@
  *
  */
 
-#include "avida/core/Archive.h"
+#ifndef AvidaCoreGeneticRepresentation_h
+#define AvidaCoreGeneticRepresentation_h
 
-const Avida::ArchivePropertyType Avida::ArchivePropertyTraits<int>::Type = "int";
-const Avida::ArchivePropertyType Avida::ArchivePropertyTraits<double>::Type = "float";
-const Avida::ArchivePropertyType Avida::ArchivePropertyTraits<Apto::String>::Type = "string";
+#include "avida/core/Types.h"
+
+
+namespace Avida {
+  
+  // GeneticRepresentation
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class GeneticRepresentation
+  {
+  public:
+    LIB_EXPORT virtual ~GeneticRepresentation() = 0;
+    
+    LIB_EXPORT virtual bool Process(GeneticRepresentationDispatchTable tbl, GeneticRepresentationPtr ptr);
+    LIB_EXPORT virtual bool Process(ConstGeneticRepresentationDispatchTable tbl, ConstGeneticRepresentationPtr ptr) const;
+    
+    LIB_EXPORT virtual Apto::String AsString() const = 0;
+    
+    LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
+  };
+  
+};
+
+
+#endif

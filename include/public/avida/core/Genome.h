@@ -26,18 +26,22 @@
 #define AvidaCoreGenome_h
 
 #include "apto/platform.h"
-#include "avida/core/Sequence.h"
-#include "avida/core/Types.h"
-
-#include "cString.h"
-
-class cHardwareManager;
-
-class cDataFile;
-template <typename T> class tDictionary;
+#include "avida/core/GeneticRepresentation.h"
 
 
-namespace Avida {  
+namespace Avida {
+  
+  // Genome - genetic and epi-genetic heritable information
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class EpigeneticObject
+  {
+  public:
+    LIB_EXPORT virtual ~EpigeneticObject() = 0;
+    
+    LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
+  };
+  
   
   // Genome - genetic and epi-genetic heritable information
   // --------------------------------------------------------------------------------------------------------------
@@ -45,45 +49,54 @@ namespace Avida {
   class Genome
   {
   private:
-    int m_hw_type;
-    cString m_inst_set;
-    Sequence m_seq;
-   
+    HardwareTypeID m_hw_type;
+    PropertyMap m_props;
+    GeneticRepresentationPtr m_representation;
+    Apto::Map<Apto::String, Apto::SmartPtr<EpigenticObject> > m_epigenetic_objs;
     
   public:
-    LIB_EXPORT Genome() : m_hw_type(-1), m_inst_set("(default)") { ; }
-    LIB_EXPORT Genome(int hw, const cString& is, const Sequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
-    LIB_EXPORT explicit Genome(const cString& seq_str);
-    LIB_EXPORT Genome(const Genome& gen) : m_hw_type(gen.m_hw_type), m_inst_set(gen.m_inst_set), m_seq(gen.m_seq) { ; }
+    LIB_EXPORT Genome(HardwareTypeID hw, const PropertyMap& props, ConstGeneticRepresentationPtr rep);
+    LIB_EXPORT explicit Genome(Apto::String genome_str);
+    LIB_EXPORT Genome(const Genome& genome);
     
     
-    LIB_EXPORT inline int GetHardwareType() const { return m_hw_type; }
-    LIB_EXPORT inline const cString& GetInstSet() const { return m_inst_set; }
-    LIB_EXPORT inline const Sequence& GetSequence() const { return m_seq; }
-    LIB_EXPORT inline Sequence& GetSequence() { return m_seq; }
+    // Accessors
+    LIB_EXPORT inline HardwareTypeID HardwareType() const { return m_hw_type; }
     
-    LIB_EXPORT inline int GetSize() const { return m_seq.GetSize(); }
+    LIB_EXPORT inline PropertyMap& Properties() { return m_props; }
+    LIB_EXPORT inline const PropertyMap& Properties() const { return m_props; }
     
-    
-    LIB_EXPORT inline void SetHardwareType(int type) { m_hw_type = type; }
-    LIB_EXPORT inline void SetInstSet(const cString& is) { m_inst_set = is; }
-    LIB_EXPORT inline void SetSequence(const Sequence& seq) { m_seq = seq; }
+    LIB_EXPORT inline GeneticRepresentationPtr Representation() { return m_representation; }
+    LIB_EXPORT inline ConstGeneticRepresentationPtr Representation() const { return const_cast<GeneticRepresentationPtr&>(m_representation); }
     
     
-    LIB_EXPORT cString AsString() const;
+    // Epigenetic Objects
+    template <typename T> LIB_EXPORT bool AttachEpigeneticObject(Apto::SmartPtr<T> obj)
+    {
+      Apto::String type_id_str(typeid(T).name());
+      if (m_epigenetic_objs.Has(type_id_str)) return false;
+      m_epigenetic_objs.Set(type_id_str, obj);
+      return true;
+    }
+    
+    template <typename T> LIB_EXPORT Apto::SmartPtr<T> GetEpigeneticObject()
+    {
+      Apto::SmartPtr<T> rtn;
+      rtn.DynamicCastFrom(m_epigenetic_objs.Get(Apto::String(typeid(T).name())));
+      return rtn;
+    }
     
     
-    LIB_EXPORT bool operator==(const Genome& gen) const
-      { return (m_hw_type == gen.m_hw_type && m_inst_set == gen.m_inst_set && m_seq == gen.m_seq); }
-    LIB_EXPORT Genome& operator=(const Genome& gen)
-      { m_hw_type = gen.m_hw_type; m_inst_set = gen.m_inst_set; m_seq = gen.m_seq; return *this; }
+    // Conversion
+    LIB_EXPORT Apto::String AsString() const;
+    
 
-    
-    LIB_EXPORT void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
-    LIB_EXPORT void Save(cDataFile& df);
-    
-    LIB_EXPORT bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, Feedback& feedback);
-    LIB_EXPORT void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
+    // Operations
+    LIB_EXPORT bool operator==(const Genome& genome) const;
+    LIB_EXPORT Genome& operator=(const Genome& genome);
+
+    LIB_EXPORT bool Serialize(ArchivePtr ar) const;
+    LIB_EXPORT static GenomePtr Deserialize(ArchivePtr ar);
   };  
 };
 

@@ -1,5 +1,5 @@
 /*
- *  core/Sequence.cc
+ *  core/InstructionSequence.cc
  *  avida-core
  *
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
@@ -22,11 +22,9 @@
  *
  */
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include "AvidaTools.h"
-
-#include "cInstSet.h"
 
 using namespace AvidaTools;
 
@@ -36,29 +34,120 @@ const double MEMORY_INCREASE_FACTOR = 1.5;
 const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
 
 
-Avida::Sequence::Sequence(const Sequence& seq)
-  : m_seq(seq.GetSize()), m_active_size(seq.GetSize()), m_mutation_steps(seq.GetMutationSteps())
+Apto::String Avida::Instruction::GetSymbol() const
+{
+  // aA0 +a+A+0 -a-A-0 ~a~A~0 ?a
+  char symbol[3];
+  symbol[1] = symbol[2] = '\0';
+  
+  if (m_operand == 255) {
+    symbol[0] = '_';
+  } else {
+    int idx = 0;
+    int offset = m_operand % 62;
+
+    switch (m_operand / 62) {
+      case 1:
+        idx = 1;
+        symbol[0] = '+';
+        break;
+      case 2:
+        idx = 1;
+        symbol[0] = '-';
+        break;
+      case 3:
+        idx = 1;
+        symbol[0] = '~';
+        break;
+      case 4:
+        idx = 1;
+        symbol[0] = '?';
+        break;
+    }
+    
+    if (m_operand < 26) symbol[idx] = offset + 'a';
+    else if (m_operand < 52) symbol[idx] = offset - 26 + 'A';
+    else if (m_operand < 62) symbol[idx] = offset - 52 + '0';
+  }
+  
+  return  Apto::String(symbol); 
+}
+
+bool Avida::Instruction::SetSymbol(const Apto::String& symbol)
+{
+  assert(symbol.GetSize() > 0);
+  
+  char sym_char = symbol[0];
+  int operand = 0;
+  switch (sym_char) {
+    case '+':
+      if (symbol.GetSize() != 2) return false;
+      operand = 62;
+      sym_char = symbol[1];
+      break;
+    case '-':
+      if (symbol.GetSize() != 2) return false;
+      operand = 124;
+      sym_char = symbol[1];
+      break;
+    case '~':
+      if (symbol.GetSize() != 2) return false;
+      operand = 186;
+      sym_char = symbol[1];
+      break;
+    case '?':
+      if (symbol.GetSize() != 2) return false;
+      operand = 248;
+      sym_char = symbol[1];
+      break;
+    case '_':
+      m_operand = 255;
+      return true;
+  }
+  
+  if (sym_char >= 'a' && sym_char <= 'z') operand += sym_char - 'a';
+  else if (sym_char >= 'A' && sym_char <= 'Z') operand += sym_char - 'A' + 26;
+  else if (sym_char >= '0' && sym_char <= '9') operand += sym_char - '0' + 52;
+  else return false;
+
+  m_operand = operand;
+  return true;
+}
+
+
+
+
+Avida::InstructionSequence::InstructionSequence(const InstructionSequence& seq)
+  : m_seq(seq.GetSize()), m_active_size(seq.GetSize())
 {
   for (int i = 0; i < m_active_size; i++)  m_seq[i] = seq[i];
 }
 
-Avida::Sequence::Sequence(const cString & str)
+Avida::InstructionSequence::InstructionSequence(const Apto::String& str)
 {
-  cString tmp_string(str);
-  tmp_string.RemoveChar('_');  // Remove all blanks from alignments...
-
-  m_active_size = tmp_string.GetSize();
-  m_seq.ResizeClear(m_active_size);
-  for (int i = 0; i < m_active_size; i++) m_seq[i].SetSymbol(tmp_string[i]);
+  m_seq.ResizeClear(str.GetSize());
+  int size = 0;
+  for (int i = 0; i < str.GetSize(); i++) {
+    if (str[i] == '_') continue;
+    switch (str[i]) {
+      case '+':
+      case '-':
+      case '~':
+      case '?':
+        if (!m_seq[size].SetSymbol(str.Substring(i, 2))) continue;
+        i++;
+        break;
+      default:
+        if (!m_seq[size].SetSymbol(str.Substring(i, 1))) continue;
+    }
+    size++;
+  }
+  m_active_size = size;
+  m_seq.Resize(size);
 }
 
 
-Avida::Sequence::~Sequence()
-{
-}
-
-
-void Avida::Sequence::adjustCapacity(int new_size)
+void Avida::InstructionSequence::adjustCapacity(int new_size)
 {
   assert(new_size > 0);
   
@@ -79,7 +168,7 @@ void Avida::Sequence::adjustCapacity(int new_size)
   m_active_size = new_size;
 }
 
-void Avida::Sequence::prepareInsert(int pos, int num_sites)
+void Avida::InstructionSequence::prepareInsert(int pos, int num_sites)
 {
   assert(pos >= 0 && pos <= m_active_size); // Must insert at a legal position!
   assert(num_sites > 0); // Must insert positive number of lines!
@@ -94,7 +183,7 @@ void Avida::Sequence::prepareInsert(int pos, int num_sites)
 }
 
 
-void Avida::Sequence::Copy(int to, int from)
+void Avida::InstructionSequence::Copy(int to, int from)
 {
   assert(to   >= 0   && to   < m_active_size);
   assert(from >= 0   && from < m_active_size);
@@ -103,16 +192,16 @@ void Avida::Sequence::Copy(int to, int from)
  
 
 // Return the sequence as an alphabetic string
-cString Avida::Sequence::AsString() const
+Apto::String Avida::InstructionSequence::AsString() const
 {
-  cString out_string(m_active_size);
-  for (int i = 0; i < m_active_size; i++) out_string[i] = m_seq[i].GetSymbol();
+  Apto::StringBuffer out_string;
+  for (int i = 0; i < m_active_size; i++) out_string += m_seq[i].GetSymbol();
 
-  return out_string;
+  return Apto::String(out_string);
 }
 
 
-void Avida::Sequence::Resize(int new_size)
+void Avida::InstructionSequence::Resize(int new_size)
 {
   assert(new_size >= 0);
   
@@ -122,7 +211,7 @@ void Avida::Sequence::Resize(int new_size)
   for (int i = old_size; i < new_size; i++) m_seq[i].SetOp(0);
 }
 
-void Avida::Sequence::Insert(int pos, const cInstruction& inst)
+void Avida::InstructionSequence::Insert(int pos, const Instruction& inst)
 {
   assert(pos >= 0);
   assert(pos <= m_seq.GetSize());
@@ -131,7 +220,7 @@ void Avida::Sequence::Insert(int pos, const cInstruction& inst)
   m_seq[pos] = inst;
 }
 
-void Avida::Sequence::Insert(int pos, const Sequence& seq)
+void Avida::InstructionSequence::Insert(int pos, const InstructionSequence& seq)
 {
   assert(pos >= 0);
   assert(pos <= m_seq.GetSize());
@@ -140,7 +229,7 @@ void Avida::Sequence::Insert(int pos, const Sequence& seq)
   for (int i = 0; i < seq.GetSize(); i++) m_seq[i + pos] = seq[i];
 }
 
-void Avida::Sequence::Remove(int pos, int num_sites)
+void Avida::InstructionSequence::Remove(int pos, int num_sites)
 {
   assert(num_sites > 0);                    // Must remove something...
   assert(pos >= 0);                         // Removal must be in sequence
@@ -151,7 +240,7 @@ void Avida::Sequence::Remove(int pos, int num_sites)
   adjustCapacity(new_size);
 }
 
-void Avida::Sequence::Replace(int pos, int num_sites, const Sequence& seq)
+void Avida::InstructionSequence::Replace(int pos, int num_sites, const InstructionSequence& seq)
 {
   assert(pos >= 0);                         // Replace must be in sequence
   assert(num_sites >= 0);                   // Cannot replace negative
@@ -181,7 +270,7 @@ void Avida::Sequence::Replace(int pos, int num_sites, const Sequence& seq)
  
  Caveat: if length([begin,end)) != length(g), all size changes are made at end.
 */
-void Avida::Sequence::Replace(const Sequence& g, int begin, int end)
+void Avida::InstructionSequence::Replace(const InstructionSequence& g, int begin, int end)
 {
 	if (begin == end) {
 		// we're actually doing an insertion...
@@ -194,12 +283,12 @@ void Avida::Sequence::Replace(const Sequence& g, int begin, int end)
 		
 		// first, replace the [begin, size) region of this sequence with as much of g as we can get.
 		int tail_size = Min(m_active_size - begin, g.GetSize());
-		Sequence tail = g.Crop(0, tail_size);
+		InstructionSequence tail = g.Crop(0, tail_size);
 		Replace(begin, (m_active_size - begin), tail);
 
 		// now, replace the [0, end) region or remove it if the whole fragment was already copied in:
 		if (tail_size != g.GetSize()) {
-			Sequence head = g.Crop(tail_size, g.GetSize());
+			InstructionSequence head = g.Crop(tail_size, g.GetSize());
 			Replace(0, end, head);
 		} else if(end > 0) {
 			Remove(0, end);
@@ -217,29 +306,29 @@ void Avida::Sequence::Replace(const Sequence& g, int begin, int end)
  
  Negative rotation is supported, and moves instructions from the beginning to the end.
 */
-void Avida::Sequence::Rotate(int n)
+void Avida::InstructionSequence::Rotate(int n)
 {
 	assert(n < m_active_size);
 	if(n==0) { return; }
 
 	if (n > 0) {
 		// forward
-		Sequence head = Crop(m_active_size - n, m_active_size);
-		Sequence tail = Crop(0, m_active_size - n);
+		InstructionSequenceSequence head = Crop(m_active_size - n, m_active_size);
+		InstructionSequenceSequence tail = Crop(0, m_active_size - n);
 		head.Append(tail);
 		operator=(head);
 	} else {
 		assert(false);
 		// backward
-		Sequence head = Crop(0, -n); // n is < 0, so this is addition.
-		Sequence tail = Crop(-n, m_active_size);
+		InstructionSequenceSequence head = Crop(0, -n); // n is < 0, so this is addition.
+		InstructionSequenceSequence tail = Crop(-n, m_active_size);
 		tail.Append(head);
 		operator=(tail);
 	}
 }
 
 
-void Avida::Sequence::operator=(const Sequence& other_seq)
+void Avida::InstructionSequence::operator=(const InstructionSequence& other_seq)
 {
   m_active_size = other_seq.m_active_size;
   m_seq.ResizeClear(m_active_size);
@@ -251,7 +340,7 @@ void Avida::Sequence::operator=(const Sequence& other_seq)
 }
 
 
-bool Avida::Sequence::operator==(const Sequence& other_seq) const
+bool Avida::InstructionSequence::operator==(const InstructionSequence& other_seq) const
 {
   // Make sure the sizes are the same.
   if (m_active_size != other_seq.m_active_size) return false;
@@ -264,7 +353,7 @@ bool Avida::Sequence::operator==(const Sequence& other_seq) const
 }
 
 
-int Avida::Sequence::FindInst(const cInstruction& inst, int start_index) const
+int Avida::InstructionSequence::FindInst(const InstructionSequence& inst, int start_index) const
 {
   assert(start_index < m_active_size);  // Starting search after sequence end.
   
@@ -275,7 +364,7 @@ int Avida::Sequence::FindInst(const cInstruction& inst, int start_index) const
 }
 
 
-int Avida::Sequence::CountInst(const cInstruction& inst) const
+int Avida::Sequence::CountInst(const InstructionSequence& inst) const
 {
   int count = 0;
   for (int i = 0; i < m_active_size; i++) if (m_seq[i] == inst) count++;
@@ -283,7 +372,7 @@ int Avida::Sequence::CountInst(const cInstruction& inst) const
 }
 
 
-int Avida::Sequence::MinDistBetween(const cInstruction& inst) const
+int Avida::Sequence::MinDistBetween(const InstructionSequence& inst) const
 {
 	int firstInstance = -1;
 	int secondInstance = -1;
@@ -323,13 +412,7 @@ int Avida::Sequence::MinDistBetween(const cInstruction& inst) const
 }
 
 
-void Avida::Sequence::SaveInstructions(std::ostream& fp, const cInstSet& inst_set) const
-{
-  for (int i = 0; i < m_active_size; i++) fp << inst_set.GetName(m_seq[i]) << endl;
-}
-
-
-Avida::Sequence Avida::Sequence::Crop(int start, int end) const
+Avida::Sequence Avida::InstructionSequence::Crop(int start, int end) const
 {
   assert(end > start);                // Must have a positive length clip!
   assert(m_active_size >= end);       // end must be < sequence length
@@ -343,7 +426,7 @@ Avida::Sequence Avida::Sequence::Crop(int start, int end) const
 }
 
 
-Avida::Sequence Avida::Sequence::Cut(int start, int end) const
+Avida::Sequence Avida::InstructionSequence::Cut(int start, int end) const
 {
   assert(end > start);                // Must have a positive size cut!
   assert(m_active_size >= end);       // end must be < sequence length
@@ -361,7 +444,7 @@ Avida::Sequence Avida::Sequence::Cut(int start, int end) const
   return out_seq;
 }  
 
-Avida::Sequence Avida::Sequence::Join(const Sequence& lhs, const Sequence& rhs)
+Avida::Sequence Avida::InstructionSequence::Join(const InstructionSequence& lhs, const InstructionSequence& rhs)
 {
   const int length1 = lhs.GetSize();
   const int length2 = rhs.GetSize();
@@ -375,7 +458,7 @@ Avida::Sequence Avida::Sequence::Join(const Sequence& lhs, const Sequence& rhs)
 }
 
 
-int Avida::Sequence::FindOverlap(const Sequence& seq1, const Sequence& seq2, int offset)
+int Avida::InstructionSequence::FindOverlap(const InstructionSequence& seq1, const InstructionSequence& seq2, int offset)
 {
   assert(offset < seq1.GetSize());
   assert(-offset < seq2.GetSize());
@@ -386,7 +469,7 @@ int Avida::Sequence::FindOverlap(const Sequence& seq1, const Sequence& seq2, int
 }
 
 
-int Avida::Sequence::FindHammingDistance(const Sequence& seq1, const Sequence& seq2, int offset)
+int Avida::InstructionSequence::FindHammingDistance(const InstructionSequence& seq1, const InstructionSequence& seq2, int offset)
 {
   const int start1 = (offset < 0) ? 0 : offset;
   const int start2 = (offset > 0) ? 0 : -offset;
@@ -405,7 +488,7 @@ int Avida::Sequence::FindHammingDistance(const Sequence& seq1, const Sequence& s
 }
 
 
-int Avida::Sequence::FindBestOffset(const Sequence& seq1, const Sequence& seq2)
+int Avida::InstructionSequence::FindBestOffset(const InstructionSequence& seq1, const InstructionSequence& seq2)
 {
   const int size1 = seq1.GetSize();
   const int size2 = seq2.GetSize();
@@ -438,14 +521,14 @@ int Avida::Sequence::FindBestOffset(const Sequence& seq1, const Sequence& seq2)
 }
 
 
-int Avida::Sequence::FindSlidingDistance(const Sequence& seq1, const Sequence& seq2)
+int Avida::InstructionSequence::FindSlidingDistance(const InstructionSequence& seq1, const InstructionSequence& seq2)
 {
   const int offset = FindBestOffset(seq1, seq2);
   return FindHammingDistance(seq1, seq2, offset);
 }
 
 
-int Avida::Sequence::FindEditDistance(const Sequence& seq1, const Sequence& seq2)
+int Avida::InstructionSequence::FindEditDistance(const InstructionSequence& seq1, const InstructionSequence& seq2)
 {
   const int size1 = seq1.GetSize();
   const int size2 = seq2.GetSize();

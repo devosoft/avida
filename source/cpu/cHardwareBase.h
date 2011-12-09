@@ -23,7 +23,7 @@
 #ifndef cHardwareBase_h
 #define cHardwareBase_h
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include <cassert>
 #include <climits>
