@@ -394,13 +394,12 @@ public:
 	void AddResourcesConsumed(double amt){	m_total_res_consumed += amt; }
 	void UpdateShannon(cPopulationCell& cell);
 	void UpdateShannonAll();
-  double GetMeanSDofFitness(); 
-  double GetMeanSDofMerit(); 
-  double GetMeanSDofGestation(); 
-
   double GetPercentReproductives();
 	void ClearShannonInformationStats();
-	
+  double GetAveGermMut();
+  double GetAveNonGermMut();
+	void ClearTotalResourceAmountConsumed() {m_total_res_consumed = 0;}
+    
 private:
 	double m_total_res_consumed; //! Amount of resources consumed by deme.
 	//! get total amount of resources used

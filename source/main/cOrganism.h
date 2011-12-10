@@ -666,7 +666,10 @@ public:
 	// -------- Division of Labor support --------
 public: 
 	void DonateResConsumedToDeme(); //! donate consumed resources to the deme.
-	
+	int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
+  void IncPointMutations(int n) {m_num_point_mut+=n;} 
+private: 
+  int m_num_point_mut;
 	
 	
 	

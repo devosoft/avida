@@ -1874,8 +1874,7 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
     return;
   }
 
-  // Update stats
-  // calculate how many different reactions the deme performed.
+  // Update stats calculate how many different reactions the deme performed.
   double deme_performed_rx=0;
   tArray<int> deme_reactions = source_deme.GetCurReactionCount();
   for(int i=0; i< deme_reactions.GetSize(); ++i) {
@@ -1896,8 +1895,7 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
   }
 
 
-  m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties,
-                                                              shannon_div, num_orgs_perf_reaction, per_reproductives);
+  m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties, shannon_div, num_orgs_perf_reaction, per_reproductives);
 
   //Option to bridge between kin and group selection.
   if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get()) {
@@ -2493,6 +2491,9 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // Methods that require a germline can sometimes come up short...
       //assert(source_founders.GetSize()>0);
       //assert(target_founders.GetSize()>0);
+      if(source_founders.GetSize() == 0) {
+        return false;
+      }
 
       // We clear the deme, but trick cPopulation::KillOrganism
       // to NOT delete the organisms, by pretending
@@ -2591,6 +2592,9 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // source deme is left untouched
       else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 2) {
       }
+      else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 3) {
+        source_deme.ClearTotalResourceAmountConsumed();
+      }
       else {
         m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
       }
@@ -2658,9 +2662,54 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 
 void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
 {
-  // phenotype can be NULL
+  // Mutate the genome?
+  if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1) {
+    // MUTATE!
 
+    // create a new genome by mutation
+    Genome mg(bg->GetProperty("genome").AsString());
+    cCPUMemory new_genome(mg.GetSequence());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
+    cAvidaContext ctx(m_world, m_world->GetRandom());
+    
+    if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
+      for(int i=0; i<new_genome.GetSize(); ++i) {
+        if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
+          new_genome[i] = instset.GetRandomInst(ctx);
+        }
+      }
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize() + 1);
+      new_genome.Insert(mut_line, instset.GetRandomInst(ctx));
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize());
+      new_genome.Remove(mut_line);
+    }
+    mg.SetSequence(new_genome);
+
+    /*
+    
+    //Create a new genotype which is daughter to the old one.
+    cDemePlaceholderUnit unit(SRC_DEME_GERMLINE, mg);
+    tArray<cBioGroup*> parents;
+    parents.Push(bg);
+    cBioGroup* new_genotype = bg->ClassifyNewBioUnit(&unit, &parents); 
+    new_genotype->RemoveBioUnit(&unit);
+    */
+    
+    InjectGenome(_cell_id, SRC_DEME_REPLICATE, mg, ctx); 
+
+  } else {
+  
+  // phenotype can be NULL
   InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx); 
+  }
 
   // At this point, the cell had better be occupied...
   assert(GetCell(_cell_id).IsOccupied());

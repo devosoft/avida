@@ -901,6 +901,8 @@ public:
   void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
   //! Print statistics about deme replication.
   void PrintDemeReplicationData(const cString& filename);
+  //! Print statistics regarding germline sequestration
+  void PrintDemeGermlineSequestration(const cString& filename);
   
 
 
@@ -951,10 +953,9 @@ protected:
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
-  cDoubleSum m_deme_fit_sd; //!< Mean standard deviation of fitness of organisms within a deme
-  cDoubleSum m_deme_gest_sd; //!< Mean standard deviation of gestation of organisms within a deme
-  cDoubleSum m_deme_merit_sd; //!< Mean standard deviation of merit of organisms within a deme
   cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
+  cDoubleSum m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
+  cDoubleSum m_ave_non_germ_mut; 
   
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.

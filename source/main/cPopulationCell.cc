@@ -391,10 +391,12 @@ void cPopulationCell::SetCellData(int data, int org_id)
   m_cell_data.contents = data;
   m_cell_data.org_id = org_id;
   m_cell_data.update = m_world->GetStats().GetUpdate();
-  if (m_organism->HasOpinion()) {
-    m_cell_data.territory = m_organism->GetOpinion().first;
+  if (m_organism != NULL) { 
+    if (m_organism->HasOpinion()) {
+      m_cell_data.territory = m_organism->GetOpinion().first;
+    }
+    m_cell_data.forager = m_organism->GetForageTarget();
   }
-  m_cell_data.forager = m_organism->GetForageTarget();
 }
 
 void cPopulationCell::ClearCellData()

@@ -312,7 +312,7 @@ public:
   CONFIG_ADD_VAR(COPY_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per copy)\n- Randomly apply insertion, deletion or point mutation");
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
   
-  CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
+  CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update or when point-mut instruction is executed)");
 
   CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_INS_PROB, double, 0.0, "Insertion rate (per site, applied on divide)");
@@ -476,13 +476,14 @@ public:
   CONFIG_ADD_VAR(DEMES_MIGRATION_METHOD, int, 0, "Which demes can an org land in when it migrates?\n0 = Any other deme\n1 = Eight neighboring demes\n2 = Two adjacent demes in list\n3 = Proportional based on the number of points");
   CONFIG_ADD_VAR(DEMES_NUM_X, int, 0, "Simulated number of demes in X dimension. Used only for migration. ");
   CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0 = Maintain old consistency\n1 = New method using genotypes");
-  CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0 = Replace and target demes\n1 = Replace target deme, reset source deme to founders\n2 = Replace target deme, leave source deme unchanged");
+  CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0 = Replace and target demes\n1 = Replace target deme, reset source deme to founders\n2 = Replace target deme, leave source deme unchanged\n3 = Replace the target deme, and reset the number of resources consumed by the source deme.");
   CONFIG_ADD_VAR(DEMES_DEFAULT_GERMLINE_PROPENSITY, double, 0.0, "Default germline propensity of organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.");
   CONFIG_ADD_VAR(DEMES_FOUNDER_GERMLINE_PROPENSITY, double, -1.0, "Default germline propensity of founder organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.\n <0 = OFF");
   CONFIG_ADD_VAR(DEMES_PREFER_EMPTY, int, 0, "Give empty demes preference as targets of deme replication?");
   CONFIG_ADD_VAR(DEMES_PROTECTION_POINTS, int, 0, "The number of points a deme receives for each suicide.");
   CONFIG_ADD_VAR(MIGRATION_RATE, double, 0.0, "Uniform probability of offspring migrating to a new deme.");  
   CONFIG_ADD_VAR(DEMES_TRACK_SHANNON_INFO, int, 0, "Enable shannon mutual information tracking for demes.");
+  CONFIG_ADD_VAR(DEMES_MUT_ORGS_ON_REPLICATION, int, 0, "Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): 0=OFF, 1=ON");
   
   
   // -------- Reversion config options --------

@@ -1749,9 +1749,6 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
 	m_deme_density.Add(source_deme.GetDensity());
-  m_deme_fit_sd.Add(source_deme.GetMeanSDofFitness());
-  m_deme_gest_sd.Add(source_deme.GetMeanSDofGestation());
-  m_deme_merit_sd.Add(source_deme.GetMeanSDofMerit());
 
 	if(source_deme.isTreatable()) {
 		++m_deme_num_repls_treatable;
@@ -1768,6 +1765,13 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 		m_deme_generation_untreatable.Add(source_deme.GetGeneration());
 		m_deme_density_untreatable.Add(source_deme.GetDensity());
 	}
+  
+  /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
+  int n_mut = source_deme.GetAveGermMut(); 
+  if (n_mut >= 0) {
+    m_ave_germ_mut.Add(n_mut); 
+    m_ave_non_germ_mut.Add(source_deme.GetAveNonGermMut());
+  }
 }
 
 
@@ -1811,9 +1815,6 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_deme_merit.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation.Average(), "Mean generation of replicated demes [generation]");
   df.Write(m_deme_density.Average(), "Mean density of replicated demes [density]");
-  df.Write(m_deme_fit_sd.Average(), "Mean standard deviation of fitness of organisms within a deme [sddemefit]");  
-  df.Write(m_deme_gest_sd.Average(), "Mean standard deviation of gestation of organisms within a deme [sddemegest]");  
-  df.Write(m_deme_merit_sd.Average(), "Mean standard deviation of merit of organisms within a deme [sddememerit]");  
   df.Endl();
 
   m_deme_num_repls = 0;
@@ -1822,11 +1823,31 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   m_deme_merit.Clear();
   m_deme_generation.Clear();
 	m_deme_density.Clear();
-  m_deme_fit_sd.Clear();
-  m_deme_fit_sd.Clear();
-  m_deme_fit_sd.Clear();
-
+  
 }
+
+/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently only prints information from deme replications since the last time this method was invoked.
+ */
+void cStats::PrintDemeGermlineSequestration(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme germline sequestration data");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+  df.Write(m_ave_germ_mut.Average(), "Mean number of mutations to germline [numgermmut]");
+  df.Write(m_ave_germ_mut.StdDeviation(), "Standard Deviation of mutations to germline [sdgermmut]");
+  df.Write(m_ave_non_germ_mut.Average(), "Mean number of mutations to non-germline orgs [numnongermmut]");
+  df.Write(m_ave_non_germ_mut.StdDeviation(), "Standard Deviation of mutations to non-germline orgs [sdnongermmut]");
+  
+  df.Endl();
+  
+  m_ave_germ_mut.Clear();
+  m_ave_non_germ_mut.Clear();
+}
+
+
+
 
 /*! Print statistics related to deme replication.  Currently only prints the
  number of deme replications since the last time PrintDemeReplicationData was

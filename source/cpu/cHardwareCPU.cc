@@ -698,6 +698,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Division of labor instructions
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -9857,6 +9858,15 @@ bool  cHardwareCPU::Inst_DonateResToDeme(cAvidaContext& ctx)
 void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 {
   m_task_switching_cost += cost;
+}
+
+
+bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
+{
+  double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
+  int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+  m_organism->IncPointMutations(num_mut);
+  return true;
 }
 
 /***
