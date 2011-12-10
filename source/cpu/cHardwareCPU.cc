@@ -9863,7 +9863,7 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 
 bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
 {
-  double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
+  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
   int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
   m_organism->IncPointMutations(num_mut);
   return true;
