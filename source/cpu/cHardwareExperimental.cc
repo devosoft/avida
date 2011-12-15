@@ -473,7 +473,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
-    const cInstruction& cur_inst = ip.GetInst();
+    const Instruction& cur_inst = ip.GetInst();
     
     if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
       // Speculative instruction reject, flush and return
@@ -566,10 +566,10 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 // This method will handle the actuall execution of an instruction
 // within single process, once that function has been finalized.
-bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 
+bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
 {
   // Copy Instruction locally to handle stochastic effects
-  cInstruction actual_inst = cur_inst;
+  Instruction actual_inst = cur_inst;
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
@@ -602,7 +602,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
 }
 
 
-void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
+void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -1068,7 +1068,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceBackward(bool mark_executed)
 
 
 
-void cHardwareExperimental::ReadInst(cInstruction in_inst)
+void cHardwareExperimental::ReadInst(Instruction in_inst)
 {
   bool is_nop = m_inst_set->IsNop(in_inst);
   
@@ -1368,7 +1368,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
   
   m_mal_active = false;
@@ -2027,7 +2027,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   getHead(head_id).Adjust();
   
   // Mutations only occur on the read, for the moment.
-  cInstruction read_inst;
+  Instruction read_inst;
   if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
   } else {
@@ -2054,7 +2054,7 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   int value = m_threads[m_cur_thread].reg[src].value;
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
   
-  active_head.SetInst(cInstruction(value));
+  active_head.SetInst(Instruction(value));
   active_head.SetFlagCopied();
   
   if (m_organism->TestCopyIns(ctx)) active_head.InsertInst(m_inst_set->GetRandomInst(ctx));
@@ -2078,7 +2078,7 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   write_head.Adjust();
   
   // Do mutations.
-  cInstruction read_inst = read_head.GetInst();
+  Instruction read_inst = read_head.GetInst();
   ReadInst(read_inst);
   if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
@@ -2657,7 +2657,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
   
   m_mal_active = false;

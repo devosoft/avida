@@ -380,7 +380,7 @@ void cHardwareGX::internalReset()
     m_promoter_states.ResizeClear( m_organism->GetGenome().GetSize() );
     m_promoter_occupied_sites.ResizeClear( m_organism->GetGenome().GetSize() );
     
-    cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
+    Instruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
     do {
       m_promoter_default_rates[m_promoter_update_head.GetPosition()] = 
         (m_promoter_update_head.GetInst() == promoter_inst) ? 1 : m_world->GetConfig().IMPLICIT_BG_PROMOTER_RATE.Get();
@@ -458,7 +458,7 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
       IP().Adjust();
       
       // Find the instruction to be executed.
-      const cInstruction& cur_inst = IP().GetInst();
+      const Instruction& cur_inst = IP().GetInst();
       
       m_advance_ip = true;
       m_reset_inputs = false;
@@ -516,10 +516,10 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
 }
 
 /*! This method executes one instruction for one programid. */
-bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 
+bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
 {
   // Copy the instruction in case of execution errors.
-  cInstruction actual_inst = cur_inst;
+  Instruction actual_inst = cur_inst;
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
@@ -547,7 +547,7 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstructi
 }
 
 
-void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
+void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -858,7 +858,7 @@ cHeadCPU cHardwareGX::FindLabel(const cCodeLabel & in_label, int direction)
 
 void cHardwareGX::ReadInst(const int in_inst)
 {
-  if(m_inst_set->IsNop(cInstruction(in_inst))) {
+  if(m_inst_set->IsNop(Instruction(in_inst))) {
     GetReadLabel().AddNop(in_inst);
   } else {
     GetReadLabel().Clear();
@@ -1294,7 +1294,7 @@ bool cHardwareGX::Inst_Return(cAvidaContext& ctx)
 bool cHardwareGX::Inst_Throw(cAvidaContext& ctx)
 {
   // Only initialize this once to save some time...
-  static cInstruction catch_inst = GetInstSet().GetInst(cStringUtil::Stringf("catch"));
+  static Instruction catch_inst = GetInstSet().GetInst(cStringUtil::Stringf("catch"));
 
   //Look for the label directly (no complement)
   ReadLabel();
@@ -1359,7 +1359,7 @@ bool cHardwareGX::Inst_ThrowIf0(cAvidaContext& ctx)
 bool cHardwareGX::Inst_Goto(cAvidaContext& ctx)
 {
   // Only initialize this once to save some time...
-  static cInstruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("label"));
+  static Instruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("label"));
 
   //Look for an EXACT label match after a 'label' instruction
   ReadLabel();
@@ -1822,7 +1822,7 @@ bool cHardwareGX::Inst_WriteInst(cAvidaContext& ctx)
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
   } else {
-    to.SetInst(cInstruction(value));
+    to.SetInst(Instruction(value));
     to.ClearFlagMutated();     // UnMark
     to.ClearFlagCopyMut();     // UnMark
   }
@@ -1852,7 +1852,7 @@ bool cHardwareGX::Inst_StackWriteInst(cAvidaContext& ctx)
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
   } else {
-    to.SetInst(cInstruction(value));
+    to.SetInst(Instruction(value));
     to.ClearFlagMutated();     // UnMark
     to.ClearFlagCopyMut();     // UnMark
   }
@@ -1931,7 +1931,7 @@ bool cHardwareGX::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
 {
   // Setup child
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_organism->GetGenome().GetSequence();
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -1950,7 +1950,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -2489,7 +2489,7 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate,
       if (neighbor != NULL && neighbor->GetPhenotype().IsDonorTrueGbLast()) {
-          const Sequence& neighbor_genome = neighbor->GetGenome().GetSequence();
+          const InstructionSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -2939,7 +2939,7 @@ bool cHardwareGX::Inst_HeadWrite(cAvidaContext& ctx)
   int value = GetRegister(src);
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
   
-  active_head.SetInst(cInstruction(value));
+  active_head.SetInst(Instruction(value));
   active_head.SetFlagCopied();
   
   // Advance the head after write...
@@ -2957,7 +2957,7 @@ bool cHardwareGX::Inst_HeadCopy(cAvidaContext& ctx)
   write_head.Adjust();
   
   // Do mutations.
-  cInstruction read_inst = read_head.GetInst();
+  Instruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
   if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
@@ -2983,7 +2983,7 @@ bool cHardwareGX::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   write_head.Adjust();
   
   // Do mutations.
-  cInstruction read_inst = read_head.GetInst();
+  Instruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
   if ( ctx.GetRandom().P(m_organism->GetCopyMutProb() / reduction) ) {
     read_inst = m_inst_set->GetRandomInst(ctx);
@@ -3496,7 +3496,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   
   // Ok, we're good to go.  We have to create the offspring's genome and delete the
   // offspring's programids from m_programids.
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome.Resize(1);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -3613,7 +3613,7 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
 
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_programids[write_head.GetMemSpace()]->GetMemory();
   child_genome = child_genome.Crop(0, child_end);
   m_organism->OffspringGenome().SetHardwareType(GetType());
@@ -3630,7 +3630,7 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
   
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
   
   m_mal_active = false;
@@ -3844,7 +3844,7 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
   // If organism has no active promoters, catch us before we enter an infinite loop...
   if (m_promoter_sum == 0.0) return;
 
-  static cInstruction terminator_inst = GetInstSet().GetInst(cStringUtil::Stringf("terminator"));
+  static Instruction terminator_inst = GetInstSet().GetInst(cStringUtil::Stringf("terminator"));
 
   if (in_limit == -1 ) in_limit = m_world->GetConfig().MAX_PROGRAMIDS.Get();
   if (in_limit > m_world->GetConfig().MAX_PROGRAMIDS.Get()) in_limit = m_world->GetConfig().MAX_PROGRAMIDS.Get();
@@ -3891,7 +3891,7 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
     read_head++; //Don't copy the promoter instruction itself (we start after that position)
     cHeadProgramid write_head(this, 0, new_programid->GetID());
     int copied = 0;
-    cInstruction inst;
+    Instruction inst;
     do {
       inst = read_head.GetInst();
       if (inst == terminator_inst) break; // Early termination 
@@ -3996,7 +3996,7 @@ int cHardwareGX::FindRegulatoryMatch(const cCodeLabel& label)
 
 /*! Construct this cProgramid, and initialize hardware resources.
 */
-cHardwareGX::cProgramid::cProgramid(const Sequence& genome, cHardwareGX* hardware)
+cHardwareGX::cProgramid::cProgramid(const InstructionSequence& genome, cHardwareGX* hardware)
 : m_gx_hardware(hardware)
 , m_unique_id(hardware->m_last_unique_id_assigned++)
 , m_executable(false)
@@ -4099,7 +4099,7 @@ std::vector<cHardwareGX::cMatchSite> cHardwareGX::cProgramid::Sites(const cCodeL
   std::vector<cHardwareGX::cMatchSite> matches;
   if(!m_bindable) return matches;
   
-  cInstruction site_inst = m_gx_hardware->GetInstSet().GetInst("site");
+  Instruction site_inst = m_gx_hardware->GetInstSet().GetInst("site");
   
   // Create a new search head at the beginning of our memory space
   // \to do doesn't properly find wrap-around matches overlapping the origin of the memory

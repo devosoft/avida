@@ -43,7 +43,6 @@ class cCPUMemory;
 class cCPUTestInfo;
 class cDataFile;
 class cInstSet;
-class cInstruction;
 class cTestCPU;
 class cWorld;
 

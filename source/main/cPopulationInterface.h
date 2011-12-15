@@ -130,7 +130,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
   //! Send a message to the faced organism.
@@ -187,15 +187,15 @@ public:
 
 protected:
 	//! Place the fragment at the location of best match.
-	void HGTMatchPlacement(cAvidaContext& ctx, const Sequence& offspring,
+	void HGTMatchPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
 												 fragment_list_type::iterator& selected,
 												 substring_match& location);
 	//! Place the fragment at the location of best match, with redundant instructions trimmed.
-	void HGTTrimmedPlacement(cAvidaContext& ctx, const Sequence& offspring,
+	void HGTTrimmedPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
 													 fragment_list_type::iterator& selected,
 													 substring_match& location);	
 	//! Place the fragment at a random location.
-	void HGTRandomPlacement(cAvidaContext& ctx, const Sequence& offspring,
+	void HGTRandomPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
 													fragment_list_type::iterator& selected,
 													substring_match& location);
 	//! Support for stateful HGT mutations.
@@ -206,7 +206,7 @@ protected:
 	//! Initialize HGT support.
 	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
 	//! Called when this organism is the receiver of an HGT donation.
-	void ReceiveHGTDonation(const Sequence& fragment);
+	void ReceiveHGTDonation(const InstructionSequence& fragment);
   
   
 public:

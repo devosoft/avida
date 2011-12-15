@@ -559,7 +559,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     }
 
     // Update the phenotypes of each offspring....
-    const Sequence& genome = offspring_array[i]->GetGenome().GetSequence();
+    const InstructionSequence& genome = offspring_array[i]->GetGenome().GetSequence();
     offspring_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     offspring_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     offspring_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
@@ -756,7 +756,7 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   return true;
 }
 
-bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
+bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(parent != NULL);
 
@@ -5172,7 +5172,7 @@ void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaCo
   Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type);
 }
 
-  void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
+  void cPopulation::InjectParasite(const cString& label, const InstructionSequence& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
   // target_organism-> target_organism->GetHardware().GetCurThread()

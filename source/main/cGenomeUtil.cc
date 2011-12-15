@@ -107,7 +107,7 @@ void cGenomeUtil::substring_match::rotate(int r, std::size_t n) {
  ending locations of that match.  Specifically, [begin,end) of the returned substring_match
  denotes the matched region in the base string.
  */
-cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const Sequence& base, const Sequence& substring) {
+cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const InstructionSequence& base, const InstructionSequence& substring) {
 	const int rows=substring.GetSize()+1;
 	const int cols=base.GetSize()+1;
 	substring_match* m[2];
@@ -164,7 +164,7 @@ cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const Sequence& bas
  The return value here is de-circularfied and de-rotated such that [begin,end) are correct
  for the base string (note that, due to circularity, begin could be > end).
  */
-cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContext& ctx, const Sequence& base, const Sequence& substring) {
+cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContext& ctx, const InstructionSequence& base, const InstructionSequence& substring) {
 	// create a copy of the genome:
 	Sequence circ(base);
 	
@@ -189,7 +189,7 @@ cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContex
 
 /*! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
  */
-void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, const Sequence& genome, fragment_list_type& fragments) {	
+void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, const InstructionSequence& genome, fragment_list_type& fragments) {	
 	// rotate this genome to remove bais for the beginning and end of the genome:
 	Sequence g(genome);
 	g.Rotate(ctx.GetRandom().GetInt(g.GetSize()));
@@ -212,7 +212,7 @@ void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, 
 
 /*! Randomly shuffle the instructions within genome in-place.
  */
-void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, Sequence& genome) {
+void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, InstructionSequence& genome) {
 	std::vector<int> idx(static_cast<std::size_t>(genome.GetSize()));
 	std::iota(idx.begin(), idx.end(), 0);
 	cRandomStdAdaptor rng(ctx.GetRandom());

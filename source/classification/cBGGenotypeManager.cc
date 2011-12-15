@@ -349,7 +349,7 @@ cFlexVar cBGGenotypeManager::GetBioGroupProperty(const cBGGenotype* genotype, co
 
 
 
-unsigned int cBGGenotypeManager::hashGenome(const Sequence& genome) const
+unsigned int cBGGenotypeManager::hashGenome(const InstructionSequence& genome) const
 {
   unsigned int total = 0;
   

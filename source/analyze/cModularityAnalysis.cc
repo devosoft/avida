@@ -57,7 +57,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   cCPUTestInfo test_info = m_test_info;
   
   const Genome& base_genome = m_genotype->GetGenome();
-  const Sequence& base_seq = base_genome.GetSequence();
+  const InstructionSequence& base_seq = base_genome.GetSequence();
 
   // Calculate the stats for the genotype we're working with...
   testcpu->TestGenome(ctx, test_info, base_genome);  
@@ -78,12 +78,12 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   if (base_fitness > 0.0 && does_tasks) {
     // Set up the instruction set for mapping
     cInstSet& map_inst_set = m_genotype->GetWorld()->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
-    const cInstruction null_inst = map_inst_set.ActivateNullInst();
+    const Instruction null_inst = map_inst_set.ActivateNullInst();
 
     // Genome for testing
     const int max_line = base_genome.GetSize();
     Genome mod_genome(base_genome);
-    Sequence& seq = mod_genome.GetSequence();
+    InstructionSequence& seq = mod_genome.GetSequence();
     
     // Create and initialize the modularity matrix
     tMatrix<int> mod_matrix(num_tasks, max_line);

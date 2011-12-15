@@ -28,7 +28,7 @@
 #include "cASLibrary.h"
 #include "cASNativeObject.h"
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include "cAnalyzeGenotype.h"
 #include "cGenomeUtil.h"

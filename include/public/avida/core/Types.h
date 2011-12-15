@@ -71,6 +71,9 @@ namespace Avida {
   typedef Apto::Map<Apto::String, GeneticRepresentationProcessFunctor> GeneticRepresentationDispatchTable;
   typedef Apto::Map<Apto::String, ConstGeneticRepresentationProcessFunctor> ConstGeneticRepresentationDispatchTable;
   
+  typedef Apto::SmartPtr<InstructionSequence> InstructionSequencePtr;
+  typedef Apto::SmartPtr<const InstructionSequence> ConstInstructionSequencePtr;
+  
   typedef Apto::SmartPtr<Genome> GenomePtr;
   typedef Apto::SmartPtr<const Genome> ConstGenomePtr;
   

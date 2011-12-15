@@ -37,7 +37,6 @@ namespace Avida {
   class Sequence;
 };
 class cCodeLabel;
-class cInstruction;
 class cString;
 
 using namespace Avida;
@@ -54,8 +53,8 @@ protected:
   
   void fullAdjust(int mem_size = -1);
 
-  int FindLabel_Forward(const cCodeLabel& search_label, const Sequence& search_mem, int pos);
-  int FindLabel_Backward(const cCodeLabel& search_label, const Sequence& search_mem, int pos);
+  int FindLabel_Forward(const cCodeLabel& search_label, const InstructionSequence& search_mem, int pos);
+  int FindLabel_Backward(const cCodeLabel& search_label, const InstructionSequence& search_mem, int pos);
   
 
 public:
@@ -86,12 +85,12 @@ public:
   inline void Advance() { m_position++; Adjust(); }
   inline void Retreat() { m_position--; Adjust(); }
 
-  inline const cInstruction& GetInst() const { return GetMemory()[m_position]; }
-  inline const cInstruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }
-  inline cInstruction GetNextInst() const;
+  inline const Instruction& GetInst() const { return GetMemory()[m_position]; }
+  inline const Instruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }
+  inline Instruction GetNextInst() const;
 
-  inline void SetInst(const cInstruction& value) { GetMemory()[m_position] = value; }
-  inline void InsertInst(const cInstruction& inst) { GetMemory().Insert(m_position, inst); }
+  inline void SetInst(const Instruction& value) { GetMemory()[m_position] = value; }
+  inline void InsertInst(const Instruction& inst) { GetMemory().Insert(m_position, inst); }
   inline void RemoveInst() { GetMemory().Remove(m_position); }
 
   inline void SetFlagCopied() { return GetMemory().SetFlagCopied(m_position); }
@@ -166,7 +165,7 @@ inline bool cHeadCPU::operator==(const cHeadCPU& in_cpu_head) const
   (m_mem_space == in_cpu_head.m_mem_space);
 }
 
-inline cInstruction cHeadCPU::GetNextInst() const
+inline Instruction cHeadCPU::GetNextInst() const
 {
   return (AtEnd()) ? m_hardware->GetInstSet().GetInstError() : GetMemory()[m_position + 1];
 }

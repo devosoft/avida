@@ -311,7 +311,7 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(cBioUnit* parent, const cString& label, const Sequence& genome);
+  bool InjectParasite(cBioUnit* parent, const cString& label, const InstructionSequence& genome);
   bool ParasiteInfectHost(cBioUnit* parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
   const tArray<cBioUnit*>& GetParasites() const { return m_parasites; }

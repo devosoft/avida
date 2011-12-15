@@ -1807,7 +1807,7 @@ public:
         char ch = aligned[seq][pos];
         if (ch == '_' && !m_use_gap) continue;                  //Skip gaps when applicable
         else if (ch == '_') site_entropy[num_insts]++;          //Update gap count at end
-        else inst_count[ cInstruction::ConvertSymbol(ch) ]++;   //Update true instruction count
+        else inst_count[ Instruction::ConvertSymbol(ch) ]++;   //Update true instruction count
         total_count++;
       }
       for (int c = 0; c < inst_count.GetSize(); c++)
@@ -2655,7 +2655,7 @@ public:
     }
 
     // Build the concensus genotype...
-    Sequence& con_genome = mg.GetSequence();
+    InstructionSequence& con_genome = mg.GetSequence();
     con_genome = Sequence(con_length);
     double total_entropy = 0.0;
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) {

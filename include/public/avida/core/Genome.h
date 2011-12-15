@@ -52,7 +52,7 @@ namespace Avida {
     HardwareTypeID m_hw_type;
     PropertyMap m_props;
     GeneticRepresentationPtr m_representation;
-    Apto::Map<Apto::String, Apto::SmartPtr<EpigenticObject> > m_epigenetic_objs;
+    Apto::Map<Apto::String, Apto::SmartPtr<EpigeneticObject> > m_epigenetic_objs;
     
   public:
     LIB_EXPORT Genome(HardwareTypeID hw, const PropertyMap& props, ConstGeneticRepresentationPtr rep);

@@ -23,7 +23,7 @@
 #ifndef cPopulationCell_h
 #define cPopulationCell_h
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include <fstream>
 #include <set>
@@ -157,7 +157,7 @@ public:
 	//! Diffuse genome fragments from this cell to its neighbors.
 	void DiffuseGenomeFragments();
 	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
-	void AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome);
+	void AddGenomeFragments(cAvidaContext& ctx, const InstructionSequence& genome);
 	//! Retrieve the number of genome fragments currently found in this cell.
 	unsigned int CountGenomeFragments() const;
 	//! Remove and return the front genome fragment.

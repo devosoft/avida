@@ -231,7 +231,7 @@ public:
 
   // --------  Core Execution Methods  --------
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
-  void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
+  void ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst);
 
   
   // --------  Helper Methods  --------
@@ -302,7 +302,7 @@ public:
 private:
   
   // --------  Core Execution Methods  --------
-  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
+  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst);
   void internalReset();
   void internalResetOnFailedDivide();
   
@@ -374,7 +374,7 @@ private:
   inline void setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2);
   void checkWaitingThreads(int cur_thread, int reg_num);
 
-  void ReadInst(cInstruction in_inst);
+  void ReadInst(Instruction in_inst);
   
   
   // ---------- Promoter Helper Functions -----------

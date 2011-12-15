@@ -386,7 +386,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   Genome mod_genome(m_genome);
   
   // Setup a NULL instruction needed for testing
-  const cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(mod_genome.GetInstSet()).ActivateNullInst();
+  const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(mod_genome.GetInstSet()).ActivateNullInst();
   
   // If we are keeping track of the specific effects on tasks from the
   // knockouts, setup the matrix.

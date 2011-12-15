@@ -31,9 +31,7 @@
 #ifndef cInstLib_h
 #include "cInstLib.h"
 #endif
-#ifndef cInstruction_h
-#include "cInstruction.h"
-#endif
+#include "avida/core/InstructionSequence.h"
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -45,6 +43,8 @@
 #endif
 
 using namespace std;
+
+using namespace Avida;
 
 /**
  * This class is used to create a mapping from the command strings in
@@ -106,26 +106,26 @@ public:
 
   // Accessors
   const cString& GetName(int id) const { return m_inst_lib->GetName(m_lib_name_map[id].lib_fun_id); }
-  const cString& GetName(const cInstruction& inst) const { return GetName(inst.GetOp()); }
+  const cString& GetName(const Instruction& inst) const { return GetName(inst.GetOp()); }
   
-  int GetRedundancy(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
-  int GetCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
-  int GetFTCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
-  int GetEnergyCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].energy_cost; }
-  double GetProbFail(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
-  int GetAddlTimeCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
-  int GetInstructionCode(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
-  double GetResCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].res_cost; }
+  int GetRedundancy(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
+  int GetCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
+  int GetFTCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
+  int GetEnergyCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].energy_cost; }
+  double GetProbFail(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
+  int GetAddlTimeCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
+  int GetInstructionCode(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
+  double GetResCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].res_cost; }
   
-  int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
+  int GetLibFunctionIndex(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
 
-  int GetNopMod(const cInstruction& inst) const
+  int GetNopMod(const Instruction& inst) const
   {
     int nopmod = m_lib_nopmod_map[inst.GetOp()];
     return m_inst_lib->GetNopMod(nopmod);
   }
 
-  cInstruction GetRandomInst(cAvidaContext& ctx) const;
+  Instruction GetRandomInst(cAvidaContext& ctx) const;
   int GetRandFunctionIndex(cAvidaContext& ctx) const { return m_lib_name_map[ GetRandomInst(ctx).GetOp() ].lib_fun_id; }
 
   int GetSize() const { return m_lib_name_map.GetSize(); }
@@ -137,39 +137,39 @@ public:
   bool HasResCosts() const { return m_has_res_costs; }
   
   // Instruction Analysis.
-  int IsNop(const cInstruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
-  bool IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
-  bool IsPromoter(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsPromoter(); }
-  bool ShouldStall(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldStall(); }
-  bool ShouldSleep(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
+  int IsNop(const Instruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
+  bool IsLabel(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
+  bool IsPromoter(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsPromoter(); }
+  bool ShouldStall(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldStall(); }
+  bool ShouldSleep(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
   
-  unsigned int GetFlags(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).GetFlags(); }
+  unsigned int GetFlags(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).GetFlags(); }
 
   // Insertion of new instructions...
-  cInstruction ActivateNullInst();
+  Instruction ActivateNullInst();
   
   // Modification of instructions during run.
-  void SetProbFail(const cInstruction& inst, double _prob_fail) { m_lib_name_map[inst.GetOp()].prob_fail = _prob_fail; }
+  void SetProbFail(const Instruction& inst, double _prob_fail) { m_lib_name_map[inst.GetOp()].prob_fail = _prob_fail; }
 
   // accessors for instruction library
   cInstLib* GetInstLib() { return m_inst_lib; }
 
-  inline cInstruction GetInst(const cString& in_name) const;
+  inline Instruction GetInst(const cString& in_name) const;
   cString FindBestMatch(const cString& in_name) const;
   bool InstInSet(const cString& in_name) const;
 
-  cInstruction GetInstDefault() const { return cInstruction(m_inst_lib->GetInstDefault()); }
-  cInstruction GetInstError() const { return cInstruction(255); }
+  Instruction GetInstDefault() const { return Instruction(m_inst_lib->GetInstDefault()); }
+  Instruction GetInstError() const { return Instruction(255); }
   
   bool LoadWithStringList(const cStringList& sl, cUserFeedback* errors = NULL);
 };
 
 
-inline cInstruction cInstSet::GetInst(const cString & in_name) const
+inline Instruction cInstSet::GetInst(const cString & in_name) const
 {
   for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
     if (m_inst_lib->GetName(m_lib_name_map[i].lib_fun_id) == in_name) {
-      return cInstruction(i);
+      return Instruction(i);
     }
   }
 
@@ -179,7 +179,7 @@ inline cInstruction cInstSet::GetInst(const cString & in_name) const
 
 
   // Adding default answer if nothing is found...
-  return cInstruction(255);
+  return Instruction(255);
 }
 
 #endif

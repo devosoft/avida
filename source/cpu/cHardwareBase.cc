@@ -78,22 +78,22 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   
   if (m_has_ft_costs) {
     m_inst_ft_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    for (int i = 0; i < num_inst_cost; i++) m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
   
   if (m_has_energy_costs) {
     m_inst_energy_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
+    for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(Instruction(i));
   }
   
   if (m_has_res_costs) {
     m_inst_res_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_res_cost[i] = m_inst_set->GetResCost(cInstruction(i));
+    for (int i = 0; i < num_inst_cost; i++) m_inst_res_cost[i] = m_inst_set->GetResCost(Instruction(i));
   }
   
   if (m_has_costs) {
     m_thread_inst_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_thread_inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
+    for (int i = 0; i < num_inst_cost; i++) m_thread_inst_cost[i] = m_inst_set->GetCost(Instruction(i));
   }
 
   internalReset();
@@ -252,7 +252,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
-  Sequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -446,14 +446,14 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 }
 
 
-bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, Sequence& genome)
+bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, InstructionSequence& genome)
 {
   
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
   
   if (mut < m_inst_set->GetSize()) { // point
     int site = ctx.GetRandom().GetUInt(genome.GetSize());
-    genome[site] = cInstruction(mut);
+    genome[site] = Instruction(mut);
   } else if (mut == m_inst_set->GetSize()) { // delete
     int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
     if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
@@ -465,7 +465,7 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, Sequence& genome)
     if (!max_genome_size || max_genome_size > MAX_GENOME_LENGTH) max_genome_size = MAX_GENOME_LENGTH;
     if (genome.GetSize() == max_genome_size) return false;
     int site = ctx.GetRandom().GetUInt(genome.GetSize() + 1);
-    genome.Insert(site, cInstruction(mut - m_inst_set->GetSize() - 1));
+    genome.Insert(site, Instruction(mut - m_inst_set->GetSize() - 1));
   }
   
   return true;
@@ -475,9 +475,9 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 {
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
   
-  if (mut < m_inst_set->GetSize()) head.SetInst(cInstruction(mut));
+  if (mut < m_inst_set->GetSize()) head.SetInst(Instruction(mut));
   else if (mut == m_inst_set->GetSize()) head.RemoveInst();
-  else head.InsertInst(cInstruction(mut - m_inst_set->GetSize() - 1));
+  else head.InsertInst(Instruction(mut - m_inst_set->GetSize() - 1));
 }
 
 
@@ -487,7 +487,7 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 // to another random position and continued reading to the end.
 // This can cause large deletions or tandem duplications.
 // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
-void cHardwareBase::doSlipMutation(cAvidaContext& ctx, Sequence& genome, int from)
+void cHardwareBase::doSlipMutation(cAvidaContext& ctx, InstructionSequence& genome, int from)
 {
   Sequence genome_copy = Sequence(genome);
   
@@ -573,7 +573,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -965,7 +965,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
-bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id)
+bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id)
 { 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
@@ -1027,7 +1027,7 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
 }
 
 
-void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const Instruction& cur_inst)
 {
   if (m_has_res_costs) {
   
@@ -1077,7 +1077,7 @@ Sequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 
 /*! Insert a genome fragment at the current write head.
  */
-void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
+void cHardwareBase::InsertGenomeFragment(const InstructionSequence& fragment) {
 	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
 	wh.GetMemory().Insert(wh.GetPosition(), fragment);
 	wh.Adjust();

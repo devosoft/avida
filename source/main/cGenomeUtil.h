@@ -23,13 +23,12 @@
 #ifndef cGenomeUtil_h
 #define cGenomeUtil_h
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include <vector>
 #include <deque>
 
 class cAvidaContext;
-class cInstruction;
 class cInstSet;
 
 using namespace Avida;
@@ -75,14 +74,14 @@ public:
 	};
 	
 	//! Find (one of) the best matches of substring in base.
-	static substring_match FindSubstringMatch(const Sequence& base, const Sequence& substring);	
+	static substring_match FindSubstringMatch(const InstructionSequence& base, const InstructionSequence& substring);	
 	//! Find (one of) the best unbiased matches of substring in base, respecting genome circularity.
-	static substring_match FindUnbiasedCircularMatch(cAvidaContext& ctx, const Sequence& base, const Sequence& substring);
-	typedef std::deque<Sequence> fragment_list_type; //!< Type for the list of genome fragments.
+	static substring_match FindUnbiasedCircularMatch(cAvidaContext& ctx, const InstructionSequence& base, const InstructionSequence& substring);
+	typedef std::deque<InstructionSequence> fragment_list_type; //!< Type for the list of genome fragments.
 	//! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
-	static void RandomSplit(cAvidaContext& ctx, double mean, double variance, const Sequence& genome, fragment_list_type& fragments);
+	static void RandomSplit(cAvidaContext& ctx, double mean, double variance, const InstructionSequence& genome, fragment_list_type& fragments);
 	//! Randomly shuffle the instructions within genome in-place.
-	static void RandomShuffle(cAvidaContext& ctx, Sequence& genome);
+	static void RandomShuffle(cAvidaContext& ctx, InstructionSequence& genome);
 };
 
 #endif

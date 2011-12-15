@@ -70,16 +70,16 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
 }
 
 
-cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
+Instruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
 {
   double weight = ctx.GetRandom().GetDouble(m_mutation_index->GetTotalWeight());
   unsigned inst_ndx = m_mutation_index->FindPosition(weight);
-  return cInstruction(inst_ndx);
+  return Instruction(inst_ndx);
 }
 
 
 
-cInstruction cInstSet::ActivateNullInst()
+Instruction cInstSet::ActivateNullInst()
 {  
   const int inst_id = m_lib_name_map.GetSize();
   const int null_fun_id = m_inst_lib->GetInstNull();
@@ -87,7 +87,7 @@ cInstruction cInstSet::ActivateNullInst()
   assert(inst_id < MAX_INSTSET_SIZE);
   
   // Make sure not to activate again if NULL is already active
-  for (int i = 0; i < inst_id; i++) if (m_lib_name_map[i].lib_fun_id == null_fun_id) return cInstruction(i);
+  for (int i = 0; i < inst_id; i++) if (m_lib_name_map[i].lib_fun_id == null_fun_id) return Instruction(i);
   
   
   // Increase the size of the array...
@@ -103,7 +103,7 @@ cInstruction cInstSet::ActivateNullInst()
   m_lib_name_map[inst_id].addl_time_cost = 0;
   m_lib_name_map[inst_id].res_cost = 0.0; 
   
-  return cInstruction(inst_id);
+  return Instruction(inst_id);
 }
 
 

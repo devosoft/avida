@@ -23,9 +23,8 @@
 #ifndef cInstLib_h
 #define cInstLib_h
 
-#ifndef cInstruction_h
-#include "cInstruction.h"
-#endif
+#include "avida/core/InstructionSequence.h"
+
 #ifndef tDictionary_h
 #include "tDictionary.h"
 #endif
@@ -34,6 +33,8 @@
 #endif
 
 class cString;
+
+using namespace Avida;
 
 
 class cInstLib
@@ -63,14 +64,14 @@ public:
   
   virtual const cString& GetNopName(const unsigned int id) = 0;
   virtual int GetNopMod(const unsigned int id) = 0;
-  virtual int GetNopMod(const cInstruction& inst) = 0;
+  virtual int GetNopMod(const Instruction& inst) = 0;
   
 
   int GetInstDefault() const { return m_inst_default; }
   int GetInstNull() const { return m_inst_null; }
 
 private:
-    inline cInstruction GetInst(const cString& name);
+    inline Instruction GetInst(const cString& name);
 
 };
 
@@ -82,11 +83,11 @@ inline int cInstLib::GetIndex(const cString& name) const
   return -1;
 }
 
-inline cInstruction cInstLib::GetInst(const cString& name)
+inline Instruction cInstLib::GetInst(const cString& name)
 {
   int idx;
-  if (m_namemap.Find(name, idx)) return cInstruction(idx);
-  return cInstruction(255);
+  if (m_namemap.Find(name, idx)) return Instruction(idx);
+  return Instruction(255);
 }
 
 

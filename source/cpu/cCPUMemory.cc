@@ -25,7 +25,7 @@
 using namespace std;
 
 
-cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : Sequence(in_memory), m_flag_array(in_memory.GetSize())
+cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : InstructionSequence(in_memory), m_flag_array(in_memory.GetSize())
 {
   for (int i = 0; i < m_flag_array.GetSize(); i++) m_flag_array[i] = in_memory.m_flag_array[i];
 }
@@ -33,7 +33,7 @@ cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : Sequence(in_memory), m_fla
 
 void cCPUMemory::adjustCapacity(int new_size)
 {
-  Sequence::adjustCapacity(new_size);
+  InstructionSequence::adjustCapacity(new_size);
   if (m_seq.GetSize() != m_flag_array.GetSize()) m_flag_array.Resize(m_seq.GetSize()); 
 }
 
@@ -100,7 +100,7 @@ void cCPUMemory::Copy(int to, int from)
 }
 
 
-void cCPUMemory::Insert(int pos, const cInstruction& inst)
+void cCPUMemory::Insert(int pos, const Instruction& inst)
 {
   assert(pos >= 0);
   assert(pos <= m_seq.GetSize());
@@ -110,7 +110,7 @@ void cCPUMemory::Insert(int pos, const cInstruction& inst)
   m_flag_array[pos] = 0;
 }
 
-void cCPUMemory::Insert(int pos, const Sequence& genome)
+void cCPUMemory::Insert(int pos, const InstructionSequence& genome)
 {
   assert(pos >= 0);
   assert(pos <= m_seq.GetSize());
@@ -136,7 +136,7 @@ void cCPUMemory::Remove(int pos, int num_sites)
   adjustCapacity(new_size);
 }
 
-void cCPUMemory::Replace(int pos, int num_sites, const Sequence& genome)
+void cCPUMemory::Replace(int pos, int num_sites, const InstructionSequence& genome)
 {
   assert(pos >= 0);                         // Replace must be in genome
   assert(num_sites >= 0);                   // Cannot replace negative
@@ -168,7 +168,7 @@ void cCPUMemory::operator=(const cCPUMemory& other_memory)
 }
 
 
-void cCPUMemory::operator=(const Sequence& other_genome)
+void cCPUMemory::operator=(const InstructionSequence& other_genome)
 {
   adjustCapacity(other_genome.GetSize());
   
