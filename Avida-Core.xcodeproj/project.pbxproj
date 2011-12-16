@@ -104,7 +104,6 @@
 		7023EC690C0A431B00362B9C /* cHelpType.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891808F7630100FC65FE /* cHelpType.cc */; };
 		7023EC6A0C0A431B00362B9C /* cHistogram.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891908F7630100FC65FE /* cHistogram.cc */; };
 		7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891A08F7630100FC65FE /* cInitFile.cc */; };
-		7023EC6F0C0A431B00362B9C /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
 		7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
 		7023EC710C0A431B00362B9C /* cIntegratedSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891B08F7630100FC65FE /* cIntegratedSchedule.cc */; };
 		7023EC720C0A431B00362B9C /* cIntegratedScheduleNode.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891C08F7630100FC65FE /* cIntegratedScheduleNode.cc */; };
@@ -853,6 +852,11 @@
 		706C7B87125F653800EDB4B9 /* cScreen_Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cScreen_Map.h; sourceTree = "<group>"; };
 		706C7B88125F653800EDB4B9 /* cTextScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTextScreen.h; sourceTree = "<group>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
+		706EA25D149950390021E441 /* Arbiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arbiter.h; sourceTree = "<group>"; };
+		706EA25E149950390021E441 /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Group.h; sourceTree = "<group>"; };
+		706EA25F149950390021E441 /* Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
+		706EA260149950390021E441 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		706EA261149950390021E441 /* Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unit.h; sourceTree = "<group>"; };
 		7070E46B12104A660056BE1E /* cDemePlaceholderUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemePlaceholderUnit.h; sourceTree = "<group>"; };
 		7070E6BE12109C1D0056BE1E /* cBioGroupListener.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBioGroupListener.cc; sourceTree = "<group>"; };
 		7073165A097C6C8F00815164 /* cParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParser.h; sourceTree = "<group>"; };
@@ -1116,9 +1120,7 @@
 		70C5BD690905CE5F0028A785 /* cHardwareManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareManager.cc; sourceTree = "<group>"; };
 		70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareManager.h; sourceTree = "<group>"; };
 		70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenomeUtil.cc; sourceTree = "<group>"; };
-		70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstruction.cc; sourceTree = "<group>"; };
 		70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenomeUtil.h; sourceTree = "<group>"; };
-		70CA6EF208DB7F9E00068AC2 /* cInstruction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstruction.h; sourceTree = "<group>"; };
 		70D1062012513C0E00F25734 /* cEntryHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEntryHandle.h; sourceTree = "<group>"; };
 		70D3AD091455DFB4000FAB0F /* Package.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cc; sourceTree = "<group>"; };
 		70DA5E9D09DA1A8D00FFF42B /* cOrgSeqMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSeqMessage.h; sourceTree = "<group>"; };
@@ -1392,6 +1394,7 @@
 				703549CD1337BB6C00D3865C /* core */,
 				70FEF6361381CAB900A9D082 /* data */,
 				708BEC9413B3C98E004CB59D /* environment */,
+				706EA25C149950390021E441 /* systematics */,
 				70A53BC5135B732C00C3E661 /* util */,
 				703549261333E36800D3865C /* viewer-core */,
 				70A53BC0135B60D700C3E661 /* Avida.h */,
@@ -1501,6 +1504,18 @@
 				70DF728F13BE20130085F85E /* World.cc */,
 			);
 			path = core;
+			sourceTree = "<group>";
+		};
+		706EA25C149950390021E441 /* systematics */ = {
+			isa = PBXGroup;
+			children = (
+				706EA25D149950390021E441 /* Arbiter.h */,
+				706EA25E149950390021E441 /* Group.h */,
+				706EA25F149950390021E441 /* Manager.h */,
+				706EA260149950390021E441 /* Types.h */,
+				706EA261149950390021E441 /* Unit.h */,
+			);
+			path = systematics;
 			sourceTree = "<group>";
 		};
 		707AEEEE09E80699001AEA89 /* actions */ = {
@@ -2002,8 +2017,6 @@
 				42490EFE0BE2472800318058 /* cGermline.h */,
 				4A587EEB1332B6590037A393 /* cGradientCount.h */,
 				4A587EEA1332B6590037A393 /* cGradientCount.cc */,
-				70CA6EF208DB7F9E00068AC2 /* cInstruction.h */,
-				70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */,
 				70B0864808F4972600FC65FE /* cLandscape.h */,
 				70B0865108F4974300FC65FE /* cLandscape.cc */,
 				4216165611DA45A800B49195 /* cMultiProcessWorld.h */,
@@ -2492,7 +2505,6 @@
 				7023EC690C0A431B00362B9C /* cHelpType.cc in Sources */,
 				7023EC6A0C0A431B00362B9C /* cHistogram.cc in Sources */,
 				7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */,
-				7023EC6F0C0A431B00362B9C /* cInstruction.cc in Sources */,
 				7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */,
 				7023EC710C0A431B00362B9C /* cIntegratedSchedule.cc in Sources */,
 				7023EC720C0A431B00362B9C /* cIntegratedScheduleNode.cc in Sources */,

@@ -44,6 +44,8 @@ namespace Avida {
   class InstructionSequence;
   class Property;
   template <typename T> struct PropertyTraits;
+  template <typename T> class ReferenceProperty;
+  class StringProperty;
   class World;
   class WorldDriver;
   class WorldFacet;

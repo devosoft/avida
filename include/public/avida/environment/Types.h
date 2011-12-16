@@ -27,8 +27,6 @@
 
 #include "apto/core.h"
 
-class cWorld;
-
 namespace Avida {
   namespace Environment {
     

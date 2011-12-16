@@ -1,8 +1,8 @@
 /*
- *  core/Properties.cc
+ *  systematics/Manager.h
  *  avida-core
  *
- *  Created by David on 8/11/11.
+ *  Created by David on 12/14/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,12 +22,20 @@
  *
  */
 
-#include "avida/core/Properties.h"
+#ifndef AvidaSystematicsManager_h
+#define AvidaSystematicsManager_h
+
+#include "apto/platform.h"
+#include "avida/systematics/Types.h"
 
 
-Apto::String Avida::StringProperty::Value() const { return m_value; }
+namespace Avida {
+  namespace Systematics {
+    
+    // Manager
+    // --------------------------------------------------------------------------------------------------------------
+    
+  };
+};
 
-
-const Avida::PropertyTypeID Avida::PropertyTraits<int>::Type = "int";
-const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
-const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
+#endif
