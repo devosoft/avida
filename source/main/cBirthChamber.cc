@@ -407,7 +407,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   // organism (which is the same as sexual with 0 recombination points)
   
   // Find a waiting entry (locally or globally)
-  cBirthEntry* old_entry = getSelectionHandler(offspring.GetHardwareType())->SelectOffspring(ctx, offspring, parent);
+  cBirthEntry* old_entry = getSelectionHandler(offspring.HardwareType())->SelectOffspring(ctx, offspring, parent);
 
   // If we couldn't find a waiting entry, this one was saved -- stop here!
   if (old_entry == NULL) return false;
@@ -442,23 +442,33 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   const int shuffle_regions = !m_world->GetConfig().CORESPOND_REC_REGS.Get();
 
   // If we are NOT modular...
+  InstructionSequencePtr genome0_seq_p;
+  GeneticRepresentationPtr genome0_rep_p = genome0.Representation();
+  genome0_seq_p.DynamicCastFrom(genome0_rep_p);
+  InstructionSequence& genome0_seq = *genome0_seq_p;
+  
+  InstructionSequencePtr genome1_seq_p;
+  GeneticRepresentationPtr genome1_rep_p = genome1.Representation();
+  genome1_seq_p.DynamicCastFrom(genome1_rep_p);
+  InstructionSequence& genome1_seq = *genome1_seq_p;
+
   if (num_modules == 0) {
-    DoBasicRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoBasicRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we ARE modular, and continuous...
   else if (continuous_regions == 1) {
-    DoModularContRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoModularContRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we are NOT continuous, but NO shuffling...
   else if (shuffle_regions == 0) {
-    DoModularNonContRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoModularNonContRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If there IS shuffling (NON-continuous required)
   else {
-    DoModularShuffleRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoModularShuffleRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // Should there be a 2-fold cost to sex?

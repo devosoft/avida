@@ -1118,7 +1118,7 @@
 		70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cGenomeUtil.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstruction.cc; sourceTree = "<group>"; };
 		70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cGenomeUtil.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		70CA6EF208DB7F9E00068AC2 /* cInstruction.h */ = {isa = PBXFileReference; fileEncoding = 30; path = cInstruction.h; sourceTree = "<group>"; };
+		70CA6EF208DB7F9E00068AC2 /* cInstruction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstruction.h; sourceTree = "<group>"; };
 		70D1062012513C0E00F25734 /* cEntryHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEntryHandle.h; sourceTree = "<group>"; };
 		70D3AD091455DFB4000FAB0F /* Package.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cc; sourceTree = "<group>"; };
 		70DA5E9D09DA1A8D00FFF42B /* cOrgSeqMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSeqMessage.h; sourceTree = "<group>"; };
@@ -2794,6 +2794,7 @@
 					"-Wno-unused-parameter",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-ferror-limit=0",
 				);
 			};
 			name = Debug;
