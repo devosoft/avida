@@ -699,6 +699,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -9868,6 +9869,12 @@ bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
   m_organism->IncPointMutations(num_mut);
   return true;
 }
+
+bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
+  m_organism->JoinGermline();
+  return true;
+}
+
 
 /***
     Mating type instructions

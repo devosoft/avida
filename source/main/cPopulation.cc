@@ -2355,7 +2355,23 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           }
           break;
         }
-
+        case 7: { // Grab the organisms that have flagged themselves as
+          // part of the germline. Ignores replicate size...
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          for (int i = 0; i<source_deme.GetSize(); ++i) {
+            cPopulationCell& cell = GetCell(i);
+            if (cell.IsOccupied()) {
+              cOrganism* o = cell.GetOrganism();
+              if (o->IsGermline()) {
+                founders.Push(o);
+              }
+            }
+          }
+         
+          source_founders = founders;
+          target_founders = founders;
+          break;
+        }
         case 2:
         case 3:
         case 4:

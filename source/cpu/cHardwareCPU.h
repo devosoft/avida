@@ -986,6 +986,7 @@ public:
 	int GetTaskSwitchingCost() { return m_task_switching_cost; }
   // Apply point mutations to a genome.
   bool Inst_ApplyPointMutations(cAvidaContext& ctx);
+  bool Inst_JoinGermline(cAvidaContext& ctx);
   
 
 	// -------- Mating types support support --------

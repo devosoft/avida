@@ -1239,15 +1239,29 @@ void cDeme::ClearShannonInformationStats()
 }
 
 
-/* Returns the average number of mutations that have occured to the deme's germline - org in cell (0,0) - as the result damage accrued by performing tasks. */
+/* Returns the average number of mutations that have occured to the deme's germline as a the result damage accrued by performing tasks. */
 double cDeme::GetAveGermMut() 
 {
-  double num_mut = -1;
-  cPopulationCell& cell = GetCell(0);
-  if (cell.IsOccupied()) {
-    num_mut = cell.GetOrganism()->GetNumOfPointMutationsApplied();
+
+  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) {
+    cPopulationCell& c = GetCell(0);
+    if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
   }
-  return num_mut;
+  double mut_count = 0;
+  double count = 0;
+  
+  for (int i=0; i<GetSize(); ++i) {
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      if (o->IsGermline()) {
+        mut_count += o->GetNumOfPointMutationsApplied();
+        ++count; 
+      }
+    }
+  }
+  return (mut_count/count);
+
 }
 
 double cDeme::GetAveNonGermMut() 
@@ -1255,13 +1269,37 @@ double cDeme::GetAveNonGermMut()
   double mut_count = 0;
   double count = 0;
   
-  for (int i=1; i<GetSize(); ++i) {
-
+  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) {
+    cPopulationCell& c = GetCell(0);
+    if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
+  }
+  
+  for (int i=0; i<GetSize(); ++i) {
+    
     cPopulationCell& cell = GetCell(i);
     if (cell.IsOccupied()) {
-      mut_count += cell.GetOrganism()->GetNumOfPointMutationsApplied();
-      ++count; 
+      cOrganism* o = cell.GetOrganism();
+      if (!o->IsGermline()) {
+        mut_count += o->GetNumOfPointMutationsApplied();
+        ++count; 
+      }
     }
   }
   return (mut_count/count);
+
+}
+
+int cDeme::GetGermlineSize() {
+  int count = 0;
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      if (o->IsGermline()) {
+        ++count; 
+      }
+    }
+  }
+  return count;
 }

@@ -175,6 +175,7 @@ public:
 
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;
+  
 };
 
 #endif

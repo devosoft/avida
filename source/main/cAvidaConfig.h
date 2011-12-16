@@ -459,7 +459,7 @@ public:
   CONFIG_ADD_VAR(LOG_DEMES_REPLICATE, bool, 0, "Log deme replications?");
   CONFIG_ADD_VAR(DEMES_REPLICATE_LOG_START, int, 0, "Update at which to start logging deme replications");
   CONFIG_ADD_VAR(DEMES_PROB_ORG_TRANSFER, double, 0.0, "Probablity of an organism being transferred from the\nsource deme to the target deme");
-  CONFIG_ADD_VAR(DEMES_ORGANISM_SELECTION, int, 0, "How should organisms be selected for transfer from\nsource to target during deme replication?\n0 = random with replacement\n1 = sequential");
+  CONFIG_ADD_VAR(DEMES_ORGANISM_SELECTION, int, 0, "How should organisms be selected for transfer from\nsource to target during deme replication?\n0 = random with replacement\n1 = sequential\n2-6 = created, but not sure what they do\n7 = organism flagged germline");
   CONFIG_ADD_VAR(DEMES_ORGANISM_PLACEMENT, int, 0, "How should organisms be placed during deme replication.\n0 = cell-array middle\n1 = deme center\n2 = random placement\n3 = sequential");
   CONFIG_ADD_VAR(DEMES_ORGANISM_FACING, int, 0, "Which direction should organisms face after deme replication.\n0 = unchanged\n1 = northwest.\n2 = random.");
   CONFIG_ADD_VAR(DEMES_MAX_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication");

@@ -1771,6 +1771,7 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   if (n_mut >= 0) {
     m_ave_germ_mut.Add(n_mut); 
     m_ave_non_germ_mut.Add(source_deme.GetAveNonGermMut());
+    m_ave_germ_size.Add(source_deme.GetGermlineSize());
   }
 }
 
@@ -1835,10 +1836,10 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
   df.WriteComment("Avida deme germline sequestration data");
   df.WriteTimeStamp();
   df.Write(GetUpdate(), "Update [update]");
-  df.Write(m_ave_germ_mut.Average(), "Mean number of mutations to germline [numgermmut]");
-  df.Write(m_ave_germ_mut.StdDeviation(), "Standard Deviation of mutations to germline [sdgermmut]");
-  df.Write(m_ave_non_germ_mut.Average(), "Mean number of mutations to non-germline orgs [numnongermmut]");
-  df.Write(m_ave_non_germ_mut.StdDeviation(), "Standard Deviation of mutations to non-germline orgs [sdnongermmut]");
+  df.Write(m_ave_germ_mut.Average(), "Mean number of mutations to germline [meangermmut]");
+  df.Write(m_ave_non_germ_mut.Average(), "Mean number of mutations to non-germline orgs [meannongermmut]");
+  df.Write(m_ave_germ_size.Average(), "Mean size of germ line [meangermsize]");
+  
   
   df.Endl();
   
