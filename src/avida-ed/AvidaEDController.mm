@@ -68,7 +68,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     currentRun = nil;
     listener = NULL;
     map = NULL;
-    
+        
     [self showWindow:self];
   }
   
@@ -150,6 +150,36 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 - (IBAction) changeMapZoom:(id)sender {
   if (map) {
     [mapView setZoom:[mapZoom doubleValue]];
+  }
+}
+
+- (IBAction) changeView:(id)sender {
+  
+  NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
+  if (sender == btnPopView) {
+    if (curView != popView) {
+      [mainSplitView replaceSubview:curView with:popView];
+      curView = popView;
+    }
+    [btnPopView setState:NSOnState];
+    [btnOrgView setState:NSOffState];
+    [btnAnalyzeView setState:NSOffState];
+  } else if (sender == btnOrgView) {
+    if (curView != orgView) {
+      [mainSplitView replaceSubview:curView with:orgView];
+      curView = orgView;
+    }
+    [btnPopView setState:NSOffState];
+    [btnOrgView setState:NSOnState];
+    [btnAnalyzeView setState:NSOffState];
+  } else if (sender == btnAnalyzeView) {
+    if (curView != analyzeView) {
+      [mainSplitView replaceSubview:curView with:analyzeView];
+      curView = analyzeView;
+    }
+    [btnPopView setState:NSOffState];
+    [btnOrgView setState:NSOffState];
+    [btnAnalyzeView setState:NSOnState];
   }
 }
 

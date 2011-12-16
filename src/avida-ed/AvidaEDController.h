@@ -53,6 +53,11 @@
 
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
+
+  IBOutlet NSButton* btnPopView;
+  IBOutlet NSButton* btnOrgView;
+  IBOutlet NSButton* btnAnalyzeView;
+
   
   IBOutlet NSView* popViewDishView;
   IBOutlet NSScrollView* mapScrollView;
@@ -60,7 +65,7 @@
   IBOutlet MapScaleView* mapScaleView;
   IBOutlet NSPopUpButton* mapViewMode;
   IBOutlet NSSlider* mapZoom;
-
+  
   IBOutlet AvidaEDPopViewStatView* popViewStatView;
   IBOutlet NSButton* btnTogglePopViewStatView;
   CGFloat lastPopViewStatViewWidth;
@@ -100,6 +105,8 @@
 - (IBAction) changeMapViewMode:(id)sender;
 - (IBAction) changeMapZoom:(id)sender;
 - (IBAction) togglePopViewStatView:(id)sender;
+
+- (IBAction) changeView:(id)sender;
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 
