@@ -1262,7 +1262,7 @@ double cDeme::GetAveGermMut()
   }
   
   if (count > 0) mut_count = mut_count/count;
-  return (count);
+  return (mut_count);
 
 }
 
@@ -1289,7 +1289,7 @@ double cDeme::GetAveNonGermMut()
   }
   
   if (count > 0) mut_count = mut_count/count;
-  return (count);
+  return (mut_count);
 }
 
 int cDeme::GetGermlineSize() {
