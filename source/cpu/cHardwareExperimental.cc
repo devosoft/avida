@@ -311,6 +311,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("read-faced-pred-cell", &cHardwareExperimental::Inst_ReadFacedPredCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-pred", &cHardwareExperimental::Inst_AttackPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-pred", &cHardwareExperimental::Inst_FightMeritPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
@@ -3976,6 +3977,61 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   
   return true;
 } 	
+
+bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
+    return false;
+  }
+    
+  // add victim's merit to attacker's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+    attacker_merit += target_merit * 0.1; //m_world->GetConfig().PRED_EFFICIENCY.Get();
+    m_organism->UpdateMerit(attacker_merit);
+  }
+  
+  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+  tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+  for (int i = 0; i < org_reactions.GetSize(); i++) {
+    org_reactions[i] += target_reactions[i];
+    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+  }
+  
+  // and add current merit bonus after adjusting for conversion efficiency
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * 0.1)); //m_world->GetConfig().PRED_EFFICIENCY.Get()));
+  
+  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    tArray<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      m_organism->AddToRBin(i, target_bins[i] * 0.1); //m_world->GetConfig().PRED_EFFICIENCY.Get());
+    }
+  }
+  
+  // if you weren't a top predator before, you are now!
+//  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-3);
+  
+  target->Die(ctx);
+  
+  const int success_reg = FindModifiedRegister(rBX);   
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  setInternalValue(success_reg, 1, true);   
+  setInternalValue(bonus_reg, (int) target_bonus, true);
+  return true;
+} 
 
 //Attack organism faced by this one if you are both predators. 
 bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
