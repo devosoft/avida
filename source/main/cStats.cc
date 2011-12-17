@@ -1845,6 +1845,7 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
   
   m_ave_germ_mut.Clear();
   m_ave_non_germ_mut.Clear();
+  m_ave_germ_size.Clear();
 }
 
 
