@@ -37,16 +37,21 @@ namespace Avida {
   
   class Property
   {
+  public:
+    static PropertyTypeID Null;
+    
   protected:
     PropertyID m_id;
     const PropertyTypeID& m_type_id;
+    
 
   public:
+    LIB_EXPORT inline Property() : m_type_id(Null) { ; } 
     LIB_EXPORT inline Property(const PropertyID& p_id, const PropertyTypeID& t_id) : m_id(p_id), m_type_id(t_id) { ; }
     
     LIB_EXPORT inline const PropertyID& PropertyID() const { return m_id; }
     LIB_EXPORT inline const PropertyTypeID& Type() const { return m_type_id; }
-    LIB_EXPORT virtual Apto::String Value() const = 0;
+    LIB_EXPORT virtual Apto::String Value() const;
   };
 
 

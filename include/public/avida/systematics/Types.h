@@ -35,6 +35,7 @@ namespace Avida {
     
     class Arbiter;
     class Group;
+    class Listener;
     class Manager;
     struct Source;
     class Unit;
@@ -43,21 +44,28 @@ namespace Avida {
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
 
-    typedef Apto::Map<Apto::String, Apto::String> ClassificationHints;
+    typedef Apto::SmartPtr<Arbiter> ArbiterPtr;
+    
+    typedef Apto::Map<Apto::String, Apto::String, Apto::DefaultHashBTree, Apto::ImplicitDefault> ClassificationHints;
+    typedef Apto::Map<Apto::String, ClassificationHints, Apto::DefaultHashBTree, Apto::ImplicitDefault> RoleClassificationHints;
+    
+    typedef int EventType;
     
     typedef int GroupID;
-    typedef Apto::SmartPtr<Group> GroupPtr;
+    typedef Apto::SmartPtr<Group, Apto::InternalRCObject> GroupPtr;
     
     typedef Apto::Array<GroupPtr> GroupMembership;
     typedef Apto::SmartPtr<GroupMembership> GroupMembershipPtr;
     typedef Apto::SmartPtr<const GroupMembership> ConstGroupMembershipPtr;
     
-    typedef Apto::Array<ConstGroupMembershipPtr> ParentGroups;
+    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
+    
+    typedef Apto::Array<GroupMembershipPtr> ParentGroups;
+    typedef Apto::Array<ConstGroupMembershipPtr> ConstParentGroups;
     typedef Apto::SmartPtr<ParentGroups> ParentGroupsPtr;
-    typedef Apto::SmartPtr<const ParentGroups> ConstParentGroupsPtr;
+    typedef Apto::SmartPtr<const ConstParentGroups> ConstParentGroupsPtr;
     
     typedef Apto::String RoleID;
-    
     
     enum TransmissionType {
       DIVISION,
@@ -65,6 +73,8 @@ namespace Avida {
       VERTICAL,
       HORIZONTAL
     };
+    
+    typedef Apto::SmartPtr<Unit, Apto::InternalRCObject> UnitPtr;
     
   };
 };

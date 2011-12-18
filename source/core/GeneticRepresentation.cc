@@ -27,28 +27,28 @@
 #include <cassert>
 
 
-Avida::Core::GeneticRepresentation::~GeneticRepresentation()
+Avida::GeneticRepresentation::~GeneticRepresentation()
 {
   
 }
 
-bool Avida::Core::GeneticRepresentation::Process(GeneticRepresentationDispatchTable tbl, GeneticRepresentationPtr ptr)
+bool Avida::GeneticRepresentation::Process(GeneticRepresentationDispatchTable tbl, GeneticRepresentationPtr ptr)
 {
   assert(this == GeneticRepresentationPtr::GetPointer(ptr));
   GeneticRepresentationProcessFunctor func;
-  if (tbl.Get(Apto::String(typeid<GeneticRepresentation>.name()), func)) {
+  if (tbl.Get(Apto::String(typeid(GeneticRepresentation).name()), func)) {
     func(ptr);
     return true;
   }
   return false;
 }
 
-bool Avida::Core::GeneticRepresentation::Process(ConstGeneticRepresentationDispatchTable tbl,
+bool Avida::GeneticRepresentation::Process(ConstGeneticRepresentationDispatchTable tbl,
                                                  ConstGeneticRepresentationPtr ptr) const
 {
   assert(this == ConstGeneticRepresentationPtr::GetPointer(ptr));
   ConstGeneticRepresentationProcessFunctor func;
-  if (tbl.Get(Apto::String(typeid<GeneticRepresentation>.name()), func)) {
+  if (tbl.Get(Apto::String(typeid(GeneticRepresentation).name()), func)) {
     func(ptr);
     return true;
   }

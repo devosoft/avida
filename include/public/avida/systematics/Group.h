@@ -48,7 +48,7 @@ namespace Avida {
     // Group
     // --------------------------------------------------------------------------------------------------------------
     
-    class Group {
+    class Group : virtual public Apto::MTRefCountObject {
     protected:
       GroupID m_id;
       int m_a_refs;
@@ -62,7 +62,7 @@ namespace Avida {
       LIB_EXPORT virtual RoleID Role() const = 0;
       LIB_EXPORT inline GroupID ID() const { return m_id; }
       
-      LIB_EXPORT virtual GroupPtr ClassifyNewUnit(UnitPtr u, ConstParentGroupsPtr parents) = 0;
+      LIB_EXPORT virtual GroupPtr ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parent_groups) = 0;
       LIB_EXPORT virtual void HandleUnitGestation(UnitPtr u) = 0;
       LIB_EXPORT virtual void RemoveUnit(UnitPtr u) = 0;
       

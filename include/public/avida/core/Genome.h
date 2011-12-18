@@ -27,6 +27,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/GeneticRepresentation.h"
+#include "avida/core/Properties.h"
 
 
 namespace Avida {

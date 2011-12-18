@@ -26,6 +26,7 @@
 #define AvidaSystematicsManager_h
 
 #include "apto/platform.h"
+#include "avida/core/World.h"
 #include "avida/systematics/Types.h"
 
 
@@ -34,6 +35,35 @@ namespace Avida {
     
     // Manager
     // --------------------------------------------------------------------------------------------------------------
+    
+    class Manager : public WorldFacet
+    {
+    private:
+      Apto::Array<ArbiterPtr> m_arbiters;
+      
+    public:
+      LIB_EXPORT inline Manager() { ; }
+      LIB_EXPORT inline ~Manager() { ; }
+      
+      bool RegisterRole(const RoleID& role, ArbiterPtr a);
+      ArbiterPtr ArbiterForRole(const RoleID& role);
+      
+      LIB_EXPORT void ClassifyNewUnit(UnitPtr u, const RoleClassificationHints* role_hints = NULL);
+      
+      LIB_EXPORT bool AttachTo(World* world);
+      LIB_EXPORT static ManagerPtr Of(World* world);
+      
+      
+      LIB_EXPORT bool Serialize(ArchivePtr ar) const;
+      
+      
+    public:
+      // WorldFacet Support Methods
+      LIB_LOCAL WorldFacetID UpdateBefore() const;
+      LIB_LOCAL WorldFacetID UpdateAfter() const;
+
+      LIB_LOCAL void PerformUpdate(Context& ctx, Update current_update);
+    };
     
   };
 };

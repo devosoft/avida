@@ -31,6 +31,7 @@ static const int WORLD_ARCHIVE_VERSION = 1;
 
 const Avida::WorldFacetID Avida::Reserved::DataManagerFacetID("datamanager");
 const Avida::WorldFacetID Avida::Reserved::EnvironmentFacetID("environment");
+const Avida::WorldFacetID Avida::Reserved::SystematicsFacetID("systematics");
 
 
 Avida::World::World()
@@ -83,6 +84,7 @@ bool Avida::World::AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet)
   
   if (facet_id == Reserved::DataManagerFacetID) m_data_manager = facet;
   else if (facet_id == Reserved::EnvironmentFacetID) m_environment = facet;
+  else if (facet_id == Reserved::SystematicsFacetID) m_systematics = facet;
         
   m_facets[facet_id] = facet;
         
@@ -106,7 +108,7 @@ bool Avida::World::Serialize(ArchivePtr ar) const
   Apto::Map<WorldFacetID, WorldFacetPtr>::KeyIterator kit = m_facets.Keys();
   while (kit.Next()) {
     ArchivePtr facet_ar = ar->DefineSubObject(*kit.Get());
-    this->GetFacet(*kit.Get())->Serialize(facet_ar);
+    this->Facet(*kit.Get())->Serialize(facet_ar);
   }
   
   return true;

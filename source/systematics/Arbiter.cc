@@ -1,8 +1,8 @@
 /*
- *  core/Properties.cc
+ *  systematics/Arbiter.cc
  *  avida-core
  *
- *  Created by David on 8/11/11.
+ *  Created by David on 12/16/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,16 +22,16 @@
  *
  */
 
-#include "avida/core/Properties.h"
+#include "avida/systematics/Arbiter.h"
+
+#include "avida/systematics/Group.h"
+#include "avida/systematics/Listener.h"
+#include "avida/systematics/Unit.h"
 
 
-Avida::PropertyTypeID Avida::Property::Null = "null";
+Avida::Systematics::Arbiter::~Arbiter() { ; }
 
-Apto::String Avida::Property::Value() const { return ""; }
-
-Apto::String Avida::StringProperty::Value() const { return m_value; }
-
-
-const Avida::PropertyTypeID Avida::PropertyTraits<int>::Type = "int";
-const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
-const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
+void Avida::Systematics::Arbiter::notifyListeners(GroupPtr g, EventType t, UnitPtr u)
+{
+  for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); (it.Next()); ) (*it.Get())->Notify(g, t, u);
+}

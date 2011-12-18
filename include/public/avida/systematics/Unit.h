@@ -58,10 +58,10 @@ namespace Avida {
     // Unit
     // --------------------------------------------------------------------------------------------------------------
     
-    class Unit
+    class Unit : virtual public Apto::MTRefCountObject
     {
     protected:
-      GroupMembershipPtr m_groups;
+      mutable GroupMembershipPtr m_groups;
       
     public:
       LIB_EXPORT inline Unit() : m_groups(new GroupMembership) { ; }
@@ -69,7 +69,7 @@ namespace Avida {
       
       LIB_EXPORT virtual Source UnitSource() const = 0;
       LIB_EXPORT virtual Apto::String UnitSourceArguments() const = 0;
-      LIB_EXPORT virtual ConstGenomePtr GetGenome() const = 0;
+      LIB_EXPORT virtual ConstGenomePtr Genome() const = 0;
       
       
       LIB_EXPORT inline ConstGroupMembershipPtr SystematicsGroupMembership() const { return m_groups; }

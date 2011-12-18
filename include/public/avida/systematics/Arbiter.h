@@ -26,6 +26,7 @@
 #define AvidaSystematicsArbiter_h
 
 #include "apto/platform.h"
+#include "avida/core/Types.h"
 #include "avida/systematics/Types.h"
 
 
@@ -38,21 +39,36 @@ namespace Avida {
     class Arbiter
     {
       friend class Manager;
-    protected:
+    private:
       RoleID m_role;
-      Apto::Array<GroupListenerPtr> m_listeners;
+      Apto::Set<Listener*> m_listeners;
       
     public:
       LIB_EXPORT virtual ~Arbiter() = 0;
       
-      LIB_EXPORT inline RoleID Role() const {
+      LIB_EXPORT inline const RoleID& Role() const { return m_role; }
       
+      // Subclass Methods
       LIB_EXPORT virtual GroupPtr ClassifyNewUnit(UnitPtr u, const ClassificationHints* hints = NULL) = 0;
       LIB_EXPORT virtual GroupPtr Group(GroupID g_id) = 0;
       
-      LIB_EXPORT void UpdateReset() = 0;
+      LIB_EXPORT virtual void PerformUpdate(Context& ctx, Update current_update) = 0;
       
+      // Listeners
+      LIB_EXPORT inline void AttachListener(Listener* listener) { m_listeners.Insert(listener); }
+      LIB_EXPORT inline void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
+      
+      // Serialization
       LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const;
+      
+      
+    protected:
+      LIB_EXPORT void notifyListeners(GroupPtr g, EventType t, UnitPtr u = UnitPtr(NULL));
+      
+      
+    private:
+      // Systematics::Manager Interaction
+      LIB_LOCAL inline void SetRole(const RoleID& role) { m_role = role; }
     };
     
   };
