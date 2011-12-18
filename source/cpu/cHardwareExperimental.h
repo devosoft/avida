@@ -516,6 +516,7 @@ private:
   bool Inst_GetEasterly(cAvidaContext& ctx);
   bool Inst_ZeroEasterly(cAvidaContext& ctx);
   bool Inst_ZeroNortherly(cAvidaContext& ctx);
+  bool Inst_GetPosition(cAvidaContext& ctx);
   
   // Rotation
   bool Inst_RotateLeftOne(cAvidaContext& ctx);
@@ -542,6 +543,9 @@ private:
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
+  bool Inst_CollectSpecific(cAvidaContext& ctx);
+
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB

@@ -260,7 +260,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
     tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
     tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly),    
-    tInstLibEntry<tMethod>("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly),    
+    tInstLibEntry<tMethod>("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly),  
+    tInstLibEntry<tMethod>("get-position", &cHardwareExperimental::Inst_GetPosition),
     
     // Rotation
     tInstLibEntry<tMethod>("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, nInstFlag::STALL),
@@ -287,6 +288,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, nInstFlag::STALL),    
     
+    tInstLibEntry<tMethod>("collect-specific", &cHardwareExperimental::Inst_CollectSpecific, nInstFlag::STALL),    
+
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
     tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), // @JJB
@@ -2900,6 +2903,27 @@ bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext& ctx) {
   return true;
 }
 
+/*! This method places the calling organism's x-y coordinates in ?BX? and ?++BX?.
+ 
+ Note that this method *will not work* from within the test CPU, so we have to guard
+ against that.
+ */
+bool cHardwareExperimental::Inst_GetPosition(cAvidaContext& ctx) 
+{
+  int absolute_cell_ID = m_organism->GetCellID();
+  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  // Fail if we're running in the test CPU.
+  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+  const int xreg = FindModifiedRegister(rBX);
+  const int yreg = FindNextRegister(xreg);
+  setInternalValue(xreg, pos.first, true);
+  setInternalValue(yreg, pos.second, true);
+  
+  return true;
+}
+
 bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
   m_organism->Rotate(1);
@@ -3526,6 +3550,58 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext& ctx)
   return true;  
 }
 
+bool cHardwareExperimental::Inst_CollectSpecific(cAvidaContext& ctx)
+{
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  double res_before = m_organism->GetRBin(resource);
+  bool success = DoActualCollect(ctx, resource, true, true, false, false);
+  double res_after = m_organism->GetRBin(resource);
+  setInternalValue(FindModifiedRegister(rBX), (int)(res_after - res_before), true);
+  return success;
+}
+
+bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit)
+{
+  // Set up res_change and max total
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+  tArray<double> res_change(res_count.GetSize());
+  res_change.SetAll(0.0);
+  double total = m_organism->GetRBinsTotal();
+  double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
+  
+	/* First, if collection is probabilistic, check to see if it succeeds.
+   *
+   * If so, remove resource(s) from environment if env_remove is set;
+   * add resource(s) to internal resource bins if internal_add is set
+   * (and this would not fill the bin beyond max).
+   */
+  if (probabilistic) {
+    double success_chance = res_count[bin_used] / double(m_world->GetConfig().COLLECT_PROB_DIVISOR.Get());
+    if (success_chance < ctx.GetRandom().GetDouble())
+    { return false; }  // we define not collecting as failure
+  }
+  
+  // Collect a unit (if possible) or some ABSORB_RESOURCE_FRACTION
+  if (unit) {
+    if (res_count[bin_used] >= 1.0) {res_change[bin_used] = -1.0;}
+    else {return false;}  // failure: not enough to collect
+  }
+  else {
+    res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
+  }
+  
+  if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
+  { m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]); }
+  
+  if(!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max))
+  {res_change[bin_used] = 0.0;}
+  
+  // Update resource counts to reflect res_change
+  m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
+  
+  return true;
+}
+
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
@@ -3790,6 +3866,9 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   setInternalValue(success_reg, 1, true);   
   setInternalValue(bonus_reg, (int) target_bonus, true);
+  const int spec_bin = m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()];
+  setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), m_organism->GetRBinsTotal(), true);
   return true;
 } 		
 
@@ -4030,6 +4109,9 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   setInternalValue(success_reg, 1, true);   
   setInternalValue(bonus_reg, (int) target_bonus, true);
+  const int spec_bin = m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()];
+  setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), m_organism->GetRBinsTotal(), true);
   return true;
 } 
 
