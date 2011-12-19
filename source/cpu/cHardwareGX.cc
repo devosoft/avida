@@ -4065,7 +4065,7 @@ void cHardwareGX::cProgramid::Reset()
 /*! Append this programid's genome to the passed in genome.  Include the tags
 that specify what this programid is capable of.
 */
-void cHardwareGX::cProgramid::AppendLinearGenome(Sequence& genome) {
+void cHardwareGX::cProgramid::AppendLinearGenome(InstructionSequence& genome) {
   genome.Append(GetInst("PROGRAMID"));
   if(GetExecutable()) { genome.Append(GetInst("EXECUTABLE")); }
   if(GetBindable()) { genome.Append(GetInst("BINDABLE")); }

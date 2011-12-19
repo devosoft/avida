@@ -116,8 +116,14 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   // Make sure the organism is okay with dividing now...
   // Moved to end of function @LZ
 
-  // Make sure that neither parent nor child will be below the minimum size.  
-  const int genome_size = m_organism->GetGenome().GetSize();
+  // Make sure that neither parent nor child will be below the minimum size. 
+  const Genome& genome = m_organism->GetGenome();
+  ConstInstructionSequencePtr seq_p;
+  ConstGeneticRepresentationPtr rep_p = genome.Representation();
+  seq_p.DynamicCastFrom(rep_p);
+  const InstructionSequence& seq = *seq_p;
+  
+  const int genome_size = seq.GetSize();
   const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
   const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
   const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
@@ -252,7 +258,11 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
-  InstructionSequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
+  Genome& offspring_gen = m_organism->OffspringGenome();
+  InstructionSequencePtr offspring_seq_p;
+  GeneticRepresentationPtr offspring_rep_p = offspring_gen.Representation();
+  offspring_seq_p.DynamicCastFrom(offspring_rep_p);
+  InstructionSequence& offspring_genome = *offspring_seq_p;
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -489,7 +499,7 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
 void cHardwareBase::doSlipMutation(cAvidaContext& ctx, InstructionSequence& genome, int from)
 {
-  Sequence genome_copy = Sequence(genome);
+  InstructionSequence genome_copy = InstructionSequence(genome);
   
   // All combinations except beginning to past end allowed
   if (from < 0) from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
@@ -573,7 +583,11 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  Genome& offspring_genome = m_organism->OffspringGenome();
+  InstructionSequencePtr offspring_seq_p;
+  GeneticRepresentationPtr offspring_rep_p = offspring_genome.Representation();
+  offspring_seq_p.DynamicCastFrom(offspring_rep_p);
+  InstructionSequence& child_genome = *offspring_seq_p;
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   

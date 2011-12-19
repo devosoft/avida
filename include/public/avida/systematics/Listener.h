@@ -1,8 +1,8 @@
 /*
- *  core/Properties.cc
+ *  systematics/Listener.h
  *  avida-core
  *
- *  Created by David on 8/11/11.
+ *  Created by David on 12/16/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,16 +22,26 @@
  *
  */
 
-#include "avida/core/Properties.h"
+#ifndef AvidaSystematicsListener_h
+#define AvidaSystematicsListener_h
+
+#include "apto/platform.h"
+#include "avida/systematics/Types.h"
 
 
-Avida::PropertyTypeID Avida::Property::Null = "null";
+namespace Avida {
+  namespace Systematics {
+    
+    // Listener
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class Listener
+    {
+    public:
+      LIB_EXPORT virtual void Notify(GroupPtr g, EventType t, UnitPtr u) = 0;
+    };
+    
+  };
+};
 
-Apto::String Avida::Property::Value() const { return ""; }
-
-Apto::String Avida::StringProperty::Value() const { return m_value; }
-
-
-const Avida::PropertyTypeID Avida::PropertyTraits<int>::Type = "int";
-const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
-const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
+#endif

@@ -39,6 +39,7 @@ namespace Avida {
   private:
     WorldFacetPtr m_data_manager;
     WorldFacetPtr m_environment;
+    WorldFacetPtr m_systematics;
     
     Apto::Map<WorldFacetID, WorldFacetPtr> m_facets;
     Apto::Array<WorldFacetPtr> m_facet_order;
@@ -49,11 +50,12 @@ namespace Avida {
     
     // General facet methods
     LIB_EXPORT bool AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet);
-    LIB_EXPORT inline WorldFacetPtr GetFacet(const WorldFacetID& facet_id) const;
+    LIB_EXPORT inline WorldFacetPtr Facet(const WorldFacetID& facet_id) const;
 
     // Specific built-in facet accessors
     LIB_EXPORT inline WorldFacetPtr DataManager() const { return m_data_manager; }
     LIB_EXPORT inline WorldFacetPtr Environment() const { return m_environment; }
+    LIB_EXPORT inline WorldFacetPtr Systematics() const { return m_systematics; }
     
     // Actions
     LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
@@ -62,7 +64,7 @@ namespace Avida {
   };
   
 
-  inline WorldFacetPtr World::GetFacet(const WorldFacetID& facet_id) const
+  inline WorldFacetPtr World::Facet(const WorldFacetID& facet_id) const
   {
     WorldFacetPtr facet;
     m_facets.Get(facet_id, facet);
@@ -95,6 +97,7 @@ namespace Avida {
   {
     LIB_EXPORT extern const WorldFacetID DataManagerFacetID;
     LIB_EXPORT extern const WorldFacetID EnvironmentFacetID;
+    LIB_EXPORT extern const WorldFacetID SystematicsFacetID;
   };
 };
 

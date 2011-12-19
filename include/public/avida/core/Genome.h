@@ -27,11 +27,12 @@
 
 #include "apto/platform.h"
 #include "avida/core/GeneticRepresentation.h"
+#include "avida/core/Properties.h"
 
 
 namespace Avida {
   
-  // Genome - genetic and epi-genetic heritable information
+  // EpigeneticObject
   // --------------------------------------------------------------------------------------------------------------
   
   class EpigeneticObject

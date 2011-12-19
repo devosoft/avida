@@ -1657,7 +1657,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
       GeneticRepresentationPtr offspring_rep_p = test_info.GetTestOrganism(0)->OffspringGenome().Representation();
       offspring_seq_p.DynamicCastFrom(offspring_rep_p);
       const InstructionSequence& offspring_seq = *offspring_seq_p;
-      bool found = genome_hash.Find(offspring_seq.AsString(), offspring_genotype);
+      bool found = genome_hash.Find((const char *)offspring_seq.AsString(), offspring_genotype);
       
       if (found) {
         offspring_genotype->SetNumCPUs(offspring_genotype->GetNumCPUs() + 1);
@@ -1667,7 +1667,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
         offspring_genotype->SetID(parent_genotype->GetID());
         offspring_genotype->SetNumCPUs(1);
         offspring_list.Push(offspring_genotype);
-        genome_hash.Set(offspring_seq.AsString(), offspring_genotype);
+        genome_hash.Set((const char *)offspring_seq.AsString(), offspring_genotype);
       }
     }
     batch_it.Remove();
@@ -2683,7 +2683,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype* genotype = NULL;
     while ((genotype = batch_it.Next()) != NULL) {
-      if (genotype->GetGenome().GetInstSet() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
+      if (m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().GetWithDefault("instset",Property("instset","")).Value())).GetInstSetName() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
       
       const Genome& genome_p = genotype->GetGenome();
       ConstInstructionSequencePtr seq_p;
@@ -2851,7 +2851,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
       seq_p_j.DynamicCastFrom(rep_p_j);
       const InstructionSequence& seq_j = *seq_p_j;
 
-      int dist = Sequence::FindHammingDistance(seq_i, seq_j);
+      int dist = InstructionSequence::FindHammingDistance(seq_i, seq_j);
       int id1 = community[i]->GetID();
       int id2 = community[j]->GetID();
       
@@ -2890,7 +2890,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
           const InstructionSequence& lineage1_seq = *lineage1_seq_p;
 
           
-          total_dist += Sequence::FindHammingDistance(lineage1_seq, parent_seq);
+          total_dist += InstructionSequence::FindHammingDistance(lineage1_seq, parent_seq);
           lineage1_genotype = parent;
         } else {
           int parent_id = lineage2_genotype->GetParentID();
@@ -2907,7 +2907,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
           lineage2_seq_p.DynamicCastFrom(lineage2_rep_p);
           const InstructionSequence& lineage2_seq = *lineage2_seq_p;
 
-          total_dist += Sequence::FindHammingDistance(lineage2_seq, parent_seq);
+          total_dist += InstructionSequence::FindHammingDistance(lineage2_seq, parent_seq);
           
           lineage2_genotype = parent;
         }
@@ -3256,7 +3256,7 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
       genotype2_seq_p.DynamicCastFrom(genotype2_rep_p);
       const InstructionSequence& genotype2_seq = *genotype2_seq_p;
 
-      const int cur_dist = Sequence::FindEditDistance(genotype1_seq, genotype2_seq);
+      const int cur_dist = InstructionSequence::FindEditDistance(genotype1_seq, genotype2_seq);
       dist_total += cur_pairs * cur_dist;
       if (cur_dist > dist_max) dist_max = cur_dist;
       pair_count += cur_pairs;
@@ -3734,7 +3734,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     used_seq_p.DynamicCastFrom(used_rep_p);
     const InstructionSequence& used_seq = *used_seq_p;
 
-    int hamm_dist = Sequence::FindHammingDistance(seq, used_seq);
+    int hamm_dist = InstructionSequence::FindHammingDistance(seq, used_seq);
     total_dist += hamm_dist;
     cpx_fp << hamm_dist << " " << total_dist << "   ";
     
@@ -4138,7 +4138,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     
     // Do the replacement...  We're only going to test genome0, so we only
     // need to modify that one.
-    Sequence cross1 = test_genome1_seq.Crop(start1, end1);
+    InstructionSequence cross1 = test_genome1_seq.Crop(start1, end1);
     test_genome0_seq.Replace(start0, size0, cross1);
     
     // Do the test.
@@ -5942,7 +5942,7 @@ void cAnalyze::CommandHamming(cString cur_string)
       genotype2_seq_p.DynamicCastFrom(genotype2_rep_p);
       const InstructionSequence& genotype2_seq = *genotype2_seq_p;
 
-      const int dist = Sequence::FindHammingDistance(genotype1_seq, genotype2_seq);
+      const int dist = InstructionSequence::FindHammingDistance(genotype1_seq, genotype2_seq);
       total_dist += dist * num_pairs;
       total_count += num_pairs;
     }
@@ -6020,7 +6020,7 @@ void cAnalyze::CommandLevenstein(cString cur_string)
       genotype2_seq_p.DynamicCastFrom(genotype2_rep_p);
       const InstructionSequence& genotype2_seq = *genotype2_seq_p;
 
-      const int dist = Sequence::FindEditDistance(genotype1_seq, genotype2_seq);
+      const int dist = InstructionSequence::FindEditDistance(genotype1_seq, genotype2_seq);
       total_dist += dist * num_pairs;
       total_count += num_pairs;
     }
@@ -6095,13 +6095,13 @@ void cAnalyze::CommandSpecies(cString cur_string)
           InstructionSequencePtr test_genome0_seq_p;
           GeneticRepresentationPtr test_genome0_rep_p = test_genome0.Representation();
           test_genome0_seq_p.DynamicCastFrom(test_genome0_rep_p);
-          const InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
+          InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
           
           Genome test_genome1 = genotype2->GetGenome(); 
           InstructionSequencePtr test_genome1_seq_p;
           GeneticRepresentationPtr test_genome1_rep_p = test_genome1.Representation();
           test_genome1_seq_p.DynamicCastFrom(test_genome1_rep_p);
-          const InstructionSequence& test_genome1_seq = *test_genome1_seq_p;
+          InstructionSequence& test_genome1_seq = *test_genome1_seq_p;
          
           double start_frac = m_world->GetRandom().GetDouble();
           double end_frac = m_world->GetRandom().GetDouble();
@@ -6131,8 +6131,8 @@ void cAnalyze::CommandSpecies(cString cur_string)
           } 
           
           // Swap the components
-          Sequence cross0 = test_genome0_seq.Crop(start0, end0);
-          Sequence cross1 = test_genome1_seq.Crop(start1, end1);
+          InstructionSequence cross0 = test_genome0_seq.Crop(start0, end0);
+          InstructionSequence cross1 = test_genome1_seq.Crop(start1, end1);
           test_genome0_seq.Replace(start0, size0, cross1);
           test_genome1_seq.Replace(start1, size1, cross0);
           
@@ -6210,13 +6210,13 @@ void cAnalyze::CommandRecombine(cString cur_string)
         InstructionSequencePtr test_genome0_seq_p;
         GeneticRepresentationPtr test_genome0_rep_p = test_genome0.Representation();
         test_genome0_seq_p.DynamicCastFrom(test_genome0_rep_p);
-        const InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
+        InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
         
         Genome test_genome1 = genotype2->GetGenome(); 
         InstructionSequencePtr test_genome1_seq_p;
         GeneticRepresentationPtr test_genome1_rep_p = test_genome1.Representation();
         test_genome1_seq_p.DynamicCastFrom(test_genome1_rep_p);
-        const InstructionSequence& test_genome1_seq = *test_genome1_seq_p;
+        InstructionSequence& test_genome1_seq = *test_genome1_seq_p;
         
         double start_frac = m_world->GetRandom().GetDouble();
         double end_frac = m_world->GetRandom().GetDouble();
@@ -6246,17 +6246,17 @@ void cAnalyze::CommandRecombine(cString cur_string)
         } 
         
         if (size0 > 0 && size1 > 0) {
-          Sequence cross0 = test_genome0_seq.Crop(start0, end0);
-          Sequence cross1 = test_genome1_seq.Crop(start1, end1);
+          InstructionSequence cross0 = test_genome0_seq.Crop(start0, end0);
+          InstructionSequence cross1 = test_genome1_seq.Crop(start1, end1);
           test_genome0_seq.Replace(start0, size0, cross1);
           test_genome1_seq.Replace(start1, size1, cross0);
         }
         else if (size0 > 0) {
-          Sequence cross0 = test_genome0_seq.Crop(start0, end0);
+          InstructionSequence cross0 = test_genome0_seq.Crop(start0, end0);
           test_genome1_seq.Replace(start1, size1, cross0);
         }
         else if (size1 > 0) {
-          Sequence cross1 = test_genome1_seq.Crop(start1, end1);
+          InstructionSequence cross1 = test_genome1_seq.Crop(start1, end1);
           test_genome0_seq.Replace(start0, size0, cross1);
         }
         

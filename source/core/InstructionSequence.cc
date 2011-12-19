@@ -201,6 +201,14 @@ Apto::String Avida::InstructionSequence::AsString() const
 }
 
 
+bool Avida::InstructionSequence::Serialize(ArchivePtr ar) const
+{
+  assert(false);
+  // @TODO - InstructionSequence::Serialize
+  return false;
+}
+
+
 void Avida::InstructionSequence::Resize(int new_size)
 {
   assert(new_size >= 0);
@@ -313,15 +321,15 @@ void Avida::InstructionSequence::Rotate(int n)
 
 	if (n > 0) {
 		// forward
-		InstructionSequenceSequence head = Crop(m_active_size - n, m_active_size);
-		InstructionSequenceSequence tail = Crop(0, m_active_size - n);
+		InstructionSequence head = Crop(m_active_size - n, m_active_size);
+		InstructionSequence tail = Crop(0, m_active_size - n);
 		head.Append(tail);
 		operator=(head);
 	} else {
 		assert(false);
 		// backward
-		InstructionSequenceSequence head = Crop(0, -n); // n is < 0, so this is addition.
-		InstructionSequenceSequence tail = Crop(-n, m_active_size);
+		InstructionSequence head = Crop(0, -n); // n is < 0, so this is addition.
+		InstructionSequence tail = Crop(-n, m_active_size);
 		tail.Append(head);
 		operator=(tail);
 	}
@@ -335,8 +343,6 @@ void Avida::InstructionSequence::operator=(const InstructionSequence& other_seq)
   
   // Now that both code arrays are the same size, copy the other one over
   for (int i = 0; i < m_active_size; i++) m_seq[i] = other_seq[i];
-  
-  m_mutation_steps = other_seq.m_mutation_steps;
 }
 
 
@@ -353,7 +359,7 @@ bool Avida::InstructionSequence::operator==(const InstructionSequence& other_seq
 }
 
 
-int Avida::InstructionSequence::FindInst(const InstructionSequence& inst, int start_index) const
+int Avida::InstructionSequence::FindInst(const Instruction& inst, int start_index) const
 {
   assert(start_index < m_active_size);  // Starting search after sequence end.
   
@@ -364,7 +370,7 @@ int Avida::InstructionSequence::FindInst(const InstructionSequence& inst, int st
 }
 
 
-int Avida::Sequence::CountInst(const InstructionSequence& inst) const
+int Avida::InstructionSequence::CountInst(const Instruction& inst) const
 {
   int count = 0;
   for (int i = 0; i < m_active_size; i++) if (m_seq[i] == inst) count++;
@@ -372,7 +378,7 @@ int Avida::Sequence::CountInst(const InstructionSequence& inst) const
 }
 
 
-int Avida::Sequence::MinDistBetween(const InstructionSequence& inst) const
+int Avida::InstructionSequence::MinDistBetween(const Instruction& inst) const
 {
 	int firstInstance = -1;
 	int secondInstance = -1;
@@ -412,21 +418,21 @@ int Avida::Sequence::MinDistBetween(const InstructionSequence& inst) const
 }
 
 
-Avida::Sequence Avida::InstructionSequence::Crop(int start, int end) const
+Avida::InstructionSequence Avida::InstructionSequence::Crop(int start, int end) const
 {
   assert(end > start);                // Must have a positive length clip!
   assert(m_active_size >= end);       // end must be < sequence length
   assert(start >= 0);                 // negative start illegal
   
   const int out_length = end - start;
-  Sequence out_seq(out_length);
+  InstructionSequence out_seq(out_length);
   for (int i = 0; i < out_length; i++) out_seq[i] = m_seq[i+start];
   
   return out_seq;
 }
 
 
-Avida::Sequence Avida::InstructionSequence::Cut(int start, int end) const
+Avida::InstructionSequence Avida::InstructionSequence::Cut(int start, int end) const
 {
   assert(end > start);                // Must have a positive size cut!
   assert(m_active_size >= end);       // end must be < sequence length
@@ -437,20 +443,20 @@ Avida::Sequence Avida::InstructionSequence::Cut(int start, int end) const
   
   assert(out_length > 0);             // Can't cut everything!
   
-  Sequence out_seq(out_length);
+  InstructionSequence out_seq(out_length);
   for (int i = 0; i < start; i++) out_seq[i] = m_seq[i];
   for (int i = start; i < out_length; i++) out_seq[i] = m_seq[i + cut_length];
   
   return out_seq;
 }  
 
-Avida::Sequence Avida::InstructionSequence::Join(const InstructionSequence& lhs, const InstructionSequence& rhs)
+Avida::InstructionSequence Avida::InstructionSequence::Join(const InstructionSequence& lhs, const InstructionSequence& rhs)
 {
   const int length1 = lhs.GetSize();
   const int length2 = rhs.GetSize();
   const int out_length = length1 + length2;
   
-  Sequence out_seq(out_length);
+  InstructionSequence out_seq(out_length);
   for (int i = 0; i < length1; i++) out_seq[i] = lhs[i];
   for (int i = 0; i < length2; i++) out_seq[i + length1] = rhs[i];
   
@@ -532,10 +538,10 @@ int Avida::InstructionSequence::FindEditDistance(const InstructionSequence& seq1
 {
   const int size1 = seq1.GetSize();
   const int size2 = seq2.GetSize();
-  const int min_size = min(size1, size2);
+  const int min_size = (size1 < size2) ? size1 : size2;
   
   // If either size is zero, return the other one!
-  if (!min_size) return max(size1, size2);
+  if (!min_size) return (size1 > size2) ? size1 : size2;
   
   // Count how many direct matches we have at the front and end.
   int match_front = 0, match_end = 0;

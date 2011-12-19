@@ -1,8 +1,8 @@
 /*
- *  core/Properties.cc
+ *  systematics/Group.cc
  *  avida-core
  *
- *  Created by David on 8/11/11.
+ *  Created by David on 12/16/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,16 +22,23 @@
  *
  */
 
-#include "avida/core/Properties.h"
+#include "avida/systematics/Group.h"
+
+#include <cassert>
 
 
-Avida::PropertyTypeID Avida::Property::Null = "null";
-
-Apto::String Avida::Property::Value() const { return ""; }
-
-Apto::String Avida::StringProperty::Value() const { return m_value; }
+Avida::Systematics::Group::~Group() { ; }
+Avida::Systematics::GroupData::~GroupData() { ; }
 
 
-const Avida::PropertyTypeID Avida::PropertyTraits<int>::Type = "int";
-const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
-const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
+bool Avida::Systematics::Group::Serialize(ArchivePtr ar) const
+{
+  // @TODO - serialize attached data
+  return false;
+}
+
+
+void Avida::Systematics::Group::AddActiveReference() { m_a_refs++; assert(m_a_refs >= 0); }
+void Avida::Systematics::Group::RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
+void Avida::Systematics::Group::AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
+void Avida::Systematics::Group::RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }

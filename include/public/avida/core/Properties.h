@@ -33,26 +33,61 @@
 namespace Avida {
   
   // Property
-  // --------------------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------------------------------------------  
   
   class Property
   {
-  private:
+  public:
+    static PropertyTypeID Null;
+    
+  protected:
     PropertyID m_id;
     const PropertyTypeID& m_type_id;
-    Apto::String m_value;
     
+
   public:
-    template <typename T> LIB_EXPORT Property(const PropertyID& prop_id, const T& prop_value)
-      : m_id(prop_id), m_type_id(PropertyTraits<T>::Type), m_value(Apto::AsStr(prop_value)) { ; }
-    LIB_EXPORT inline Property(const PropertyID& prop_id, const PropertyTypeID& type_id, const Apto::String& prop_value)
-      : m_id(prop_id), m_type_id(type_id), m_value(prop_value) { ; }
+    LIB_EXPORT inline Property() : m_type_id(Null) { ; } 
+    LIB_EXPORT inline Property(const PropertyID& p_id, const PropertyTypeID& t_id) : m_id(p_id), m_type_id(t_id) { ; }
     
     LIB_EXPORT inline const PropertyID& PropertyID() const { return m_id; }
     LIB_EXPORT inline const PropertyTypeID& Type() const { return m_type_id; }
-    LIB_EXPORT inline const Apto::String& Value() const { return m_value; }
+    LIB_EXPORT virtual Apto::String Value() const;
+  };
+
+
+  // ReferenceProperty
+  // --------------------------------------------------------------------------------------------------------------  
+  
+  template <typename T> class ReferenceProperty : public Property
+  {
+  private:
+    const T& m_value_ref;
+    
+  public:
+    LIB_EXPORT ReferenceProperty(const Avida::PropertyID& prop_id, const T& value_ref)
+      : Property(prop_id, PropertyTraits<T>::Type), m_value_ref(value_ref) { ; }
+    
+    LIB_EXPORT Apto::String Value() const { return Apto::AsStr(m_value_ref); }
   };
   
+
+  // StringProperty
+  // --------------------------------------------------------------------------------------------------------------  
+  
+  class StringProperty : public Property
+  {
+  private:
+    Apto::String m_value;
+    
+  public:
+    template <typename T> LIB_EXPORT StringProperty(const Avida::PropertyID& prop_id, const T& prop_value)
+      : Property(prop_id, PropertyTraits<T>::Type), m_value(Apto::AsStr(prop_value)) { ; }
+    LIB_EXPORT inline StringProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const Apto::String& prop_value)
+      : Property(prop_id, type_id), m_value(prop_value) { ; }
+    
+    LIB_EXPORT Apto::String Value() const;
+  };
+
 
   
   // PropertyTraits Specializations

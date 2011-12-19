@@ -22,7 +22,7 @@
 
 #include "cGenomeUtil.h"
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include "cAvidaContext.h"
 #include "cInitFile.h"

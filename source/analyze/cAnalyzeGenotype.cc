@@ -599,7 +599,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     parent_seq_p.DynamicCastFrom(parent_rep_p);
     const InstructionSequence& parent_seq = *parent_seq_p;
     
-    parent_dist = cStringUtil::EditDistance(seq.AsString(), parent_seq.AsString(), parent_muts);
+    parent_dist = cStringUtil::EditDistance((const char *)seq.AsString(), (const char *)parent_seq.AsString(), parent_muts);
     
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
@@ -859,7 +859,7 @@ cString cAnalyzeGenotype::GetSequence() const
   ConstGeneticRepresentationPtr rep_p = m_genome.Representation();
   seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& seq = *seq_p;
-  return seq.AsString(); 
+  return (const char *)seq.AsString(); 
 }
 
 cString cAnalyzeGenotype::GetHTMLSequence() const
@@ -869,7 +869,7 @@ cString cAnalyzeGenotype::GetHTMLSequence() const
   seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& genome_seq = *seq_p;
   
-  cString text_genome = genome_seq.AsString();
+  cString text_genome = (const char *)genome_seq.AsString();
   cString html_code("<tt>");
   
   cString diff_info = parent_muts;
