@@ -24,6 +24,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/Feedback.h"
+#include "avida/systematics/Unit.h"
 
 #include "cDeme.h"
 #include "cEnvironment.h"
@@ -385,7 +386,7 @@ int cPopulationInterface::BuyValue(const int label, const int buy_price)
 	return value;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);

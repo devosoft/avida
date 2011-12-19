@@ -23,7 +23,6 @@
 #include "cBirthChamber.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cBirthDemeHandler.h"
 #include "cBirthGenomeSizeHandler.h"
 #include "cBirthGlobalHandler.h"

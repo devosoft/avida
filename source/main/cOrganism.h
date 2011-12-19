@@ -25,7 +25,6 @@
 
 #include "avida/core/Genome.h"
 
-#include "cBioUnit.h"
 #include "cCPUMemory.h"
 #include "cGenomeTestMetrics.h"
 #include "cMutationRates.h"

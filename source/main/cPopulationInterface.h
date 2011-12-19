@@ -24,6 +24,7 @@
 #define cPopulationInterface_h
 
 #include "avida/core/WorldDriver.h"
+#include "avida/systematics/Unit.h"
 
 #include "cOrgInterface.h"
 #include "cWorld.h"
@@ -130,7 +131,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code);
+  bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
   //! Send a message to the faced organism.

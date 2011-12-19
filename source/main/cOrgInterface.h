@@ -33,7 +33,7 @@
 
 namespace Avida {
   class Genome;
-  class Sequence;
+  class InstructionSequence;
 };
 
 class cAvidaContext;

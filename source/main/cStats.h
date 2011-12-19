@@ -30,7 +30,6 @@
 #include "avida/core/InstructionSequence.h"
 #include "avida/data/Provider.h"
 
-#include "cBioGroupListener.h"
 #include "cDoubleSum.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
@@ -351,7 +350,7 @@ public:
   ~cStats() { ; }
 
   // cBioGroupListener
-  void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
+  void NotifyBGEvent(Systematics::GroupPtr bg, eBGEventType type, Systematics::UnitPtr bu);
   
   
   // Data::Provider

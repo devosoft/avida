@@ -81,11 +81,11 @@ namespace Avida {
       bool Serialize(ArchivePtr ar) const;
       
       
-      tIterator<cBioGroup>* Iterator();
+      tIterator<Systematics::Group>* Iterator();
       
       
       // Genotype Manager Methods
-      cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents, tArrayMap<cString, cString>* hints = NULL);
+      cBGGenotype* ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents, tArrayMap<cString, cString>* hints = NULL);
       void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
 
       const tArray<cString>& GetBioGroupPropertyList() const;

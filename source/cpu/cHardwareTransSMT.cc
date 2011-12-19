@@ -191,7 +191,7 @@ void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_
   skipExecution = false;
 }
 
-cBioUnit* cHardwareTransSMT::ThreadGetOwner()
+Systematics::UnitPtr cHardwareTransSMT::ThreadGetOwner()
 {
   return (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
 }

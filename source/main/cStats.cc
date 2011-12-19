@@ -27,7 +27,6 @@
 #include "avida/data/Package.h"
 #include "avida/data/Util.h"
 
-#include "cBioGroup.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -288,7 +287,7 @@ cStats::cStats(cWorld* world)
 }
 
 
-void cStats::NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
+void cStats::NotifyBGEvent(Systematics::GroupPtr bg, eBGEventType type, Systematics::UnitPtr bu)
 {
   assert(bg);
 

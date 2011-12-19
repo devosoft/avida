@@ -3573,7 +3573,7 @@ public:
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           if(organism->GetNumParasites() > 0)
           {
-            tArray<cBioUnit*> parasites = organism->GetParasites();
+            tArray<Systematics::UnitPtr> parasites = organism->GetParasites();
             virulence = dynamic_cast<cParasite*>(parasites[0])->GetVirulence();
           }
           else { virulence = -1; }
@@ -3704,7 +3704,7 @@ public:
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           if(organism->GetNumParasites() > 0)
           {
-            tArray<cBioUnit*> parasites = organism->GetParasites();
+            tArray<Systematics::UnitPtr> parasites = organism->GetParasites();
             
             genome_seq = dynamic_cast<cParasite*>(parasites[0])->GetGenome().GetSequence().AsString();
           }

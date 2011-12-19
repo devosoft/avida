@@ -746,7 +746,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   return inject_signal;
 }
 
-bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
+bool cHardwareSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
 {
   assert(bu->GetGenome().GetHardwareType() == GetType() && bu->GetGenome().GetInstSet() == m_inst_set->GetInstSetName());
   

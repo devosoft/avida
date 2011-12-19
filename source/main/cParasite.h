@@ -24,9 +24,6 @@
 
 #include "avida/core/Genome.h"
 
-#ifndef cBioUnit_h
-#include "cBioUnit.h"
-#endif
 #ifndef cPhenotype_h
 #include "cPhenotype.h"
 #endif

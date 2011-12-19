@@ -23,9 +23,8 @@
 
 #include "avida/private/systematics/GenotypeArbiter.h"
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
-#include "cBGGenotype.h"
 #include "cDataFile.h"
 #include "cStats.h"
 #include "cStringUtil.h"
@@ -63,7 +62,7 @@ cBGGenotypeManager::~cBGGenotypeManager()
 }
 
 
-cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArrayMap<cString, cString>* hints) { return ClassifyNewBioUnit(bu, NULL, hints); }
+cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArrayMap<cString, cString>* hints) { return ClassifyNewBioUnit(bu, NULL, hints); }
 
 
 void cBGGenotypeManager::UpdateReset()
@@ -214,7 +213,7 @@ tIterator<cBioGroup>* cBGGenotypeManager::Iterator()
 
 
 
-cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents, tArrayMap<cString, cString>* hints)
+cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents, tArrayMap<cString, cString>* hints)
 {
   int list_num = hashGenome(bu->GetGenome().GetSequence());
   
