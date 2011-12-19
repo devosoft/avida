@@ -55,7 +55,6 @@ class cHardwareBase;
 class cInstSet;
 class cLineage;
 class cOrgSinkMessage;
-class cSaleItem;
 class cStateGrid;
 
 using namespace Avida;
@@ -86,7 +85,6 @@ private:
   tBuffer<int> m_input_buf;
   tBuffer<int> m_output_buf;
   tBuffer<int> m_received_messages;
-  tList<tListNode<cSaleItem> > m_sold_items;
   
   int m_cur_sg;
 
@@ -254,8 +252,6 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price);
   int BuyValue(const int label, const int buy_price);
-  tListNode<tListNode<cSaleItem> >* AddSoldItem(tListNode<cSaleItem>* node) { return m_sold_items.PushRear(node); }
-  tList<tListNode<cSaleItem> >* GetSoldItems() { return &m_sold_items; }
   void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
 
   int GetPrevSeenCellID() const { return m_interface->GetPrevSeenCellID(); }

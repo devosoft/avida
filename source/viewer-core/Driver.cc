@@ -29,7 +29,6 @@
 #include "avida/viewer-core/Listener.h"
 
 #include "cAvidaContext.h"
-#include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"

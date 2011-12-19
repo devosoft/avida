@@ -22,7 +22,6 @@
 
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
-#include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"

@@ -3203,9 +3203,6 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
     }
   }
   
-  //Need to clear the mutation steps, so that only most recent are there...
-  child_genome.GetMutationSteps().Clear();
-  
   //Perform divide mutations...
   Divide_DoMutations(ctx);
   

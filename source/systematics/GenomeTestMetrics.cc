@@ -1,5 +1,5 @@
 /*
- *  cGenomeTestMetrics.cc
+ *  private/systematics/GenomeTestMetrics.cc
  *  Avida
  *
  *  Created by David Bryson on 8/13/10.
@@ -17,29 +17,27 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#include "cGenomeTestMetrics.h"
+#include "avida/private/systematics/GenomeTestMetrics.h"
 
 #include "avida/core/Genome.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cHardwareManager.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
-#include "tAutoRelease.h"
-
-using namespace Avida;
 
 
-cGenomeTestMetrics::cGenomeTestMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg)
+Avida::Systematics::GenomeTestMetrics::GenomeTestMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr g)
 {
-  tAutoRelease<cTestCPU> testcpu(world->GetHardwareManager().CreateTestCPU(ctx));
+  Apto::SmartPtr<cTestCPU> testcpu(world->GetHardwareManager().CreateTestCPU(ctx));
   
   cCPUTestInfo test_info;
-  testcpu->TestGenome(ctx, test_info, Genome(bg->GetProperty("genome").AsString()));
+  testcpu->TestGenome(ctx, test_info, Genome(g->Properties().Get("genome").Value()));
   
   m_is_viable = test_info.IsViable();
   
@@ -53,14 +51,21 @@ cGenomeTestMetrics::cGenomeTestMetrics(cWorld* world, cAvidaContext& ctx, cBioGr
 }
 
 
-
-cGenomeTestMetrics* cGenomeTestMetrics::GetMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg)
+bool Avida::Systematics::GenomeTestMetrics::Serialize(ArchivePtr ar) const
 {
-  cGenomeTestMetrics* metrics = bg->GetData<cGenomeTestMetrics>();
-  if (!metrics && bg->HasProperty("genome")) {
-    metrics = new cGenomeTestMetrics(world, ctx, bg);
+  // @TODO
+  return false;
+}
+
+
+Avida::Systematics::GenomeTestMetricsPtr Avida::Systematics::GenomeTestMetrics::GetMetrics(cWorld* world, cAvidaContext& ctx,
+                                                                                           GroupPtr g)
+{
+  GenomeTestMetricsPtr metrics = g->GetData<GenomeTestMetrics>();
+  if (!metrics && g->Properties().Has("genome")) {
+    metrics = GenomeTestMetricsPtr(new GenomeTestMetrics(world, ctx, g));
     assert(metrics);
-    bg->AttachData(metrics);
+    g->AttachData(metrics);
   }
 
   return metrics;

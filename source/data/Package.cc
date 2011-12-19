@@ -31,6 +31,7 @@
 
 bool Avida::Data::Package::IsAggregate() const { return false; }
 Apto::String Avida::Data::Package::GetAggregateDescriptor() const { return Apto::String(); }
+int Avida::Data::Package::NumComponents() const { return 0; }
 Avida::Data::PackagePtr Avida::Data::Package::GetComponent(int index) { return PackagePtr(); }
 Avida::Data::ConstPackagePtr Avida::Data::Package::GetComponent(int index) const { return ConstPackagePtr(); }
 
@@ -74,6 +75,7 @@ Apto::String Avida::Data::ArrayPackage::GetAggregateDescriptor() const
   return desc;
 }
 
+int Avida::Data::ArrayPackage::NumComponents() const { return m_entries.GetSize(); }
 
 Avida::Data::PackagePtr Avida::Data::ArrayPackage::GetComponent(int index)
 {

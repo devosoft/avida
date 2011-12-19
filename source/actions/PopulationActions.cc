@@ -44,7 +44,6 @@
 #include "cArgSchema.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
-#include "cClassificationManager.h"
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
 

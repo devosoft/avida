@@ -61,6 +61,7 @@ namespace Avida {
       
       LIB_EXPORT virtual RoleID Role() const = 0;
       LIB_EXPORT inline GroupID ID() const { return m_id; }
+      LIB_EXPORT virtual ArbiterPtr Arbiter() const = 0;
       
       LIB_EXPORT virtual GroupPtr ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parent_groups) = 0;
       LIB_EXPORT virtual void HandleUnitGestation(UnitPtr u) = 0;

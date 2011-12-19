@@ -52,6 +52,7 @@ namespace Avida {
     LIB_EXPORT inline const PropertyID& PropertyID() const { return m_id; }
     LIB_EXPORT inline const PropertyTypeID& Type() const { return m_type_id; }
     LIB_EXPORT virtual Apto::String Value() const;
+    LIB_EXPORT inline operator Apto::String() const { return Value(); }
   };
 
 

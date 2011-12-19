@@ -22,7 +22,6 @@
 #include "cDriver_TextViewer.h"
 
 #include "cAnalyze.h"
-#include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"

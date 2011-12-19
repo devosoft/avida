@@ -49,6 +49,7 @@ namespace Avida {
 
       LIB_EXPORT virtual bool IsAggregate() const;
       LIB_EXPORT virtual Apto::String GetAggregateDescriptor() const;
+      LIB_EXPORT virtual int NumComponents() const;
       LIB_EXPORT virtual PackagePtr GetComponent(int index);
       LIB_EXPORT virtual ConstPackagePtr GetComponent(int index) const;
     };
@@ -63,12 +64,12 @@ namespace Avida {
       T m_value;
       
     public:
-      Wrap(T value) : m_value(value) { ; }
+      LIB_EXPORT inline Wrap(T value) : m_value(value) { ; }
       
-      bool BoolValue() const { return m_value; }
-      int IntValue() const { return m_value; }
-      double DoubleValue() const { return m_value; }
-      Apto::String StringValue() const { return Apto::String(Apto::AsStr(m_value)); }
+      LIB_EXPORT bool BoolValue() const { return m_value; }
+      LIB_EXPORT int IntValue() const { return m_value; }
+      LIB_EXPORT double DoubleValue() const { return m_value; }
+      LIB_EXPORT Apto::String StringValue() const { return Apto::String(Apto::AsStr(m_value)); }
     };
     
     template <> class Wrap<Apto::String> : public Package
@@ -77,12 +78,12 @@ namespace Avida {
       Apto::String m_value;
       
     public:
-      Wrap(Apto::String value) : m_value(value) { ; }
+      LIB_EXPORT inline Wrap(Apto::String value) : m_value(value) { ; }
       
-      bool BoolValue() const { return Apto::StrAs(m_value); }
-      int IntValue() const { return Apto::StrAs(m_value); }
-      double DoubleValue() const { return Apto::StrAs(m_value); }
-      Apto::String StringValue() const { return m_value; }
+      LIB_EXPORT bool BoolValue() const { return Apto::StrAs(m_value); }
+      LIB_EXPORT int IntValue() const { return Apto::StrAs(m_value); }
+      LIB_EXPORT double DoubleValue() const { return Apto::StrAs(m_value); }
+      LIB_EXPORT Apto::String StringValue() const { return m_value; }
     };
         
     
@@ -95,19 +96,20 @@ namespace Avida {
       Apto::Array<PackagePtr> m_entries;
       
     public:
-      inline ArrayPackage() { ; }
+      LIB_EXPORT inline ArrayPackage() { ; }
       
-      bool BoolValue() const;
-      int IntValue() const;
-      double DoubleValue() const;
-      Apto::String StringValue() const;
+      LIB_EXPORT bool BoolValue() const;
+      LIB_EXPORT int IntValue() const;
+      LIB_EXPORT double DoubleValue() const;
+      LIB_EXPORT Apto::String StringValue() const;
       
-      bool IsAggregate() const;
-      Apto::String GetAggregateDescriptor() const;
-      PackagePtr GetComponent(int index);
-      ConstPackagePtr GetComponent(int index) const;
+      LIB_EXPORT bool IsAggregate() const;
+      LIB_EXPORT Apto::String GetAggregateDescriptor() const;
+      LIB_EXPORT int NumComponents() const;
+      LIB_EXPORT PackagePtr GetComponent(int index);
+      LIB_EXPORT ConstPackagePtr GetComponent(int index) const;
       
-      inline void AddComponent(PackagePtr comp) { m_entries.Push(comp); }
+      LIB_EXPORT inline void AddComponent(PackagePtr comp) { m_entries.Push(comp); }
     };
   };
 };
