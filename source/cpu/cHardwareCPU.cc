@@ -422,6 +422,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
     tInstLibEntry<tMethod>("increment-mating-display-a", &cHardwareCPU::Inst_IncrementMatingDisplayA),
     tInstLibEntry<tMethod>("increment-mating-display-b", &cHardwareCPU::Inst_IncrementMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mating-display-a", &cHardwareCPU::Inst_SetMatingDisplayA),
+    tInstLibEntry<tMethod>("set-mating-display-b", &cHardwareCPU::Inst_SetMatingDisplayB),
     tInstLibEntry<tMethod>("set-mate-preference-random", &cHardwareCPU::Inst_SetMatePreferenceRandom),
     tInstLibEntry<tMethod>("set-mate-preference-highest-display-a", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA),
     tInstLibEntry<tMethod>("set-mate-preference-highest-display-b", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB),
@@ -9963,6 +9965,30 @@ bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
   int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
   counter++;
   m_organism->GetPhenotype().SetCurMatingDisplayB(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
+//Sets the display value a to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayA(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
+//Sets the display value b to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayB(new_display);
   return true;
 }
 
