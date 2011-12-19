@@ -269,8 +269,7 @@ bool Avida::Data::Manager::AttachTo(World* world)
 Avida::Data::ManagerPtr Avida::Data::Manager::Of(World* world)
 {
   ManagerPtr manager;
-  WorldFacetPtr facet(world->DataManager());
-  manager.DynamicCastFrom(facet);
+  manager.DynamicCastFrom(world->DataManager());
   return manager;
 }
 

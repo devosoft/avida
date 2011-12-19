@@ -70,8 +70,7 @@ bool Avida::Systematics::Manager::AttachTo(World* world)
 Avida::Systematics::ManagerPtr Avida::Systematics::Manager::Of(World* world)
 {
   ManagerPtr manager;
-  WorldFacetPtr facet(world->Systematics());
-  manager.DynamicCastFrom(facet);
+  manager.DynamicCastFrom(world->Systematics());
   return manager;
 }
 

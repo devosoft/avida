@@ -354,3 +354,34 @@ void cBGGenotype::UpdateReset()
   m_breed_true.Next();
   m_breed_in.Next();
 }
+
+
+void cBGGenotypeManager::buildDataCommandManager() const
+{
+  m_dcm = new tDataCommandManager<cBGGenotype>;
+  
+#define ADD_PROP(NAME, TYPE, GET, DESC) \
+m_dcm->Add(NAME, new tDataEntryOfType<cBGGenotype, TYPE>(NAME, DESC, &cBGGenotype::GET));
+  
+  ADD_PROP("genome", cString (), GetGenomeString, "Genome");
+  ADD_PROP("name", const cString& (), GetName, "Name");
+  ADD_PROP("parents", const cString& (), GetParentString, "Parents");
+  ADD_PROP("threshold", bool (), IsThreshold, "Threshold");  
+  ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
+  ADD_PROP("fitness", double (), GetFitness, "Average Fitness");
+  ADD_PROP("repro_rate", double (), GetReproRate, "Repro Rate");
+  ADD_PROP("recent_births", int (), GetThisBirths, "Recent Births (during update)");
+  ADD_PROP("recent_deaths", int (), GetThisDeaths, "Recent Deaths (during update)");
+  ADD_PROP("recent_breed_true", int (), GetThisBreedTrue, "Recent Breed True (during update)");
+  ADD_PROP("recent_breed_in", int (), GetThisBreedIn, "Recent Breed In (during update)");
+  ADD_PROP("recent_breed_out", int (), GetThisBreedOut, "Recent Breed Out (during update)");
+  ADD_PROP("total_organisms", int (), GetTotalOrganisms, "Total Organisms");
+  ADD_PROP("last_births", int (), GetLastBirths, "Births (during last update)");
+  ADD_PROP("last_breed_true", int (), GetLastBreedTrue, "Breed True (during last update)");
+  ADD_PROP("last_breed_in", int (), GetLastBreedIn, "Breed In (during last update)");
+  ADD_PROP("last_breed_out", int (), GetLastBreedOut, "Breed Out (during last update)");
+  ADD_PROP("last_birth_cell", int (), GetLastBirthCell, "Last birth cell");
+  ADD_PROP("last_group_id", int (), GetLastGroupID, "Last birth group");
+  ADD_PROP("last_forager_type", int (), GetLastForagerType, "Last birth forager type");
+}
+

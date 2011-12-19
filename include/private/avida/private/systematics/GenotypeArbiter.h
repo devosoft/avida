@@ -25,6 +25,7 @@
 #define AvidaSystematicsGenotypeArbiter_h
 
 #include "avida/core/Properties.h"
+#include "avida/data/Provider.h"
 #include "avida/systematics/Arbiter.h"
 #include "avida/private/systematics/Genotype.h"
 
@@ -50,26 +51,51 @@ namespace Avida {
     // Genotype
     // --------------------------------------------------------------------------------------------------------------
     
-    class GenotypeArbiter : public Arbiter
+    class GenotypeArbiter : public Arbiter, public Data::Provider
     {
+    public:
+      enum {
+        EVENT_ADD_THRESHOLD,
+        EVENT_REMOVE_THRESHOLD
+      };
+      
     private:
-      cWorld* m_world;
-
-      tSparseVectorList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
-      tManagedPointerArray<tSparseVectorList<cBGGenotype> > m_active_sz;
-      tSparseVectorList<cBGGenotype> m_historic;
-      cBGGenotype* m_coalescent;
+      // Config Settings
+      int m_threshold;
+      
+      // Internal Data Structures
+      Apto::List<GenotypePtr, Apto::SparseVector> m_active_hash[nBGGenotypeManager::HASH_SIZE];
+      Apto::Array<Apto::List<GenotypePtr, Apto::SparseVector>, Apto::ManagedPointer> m_active_sz;
+      Apto::List<GenotypePtr, Apto::SparseVector> m_historic;
+      GenotypePtr m_coalescent;
       int m_best;
       int m_next_id;
       int m_dom_prev;
       int m_dom_time;
-      tArray<int> m_sz_count;
+      Apto::Array<int> m_sz_count;
       
-      mutable tDataCommandManager<cBGGenotype>* m_dcm;
+      Update m_cur_update;
+      
+      // Stats
+      int m_tot_genotypes;
+      int m_coalescent_depth;
+      
+
+      struct ProvidedData
+      {
+        Apto::String description;
+        Apto::Functor<Data::PackagePtr, Apto::NullType> GetData;
+        
+        ProvidedData() { ; }
+        ProvidedData(const Apto::String& desc, Apto::Functor<Data::PackagePtr, Apto::NullType> func)
+          : description(desc), GetData(func) { ; } 
+      };
+      Apto::Map<Data::DataID, ProvidedData> m_provided_data;
+      mutable Data::ConstDataSetPtr m_provides;
       
       
     public:
-      GenotypeArbiter(cWorld* world);
+      GenotypeArbiter(int threshold);
       ~GenotypeArbiter();
       
       // Arbiter Interface Methods
@@ -80,61 +106,62 @@ namespace Avida {
       
       bool Serialize(ArchivePtr ar) const;
       
+      IteratorPtr Begin();
       
-      tIterator<cBioGroup>* Iterator();
+      
+      // Data::Provider
+      Data::ConstDataSetPtr Provides() const;
+      void UpdateProvidedValues(Update current_update);
+      Data::PackagePtr GetProvidedValue(const Data::DataID& data_id) const;
+      Apto::String DescribeProvidedValue(const Data::DataID& data_id) const;
       
       
       // Genotype Manager Methods
-      cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents, tArrayMap<cString, cString>* hints = NULL);
-      void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
-
-      const tArray<cString>& GetBioGroupPropertyList() const;
-      bool BioGroupHasProperty(const cString& prop) const;
-      cFlexVar GetBioGroupProperty(const cBGGenotype* genotype, const cString& prop) const;
+      GenotypePtr ClassifyNewUnit(UnitPtr bu, ConstGroupMembershipPtr parents, const ClassificationHints* hints = NULL);
+      void AdjustGenotype(GenotypePtr genotype, int old_size, int new_size);
+      
       
     private:
-      unsigned int hashGenome(const Sequence& genome) const;
-      cString nameGenotype(int size);
+      void setupProvidedData(World* world);
+      template <class T> Data::PackagePtr packageData(const T&) const;
+      Data::ProviderPtr activateProvider(World*);
       
-      void removeGenotype(cBGGenotype* genotype);
+      unsigned int hashGenome(const InstructionSequence& genome) const;
+      Apto::String nameGenotype(int size);
+      
+      void removeGenotype(GenotypePtr genotype);
       void updateCoalescent();
       
       inline void resizeActiveList(int size);
-      inline cBGGenotype* getBest();
+      inline GenotypePtr getBest();
+            
       
-      void buildDataCommandManager() const;
-      
-      class cGenotypeIterator : public tIterator<cBioGroup>
+      class GenotypeIterator : public Iterator
       {
       private:
-        cBGGenotypeManager* m_bgm;
+        GenotypeArbiterPtr m_bgm;
         int m_sz_i;
-        tIterator<cBGGenotype>* m_it;
-        
-        cGenotypeIterator(); // @not_implemented
-        cGenotypeIterator(const cGenotypeIterator&); // @not_implemented
-        cGenotypeIterator& operator=(const cGenotypeIterator&); // @not_implemented
-        
-        
+        Apto::List<GenotypePtr, Apto::SparseVector>::Iterator m_it;
+                
       public:
-        cGenotypeIterator(cBGGenotypeManager* bgm)
-          : m_bgm(bgm), m_sz_i(bgm->m_best), m_it(m_bgm->m_active_sz[m_sz_i].Iterator()) { ; }
-        ~cGenotypeIterator() { delete m_it; }
+        GenotypeIterator(GenotypeArbiterPtr bgm)
+          : m_bgm(bgm), m_sz_i(bgm->m_best), m_it(m_bgm->m_active_sz[m_sz_i].Begin()) { ; }
+        ~GenotypeIterator() { ; }
         
-        cBioGroup* Get();
-        cBioGroup* Next();
+        GroupPtr Get();
+        GroupPtr Next();
       };
     };
 
 
-    inline void cBGGenotypeManager::resizeActiveList(int size)
+    inline void GenotypeArbiter::resizeActiveList(int size)
     {
       if (m_active_sz.GetSize() <= size) m_active_sz.Resize(size + 1);
     }
 
-    inline cBGGenotype* cBGGenotypeManager::getBest()
+    inline GenotypePtr GenotypeArbiter::getBest()
     {
-      return (m_best) ? m_active_sz[m_best].GetFirst() : NULL;
+      return (m_best) ? m_active_sz[m_best].GetFirst() : GenotypePtr(NULL);
     }
 
   };

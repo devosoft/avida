@@ -39,6 +39,10 @@ namespace Avida {
     class Arbiter : virtual public Apto::MTRefCountObject
     {
       friend class Manager;
+    public:
+      class Iterator;
+      typedef Apto::SmartPtr<Iterator> IteratorPtr;
+      
     private:
       RoleID m_role;
       Apto::Set<Listener*> m_listeners;
@@ -48,11 +52,15 @@ namespace Avida {
       
       LIB_EXPORT inline const RoleID& Role() const { return m_role; }
       
+      
       // Subclass Methods
       LIB_EXPORT virtual GroupPtr ClassifyNewUnit(UnitPtr u, const ClassificationHints* hints = NULL) = 0;
       LIB_EXPORT virtual GroupPtr Group(GroupID g_id) = 0;
       
       LIB_EXPORT virtual void PerformUpdate(Context& ctx, Update current_update) = 0;
+      
+      LIB_EXPORT virtual IteratorPtr Begin();
+      
       
       // Listeners
       LIB_EXPORT inline void AttachListener(Listener* listener) { m_listeners.Insert(listener); }
@@ -65,6 +73,16 @@ namespace Avida {
     protected:
       LIB_EXPORT void notifyListeners(GroupPtr g, EventType t, UnitPtr u = UnitPtr(NULL));
       
+      
+    public:
+      class Iterator
+      {
+      public:
+        virtual ~Iterator() = 0;
+        
+        virtual GroupPtr Get() = 0;
+        virtual GroupPtr Next() = 0;        
+      };
       
     private:
       // Systematics::Manager Interaction

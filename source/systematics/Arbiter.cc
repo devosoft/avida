@@ -35,3 +35,5 @@ void Avida::Systematics::Arbiter::notifyListeners(GroupPtr g, EventType t, UnitP
 {
   for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); (it.Next()); ) (*it.Get())->Notify(g, t, u);
 }
+
+Avida::Systematics::Arbiter::Iterator::~Iterator() { ; }

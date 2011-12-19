@@ -218,7 +218,6 @@ private:
   int num_genotypes_last;
 
   int tot_organisms;
-  int tot_genotypes;
   int tot_threshold;
   int tot_lineages;
   int tot_executed;
@@ -554,7 +553,6 @@ public:
 
   void RecordBirth(bool breed_true);
   void RecordDeath() { num_deaths++; }
-  void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id, int parent_distance, int depth, int max_abundance,
                       int parasite_abundance, int age, int length);
   void AddLineage() { tot_lineages++; num_lineages++; }
@@ -663,7 +661,6 @@ public:
   int GetNumModified() const { return num_modified;}
 
   int GetTotCreatures() const       { return tot_organisms; }
-  int GetTotGenotypes() const       { return tot_genotypes; }
   int GetTotThreshold() const       { return tot_threshold; }
   int GetTotLineages() const        { return tot_lineages; }
 

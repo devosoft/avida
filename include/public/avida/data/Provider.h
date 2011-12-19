@@ -36,7 +36,7 @@ namespace Avida {
     // Data::Provider - Data Provider Protocol Definition
     // --------------------------------------------------------------------------------------------------------------
     
-    class Provider
+    class Provider : virtual public Apto::MTRefCountObject
     {
     public:
       LIB_EXPORT virtual ~Provider() { ; }

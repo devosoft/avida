@@ -78,6 +78,9 @@ namespace Avida {
   
   typedef int HardwareTypeID;
   
+  typedef Apto::SmartPtr<InstructionSequence> InstructionSequencePtr;
+  typedef Apto::SmartPtr<const InstructionSequence> ConstInstructionSequencePtr;
+  
   typedef Apto::String PropertyID;
   typedef Apto::String PropertyTypeID;
   typedef Apto::Set<PropertyID> PropertyIDSet;

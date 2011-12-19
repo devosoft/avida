@@ -63,8 +63,8 @@ protected:
   cEnvironment* m_env;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
-  Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount> m_pop;
-  Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
+  Apto::SmartPtr<cPopulation, Apto::InternalRCObject> m_pop;
+  Apto::SmartPtr<cStats, Apto::InternalRCObject> m_stats;
   WorldDriver* m_driver;
   
   Data::ManagerPtr m_data_mgr;

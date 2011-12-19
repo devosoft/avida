@@ -150,8 +150,7 @@ bool Avida::Environment::Manager::AttachTo(World* world)
 Avida::Environment::ManagerPtr Avida::Environment::Manager::Of(World* world)
 {
   ManagerPtr manager;
-  WorldFacetPtr facet(world->Environment());
-  manager.DynamicCastFrom(facet);
+  manager.DynamicCastFrom(world->Environment());
   return manager;
 }
 

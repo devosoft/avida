@@ -32,10 +32,6 @@
 #include "cDoubleSum.h"
 
 
-class cAvidaContext;
-class cWorld;
-
-
 namespace Avida {
   namespace Systematics {
     
@@ -61,7 +57,7 @@ namespace Avida {
       friend class GenotypeArbiter;
     private:
       GenotypeArbiterPtr m_mgr;
-      cEntryHandle* m_handle;
+      Apto::List<GenotypePtr, Apto::SparseVector>::EntryHandle* m_handle;
       
       Source m_src;
       Genome m_genome;
@@ -102,7 +98,6 @@ namespace Avida {
       int m_last_forager_type;
       
       Genotype(GenotypeArbiterPtr mgr, int in_id, UnitPtr founder, int update, ConstGroupMembershipPtr parents);
-      Genotype(GenotypeArbiterPtr mgr, int in_id, const tDictionary<cString>& props, cWorld* world);
       
     public:
       ~Genotype();
@@ -118,7 +113,7 @@ namespace Avida {
       int Depth() const;
       int NumUnits() const;
       
-      ConstPropertyIDSetPtr ProperyIDs() const;
+      ConstPropertyIDSetPtr PropertyIDs() const;
       const PropertyMap& Properties() const;
       
       bool Serialize(ArchivePtr ar) const;
@@ -183,8 +178,6 @@ namespace Avida {
       inline void SetLastBirthCell(int birth_cell) { m_last_birth_cell = birth_cell; }
       inline void SetLastGroupID(int group_id) { m_last_group_id = group_id; }
       inline void SetLastForagerType(int forager_type) { m_last_forager_type = forager_type; }
-      
-      
     };
 
   };
