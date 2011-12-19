@@ -9966,6 +9966,30 @@ bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
+//Sets the display value a to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayA(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
+//Sets the display value b to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayB(new_display);
+  return true;
+}
+
 bool cHardwareCPU::Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref)
 {
   m_organism->GetPhenotype().SetMatePreference(mate_pref);
