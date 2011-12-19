@@ -2611,6 +2611,12 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 3) {
         source_deme.ClearTotalResourceAmountConsumed();
       }
+      else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 4) {
+        source_deme.ClearTotalResourceAmountConsumed();
+        for(int i=0; i<source_founders.GetSize(); i++) {
+          source_founders[i]->Die(ctx);
+        }
+      }
       else {
         m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
       }

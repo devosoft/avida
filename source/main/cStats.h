@@ -954,9 +954,9 @@ protected:
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
   cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
-  cDoubleSum m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
-  cDoubleSum m_ave_non_germ_mut; 
-  cDoubleSum m_ave_germ_size;
+  std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
+  std::deque<double> m_ave_non_germ_mut; 
+  std::deque<double> m_ave_germ_size;
   
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.

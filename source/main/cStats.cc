@@ -1769,9 +1769,9 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
   int n_mut = source_deme.GetAveGermMut(); 
   if (n_mut >= 0) {
-    m_ave_germ_mut.Add(n_mut); 
-    m_ave_non_germ_mut.Add(source_deme.GetAveNonGermMut());
-    m_ave_germ_size.Add(source_deme.GetGermlineSize());
+    m_ave_germ_mut.push_back(n_mut); 
+    m_ave_non_germ_mut.push_back(source_deme.GetAveNonGermMut());
+    m_ave_germ_size.push_back(source_deme.GetGermlineSize());
   }
 }
 
@@ -1827,7 +1827,7 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   
 }
 
-/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently only prints information from deme replications since the last time this method was invoked.
+/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently prints information from the last 100 deme replications events.
  */
 void cStats::PrintDemeGermlineSequestration(const cString& filename)
 {
@@ -1836,16 +1836,31 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
   df.WriteComment("Avida deme germline sequestration data");
   df.WriteTimeStamp();
   df.Write(GetUpdate(), "Update [update]");
-  df.Write(m_ave_germ_mut.Average(), "Mean number of mutations to germline [meangermmut]");
-  df.Write(m_ave_non_germ_mut.Average(), "Mean number of mutations to non-germline orgs [meannongermmut]");
-  df.Write(m_ave_germ_size.Average(), "Mean size of germ line [meangermsize]");
   
+  while(m_ave_germ_mut.size()>100) {
+		m_ave_germ_mut.pop_front();
+	}
+  while(m_ave_non_germ_mut.size()>100) {
+		m_ave_non_germ_mut.pop_front();
+	}
+  while(m_ave_germ_size.size()>100) {
+		m_ave_germ_size.pop_front();
+	}
   
+  if(m_ave_germ_mut.empty()) {
+		df.Write(0.0, "Mean number of mutations to germline [meangermmut]"); 
+    df.Write(0.0, "Mean number of mutations to non-germline orgs [meannongermmut]");
+    df.Write(0.0, "Mean size of germ line [meangermsize]");
+
+	} 
+  else {
+    df.Write(std::accumulate(m_ave_germ_mut.begin(), m_ave_germ_mut.end(), 0.0)/m_ave_germ_mut.size(), "Mean number of mutations to germline [meangermmut]");
+    df.Write(std::accumulate(m_ave_non_germ_mut.begin(), m_ave_non_germ_mut.end(), 0.0)/m_ave_non_germ_mut.size(), "Mean number of mutations to non-germline orgs [meannongermmut]");	
+    df.Write(std::accumulate(m_ave_germ_size.begin(), m_ave_germ_size.end(), 0.0)/m_ave_germ_size.size(), "Mean size of germ line [meangermsize]");
+  }
+   
   df.Endl();
-  
-  m_ave_germ_mut.Clear();
-  m_ave_non_germ_mut.Clear();
-  m_ave_germ_size.Clear();
+
 }
 
 
