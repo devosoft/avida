@@ -296,7 +296,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
     char before_mutation = offspring_genome[mut_line].GetSymbol();
     offspring_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
-    offspring_genome.GetMutationSteps().AddSubstitutionMutation(mut_line, before_mutation, offspring_genome[mut_line].GetSymbol());
     totalMutations++;
   }
   
@@ -309,7 +308,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
     char before_mutation = offspring_genome[mut_line].GetSymbol();
     offspring_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
-    offspring_genome.GetMutationSteps().AddSubstitutionMutation(mut_line, before_mutation, offspring_genome[mut_line].GetSymbol());
     totalMutations++;
   }
   
@@ -318,7 +316,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (m_organism->TestDivideIns(ctx) && offspring_genome.GetSize() < max_genome_size && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize() + 1);
     offspring_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-    offspring_genome.GetMutationSteps().AddInsertionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
     totalMutations++;
   }
   
@@ -331,7 +328,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     if (totalMutations >= maxmut) break;
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize() + 1);
     offspring_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-    offspring_genome.GetMutationSteps().AddInsertionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
     totalMutations++;
   }
   
@@ -339,7 +335,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   // Divide Deletions
   if (m_organism->TestDivideDel(ctx) && offspring_genome.GetSize() > min_genome_size && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
-    offspring_genome.GetMutationSteps().AddDeletionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
     offspring_genome.Remove(mut_line);
     totalMutations++;
   }
@@ -352,7 +347,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     if (offspring_genome.GetSize() <= min_genome_size) break;
     if (totalMutations >= maxmut) break;
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
-    offspring_genome.GetMutationSteps().AddDeletionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
     offspring_genome.Remove(mut_line);
     totalMutations++;
   }
@@ -374,7 +368,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
         int site = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
         char before_mutation = offspring_genome[site].GetSymbol();
         offspring_genome[site] = m_inst_set->GetRandomInst(ctx);
-        offspring_genome.GetMutationSteps().AddSubstitutionMutation(site, before_mutation, offspring_genome[site].GetSymbol());
         totalMutations++;
       }
     }
@@ -399,7 +392,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
       // Actually do the mutations (in reverse sort order)
       for (int i = mut_sites.GetSize() - 1; i >= 0; i--) {
         offspring_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
-        offspring_genome.GetMutationSteps().AddInsertionMutation(mut_sites[i], offspring_genome[mut_sites[i]].GetSymbol());
       }
       
       totalMutations += num_mut;
@@ -419,7 +411,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
       int site = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
-      offspring_genome.GetMutationSteps().AddDeletionMutation(site, offspring_genome[site].GetSymbol());
       offspring_genome.Remove(site);
     }
     
@@ -564,7 +555,6 @@ void cHardwareBase::doSlipMutation(cAvidaContext& ctx, InstructionSequence& geno
   // Deletion / remaining genome
   if (insertion_length < 0) insertion_length = 0;
   for (int i = insertion_length; i < genome_copy.GetSize() - to; i++) genome[from + i] = genome_copy[to + i];
-  genome.GetMutationSteps().AddSlipMutation(from, to);
   
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS) {
     cout << "SLIP MUTATION from " << from << " to " << to << endl;

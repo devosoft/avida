@@ -35,6 +35,7 @@ namespace Avida {
     
     class Arbiter;
     class Group;
+    class GroupData;
     class Listener;
     class Manager;
     struct Source;
@@ -44,7 +45,7 @@ namespace Avida {
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
 
-    typedef Apto::SmartPtr<Arbiter> ArbiterPtr;
+    typedef Apto::SmartPtr<Arbiter, Apto::InternalRCObject> ArbiterPtr;
     
     typedef Apto::Map<Apto::String, Apto::String, Apto::DefaultHashBTree, Apto::ImplicitDefault> ClassificationHints;
     typedef Apto::Map<Apto::String, ClassificationHints, Apto::DefaultHashBTree, Apto::ImplicitDefault> RoleClassificationHints;

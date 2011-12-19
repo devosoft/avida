@@ -30,7 +30,6 @@
 #include "cBirthGridLocalHandler.h"
 #include "cBirthMateSelectHandler.h"
 #include "cBirthNeighborhoodHandler.h"
-#include "cClassificationManager.h"
 #include "cOrganism.h"
 #include "cWorld.h"
 #include "cStats.h"

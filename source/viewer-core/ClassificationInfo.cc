@@ -27,7 +27,6 @@
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
 #include "cBitArray.h"
-#include "cClassificationManager.h"
 #include "cPopulation.h"
 #include "cWorld.h"
 #include "tAutoRelease.h"

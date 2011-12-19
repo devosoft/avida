@@ -33,7 +33,6 @@
 #include "cBioGroupManager.h"
 #include "cBGGenotype.h"
 #include "tArrayUtils.h"
-#include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"

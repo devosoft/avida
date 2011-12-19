@@ -27,7 +27,6 @@
 #include "cAnalyze.h"
 #include "cAvidaContext.h"
 #include "cBGGenotype.h"
-#include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"

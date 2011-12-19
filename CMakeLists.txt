@@ -148,13 +148,7 @@ SET(CLASSIFICATION_DIR ${PROJECT_SOURCE_DIR}/source/classification)
 SET(CLASSIFICATION_SOURCES
   ${CLASSIFICATION_DIR}/cBGGenotype.cc
   ${CLASSIFICATION_DIR}/cBGGenotypeManager.cc
-  ${CLASSIFICATION_DIR}/cBioGroup.cc
-  ${CLASSIFICATION_DIR}/cBioGroupListener.cc
-  ${CLASSIFICATION_DIR}/cBioGroupManager.cc
-  ${CLASSIFICATION_DIR}/cBioUnit.cc
-  ${CLASSIFICATION_DIR}/cClassificationManager.cc
   ${CLASSIFICATION_DIR}/cGenomeTestMetrics.cc
-  ${CLASSIFICATION_DIR}/cMutationSteps.cc
   ${CLASSIFICATION_DIR}/cSexualAncestry.cc
 )
 SOURCE_GROUP(classification FILES ${CLASSIFICATION_SOURCES})

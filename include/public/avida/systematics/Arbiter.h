@@ -36,7 +36,7 @@ namespace Avida {
     // Arbiter
     // --------------------------------------------------------------------------------------------------------------
     
-    class Arbiter
+    class Arbiter : virtual public Apto::MTRefCountObject
     {
       friend class Manager;
     private:

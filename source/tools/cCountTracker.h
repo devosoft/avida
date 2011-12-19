@@ -33,14 +33,14 @@ public:
   cCountTracker() { Clear(); }
   ~cCountTracker() { ; }
 
-  int GetCur() const { return cur_count; }
-  int GetLast() const { return last_count; }
-  int GetTotal() const { return total_count; }
+  inline const int& GetCur() const { return cur_count; }
+  inline const int& GetLast() const { return last_count; }
+  inline const int& GetTotal() const { return total_count; }
 
-  void Inc() { cur_count++; total_count++; }
-  void Dec() { cur_count--; }
-  void Next() { last_count = cur_count; cur_count = 0; }
-  void Clear() { cur_count = last_count = total_count = 0; }
+  inline void Inc() { cur_count++; total_count++; }
+  inline void Dec() { cur_count--; }
+  inline void Next() { last_count = cur_count; cur_count = 0; }
+  inline void Clear() { cur_count = last_count = total_count = 0; }
 };
 
 

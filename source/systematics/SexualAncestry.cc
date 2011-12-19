@@ -1,5 +1,5 @@
 /*
- *  cSexualAncestry.cc
+ *  private/systematics/SexualAncestry.cc
  *  Avida
  *
  *  Created by David on 7/7/10.
@@ -17,16 +17,20 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#include "cSexualAncestry.h"
+#include "avida/private/systematics/SexualAncestry.h"
 
-#include "cBGGenotype.h"
+#include "avida/core/Properties.h"
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Group.h"
 
 
-cSexualAncestry::cSexualAncestry(cBioGroup* bg)
+Avida::Systematics::SexualAncestry::SexualAncestry(GroupPtr g)
 {
-  m_id = bg->GetID();
+  m_id = g->ID();
   m_ancestor_ids[0] = -1;
   m_ancestor_ids[1] = -1;
   m_ancestor_ids[2] = -1;
@@ -34,43 +38,57 @@ cSexualAncestry::cSexualAncestry(cBioGroup* bg)
   m_ancestor_ids[4] = -1;
   m_ancestor_ids[5] = -1;
   
-  assert(dynamic_cast<cBGGenotype*>(bg));
-  cBGGenotype* genotype = (cBGGenotype*)bg;
+  if (!g->Properties().Has("parents")) return;
   
-  if (genotype->GetParents().GetSize() > 0) {
-    cBGGenotype* p1 = genotype->GetParents()[0];
-    cSexualAncestry* p1sa = p1->GetData<cSexualAncestry>();
+  ArbiterPtr arbiter = g->Arbiter();
+  Apto::Array<GroupPtr> parents;
+  Apto::String parent_str = g->Properties().Get("parents");
+  while (parent_str.GetSize()) {
+    parents.Push(arbiter->Group(Apto::StrAs(parent_str.Pop(','))));
+  }
+  
+  
+  if (parents.GetSize() > 0) {
+    GroupPtr p1 = parents[0];
+    SexualAncestryPtr p1sa = p1->GetData<SexualAncestry>();
     if (!p1sa) {
-      p1sa = new cSexualAncestry(p1);
+      p1sa = SexualAncestryPtr(new SexualAncestry(p1));
       p1->AttachData(p1sa);
     }
     
-    m_ancestor_ids[0] = p1->GetID();
+    m_ancestor_ids[0] = p1->ID();
     m_ancestor_ids[2] = p1sa->GetAncestorID(0);
     m_ancestor_ids[3] = p1sa->GetAncestorID(1);
   }
 
-  if (genotype->GetParents().GetSize() > 1) {
-    cBGGenotype* p2 = genotype->GetParents()[1];
-    cSexualAncestry* p2sa = p2->GetData<cSexualAncestry>();
+  if (parents.GetSize() > 1) {
+    GroupPtr p2 = parents[1];
+    SexualAncestryPtr p2sa = p2->GetData<SexualAncestry>();
     if (!p2sa) {
-      p2sa = new cSexualAncestry(p2);
+      p2sa = SexualAncestryPtr(new SexualAncestry(p2));
       p2->AttachData(p2sa);
     }
     
-    m_ancestor_ids[1] = p2->GetID();
+    m_ancestor_ids[1] = p2->ID();
     m_ancestor_ids[4] = p2sa->GetAncestorID(0);
     m_ancestor_ids[5] = p2sa->GetAncestorID(1);
   }
 }
 
-int cSexualAncestry::GetPhyloDistance(cBioGroup* bg) const
+
+bool Avida::Systematics::SexualAncestry::Serialize(ArchivePtr ar) const
 {
-  assert(dynamic_cast<cBGGenotype*>(bg));
-  cSexualAncestry* tsa = bg->GetData<cSexualAncestry>();
+  // @TODO
+  return false;
+}
+
+
+int Avida::Systematics::SexualAncestry::GetPhyloDistance(GroupPtr g) const
+{
+  SexualAncestryPtr tsa = g->GetData<SexualAncestry>();
   if (!tsa) {
-    tsa = new cSexualAncestry(bg);
-    bg->AttachData(tsa);
+    tsa = SexualAncestryPtr(new SexualAncestry(g));
+    g->AttachData(tsa);
   }
   
 

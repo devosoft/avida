@@ -1,5 +1,5 @@
 /*
- *  cBGGenotype.cc
+ *  private/systematics/Genotype.cc
  *  Avida
  *
  *  Created by David on 11/5/09.
@@ -17,13 +17,15 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#include "cBGGenotype.h"
+#include "avida/private/systematics/Genotype.h"
 
-#include "cBGGenotypeManager.h"
-#include "cDataFile.h"
+#include "avida/private/systematics/GenotypeArbiter.h"
 #include "cEntryHandle.h"
+
 #include "cPhenotype.h"
 #include "cStringList.h"
 #include "cStringUtil.h"

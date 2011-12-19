@@ -52,7 +52,6 @@ class cLineage;
 class cOrganism;
 class cPopulationCell;
 class cSchedule;
-class cSaleItem;
 
 using namespace Avida;
 
@@ -67,7 +66,6 @@ private:
   tArray<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
-  tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
   //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
   //std::map<int, std::vector<cOrganism*> > group_list;
@@ -153,8 +151,6 @@ public:
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
-  void AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id);
-  int BuyValue(const int label, const int buy_price, const int cell_id);
   void SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx); 
 
   // Deme-related methods

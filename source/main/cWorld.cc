@@ -26,11 +26,11 @@
 
 #include "avida/data/Manager.h"
 #include "avida/environment/Manager.h"
+#include "avida/systematics/Manager.h"
 
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
 #include "cBioGroupManager.h"
-#include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cHardwareManager.h"
@@ -71,7 +71,6 @@ cWorld::~cWorld()
   // Forcefully clean up population before classification manager
   m_pop = Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount>();
   
-  delete m_class_mgr; m_class_mgr = NULL;
   delete m_env; m_env = NULL;
   delete m_event_list; m_event_list = NULL;
   delete m_hw_mgr; m_hw_mgr = NULL;
@@ -107,10 +106,12 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
     
     // Environment
     Environment::ManagerPtr(new Environment::Manager)->AttachTo(new_world);
+    
+    // Systematics
+    Systematics::ManagerPtr(new Systematics::Manager)->AttachTo(new_world);
   }
   
 
-  m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
   
   
