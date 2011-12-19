@@ -28,6 +28,8 @@
 #include "cMerit.h"
 #endif
 
+#include "tArray.h"
+
 class cBioGroup;
 
 using namespace Avida;

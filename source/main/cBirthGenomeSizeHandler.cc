@@ -20,7 +20,7 @@
  */
 
 #include "cBirthGenomeSizeHandler.h"
-
+#include "InstructionSequence.h"
 #include "avida/core/Genome.h"
 
 #include "cBirthChamber.h"
@@ -38,7 +38,12 @@ cBirthGenomeSizeHandler::~cBirthGenomeSizeHandler()
 
 cBirthEntry* cBirthGenomeSizeHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
 {
-  int offspring_length = offspring.GetSize();
+  ConstInstructionSequencePtr offspring_seq_p;
+  ConstGeneticRepresentationPtr offspring_rep_p = offspring.Representation();
+  offspring_seq_p.DynamicCastFrom(offspring_rep_p);
+  const InstructionSequence& offspring_seq = *offspring_seq_p;
+  
+  int offspring_length = offspring_seq.GetSize();
   
   // If this is a new largest genome, increase the array size accordingly
   if (m_entries.GetSize() <= offspring_length) m_entries.Resize(offspring_length + 1);

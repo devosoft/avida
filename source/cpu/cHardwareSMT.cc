@@ -138,7 +138,7 @@ cHardwareSMT::cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 	
   m_mem_array[0] = in_organism->GetGenome().GetSequence();  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
-  m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
+  m_mem_array[0][m_mem_array[0].GetSize() - 1] = Instruction();
   Reset(ctx);                            // Setup the rest of the hardware...
 }
 
@@ -218,7 +218,7 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
-    const cInstruction& cur_inst = IP().GetInst();
+    const Instruction& cur_inst = IP().GetInst();
 		
     // Print the short form status of this CPU at each step... 
     if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
@@ -268,10 +268,10 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 // This method will handle the actual execution of an instruction
 // within single process, once that function has been finalized.
-bool cHardwareSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 
+bool cHardwareSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
 {
   // Copy Instruction locally to handle stochastic effects
-  cInstruction actual_inst = cur_inst;
+  Instruction actual_inst = cur_inst;
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
@@ -300,7 +300,7 @@ bool cHardwareSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
 }
 
 
-void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
+void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -517,7 +517,7 @@ cHeadCPU cHardwareSMT::FindLabel(int direction)
 // Search forwards for search_label from _after_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const Sequence& search_genome, int pos)
+int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const InstructionSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -597,7 +597,7 @@ int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const Sequen
 // Search backwards for search_label from _before_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const Sequence& search_genome, int pos)
+int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const InstructionSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -746,7 +746,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   return inject_signal;
 }
 
-bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
+bool cHardwareSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
 {
   assert(bu->GetGenome().GetHardwareType() == GetType() && bu->GetGenome().GetInstSet() == m_inst_set->GetInstSetName());
   
@@ -786,7 +786,7 @@ bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
 
 void cHardwareSMT::ReadInst(const int in_inst)
 {
-  if (m_inst_set->IsNop( cInstruction(in_inst) )) {
+  if (m_inst_set->IsNop( Instruction(in_inst) )) {
     GetReadLabel().AddNop(in_inst);
   } else {
     GetReadLabel().Clear();
@@ -1056,7 +1056,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 	
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
 	
   bool parent_alive = m_organism->ActivateDivide(ctx);
@@ -1357,7 +1357,7 @@ bool cHardwareSMT::Inst_InstWrite(cAvidaContext& ctx)
   int value = Stack(src).Pop();
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
 	
-  active_head.SetInst(cInstruction(value));
+  active_head.SetInst(Instruction(value));
   active_head.SetFlagCopied();
 	
   // Advance the head after write...

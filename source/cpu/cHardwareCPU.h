@@ -154,7 +154,7 @@ protected:
   // Epigenetic State -->
 	
 
-  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
+  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
   inline void StackPush(int value);
@@ -174,8 +174,8 @@ protected:
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
+  int FindLabel_Forward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -241,7 +241,7 @@ public:
   static cString GetDefaultInstFilename() { return "instset-heads.cfg"; }
 
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
-  void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
+  void ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst);
 
   
   // --------  Helper methods  --------

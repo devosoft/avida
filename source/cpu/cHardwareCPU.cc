@@ -755,7 +755,7 @@ void cHardwareCPU::internalReset()
   // Promoter model
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get()) {
     // Ideally, this shouldn't be hard-coded
-    cInstruction promoter_inst = m_inst_set->GetInst("promoter");
+    Instruction promoter_inst = m_inst_set->GetInst("promoter");
     
     m_promoter_index = -1; // Meaning the last promoter was nothing
     m_promoter_offset = 0;
@@ -864,7 +864,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
-    const cInstruction& cur_inst = ip.GetInst();
+    const Instruction& cur_inst = ip.GetInst();
     
     if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
       // Speculative instruction reject, flush and return
@@ -964,10 +964,10 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 // This method will handle the actual execution of an instruction
 // within a single process, once that function has been finalized.
-bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 
+bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
 {
   // Copy Instruction locally to handle stochastic effects
-  cInstruction actual_inst = cur_inst;
+  Instruction actual_inst = cur_inst;
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
@@ -1004,7 +1004,7 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
 }
 
 
-void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
+void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -1323,7 +1323,7 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
 
 void cHardwareCPU::ReadInst(const int in_inst)
 {
-  if (m_inst_set->IsNop( cInstruction(in_inst) )) {
+  if (m_inst_set->IsNop( Instruction(in_inst) )) {
     GetReadLabel().AddNop(in_inst);
   } else {
     GetReadLabel().Clear();
@@ -1407,7 +1407,7 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
       break;
   }
 	
-  const cInstruction label_inst = GetInstSet().GetInst(handlerHeadInstructionString);
+  const Instruction label_inst = GetInstSet().GetInst(handlerHeadInstructionString);
   
   cHeadCPU search_head(IP());
   int start_pos = search_head.GetPosition();
@@ -1649,7 +1649,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
 	
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -1673,7 +1673,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
     }
   }
   
@@ -1719,7 +1719,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -1773,7 +1773,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
 
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
     }
   }
   
@@ -1813,7 +1813,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -1862,7 +1862,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
     }
   }
   
@@ -1902,7 +1902,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -1953,7 +1953,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
     }
   }
   
@@ -2402,7 +2402,7 @@ bool cHardwareCPU::Inst_Return(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
 {
   // Only initialize this once to save some time...
-  static cInstruction catch_inst = GetInstSet().GetInst(cStringUtil::Stringf("catch"));
+  static Instruction catch_inst = GetInstSet().GetInst(cStringUtil::Stringf("catch"));
   
   //Look for the label directly (no complement)
   ReadLabel();
@@ -2463,7 +2463,7 @@ bool cHardwareCPU::Inst_ThrowIf0(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Goto(cAvidaContext& ctx)
 {
   // Only initialize this once to save some time...
-  static cInstruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("label"));
+  static Instruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("label"));
   
   //Look for an EXACT label match after a 'label' instruction
   ReadLabel();
@@ -2985,7 +2985,7 @@ bool cHardwareCPU::Inst_WriteInst(cAvidaContext& ctx)
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
   } else {
-    to.SetInst(cInstruction(value));
+    to.SetInst(Instruction(value));
     to.ClearFlagMutated();     // UnMark
     to.ClearFlagCopyMut();     // UnMark
   }
@@ -3015,7 +3015,7 @@ bool cHardwareCPU::Inst_StackWriteInst(cAvidaContext& ctx)
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
   } else {
-    to.SetInst(cInstruction(value));
+    to.SetInst(Instruction(value));
     to.ClearFlagMutated();     // UnMark
     to.ClearFlagCopyMut();     // UnMark
   }
@@ -3142,8 +3142,8 @@ void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
   static bool transposon_in_use = GetInstSet().InstInSet(cStringUtil::Stringf("transposon"));
   if (!transposon_in_use) return;
   
-  static cInstruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  static Instruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   
   // Count the number of transposons that are marked as executed
   int tr_count = 0;
@@ -3184,7 +3184,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   }
   
   // Setup child
-  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  InstructionSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_organism->GetGenome().GetSequence();
   
   
@@ -3218,7 +3218,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
     }
   }
   
@@ -4407,7 +4407,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 		
     //if neighbor exists, do they have the green beard gene?
     if (neighbor != NULL) {
-      const Sequence& neighbor_genome = neighbor->GetGenome().GetSequence();
+      const InstructionSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
       
       // for each instruction in the genome...
       for (int i = 0; i < neighbor_genome.GetSize(); i++){
@@ -4697,7 +4697,7 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
       }
 			
       if (neighbor_thresh_of_gb >= m_world->GetConfig().MIN_GB_DONATE_THRESHOLD.Get() ) {
-	const Sequence& neighbor_genome = neighbor->GetGenome().GetSequence();
+	const InstructionSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 	
 	// Code to track the edit distance between tgb donors and recipients
 	const int edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
@@ -4819,7 +4819,7 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
     if (neighbor != NULL &&
 	neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() >= quanta_donate_thresh) {
 			
-      const Sequence& neighbor_genome = neighbor->GetGenome().GetSequence();
+      const InstructionSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
       
       // for each instruction in the genome...
       for (int i=0;i<neighbor_genome.GetSize();i++){
@@ -4897,7 +4897,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
     neighbor = m_organism->GetNeighbor();
     // If neighbor exists, AND if their parent attempted to donate at this position.
     if (neighbor != NULL && neighbor->GetPhenotype().IsDonorPositionLast(donate_locus)) {
-      const Sequence& neighbor_genome = neighbor->GetGenome().GetSequence();
+      const InstructionSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
       // See if this organism has a donate at the correct position.
       if (neighbor_genome.GetSize() > donate_locus && neighbor_genome[donate_locus] == getIP().GetInst()) {
         found = true;
@@ -6214,7 +6214,7 @@ bool cHardwareCPU::Inst_HeadWrite(cAvidaContext& ctx)
   int value = GetRegister(src);
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
   
-  active_head.SetInst(cInstruction(value));
+  active_head.SetInst(Instruction(value));
   active_head.SetFlagCopied();
   
   if (m_organism->TestCopyIns(ctx)) active_head.InsertInst(m_inst_set->GetRandomInst(ctx));
@@ -6240,7 +6240,7 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
   write_head.Adjust();
   
   // Do mutations.
-  cInstruction read_inst = read_head.GetInst();
+  Instruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
   
   if (m_organism->TestCopyMut(ctx)) {
@@ -6278,7 +6278,7 @@ bool cHardwareCPU::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   write_head.Adjust();
   
   // Do mutations.
-  cInstruction read_inst = read_head.GetInst();
+  Instruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
   if ( ctx.GetRandom().P(m_organism->GetCopyMutProb() / reduction) ) {
     read_inst = m_inst_set->GetRandomInst(ctx);
@@ -7308,7 +7308,7 @@ bool cHardwareCPU::Inst_START_Handler(cAvidaContext& ctx)
 {
   m_advance_ip = false;
   //Jump 1 instruction passed msg-handler
-  cInstruction label_inst = GetInstSet().GetInst("end-handler");
+  Instruction label_inst = GetInstSet().GetInst("end-handler");
   
   cHeadCPU search_head(IP());
   int start_pos = search_head.GetPosition();
@@ -7422,7 +7422,7 @@ bool cHardwareCPU::Jump_To_Alarm_Label(int jump_label)
     assert(false);
   }
   
-  cInstruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("alarm-label-")+channel);
+  Instruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("alarm-label-")+channel);
   
   cHeadCPU search_head(getIP());
   int start_pos = search_head.GetPosition();

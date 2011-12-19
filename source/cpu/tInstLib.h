@@ -32,7 +32,6 @@
 #include "tInstLibEntry.h"
 #endif
 
-class cInstruction;
 
 template <class MethodType> class tInstLib : public cInstLib
 {
@@ -62,7 +61,7 @@ public:
   
   const cString& GetNopName(const unsigned int id) { return m_nopmod_names[id]; }  
   int GetNopMod(const unsigned int id) { return m_nopmods[id]; }
-  int GetNopMod(const cInstruction& inst) { return GetNopMod(inst.GetOp()); }
+  int GetNopMod(const Instruction& inst) { return GetNopMod(inst.GetOp()); }
 };
 
 #endif

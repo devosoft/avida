@@ -33,8 +33,8 @@
 #include "tDictionary.h"
 
 
-cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
-  : cBioGroup(in_id)
+cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, Systematics::UnitPtr founder, int update, tArray<Systematics::GroupPtr>* parents)
+  : Systematics::Group(in_id)
   , m_mgr(mgr)
   , m_handle(NULL)
   , m_src(founder->GetUnitSource())
@@ -144,7 +144,7 @@ const cString& cBGGenotype::GetRole() const
 }
 
 
-cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)
+cBioGroup* cBGGenotype::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents)
 {
   m_births.Inc();
   
@@ -161,7 +161,7 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
   return m_mgr->ClassifyNewBioUnit(bu, parents);
 }
 
-void cBGGenotype::HandleBioUnitGestation(cBioUnit* bu)
+void cBGGenotype::HandleBioUnitGestation(Systematics::UnitPtr bu)
 {
   const cPhenotype& phenotype = bu->GetPhenotype();
   
@@ -174,7 +174,7 @@ void cBGGenotype::HandleBioUnitGestation(cBioUnit* bu)
 }
 
 
-void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
+void cBGGenotype::RemoveBioUnit(Systematics::UnitPtr bu)
 {
   m_deaths.Inc();
   
@@ -238,7 +238,7 @@ void cBGGenotype::DepthSave(cDataFile& df)
   df.Write(m_depth, "Phylogenetic Depth", "depth");
 }
 
-bool cBGGenotype::Matches(cBioUnit* bu)
+bool cBGGenotype::Matches(Systematics::UnitPtr bu)
 {
   // Handle source branching
   switch (m_src) {
@@ -314,7 +314,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
   return (m_genome == bu->GetGenome());
 }
 
-void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)
+void cBGGenotype::NotifyNewBioUnit(Systematics::UnitPtr bu)
 {
   m_active = true;
   switch (bu->GetUnitSource()) {

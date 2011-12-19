@@ -157,7 +157,7 @@ public:
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
     Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length));
-    Sequence& seq = mg.GetSequence();
+    InstructionSequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
@@ -206,9 +206,9 @@ public:
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length + 1));
-      Sequence& seq = mg.GetSequence();
+      InstructionSequence& seq = mg.GetSequence();
       for (int j = 0; j < m_length; j++) {
-        cInstruction inst = is.GetRandomInst(ctx);
+        Instruction inst = is.GetRandomInst(ctx);
         while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
         seq[j] = inst;
       }
@@ -1396,7 +1396,7 @@ public:
 				
 				// count the number of target instructions in the genome
         const Genome& mg = cell.GetOrganism()->GetGenome();
-				const Sequence& genome = mg.GetSequence();
+				const InstructionSequence& genome = mg.GetSequence();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
 				currentMinDist.Add(minDist);

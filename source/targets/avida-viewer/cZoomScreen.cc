@@ -1031,10 +1031,10 @@ void cZoomScreen::EditMemory(cAvidaContext& ctx)
       memory_offset = 0;
       break;
     case INST_EDIT_CHANGE:
-      edit_head.SetInst(cInstruction(new_inst));
+      edit_head.SetInst(Instruction(new_inst));
       break;
     case INST_EDIT_INSERT:
-      edit_head.InsertInst(cInstruction(new_inst));
+      edit_head.InsertInst(Instruction(new_inst));
       break;
     case INST_EDIT_REMOVE:
       edit_head.RemoveInst();
@@ -1110,8 +1110,8 @@ void cZoomScreen::ViewInstruction()
   const int inst_id = inst_ptr.GetInst().GetOp();
   
   window->Print(4, 14, "%3d", inst_ptr.GetPosition());
-  window->Print(6, 14, "%3d", inst_set.GetRedundancy(cInstruction(inst_id)) );
-  window->Print(7, 14, "%3d", inst_set.GetCost(cInstruction(inst_id)) );
+  window->Print(6, 14, "%3d", inst_set.GetRedundancy(Instruction(inst_id)) );
+  window->Print(7, 14, "%3d", inst_set.GetCost(Instruction(inst_id)) );
   
   if (inst_ptr.GetMemory().FlagCopied(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
   else window->SetColor(COLOR_CYAN);

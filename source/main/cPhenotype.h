@@ -23,7 +23,7 @@
 #ifndef cPhenotype_h
 #define cPhenotype_h
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include <fstream>
 
@@ -297,19 +297,19 @@ public:
   
   enum energy_levels {ENERGY_LEVEL_LOW = 0, ENERGY_LEVEL_MEDIUM, ENERGY_LEVEL_HIGH};
 	
-  void ResetMerit(const Sequence & _cgenome);
+  void ResetMerit(const InstructionSequence & _cgenome);
   void Sterilize();
   // Run when being setup *as* and offspring.
-  void SetupOffspring(const cPhenotype & parent_phenotype, const Sequence & _genome);
+  void SetupOffspring(const cPhenotype & parent_phenotype, const InstructionSequence & _genome);
 
   // Run when being setup as an injected organism.
-  void SetupInject(const Sequence & _genome);
+  void SetupInject(const InstructionSequence & _genome);
 
   // Run when this organism successfully executes a divide.
-  void DivideReset(const Sequence & _genome);
+  void DivideReset(const InstructionSequence & _genome);
   
   // Same as DivideReset(), but only run in test CPUs.
-  void TestDivideReset(const Sequence & _genome);
+  void TestDivideReset(const InstructionSequence & _genome);
 
   // Run when an organism is being forced to replicate, but not at the end
   // of its replication cycle.  Assume exact clone with no mutations.
@@ -403,7 +403,7 @@ public:
 	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
-  void  TrialDivideReset(const Sequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
+  void  TrialDivideReset(const InstructionSequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB

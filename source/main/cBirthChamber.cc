@@ -23,7 +23,6 @@
 #include "cBirthChamber.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cBirthDemeHandler.h"
 #include "cBirthGenomeSizeHandler.h"
 #include "cBirthGlobalHandler.h"
@@ -128,7 +127,7 @@ void cBirthChamber::ClearEntry(cBirthEntry& entry)
 }
 
 
-bool cBirthChamber::RegionSwap(Sequence& genome0, Sequence& genome1, int start0, int end0, int start1, int end1)
+bool cBirthChamber::RegionSwap(InstructionSequence& genome0, InstructionSequence& genome1, int start0, int end0, int start1, int end1)
 {
    assert( start0 >= 0  &&  start0 < genome0.GetSize() );
    assert( end0   >= 0  &&  end0   < genome0.GetSize() );
@@ -149,24 +148,24 @@ bool cBirthChamber::RegionSwap(Sequence& genome0, Sequence& genome1, int start0,
    } 
 
    if (size0 > 0 && size1 > 0) {
-     Sequence cross0 = genome0.Crop(start0, end0);
-     Sequence cross1 = genome1.Crop(start1, end1);
+     InstructionSequence cross0 = genome0.Crop(start0, end0);
+     InstructionSequence cross1 = genome1.Crop(start1, end1);
      genome0.Replace(start0, size0, cross1);
      genome1.Replace(start1, size1, cross0);
    } else if (size0 > 0) {
-     Sequence cross0 = genome0.Crop(start0, end0);
+     InstructionSequence cross0 = genome0.Crop(start0, end0);
      genome1.Replace(start1, size1, cross0);
    } else if (size1 > 0) {
-     Sequence cross1 = genome1.Crop(start1, end1);
+     InstructionSequence cross1 = genome1.Crop(start1, end1);
      genome0.Replace(start0, size0, cross1);
    }
 
    return true;
 }
 
-void cBirthChamber::GenomeSwap(Sequence& genome0, Sequence& genome1, double& merit0, double& merit1)
+void cBirthChamber::GenomeSwap(InstructionSequence& genome0, InstructionSequence& genome1, double& merit0, double& merit1)
 {
-  Sequence genome0_tmp = genome0;
+  InstructionSequence genome0_tmp = genome0;
   genome0 = genome1; 
   genome1 = genome0_tmp; 
 
@@ -236,7 +235,7 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
 
 
 
-void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
+void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1,
                                          double& merit0, double& merit1)
 {
   double start_frac = ctx.GetRandom().GetDouble();
@@ -265,7 +264,7 @@ void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, Sequence& genome0, 
   } 
 }
 
-void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
+void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1,
                                                double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -300,7 +299,7 @@ void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, Sequence& gen
   } 
 }
 
-void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
+void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1,
                                                   double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -334,7 +333,7 @@ void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, Sequence& 
   } 
 }
 
-void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, Sequence& genome0, Sequence& genome1,
+void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1,
                                                    double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -406,7 +405,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   // organism (which is the same as sexual with 0 recombination points)
   
   // Find a waiting entry (locally or globally)
-  cBirthEntry* old_entry = getSelectionHandler(offspring.GetHardwareType())->SelectOffspring(ctx, offspring, parent);
+  cBirthEntry* old_entry = getSelectionHandler(offspring.HardwareType())->SelectOffspring(ctx, offspring, parent);
 
   // If we couldn't find a waiting entry, this one was saved -- stop here!
   if (old_entry == NULL) return false;
@@ -441,23 +440,33 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
   const int shuffle_regions = !m_world->GetConfig().CORESPOND_REC_REGS.Get();
 
   // If we are NOT modular...
+  InstructionSequencePtr genome0_seq_p;
+  GeneticRepresentationPtr genome0_rep_p = genome0.Representation();
+  genome0_seq_p.DynamicCastFrom(genome0_rep_p);
+  InstructionSequence& genome0_seq = *genome0_seq_p;
+  
+  InstructionSequencePtr genome1_seq_p;
+  GeneticRepresentationPtr genome1_rep_p = genome1.Representation();
+  genome1_seq_p.DynamicCastFrom(genome1_rep_p);
+  InstructionSequence& genome1_seq = *genome1_seq_p;
+
   if (num_modules == 0) {
-    DoBasicRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoBasicRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we ARE modular, and continuous...
   else if (continuous_regions == 1) {
-    DoModularContRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoModularContRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we are NOT continuous, but NO shuffling...
   else if (shuffle_regions == 0) {
-    DoModularNonContRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoModularNonContRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If there IS shuffling (NON-continuous required)
   else {
-    DoModularShuffleRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
+    DoModularShuffleRecombination(ctx, genome0_seq, genome1_seq, meritOrEnergy0, meritOrEnergy1);
   }
 
   // Should there be a 2-fold cost to sex?

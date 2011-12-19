@@ -28,8 +28,6 @@
 #include "avida/data/Package.h"
 #include "avida/private/systematics/Genotype.h"
 
-#include "cStringUtil.h"
-
 
 Avida::Systematics::GenotypeArbiter::GenotypeArbiter(int threshold)
   : m_threshold(threshold)
@@ -61,8 +59,6 @@ Avida::Systematics::GenotypeArbiter::~GenotypeArbiter()
 
 Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::ClassifyNewUnit(UnitPtr u, const ClassificationHints* hints)
 {
-//  GenotypePtr g = ClassifyNewUnit(u, ConstGroupMembershipPtr(NULL), hints);
-//  return g;
   return ClassifyNewUnit(u, ConstGroupMembershipPtr(NULL), hints);
 }
 

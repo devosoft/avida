@@ -172,7 +172,7 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, Genome& cur
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   Genome mg(cur_genome);
-  Sequence& mod_genome = mg.GetSequence();
+  InstructionSequence& mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = start_line; line_num < max_line; line_num++) {
@@ -211,7 +211,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   Genome mg(base_genome);
-  Sequence& mod_genome = mg.GetSequence();
+  InstructionSequence& mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
@@ -257,7 +257,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
     mg.SetSequence(mod_genome);
     ProcessGenome(ctx, testcpu, mg);
     if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
-    mod_genome.Insert(line_num, cInstruction(cur_inst));
+    mod_genome.Insert(line_num, Instruction(cur_inst));
   }
   
   delete testcpu;
@@ -280,7 +280,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   for (int line_num = 0; line_num <= max_line; line_num++) {
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
-      mod_genome.Insert(line_num, cInstruction(inst_num));
+      mod_genome.Insert(line_num, Instruction(inst_num));
       mg.SetSequence(mod_genome);
       ProcessGenome(ctx, testcpu, mg);
       if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
@@ -562,11 +562,11 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
   
   // Loop through all the lines of genome, testing each line.
   for (int line_num = 0; line_num < genome_size; line_num++) {
-    cInstruction cur_inst( base_genome.GetSequence()[line_num] );
+    Instruction cur_inst( base_genome.GetSequence()[line_num] );
     
     for (int i = 0; i < trials; i++) {
       // Choose the new instruction for that line...
-      cInstruction new_inst(inst_set.GetRandomInst(ctx) );
+      Instruction new_inst(inst_set.GetRandomInst(ctx) );
       if (cur_inst == new_inst) { i--; continue; }
       
       // Make the change, and test it!
@@ -606,8 +606,8 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
     
     // Choose the new instructions for those lines...
     for (mut_num = 0; mut_num < distance; mut_num++) {
-      const cInstruction new_inst(inst_set.GetRandomInst(ctx));
-      const cInstruction& cur_inst = base_genome.GetSequence()[ mut_lines[mut_num] ];
+      const Instruction new_inst(inst_set.GetRandomInst(ctx));
+      const Instruction& cur_inst = base_genome.GetSequence()[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
@@ -677,7 +677,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx)
   const int genome_size = base_genome.GetSize();
   
   tArray<int> mut_lines(2);
-  tArray<cInstruction> mut_insts(2);
+  tArray<Instruction> mut_insts(2);
   
   // Loop through all the lines of genome, testing many combinations.
   for (int i = 0; i < trials; i++) {
@@ -686,8 +686,8 @@ void cLandscape::TestPairs(cAvidaContext& ctx)
     
     // Choose the new instructions for those lines...
     for (int mut_num = 0; mut_num < 2; mut_num++) {
-      const cInstruction new_inst( inst_set.GetRandomInst(ctx) );
-      const cInstruction& cur_inst = base_genome.GetSequence()[ mut_lines[mut_num] ];
+      const Instruction new_inst( inst_set.GetRandomInst(ctx) );
+      const Instruction& cur_inst = base_genome.GetSequence()[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
@@ -714,7 +714,7 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
   const int max_line = base_genome.GetSize();
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   Genome mod_genome(base_genome);
-  cInstruction inst1, inst2;
+  Instruction inst1, inst2;
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line1_num = 0; line1_num < max_line - 1; line1_num++) {
@@ -769,7 +769,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     for (int line_num = 0; line_num <= max_line; line_num++) {
       // Loop through all instructions...
       for (int inst_num = 0; inst_num < inst_size; inst_num++) {
-        mod_genome.Insert(line_num, cInstruction(inst_num));
+        mod_genome.Insert(line_num, Instruction(inst_num));
         mg.SetSequence(mod_genome);
         ProcessGenome(ctx, testcpu, mg);
         mod_genome.Remove(line_num);
@@ -783,7 +783,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
       mod_genome.Remove(line_num);
       mg.SetSequence(mod_genome);
       ProcessGenome(ctx, testcpu, mg);
-      mod_genome.Insert(line_num, cInstruction(cur_inst));
+      mod_genome.Insert(line_num, Instruction(cur_inst));
     }
     
     pos_frac = GetProbPos();
@@ -812,7 +812,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 
 
 double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, Genome& mod_genome, int line1, int line2,
-                               const cInstruction& mut1, const cInstruction& mut2)
+                               const Instruction& mut1, const Instruction& mut2)
 {
   mod_genome.GetSequence()[line1] = mut1;
   mod_genome.GetSequence()[line2] = mut2;

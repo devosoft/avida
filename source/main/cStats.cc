@@ -27,7 +27,6 @@
 #include "avida/data/Package.h"
 #include "avida/data/Util.h"
 
-#include "cBioGroup.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -288,7 +287,7 @@ cStats::cStats(cWorld* world)
 }
 
 
-void cStats::NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
+void cStats::NotifyBGEvent(Systematics::GroupPtr bg, eBGEventType type, Systematics::UnitPtr bu)
 {
   assert(bg);
 
@@ -3379,13 +3378,13 @@ void cStats::PrintDemeNetworkTopology(const cString& filename) {
 
 /*! Called when an organism metabolizes a genome fragment.
  */
-void cStats::GenomeFragmentMetabolized(cOrganism* organism, const Sequence& fragment) {
+void cStats::GenomeFragmentMetabolized(cOrganism* organism, const InstructionSequence& fragment) {
 	m_hgt_metabolized.Add(fragment.GetSize());
 }
 
 /*! Called when a fragment is inserted into an offspring's genome via HGT.
  */
-void cStats::GenomeFragmentInserted(cOrganism* organism, const Sequence& fragment, const cGenomeUtil::substring_match& location) {
+void cStats::GenomeFragmentInserted(cOrganism* organism, const InstructionSequence& fragment, const cGenomeUtil::substring_match& location) {
 	m_hgt_inserted.Add(fragment.GetSize());
 }
 

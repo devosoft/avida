@@ -25,6 +25,8 @@
 
 #include "avida/core/Genome.h"
 
+#include "avida/core/InstructionSequence.h"
+
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
 #endif
@@ -38,7 +40,6 @@
 class cAvidaContext;
 class cDataFile;
 class cInstSet;
-class cInstruction;
 class cTestCPU;
 class cWorld;
 
@@ -180,7 +181,7 @@ private:
   void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, Genome& cur_genome, int cur_distance, int start_line);
   
   double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, Genome& mod_genome, int line1, int line2,
-                     const cInstruction& mut1, const cInstruction& mut2);  
+                     const Instruction& mut1, const Instruction& mut2);  
 };
 
 #endif

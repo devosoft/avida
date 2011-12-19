@@ -41,7 +41,7 @@ Avida::Genome::Genome(const cString& seq_str)
   cString str = seq_str;
   m_hw_type = str.Pop(',').AsInt();
   m_inst_set = str.Pop(',');
-  m_seq = Sequence(str);
+  m_seq = InstructionSequence(str);
 }
 
 void Avida::Genome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
@@ -116,7 +116,7 @@ bool Avida::Genome::LoadFromDetailFile(const cString& fname, const cString& wdir
   
   m_hw_type = is->GetHardwareType();
   m_inst_set = is->GetInstSetName();
-  Sequence new_seq(input_file.GetNumLines());
+  InstructionSequence new_seq(input_file.GetNumLines());
   
   for (int line_num = 0; line_num < new_seq.GetSize(); line_num++) {
     cString cur_line = input_file.GetLine(line_num);

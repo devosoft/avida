@@ -615,7 +615,7 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
 
 
 
-bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const Sequence& injected_code)
+bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(m_interface);
   return m_interface->InjectParasite(this, parent, label, injected_code);

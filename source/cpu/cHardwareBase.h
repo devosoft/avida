@@ -45,7 +45,6 @@ class cCodeLabel;
 class cCPUMemory;
 class cHardwareTracer;
 class cHeadCPU;
-class cInstruction;
 class cMutation;
 class cOrganism;
 class cString;
@@ -113,7 +112,7 @@ public:
   // --------  Core Functionality  --------
   void Reset(cAvidaContext& ctx);
   virtual bool SingleProcess(cAvidaContext& ctx, bool speculative = false) = 0;
-  virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
+  virtual void ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst) = 0;
 
   int Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
   bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
@@ -210,14 +209,14 @@ public:
 	
 	// -------- HGT --------
 	//! Retrieve a genome fragment extending downstream from the read head.
-	virtual Sequence GetGenomeFragment(unsigned int downstream);
+	virtual InstructionSequence GetGenomeFragment(unsigned int downstream);
 	//! Insert a genome fragment at the current write head.
-	virtual void InsertGenomeFragment(const Sequence& fragment);
+	virtual void InsertGenomeFragment(const InstructionSequence& fragment);
   
 protected:
   // --------  Core Execution Methods  --------
-  bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
-  void SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id);
+  void SingleProcess_PayPostCosts(cAvidaContext& ctx, const Instruction& cur_inst);
   virtual void internalReset() = 0;
 	virtual void internalResetOnFailedDivide() = 0;
   
@@ -240,9 +239,9 @@ protected:
 
   
   // --------  Mutation Helper Methods  --------
-  bool doUniformMutation(cAvidaContext& ctx, Sequence& genome);
+  bool doUniformMutation(cAvidaContext& ctx, InstructionSequence& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
-  void doSlipMutation(cAvidaContext& ctx, Sequence& genome, int from = -1);
+  void doSlipMutation(cAvidaContext& ctx, InstructionSequence& genome, int from = -1);
   
 
   // --------  Organism Execution Property Calculation  --------

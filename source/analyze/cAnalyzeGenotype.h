@@ -25,6 +25,7 @@
 
 #include "apto/core/RWLock.h"
 #include "avida/core/Genome.h"
+#include "avida/core/Properties.h"
 
 #include <fstream>
 
@@ -296,7 +297,7 @@ public:
   void SetLineageLabel(int _label) { lineage_label = _label; }
 
   void SetParentMuts(const cString & in_muts) { parent_muts = in_muts; }
-  
+
   void SetTaskOrder(const cString & in_order) { task_order = in_order; }
 
   // A set of NULL accessors to simplyfy automated accesses.
@@ -403,9 +404,9 @@ public:
   const cString & GetTaskOrder() const { return task_order; }
   cString GetTaskList() const;
 
-  int GetHWType() const { return m_genome.GetHardwareType(); }
-  const cString& GetInstSet() const { return m_genome.GetInstSet(); }
-  cString GetSequence() const { return m_genome.GetSequence().AsString(); }
+  int GetHWType() const { return m_genome.HardwareType(); }
+  cString GetInstSet() const { return cString((const char*)m_genome.Properties().GetWithDefault("instset",Property("instset","")).Value()); }
+  cString GetSequence() const;
   cString GetHTMLSequence() const;
 
   cString GetMapLink() const {

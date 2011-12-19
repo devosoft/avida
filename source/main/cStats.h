@@ -27,10 +27,9 @@
 
 #include "AvidaTools.h"
 
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 #include "avida/data/Provider.h"
 
-#include "cBioGroupListener.h"
 #include "cDoubleSum.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
@@ -350,7 +349,7 @@ public:
   ~cStats() { ; }
 
   // cBioGroupListener
-  void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
+  void NotifyBGEvent(Systematics::GroupPtr bg, eBGEventType type, Systematics::UnitPtr bu);
   
   
   // Data::Provider
@@ -1096,9 +1095,9 @@ private:
 	cDoubleSum m_hgt_inserted; //!< Total length of inserted genome fragments.
 public:
 	//! Called when an organism metabolizes a genome fragment.
-	void GenomeFragmentMetabolized(cOrganism* organism, const Sequence& fragment);
+	void GenomeFragmentMetabolized(cOrganism* organism, const InstructionSequence& fragment);
 	//! Called when an organism inserts a genome fragment.
-	void GenomeFragmentInserted(cOrganism* organism, const Sequence& fragment, const cGenomeUtil::substring_match& location);
+	void GenomeFragmentInserted(cOrganism* organism, const InstructionSequence& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
 

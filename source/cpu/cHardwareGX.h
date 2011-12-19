@@ -138,7 +138,7 @@ public:
   class cProgramid {
   public:
     //! Constructs a cProgramid from a genome and CPU.
-    cProgramid(const Sequence& genome, cHardwareGX* hardware);
+    cProgramid(const InstructionSequence& genome, cHardwareGX* hardware);
     ~cProgramid() {}
     
     //! Returns whether and where this cProgramid matches the passed-in label.
@@ -179,7 +179,7 @@ public:
     tBuffer<int>& GetOutputBuf() { return m_output_buf; }
     int  GetCPUCyclesUsed() { return m_cpu_cycles_used; }
     void ResetCPUCyclesUsed() { m_cpu_cycles_used = 0; }
-    cInstruction GetInst(cString inst) { assert(m_gx_hardware); return m_gx_hardware->GetInstSet().GetInst(inst); }
+    Instruction GetInst(cString inst) { assert(m_gx_hardware); return m_gx_hardware->GetInstSet().GetInst(inst); }
 
     const cCPUMemory& GetMemory() const { return m_memory; }
     
@@ -256,7 +256,7 @@ protected:
   bool m_reset_inputs; // Flag to make it easy for instructions to reset all inputs (force task modularity).
   bool m_reset_heads;  // Flas to make it easy for instructions to reset heads back (force task modularity).
 
-  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
+  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
   inline void StackPush(int value) { assert(m_current); m_current->m_stack.Push(value); }
@@ -273,8 +273,8 @@ protected:
   cCodeLabel& GetLabel() { assert(m_current); return m_current->m_next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const Sequence& search_genome, int pos);
+  int FindLabel_Forward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
   const cCodeLabel& GetReadLabel() const { assert(m_current); return m_current->m_read_label; }
   cCodeLabel& GetReadLabel() { assert(m_current); return m_current->m_read_label; }
@@ -311,7 +311,7 @@ public:
   static cString GetDefaultInstFilename() { return "instset-gx.cfg"; }
 
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
-  void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
+  void ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst);
 
   
   // --------  Helper methods  --------

@@ -24,6 +24,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/Feedback.h"
+#include "avida/systematics/Unit.h"
 
 #include "cDeme.h"
 #include "cEnvironment.h"
@@ -385,7 +386,7 @@ int cPopulationInterface::BuyValue(const int label, const int buy_price)
 	return value;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);
@@ -1038,7 +1039,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 
 /*! Place the fragment at the location of best match.
  */
-void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const Sequence& offspring,
+void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
 																						 fragment_list_type::iterator& selected,
 																						 substring_match& location) {
 	// find the location within the offspring's genome that best matches the selected fragment:
@@ -1055,7 +1056,7 @@ void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const Sequence&
  Mutations to the offspring are still performed using the entire fragment, so this effectively
  increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
  */
-void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const Sequence& offspring,
+void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
 																											 fragment_list_type::iterator& selected,
 																											 substring_match& location) {
 	// copy the selected fragment, trimming redundant instructions at the end:
@@ -1075,7 +1076,7 @@ void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const Sequenc
  The beginning of the fragment location is selected at random, while the end is selected a
  random distance (up to the length of the selected fragment * 2) instructions away.
  */
-void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const Sequence& offspring,
+void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const InstructionSequence& offspring,
 																											fragment_list_type::iterator& selected,
 																											substring_match& location) {
 	// select a random location within the offspring's genome for this fragment to be
@@ -1088,7 +1089,7 @@ void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const Sequence
 
 /*! Called when this organism is the receiver of an HGT donation.
  */
-void cPopulationInterface::ReceiveHGTDonation(const Sequence& fragment) {
+void cPopulationInterface::ReceiveHGTDonation(const InstructionSequence& fragment) {
 	InitHGTSupport();
 	m_hgt_support->_pending.push_back(fragment);
 }

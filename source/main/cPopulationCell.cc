@@ -331,7 +331,7 @@ void cPopulationCell::DiffuseGenomeFragments() {
  As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
  remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
  */
-void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome) {
+void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const InstructionSequence& genome) {
 	assert(genome.GetSize()>0); // oh, sweet sanity.
 	InitHGTSupport();
 	
