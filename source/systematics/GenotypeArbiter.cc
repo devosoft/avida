@@ -28,6 +28,10 @@
 #include "avida/data/Package.h"
 #include "avida/private/systematics/Genotype.h"
 
+#include "cDoubleSum.h"
+
+#include <cmath>
+
 
 Avida::Systematics::GenotypeArbiter::GenotypeArbiter(int threshold)
   : m_threshold(threshold)
@@ -67,13 +71,13 @@ void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context& ctx, Update cur
 {
   m_cur_update = current_update;
   
-  if (m_active_sz.GetSize() < nBGGenotypeManager::HASH_SIZE) {
+  if (m_active_sz.GetSize() < HASH_SIZE) {
     for (int i = 0; i < m_active_sz.GetSize(); i++) {
       Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
       while (list_it.Next() != NULL) if ((*list_it.Get())->IsThreshold()) (*list_it.Get())->UpdateReset();
     }
   } else {
-    for (int i = 0; i < nBGGenotypeManager::HASH_SIZE; i++) {
+    for (int i = 0; i < HASH_SIZE; i++) {
       Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_active_hash[i].Begin());
       while (list_it.Next() != NULL) if ((*list_it.Get())->IsThreshold()) (*list_it.Get())->UpdateReset();
     }    
@@ -124,82 +128,76 @@ Avida::Data::ConstDataSetPtr Avida::Systematics::GenotypeArbiter::Provides() con
 
 void Avida::Systematics::GenotypeArbiter::UpdateProvidedValues(Update current_update)
 {
-//
-//  // Clear out genotype sums...
-//  stats.SumGenotypeAge().Clear();
-//  stats.SumAbundance().Clear();
-//  stats.SumGenotypeDepth().Clear();
-//  stats.SumSize().Clear();
-//  stats.SumThresholdAge().Clear();
-//  
-//  double entropy = 0.0;
-//  int active_count = 0;
-//  for (int i = 1; i < m_active_sz.GetSize(); i++) {
-//    active_count += m_active_sz[i].GetSize();
-//    tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[i].Iterator());
-//    while (list_it->Next() != NULL) {
-//      cBGGenotype* bg = list_it->Get();
-//      const int abundance = bg->GetNumUnits();
-//      
-//      // Update stats...
-//      const int age = stats.GetUpdate() - bg->GetUpdateBorn();
-//      stats.SumGenotypeAge().Add(age, abundance);
-//      stats.SumAbundance().Add(abundance);
-//      stats.SumGenotypeDepth().Add(bg->GetDepth(), abundance);
-//      stats.SumSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
-//      
-//      // Calculate this genotype's contribution to entropy
-//      // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
-//      //   to the output stage, but behavior is dependent on compiler used and optimization
-//      //   level.  For consistent output, ensures that 0.0 is returned.
-//      const double p = ((double) abundance) / (double) stats.GetNumCreatures();
-//      const double partial_ent = (abundance == stats.GetNumCreatures()) ? 0.0 : -(p * Log(p)); 
-//      entropy += partial_ent;
-//      
-//      // Do any special calculations for threshold genotypes.
-//      if (bg->IsThreshold()) stats.SumThresholdAge().Add(age, abundance);
-//    }
-//  }
-//  
-//  stats.SetEntropy(entropy);
-//  stats.SetNumGenotypes(active_count, m_historic.GetSize());
-//  
-//  
-//  // Handle dominant genotype stats
-//  cBGGenotype* dom_genotype = getBest();
-//  if (dom_genotype == NULL) return;
-//  
-//  stats.SetDomMerit(dom_genotype->GetMerit());
-//  stats.SetDomGestation(dom_genotype->GetGestationTime());
-//  stats.SetDomReproRate(dom_genotype->GetReproRate());
-//  stats.SetDomFitness(dom_genotype->GetFitness());
-//  stats.SetDomCopiedSize(dom_genotype->GetCopiedSize());
-//  stats.SetDomExeSize(dom_genotype->GetExecutedSize());
-//  
-//  stats.SetDomSize(dom_genotype->GetGenome().GetSequence().GetSize());
-//  stats.SetDomID(dom_genotype->GetID());
-//  stats.SetDomName(dom_genotype->GetName());
-//  
-//  if (dom_genotype->IsThreshold()) {
-//    stats.SetDomBirths(dom_genotype->GetLastBirths());
-//    stats.SetDomBreedTrue(dom_genotype->GetLastBreedTrue());
-//    stats.SetDomBreedIn(dom_genotype->GetLastBreedIn());
-//    stats.SetDomBreedOut(dom_genotype->GetLastBreedOut());
-//  } else {
-//    stats.SetDomBirths(dom_genotype->GetThisBirths());
-//    stats.SetDomBreedTrue(dom_genotype->GetThisBreedTrue());
-//    stats.SetDomBreedIn(dom_genotype->GetThisBreedIn());
-//    stats.SetDomBreedOut(dom_genotype->GetThisBreedOut());
-//  }
-//  
-//  stats.SetDomAbundance(dom_genotype->GetNumUnits());
-//  stats.SetDomGeneDepth(dom_genotype->GetDepth());
-//  stats.SetDomSequence(dom_genotype->GetGenome().GetSequence().AsString());
-//  
-//  stats.SetDomLastBirthCell(dom_genotype->GetLastBirthCell());
-//  stats.SetDomLastGroup(dom_genotype->GetLastGroupID());
-//  stats.SetDomLastForagerType(dom_genotype->GetLastForagerType());
-//  
+  cDoubleSum sum_age;
+  cDoubleSum sum_abundance;
+  cDoubleSum sum_depth;
+  cDoubleSum sum_size;
+  cDoubleSum sum_threshold_age;
+  
+  // Pre-calculate the total number of units that are currently active (used in entropy calculation)
+  int tot_units = 0;
+  for (int i = 1; i < m_active_sz.GetSize(); i++) {
+    Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
+    while (list_it.Next()) tot_units += (*list_it.Get())->NumUnits();
+  }
+  
+  // Loop through all genotypes collecting statistics
+  m_entropy = 0.0;
+  int active_count = 0;
+  for (int i = 1; i < m_active_sz.GetSize(); i++) {
+    active_count += m_active_sz[i].GetSize();
+    Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
+    while (list_it.Next()) {
+      GenotypePtr bg = *list_it.Get();
+      const int abundance = bg->NumUnits();
+      
+      // Update stats...
+      const int age = current_update - bg->GetUpdateBorn();
+      sum_age.Add(age, abundance);
+      sum_abundance.Add(abundance);
+      sum_depth.Add(bg->Depth(), abundance);
+      
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(bg->Genome().Representation());
+      assert(seq);
+      sum_size.Add(seq->GetSize(), abundance);
+      
+      // Calculate this genotype's contribution to entropy
+      // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
+      //   to the output stage, but behavior is dependent on compiler used and optimization
+      //   level.  For consistent output, ensures that 0.0 is returned.
+      const double p = ((double) abundance) / (double) tot_units;
+      const double partial_ent = (abundance == tot_units) ? 0.0 : -(p * log(p)); 
+      m_entropy += partial_ent;
+      
+      // Do any special calculations for threshold genotypes.
+      if (bg->IsThreshold()) sum_threshold_age.Add(age, abundance);
+    }
+  }
+  
+  // Stash all stats so that the can be retrieved using the provider mechanisms
+  m_num_genotypes = active_count;
+  m_num_historic_genotypes = m_historic.GetSize();
+  
+  m_ave_age = sum_age.Average();
+  m_ave_abundance = sum_abundance.Average();
+  m_ave_depth = sum_depth.Average();
+  m_ave_size = sum_size.Average();
+  m_ave_threshold_age = sum_threshold_age.Average();
+  
+  m_stderr_age = sum_age.StdError();
+  m_stderr_abundance = sum_abundance.StdError();
+  m_stderr_depth = sum_depth.StdError();
+  m_stderr_size = sum_size.StdError();
+  m_stderr_threshold_age = sum_threshold_age.StdError();
+  
+  m_var_age = sum_age.Variance();
+  m_var_abundance = sum_abundance.Variance();
+  m_var_depth = sum_depth.Variance();
+  m_var_size = sum_size.Variance();
+  m_var_threshold_age = sum_threshold_age.Variance();
+  
+  m_dom_id = (getBest()) ? getBest()->ID() : -1;  
 }
 
 
@@ -235,7 +233,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
 {
   
   ConstInstructionSequencePtr seq;
-  seq.DynamicCastFrom(u->Genome()->Representation());
+  seq.DynamicCastFrom(u->Genome().Representation());
   assert(seq);
   int list_num = hashGenome(*seq);
   
@@ -262,7 +260,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
       while (list_it.Next() != NULL) {
         if ((*list_it.Get())->ID() == gid) {
           found = *list_it.Get();
-          seq.DynamicCastFrom(found->GetGenome().Representation());
+          seq.DynamicCastFrom(found->Genome().Representation());
           assert(seq);
           
           m_active_hash[hashGenome(*seq)].Push(found);
@@ -306,7 +304,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
     if (found->NumUnits() > m_best) {
       m_best = found->NumUnits();
       found->SetThreshold();
-      seq.DynamicCastFrom(found->GetGenome().Representation());
+      seq.DynamicCastFrom(found->Genome().Representation());
       assert(seq);
       found->SetName(nameGenotype(seq->GetSize()));
       notifyListeners(found, EVENT_ADD_THRESHOLD);
@@ -347,8 +345,8 @@ void Avida::Systematics::GenotypeArbiter::AdjustGenotype(GenotypePtr genotype, i
   
   if (!genotype->IsThreshold() && (new_size >= m_threshold || genotype == getBest())) {
     genotype->SetThreshold();
-    InstructionSequencePtr seq;
-    seq.DynamicCastFrom(genotype->GetGenome().Representation());
+    ConstInstructionSequencePtr seq;
+    seq.DynamicCastFrom(genotype->Genome().Representation());
     assert(seq);
     genotype->SetName(nameGenotype(seq->GetSize()));
     notifyListeners(genotype, EVENT_ADD_THRESHOLD);
@@ -382,8 +380,33 @@ void Avida::Systematics::GenotypeArbiter::setupProvidedData(World* world)
   mgr->Register(name, activate); \
 }
 
-  PROVIDE("", "", int, );
+  PROVIDE("total", "Total Number of Genotypes", int, m_tot_genotypes);
+  PROVIDE("current", "Number of Current Genotypes", int, m_num_genotypes);
+  PROVIDE("ancestral", "Number of Ancestral Genotypes", int, m_num_historic_genotypes);
   
+  PROVIDE("coalescent_depth", "Coalescent Depth", int, m_coalescent_depth);
+  
+  PROVIDE("ave_age", "Average Age", double, m_ave_age);
+  PROVIDE("ave_abundance", "Average Abundance", double, m_ave_abundance);
+  PROVIDE("ave_depth", "Average Depth", double, m_ave_depth);
+  PROVIDE("ave_size", "Average ", double, m_ave_size);
+  PROVIDE("ave_threshold_age", "Average Threshold Age", double, m_ave_threshold_age);
+  
+  PROVIDE("stderr_age", "Age Standard Error", double, m_stderr_age);
+  PROVIDE("stderr_abundance", "Abundance Standard Error", double, m_stderr_abundance);
+  PROVIDE("stderr_depth", "Depth Standard Error", double, m_stderr_depth);
+  PROVIDE("stderr_size", "Size Standard Error", double, m_stderr_size);
+  PROVIDE("stderr_threshold_age", "Threshold Age Standard Error", double, m_stderr_threshold_age);
+  
+  PROVIDE("var_age", "Age Variance", double, m_var_age);
+  PROVIDE("var_abundance", "Abundance Variance", double, m_var_abundance);
+  PROVIDE("var_depth", "Depth Variance", double, m_var_depth);
+  PROVIDE("var_size", "Size Variance", double, m_var_size);
+  PROVIDE("var_threshold_age", "Threshold Age Variance", double, m_var_threshold_age);
+  
+  PROVIDE("entropy", "Genotypic Entropy", double, m_entropy);
+  
+  PROVIDE("dominant_id", "Dominant Genotype ID", int, m_dom_id);
 }
 
 
@@ -396,7 +419,7 @@ unsigned int Avida::Systematics::GenotypeArbiter::hashGenome(const InstructionSe
     total += (genome[i].GetOp() + 3) * i;
   }
   
-  return total % nBGGenotypeManager::HASH_SIZE;
+  return total % HASH_SIZE;
 }
 
 Apto::String Avida::Systematics::GenotypeArbiter::nameGenotype(int size)
@@ -420,8 +443,8 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   if (genotype->ActiveReferenceCount()) return;    
   
   if (genotype->IsActive()) {
-    InstructionSequencePtr seq;
-    seq.DynamicCastFrom(genotype->GetGenome().Representation());
+    ConstInstructionSequencePtr seq;
+    seq.DynamicCastFrom(genotype->Genome().Representation());
     int list_num = hashGenome(*seq);
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_cur_update);
@@ -435,7 +458,7 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   
   if (genotype->PassiveReferenceCount()) return;
   
-  const Apto::Array<GenotypePtr>& parents = genotype->GetParents();
+  const Apto::Array<GenotypePtr>& parents = genotype->Parents();
   for (int i = 0; i < parents.GetSize(); i++) {
     parents[i]->RemovePassiveReference();
     updateCoalescent();
@@ -446,7 +469,6 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   
   assert(genotype->m_handle);
   genotype->m_handle->Remove(); // Remove from historic list
-  delete genotype;
 }
 
 void Avida::Systematics::GenotypeArbiter::updateCoalescent()
@@ -459,16 +481,16 @@ void Avida::Systematics::GenotypeArbiter::updateCoalescent()
     return;
   }
   
-  // @TODO - update coalescent assumes asexual population
+  // @note - update coalescent assumes asexual population
   GenotypePtr test_gen = getBest();
   GenotypePtr found_gen = test_gen;
-  GenotypePtr parent_gen = (found_gen->GetParents().GetSize()) ? (found_gen->GetParents()[0]) : GenotypePtr(NULL);
+  GenotypePtr parent_gen = (found_gen->Parents().GetSize()) ? (found_gen->Parents()[0]) : GenotypePtr(NULL);
 
   while (parent_gen) {
     if (test_gen->ActiveReferenceCount() > 0 || test_gen->PassiveReferenceCount() > 1) found_gen = test_gen;
     
     test_gen = parent_gen;
-    parent_gen = (test_gen->GetParents().GetSize()) ? (test_gen->GetParents()[0]) : GenotypePtr(NULL);
+    parent_gen = (test_gen->Parents().GetSize()) ? (test_gen->Parents()[0]) : GenotypePtr(NULL);
   }
   
   m_coalescent = found_gen;

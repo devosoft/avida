@@ -29,21 +29,6 @@
 #include "avida/systematics/Arbiter.h"
 #include "avida/private/systematics/Genotype.h"
 
-#include "tIterator.h"
-#include "tManagedPointerArray.h"
-#include "tSparseVectorList.h"
-
-namespace Avida {
-  class Sequence;
-}
-class cWorld;
-
-
-namespace nBGGenotypeManager {
-  const int HASH_SIZE = 3203;
-}
-
-
 
 namespace Avida {
   namespace Systematics {
@@ -53,18 +38,21 @@ namespace Avida {
     
     class GenotypeArbiter : public Arbiter, public Data::Provider
     {
+      friend class Genotype;
     public:
       enum {
         EVENT_ADD_THRESHOLD,
         EVENT_REMOVE_THRESHOLD
       };
       
+      static const int HASH_SIZE = 3203;
+      
     private:
       // Config Settings
       int m_threshold;
       
       // Internal Data Structures
-      Apto::List<GenotypePtr, Apto::SparseVector> m_active_hash[nBGGenotypeManager::HASH_SIZE];
+      Apto::List<GenotypePtr, Apto::SparseVector> m_active_hash[HASH_SIZE];
       Apto::Array<Apto::List<GenotypePtr, Apto::SparseVector>, Apto::ManagedPointer> m_active_sz;
       Apto::List<GenotypePtr, Apto::SparseVector> m_historic;
       GenotypePtr m_coalescent;
@@ -78,7 +66,34 @@ namespace Avida {
       
       // Stats
       int m_tot_genotypes;
+      
+      int m_num_genotypes;
+      int m_num_historic_genotypes;
+      
       int m_coalescent_depth;
+      
+      double m_ave_age;
+      double m_ave_abundance;
+      double m_ave_depth;
+      double m_ave_size;
+      double m_ave_threshold_age;
+
+      double m_stderr_age;
+      double m_stderr_abundance;
+      double m_stderr_depth;
+      double m_stderr_size;
+      double m_stderr_threshold_age;
+
+      double m_var_age;
+      double m_var_abundance;
+      double m_var_depth;
+      double m_var_size;
+      double m_var_threshold_age;
+
+      double m_entropy;
+      
+      int m_dom_id;
+      
       
 
       struct ProvidedData
@@ -116,7 +131,8 @@ namespace Avida {
       Apto::String DescribeProvidedValue(const Data::DataID& data_id) const;
       
       
-      // Genotype Manager Methods
+    private:
+      // Methods called by Genotype
       GenotypePtr ClassifyNewUnit(UnitPtr bu, ConstGroupMembershipPtr parents, const ClassificationHints* hints = NULL);
       void AdjustGenotype(GenotypePtr genotype, int old_size, int new_size);
       

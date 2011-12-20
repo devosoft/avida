@@ -47,10 +47,7 @@ namespace Avida {
     LIB_EXPORT virtual void SetObjectType(ArchiveObjectType obj_type) = 0;
     LIB_EXPORT virtual void SetVersion(int version) = 0;
     
-    LIB_EXPORT virtual ConstPropertyMapPtr Properties() const = 0;
-    LIB_EXPORT virtual ConstPropertyIDSetPtr PropertyIDs() const = 0;
-    LIB_EXPORT virtual PropertyTypeID PropertyType() const = 0;
-    LIB_EXPORT virtual Apto::String PropertyValue(PropertyID prop_id) const = 0;
+    LIB_EXPORT virtual const PropertyMap& Properties() const = 0;
     
     LIB_EXPORT virtual bool AttachProperty(const Property& prop) = 0;
     

@@ -630,13 +630,6 @@ public:
       avg_competition_copied_fitness = _in_cp_avg; min_competition_copied_fitness = _in_cp_min; max_competition_copied_fitness = _in_cp_max; }
   void SetCompetitionOrgsReplicated(int _in) { num_orgs_replicated = _in; }
 
-  //market info
-  void AddMarketItemBought() { num_bought++;}
-  void AddMarketItemSold() { num_sold++; }
-  void AddMarketItemUsed() { num_used++; }
-  void AddMarketOwnItemUsed() { num_own_used++; }
-
-
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 

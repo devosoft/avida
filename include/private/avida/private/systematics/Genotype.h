@@ -92,12 +92,13 @@ namespace Avida {
       cDoubleSum m_repro_rate;
       cDoubleSum m_merit;
       cDoubleSum m_fitness;
-      
+            
       int m_last_birth_cell;
       int m_last_group_id;
       int m_last_forager_type;
       
-      Genotype(GenotypeArbiterPtr mgr, int in_id, UnitPtr founder, int update, ConstGroupMembershipPtr parents);
+      mutable PropertyMap* m_prop_map;
+      
       
     public:
       ~Genotype();
@@ -113,71 +114,47 @@ namespace Avida {
       int Depth() const;
       int NumUnits() const;
       
-      ConstPropertyIDSetPtr PropertyIDs() const;
       const PropertyMap& Properties() const;
       
       bool Serialize(ArchivePtr ar) const;
-      
 
       void RemoveActiveReference();
       
-      
+
       // Genotype Specific Methods
-      inline const Source& GetSource() const { return m_src; }
-      inline const Genome& GetGenome() const { return m_genome; }
-      inline Apto::String GetGenomeString() const { return m_genome.AsString(); }      
+      bool Matches(UnitPtr u);
       
-      inline const Apto::String& GetName() const { return m_name; }
+      
+      // ???      
+      inline void SetLastBirthCell(int birth_cell) { m_last_birth_cell = birth_cell; }
+      inline void SetLastGroupID(int group_id) { m_last_group_id = group_id; }
+      inline void SetLastForagerType(int forager_type) { m_last_forager_type = forager_type; }
+      
+      
+    private:
+      // Methods called by GenotypeArbiter
+      Genotype(GenotypeArbiterPtr mgr, GroupID in_id, UnitPtr founder, Update update, ConstGroupMembershipPtr parents);
+
+      void NotifyNewUnit(UnitPtr u);
+      void UpdateReset();
+
+      inline const Genome& Genome() const { return m_genome; }
+      inline const Apto::Array<GenotypePtr> Parents() const { return m_parents; }
+      
       inline void SetName(const Apto::String& name) { m_name = name; }
       
       inline bool IsThreshold() const { return m_threshold; }
       inline bool IsActive() const { return m_active; }
       
       inline int GetUpdateBorn() const { return m_update_born; }
-      inline int GetUpdateDeactivated() const { return m_update_deactivated; }
-      
-      inline const Apto::String& GetParentString() const { return m_parent_str; }
       
       inline void SetThreshold() { m_threshold = true; }
       inline void ClearThreshold() { m_threshold = false; }
       
       inline void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
       
-      inline const Apto::Array<GenotypePtr> GetParents() const { return m_parents; }
-      
-      bool Matches(UnitPtr u);
-      void NotifyNewUnit(UnitPtr u);
-      
-      void UpdateReset();
-
-      // ... convert to properties
-      inline int GetTotalOrganisms() const { return m_total_organisms; }
-      
-      inline int GetLastBirths() const { return m_births.GetLast(); }
-      inline int GetLastBreedIn() const { return m_breed_in.GetLast(); }
-      inline int GetLastBreedTrue() const { return m_breed_true.GetLast(); }
-      inline int GetLastBreedOut() const { return m_breed_out.GetLast(); }
-      
-      inline int GetThisBirths() const { return m_births.GetCur(); }
-      inline int GetThisDeaths() const { return m_deaths.GetCur(); }
-      inline int GetThisBreedIn() const { return m_breed_in.GetCur(); }
-      inline int GetThisBreedTrue() const { return m_breed_true.GetCur(); }
-      inline int GetThisBreedOut() const { return m_breed_out.GetCur(); }
-      
-      inline double GetCopiedSize() const { return m_copied_size.Average(); }
-      inline double GetExecutedSize() const { return m_exe_size.Average(); }
-      inline double GetGestationTime() const { return m_gestation_time.Average(); }
-      inline double GetReproRate() const { return m_repro_rate.Average(); }
-      inline double GetMerit() const { return m_merit.Average(); }
-      inline double GetFitness() const { return m_fitness.Average(); }
-      
-      inline int GetLastBirthCell() const { return m_last_birth_cell; }
-      inline int GetLastGroupID() const { return m_last_group_id; } 
-      inline int GetLastForagerType() const { return m_last_forager_type; } 
-      
-      inline void SetLastBirthCell(int birth_cell) { m_last_birth_cell = birth_cell; }
-      inline void SetLastGroupID(int group_id) { m_last_group_id = group_id; }
-      inline void SetLastForagerType(int forager_type) { m_last_forager_type = forager_type; }
+    private:
+      void setupPropertyMap() const;
     };
 
   };

@@ -84,7 +84,6 @@ public:
 			m_seq[i].SetOp(0);
 			m_flag_array[i] = 0;
 		}
-    m_mutation_steps.Clear();
 	}
   inline void ClearFlags() { m_flag_array.SetAll(0); }
   void Reset(int new_size);     // Reset size, clearing contents...

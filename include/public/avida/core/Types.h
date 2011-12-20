@@ -43,6 +43,7 @@ namespace Avida {
   class Instruction;
   class InstructionSequence;
   class Property;
+  class PropertyMap;
   template <typename T> struct PropertyTraits;
   template <typename T> class ReferenceProperty;
   class StringProperty;
@@ -84,12 +85,12 @@ namespace Avida {
   typedef Apto::SmartPtr<InstructionSequence> InstructionSequencePtr;
   typedef Apto::SmartPtr<const InstructionSequence> ConstInstructionSequencePtr;
   
+  typedef Apto::SmartPtr<Property> PropertyPtr;
   typedef Apto::String PropertyID;
   typedef Apto::String PropertyTypeID;
   typedef Apto::Set<PropertyID> PropertyIDSet;
   typedef Apto::SmartPtr<PropertyIDSet> PropertyIDSetPtr;
   typedef Apto::SmartPtr<const PropertyIDSet> ConstPropertyIDSetPtr;
-  typedef Apto::Map<PropertyID, Property, Apto::DefaultHashBTree, Apto::ImplicitDefault> PropertyMap;
   typedef Apto::SmartPtr<PropertyMap> PropertyMapPtr;
   typedef Apto::SmartPtr<const PropertyMap> ConstPropertyMapPtr;
   
