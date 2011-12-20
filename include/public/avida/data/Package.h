@@ -69,7 +69,7 @@ namespace Avida {
       LIB_EXPORT bool BoolValue() const { return m_value; }
       LIB_EXPORT int IntValue() const { return m_value; }
       LIB_EXPORT double DoubleValue() const { return m_value; }
-      LIB_EXPORT Apto::String StringValue() const { return Apto::String(Apto::AsStr(m_value)); }
+      LIB_EXPORT Apto::String StringValue() const { return Apto::AsStr(m_value); }
     };
     
     template <> class Wrap<Apto::String> : public Package

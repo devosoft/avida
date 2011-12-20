@@ -23,27 +23,21 @@
 
 #include "avida/private/systematics/Genotype.h"
 
+#include "avida/core/InstructionSequence.h"
 #include "avida/private/systematics/GenotypeArbiter.h"
-#include "cEntryHandle.h"
-
-#include "cPhenotype.h"
-#include "cStringList.h"
-#include "cStringUtil.h"
-#include "cWorld.h"
-#include "tDictionary.h"
 
 
-cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, Systematics::UnitPtr founder, int update, tArray<Systematics::GroupPtr>* parents)
-  : Systematics::Group(in_id)
+Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, UnitPtr founder, Update update,
+                             ConstGroupMembershipPtr parents)
+  : Group(in_id)
   , m_mgr(mgr)
   , m_handle(NULL)
-  , m_src(founder->GetUnitSource())
-  , m_src_args(founder->GetUnitSourceArgs())
-  , m_genome(founder->GetGenome())
+  , m_src(founder->UnitSource())
+  , m_genome(founder->Genome())
   , m_name("001-no_name")
   , m_threshold(false)
   , m_active(true)
-  , m_generation_born(founder->GetPhenotype().GetGeneration())
+  , m_generation_born(Apto::StrAs(founder->Properties().Get("generation")))
   , m_update_born(update)
   , m_update_deactivated(-1)
   , m_depth(0)
@@ -54,116 +48,71 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, Systematics::UnitPt
   , m_last_birth_cell(0)
   , m_last_group_id(-1)
   , m_last_forager_type(-1)
+  , m_prop_map(NULL)
 {
   AddActiveReference();
   if (parents) {
     m_parents.Resize(parents->GetSize());
     for (int i = 0; i < m_parents.GetSize(); i++) {
-      m_parents[i] = static_cast<cBGGenotype*>((*parents)[i]);
+      GenotypePtr p;
+      p.DynamicCastFrom((*parents)[i]);
+      assert(p);
+      m_parents[i] = p;
       m_parents[i]->AddPassiveReference();
       if (i > 0) m_parent_str += ",";
-      m_parent_str += cStringUtil::Convert(m_parents[i]->GetID());
+      m_parent_str += Apto::AsStr(m_parents[i]->ID());
     }
   }
-  if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
-  if (m_src != SRC_ORGANISM_FILE_LOAD) m_breed_in.Inc();
-  m_name.Set("%03d-no_name", m_genome.GetSequence().GetSize());
+  if (m_parents.GetSize()) m_depth = m_parents[0]->Depth() + 1;
+  if (!m_src.external) m_breed_in.Inc();
+  
+  InstructionSequencePtr seq;
+  seq.DynamicCastFrom(m_genome.Representation());
+  assert(seq);
+  m_name = Apto::FormatStr("%03d-no_name", seq->GetSize());
 }
 
 
-cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props, cWorld* world)
-: cBioGroup(in_id)
-, m_mgr(mgr)
-, m_handle(NULL)
-, m_name("001-no_name")
-, m_threshold(false)
-, m_active(false)
-, m_active_offspring_genotypes(0)
-, m_num_organisms(0)
-, m_last_num_organisms(0)
-, m_total_organisms(0)
-{
-  if (props.HasEntry("src")) {
-    m_src = (eBioUnitSource)props.Get("src").AsInt();
-  } else {
-    m_src = SRC_ORGANISM_FILE_LOAD;
-  }
-  m_src_args = props.Get("src_args");
-  if (m_src_args == "(none)") m_src_args = "";
-  
-  m_genome.Load(props, world->GetHardwareManager());
-  
-  if (props.HasEntry("gen_born")) {
-    m_generation_born = props.Get("gen_born").AsInt();
-  } else {
-    m_generation_born = -1;
-  }
-  assert(props.HasEntry("update_born"));
-  m_update_born = props.Get("update_born").AsInt();
-  if (props.HasEntry("update_deactivated")) {
-    m_update_deactivated = props.Get("update_deactivated").AsInt();
-  } else {
-    m_update_deactivated = -1;
-  }
-  assert(props.HasEntry("depth"));  
-  m_depth = props.Get("depth").AsInt();
-  
-  if (props.HasEntry("parents")) {
-    m_parent_str = props.Get("parents");
-  } else if (props.HasEntry("parent_id")) { // Backwards compatible load
-    m_parent_str = props.Get("parent_id");
-  }
-  if (m_parent_str == "(none)") m_parent_str = "";
-  cStringList parents(m_parent_str,',');
-
-  m_parents.Resize(parents.GetSize());
-  for (int i = 0; i < m_parents.GetSize(); i++) {
-    m_parents[i] = static_cast<cBGGenotype*>(m_mgr->GetBioGroup(parents.Pop().AsInt()));
-    assert(m_parents[i]);
-    m_parents[i]->AddPassiveReference();
-  }
-}
-
-
-
-cBGGenotype::~cBGGenotype()
+Avida::Systematics::Genotype::~Genotype()
 {
   delete m_handle;
-  m_parents.Resize(0);
+  delete m_prop_map;
 }
 
-int cBGGenotype::GetRoleID() const
+Avida::Systematics::RoleID Avida::Systematics::Genotype::Role() const
 {
-  return m_mgr->GetRoleID();
+  return m_mgr->Role();
 }
 
-
-const cString& cBGGenotype::GetRole() const
+Avida::Systematics::ArbiterPtr Avida::Systematics::Genotype::Arbiter() const
 {
-  return m_mgr->GetRole();
+  return m_mgr;
 }
 
 
-cBioGroup* cBGGenotype::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents)
+Avida::Systematics::GroupPtr Avida::Systematics::Genotype::ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parents)
 {
   m_births.Inc();
   
-  if (Matches(bu)) {
+  if (Matches(u)) {
     m_breed_true.Inc();
     m_total_organisms++;
     m_num_organisms++;
-    m_mgr->AdjustGenotype(this, m_num_organisms - 1, m_num_organisms);
+    
+    GenotypePtr g(this);
+    AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
+    m_mgr->AdjustGenotype(g, m_num_organisms - 1, m_num_organisms);
     AddActiveReference();
-    return this;
+    return g;
   }  
   
   m_breed_out.Inc();
-  return m_mgr->ClassifyNewBioUnit(bu, parents);
+  return m_mgr->ClassifyNewUnit(u, parents);
 }
 
-void cBGGenotype::HandleBioUnitGestation(Systematics::UnitPtr bu)
+void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
 {
-  const cPhenotype& phenotype = bu->GetPhenotype();
+  const cPhenotype& phenotype = u->GetPhenotype();
   
   m_copied_size.Add(phenotype.GetCopiedSize());
   m_exe_size.Add(phenotype.GetExecutedSize());
@@ -174,7 +123,7 @@ void cBGGenotype::HandleBioUnitGestation(Systematics::UnitPtr bu)
 }
 
 
-void cBGGenotype::RemoveBioUnit(Systematics::UnitPtr bu)
+void Avida::Systematics::Genotype::RemoveUnit(UnitPtr u)
 {
   m_deaths.Inc();
   
@@ -183,169 +132,140 @@ void cBGGenotype::RemoveBioUnit(Systematics::UnitPtr bu)
   assert(m_a_refs >= 0);
   
   m_num_organisms--;
-  m_mgr->AdjustGenotype(this, m_num_organisms + 1, m_num_organisms);
+  GenotypePtr g(this);
+  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
+  m_mgr->AdjustGenotype(g, m_num_organisms + 1, m_num_organisms);
 }
 
-void cBGGenotype::RemoveActiveReference()
+
+const Avida::PropertyMap& Avida::Systematics::Genotype::Properties() const
+{
+  if (!m_prop_map) setupPropertyMap();
+  return *m_prop_map;
+}
+
+
+bool Avida::Systematics::Genotype::Serialize(ArchivePtr ar) const
+{
+  // @TODO
+//  df.Write(m_id, "ID", "id");
+//  df.Write(Avida::BioUnitSourceMap[m_src], "Source", "src");
+//  df.Write(m_src_args.GetSize() ? m_src_args : "(none)", "Source Args", "src_args");
+//  
+//  cString str("");
+//  if (m_parents.GetSize()) {
+//    str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
+//    for (int i = 1; i < m_parents.GetSize(); i++) {
+//      str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
+//    }
+//  }
+//  df.Write((str.GetSize()) ? str : "(none)", "Parent ID(s)", "parents");
+//  
+//  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
+//  df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");
+//  df.Write(m_genome.GetSequence().GetSize(), "Genome Length", "length");
+//  df.Write(m_merit.Average(), "Average Merit", "merit");
+//  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
+//  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
+//  df.Write(m_generation_born, "Generation Born", "gen_born");
+//  df.Write(m_update_born, "Update Born", "update_born");
+//  df.Write(m_update_deactivated, "Update Deactivated", "update_deactivated");
+//  df.Write(m_depth, "Phylogenetic Depth", "depth");
+//  m_genome.Save(df);
+  return false;
+}
+
+
+void Avida::Systematics::Genotype::RemoveActiveReference()
 {
   m_a_refs--;
   assert(m_a_refs >= 0);
   
-  if (!m_a_refs) m_mgr->AdjustGenotype(this, m_num_organisms, 0);
+  GenotypePtr g(this);
+  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
+  if (!m_a_refs) m_mgr->AdjustGenotype(g, m_num_organisms, 0);
 }
 
 
-const tArray<cString>& cBGGenotype::GetProperyList() const { return m_mgr->GetBioGroupPropertyList(); }
-bool cBGGenotype::HasProperty(const cString& prop) const { return m_mgr->BioGroupHasProperty(prop); }
-cFlexVar cBGGenotype::GetProperty(const cString& prop) const { return m_mgr->GetBioGroupProperty(this, prop); }
 
-
-
-void cBGGenotype::Save(cDataFile& df)
-{
-  
-  df.Write(m_id, "ID", "id");
-  df.Write(Avida::BioUnitSourceMap[m_src], "Source", "src");
-  df.Write(m_src_args.GetSize() ? m_src_args : "(none)", "Source Args", "src_args");
-
-  cString str("");
-  if (m_parents.GetSize()) {
-    str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
-    for (int i = 1; i < m_parents.GetSize(); i++) {
-      str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
-    }
-  }
-  df.Write((str.GetSize()) ? str : "(none)", "Parent ID(s)", "parents");
-  
-  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
-  df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");
-  df.Write(m_genome.GetSequence().GetSize(), "Genome Length", "length");
-  df.Write(m_merit.Average(), "Average Merit", "merit");
-  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
-  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
-  df.Write(m_generation_born, "Generation Born", "gen_born");
-  df.Write(m_update_born, "Update Born", "update_born");
-  df.Write(m_update_deactivated, "Update Deactivated", "update_deactivated");
-  df.Write(m_depth, "Phylogenetic Depth", "depth");
-  m_genome.Save(df);
-}
-
-
-void cBGGenotype::DepthSave(cDataFile& df)
-{
-  df.Write(m_id, "ID", "genotype_id");
-  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
-  df.Write(m_depth, "Phylogenetic Depth", "depth");
-}
-
-bool cBGGenotype::Matches(Systematics::UnitPtr bu)
+bool Avida::Systematics::Genotype::Matches(UnitPtr u)
 {
   // Handle source branching
-  switch (m_src) {
-    case SRC_DEME_COMPETE:
-    case SRC_DEME_COPY:
-    case SRC_DEME_GERMLINE:
-    case SRC_DEME_RANDOM:
-    case SRC_DEME_REPLICATE:
-    case SRC_DEME_SPAWN:
-    case SRC_ORGANISM_COMPETE:
-    case SRC_ORGANISM_DIVIDE:
-    case SRC_ORGANISM_FILE_LOAD:
-    case SRC_ORGANISM_RANDOM:
-      switch (bu->GetUnitSource()) {
-        case SRC_DEME_COMPETE:
-        case SRC_DEME_COPY:
-        case SRC_DEME_GERMLINE:
-        case SRC_DEME_RANDOM:
-        case SRC_DEME_REPLICATE:
-        case SRC_DEME_SPAWN:
-        case SRC_ORGANISM_COMPETE:
-        case SRC_ORGANISM_DIVIDE:
-        case SRC_ORGANISM_FILE_LOAD:
-        case SRC_ORGANISM_RANDOM:
+  switch (m_src.transmission_type) {
+    case DIVISION:
+    case DUPLICATION:
+      switch (u->UnitSource().transmission_type) {
+        case DIVISION:
+        case DUPLICATION:
           break;
           
-        case SRC_PARASITE_FILE_LOAD:
-        case SRC_PARASITE_INJECT:
+        case VERTICAL:
+        case HORIZONTAL:
           return false;
           break;
           
         default:
-          assert(false);
+          return false;
           break;          
       }
       break;
       
-    case SRC_PARASITE_FILE_LOAD:
-    case SRC_PARASITE_INJECT:
-      switch (bu->GetUnitSource()) {
-        case SRC_DEME_COMPETE:
-        case SRC_DEME_COPY:
-        case SRC_DEME_GERMLINE:
-        case SRC_DEME_RANDOM:
-        case SRC_DEME_REPLICATE:
-        case SRC_DEME_SPAWN:
-        case SRC_ORGANISM_COMPETE:
-        case SRC_ORGANISM_DIVIDE:
-        case SRC_ORGANISM_FILE_LOAD:
-        case SRC_ORGANISM_RANDOM:
+    case VERTICAL:
+    case HORIZONTAL:
+      switch (u->UnitSource().transmission_type) {
+        case DIVISION:
+        case DUPLICATION:
           return false;
           break;
           
-        case SRC_PARASITE_FILE_LOAD:
-        case SRC_PARASITE_INJECT:
+        case VERTICAL:
+        case HORIZONTAL:
           // Verify that the parasite inject label matches
-          if (m_src_args != bu->GetUnitSourceArgs()) return false;
+          if (m_src.arguments != u->UnitSource().arguments) return false;
           break;
           
         default:
-          assert(false);
+          return false;
           break;          
       }
       break;
       
     default:
-      assert(false);
+      return false;
       break;
       
   }
   
   // Compare the genomes
-  return (m_genome == bu->GetGenome());
+  return (m_genome == u->Genome());
 }
 
-void cBGGenotype::NotifyNewBioUnit(Systematics::UnitPtr bu)
+void Avida::Systematics::Genotype::NotifyNewUnit(UnitPtr u)
 {
   m_active = true;
-  switch (bu->GetUnitSource()) {
-    case SRC_DEME_COMPETE:
-    case SRC_DEME_COPY:
-    case SRC_DEME_GERMLINE:
-    case SRC_DEME_RANDOM:
-    case SRC_DEME_REPLICATE:
-    case SRC_DEME_SPAWN:
-    case SRC_ORGANISM_COMPETE:
-    case SRC_ORGANISM_FILE_LOAD:
-    case SRC_ORGANISM_RANDOM:
-    case SRC_PARASITE_FILE_LOAD:
-      break;
-      
-    case SRC_ORGANISM_DIVIDE:
-    case SRC_PARASITE_INJECT:
-      m_breed_in.Inc();
-      break;
-      
-    default:
-      break;          
+  if (!u->UnitSource().external) {
+    switch (u->UnitSource().transmission_type) {
+      case DIVISION:
+      case HORIZONTAL:
+      case VERTICAL:
+        m_breed_in.Inc();
+        break;
+        
+      default:
+        break;          
+    }
   }
   m_total_organisms++;
   m_num_organisms++;
-  m_mgr->AdjustGenotype(this, m_num_organisms - 1, m_num_organisms);
+
+  GenotypePtr g(this);
+  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
+  m_mgr->AdjustGenotype(g, m_num_organisms - 1, m_num_organisms);
   AddActiveReference();
 }
 
 
-void cBGGenotype::UpdateReset()
+void Avida::Systematics::Genotype::UpdateReset()
 {
   m_last_num_organisms = m_num_organisms;
   m_births.Next();
@@ -356,32 +276,43 @@ void cBGGenotype::UpdateReset()
 }
 
 
-void cBGGenotypeManager::buildDataCommandManager() const
+void Avida::Systematics::Genotype::setupPropertyMap() const
 {
-  m_dcm = new tDataCommandManager<cBGGenotype>;
-  
-#define ADD_PROP(NAME, TYPE, GET, DESC) \
-m_dcm->Add(NAME, new tDataEntryOfType<cBGGenotype, TYPE>(NAME, DESC, &cBGGenotype::GET));
-  
-  ADD_PROP("genome", cString (), GetGenomeString, "Genome");
-  ADD_PROP("name", const cString& (), GetName, "Name");
-  ADD_PROP("parents", const cString& (), GetParentString, "Parents");
-  ADD_PROP("threshold", bool (), IsThreshold, "Threshold");  
-  ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
-  ADD_PROP("fitness", double (), GetFitness, "Average Fitness");
-  ADD_PROP("repro_rate", double (), GetReproRate, "Repro Rate");
-  ADD_PROP("recent_births", int (), GetThisBirths, "Recent Births (during update)");
-  ADD_PROP("recent_deaths", int (), GetThisDeaths, "Recent Deaths (during update)");
-  ADD_PROP("recent_breed_true", int (), GetThisBreedTrue, "Recent Breed True (during update)");
-  ADD_PROP("recent_breed_in", int (), GetThisBreedIn, "Recent Breed In (during update)");
-  ADD_PROP("recent_breed_out", int (), GetThisBreedOut, "Recent Breed Out (during update)");
-  ADD_PROP("total_organisms", int (), GetTotalOrganisms, "Total Organisms");
-  ADD_PROP("last_births", int (), GetLastBirths, "Births (during last update)");
-  ADD_PROP("last_breed_true", int (), GetLastBreedTrue, "Breed True (during last update)");
-  ADD_PROP("last_breed_in", int (), GetLastBreedIn, "Breed In (during last update)");
-  ADD_PROP("last_breed_out", int (), GetLastBreedOut, "Breed Out (during last update)");
-  ADD_PROP("last_birth_cell", int (), GetLastBirthCell, "Last birth cell");
-  ADD_PROP("last_group_id", int (), GetLastGroupID, "Last birth group");
-  ADD_PROP("last_forager_type", int (), GetLastForagerType, "Last birth forager type");
-}
+  if (m_prop_map) return;
 
+  m_prop_map = new PropertyMap();
+  
+#define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, VAL)));
+#define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, VAL)));
+  ADD_FUN_PROP("genome", "Genome", Apto::String, FunctorProperty<Apto::String>::Functor(&m_genome, &Genome::AsString));
+  ADD_REF_PROP("name", "Name", Apto::String, m_name);
+  ADD_REF_PROP("parents", "Parent IDs", Apto::String, m_parent_str);
+  ADD_REF_PROP("threshold", "Threshold", bool, m_threshold);
+  ADD_REF_PROP("update_born", "Update Born", int, m_update_born);
+  
+  ADD_FUN_PROP("ave_copy_size", "Average Copied Size", double, FunctorProperty<double>::Functor(&m_copied_size, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_exe_size", "Average Executed Size", double, FunctorProperty<double>::Functor(&m_exe_size, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_gestation_time", "Average Gestation Time", double, FunctorProperty<double>::Functor(&m_gestation_time, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_repro_rate", "Average Repro Rate", double, FunctorProperty<double>::Functor(&m_repro_rate, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_metabolic_rate", "Average Metabolic Rate", double, FunctorProperty<double>::Functor(&m_merit, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_fitness", "Average Fitness", double, FunctorProperty<double>::Functor(&m_fitness, &cDoubleSum::Average));
+  
+  ADD_REF_PROP("recent_births", "Recent Births (during update)", int, m_births.GetCur());
+  ADD_REF_PROP("recent_deaths", "Recent Deaths (during update)", int, m_deaths.GetCur());
+  ADD_REF_PROP("recent_breed_true", "Recent Breed True (during update)", int, m_breed_true.GetCur());
+  ADD_REF_PROP("recent_breed_in", "Recent Breed In (during update)", int, m_breed_in.GetCur());
+  ADD_REF_PROP("recent_breed_out", "Recent Breed Out (during update)", int, m_breed_out.GetCur());
+  
+  ADD_REF_PROP("total_organisms", "Total Organisms", int, m_total_organisms);
+  ADD_REF_PROP("last_births", "Births (during last update)", int, m_births.GetLast());
+  ADD_REF_PROP("last_deaths", "Deaths (during last update)", int, m_deaths.GetLast());
+  ADD_REF_PROP("last_breed_true", "Breed True (during last update)", int, m_breed_true.GetLast());
+  ADD_REF_PROP("last_breed_in", "Breed In (during last update)", int, m_breed_in.GetLast());
+  ADD_REF_PROP("last_breed_out", "Breed Out (during last update)", int, m_breed_out.GetLast());
+  
+  ADD_REF_PROP("last_birth_cell", "Last birth cell", int, m_last_birth_cell);
+  ADD_REF_PROP("last_group_id", "Last birth group", int, m_last_group_id);
+  ADD_REF_PROP("last_forager_type", "Last birth forager type", int, m_last_forager_type);
+#undef ADD_FUN_PROP
+#undef Add_REF_PROP
+}

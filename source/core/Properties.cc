@@ -27,11 +27,28 @@
 
 Avida::PropertyTypeID Avida::Property::Null = "null";
 
+Avida::Property::~Property() { ; }
+
 Apto::String Avida::Property::Value() const { return ""; }
 
 Apto::String Avida::StringProperty::Value() const { return m_value; }
 
 
+const Avida::PropertyTypeID Avida::PropertyTraits<bool>::Type = "bool";
 const Avida::PropertyTypeID Avida::PropertyTraits<int>::Type = "int";
 const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
 const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
+
+bool Avida::PropertyMap::operator==(const PropertyMap& p) const
+{
+  // @TODO
+  assert(false);
+  return false;
+}
+
+bool Avida::PropertyMap::Serialize(ArchivePtr ar) const
+{
+  // @TODO
+  assert(false);
+  return false;
+}

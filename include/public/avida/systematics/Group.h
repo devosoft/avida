@@ -70,7 +70,6 @@ namespace Avida {
       LIB_EXPORT virtual int Depth() const = 0;
       LIB_EXPORT virtual int NumUnits() const = 0;
       
-      LIB_EXPORT virtual ConstPropertyIDSetPtr PropertyIDs() const = 0;
       LIB_EXPORT virtual const PropertyMap& Properties() const = 0;
       
       LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const;
