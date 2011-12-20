@@ -51,8 +51,8 @@
 #include "cStringList.h"
 #include "tArray.h"
 #include "tList.h"
+#include "avida/systematics/Types.h"
 
-class cBioGroup;
 class cPopulation;
 class cWorld;
 
@@ -71,7 +71,7 @@ namespace Avida {
       
       // Constant Inforation setup by specific viewer.
       tArray<int> m_color_chart_id;
-      tArray<cBioGroup*> m_color_chart_ptr;
+      tArray<Systematics::GroupPtr> m_color_chart_ptr;
       int m_threshold_colors;
       int m_next_color;
     
@@ -91,7 +91,7 @@ namespace Avida {
       
       
     private:
-      MapColor* getMapColor(cBioGroup* bg);
+      MapColor* getMapColor(Systematics::GroupPtr bg);
     };
     
   };

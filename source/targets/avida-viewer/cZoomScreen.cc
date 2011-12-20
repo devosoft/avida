@@ -926,7 +926,7 @@ void cZoomScreen::UpdateGenotype(cAvidaContext& ctx)
   
   if (info.GetActiveGenotype() != NULL) {
     cBioGroup* genotype = info.GetActiveGenotype();
-    cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, genotype);
+    Systematics::GenomeTestMetrics* metrics = Systematics::GenomeTestMetrics::GetMetrics(ctx, genotype);
     Print(5, 12, "%9d", genotype->GetNumUnits());
     Print(6, 12, "%9d", Genome(genotype->GetProperty("genome").AsString()).GetSize());
     PrintDouble(7, 14, metrics->GetLinesCopied());

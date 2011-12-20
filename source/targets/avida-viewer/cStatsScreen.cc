@@ -10,7 +10,7 @@
 #include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
-#include "cGenomeTestMetrics.h"
+#include "avida/private/systematics/GenomeTestMetrics.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "tAutoRelease.h"
@@ -123,7 +123,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(10, 38, stats.GetEntropy());
   PrintDouble(12, 38, stats.GetSpeciesEntropy());
 
-  cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, best_gen);
+  Systematics::GenomeTestMetrics* metrics = Systematics::GenomeTestMetrics::GetMetrics(ctx, best_gen);
   PrintDouble(2, 62, metrics->GetFitness());
   PrintDouble(3, 62, metrics->GetMerit());
   PrintDouble(4, 62, metrics->GetGestationTime());

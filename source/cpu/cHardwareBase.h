@@ -24,6 +24,7 @@
 #define cHardwareBase_h
 
 #include "avida/core/InstructionSequence.h"
+#include "avida/systematics/Types.h"
 
 #include <cassert>
 #include <climits>
@@ -171,7 +172,7 @@ public:
   virtual bool ThreadSelect(const cCodeLabel& in_label) = 0;
   virtual void ThreadNext() = 0;
   virtual void ThreadPrev() = 0;
-  virtual cBioUnit* ThreadGetOwner() = 0;
+  virtual Systematics::UnitPtr ThreadGetOwner() = 0;
 
   virtual int GetNumThreads() const = 0;
   virtual int GetCurThread() const = 0;
@@ -183,7 +184,7 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  virtual bool ParasiteInfectHost(cBioUnit* bu) = 0;
+  virtual bool ParasiteInfectHost(Systematics::UnitPtr bu) = 0;
   
     
   // --------  Mutation  --------

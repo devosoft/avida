@@ -24,6 +24,7 @@
 #include <set>
 #include <vector>
 
+#include "avida/systematics/Types.h"
 #include "cDemeCellEvent.h"
 #include "cGermline.h"
 #include "cPhenotype.h"
@@ -35,7 +36,6 @@
 #include "cStringList.h"
 #include "cDoubleSum.h"
 
-class cBioGroup;
 class cResource;
 class cWorld;
 class cPopulationCell;
@@ -305,7 +305,7 @@ public:
 
   // --- Founder list management --- //
   void ClearFounders();
-  void AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype = NULL);
+  void AddFounder(Systematics::GroupPtr bg, cPhenotype * _in_phenotype = NULL);
   tArray<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
   tArray<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
   double GetAvgFounderGeneration() { return avg_founder_generation; }        
@@ -313,7 +313,7 @@ public:
   double GetGenerationsPerLifetime() { return generations_per_lifetime; }  
 
   // --- Germline management --- //
-  void ReplaceGermline(cBioGroup* bg);
+  void ReplaceGermline(Systematics::GroupPtr bg);
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }
 
   // --- Deme/Message/Movement predicates --- //

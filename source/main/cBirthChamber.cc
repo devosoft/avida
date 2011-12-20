@@ -206,7 +206,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const Genome& offspring, cOr
     }
   }
   
-  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  tArray<const tArray<Systematics::GroupPtr>*> pgrps(1);
   pgrps[0] = &parent.GetBioGroups();
   child_array[0]->SelfClassify(pgrps);
 
@@ -384,9 +384,9 @@ void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, Instructio
 }
 
 
-void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGroup*>* p0grps, const tArray<cBioGroup*>* p1grps)
+void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, const tArray<Systematics::GroupPtr>* p0grps, const tArray<Systematics::GroupPtr>* p1grps)
 {
-  tArray<const tArray<cBioGroup*>*> pgrps;
+  tArray<const tArray<Systematics::GroupPtr>*> pgrps;
   if (p0grps) pgrps.Push(p0grps);
   if (p1grps) pgrps.Push(p1grps);
   organism->SelfClassify(pgrps);
@@ -473,8 +473,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
 
   const int two_fold_cost = m_world->GetConfig().TWO_FOLD_COST_SEX.Get();
 
-  const tArray<cBioGroup*>* parent0_groups = &old_entry->groups;
-  const tArray<cBioGroup*>* parent1_groups = &parent->GetBioGroups();
+  const tArray<Systematics::GroupPtr>* parent0_groups = &old_entry->groups;
+  const tArray<Systematics::GroupPtr>* parent1_groups = &parent->GetBioGroups();
   
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);

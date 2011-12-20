@@ -23,7 +23,6 @@
 #include "cPopulationCell.h"
 
 #include "avida/core/Feedback.h"
-
 #include "cDoubleSum.h"
 #include "nHardware.h"
 #include "cOrganism.h"
@@ -362,11 +361,11 @@ unsigned int cPopulationCell::CountGenomeFragments() const {
 
 /*! Remove and return a random genome fragment.
  */
-Sequence cPopulationCell::PopGenomeFragment() {
+InstructionSequence cPopulationCell::PopGenomeFragment() {
 	assert(m_hgt!=0);
 	fragment_list_type::iterator i = m_hgt->fragments.begin();
 	std::advance(i, m_world->GetRandom().GetUInt(0, m_hgt->fragments.size()));	
-	Sequence tmp = *i;
+	InstructionSequence tmp = *i;
 	m_hgt->fragments.erase(i);
 	return tmp;
 }

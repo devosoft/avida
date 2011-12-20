@@ -12,7 +12,6 @@
 #include "cScreen.h"
 #endif
 
-class cBioGroup;
 class cWorld;
 
 #define HIST_GENOTYPE  0
@@ -28,7 +27,7 @@ protected:
   cWorld* m_world;
   int mode;
 
-  void PrintGenotype(cBioGroup* in_gen, int in_pos, int max_stars, int star_size);
+  void PrintGenotype(Systematics::GroupPtr in_gen, int in_pos, int max_stars, int star_size);
 public:
   cHistScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info)
   : cScreen(y_size, x_size, y_start, x_start, in_info), m_world(world), mode(HIST_GENOTYPE) { ; }

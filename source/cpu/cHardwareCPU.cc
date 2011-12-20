@@ -26,7 +26,6 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
@@ -4259,7 +4258,7 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
-    cBioGroup* bg = m_organism->GetBioGroup("genotype");
+    Systematics::GroupPtr bg = m_organism->GetBioGroup("genotype");
     if (!bg) return false;
     cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
     if (!sa) {
@@ -4270,7 +4269,7 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
     while (neighbor_id < max_id) {
       neighbor = m_organism->GetNeighbor();
       if (neighbor != NULL) {
-        cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+        Systematics::GroupPtr nbg = neighbor->GetBioGroup("genotype");
         assert(nbg);
         if (sa->GetPhyloDistance(nbg) <= max_dist) {
           found = true;

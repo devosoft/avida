@@ -26,7 +26,7 @@
 #include "avida/core/Genome.h"
 
 #include "cCPUMemory.h"
-#include "cGenomeTestMetrics.h"
+#include "avida/private/systematics/GenomeTestMetrics.h"
 #include "cMutationRates.h"
 #include "cPhenotype.h"
 #include "cOrgInterface.h"
@@ -68,7 +68,7 @@ private:
   eBioUnitSource m_src;
   cString m_src_args;
   const Genome m_initial_genome;         // Initial genome; can never be changed!
-  tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
+  tArray<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
   int m_id;                               // unique id for each org, is just the number it was born
@@ -306,10 +306,10 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(cBioUnit* parent, const cString& label, const InstructionSequence& genome);
-  bool ParasiteInfectHost(cBioUnit* parasite);
+  bool InjectParasite(Systematics::UnitPtr parent, const cString& label, const InstructionSequence& genome);
+  bool ParasiteInfectHost(Systematics::UnitPtr parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
-  const tArray<cBioUnit*>& GetParasites() const { return m_parasites; }
+  const tArray<Systematics::UnitPtr>& GetParasites() const { return m_parasites; }
   void ClearParasites();
 
   // --------  Mutation Rate Convenience Methods  --------
@@ -674,15 +674,15 @@ private:
 
 
 inline double cOrganism::GetTestFitness(cAvidaContext& ctx) const {
-  return cGenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetFitness();
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetFitness();
 }
 
 inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
-  return cGenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetMerit();
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetMerit();
 }
 
 inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
-  return cGenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetColonyFitness();
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetColonyFitness();
 }
 
 

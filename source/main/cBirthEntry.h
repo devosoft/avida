@@ -23,6 +23,7 @@
 #define cBirthEntry_h
 
 #include "avida/core/Genome.h"
+#include "avida/systematics/Types.h"
 
 #ifndef cMerit_h
 #include "cMerit.h"
@@ -34,7 +35,6 @@ class cBioGroup;
 
 using namespace Avida;
 
-
 class cBirthEntry
 {
 public:
@@ -42,7 +42,7 @@ public:
   double energy4Offspring;
   cMerit merit;
   int timestamp; // -1 if empty
-  tArray<cBioGroup*> groups;
+  tArray<Systematics::GroupPtr> groups;
   
   inline cBirthEntry() : timestamp(-1) { ; }
 };

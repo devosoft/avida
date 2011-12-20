@@ -24,7 +24,6 @@
 
 #include "avida/viewer-core/Map.h"
 
-#include "cBioGroup.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -262,7 +261,7 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       m_color_grid[i] = -4;
       m_color_count[0]++;
     } else {
-      cBioGroup* bg = org->GetBioGroup("genotype");
+      Systematics::GroupPtr bg = org->GetBioGroup("genotype");
       Avida::CoreView::ClassificationInfo::MapColor* mapcolor = bg->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;

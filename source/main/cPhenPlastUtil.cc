@@ -26,7 +26,7 @@
 #include "cPhenPlastSummary.h"
 
 
-int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, cBioGroup* bg)
+int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
   cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
@@ -39,7 +39,7 @@ int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, cBioGrou
   return ps->m_num_phenotypes;
 }
 
-double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, cBioGroup* bg)
+double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
   cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
@@ -52,7 +52,7 @@ double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, c
   return ps->m_phenotypic_entropy;
 }
 
-double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBioGroup* bg, int task_id)
+double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg, int task_id)
 {
   cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
@@ -65,7 +65,7 @@ double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBi
   return ps->m_task_probabilities[task_id];
 }
 
-const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, cBioGroup* bg)
+const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
   cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {

@@ -161,7 +161,7 @@ public:
 	//! Retrieve the number of genome fragments currently found in this cell.
 	unsigned int CountGenomeFragments() const;
 	//! Remove and return the front genome fragment.
-	Sequence PopGenomeFragment();
+	InstructionSequence PopGenomeFragment();
 	//! Retrieve the list of fragments from this cell.
 	fragment_list_type& GetFragments();
 	//! Clear all fragments from this cell, adjust resources as required.

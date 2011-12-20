@@ -334,7 +334,7 @@ void cHardwareGX::internalReset()
   {
  
     // And add any programids specified by the "genome."
-    Sequence genome = m_organism->GetGenome().GetSequence();
+    InstructionSequence genome = m_organism->GetGenome().GetSequence();
     
     // These specify the range of instructions that will be used to create a new
     // programid.  The range of instructions used to create a programid is:
@@ -550,7 +550,6 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructio
 void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
-  bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
   if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
@@ -660,7 +659,7 @@ cHeadCPU cHardwareGX::FindLabel(int direction)
 // to find search label's match inside another label.
 
 int cHardwareGX::FindLabel_Forward(const cCodeLabel & search_label,
-                                    const Sequence & search_genome, int pos)
+                                    const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
   
@@ -742,7 +741,7 @@ int cHardwareGX::FindLabel_Forward(const cCodeLabel & search_label,
 // to find search label's match inside another label.
 
 int cHardwareGX::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const Sequence & search_genome, int pos)
+                                     const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
   
@@ -2055,7 +2054,6 @@ bool cHardwareGX::Inst_TaskStackLoad(cAvidaContext& ctx)
 bool cHardwareGX::Inst_TaskPut(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  const int value = GetRegister(reg_used);
   GetRegister(reg_used) = 0;
   m_organism->DoOutput(ctx, value);
   return true;
@@ -2075,7 +2073,6 @@ bool cHardwareGX::Inst_TaskIO(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
   
   // Do the "put" component
-  const int value_out = GetRegister(reg_used);
   m_organism->DoOutput(ctx, m_current->m_input_buf, m_current->m_output_buf, value_out);  // Check for tasks completed.
   
   // Do the "get" component
@@ -2100,7 +2097,6 @@ bool cHardwareGX::Inst_TaskIO_Feedback(cAvidaContext& ctx)
   double preOutputBonus = m_organism->GetPhenotype().GetCurBonus();
   
   // Do the "put" component
-  const int value_out = GetRegister(reg_used);
   m_organism->DoOutput(ctx, m_current->m_input_buf, m_current->m_output_buf, value_out);  // Check for tasks completed.
   
   //check cur_merit after the output
@@ -2134,23 +2130,6 @@ bool cHardwareGX::Inst_MatchStrings(cAvidaContext& ctx)
 		return false;
 	m_organism->DoOutput(ctx, 357913941);
 	m_executedmatchstrings = true;
-	return true;
-}
-
-bool cHardwareGX::Inst_Sell(cAvidaContext& ctx)
-{
-	int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
-	int send_value = GetRegister(REG_BX);
-	int sell_price = m_world->GetConfig().SELL_PRICE.Get();
-	m_organism->SellValue(send_value, search_label, sell_price);
-	return true;
-}
-
-bool cHardwareGX::Inst_Buy(cAvidaContext& ctx)
-{
-	int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
-	int buy_price = m_world->GetConfig().BUY_PRICE.Get();
-	GetRegister(REG_BX) = m_organism->BuyValue(search_label, buy_price);
 	return true;
 }
 
@@ -2358,7 +2337,7 @@ bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       int edit_dist = max_dist + 1;
       if (neighbor != NULL) {
-        edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+        edit_dist = InstructionSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
                                                   neighbor->GetGenome().GetSequence());
       }
       if (edit_dist <= max_dist) {
@@ -2417,7 +2396,7 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 
       //if neighbor exists, do they have the green beard gene?
       if (neighbor != NULL) {
-          const Sequence & neighbor_genome = neighbor->GetGenome().GetSequence();
+          const InstructionSequence & neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -2564,7 +2543,7 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate >= threshhold,
       if (neighbor != NULL && neighbor->GetPhenotype().GetNumThreshGbDonationsLast()>= m_world->GetConfig().MIN_GB_DONATE_THRESHOLD.Get() ) {
-          const Sequence & neighbor_genome = neighbor->GetGenome().GetSequence();
+          const InstructionSequence & neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -2658,7 +2637,7 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
       if (neighbor != NULL &&
 	  neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() >= quanta_donate_thresh) {
 
-          const Sequence & neighbor_genome = neighbor->GetGenome().GetSequence();
+          const InstructionSequence & neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -3081,7 +3060,7 @@ bool cHardwareGX::Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bi
   }
   
   // Create the new programid and add it to the list
-  Sequence new_genome(1);
+  InstructionSequence new_genome(1);
   programid_ptr new_programid = new cProgramid(new_genome, this);
   new_programid->m_executable = executable;
   new_programid->m_bindable = bindable;
@@ -3569,7 +3548,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
     return false;
   }
   
-  Sequence new_genome(allocated_size);
+  InstructionSequence new_genome(allocated_size);
   programid_ptr new_programid = new cProgramid(new_genome, this);
   new_programid->SetBindable(true);
   new_programid->SetReadable(true);
@@ -3882,7 +3861,7 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
     m_promoter_states[m_promoter_update_head.GetPosition()] -= 1.0;
     
     // Create new programid
-    Sequence new_genome(m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
+    InstructionSequence new_genome(m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
     programid_ptr new_programid = new cProgramid(new_genome, this);
     new_programid->SetExecutable(true);
     AddProgramid(new_programid);

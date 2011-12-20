@@ -199,7 +199,7 @@ void cMapScreen::PlaceCursor(cAvidaContext& ctx)
   int y_offset = (info.GetActiveID() / x_size) - (corner_id / x_size);
   if (y_offset < 0) y_offset += y_size;
 
-  cBioGroup* cpu_gen = info.GetActiveGenotype();
+  Systematics::GroupPtr cpu_gen = info.GetActiveGenotype();
 
   if (!cpu_gen) {
     Print(Height() - 1, 33,

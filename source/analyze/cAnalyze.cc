@@ -816,7 +816,7 @@ void cAnalyze::LoadFile(cString cur_string)
   
   // Setup the genome...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-  Genome default_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(1));
+  Genome default_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(1));
   int load_count = 0;
   
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
@@ -4811,7 +4811,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << "<tr><th colspan=3>Base Creature";
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome null_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(1));
+      Genome null_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(1));
       cAnalyzeGenotype null_genotype(m_world, null_genome);
       while ((data_command = output_it.Next()) != NULL) {
         const cFlexVar cur_value = data_command->GetValue(genotype);
@@ -6794,7 +6794,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       
       // Determine the fitness of the current sequence...
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome test_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(test_sequence));
+      Genome test_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(test_sequence));
       cCPUTestInfo test_info;
       testcpu->TestGenome(m_ctx, test_info, test_genome);
       const double fitness = test_info.GetGenotypeFitness();
@@ -6821,7 +6821,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     
     for (int i = 0; i <= total_diffs; i++) {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome max_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(max_sequence[i]));
+      Genome max_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(max_sequence[i]));
       cAnalyzeGenotype max_genotype(m_world, max_genome);
       max_genotype.Recalculate(m_ctx);
       fp << i                                         << " "  //  1
@@ -8276,7 +8276,7 @@ void cAnalyze::MutationRevert(cString cur_string)
 					}
 					
           const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-          Genome rev_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(reverted));
+          Genome rev_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(reverted));
 					cAnalyzeGenotype new_genotype(m_world, rev_genome);  //Get likely fitness
 					new_genotype.Recalculate(m_ctx, &test_info, NULL, 50);
 					

@@ -9,8 +9,6 @@
 
 #include <fstream>
 
-#include "cBioGroup.h"
-#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cViewInfo.h"
 #include "cWorld.h"
@@ -20,7 +18,7 @@
 using namespace std;
 
 
-void cHistScreen::PrintGenotype(cBioGroup* in_gen, int in_pos, int max_stars, int star_size)
+void cHistScreen::PrintGenotype(Systematics::GroupPtr in_gen, int in_pos, int max_stars, int star_size)
 {
   SetBoldColor(COLOR_CYAN);
   PrintDouble(in_pos, 0, in_gen->GetProperty("fitness").AsDouble());
@@ -109,8 +107,8 @@ void cHistScreen::Update(cAvidaContext& ctx)
   
   switch(mode) {
     case HIST_GENOTYPE:
-      tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-      cBioGroup* bg = it->Next();
+      tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      Systematics::GroupPtr bg = it->Next();
       if (bg) max_num = bg->GetNumUnits();
       star_size = (max_num / max_stars);
       if (max_num % max_stars) star_size++;

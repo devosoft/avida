@@ -21,6 +21,7 @@
  */
 
 #include "cPhenotype.h"
+#include "avida/systematics/Types.h"
 #include "cContextPhenotype.h"
 #include "cEnvironment.h"
 #include "cDeme.h"

@@ -31,6 +31,8 @@
 #ifndef cOrgInterface_h
 #define cOrgInterface_h
 
+#include "avida/systematics/Types.h"
+
 namespace Avida {
   class Genome;
   class InstructionSequence;
@@ -117,9 +119,7 @@ public:
   virtual cOrgSinkMessage* NetReceive() = 0;
   virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;
   virtual int ReceiveValue() = 0;
-  virtual void SellValue(const int data, const int label, const int sell_price, const int org_id) = 0;
-  virtual int BuyValue(const int label, const int buy_price) = 0;
-  virtual bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code) = 0;
+  virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;

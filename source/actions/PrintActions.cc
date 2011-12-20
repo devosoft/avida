@@ -22,15 +22,13 @@
 #include "PrintActions.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
-#include "cBioGroup.h"
-#include "cBioGroupManager.h"
 #include "cBGGenotype.h"
 #include "tArrayUtils.h"
 #include "cCPUTestInfo.h"
@@ -367,11 +365,11 @@ public:
 
     // Loop through all genotypes getting min and max values
     cClassificationManager& classmgr = m_world->GetClassificationManager();
-    tAutoRelease<tIterator<cBioGroup> > it;
+    tAutoRelease<tIterator<Systematics::Group> > it;
 
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       if (bg->GetDepth() < min) min = bg->GetDepth();
       if (bg->GetDepth() > max) max = bg->GetDepth();
     }
@@ -420,11 +418,11 @@ public:
     
     // Loop through all genotypes getting min and max values
     cClassificationManager& classmgr = m_world->GetClassificationManager();
-    tAutoRelease<tIterator<cBioGroup> > it;
+    tAutoRelease<tIterator<Systematics::Group> > it;
     
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
       {
         if (bg->GetDepth() < min) min = bg->GetDepth();
@@ -444,7 +442,7 @@ public:
     // Loop through all genotypes binning the values
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
       {
         n[bg->GetDepth() - min] += bg->GetNumUnits();
@@ -484,11 +482,11 @@ public:
     
     // Loop through all genotypes getting min and max values
     cClassificationManager& classmgr = m_world->GetClassificationManager();
-    tAutoRelease<tIterator<cBioGroup> > it;
+    tAutoRelease<tIterator<Systematics::Group> > it;
     
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
       {
         if (bg->GetDepth() < min) min = bg->GetDepth();
@@ -505,7 +503,7 @@ public:
     // Loop through all genotypes binning the values
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
       {
         n[bg->GetDepth() - min] += bg->GetNumUnits();
@@ -559,7 +557,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     // Allocate array for the histogram & zero it
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     tArray<int> hist(it->Next()->GetNumUnits());
     hist.SetAll(0);
 
@@ -710,8 +708,8 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    cBioGroup* bg = it->Next();
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::GroupPtr bg = it->Next();
     if (bg) {
       cString filename(m_filename);
       if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
@@ -738,7 +736,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     int num_groups = 0;
     map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();    
     map <int,int>::iterator itr;    
@@ -748,7 +746,7 @@ public:
     }
     
     tSmartArray<int> birth_groups_checked;
-    cBioGroup* bg = it->Next();
+    Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_groups; i++) {
       bool already_used = false;
@@ -803,7 +801,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     int num_fts = 1;
     if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) num_fts = 2;
     else num_fts = 1;  // account for -1's
@@ -812,7 +810,7 @@ public:
     for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
 
     tSmartArray<int> birth_forage_types_checked;
-    cBioGroup* bg = it->Next();
+    Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_fts; i++) {
       bool already_used = false;
@@ -925,7 +923,7 @@ public:
     double fave = 0;
     double fave_testCPU = 0;
     double max_fitness = -1; // we set this to -1, so that even 0 is larger...
-    cBioGroup* max_f_genotype = NULL;
+    Systematics::GroupPtr max_f_genotype = NULL;
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
@@ -933,7 +931,7 @@ public:
       if (pop.GetCell(i).IsOccupied() == false) continue;  // One use organisms.
 
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cBioGroup* genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
 
       cCPUTestInfo test_info;
       testcpu->TestGenome(ctx, test_info, Genome(genotype->GetProperty("genome").AsString()));
@@ -1184,7 +1182,7 @@ public:
 
   //This function may get called by outside classes to generate a histogram of log10 fitnesses;
   //max may be updated by this function if the range is not evenly divisible by the step
-  static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cBioGroup*>& gens,
+  static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<Systematics::GroupPtr>& gens,
                                    double min, double step, double& max, const cString& mode, cWorld* world,
                                    cAvidaContext& ctx)
   {
@@ -1201,7 +1199,7 @@ public:
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
-    tArray<cBioGroup*>::const_iterator git;
+    tArray<Systematics::GroupPtr>::const_iterator git;
     tArray<cOrganism*>::const_iterator oit;
     for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
       cCPUTestInfo test_info;
@@ -1268,13 +1266,13 @@ public:
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
     tArray<cOrganism*> orgs;
-    tArray<cBioGroup*> gens;
+    tArray<Systematics::GroupPtr> gens;
 
     for (int i = 0; i < pop.GetSize(); i++)
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cBioGroup* genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
       orgs.Push(organism);
       gens.Push(genotype);
     }
@@ -1363,7 +1361,7 @@ public:
     return retval;
   }
 
-  static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cBioGroup*>& gens,
+  static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<Systematics::GroupPtr>& gens,
                                    double min, double step, double& max, const cString& mode, cWorld* world,
                                    cAvidaContext& ctx)
   {
@@ -1380,7 +1378,7 @@ public:
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
-    tArray<cBioGroup*>::const_iterator git;
+    tArray<Systematics::GroupPtr>::const_iterator git;
     tArray<cOrganism*>::const_iterator oit;
     for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
       cCPUTestInfo test_info;
@@ -1389,7 +1387,7 @@ public:
       if ((*git)->GetProperty("parents") != "") {
         cStringList parents((*git)->GetProperty("parents").AsString(), ',');
 
-        cBioGroup* pbg = world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(parents.Pop().AsInt());
+        Systematics::GroupPtr pbg = world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(parents.Pop().AsInt());
         parent_fitness = pbg->GetProperty("fitness").AsDouble();
       }
 
@@ -1451,13 +1449,13 @@ public:
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
     tArray<cOrganism*> orgs;
-    tArray<cBioGroup*> gens;
+    tArray<Systematics::GroupPtr> gens;
 
     for (int i = 0; i < pop.GetSize(); i++)
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cBioGroup* genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
       orgs.Push(organism);
       gens.Push(genotype);
     }
@@ -1547,21 +1545,21 @@ public:
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
-    map< int, tArray<cBioGroup*> > gen_map;  //Map of ccladeID to array of genotype IDs
+    map< int, tArray<Systematics::GroupPtr> > gen_map;  //Map of ccladeID to array of genotype IDs
 
     //Collect clade information
     for (int i = 0; i < pop.GetSize(); i++){
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cBioGroup* genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
       int cladeID = organism->GetCCladeLabel();
 
       map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
-      map< int, tArray<cBioGroup*> >::iterator git = gen_map.find(cladeID);
+      map< int, tArray<Systematics::GroupPtr> >::iterator git = gen_map.find(cladeID);
       if (oit == org_map.end()) {
         //The clade is new
         org_map[cladeID] = tArray<cOrganism*>(1, organism);
-        gen_map[cladeID] = tArray<cBioGroup*>(1, genotype);
+        gen_map[cladeID] = tArray<Systematics::GroupPtr>(1, genotype);
       } else {
         //The clade is known
         oit->second.Push(organism);
@@ -1576,7 +1574,7 @@ public:
       ctx.Driver().Abort(Avida::IO_ERROR);
     }
     map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
-    map< int, tArray<cBioGroup*> >::iterator git = gen_map.begin();
+    map< int, tArray<Systematics::GroupPtr> >::iterator git = gen_map.begin();
     for (; oit != org_map.end(); oit++, git++) {
       tArray<int> hist =
       cActionPrintLogFitnessHistogram::MakeHistogram((oit->second), (git->second), m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx );
@@ -1675,21 +1673,21 @@ public:
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
-    map< int, tArray<cBioGroup*> > gen_map;  //Map of ccladeID to array of genotype IDs
+    map< int, tArray<Systematics::GroupPtr> > gen_map;  //Map of ccladeID to array of genotype IDs
 
     //Collect clade information
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cBioGroup* genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
       int cladeID = organism->GetCCladeLabel();
 
       map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
-      map< int, tArray<cBioGroup*> >::iterator git = gen_map.find(cladeID);
+      map< int, tArray<Systematics::GroupPtr> >::iterator git = gen_map.find(cladeID);
       if (oit == org_map.end()) {
         // The clade is new
         org_map[cladeID] = tArray<cOrganism*>(1, organism);
-        gen_map[cladeID] = tArray<cBioGroup*>(1, genotype);
+        gen_map[cladeID] = tArray<Systematics::GroupPtr>(1, genotype);
       } else {
         // The clade is known
         oit->second.Push(organism);
@@ -1704,7 +1702,7 @@ public:
       ctx.Driver().Abort(Avida::IO_ERROR);      
     }
     map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
-    map< int, tArray<cBioGroup*> >::iterator git = gen_map.begin();
+    map< int, tArray<Systematics::GroupPtr> >::iterator git = gen_map.begin();
     for (; oit != org_map.end(); oit++, git++) {
       tArray<int> hist = cActionPrintRelativeFitnessHistogram::MakeHistogram( (oit->second), (git->second),
                                                                              m_hist_fmin, m_hist_fstep, m_hist_fmax,
@@ -1727,10 +1725,6 @@ public:
 
   }
 };
-
-
-
-
 
 
 /*
@@ -1946,10 +1940,10 @@ public:
       ofstream& fot = m_world->GetDataFileOFStream(this_path);
       PrintHeader(fot);
 
-      tAutoRelease<tIterator<cBioGroup> > it;
+      tAutoRelease<tIterator<Systematics::Group> > it;
       it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
       while (it->Next()) {
-        cBioGroup* bg = it->Get();
+        Systematics::GroupPtr bg = it->Get();
         tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(Genome(bg->GetProperty("genome").AsString()), m_num_trials, test_info, m_world, ctx));
         PrintPPG(fot, ppgen, bg->GetID(), bg->GetProperty("parents").AsString());
       }
@@ -2025,11 +2019,11 @@ public:
       }
     }
     else {  // E X P E R I M E N T    M O D E  (See above for explination)
-      tAutoRelease<tIterator<cBioGroup> > it;
+      tAutoRelease<tIterator<Systematics::Group> > it;
 
       it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
       while (it->Next()) {
-        cBioGroup* bg = it->Get();
+        Systematics::GroupPtr bg = it->Get();
 
         int weight = (m_weighted) ? bg->GetNumUnits() : 1;
         tArray<double> task_prob = cPhenPlastUtil::GetTaskProbabilities(ctx, m_world, bg);
@@ -2146,12 +2140,12 @@ public:
       } // End looping through genotypes
     }
     else {  // E X P E R I M E N T    M O D E    (See above for explination)
-      tAutoRelease<tIterator<cBioGroup> > it;
+      tAutoRelease<tIterator<Systematics::Group> > it;
       it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
       pp_entropy.ResizeClear(num_genotypes);
       pp_taskentropy.ResizeClear(num_genotypes);
       while (it->Next()) {
-        cBioGroup* bg = it->Get();
+        Systematics::GroupPtr bg = it->Get();
         int num = bg->GetNumUnits();
         num_orgs += num;
         if (cPhenPlastUtil::GetNumPhenotypes(ctx, m_world, bg) > 1) {
@@ -2244,7 +2238,7 @@ public:
 
     // get the info for the dominant genotype
 
-    tAutoRelease<tIterator<cBioGroup> > it;
+    tAutoRelease<tIterator<Systematics::Group> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     it->Next();
     Sequence best_genome = Genome(it->Get()->GetProperty("genome").AsString()).GetSequence();
@@ -2348,10 +2342,10 @@ public:
     }
 
     // cycle over all genotypes
-    tAutoRelease<tIterator<cBioGroup> > it;
+    tAutoRelease<tIterator<Systematics::Group> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     while ((it->Next())) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int num_orgs = bg->GetNumUnits();
 
@@ -2397,8 +2391,8 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname='dom-test.dat']"; }
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    cBioGroup* bg = it->Next();
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::GroupPtr bg = it->Next();
     Genome genome(bg->GetProperty("genome").AsString());
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
@@ -2620,10 +2614,10 @@ public:
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) inst_hist[i].Resize(num_inst,-1);
 
     // Loop through all of the genotypes adding them to the histograms.
-    tAutoRelease<tIterator<cBioGroup> > it;
+    tAutoRelease<tIterator<Systematics::Group> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     while ((it->Next())) {
-      cBioGroup* bg = it->Get();
+      Systematics::GroupPtr bg = it->Get();
       const int num_organisms = bg->GetNumUnits();
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int length = genome.GetSize();
@@ -3050,7 +3044,7 @@ public:
     }
 
     // Add new entries where possible
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     for (int i = 0; (it->Next()) && i < m_threshold; i++) {
       if (!isInChart(it->Get()->GetID())) {
         // Add to the genotype chart
@@ -3070,7 +3064,7 @@ public:
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        cBioGroup* bg = (cell.IsOccupied()) ? cell.GetOrganism()->GetBioGroup("genotype") : NULL;
+        Systematics::GroupPtr bg = (cell.IsOccupied()) ? cell.GetOrganism()->GetBioGroup("genotype") : NULL;
         if (bg) {
           int color = 0;
           for (; color < m_num_colors; color++) if (m_genotype_chart[color] == bg->GetID()) break;
@@ -3088,7 +3082,7 @@ public:
 private:
   int FindPos(int gid)
   {
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     int i = 0;
     while ((it->Next()) && i < m_num_colors) {
       if (gid == it->Get()->GetID()) return i;

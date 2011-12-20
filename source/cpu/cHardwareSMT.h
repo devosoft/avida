@@ -73,7 +73,7 @@ protected:
     
     // If this thread was spawned by Inject, this will point to the biounit of the parasite running the thread.
     // Otherwise, it will be NULL.
-    cBioUnit* owner;
+    Systematics::UnitPtr owner;
     
     cLocalThread(cHardwareBase* hw = NULL) { Reset(hw); }
     ~cLocalThread() { ; }
@@ -235,7 +235,7 @@ public:
   inline bool ThreadSelect(const cCodeLabel& in_label);
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
-  cBioUnit* ThreadGetOwner();
+  Systematics::UnitPtr ThreadGetOwner();
 
   int GetNumThreads() const { return m_threads.GetSize(); }
   int GetCurThread() const { return m_cur_thread; }
@@ -246,7 +246,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return -1; }
   
   // --------  Parasite Stuff  --------
-  bool ParasiteInfectHost(cBioUnit* bu);
+  bool ParasiteInfectHost(Systematics::UnitPtr bu);
 	
   
 private:

@@ -29,6 +29,7 @@
 #ifndef tArrayMap_h
 #include "tArrayMap.h"
 #endif
+#include "avida/systematics/Types.h"
 
 /**
  * All genome-based organisms must go through the birth chamber, which will
@@ -95,7 +96,7 @@ private:
   void DoModularShuffleRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1,
                                      double& merit0, double& merit1);
   
-  void SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGroup*>* p0grps, const tArray<cBioGroup*>* p1grps = NULL);
+  void SetupGenotypeInfo(cOrganism* organism, const tArray<Systematics::GroupPtr>* p0grps, const tArray<Systematics::GroupPtr>* p1grps = NULL);
 };
 
 

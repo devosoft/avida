@@ -24,7 +24,7 @@
 #include "AvidaTools.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
@@ -44,8 +44,6 @@
 #include "cArgSchema.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
-#include "cBioGroup.h"
-#include "cBioGroupManager.h"
 
 #include <map>
 #include <set>
@@ -5123,9 +5121,9 @@ public:
     // this will allow genotypes to wait until the next event (which will overwrite the array contents)
     // only tracing for orgs within threshold (unless none are, then just use first bg)
     
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    cBioGroup* bg = it->Next();
-    tSmartArray<cBioGroup*> bg_list;
+    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::GroupPtr bg = it->Next();
+    tSmartArray<Systematics::GroupPtr> bg_list;
     tSmartArray<int> fts_to_use;
     tSmartArray<int> groups_to_use;
     int num_doms = 0;

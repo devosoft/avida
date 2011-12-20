@@ -129,16 +129,6 @@ int cTestCPUInterface::ReceiveValue()
   return m_testcpu->GetReceiveValue();
 }
 
-void cTestCPUInterface::SellValue(const int data, const int label, const int sell_price, const int org_id)
-{
-
-}
-
-int cTestCPUInterface::BuyValue(const int label, const int buy_price)
-{
-	return m_testcpu->GetReceiveValue();
-}
-
 bool cTestCPUInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   return false;

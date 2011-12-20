@@ -20,8 +20,6 @@
 
 #include "cDeme.h"
 
-#include "cBioGroup.h"
-#include "cBioGroupManager.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -789,7 +787,7 @@ double cDeme::CalculateTotalInitialEnergyResources() const
 
 // --- Founder list management --- //
 
-void cDeme::AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype)
+void cDeme::AddFounder(Systematics::GroupPtr bg, cPhenotype * _in_phenotype)
 {
   // save genotype id
   m_founder_genotype_ids.Push( bg->GetID() );
@@ -805,7 +803,7 @@ void cDeme::ClearFounders()
   // check for unused genotypes, now that we're done with these
   for (int i=0; i<m_founder_genotype_ids.GetSize(); i++) {
     
-    cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(m_founder_genotype_ids[i]);
+    Systematics::GroupPtr bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(m_founder_genotype_ids[i]);
     assert(bg);
     bg->RemovePassiveReference();
   }
@@ -815,7 +813,7 @@ void cDeme::ClearFounders()
   m_founder_phenotypes.ResizeClear(0);
 }
 
-void cDeme::ReplaceGermline(cBioGroup* bg)
+void cDeme::ReplaceGermline(Systematics::GroupPtr bg)
 {
   // same genotype, no changes
   if (m_germline_genotype_id == bg->GetID()) return;
@@ -827,7 +825,7 @@ void cDeme::ReplaceGermline(cBioGroup* bg)
 
   
   // next, if we previously were saving a germline genotype, free it
-  cBioGroup* pbg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(prev_germline_genotype_id);
+  Systematics::GroupPtr pbg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(prev_germline_genotype_id);
   if (pbg) pbg->RemovePassiveReference();
 }
 

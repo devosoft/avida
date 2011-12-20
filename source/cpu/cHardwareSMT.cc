@@ -20,6 +20,7 @@
  */
 
 #include "cHardwareSMT.h"
+#include "avida/systematics/Unit.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
@@ -183,7 +184,7 @@ void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space
   owner = NULL;  
 }
 
-cBioUnit* cHardwareSMT::ThreadGetOwner()
+Systematics::UnitPtr cHardwareSMT::ThreadGetOwner()
 {
   return (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
 }
@@ -719,7 +720,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
     return false; // (inject fails)
   }
   if (end_pos < MIN_INJECT_SIZE) {
-    m_mem_array[mem_space_used] = Sequence("a"); 
+    m_mem_array[mem_space_used] = InstructionSequence("a"); 
     m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }  
@@ -731,7 +732,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
 	
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) {
-    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
+    Systematics::UnitPtr parent = (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
     inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
   }
 	

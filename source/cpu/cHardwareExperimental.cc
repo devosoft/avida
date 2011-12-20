@@ -26,7 +26,6 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
@@ -3844,7 +3843,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   
   bool is_kin = false;
   
-  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  Systematics::GroupPtr bg = m_organism->GetBioGroup("genotype");
   if (!bg) return false;
   cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
   if (!sa) {
@@ -3852,7 +3851,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
     bg->AttachData(sa);
   }
   
-  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  Systematics::GroupPtr nbg = neighbor->GetBioGroup("genotype");
   assert(nbg);
   if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
   

@@ -375,17 +375,6 @@ int cPopulationInterface::ReceiveValue()
   return 0;
 }
 
-void cPopulationInterface::SellValue(const int data, const int label, const int sell_price, const int org_id)
-{
-	m_world->GetPopulation().AddSellValue(data, label, sell_price, org_id, m_cell_id);
-}
-
-int cPopulationInterface::BuyValue(const int label, const int buy_price)
-{
-	int value = m_world->GetPopulation().BuyValue(label, buy_price, m_cell_id);
-	return value;
-}
-
 bool cPopulationInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(parent != NULL);
@@ -969,19 +958,24 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 	}
 	
 	// now, for each fragment being HGT'd, figure out where to put it:
+  InstructionSequencePtr offspring_seq_p;
+  GeneticRepresentationPtr offspring_rep_p = offspring.Representation();
+  offspring_seq_p.DynamicCastFrom(offspring_rep_p);
+  InstructionSequence& offspring_seq = *offspring_seq_p;
+  
 	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
 		cGenomeUtil::substring_match location;
 		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
 			case 0: { // match placement
-				HGTMatchPlacement(ctx, offspring.GetSequence(), i, location);
+				HGTMatchPlacement(ctx, offspring_seq, i, location);
 				break;
 			}
 			case 1: { // match placement with redundant instruction trimming
-				HGTTrimmedPlacement(ctx, offspring.GetSequence(), i, location);
+				HGTTrimmedPlacement(ctx, offspring_seq, i, location);
 				break;
 			}
 			case 2: { // random placement
-				HGTRandomPlacement(ctx, offspring.GetSequence(), i, location);
+				HGTRandomPlacement(ctx, offspring_seq, i, location);
 				break;
 			}
 			default: { // error
@@ -1003,7 +997,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				break;
 			}
 			case 2: { // replace the instructions in the fragment with random instructions.
-				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(offspring.GetInstSet());
+				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(cString((const char*)offspring.Properties().GetWithDefault("instset",Property("instset","")).Value()));
 				for(int j=0; j<i->GetSize(); ++j) {
 					(*i)[j] = instset.GetRandomInst(ctx);
 				}
@@ -1020,11 +1014,11 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 		// be extended in the same way as fragment selection if need be.
 		if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
 			// insert the fragment just after the final location:
-			offspring.GetSequence().Insert(location.end, *i);
+			offspring_seq.Insert(location.end, *i);
 		} else {
 			// replacement: replace [begin,end) instructions in the genome with the fragment,
 			// respecting circularity.
-			offspring.GetSequence().Replace(*i, location.begin, location.end);
+			offspring_seq.Replace(*i, location.begin, location.end);
 		}
 		
 		// stats tracking:
@@ -1060,7 +1054,7 @@ void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const Instruc
 																											 fragment_list_type::iterator& selected,
 																											 substring_match& location) {
 	// copy the selected fragment, trimming redundant instructions at the end:
-	Sequence trimmed(*selected);
+	InstructionSequence trimmed(*selected);
 	while((trimmed.GetSize() >= 2) && (trimmed[trimmed.GetSize()-1] == trimmed[trimmed.GetSize()-2])) {
 		trimmed.Remove(trimmed.GetSize()-1);
 	}

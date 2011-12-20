@@ -77,7 +77,7 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-  tSmartArray<cBioGroup*> minitrace_queue;
+  tSmartArray<Systematics::GroupPtr> minitrace_queue;
   bool print_mini_trace_genomes;
   
   // Default organism setups...
@@ -132,7 +132,7 @@ public:
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
-  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code);
+  bool ActivateParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code);
   
   // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
@@ -173,7 +173,7 @@ public:
   void SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx); 
 
   //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext& ctx); 
+  void SeedDeme(cDeme& _deme, Systematics::GroupPtr bg, eBioUnitSource src, cAvidaContext& ctx); 
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   bool SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
@@ -240,8 +240,8 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
-  tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
+  void SetMiniTraceQueue(tSmartArray<Systematics::GroupPtr> new_queue, bool print_genomes);
+  tSmartArray<Systematics::GroupPtr> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -384,7 +384,7 @@ private:
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL); 
+  void SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL); 
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	

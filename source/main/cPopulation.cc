@@ -23,7 +23,7 @@
 #include "cPopulation.h"
 
 #include "avida/core/Feedback.h"
-#include "avida/core/Sequence.h"
+#include "avida/core/InstructionSequence.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/data/Util.h"
@@ -31,8 +31,6 @@
 #include "AvidaTools.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
-#include "cBioGroupManager.h"
 #include "cCPUTestInfo.h"
 #include "cCodeLabel.h"
 #include "cConstBurstSchedule.h"
@@ -41,7 +39,7 @@
 #include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
-#include "cGenomeTestMetrics.h"
+#include "avida/private/systematics/GenomeTestMetrics.h"
 #include "cBGGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -752,7 +750,7 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   return true;
 }
 
-bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const InstructionSequence& injected_code)
+bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(parent != NULL);
 
@@ -831,7 +829,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   target_organism->GetPhenotype().SetLastParasiteTaskCount(host->GetPhenotype().GetLastParasiteTaskCount());
 
   // Classify the parasite
-  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  tArray<const tArray<Systematics::GroupPtr>*> pgrps(1);
   pgrps[0] = &parent->GetBioGroups();
   parasite->SelfClassify(pgrps);
 
@@ -971,7 +969,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
-  cBioGroup* org_bg = in_organism->GetBioGroup("genotype");
+  Systematics::GroupPtr org_bg = in_organism->GetBioGroup("genotype");
   for (int i = 0; i < minitrace_queue.GetSize(); i++)
   {
     if (org_bg == minitrace_queue[i]) {
@@ -1010,7 +1008,7 @@ void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organis
   delete testcpu;
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, const bool print_genomes)
+void cPopulation::SetMiniTraceQueue(tSmartArray<Systematics::GroupPtr> new_queue, const bool print_genomes)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
@@ -2041,7 +2039,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
 
     // get germline genotype
     int germline_genotype_id = source_deme.GetGermlineGenotypeID();
-    cBioGroup* germline_genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(germline_genotype_id);
+    Systematics::GroupPtr germline_genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(germline_genotype_id);
     assert(germline_genotype);
 
     // create a new genome by mutation
@@ -2073,9 +2071,9 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
 
     //Create a new genotype which is daughter to the old one.
     cDemePlaceholderUnit unit(SRC_DEME_GERMLINE, mg);
-    tArray<cBioGroup*> parents;
+    tArray<Systematics::GroupPtr> parents;
     parents.Push(germline_genotype);
-    cBioGroup* new_germline_genotype = germline_genotype->ClassifyNewBioUnit(&unit, &parents);
+    Systematics::GroupPtr new_germline_genotype = germline_genotype->ClassifyNewBioUnit(&unit, &parents);
     source_deme.ReplaceGermline(new_germline_genotype);
     target_deme.ReplaceGermline(new_germline_genotype);
     SeedDeme(source_deme, new_germline_genotype, SRC_DEME_GERMLINE, ctx); 
@@ -2157,7 +2155,7 @@ void cPopulation::SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvi
   }
 }
 
-void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext& ctx) { 
+void cPopulation::SeedDeme(cDeme& _deme, Systematics::GroupPtr bg, eBioUnitSource src, cAvidaContext& ctx) { 
   // Kill all the organisms in the deme.
   _deme.KillAll(ctx); 
   _deme.ClearFounders();
@@ -2546,7 +2544,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 
           int cellid = DemeSelectInjectionCell(source_deme, i);
           //cout << "founder: " << source_founders[i] << endl;
-          cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
+          Systematics::GroupPtr bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
           SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i]); 
           DemePostInjection(source_deme, cell_array[cellid]);
         }
@@ -2623,7 +2621,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
 {
   // phenotype can be NULL
 
@@ -4550,11 +4548,11 @@ struct sOrgInfo {
 };
 
 struct sGroupInfo {
-  cBioGroup* bg;
+  Systematics::GroupPtr bg;
   tArray<sOrgInfo> orgs;
   bool parasite;
 
-  sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
+  sGroupInfo(Systematics::GroupPtr in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
 };
 
 bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bool save_groupings)
@@ -4572,9 +4570,9 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
       cOrganism* org = cell_array[cell].GetOrganism();
 
       // Handle any parasites
-      const tArray<cBioUnit*>& parasites = org->GetParasites();
+      const tArray<Systematics::UnitPtr>& parasites = org->GetParasites();
       for (int p = 0; p < parasites.GetSize(); p++) {
-        cBioGroup* pg = parasites[p]->GetBioGroup("genotype");
+        Systematics::GroupPtr pg = parasites[p]->GetBioGroup("genotype");
         if (pg == NULL) continue;
 
         sGroupInfo* map_entry = NULL;
@@ -4589,7 +4587,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
 
 
       // Handle the organism itself
-      cBioGroup* genotype = org->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = org->GetBioGroup("genotype");
       if (genotype == NULL) continue;
 
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
@@ -4620,7 +4618,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
   tArray<sGroupInfo*> genotype_entries;
   genotype_map.GetValues(genotype_entries);
   for (int i = 0; i < genotype_entries.GetSize(); i++) {
-    cBioGroup* genotype = genotype_entries[i]->bg;
+    Systematics::GroupPtr genotype = genotype_entries[i]->bg;
 
     genotype->Save(df);
 
@@ -4682,9 +4680,9 @@ bool cPopulation::SaveFlameData(const cString& filename)
       cOrganism* org = cell_array[cell].GetOrganism();
       
       // Handle any parasites
-      const tArray<cBioUnit*>& parasites = org->GetParasites();
+      const tArray<Systematics::UnitPtr>& parasites = org->GetParasites();
       for (int p = 0; p < parasites.GetSize(); p++) {
-        cBioGroup* pg = parasites[p]->GetBioGroup("genotype");
+        Systematics::GroupPtr pg = parasites[p]->GetBioGroup("genotype");
         if (pg == NULL) continue;
         
         sGroupInfo* map_entry = NULL;
@@ -4699,7 +4697,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
       
       
       // Handle the organism itself
-      cBioGroup* genotype = org->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = org->GetBioGroup("genotype");
       if (genotype == NULL) continue;
       
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
@@ -4718,7 +4716,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
   tArray<sGroupInfo*> genotype_entries;
   genotype_map.GetValues(genotype_entries);
   for (int i = 0; i < genotype_entries.GetSize(); i++) {
-    cBioGroup* genotype = genotype_entries[i]->bg;
+    Systematics::GroupPtr genotype = genotype_entries[i]->bg;
     
     genotype->DepthSave(df);
     
@@ -4745,7 +4743,7 @@ public:
   tArray<int> forager_types;
   tArray<int> birth_cells;
 
-  cBioGroup* bg;
+  Systematics::GroupPtr bg;
 
 
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
@@ -4825,7 +4823,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   // Sort genotypes in ascending order according to their id_num
   tArrayUtils::QSort(genotypes);
 
-  cBioGroupManager* bgm = m_world->GetClassificationManager().GetBioGroupManager("genotype");
+  Systematics::ManagerPtr bgm = m_world->GetClassificationManager().GetBioGroupManager("genotype");
   for (int i = 0; i < genotypes.GetSize(); i++) {
     // Fix Parent IDs
     cString nparentstr;
@@ -5057,7 +5055,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     //find the genotype we just created from the genome, and save it
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
     cDemePlaceholderUnit unit(src, genome);
-    cBioGroup* genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->ClassifyNewBioUnit(&unit);
+    Systematics::GroupPtr genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->ClassifyNewBioUnit(&unit);
     deme.ReplaceGermline(genotype);
     genotype->RemoveBioUnit(&unit);
   }
@@ -5344,7 +5342,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
   cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_COMPETE);
 
   // Classify the offspring
-  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  tArray<const tArray<Systematics::GroupPtr>*> pgrps(1);
   pgrps[0] = &parent.GetBioGroups();
   new_organism->SelfClassify(pgrps);
 
@@ -5396,7 +5394,7 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);
 
-  cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(m_world, ctx, new_organism->GetBioGroup("genotype"));
+  Systematics::GenomeTestMetrics* metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, new_organism->GetBioGroup("genotype"));
 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));

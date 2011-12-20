@@ -20,6 +20,7 @@
  */
 
 #include "cHardwareTransSMT.h"
+#include "avida/systematics/Unit.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
@@ -193,7 +194,7 @@ void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_
 
 Systematics::UnitPtr cHardwareTransSMT::ThreadGetOwner()
 {
-  return (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
+  return (m_threads[m_cur_thread].owner) ? (Systematics::UnitPtr) m_threads[m_cur_thread].owner : m_organism;
 }
 
 
@@ -664,12 +665,12 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 	
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) {
-    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
+    Systematics::UnitPtr parent = (m_threads[m_cur_thread].owner) ? (Systematics::UnitPtr) m_threads[m_cur_thread].owner : m_organism;
     inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = Sequence("a"); 
+  m_mem_array[mem_space_used] = InstructionSequence("a"); 
 	
   if (m_world->GetConfig().INJECT_METHOD.Get() == INJECT_METHOD_SPLIT) {
     for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
@@ -682,7 +683,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 }
 
 
-bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
+bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
 {
   assert(bu->GetGenome().GetHardwareType() == GetType() && bu->GetGenome().GetInstSet() == m_inst_set->GetInstSetName());
   

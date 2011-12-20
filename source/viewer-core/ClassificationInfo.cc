@@ -24,8 +24,6 @@
 
 #include "avida/private/viewer-core/ClassificationInfo.h"
 
-#include "cBioGroup.h"
-#include "cBioGroupManager.h"
 #include "cBitArray.h"
 #include "cPopulation.h"
 #include "cWorld.h"
@@ -51,7 +49,7 @@ void Avida::CoreView::ClassificationInfo::Update()
   free_color.SetAll();
 
   // Loop through all genotypes that should be colors to mark those that we can clear out.
-  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager(m_role)->Iterator());
+  tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager(m_role)->Iterator());
   int count = 0;
   while (count < num_colors && it->Next()) {
     const int cur_color = getMapColor(it->Get())->color;
@@ -89,7 +87,7 @@ void Avida::CoreView::ClassificationInfo::Update()
 }
 
 
-Avida::CoreView::ClassificationInfo::MapColor* Avida::CoreView::ClassificationInfo::getMapColor(cBioGroup* bg)
+Avida::CoreView::ClassificationInfo::MapColor* Avida::CoreView::ClassificationInfo::getMapColor(Systematics::GroupPtr bg)
 {
   MapColor* mc = bg->GetData<MapColor>();
   if (!mc) {

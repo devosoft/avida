@@ -280,7 +280,7 @@ public:
   bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
-  cBioUnit* ThreadGetOwner() { return m_organism; }
+  Systematics::UnitPtr ThreadGetOwner() { return m_organism; }
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
@@ -291,7 +291,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return -1; }
 
   // --------  Parasite Stuff  --------
-  bool ParasiteInfectHost(cBioUnit* bu) { return false; }
+  bool ParasiteInfectHost(Systematics::UnitPtr bu) { return false; }
 
   
   // --------  Non-Standard Methods  --------  

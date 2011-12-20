@@ -184,7 +184,7 @@ public:
     const cCPUMemory& GetMemory() const { return m_memory; }
     
     //! Append this programid's genome to the passed-in genome in linear format (includes tags).
-    void AppendLinearGenome(Sequence& genome);
+    void AppendLinearGenome(InstructionSequence& genome);
 
     //! Print this programid's genome, in linear format.
     void PrintGenome(std::ostream& out);
@@ -363,7 +363,7 @@ public:
   virtual bool ThreadSelect(const cCodeLabel& in_label) { return false; }
   virtual void ThreadPrev() { ; }
   virtual void ThreadNext() { ; }
-  virtual cBioUnit* ThreadGetOwner() { return m_organism; }
+  virtual Systematics::UnitPtr ThreadGetOwner() { return m_organism; }
   
   virtual int GetNumThreads() const { return 1; }
   virtual int GetCurThread() const { return -1; }
@@ -374,7 +374,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return -1; }
 
    // --------  Parasite Stuff  --------
-  bool ParasiteInfectHost(cBioUnit* bu) { return false; }
+  bool ParasiteInfectHost(Systematics::UnitPtr bu) { return false; }
 
 
   // --------  Input/Output Buffers  --------

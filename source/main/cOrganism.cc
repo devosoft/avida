@@ -26,7 +26,6 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cContextPhenotype.h"
 #include "cDeme.h"
 #include "cEnvironment.h"
@@ -615,13 +614,13 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
 
 
 
-bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const InstructionSequence& injected_code)
+bool cOrganism::InjectParasite(Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
 {
   assert(m_interface);
   return m_interface->InjectParasite(this, parent, label, injected_code);
 }
 
-bool cOrganism::ParasiteInfectHost(cBioUnit* parasite)
+bool cOrganism::ParasiteInfectHost(Systematics::UnitPtr parasite)
 {
   if (!m_hardware->ParasiteInfectHost(parasite)) return false;
   

@@ -23,7 +23,6 @@
 #include "cTestCPU.h"
 
 #include "cAvidaContext.h"
-#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -442,13 +441,16 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   df.Endl();
   
   // Display the genome
-  genome.GetSequence().SaveInstructions(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet());
+  ConstInstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(genome.Representation());
+  const InstructionSequence& seq = *seq_p;
+  seq.SaveInstructions(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet());
   
   m_world->GetDataFileManager().Remove(filename);
 }
 
 
-void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename, int update)
+void cTestCPU::PrintBioGroup(cAvidaContext& ctx, Systematics::GroupPtr bg, cString filename, int update)
 {
   if (!bg->HasProperty("genome")) return;
   

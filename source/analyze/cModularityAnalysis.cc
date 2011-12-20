@@ -57,7 +57,9 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   cCPUTestInfo test_info = m_test_info;
   
   const Genome& base_genome = m_genotype->GetGenome();
-  const InstructionSequence& base_seq = base_genome.GetSequence();
+  ConstInstructionSequencePtr base_seq_p;
+  base_seq_p.DynamicCastFrom(base_genome.Representation());
+  const InstructionSequence& base_seq = *base_seq_p;
 
   // Calculate the stats for the genotype we're working with...
   testcpu->TestGenome(ctx, test_info, base_genome);  
@@ -81,9 +83,12 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     const Instruction null_inst = map_inst_set.ActivateNullInst();
 
     // Genome for testing
-    const int max_line = base_genome.GetSize();
+    const int max_line = base_seq.GetSize();
     Genome mod_genome(base_genome);
-    InstructionSequence& seq = mod_genome.GetSequence();
+    InstructionSequencePtr mod_seq_p;
+    GeneticRepresentationPtr mod_rep_p = mod_genome.Representation();
+    mod_seq_p.DynamicCastFrom(mod_rep_p);
+    InstructionSequence& mod_seq = *mod_seq_p;
     
     // Create and initialize the modularity matrix
     tMatrix<int> mod_matrix(num_tasks, max_line);
@@ -96,7 +101,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     for (int line_num = 0; line_num < max_line; line_num++) {
       int cur_inst = base_seq[line_num].GetOp();
       
-      seq[line_num] = null_inst;
+      mod_seq[line_num] = null_inst;
       
       // Run the modified genome through the Test CPU
       testcpu->TestGenome(ctx, test_info, mod_genome);
@@ -119,7 +124,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
       }
           
       // Reset the mod_genome back to the original sequence.
-      seq[line_num].SetOp(cur_inst);
+      mod_seq[line_num].SetOp(cur_inst);
     }
     
     tArray<int> sites_inv_x_tasks(num_tasks + 1, 0);  // # of inst's involved in 0,1,2,3... tasks    

@@ -27,7 +27,6 @@ namespace Avida {
 };
 
 class cAvidaContext;
-class cBioGroup;
 class cPhenPlastSummary;
 class cWorld;
 
@@ -42,10 +41,10 @@ private:
   cPhenPlastUtil(); // @not_implemented
   
 public:
-  static int GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
-  static double GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
-  static double GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBioGroup* bg, int task_id);
-  static const tArray<double>& GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
+  static int GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg);
+  static double GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg);
+  static double GetTaskProbability(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg, int task_id);
+  static const tArray<double>& GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg);
   static cPhenPlastSummary* TestPlasticity(cAvidaContext& ctx, cWorld* world, const Genome& mg);
 };  
 

@@ -24,6 +24,7 @@
 #include "avida/private/systematics/Genotype.h"
 
 #include "avida/private/systematics/GenotypeArbiter.h"
+#include "avida/public/systematics/Types.h"
 #include "cEntryHandle.h"
 
 #include "cPhenotype.h"
@@ -144,7 +145,7 @@ const cString& cBGGenotype::GetRole() const
 }
 
 
-cBioGroup* cBGGenotype::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents)
+Systematics::GroupPtr cBGGenotype::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents)
 {
   m_births.Inc();
   
