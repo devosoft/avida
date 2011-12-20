@@ -382,7 +382,7 @@ public:
     // Loop through all genotypes binning the values
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
-      n[it->Get()->GetDepth() - min] += it->Get()->GetNumUnits();
+      n[it->Get()->GetDepth() - min] += it->Get()->NumUnits();
     }
 
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -445,7 +445,7 @@ public:
       Systematics::GroupPtr bg = it->Get();
       if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
       {
-        n[bg->GetDepth() - min] += bg->GetNumUnits();
+        n[bg->GetDepth() - min] += bg->NumUnits();
       }
     }
     
@@ -506,7 +506,7 @@ public:
       Systematics::GroupPtr bg = it->Get();
       if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
       {
-        n[bg->GetDepth() - min] += bg->GetNumUnits();
+        n[bg->GetDepth() - min] += bg->NumUnits();
       }
     }
     
@@ -558,14 +558,14 @@ public:
   {
     // Allocate array for the histogram & zero it
     tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    tArray<int> hist(it->Next()->GetNumUnits());
+    tArray<int> hist(it->Next()->NumUnits());
     hist.SetAll(0);
 
     // Loop through all genotypes binning the values
     do {
-      assert(it->Get()->GetNumUnits() - 1 >= 0);
-      assert(it->Get()->GetNumUnits() - 1 < hist.GetSize());
-      hist[it->Get()->GetNumUnits() - 1]++;
+      assert(it->Get()->NumUnits() - 1 >= 0);
+      assert(it->Get()->NumUnits() - 1 < hist.GetSize());
+      hist[it->Get()->NumUnits() - 1]++;
     } while (it->Next());
 
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -2025,7 +2025,7 @@ public:
       while (it->Next()) {
         Systematics::GroupPtr bg = it->Get();
 
-        int weight = (m_weighted) ? bg->GetNumUnits() : 1;
+        int weight = (m_weighted) ? bg->NumUnits() : 1;
         tArray<double> task_prob = cPhenPlastUtil::GetTaskProbabilities(ctx, m_world, bg);
         for (int k = 0; k < task_prob.GetSize(); k++){
           int bin_id = (task_prob[k] < 1.0) ? (int) ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
@@ -2146,7 +2146,7 @@ public:
       pp_taskentropy.ResizeClear(num_genotypes);
       while (it->Next()) {
         Systematics::GroupPtr bg = it->Get();
-        int num = bg->GetNumUnits();
+        int num = bg->NumUnits();
         num_orgs += num;
         if (cPhenPlastUtil::GetNumPhenotypes(ctx, m_world, bg) > 1) {
           double entropy = cPhenPlastUtil::GetPhenotypicEntropy(ctx, m_world, bg);
@@ -2245,13 +2245,13 @@ public:
     dom_dist = Sequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
     hamming_m1 += dom_dist;
     hamming_m2 += dom_dist*dom_dist;
-    count += it->Get()->GetNumUnits();
+    count += it->Get()->NumUnits();
     // now cycle over the remaining genotypes
     while ((it->Next())) {
       int dist = Sequence::FindHammingDistance(m_reference.GetSequence(), Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       hamming_m1 += dist;
       hamming_m2 += dist*dist;
-      count += it->Get()->GetNumUnits();
+      count += it->Get()->NumUnits();
     }
 
     hamming_m1 /= static_cast<double>(count);
@@ -2347,7 +2347,7 @@ public:
     while ((it->Next())) {
       Systematics::GroupPtr bg = it->Get();
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
-      const int num_orgs = bg->GetNumUnits();
+      const int num_orgs = bg->NumUnits();
 
       // now output
 
@@ -2618,7 +2618,7 @@ public:
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     while ((it->Next())) {
       Systematics::GroupPtr bg = it->Get();
-      const int num_organisms = bg->GetNumUnits();
+      const int num_organisms = bg->NumUnits();
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int length = genome.GetSize();
       if (genome.GetInstSet() != m_inst_set) continue;
@@ -2686,7 +2686,7 @@ public:
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     cDoubleSum distance_sum;
     while ((it->Next())) {
-      const int num_organisms = it->Get()->GetNumUnits();
+      const int num_organisms = it->Get()->NumUnits();
       const int cur_dist = Sequence::FindEditDistance(con_genome, Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       distance_sum.Add(cur_dist, num_organisms);
     }

@@ -24,9 +24,10 @@
 #define cOrganism_h
 
 #include "avida/core/Genome.h"
+#include "avida/private/systematics/GenomeTestMetrics.h"
+#include "avida/systematics/Unit.h"
 
 #include "cCPUMemory.h"
-#include "avida/private/systematics/GenomeTestMetrics.h"
 #include "cMutationRates.h"
 #include "cPhenotype.h"
 #include "cOrgInterface.h"
@@ -59,7 +60,7 @@ class cStateGrid;
 using namespace Avida;
 
 
-class cOrganism : public cBioUnit
+class cOrganism : public Systematics::Unit
 {
 private:
   cWorld* m_world;
@@ -67,7 +68,7 @@ private:
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   eBioUnitSource m_src;
   cString m_src_args;
-  const Genome m_initial_genome;         // Initial genome; can never be changed!
+  const class Genome m_initial_genome;         // Initial genome; can never be changed!
   tArray<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
@@ -77,7 +78,7 @@ private:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
   
 	// Other stats
-  Genome m_offspring_genome;              // Child genome, while under construction.
+  class Genome m_offspring_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -125,14 +126,14 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation,
+  cOrganism(cWorld* world, cAvidaContext& ctx, const class Genome& genome, int parent_generation,
             eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const Genome& GetGenome() const { return m_initial_genome; }
+  const class Genome& GetGenome() const { return m_initial_genome; }
   
 
   // --------  Support Methods  --------
@@ -183,7 +184,7 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
   
-  Genome& OffspringGenome() { return m_offspring_genome; }
+  class Genome& OffspringGenome() { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
@@ -674,15 +675,15 @@ private:
 
 
 inline double cOrganism::GetTestFitness(cAvidaContext& ctx) const {
-  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetFitness();
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, SystematicsGroup("genotype"))->GetFitness();
 }
 
 inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
-  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetMerit();
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, SystematicsGroup("genotype"))->GetMerit();
 }
 
 inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
-  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetColonyFitness();
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, SystematicsGroup("genotype"))->GetColonyFitness();
 }
 
 

@@ -405,7 +405,7 @@ public:
   cString GetTaskList() const;
 
   int GetHWType() const { return m_genome.HardwareType(); }
-  cString GetInstSet() const { return cString((const char*)m_genome.Properties().GetWithDefault("instset",Property("instset","")).Value()); }
+  cString GetInstSet() const { return cString((const char*)m_genome.Properties().Get("instset").Value()); }
   cString GetSequence() const;
   cString GetHTMLSequence() const;
 

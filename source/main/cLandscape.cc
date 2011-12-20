@@ -154,7 +154,7 @@ void cLandscape::Process(cAvidaContext& ctx)
   
   // Calculate the complexity...
   
-  double max_ent = log((double) m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize());
+  double max_ent = log((double) m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize());
   total_entropy = 0;
   ConstInstructionSequencePtr base_seq_p;
   GeneticRepresentationPtr rep_p = base_genome.Representation();
@@ -167,7 +167,7 @@ void cLandscape::Process(cAvidaContext& ctx)
   }
   complexity = base_seq.GetSize() - total_entropy;
   
-  m_num_found = base_seq.GetSize() * (m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize() - 1);
+  m_num_found = base_seq.GetSize() * (m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize() - 1);
 }
 
 
@@ -181,7 +181,7 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, Genome& cur
   base_seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& base_seq = *base_seq_p;
   const int max_line = base_seq.GetSize() - cur_distance + 1;
-  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
   
   Genome mg(cur_genome);
   InstructionSequencePtr mod_seq_p;
@@ -227,7 +227,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   base_seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& base_seq = *base_seq_p;
   const int max_line = base_seq.GetSize();
-  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
   
   Genome mg(base_genome);
   InstructionSequencePtr mod_seq_p;
@@ -304,7 +304,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   base_seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& base_seq = *base_seq_p;
   const int max_line = base_seq.GetSize();
-  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
   
   Genome mg(base_genome);
   InstructionSequencePtr mod_seq_p;
@@ -436,7 +436,7 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   // Calculate the complexity...
   
-  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize()));
+  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize()));
   total_entropy = 0;
   ConstInstructionSequencePtr base_seq_p;
   GeneticRepresentationPtr rep_p = base_genome.Representation();
@@ -583,7 +583,7 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   // Calculate the complexity...
   
-  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize()));
+  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize()));
   total_entropy = 0;
   ConstInstructionSequencePtr base_seq_p;
   GeneticRepresentationPtr rep_p = base_genome.Representation();
@@ -615,7 +615,7 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
   int genome_size = base_seq.GetSize();
 
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value()));
+  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value()));
   
   ProcessBase(ctx, testcpu);
   
@@ -658,7 +658,7 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
   int genome_size = base_seq.GetSize();
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value()));
+  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value()));
   ProcessBase(ctx, testcpu);
   
   // Set to default number of trials if trials has not been specified
@@ -713,7 +713,7 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
   base_seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& base_seq = *base_seq_p;
   const int max_line = base_seq.GetSize();
-  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
   fitness_chart.ResizeClear(max_line, inst_size);
   
   Genome mod_genome(base_genome);
@@ -741,7 +741,7 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
 void cLandscape::TestPairs(cAvidaContext& ctx)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value()));
+  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value()));
   
   ProcessBase(ctx, testcpu);
   if (base_fitness == 0.0) return;
@@ -795,7 +795,7 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
   base_seq_p.DynamicCastFrom(rep_p);
   const InstructionSequence& base_seq = *base_seq_p;
   const int max_line = base_seq.GetSize();
-  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
   Genome mod_genome(base_genome);
   Instruction inst1, inst2;
   
@@ -834,7 +834,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 
   int gen = 0;
   
-  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
   double pos_frac = 1.0;
   
   distance = 1;
@@ -978,7 +978,7 @@ void cLandscape::PrintStats(cDataFile& df, int update)
 void cLandscape::PrintEntropy(cDataFile& df)
 {
   df.WriteComment("Entropy Data");
-  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().GetWithDefault("instset",Property("instset","")).Value())).GetSize()));
+  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize()));
   ConstInstructionSequencePtr base_seq_p;
   GeneticRepresentationPtr rep_p = base_genome.Representation();
   base_seq_p.DynamicCastFrom(rep_p);

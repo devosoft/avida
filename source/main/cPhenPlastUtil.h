@@ -22,6 +22,8 @@
 #ifndef cPhenPlastUtil_h
 #define cPhenPlastUtil_h
 
+#include "avida/systematics/Types.h"
+
 namespace Avida {
   class Genome;
 };
