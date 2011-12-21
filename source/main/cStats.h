@@ -83,7 +83,7 @@ struct s_inst_circumstances {
   int tol_max;
 }; // @JJB
 
-class cStats : public cBioGroupListener, public Data::ArgumentedProvider
+class cStats : public Data::ArgumentedProvider
 {
 private:
   cWorld* m_world;
@@ -140,12 +140,6 @@ private:
   cDoubleSum sum_copy_size;
   cDoubleSum sum_exe_size;
 
-  cDoubleSum sum_genotype_age;
-
-  cDoubleSum sum_abundance;
-  cDoubleSum sum_genotype_depth;
-
-  cDoubleSum sum_threshold_age;
 
 
   // --------  Instruction Counts  ---------
@@ -156,7 +150,6 @@ private:
   // --------  Calculated Stats  ---------
   double entropy;
   double species_entropy;
-  double energy;
   double dom_fidelity;
   double ave_fidelity;
 
@@ -164,13 +157,6 @@ private:
   double max_viable_fitness;
 
   // --------  Dominant Genotype  ---------
-  double dom_merit;
-  double dom_gestation;
-  double dom_repro_rate;
-  double dom_fitness;
-  int dom_size;
-  double dom_copied_size;
-  double dom_exe_size;
   double max_fitness;
   double max_merit;
   int max_gestation_time;
@@ -179,21 +165,7 @@ private:
   double min_merit;
   int min_gestation_time;
   int min_genome_length;
-  int dom_genotype_id;
-  cString dom_name;
-  int dom_births;
-  int dom_breed_true;
-  int dom_breed_in;
-  int dom_breed_out;
-  int dom_abundance;
-  int dom_gene_depth;
-  cString dom_sequence;
-  
-  int dom_last_birth_cell;
-  int dom_last_forager_type;
-  int dom_last_group_id;
 
-  int coal_depth;
 
   // --------  Population Stats  ---------
   int num_births;
@@ -202,10 +174,6 @@ private:
   int num_breed_true;
   int num_breed_true_creatures;
   int num_creatures;
-  int num_genotypes;
-  int num_genotypes_historic;
-  int num_threshold;
-  int num_lineages;
   int num_executed;
   int num_parasites;
   int num_no_birth_creatures;
@@ -214,11 +182,7 @@ private:
   int m_num_threads;
   int num_modified;
 
-  int num_genotypes_last;
-
   int tot_organisms;
-  int tot_threshold;
-  int tot_lineages;
   int tot_executed;
 
   // --------  Parasite Task Stats  ---------
@@ -269,13 +233,6 @@ private:
 
   // --------  State Variables  ---------
   int last_update;
-
-
-  // --------  Market Stats  ---------
-  int num_bought;
-  int num_sold;
-  int num_used;
-  int num_own_used;
 
 
   // --------  Sense Instruction Stats  ---------
@@ -348,9 +305,6 @@ public:
   cStats(cWorld* world);
   ~cStats() { ; }
 
-  // cBioGroupListener
-  void NotifyBGEvent(Systematics::GroupPtr bg, eBGEventType type, Systematics::UnitPtr bu);
-  
   
   // Data::Provider
   Data::ConstDataSetPtr Provides() const;
@@ -374,54 +328,9 @@ public:
   int GetUpdate() const { return m_update; }
   double GetGeneration() const { return SumGeneration().Average(); }
 
-  double GetDomMerit() const { return dom_merit; }
-  double GetDomGestation() const { return dom_gestation; }
-  double GetDomReproRate() const { return dom_repro_rate; }
-  double GetDomFitness() const { return dom_fitness; }
-  double GetDomCopySize() const { return dom_copied_size; }
-  double GetDomExeSize() const { return dom_exe_size; }
-
-  int GetDomSize() const { return dom_size; }
-  int GetDomID() const { return dom_genotype_id; }
-  const cString & GetDomName() const { return dom_name; }
-  int GetDomBirths() const { return dom_births; }
-  int GetDomBreedTrue() const { return dom_breed_true; }
-  int GetDomBreedIn() const { return dom_breed_in; }
-  int GetDomBreedOut() const { return dom_breed_out; }
-  int GetDomAbundance() const { return dom_abundance; }
-  int GetDomGeneDepth() const { return dom_gene_depth; }
-  const cString& GetDomSequence() const { return dom_sequence; }
-  
-  int GetDomLastBirthCell() const { return dom_last_birth_cell; }
-  int GetDomLastGroup() const { return dom_last_group_id; }
-  int GetDomLastForagerType() const { return dom_last_forager_type; }
-
   int GetSenseSize() const { return sense_size; }
 
   // Settings...
-  void SetDomMerit(double in_merit) { dom_merit = in_merit; }
-  void SetDomGestation(double in_gest) { dom_gestation = in_gest; }
-  void SetDomReproRate(double in_rate) { dom_repro_rate = in_rate; }
-  void SetDomFitness(double in_fit) { dom_fitness = in_fit; }
-  void SetDomCopiedSize(double in_size) { dom_copied_size = in_size; }
-  void SetDomExeSize(double in_size) { dom_exe_size = in_size; }
-
-  void SetDomSize(int in_size) { dom_size = in_size; }
-  void SetDomID(int in_id) { dom_genotype_id = in_id; }
-  void SetDomName(const cString & in_name) { dom_name = in_name; }
-  void SetDomBirths(int in_births) { dom_births = in_births; }
-  void SetDomBreedTrue(int in_bt) { dom_breed_true = in_bt; }
-  void SetDomBreedIn(int in_bi) { dom_breed_in = in_bi; }
-  void SetDomBreedOut(int in_bo) { dom_breed_out = in_bo; }
-  void SetDomAbundance(int in_abund) { dom_abundance = in_abund; }
-  void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
-  void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
-
-  void SetDomLastBirthCell(int in_lbc) { dom_last_birth_cell = in_lbc; }
-  void SetDomLastGroup(int in_lg) { dom_last_group_id = in_lg; }
-  void SetDomLastForagerType(int in_lfg) { dom_last_forager_type = in_lfg; }
-
-  void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
 
   inline void SetNumGenotypes(int new_genotypes, int num_historic);
   inline void SetNumCreatures(int new_creatures) { num_creatures = new_creatures; }
@@ -452,11 +361,7 @@ public:
   cDoubleSum& SumReproRate()     { return sum_repro_rate; }
 
   cDoubleSum& SumCreatureAge()   { return sum_creature_age; }
-  cDoubleSum& SumGenotypeAge()   { return sum_genotype_age; }
   cDoubleSum& SumGeneration()    { return sum_generation; }
-  cDoubleSum& SumAbundance()     { return sum_abundance; }
-  cDoubleSum& SumGenotypeDepth() { return sum_genotype_depth; }
-  cDoubleSum& SumThresholdAge()  { return sum_threshold_age; }
 
   cDoubleSum& SumNeutralMetric() { return sum_neutral_metric; }
   cDoubleSum& SumLineageLabel()  { return sum_lineage_label; }
@@ -503,11 +408,7 @@ public:
   const cDoubleSum& SumReproRate() const     { return sum_repro_rate; }
 
   const cDoubleSum& SumCreatureAge() const   { return sum_creature_age; }
-  const cDoubleSum& SumGenotypeAge() const   { return sum_genotype_age; }
   const cDoubleSum& SumGeneration() const    { return sum_generation; }
-  const cDoubleSum& SumAbundance() const     { return sum_abundance; }
-  const cDoubleSum& SumGenotypeDepth() const { return sum_genotype_depth; }
-  const cDoubleSum& SumThresholdAge() const  { return sum_threshold_age; }
 
   const cDoubleSum& SumNeutralMetric() const { return sum_neutral_metric; }
   const cDoubleSum& SumLineageLabel() const  { return sum_lineage_label; }
@@ -547,16 +448,10 @@ public:
   void IncResamplings() { ++num_resamplings; }
   void IncFailedResamplings() { ++num_failedResamplings; }
 
-  void CalcEnergy();
   void CalcFidelity();
 
   void RecordBirth(bool breed_true);
   void RecordDeath() { num_deaths++; }
-  void RemoveGenotype(int id_num, int parent_id, int parent_distance, int depth, int max_abundance,
-                      int parasite_abundance, int age, int length);
-  void AddLineage() { tot_lineages++; num_lineages++; }
-  void RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
-                     int total_genotypes, double fitness, double lineage_stat1, double lineage_stat2 );
 
   void IncExecuted() { num_executed++; }
 
@@ -641,10 +536,6 @@ public:
   int GetBreedTrue() const          { return num_breed_true; }
   int GetBreedTrueCreatures() const { return num_breed_true_creatures; }
   int GetNumCreatures() const       { return num_creatures; }
-  int GetNumGenotypes() const       { return num_genotypes; }
-  int GetNumGenotypesHistoric() const { return num_genotypes_historic; }
-  int GetNumThreshold() const       { return num_threshold; }
-  int GetNumLineages() const        { return num_lineages; }
   int GetNumParasites() const       { return num_parasites; }
   int GetNumNoBirthCreatures() const{ return num_no_birth_creatures; }
   int GetNumSingleThreadCreatures() const { return num_single_thread_creatures; }
@@ -653,8 +544,6 @@ public:
   int GetNumModified() const { return num_modified;}
 
   int GetTotCreatures() const       { return tot_organisms; }
-  int GetTotThreshold() const       { return tot_threshold; }
-  int GetTotLineages() const        { return tot_lineages; }
 
   int GetTaskCurCount(int task_num) const { return task_cur_count[task_num]; }
   int GetTaskHostCurCount(int task_num) const { return tasks_host_current[task_num]; }
@@ -681,12 +570,6 @@ public:
   const tArray<int>& GetReactions() const { return m_reaction_last_count; }
   const tArray<double> & GetResources() const { return resource_count; }
 
-  // market info
-  int GetMarketNumBought() const { return num_bought; }
-  int GetMarketNumSold() const { return num_sold; }
-  int GetMarketNumUsed() const { return num_used; }
-  int GetMarketNumOwnUsed() const { return num_own_used; }
-
   double GetAveReproRate() const  { return sum_repro_rate.Average(); }
 
   double GetAveMerit() const      { return sum_merit.Average(); }
@@ -703,19 +586,12 @@ public:
   double GetAveGestation() const { return sum_gestation.Average(); }
   double GetAveFitness() const   { return sum_fitness.Average(); }
 
-  double GetAveGenotypeAge() const { return sum_genotype_age.Average();}
-
   double GetAveSize() const       { return sum_size.Average(); }
   double GetAveCopySize() const   { return sum_copy_size.Average(); }
   double GetAveExeSize() const    { return sum_exe_size.Average(); }
 
   double GetEntropy() const        { return entropy; }
   double GetSpeciesEntropy() const { return species_entropy; }
-  double GetEnergy() const         { return energy; }
-  double GetEvenness() const       { return entropy / AvidaTools::Log(num_genotypes); }
-  int GetCoalescentDepth() const   { return coal_depth; }
-
-  double GetAveThresholdAge() const { return sum_threshold_age.Average(); }
 
   double GetMaxFitness() const { return max_fitness; }
   double GetMaxMerit() const { return max_merit; }
@@ -755,7 +631,6 @@ public:
   void PrintFlowRateTuples(const cString& filename);
   void PrintErrorData(const cString& filename);
   void PrintVarianceData(const cString& filename);
-  void PrintDominantData(const cString& filename);
   void PrintParasiteData(const cString& filename);
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
@@ -783,7 +658,6 @@ public:
   void PrintDivideMutData(const cString& filename);
   void PrintMutationRateData(const cString& filename);
   void PrintInstructionData(const cString& filename, const cString& inst_set);
-  void PrintMarketData(const cString& filename);
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
   void PrintInternalTasksData(const cString& filename);
@@ -1136,13 +1010,6 @@ private:
   template <class T, class U> Data::PackagePtr packageArgData(T (cStats::*)(U arg) const, U arg) const;
 };
 
-
-inline void cStats::SetNumGenotypes(int new_genotypes, int num_historic)
-{
-  num_genotypes_last = num_genotypes;
-  num_genotypes = new_genotypes;
-  num_genotypes_historic = num_historic;
-}
 
 inline void cStats::SetBreedTrueCreatures(int in_num_breed_true_creatures)
 {

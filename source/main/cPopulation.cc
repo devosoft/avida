@@ -4521,7 +4521,6 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   m_world->GetClassificationManager().UpdateStats(stats);
 
   // Have stats calculate anything it now can...
-  stats.CalcEnergy();
   stats.CalcFidelity();
 
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx);   

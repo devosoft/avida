@@ -62,17 +62,9 @@ cStats::cStats(cWorld* world)
   , rave_true_replication_rate( 500 )
   , entropy(0.0)
   , species_entropy(0.0)
-  , energy(0.0)
   , dom_fidelity(0.0)
   , ave_fidelity(0.0)
   , max_viable_fitness(0)
-  , dom_merit(0)
-  , dom_gestation(0)
-  , dom_repro_rate(0)
-  , dom_fitness(0)
-  , dom_size(0)
-  , dom_copied_size(0)
-  , dom_exe_size(0)
   , max_fitness(0)
   , max_merit(0)
   , max_gestation_time(0)
@@ -81,29 +73,12 @@ cStats::cStats(cWorld* world)
   , min_merit(FLT_MAX)
   , min_gestation_time(INT_MAX)
   , min_genome_length(INT_MAX)
-  , dom_genotype_id(-1)
-  , dom_name("(none)")
-  , dom_births(0)
-  , dom_breed_true(0)
-  , dom_breed_in(0)
-  , dom_breed_out(0)
-  , dom_abundance(0)
-  , dom_gene_depth(-1)
-  , dom_sequence("")
-  , dom_last_birth_cell(0)
-  , dom_last_forager_type(-1)
-  , dom_last_group_id(-1)
-  , coal_depth(0)
   , num_births(0)
   , num_deaths(0)
   , num_breed_in(0)
   , num_breed_true(0)
   , num_breed_true_creatures(0)
   , num_creatures(0)
-  , num_genotypes(0)
-  , num_genotypes_historic(0)
-  , num_threshold(0)
-  , num_lineages(0)
   , num_executed(0)
   , num_parasites(0)
   , num_no_birth_creatures(0)
@@ -111,19 +86,11 @@ cStats::cStats(cWorld* world)
   , num_multi_thread_creatures(0)
   , m_num_threads(0)
   , num_modified(0)
-  , num_genotypes_last(1)
   , tot_organisms(0)
-  , tot_genotypes(0)
-  , tot_threshold(0)
-  , tot_lineages(0)
   , tot_executed(0)
   , num_resamplings(0)
   , num_failedResamplings(0)
   , last_update(0)
-  , num_bought(0)
-  , num_sold(0)
-  , num_used(0)
-  , num_own_used(0)
   , sense_size(0)
   , avg_competition_fitness(0)
   , min_competition_fitness(0)
@@ -287,31 +254,6 @@ cStats::cStats(cWorld* world)
 }
 
 
-void cStats::NotifyBGEvent(Systematics::GroupPtr bg, eBGEventType type, Systematics::UnitPtr bu)
-{
-  assert(bg);
-
-  switch (type) {
-    case BG_EVENT_ADD_THRESHOLD:
-      num_threshold++;
-      tot_threshold++;
-      if (m_world->GetConfig().LOG_THRESHOLD.Get()) {
-        cDataFile& df = m_world->GetDataFile("threshold.log");
-        df.Write(m_update, "Update");
-        df.Write(bg->GetID(), "ID");
-        df.Write(bg->GetProperty("name").AsString(), "Name");
-        df.Endl();
-      }
-      break;
-
-    case BG_EVENT_REMOVE_THRESHOLD:
-      num_threshold--;
-      break;
-  }
-
-}
-
-
 Data::ConstDataSetPtr cStats::Provides() const
 {
   if (!m_provides) {
@@ -424,34 +366,8 @@ void cStats::setupProvidedData()
   // Population Level Stats
   m_data_manager.Add("entropy",         "Genotype Entropy (Diversity)", &cStats::GetEntropy);
   m_data_manager.Add("species_entropy", "Species Entropy (Diversity)",  &cStats::GetEntropy);
-  m_data_manager.Add("energy",          "Average Inferiority (Energy)", &cStats::GetEnergy);
-  m_data_manager.Add("richness",        "Number of Different Genotypes (Richness)", &cStats::GetNumGenotypes);
-  m_data_manager.Add("eveness",         "Equitability of Genotype Distribution (Evenness)", &cStats::GetEvenness);
-  m_data_manager.Add("coal_depth",      "Depth of Coalescent Genotype", &cStats::GetCoalescentDepth);
   m_data_manager.Add("num_resamplings",  "Total Number of resamplings this time step", &cStats::GetResamplings);
   m_data_manager.Add("num_failedResamplings",  "Total Number of divide commands that reached the resampling hard-cap this time step", &cStats::GetFailedResamplings);
-
-
-  // Dominant Genotype Stats
-  m_data_manager.Add("dom_merit",      "Ave Merit of Dominant Genotype",          &cStats::GetDomMerit);
-  m_data_manager.Add("dom_gest",       "Ave Gestation Time of Dominant Genotype", &cStats::GetDomGestation);
-  m_data_manager.Add("dom_fitness",    "Ave Fitness of Dominant Genotype",        &cStats::GetDomFitness);
-  m_data_manager.Add("dom_repro",      "Ave Repro-Rate of Dominant Genotype",     &cStats::GetDomReproRate);
-  m_data_manager.Add("dom_length",     "Genome Length of Dominant Genotype",      &cStats::GetDomSize);
-  m_data_manager.Add("dom_copy_length","Copied Length of Dominant Genotype",      &cStats::GetDomCopySize);
-  m_data_manager.Add("dom_exe_length", "Executed Length of Dominant Genotype",    &cStats::GetDomExeSize);
-  m_data_manager.Add("dom_id",         "ID of Dominant Genotype",                 &cStats::GetDomID);
-  m_data_manager.Add("dom_name",       "Name of Dominant Genotype",               &cStats::GetDomName);
-  m_data_manager.Add("dom_births",     "Birth Count of Dominant Genotype",        &cStats::GetDomBirths);
-  m_data_manager.Add("dom_breed_true", "Breed-True Count  of Dominant Genotype",  &cStats::GetDomBreedTrue);
-  m_data_manager.Add("dom_breed_in",   "Breed-In Count of Dominant Genotype",     &cStats::GetDomBreedIn);
-  m_data_manager.Add("dom_breed_out",  "Breed-Out Count of Dominant Genotype",    &cStats::GetDomBreedOut);
-  m_data_manager.Add("dom_num_cpus",   "Abundance of Dominant Genotype",          &cStats::GetDomAbundance);
-  m_data_manager.Add("dom_depth",      "Tree Depth of Dominant Genotype",         &cStats::GetDomGeneDepth);
-  m_data_manager.Add("dom_sequence",   "Sequence of Dominant Genotype",           &cStats::GetDomSequence);
-  m_data_manager.Add("dom_last_birth_cell", "Birth Cell of Last-Born Dominant Genotype", &cStats::GetDomLastBirthCell);
-  m_data_manager.Add("dom_last_group_id", "Birth Group ID of Last-Born Dominant Genotype", &cStats::GetDomLastGroup);
-  m_data_manager.Add("dom_last_forager_type", "Birth Forager Type of Last-Born Dominant Genotype", &cStats::GetDomLastForagerType);
 
   // Current Counts...
   m_data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
@@ -460,10 +376,6 @@ void cStats::setupProvidedData()
   m_data_manager.Add("breed_true",     "Count of Breed-True Births",             &cStats::GetBreedTrue);
   m_data_manager.Add("bred_true",      "Count of Organisms that have Bred True", &cStats::GetBreedTrueCreatures);
   m_data_manager.Add("num_cpus",       "Count of Organisms in Population",       &cStats::GetNumCreatures);
-  m_data_manager.Add("num_genotypes",  "Count of Genotypes in Population",       &cStats::GetNumGenotypes);
-  m_data_manager.Add("num_genotypes_historic", "Count of Historic Genotypes",    &cStats::GetNumGenotypesHistoric);
-  m_data_manager.Add("num_threshold",  "Count of Threshold Genotypes",           &cStats::GetNumThreshold);
-  m_data_manager.Add("num_lineages",   "Count of Lineages in Population",        &cStats::GetNumLineages);
   m_data_manager.Add("num_parasites",  "Count of Parasites in Population",       &cStats::GetNumParasites);
   m_data_manager.Add("threads",        "Count of Threads in Population",         &cStats::GetNumThreads);
   m_data_manager.Add("num_no_birth",   "Count of Childless Organisms",           &cStats::GetNumNoBirthCreatures);
@@ -473,9 +385,6 @@ void cStats::setupProvidedData()
   
   // Total Counts...
   m_data_manager.Add("tot_cpus",      "Total Organisms ever in Population", &cStats::GetTotCreatures);
-  m_data_manager.Add("tot_genotypes", "Total Genotypes ever in Population", &cStats::GetTotGenotypes);
-  m_data_manager.Add("tot_threshold", "Total Threshold Genotypes Ever",     &cStats::GetTotThreshold);
-  m_data_manager.Add("tot_lineages",  "Total Lineages ever in Population",  &cStats::GetTotLineages);
 
   
   // Some Average Data...
@@ -487,11 +396,9 @@ void cStats::setupProvidedData()
   m_data_manager.Add("ave_lineage",    "Average Lineage Label",            &cStats::GetAveLineageLabel);
   m_data_manager.Add("ave_gest",       "Average Gestation Time",           &cStats::GetAveGestation);
   m_data_manager.Add("ave_fitness",    "Average Fitness",                  &cStats::GetAveFitness);
-  m_data_manager.Add("ave_gen_age",    "Average Genotype Age",             &cStats::GetAveGenotypeAge);
   m_data_manager.Add("ave_length",     "Average Genome Length",            &cStats::GetAveSize);
   m_data_manager.Add("ave_copy_length","Average Copied Length",            &cStats::GetAveCopySize);
   m_data_manager.Add("ave_exe_length", "Average Executed Length",          &cStats::GetAveExeSize);
-  m_data_manager.Add("ave_thresh_age", "Average Threshold Genotype Age",   &cStats::GetAveThresholdAge);
 
   PROVIDE("core.world.ave_metabolic_rate", "Average Metabolic Rate",               double, GetAveMerit);
   PROVIDE("core.world.ave_age",            "Average Organism Age (in updates)",    double, GetAveCreatureAge);
@@ -570,24 +477,6 @@ void cStats::ZeroInst()
   }
 }
 
-void cStats::CalcEnergy()
-{
-  assert(sum_fitness.Average() >= 0.0);
-  assert(dom_fitness >= 0);
-
-
-  // Note: When average fitness and dominant fitness are close in value (i.e. should be identical)
-  //       floating point rounding error can cause output variances.  To mitigate this, threshold
-  //       caps off values that differ by less than it, flushing the effective output value to zero.
-  const double ave_fitness = sum_fitness.Average();
-  const double threshold = 1.0e-14;
-  if (ave_fitness == 0.0 || dom_fitness == 0.0 || fabs(ave_fitness - dom_fitness) < threshold) {
-    energy = 0.0;
-  } else  {
-    energy = Log(dom_fitness / ave_fitness);
-  }
-}
-
 void cStats::CalcFidelity()
 {
   // There is a (small) probability that when a random instruction is picked
@@ -607,7 +496,6 @@ void cStats::CalcFidelity()
 
   double true_cm_rate = adj * m_world->GetConfig().COPY_MUT_PROB.Get();
   ave_fidelity = base_fidelity * pow(1.0 - true_cm_rate, sum_size.Average());
-  dom_fidelity = base_fidelity * pow(1.0 - true_cm_rate, dom_size);
 }
 
 void cStats::RecordBirth(bool breed_true)
@@ -622,29 +510,6 @@ void cStats::RecordBirth(bool breed_true)
 
   if (breed_true) num_breed_true++;
   else num_breed_in++;
-}
-
-
-void cStats::RemoveGenotype(int id_num, int parent_id,
-   int parent_dist, int depth, int max_abundance, int parasite_abundance,
-   int age, int length)
-{
-  if (m_world->GetConfig().LOG_GENOTYPES.Get() &&
-      (m_world->GetConfig().LOG_GENOTYPES.Get() != 2 || max_abundance > 2)) {
-    const int update_born = cStats::GetUpdate() - age + 1;
-    cDataFile& df = m_world->GetDataFile("genotype.log");
-    df.Write(id_num, "Genotype ID");
-    df.Write(update_born, "Update Born");
-    df.Write(parent_id, "Parent ID");
-    df.Write(parent_dist, "Parent Distance");
-    df.Write(depth, "Depth");
-    df.Write(max_abundance, "Maximum Abundance");
-    df.Write(age, "Age");
-    df.Write(length, "Length");
-    df.Endl();
-  }
-
-  (void) parasite_abundance; // Not used now, but maybe in future.
 }
 
 void cStats::ProcessUpdate()
@@ -693,9 +558,6 @@ void cStats::ProcessUpdate()
   m_reaction_last_add_reward.SetAll(0.0);
   m_reaction_exe_count.SetAll(0);
 
-  dom_merit = 0;
-  dom_gestation = 0.0;
-  dom_fitness = 0.0;
   max_fitness = 0.0;
 
   num_resamplings = 0;
@@ -706,30 +568,6 @@ void cStats::ProcessUpdate()
   m_spec_waste = 0;
 
   num_migrations = 0;
-}
-
-void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
-                           int total_genotypes, double fitness, double lineage_stat1, double lineage_stat2 )
-{
-  num_lineages--;
-  if (m_world->GetConfig().LOG_LINEAGES.Get()) {
-    cDataFile& lineage_log = m_world->GetDataFile("lineage.log");
-
-    lineage_log.WriteComment("Columns 10, 11 depend on lineage creation method chosen.");
-
-    lineage_log.Write(id_num, "lineage id");
-    lineage_log.Write(parent_id, "parent lineage id");
-    lineage_log.Write(fitness, "initial fitness");
-    lineage_log.Write(total_CPUs, "total number of creatures");
-    lineage_log.Write(total_genotypes, "total number of genotypes");
-    lineage_log.Write(update_born, "update born");
-    lineage_log.Write(cStats::GetUpdate(), "update extinct");
-    lineage_log.Write(generation_born, "generation born");
-    lineage_log.Write(SumGeneration().Average(), "generation extinct");
-    lineage_log.Write(lineage_stat1, "lineage stat1");
-    lineage_log.Write(lineage_stat2, "lineage stat2");
-    lineage_log.Endl();
-  }
 }
 
 
@@ -747,7 +585,7 @@ void cStats::PrintAverageData(const cString& filename)
   df.WriteComment("Avida Average Data");
   df.WriteTimeStamp();
 
-  df.Write(m_update,                "Update");
+  df.Write(m_update,                      "Update");
   df.Write(sum_merit.Average(),           "Merit");
   df.Write(sum_gestation.Average(),       "Gestation Time");
   df.Write(sum_fitness.Average(),         "Fitness");
@@ -755,7 +593,7 @@ void cStats::PrintAverageData(const cString& filename)
   df.Write(sum_size.Average(),            "Size");
   df.Write(sum_copy_size.Average(),       "Copied Size");
   df.Write(sum_exe_size.Average(),        "Executed Size");
-  df.Write(sum_abundance.Average(),       "Abundance");
+  df.Write(0,                             "(deprecated) Abundance");
 
   // The following causes births and breed true to default to 0.0 when num_creatures is 0
   double ave_births = 0.0;
@@ -768,7 +606,7 @@ void cStats::PrintAverageData(const cString& filename)
   df.Write(ave_births,                    "Proportion of organisms that gave birth in this update");
   df.Write(ave_breed_true,                "Proportion of Breed True Organisms");
 
-  df.Write(sum_genotype_depth.Average(),  "Genotype Depth");
+  df.Write(0,                             "(deprecated) Genotype Depth");
   df.Write(sum_generation.Average(),      "Generation");
   df.Write(sum_neutral_metric.Average(),  "Neutral Metric");
   df.Write(sum_lineage_label.Average(),   "Lineage Label");
@@ -857,10 +695,10 @@ void cStats::PrintErrorData(const cString& filename)
   df.Write(sum_size.StdError(),            "Size");
   df.Write(sum_copy_size.StdError(),       "Copied Size");
   df.Write(sum_exe_size.StdError(),        "Executed Size");
-  df.Write(sum_abundance.StdError(),       "Abundance");
-  df.Write(-1,                             "(No Data)");
-  df.Write(-1,                             "(No Data)");
-  df.Write(sum_genotype_depth.StdError(),  "Genotype Depth");
+  df.Write(0,                              "(deprecated) Abundance");
+  df.Write(-1,                             "(deprecated)");
+  df.Write(-1,                             "(deprecated)");
+  df.Write(0,                              "(deprecated) Genotype Depth");
   df.Write(sum_generation.StdError(),      "Generation");
   df.Write(sum_neutral_metric.StdError(),  "Neutral Metric");
   df.Write(sum_lineage_label.StdError(),   "Lineage Label");
@@ -884,10 +722,10 @@ void cStats::PrintVarianceData(const cString& filename)
   df.Write(sum_size.Variance(),            "Size");
   df.Write(sum_copy_size.Variance(),       "Copied Size");
   df.Write(sum_exe_size.Variance(),        "Executed Size");
-  df.Write(sum_abundance.Variance(),       "Abundance");
-  df.Write(-1,                             "(No Data)");
-  df.Write(-1,                             "(No Data)");
-  df.Write(sum_genotype_depth.Variance(),  "Genotype Depth");
+  df.Write(0,                              "(deprecated) Abundance");
+  df.Write(-1,                             "(deprecated)");
+  df.Write(-1,                             "(deprecated)");
+  df.Write(0,                              "(deprecated) Genotype Depth");
   df.Write(sum_generation.Variance(),      "Generation");
   df.Write(sum_neutral_metric.Variance(),  "Neutral Metric");
   df.Write(sum_lineage_label.Variance(),   "Lineage Label");
@@ -895,32 +733,6 @@ void cStats::PrintVarianceData(const cString& filename)
   df.Endl();
 }
 
-
-void cStats::PrintDominantData(const cString& filename)
-{
-  cDataFile& df = m_world->GetDataFile(filename);
-
-  df.WriteComment("Avida Dominant Data");
-  df.WriteTimeStamp();
-
-  df.Write(m_update,     "Update");
-  df.Write(dom_merit,       "Average Merit of the Dominant Genotype");
-  df.Write(dom_gestation,   "Average Gestation Time of the Dominant Genotype");
-  df.Write(dom_fitness,     "Average Fitness of the Dominant Genotype");
-  df.Write(dom_repro_rate,  "Repro Rate?");
-  df.Write(dom_size,        "Size of Dominant Genotype");
-  df.Write(dom_copied_size, "Copied Size of Dominant Genotype");
-  df.Write(dom_exe_size,    "Executed Size of Dominant Genotype");
-  df.Write(dom_abundance,   "Abundance of Dominant Genotype");
-  df.Write(dom_births,      "Number of Births");
-  df.Write(dom_breed_true,  "Number of Dominant Breed True?");
-  df.Write(dom_gene_depth,  "Dominant Gene Depth");
-  df.Write(dom_breed_in,    "Dominant Breed In");
-  df.Write(max_fitness,     "Max Fitness?");
-  df.Write(dom_genotype_id, "Genotype ID of Dominant Genotype");
-  df.Write(dom_name,        "Name of the Dominant Genotype");
-  df.Endl();
-}
 
 void cStats::PrintParasiteData(const cString& filename)
 {
@@ -936,7 +748,6 @@ void cStats::PrintParasiteData(const cString& filename)
 
 void cStats::PrintStatsData(const cString& filename)
 {
-  const int genotype_change = num_genotypes - num_genotypes_last;
   const double log_ave_fid = (ave_fidelity > 0.0 && ave_fidelity != 1.0) ? -Log(ave_fidelity) : 0.0;
   const double log_dom_fid = (dom_fidelity > 0.0 && ave_fidelity != 1.0) ? -Log(dom_fidelity) : 0.0;
 
@@ -945,17 +756,17 @@ void cStats::PrintStatsData(const cString& filename)
   df.WriteComment("Generic Statistics Data");
   df.WriteTimeStamp();
 
-  df.Write(m_update,          "update");
-  df.Write(energy,               "average inferiority (energy)");
-  df.Write(1.0 - ave_fidelity,   "ave probability of any mutations in genome");
-  df.Write(1.0 - dom_fidelity,   "probability of any mutations in dom genome");
-  df.Write(log_ave_fid,          "log(average fidelity)");
-  df.Write(log_dom_fid,          "log(dominant fidelity)");
-  df.Write(genotype_change,      "change in number of genotypes");
-  df.Write(entropy,              "genotypic entropy");
-  df.Write(species_entropy,      "species entropy");
-  df.Write(coal_depth,           "depth of most reacent coalescence");
-  df.Write(num_resamplings,      "Total number of resamplings this generation");
+  df.Write(m_update,            "update");
+  df.Write(0,                   "(deprecated) average inferiority (energy)");
+  df.Write(1.0 - ave_fidelity,  "ave probability of any mutations in genome");
+  df.Write(1.0 - dom_fidelity,  "probability of any mutations in dom genome");
+  df.Write(log_ave_fid,         "log(average fidelity)");
+  df.Write(log_dom_fid,         "log(dominant fidelity)");
+  df.Write(0,                   "(deprecated) change in number of genotypes");
+  df.Write(entropy,             "genotypic entropy");
+  df.Write(species_entropy,     "species entropy");
+  df.Write(0,                   "(deprecated) depth of most reacent coalescence");
+  df.Write(num_resamplings,     "Total number of resamplings this generation");
   df.Write(num_failedResamplings, "Total number of organisms that failed to resample this generation");
 
   df.Endl();
@@ -969,17 +780,17 @@ void cStats::PrintCountData(const cString& filename)
   df.WriteComment("Avida count data");
   df.WriteTimeStamp();
 
-  df.Write(m_update,         "update");
-  df.Write(num_executed,           "number of insts executed this update");
-  df.Write(num_creatures,          "number of organisms");
-  df.Write(num_genotypes,          "number of different genotypes");
-  df.Write(num_threshold,          "number of different threshold genotypes");
-  df.Write(0,                      "number of different species");
-  df.Write(0,                      "number of different threshold species");
-  df.Write(num_lineages,           "number of different lineages");
-  df.Write(num_births,             "number of births in this update");
-  df.Write(num_deaths,             "number of deaths in this update");
-  df.Write(num_breed_true,         "number of breed true");
+  df.Write(m_update,                "update");
+  df.Write(num_executed,            "number of insts executed this update");
+  df.Write(num_creatures,           "number of organisms");
+  df.Write(0,                       "(deprecated) number of different genotypes");
+  df.Write(0,                       "(deprecated) number of different threshold genotypes");
+  df.Write(0,                       "(deprecated) number of different species");
+  df.Write(0,                       "(deprecated) number of different threshold species");
+  df.Write(0,                       "(deprecated) number of different lineages");
+  df.Write(num_births,              "number of births in this update");
+  df.Write(num_deaths,              "number of deaths in this update");
+  df.Write(num_breed_true,          "number of breed true");
   df.Write(num_breed_true_creatures, "number of breed true organisms?");
   df.Write(num_no_birth_creatures,   "number of no-birth organisms");
   df.Write(num_single_thread_creatures, "number of single-threaded organisms");
@@ -1066,10 +877,10 @@ void cStats::PrintTotalsData(const cString& filename)
   df.Write((tot_executed+num_executed), "Total Instructions Executed");
   df.Write(num_executed, "Instructions Executed This Update");
   df.Write(tot_organisms, "Total Organisms");
-  df.Write(tot_genotypes, "Total Genotypes");
-  df.Write(tot_threshold, "Total Threshold");
-  df.Write(0, "Total Species");
-  df.Write(tot_lineages, "Total Lineages");
+  df.Write(0, "(deprecated) Total Genotypes");
+  df.Write(0, "(deprecated) Total Threshold");
+  df.Write(0, "(deprecated) Total Species");
+  df.Write(0, "(deprecated) Total Lineages");
   df.Endl();
 }
 
@@ -1521,22 +1332,6 @@ void cStats::PrintInstructionData(const cString& filename, const cString& inst_s
     df.Write(m_is_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
 
-  df.Endl();
-}
-
-void cStats::PrintMarketData(const cString& filename)
-{
-	cDataFile& df = m_world->GetDataFile(filename);
-
-	df.WriteComment( "Avida market data\n" );
-	df.WriteComment("cumulative totals since the last update data was printed" );
-	df.WriteTimeStamp();
-	df.Write( GetUpdate(), "update" );
-	df.Write( num_bought, "num bought" );
-	df.Write( num_sold, "num sold" );
-	df.Write(num_used, "num used" );
-	df.Write(num_own_used, "num own used" );
-	num_bought = num_sold = num_used = num_own_used = 0;
   df.Endl();
 }
 

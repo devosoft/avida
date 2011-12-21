@@ -70,6 +70,9 @@ namespace Avida {
       int m_num_genotypes;
       int m_num_historic_genotypes;
       
+      int m_num_threshold;
+      int m_tot_threshold;
+      
       int m_coalescent_depth;
       
       double m_ave_age;

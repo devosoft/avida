@@ -272,6 +272,8 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
             m_best = found->NumUnits();
             found->SetThreshold();
             found->SetName(nameGenotype(seq->GetSize()));
+            m_num_threshold++;
+            m_tot_threshold++;
             notifyListeners(found, EVENT_ADD_THRESHOLD);
           }          
         }
@@ -307,6 +309,8 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
       seq.DynamicCastFrom(found->Genome().Representation());
       assert(seq);
       found->SetName(nameGenotype(seq->GetSize()));
+      m_num_threshold++;
+      m_tot_threshold++;
       notifyListeners(found, EVENT_ADD_THRESHOLD);
     }
   }
@@ -349,6 +353,8 @@ void Avida::Systematics::GenotypeArbiter::AdjustGenotype(GenotypePtr genotype, i
     seq.DynamicCastFrom(genotype->Genome().Representation());
     assert(seq);
     genotype->SetName(nameGenotype(seq->GetSize()));
+    m_num_threshold++;
+    m_tot_threshold++;
     notifyListeners(genotype, EVENT_ADD_THRESHOLD);
   }
 }
@@ -383,7 +389,10 @@ void Avida::Systematics::GenotypeArbiter::setupProvidedData(World* world)
   PROVIDE("total", "Total Number of Genotypes", int, m_tot_genotypes);
   PROVIDE("current", "Number of Current Genotypes", int, m_num_genotypes);
   PROVIDE("ancestral", "Number of Ancestral Genotypes", int, m_num_historic_genotypes);
-  
+
+  PROVIDE("total_threshold", "Total Number of Threshold Genotypes", int, m_tot_threshold);
+  PROVIDE("current_threshold", "Number of Current Threshold Genotypes", int, m_num_threshold);
+
   PROVIDE("coalescent_depth", "Coalescent Depth", int, m_coalescent_depth);
   
   PROVIDE("ave_age", "Average Age", double, m_ave_age);
@@ -452,6 +461,7 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   }
 
   if (genotype->IsThreshold()) {
+    m_num_threshold--;
     notifyListeners(genotype, EVENT_REMOVE_THRESHOLD);
     genotype->ClearThreshold();
   }
