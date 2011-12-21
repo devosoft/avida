@@ -984,6 +984,10 @@ public:
 	// the additional cycle cost will be added.
 	void IncrementTaskSwitchingCost(int cost);
 	int GetTaskSwitchingCost() { return m_task_switching_cost; }
+  // Apply point mutations to a genome.
+  bool Inst_ApplyPointMutations(cAvidaContext& ctx);
+  bool Inst_JoinGermline(cAvidaContext& ctx);
+  
 
 	// -------- Mating types support support --------
 public:
@@ -996,6 +1000,8 @@ public:
   bool Inst_IfMatingTypeJuvenile(cAvidaContext& ctx);
   bool Inst_IncrementMatingDisplayA(cAvidaContext& ctx);
   bool Inst_IncrementMatingDisplayB(cAvidaContext& ctx);
+  bool Inst_SetMatingDisplayA(cAvidaContext& ctx);
+  bool Inst_SetMatingDisplayB(cAvidaContext& ctx);
   bool Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref);
   bool Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx);
   bool Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx);

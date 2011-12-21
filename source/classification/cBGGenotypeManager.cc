@@ -95,7 +95,14 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SumSize().Clear();
   stats.SumThresholdAge().Clear();
   
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    stats.SumPreySize().Clear();
+    stats.SumPredSize().Clear();
+  }
+  
   double entropy = 0.0;
+  double prey_entropy = 0.0;
+  double pred_entropy = 0.0;
   int active_count = 0;
   for (int i = 1; i < m_active_sz.GetSize(); i++) {
     active_count += m_active_sz[i].GetSize();
@@ -103,13 +110,18 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
     while (list_it->Next() != NULL) {
       cBGGenotype* bg = list_it->Get();
       const int abundance = bg->GetNumUnits();
-      
+
       // Update stats...
       const int age = stats.GetUpdate() - bg->GetUpdateBorn();
       stats.SumGenotypeAge().Add(age, abundance);
       stats.SumAbundance().Add(abundance);
       stats.SumGenotypeDepth().Add(bg->GetDepth(), abundance);
       stats.SumSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+      
+      if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+        if (bg->GetLastForagerType() !=-2) stats.SumPreySize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+        else stats.SumPredSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+      }      
       
       // Calculate this genotype's contribution to entropy
       // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
@@ -119,6 +131,19 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
       const double partial_ent = (abundance == stats.GetNumCreatures()) ? 0.0 : -(p * Log(p)); 
       entropy += partial_ent;
       
+      if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+        if (bg->GetLastForagerType() > -2) {
+          const double prey_p = ((double) abundance) / (double) stats.GetNumPreyCreatures();
+          const double prey_partial_ent = (abundance == stats.GetNumPreyCreatures()) ? 0.0 : -(prey_p * Log(prey_p)); 
+          prey_entropy += prey_partial_ent;
+        }
+        else {
+          const double pred_p = ((double) abundance) / (double) stats.GetNumPredCreatures();
+          const double pred_partial_ent = (abundance == stats.GetNumPredCreatures()) ? 0.0 : -(pred_p * Log(pred_p)); 
+          pred_entropy += pred_partial_ent;
+        }
+      }
+      
       // Do any special calculations for threshold genotypes.
       if (bg->IsThreshold()) stats.SumThresholdAge().Add(age, abundance);
     }
@@ -127,7 +152,11 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetEntropy(entropy);
   stats.SetNumGenotypes(active_count, m_historic.GetSize());
   
-  
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    stats.SetPreyEntropy(prey_entropy);
+    stats.SetPredEntropy(pred_entropy);
+  }
+    
   // Handle dominant genotype stats
   cBGGenotype* dom_genotype = getBest();
   if (dom_genotype == NULL) return;

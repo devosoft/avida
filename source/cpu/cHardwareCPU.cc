@@ -422,6 +422,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
     tInstLibEntry<tMethod>("increment-mating-display-a", &cHardwareCPU::Inst_IncrementMatingDisplayA),
     tInstLibEntry<tMethod>("increment-mating-display-b", &cHardwareCPU::Inst_IncrementMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mating-display-a", &cHardwareCPU::Inst_SetMatingDisplayA),
+    tInstLibEntry<tMethod>("set-mating-display-b", &cHardwareCPU::Inst_SetMatingDisplayB),
     tInstLibEntry<tMethod>("set-mate-preference-random", &cHardwareCPU::Inst_SetMatePreferenceRandom),
     tInstLibEntry<tMethod>("set-mate-preference-highest-display-a", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA),
     tInstLibEntry<tMethod>("set-mate-preference-highest-display-b", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB),
@@ -698,6 +700,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Division of labor instructions
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -9859,6 +9863,21 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
   m_task_switching_cost += cost;
 }
 
+
+bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
+{
+  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+  int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+  m_organism->IncPointMutations(num_mut);
+  return true;
+}
+
+bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
+  m_organism->JoinGermline();
+  return true;
+}
+
+
 /***
     Mating type instructions
 ***/
@@ -9946,6 +9965,30 @@ bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
   int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
   counter++;
   m_organism->GetPhenotype().SetCurMatingDisplayB(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
+//Sets the display value a to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayA(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
+//Sets the display value b to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayB(new_display);
   return true;
 }
 

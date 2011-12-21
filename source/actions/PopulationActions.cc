@@ -2087,11 +2087,15 @@ public:
 		const cString cpy = "GERMLINE_COPY_MUT";
 		const cString ins = "GERMLINE_INS_MUT";
 		const cString del = "GERMLINE_DEL_MUT";
+    const cString inst = "INST_POINT_MUT_PROB";
+
 		const cString val = "0.0";
 		
 		m_world->GetConfig().Set(cpy, val);
 		m_world->GetConfig().Set(ins, val);
 		m_world->GetConfig().Set(del, val);
+    m_world->GetConfig().Set(inst, val);
+
   }
 };
 

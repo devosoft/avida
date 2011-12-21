@@ -88,6 +88,8 @@ cPopulation::cPopulation(cWorld* world)
 , print_mini_trace_genomes(true)
 , environment(world->GetEnvironment())
 , num_organisms(0)
+, num_prey_organisms(0)
+, num_pred_organisms(0)
 , sync_events(false)
 , m_hgt_resid(-1)
 {
@@ -823,7 +825,10 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   // Keep track of statistics for organism counts...
   num_organisms++;
-  
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
+    else num_pred_organisms++;
+  }
   if (deme_array.GetSize() > 0) {
     deme_array[target_cell.GetDemeID()].IncOrgCount();
   }
@@ -1874,8 +1879,7 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
     return;
   }
 
-  // Update stats
-  // calculate how many different reactions the deme performed.
+  // Update stats calculate how many different reactions the deme performed.
   double deme_performed_rx=0;
   tArray<int> deme_reactions = source_deme.GetCurReactionCount();
   for(int i=0; i< deme_reactions.GetSize(); ++i) {
@@ -1896,8 +1900,7 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
   }
 
 
-  m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties,
-                                                              shannon_div, num_orgs_perf_reaction, per_reproductives);
+  m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties, shannon_div, num_orgs_perf_reaction, per_reproductives);
 
   //Option to bridge between kin and group selection.
   if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get()) {
@@ -2357,7 +2360,23 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           }
           break;
         }
-
+        case 7: { // Grab the organisms that have flagged themselves as
+          // part of the germline. Ignores replicate size...
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          for (int i = 0; i<source_deme.GetSize(); ++i) {
+            cPopulationCell& cell = GetCell(i);
+            if (cell.IsOccupied()) {
+              cOrganism* o = cell.GetOrganism();
+              if (o->IsGermline()) {
+                founders.Push(o);
+              }
+            }
+          }
+         
+          source_founders = founders;
+          target_founders = founders;
+          break;
+        }
         case 2:
         case 3:
         case 4:
@@ -2493,6 +2512,9 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // Methods that require a germline can sometimes come up short...
       //assert(source_founders.GetSize()>0);
       //assert(target_founders.GetSize()>0);
+      if(source_founders.GetSize() == 0) {
+        return false;
+      }
 
       // We clear the deme, but trick cPopulation::KillOrganism
       // to NOT delete the organisms, by pretending
@@ -2591,6 +2613,15 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // source deme is left untouched
       else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 2) {
       }
+      else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 3) {
+        source_deme.ClearTotalResourceAmountConsumed();
+      }
+      else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 4) {
+        source_deme.ClearTotalResourceAmountConsumed();
+        for(int i=0; i<source_founders.GetSize(); i++) {
+          source_founders[i]->Die(ctx);
+        }
+      }
       else {
         m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
       }
@@ -2658,9 +2689,54 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 
 void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
 {
-  // phenotype can be NULL
+  // Mutate the genome?
+  if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1) {
+    // MUTATE!
 
+    // create a new genome by mutation
+    Genome mg(bg->GetProperty("genome").AsString());
+    cCPUMemory new_genome(mg.GetSequence());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
+    cAvidaContext ctx(m_world, m_world->GetRandom());
+    
+    if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
+      for(int i=0; i<new_genome.GetSize(); ++i) {
+        if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
+          new_genome[i] = instset.GetRandomInst(ctx);
+        }
+      }
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize() + 1);
+      new_genome.Insert(mut_line, instset.GetRandomInst(ctx));
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize());
+      new_genome.Remove(mut_line);
+    }
+    mg.SetSequence(new_genome);
+
+    /*
+    
+    //Create a new genotype which is daughter to the old one.
+    cDemePlaceholderUnit unit(SRC_DEME_GERMLINE, mg);
+    tArray<cBioGroup*> parents;
+    parents.Push(bg);
+    cBioGroup* new_genotype = bg->ClassifyNewBioUnit(&unit, &parents); 
+    new_genotype->RemoveBioUnit(&unit);
+    */
+    
+    InjectGenome(_cell_id, SRC_DEME_REPLICATE, mg, ctx); 
+
+  } else {
+  
+  // phenotype can be NULL
   InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx); 
+  }
 
   // At this point, the cell had better be occupied...
   assert(GetCell(_cell_id).IsOccupied());
@@ -4530,6 +4606,76 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   resource_count.UpdateGlobalResources(ctx);   
 }
 
+void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx) 
+{
+  // Get per-org stats seperately for pred and prey
+  cStats& stats = m_world->GetStats();
+  
+  // Clear out organism sums...
+  stats.SumPreyFitness().Clear();
+  stats.SumPreyGestation().Clear();
+  stats.SumPreyMerit().Clear();
+  stats.SumPreyCreatureAge().Clear();
+  stats.SumPreyGeneration().Clear();
+  
+  stats.SumPredFitness().Clear();
+  stats.SumPredGestation().Clear();
+  stats.SumPredMerit().Clear();
+  stats.SumPredCreatureAge().Clear();
+  stats.SumPredGeneration().Clear();
+  
+//  stats.ZeroFTReactions();   ****
+  
+  stats.ZeroFTInst();
+      
+  for (int i = 0; i < live_org_list.GetSize(); i++) {  
+    cOrganism* organism = live_org_list[i];
+    const cPhenotype& phenotype = organism->GetPhenotype();
+    const cMerit cur_merit = phenotype.GetMerit();
+    const double cur_fitness = phenotype.GetFitness();
+    
+    if(organism->GetForageTarget() > -2) {
+      stats.SumPreyFitness().Add(cur_fitness);
+      stats.SumPreyGestation().Add(phenotype.GetGestationTime());
+      stats.SumPreyMerit().Add(cur_merit.GetDouble());
+      stats.SumPreyCreatureAge().Add(phenotype.GetAge());
+      stats.SumPreyGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+    }
+    else {
+      stats.SumPredFitness().Add(cur_fitness);
+      stats.SumPredGestation().Add(phenotype.GetGestationTime());
+      stats.SumPredMerit().Add(cur_merit.GetDouble());
+      stats.SumPredCreatureAge().Add(phenotype.GetAge());
+      stats.SumPredGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+    }
+        
+    // Record what add bonuses this organism garnered for different reactions
+/*    for (int j = 0; j < m_world->GetEnvironment().GetNumReactions(); j++) {
+      if (phenotype.GetCurReactionCount()[j] > 0) {
+        stats.AddCurReaction(j);
+        stats.AddCurReactionAddReward(j, phenotype.GetCurReactionAddReward()[j]);
+      }
+      
+      if (phenotype.GetLastReactionCount()[j] > 0) {
+        stats.AddLastReaction(j);
+        stats.IncReactionExeCount(j, phenotype.GetLastReactionCount()[j]);
+        stats.AddLastReactionAddReward(j, phenotype.GetLastReactionAddReward()[j]);
+      }
+    }*/
+            
+  }
+}
+
 void cPopulation::UpdateResStats(cAvidaContext& ctx) 
 {
   cStats& stats = m_world->GetStats();
@@ -4551,9 +4697,13 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 
   UpdateDemeStats(ctx); 
   UpdateOrganismStats(ctx);
-  
   m_world->GetClassificationManager().UpdateStats(stats);
-
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    stats.SetNumPreyCreatures(GetNumPreyOrganisms());
+    stats.SetNumPredCreatures(GetNumPredOrganisms());
+    UpdateFTOrgStats(ctx);
+  }
+  
   // Have stats calculate anything it now can...
   stats.CalcEnergy();
   stats.CalcFidelity();

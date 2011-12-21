@@ -151,6 +151,8 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
   m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstPreyExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   
   
   return true;

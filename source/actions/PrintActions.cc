@@ -107,6 +107,12 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
+STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
+STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
+STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
+STATS_OUT_FILE(PrintPredatorErrorData,      predator_error.dat   );
+STATS_OUT_FILE(PrintPreyVarianceData,       prey_variance.dat   );
+STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
@@ -115,6 +121,7 @@ STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
+STATS_OUT_FILE(PrintDemeGermlineSequestration, deme_germ.dat);
 STATS_OUT_FILE(PrintDemeReactionDiversityReplicationData, deme_rx_repl.dat );
 STATS_OUT_FILE(PrintWinningDeme, deme_winners.dat);
 STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
@@ -290,6 +297,63 @@ public:
   }
 };
 
+class cActionPrintPreyInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPreyInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "prey_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("prey_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"prey_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPreyInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintPredatorInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPredatorInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "predator_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("predator_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"predator_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPredatorInstructionData(m_filename, m_inst_set);
+  }
+};
 
 class cActionPrintInstructionAbundanceHistogram : public cAction
 {
@@ -4335,6 +4399,14 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
+  action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
+  action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");
+  action_lib->Register<cActionPrintPredatorErrorData>("PrintPredatorErrorData");
+  action_lib->Register<cActionPrintPreyVarianceData>("PrintPreyVarianceData");
+  action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
+  action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
+  action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
@@ -4381,6 +4453,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
+  action_lib->Register<cActionPrintDemeGermlineSequestration>("PrintDemeGermlineSequestration");
 	action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
   action_lib->Register<cActionPrintWinningDeme>("PrintWinningDeme");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
