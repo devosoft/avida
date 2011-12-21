@@ -24,14 +24,14 @@
 
 #include "avida/viewer-core/Map.h"
 
+#include "avida/private/viewer-core/ClassificationInfo.h"
+
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
-
-#include "avida/private/viewer-core/ClassificationInfo.h"
 
 #include <cmath>
 #include <iostream>

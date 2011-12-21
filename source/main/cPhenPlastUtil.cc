@@ -21,7 +21,8 @@
 
 #include "cPhenPlastUtil.h"
 
-#include "cBGGenotype.h"
+#include "avida/systematics/Group.h"
+
 #include "cPhenPlastGenotype.h"
 #include "cPhenPlastSummary.h"
 

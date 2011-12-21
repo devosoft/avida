@@ -24,9 +24,10 @@
 
 #include "Avida2Driver.h"
 
+#include "avida/systematics/Group.h"
+
 #include "cAnalyze.h"
 #include "cAvidaContext.h"
-#include "cBGGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"

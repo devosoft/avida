@@ -27,6 +27,9 @@
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/data/Util.h"
+#include "avida/systematics/Group.h"
+
+#include "avida/private/systematics/GenomeTestMetrics.h"
 
 #include "AvidaTools.h"
 
@@ -39,8 +42,6 @@
 #include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
-#include "avida/private/systematics/GenomeTestMetrics.h"
-#include "cBGGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
@@ -4521,7 +4522,6 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   m_world->GetClassificationManager().UpdateStats(stats);
 
   // Have stats calculate anything it now can...
-  stats.CalcEnergy();
   stats.CalcFidelity();
 
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx);   

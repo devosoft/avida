@@ -24,12 +24,12 @@
 #include "avida/Avida.h"
 
 #include "avida/core/WorldDriver.h"
+#include "avida/systematics/Group.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
-#include "cBGGenotype.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"

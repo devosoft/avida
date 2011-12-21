@@ -30,7 +30,6 @@
 
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
-#include "cBioGroupManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cHardwareManager.h"

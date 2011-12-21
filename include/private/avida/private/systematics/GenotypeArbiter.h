@@ -27,6 +27,7 @@
 #include "avida/core/Properties.h"
 #include "avida/data/Provider.h"
 #include "avida/systematics/Arbiter.h"
+
 #include "avida/private/systematics/Genotype.h"
 
 
@@ -69,6 +70,9 @@ namespace Avida {
       
       int m_num_genotypes;
       int m_num_historic_genotypes;
+      
+      int m_num_threshold;
+      int m_tot_threshold;
       
       int m_coalescent_depth;
       

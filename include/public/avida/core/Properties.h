@@ -56,6 +56,7 @@ namespace Avida {
     LIB_EXPORT inline const Apto::String& Description() const { return m_desc; }
     LIB_EXPORT virtual Apto::String Value() const;
     LIB_EXPORT inline operator Apto::String() const { return Value(); }
+    LIB_EXPORT inline operator const char*() const { return (const char*)Value(); }
   };
 
 

@@ -24,12 +24,12 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/systematics/Group.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
-#include "cBGGenotype.h"
 #include "tArrayUtils.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
@@ -78,7 +78,6 @@ STATS_OUT_FILE(PrintAverageData,            average.dat         );
 STATS_OUT_FILE(PrintDemeAverageData,        deme_average.dat    );
 STATS_OUT_FILE(PrintErrorData,              error.dat           );
 STATS_OUT_FILE(PrintVarianceData,           variance.dat        );
-STATS_OUT_FILE(PrintDominantData,           dominant.dat        );
 STATS_OUT_FILE(PrintStatsData,              stats.dat           );
 STATS_OUT_FILE(PrintCountData,              count.dat           );
 STATS_OUT_FILE(PrintMessageData,            message.dat         );
@@ -104,7 +103,6 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
-STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
