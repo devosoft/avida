@@ -26,6 +26,7 @@
 #include "avida/core/InstructionSequence.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
+
 #include "avida/private/systematics/Genotype.h"
 
 #include "cDoubleSum.h"

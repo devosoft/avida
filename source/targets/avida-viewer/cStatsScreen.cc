@@ -7,10 +7,11 @@
 
 #include "cStatsScreen.h"
 
+#include "avida/private/systematics/GenomeTestMetrics.h"
+
 #include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
-#include "avida/private/systematics/GenomeTestMetrics.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "tAutoRelease.h"

@@ -27,6 +27,9 @@
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/data/Util.h"
+#include "avida/systematics/Group.h"
+
+#include "avida/private/systematics/GenomeTestMetrics.h"
 
 #include "AvidaTools.h"
 
@@ -39,8 +42,6 @@
 #include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
-#include "avida/private/systematics/GenomeTestMetrics.h"
-#include "cBGGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"

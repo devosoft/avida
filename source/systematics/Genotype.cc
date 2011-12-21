@@ -24,7 +24,9 @@
 #include "avida/private/systematics/Genotype.h"
 
 #include "avida/core/InstructionSequence.h"
+
 #include "avida/private/systematics/GenotypeArbiter.h"
+
 
 Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, UnitPtr founder, Update update,
                              ConstGroupMembershipPtr parents)
@@ -89,11 +91,7 @@ Avida::Systematics::ArbiterPtr Avida::Systematics::Genotype::Arbiter() const
 }
 
 
-<<<<<<< HEAD
-Systematics::GroupPtr cBGGenotype::ClassifyNewBioUnit(Systematics::UnitPtr bu, tArray<Systematics::GroupPtr>* parents)
-=======
 Avida::Systematics::GroupPtr Avida::Systematics::Genotype::ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parents)
->>>>>>> 90728112a3a108223dae83cc14f8520c77487da1
 {
   m_births.Inc();
   
@@ -115,14 +113,12 @@ Avida::Systematics::GroupPtr Avida::Systematics::Genotype::ClassifyNewUnit(UnitP
 
 void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
 {
-  const cPhenotype& phenotype = u->GetPhenotype();
-  
-  m_copied_size.Add(phenotype.GetCopiedSize());
-  m_exe_size.Add(phenotype.GetExecutedSize());
-  m_gestation_time.Add(phenotype.GetGestationTime());
-  m_repro_rate.Add(1.0 / phenotype.GetGestationTime());
-  m_merit.Add(phenotype.GetMerit().GetDouble());
-  m_fitness.Add(phenotype.GetFitness());
+  m_copied_size.Add(Apto::StrAs(u->Properties().Get("copied_size")));
+  m_exe_size.Add(Apto::StrAs(u->Properties().Get("executed_size")));
+  m_gestation_time.Add(Apto::StrAs(u->Properties().Get("gestation_time")));
+  m_repro_rate.Add(1.0 / (double)Apto::StrAs(u->Properties().Get("gestation_time")));
+  m_merit.Add(Apto::StrAs(u->Properties().Get("merit")));
+  m_fitness.Add(Apto::StrAs(u->Properties().Get("fitness")));
 }
 
 

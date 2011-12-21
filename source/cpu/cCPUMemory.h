@@ -25,14 +25,8 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
-using namespace Avida;
-
-
-class cCPUMemory : public InstructionSequence
+class cCPUMemory : public Avida::InstructionSequence
 {
 private:
 	static const unsigned char MASK_COPIED   = 0x01;
@@ -44,7 +38,7 @@ private:
 	static const unsigned char MASK_UNUSED1  = 0x40; // unused bit
 	static const unsigned char MASK_UNUSED2  = 0x80; // unused bit
   
-  tArray<unsigned char> m_flag_array;
+  Apto::Array<unsigned char> m_flag_array;
 
   void adjustCapacity(int new_size);
   void prepareInsert(int pos, int num_sites);
@@ -53,7 +47,7 @@ public:
   cCPUMemory(const cCPUMemory& in_memory);
   cCPUMemory(const InstructionSequence& in_genome) : InstructionSequence(in_genome), m_flag_array(in_genome.GetSize()) { ; }
   explicit cCPUMemory(int size = 1)  : InstructionSequence(size), m_flag_array(size) { ClearFlags(); }
-  cCPUMemory(const cString& in_string) : InstructionSequence(in_string), m_flag_array(in_string.GetSize()) { ; }
+  cCPUMemory(const Apto::String& in_string) : InstructionSequence(in_string), m_flag_array(in_string.GetSize()) { ; }
   ~cCPUMemory() { ; }
 
   inline bool FlagCopied(int pos) const     { return MASK_COPIED   & m_flag_array[pos]; }
@@ -92,7 +86,7 @@ public:
   
   void Resize(int new_size);
   void Copy(int to, int from);
-  void Insert(int pos, const Instruction& inst);
+  void Insert(int pos, const Avida::Instruction& inst);
   void Insert(int pos, const InstructionSequence& genome);
   void Remove(int pos, int num_sites = 1);
   void Replace(int pos, int num_sites, const InstructionSequence& genome);

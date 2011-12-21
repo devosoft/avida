@@ -25,6 +25,8 @@
 
 #include "avida/core/WorldDriver.h"
 
+#include "avida/private/systematics/SexualAncestry.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
@@ -32,7 +34,6 @@
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cSexualAncestry.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"

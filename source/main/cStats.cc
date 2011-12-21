@@ -3395,8 +3395,8 @@ void cStats::PrintWinningDeme(const cString& filename) {
 	for(int i=0; i<deme.GetSize(); ++i) {
 		cOrganism* org=deme.GetOrganism(i);
 		if(org != 0) {
-			genotypes.push_back(org->GetBioGroup("genotype")->GetID());
-			uniq.insert(org->GetBioGroup("genotype")->GetID());
+			genotypes.push_back(org->SystematicsGroup("genotype")->ID());
+			uniq.insert(org->SystematicsGroup("genotype")->ID());
 		}
 	}
 	

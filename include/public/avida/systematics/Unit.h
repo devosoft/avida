@@ -71,6 +71,8 @@ namespace Avida {
       LIB_EXPORT virtual Apto::String UnitSourceArguments() const = 0;
       LIB_EXPORT virtual const Genome& Genome() const = 0;
       
+      LIB_EXPORT virtual const PropertyMap& Properties() const = 0;
+      
       
       LIB_EXPORT inline ConstGroupMembershipPtr SystematicsGroupMembership() const { return m_groups; }
       LIB_EXPORT GroupPtr SystematicsGroup(const RoleID& role) const;

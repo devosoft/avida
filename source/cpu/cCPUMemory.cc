@@ -23,7 +23,7 @@
 #include "cCPUMemory.h"
 
 using namespace std;
-
+using namespace Avida;
 
 cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : InstructionSequence(in_memory), m_flag_array(in_memory.GetSize())
 {

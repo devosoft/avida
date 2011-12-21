@@ -27,6 +27,7 @@
 #include "avida/core/Properties.h"
 #include "avida/data/Provider.h"
 #include "avida/systematics/Arbiter.h"
+
 #include "avida/private/systematics/Genotype.h"
 
 

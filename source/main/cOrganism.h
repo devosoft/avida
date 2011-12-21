@@ -24,8 +24,9 @@
 #define cOrganism_h
 
 #include "avida/core/Genome.h"
-#include "avida/private/systematics/GenomeTestMetrics.h"
 #include "avida/systematics/Unit.h"
+
+#include "avida/private/systematics/GenomeTestMetrics.h"
 
 #include "cCPUMemory.h"
 #include "cMutationRates.h"
