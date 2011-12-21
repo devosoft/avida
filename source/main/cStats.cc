@@ -137,6 +137,10 @@ cStats::cStats(cWorld* world)
   , m_spec_waste(0)
   , num_migrations(0)
   , m_num_successful_mates(0)
+  , prey_entropy(0.0)
+  , num_prey_creatures(0)
+  , pred_entropy(0.0)
+  , num_pred_creatures(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -193,6 +197,7 @@ cStats::cStats(cWorld* world)
 
 
   ZeroInst();
+  ZeroFTInst();
 
   const int num_reactions = env.GetNumReactions();
   m_reaction_cur_count.Resize(num_reactions);
@@ -507,6 +512,16 @@ void cStats::ZeroReactions()
 void cStats::ZeroInst()
 {
   for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_exe_inst_map.begin(); it != m_is_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+}
+
+void cStats::ZeroFTInst()
+{
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_prey_exe_inst_map.begin(); it != m_is_prey_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_exe_inst_map.begin(); it != m_is_pred_exe_inst_map.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
   }
 }
@@ -874,6 +889,148 @@ void cStats::PrintParasiteData(const cString& filename)
 
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
+  df.Endl();
+}
+
+void cStats::PrintPreyAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_prey_fitness.Average(),        "Fitness");
+  df.Write(sum_prey_gestation.Average(),      "Gestation Time");
+  df.Write(sum_prey_merit.Average(),          "Merit");
+  df.Write(sum_prey_creature_age.Average(),   "Creature Age");
+  df.Write(sum_prey_generation.Average(),     "Generation");
+  df.Write(sum_prey_size.Average(),           "Genome Length");
+  df.Write(prey_entropy,                      "Total Prey Genotypic Entropy");
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_pred_fitness.Average(),        "Fitness");
+  df.Write(sum_pred_gestation.Average(),      "Gestation Time");
+  df.Write(sum_pred_merit.Average(),          "Merit");
+  df.Write(sum_pred_creature_age.Average(),   "Creature Age");
+  df.Write(sum_pred_generation.Average(),     "Generation");
+  df.Write(sum_pred_size.Average(),           "Genome Length");
+  df.Write(pred_entropy,                      "Total Predator Genotypic Entropy");
+  
+  df.Endl();
+}
+
+void cStats::PrintPreyErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_prey_fitness.StdError(),         "Fitness");
+  df.Write(sum_prey_gestation.StdError(),       "Gestation Time");
+  df.Write(sum_prey_merit.StdError(),           "Merit");
+  df.Write(sum_prey_creature_age.StdError(),    "Creature Age");
+  df.Write(sum_prey_generation.StdError(),      "Generation");
+  df.Write(sum_prey_size.StdError(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_pred_fitness.StdError(),         "Fitness");
+  df.Write(sum_pred_gestation.StdError(),       "Gestation Time");
+  df.Write(sum_pred_merit.StdError(),           "Merit");
+  df.Write(sum_pred_creature_age.StdError(),    "Creature Age");
+  df.Write(sum_pred_generation.StdError(),      "Generation");
+  df.Write(sum_pred_size.StdError(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPreyVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_prey_fitness.Variance(),         "Fitness");
+  df.Write(sum_prey_gestation.Variance(),       "Gestation Time");
+  df.Write(sum_prey_merit.Variance(),           "Merit");
+  df.Write(sum_prey_creature_age.Variance(),    "Creature Age");
+  df.Write(sum_prey_generation.Variance(),      "Generation");
+  df.Write(sum_prey_size.Variance(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_pred_fitness.Variance(),         "Fitness");
+  df.Write(sum_pred_gestation.Variance(),       "Gestation Time");
+  df.Write(sum_pred_merit.Variance(),           "Merit");
+  df.Write(sum_pred_creature_age.Variance(),    "Creature Age");
+  df.Write(sum_pred_generation.Variance(),      "Generation");
+  df.Write(sum_pred_size.Variance(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey org instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_prey_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_prey_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator org instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_pred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
   df.Endl();
 }
 

@@ -88,6 +88,9 @@ private:
   int world_y;                         // Structured population height.
   int world_z;                         //!< Population depth.
   int num_organisms;                   // Cell count with living organisms
+  int num_prey_organisms;
+  int num_pred_organisms;
+  
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
   // Outside interactions...
@@ -272,6 +275,9 @@ public:
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
 
+  int GetNumPreyOrganisms() { return num_prey_organisms; }
+  int GetNumPredOrganisms() { return num_pred_organisms; }
+  
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);
@@ -363,6 +369,7 @@ private:
   // Update statistics collecting...
   void UpdateDemeStats(cAvidaContext& ctx); 
   void UpdateOrganismStats(cAvidaContext& ctx); 
+  void UpdateFTOrgStats(cAvidaContext& ctx); 
   
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
