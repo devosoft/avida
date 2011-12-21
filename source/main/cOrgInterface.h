@@ -39,7 +39,6 @@ namespace Avida {
 };
 
 class cAvidaContext;
-class cBioUnit;
 class cDeme;
 class cOrganism;
 class cOrgMessage;

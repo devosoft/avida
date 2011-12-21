@@ -32,10 +32,6 @@
 #include "cPopulationCell.h"
 #include "cSensing.h"
 
-namespace Avida {
-  class Sequence;
-};
-
 class cAvidaContext;
 class cDeme;
 class cPopulation;

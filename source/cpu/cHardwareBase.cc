@@ -294,7 +294,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
-    char before_mutation = offspring_genome[mut_line].GetSymbol();
     offspring_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
     totalMutations++;
   }
@@ -306,7 +305,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   {
     if (totalMutations >= maxmut) break;
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
-    char before_mutation = offspring_genome[mut_line].GetSymbol();
     offspring_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
     totalMutations++;
   }
@@ -366,7 +364,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     if (num_mut > 0 && totalMutations < maxmut) {
       for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
         int site = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
-        char before_mutation = offspring_genome[site].GetSymbol();
         offspring_genome[site] = m_inst_set->GetRandomInst(ctx);
         totalMutations++;
       }
@@ -1070,9 +1067,9 @@ void cHardwareBase::ReceiveFlash()
 
 /*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
  */
-Sequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
+InstructionSequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 	cHeadCPU tmp(GetHead(nHardware::HEAD_READ));
-	Sequence fragment(downstream);
+	InstructionSequence fragment(downstream);
 	for(; downstream>0; --downstream, tmp.Advance()) { 
 		fragment.Append(tmp.GetInst());
 	}

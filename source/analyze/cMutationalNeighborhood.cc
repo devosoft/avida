@@ -38,9 +38,13 @@ using namespace std;
 
 
 cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const Genome& genome, int target)
-  : m_world(world), m_initialized(false), m_inst_set(m_world->GetHardwareManager().GetInstSet(genome.GetInstSet()))
+  : m_world(world), m_initialized(false)
+  , m_inst_set(m_world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset")))
   , m_target(target), m_base_genome(genome)
 {
+  InstructionSequencePtr seq;
+  seq.DynamicCastFrom(m_base_genome.Representation());
+  m_base_genome_size = seq->GetSize();
   // Acquire write lock, to prevent any cMutationalNeighborhoodResults instances before computing
   m_rwlock.WriteLock();
 }
@@ -53,7 +57,7 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
     int cur_site = m_cur_site++;
     m_mutex.Unlock();
 
-    if (cur_site < m_base_genome.GetSize()) {
+    if (cur_site < m_base_genome_size) {
       // Create test infrastructure
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
       cCPUTestInfo test_info;
@@ -62,50 +66,50 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       sStep& opdata = m_onestep_point[cur_site];
       opdata.peak_fitness = m_base_fitness;
       opdata.peak_genome = m_base_genome;
-      opdata.site_count.Resize(m_base_genome.GetSize(), 0);
+      opdata.site_count.Resize(m_base_genome_size, 0);
 
       sStep& oidata = m_onestep_insert[cur_site];
       oidata.peak_fitness = m_base_fitness;
       oidata.peak_genome = m_base_genome;
-      oidata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+      oidata.site_count.Resize(m_base_genome_size + 1, 0);
 
       sStep& oddata = m_onestep_delete[cur_site];
       oddata.peak_fitness = m_base_fitness;
       oddata.peak_genome = m_base_genome;
-      oddata.site_count.Resize(m_base_genome.GetSize(), 0);
+      oddata.site_count.Resize(m_base_genome_size, 0);
       
       
       // Setup Data Used in Two Step
       sStep& tpdata = m_twostep_point[cur_site];
       tpdata.peak_fitness = m_base_fitness;
       tpdata.peak_genome = m_base_genome;
-      tpdata.site_count.Resize(m_base_genome.GetSize(), 0);
+      tpdata.site_count.Resize(m_base_genome_size, 0);
 
       sStep& tidata = m_twostep_insert[cur_site];
       tidata.peak_fitness = m_base_fitness;
       tidata.peak_genome = m_base_genome;
-      tidata.site_count.Resize(m_base_genome.GetSize() + 2, 0);
+      tidata.site_count.Resize(m_base_genome_size + 2, 0);
 
       sStep& tddata = m_twostep_delete[cur_site];
       tddata.peak_fitness = m_base_fitness;
       tddata.peak_genome = m_base_genome;
-      tddata.site_count.Resize(m_base_genome.GetSize(), 0);
+      tddata.site_count.Resize(m_base_genome_size, 0);
 
       
       sStep& tipdata = m_insert_point[cur_site];
       tipdata.peak_fitness = m_base_fitness;
       tipdata.peak_genome = m_base_genome;
-      tipdata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+      tipdata.site_count.Resize(m_base_genome_size + 1, 0);
       
       sStep& tiddata = m_insert_delete[cur_site];
       tiddata.peak_fitness = m_base_fitness;
       tiddata.peak_genome = m_base_genome;
-      tiddata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+      tiddata.site_count.Resize(m_base_genome_size + 1, 0);
       
       sStep& tdpdata = m_delete_point[cur_site];
       tdpdata.peak_fitness = m_base_fitness;
       tdpdata.peak_genome = m_base_genome;
-      tdpdata.site_count.Resize(m_base_genome.GetSize(), 0);
+      tdpdata.site_count.Resize(m_base_genome_size, 0);
       
       
       // Do the processing, starting with One Step
@@ -115,27 +119,27 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
 
       // Process the hanging insertion on the first cycle through (to balance execution time)
       if (cur_site == 0) {
-        cur_site = m_base_genome.GetSize();
+        cur_site = m_base_genome_size;
         
         sStep& oidata2 = m_onestep_insert[cur_site];
         oidata2.peak_fitness = m_base_fitness;
         oidata2.peak_genome = m_base_genome;
-        oidata2.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+        oidata2.site_count.Resize(m_base_genome_size + 1, 0);
         
         sStep& tidata2 = m_twostep_insert[cur_site];
         tidata2.peak_fitness = m_base_fitness;
         tidata2.peak_genome = m_base_genome;
-        tidata2.site_count.Resize(m_base_genome.GetSize() + 2, 0);
+        tidata2.site_count.Resize(m_base_genome_size + 2, 0);
         
         sStep& tipdata2 = m_insert_point[cur_site];
         tipdata2.peak_fitness = m_base_fitness;
         tipdata2.peak_genome = m_base_genome;
-        tipdata2.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+        tipdata2.site_count.Resize(m_base_genome_size + 1, 0);
         
         sStep& tiddata2 = m_insert_delete[cur_site];
         tiddata2.peak_fitness = m_base_fitness;
         tiddata2.peak_genome = m_base_genome;
-        tiddata2.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+        tiddata2.site_count.Resize(m_base_genome_size + 1, 0);
         
         ProcessOneStepInsert(ctx, testcpu, test_info, cur_site); 
       }
@@ -149,7 +153,7 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
   }
   
   m_mutex.Lock();
-  if (++m_completed == m_base_genome.GetSize()) ProcessComplete(ctx); 
+  if (++m_completed == m_base_genome_size) ProcessComplete(ctx); 
   m_mutex.Unlock();
 }
 
@@ -176,21 +180,21 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   delete testcpu;
 
   // Setup state to begin processing
-  m_onestep_point.ResizeClear(m_base_genome.GetSize());
-  m_onestep_insert.ResizeClear(m_base_genome.GetSize() + 1);
-  m_onestep_delete.ResizeClear(m_base_genome.GetSize());
+  m_onestep_point.ResizeClear(m_base_genome_size);
+  m_onestep_insert.ResizeClear(m_base_genome_size + 1);
+  m_onestep_delete.ResizeClear(m_base_genome_size);
   
-  m_twostep_point.ResizeClear(m_base_genome.GetSize());
-  m_twostep_insert.ResizeClear(m_base_genome.GetSize() + 1);
-  m_twostep_delete.ResizeClear(m_base_genome.GetSize());
+  m_twostep_point.ResizeClear(m_base_genome_size);
+  m_twostep_insert.ResizeClear(m_base_genome_size + 1);
+  m_twostep_delete.ResizeClear(m_base_genome_size);
   
-  m_insert_point.ResizeClear(m_base_genome.GetSize() + 1);
-  m_insert_delete.ResizeClear(m_base_genome.GetSize() + 1);
-  m_delete_point.ResizeClear(m_base_genome.GetSize());
+  m_insert_point.ResizeClear(m_base_genome_size + 1);
+  m_insert_delete.ResizeClear(m_base_genome_size + 1);
+  m_delete_point.ResizeClear(m_base_genome_size);
   
-  m_fitness_point.ResizeClear(m_base_genome.GetSize(), m_inst_set.GetSize());
-  m_fitness_insert.ResizeClear(m_base_genome.GetSize() + 1, m_inst_set.GetSize());
-  m_fitness_delete.ResizeClear(m_base_genome.GetSize(), 1);
+  m_fitness_point.ResizeClear(m_base_genome_size, m_inst_set.GetSize());
+  m_fitness_insert.ResizeClear(m_base_genome_size + 1, m_inst_set.GetSize());
+  m_fitness_delete.ResizeClear(m_base_genome_size, 1);
   
   m_cur_site = 0;
   m_completed = 0;
@@ -202,7 +206,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   
   // Load enough jobs to process all sites
   cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-  for (int i = 0; i < m_base_genome.GetSize(); i++)
+  for (int i = 0; i < m_base_genome_size; i++)
     jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(this, &cMutationalNeighborhood::Process));
   
   jobqueue.Start();
@@ -215,7 +219,9 @@ void cMutationalNeighborhood::ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* 
   sStep& odata = m_onestep_point[cur_site];
   
   Genome mod_genome(m_base_genome);
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   
   // Loop through all the lines of genome, testing trying all combinations.
   int cur_inst = seq[cur_site].GetOp();
@@ -240,7 +246,9 @@ void cMutationalNeighborhood::ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU*
   sStep& odata = m_onestep_insert[cur_site];
   
   Genome mod_genome(m_base_genome);
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   seq.Insert(cur_site, Instruction(0));
   
   // Loop through all instructions...
@@ -260,7 +268,9 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
   sStep& odata = m_onestep_delete[cur_site];
   
   Genome mod_genome(m_base_genome);
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   seq.Remove(cur_site);
 
   m_fitness_delete[cur_site][0] = ProcessOneStepGenome(ctx, testcpu, test_info, mod_genome, odata, cur_site);
@@ -331,12 +341,14 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
                                                   int cur_site, Genome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   sTwoStep& tdata = m_twostep_point[cur_site];
   sPendFit cur(m_fitness_point, cur_site, seq[cur_site].GetOp());
 
   // Loop through remaining lines of genome, testing trying all combinations.
-  for (int line_num = cur_site + 1; line_num < m_base_genome.GetSize(); line_num++) {
+  for (int line_num = cur_site + 1; line_num < m_base_genome_size; line_num++) {
     int cur_inst = seq[line_num].GetOp();
     
     // Loop through all instructions...
@@ -356,8 +368,10 @@ void cMutationalNeighborhood::ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU*
                                                    int cur_site, Genome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
-  const int mod_size = mod_genome.GetSize();
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
+  const int mod_size = seq.GetSize();
   sTwoStep& tdata = m_twostep_insert[cur_site];
   sPendFit cur(m_fitness_insert, cur_site, seq[cur_site].GetOp());
   
@@ -377,8 +391,10 @@ void cMutationalNeighborhood::ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU*
 void cMutationalNeighborhood::ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
                                                    int cur_site, Genome& mod_genome)
 {
-  const int mod_size = mod_genome.GetSize();
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
+  const int mod_size = seq.GetSize();
   sTwoStep& tdata = m_twostep_delete[cur_site];
   sPendFit cur(m_fitness_delete, cur_site, 0); // Delete 'inst' is always 0
   
@@ -396,7 +412,9 @@ void cMutationalNeighborhood::ProcessInsertPointCombo(cAvidaContext& ctx, cTestC
                                                       int cur_site, Genome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   sTwoStep& tdata = m_insert_point[cur_site];
   sPendFit cur(m_fitness_insert, cur_site, seq[cur_site].GetOp());
   
@@ -423,7 +441,9 @@ void cMutationalNeighborhood::ProcessInsertPointCombo(cAvidaContext& ctx, cTestC
 void cMutationalNeighborhood::ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
                                                        int cur_site, Genome& mod_genome)
 {
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   sTwoStep& tdata = m_insert_delete[cur_site];
   sPendFit cur(m_fitness_insert, cur_site, seq[cur_site].GetOp());
 
@@ -444,7 +464,9 @@ void cMutationalNeighborhood::ProcessDeletePointCombo(cAvidaContext& ctx, cTestC
                                                       int cur_site, Genome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
-  InstructionSequence& seq = mod_genome.GetSequence();
+  InstructionSequencePtr seq_p;
+  seq_p.DynamicCastFrom(mod_genome.Representation());
+  InstructionSequence& seq = *seq_p;
   sTwoStep& tdata = m_delete_point[cur_site];
   sPendFit cur(m_fitness_delete, cur_site, 0); // Delete 'inst' is always 0
   
@@ -530,17 +552,17 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 {
   m_op.peak_fitness = m_base_fitness;
   m_op.peak_genome = m_base_genome;
-  m_op.site_count.Resize(m_base_genome.GetSize(), 0);
+  m_op.site_count.Resize(m_base_genome_size, 0);
   AggregateOneStep(m_onestep_point, m_op);
 
   m_oi.peak_fitness = m_base_fitness;
   m_oi.peak_genome = m_base_genome;
-  m_oi.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+  m_oi.site_count.Resize(m_base_genome_size + 1, 0);
   AggregateOneStep(m_onestep_insert, m_oi);
 
   m_od.peak_fitness = m_base_fitness;
   m_od.peak_genome = m_base_genome;
-  m_od.site_count.Resize(m_base_genome.GetSize(), 0);
+  m_od.site_count.Resize(m_base_genome_size, 0);
   AggregateOneStep(m_onestep_delete, m_od);
   
   
@@ -580,33 +602,33 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   
   m_tp.peak_fitness = m_base_fitness;
   m_tp.peak_genome = m_base_genome;
-  m_tp.site_count.Resize(m_base_genome.GetSize(), 0);
+  m_tp.site_count.Resize(m_base_genome_size, 0);
   AggregateTwoStep(m_twostep_point, m_tp);
   
   m_ti.peak_fitness = m_base_fitness;
   m_ti.peak_genome = m_base_genome;
-  m_ti.site_count.Resize(m_base_genome.GetSize() + 2, 0);
+  m_ti.site_count.Resize(m_base_genome_size + 2, 0);
   AggregateTwoStep(m_twostep_insert, m_ti);
   
   m_td.peak_fitness = m_base_fitness;
   m_td.peak_genome = m_base_genome;
-  m_td.site_count.Resize(m_base_genome.GetSize(), 0);
+  m_td.site_count.Resize(m_base_genome_size, 0);
   AggregateTwoStep(m_twostep_delete, m_td);
 
 
   m_tip.peak_fitness = m_base_fitness;
   m_tip.peak_genome = m_base_genome;
-  m_tip.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+  m_tip.site_count.Resize(m_base_genome_size + 1, 0);
   AggregateTwoStep(m_insert_point, m_tip);
   
   m_tid.peak_fitness = m_base_fitness;
   m_tid.peak_genome = m_base_genome;
-  m_tid.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+  m_tid.site_count.Resize(m_base_genome_size + 1, 0);
   AggregateTwoStep(m_insert_delete, m_tid);
   
   m_tdp.peak_fitness = m_base_fitness;
   m_tdp.peak_genome = m_base_genome;
-  m_tdp.site_count.Resize(m_base_genome.GetSize(), 0);
+  m_tdp.site_count.Resize(m_base_genome_size, 0);
   AggregateTwoStep(m_delete_point, m_tdp);
   
   
@@ -732,12 +754,12 @@ void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAgg
   }
   
   const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
-  for (int i = 0; i < m_base_genome.GetSize(); i++) {
+  for (int i = 0; i < m_base_genome_size; i++) {
     // Per-site entropy is the log of the number of legal states for that
     // site.  Add one to account for the unmutated state.
     osa.total_entropy += log(static_cast<double>(osa.site_count[i] + 1)) / max_ent;
   }
-  osa.complexity = m_base_genome.GetSize() - osa.total_entropy;
+  osa.complexity = m_base_genome_size - osa.total_entropy;
 }
 
 
@@ -795,12 +817,12 @@ void cMutationalNeighborhood::AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStep
   }
   
   const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
-  for (int i = 0; i < m_base_genome.GetSize(); i++) {
+  for (int i = 0; i < m_base_genome_size; i++) {
     // Per-site entropy is the log of the number of legal states for that
     // site.  Add one to account for the unmutated state.
     tsa.total_entropy += log(static_cast<double>(tsa.site_count[i] + 1)) / max_ent;
   }
-  tsa.complexity = m_base_genome.GetSize() - tsa.total_entropy;
+  tsa.complexity = m_base_genome_size - tsa.total_entropy;
   
 }
 
@@ -814,7 +836,7 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetBaseFitness(), "Base Fitness");
   df.Write(GetBaseMerit(), "Base Merit");
   df.Write(GetBaseGestation(), "Base Gestation");
-  df.Write(GetBaseGenome().GetSize(), "Base Genome Length");
+  df.Write(GetBaseGenomeSize(), "Base Genome Length");
   df.Write(GetBaseTargetTask(), "Base Performs Target Task");
 
   df.Write(Get1SAggregateTotal(), "Total 1-Step Mutants");

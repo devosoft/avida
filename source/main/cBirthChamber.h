@@ -23,13 +23,10 @@
 #ifndef cBirthChamber_h
 #define cBirthChamber_h
 
-#ifndef cBirthEntry_h
+#include "avida/systematics/Group.h"
+
 #include "cBirthEntry.h"
-#endif
-#ifndef tArrayMap_h
 #include "tArrayMap.h"
-#endif
-#include "avida/systematics/Types.h"
 
 /**
  * All genome-based organisms must go through the birth chamber, which will
@@ -38,10 +35,6 @@
  * turned on, this class will hold organisms that are waiting to be crossed
  * over before they are born.
  **/
-
-namespace Avida {
-  class Sequence;
-};
 
 class cAvidaContext;
 class cBirthSelectionHandler;
@@ -96,7 +89,7 @@ private:
   void DoModularShuffleRecombination(cAvidaContext& ctx, InstructionSequence& genome0, InstructionSequence& genome1,
                                      double& merit0, double& merit1);
   
-  void SetupGenotypeInfo(cOrganism* organism, const tArray<Systematics::GroupPtr>* p0grps, const tArray<Systematics::GroupPtr>* p1grps = NULL);
+  void SetupGenotypeInfo(cOrganism* organism, Systematics::ConstGroupMembershipPtr p0grps, Systematics::ConstGroupMembershipPtr p1grps = Systematics::ConstGroupMembershipPtr(NULL));
 };
 
 

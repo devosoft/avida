@@ -1047,17 +1047,21 @@ public:
         cOrganism* organism = orgdata->GetOrganism();
         cPhenotype& phenotype = organism->GetPhenotype();
         
-        assert(dynamic_cast<cBGGenotype*>(organism->GetBioGroup("genotype")));
-        cBGGenotype* genotype = (cBGGenotype*)organism->GetBioGroup("genotype");
+        Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
+        
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(organism->GetGenome().Representation());
+        assert(seq);
         
         cString name;
-        if (genotype->IsThreshold()) name = genotype->GetName();
-        else name.Set("%03d-no_name-u%i-c%i", organism->GetGenome().GetSize(), update, orgdata->GetCellID());
+        if ((bool)Apto::StrAs(genotype->Properties().Get("threshold"))) name = genotype->Properties().Get("name");
+        else name.Set("%03d-no_name-u%i-c%i", seq->GetSize(), update, orgdata->GetCellID());
 
         
         df.Write(orgdata->GetCellID(), "Cell ID");
         df.Write(name, "Organism Name");
-        df.Write(organism->GetGenome().GetSize(),"Genome Length");
+        
+        df.Write(seq->GetSize(),"Genome Length");
         df.Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
         df.Write(phenotype.GetFitness(), "Fitness (actual)");
         df.Write(organism->GetLineageLabel(), "Lineage Label");

@@ -40,12 +40,7 @@
 #include <map>
 
 
-namespace Avida {
-  class Sequence;
-};
-
 class cAvidaContext;
-class cBioUnit;
 class cCodeLabel;
 class cEnvironment;
 class cLineage;
@@ -128,7 +123,7 @@ public:
   
   bool InitiatePop(cUserFeedback* errors = NULL);
 
-  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
+  void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
@@ -138,8 +133,8 @@ public:
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
   
   // Inject an organism from the outside world.
-  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1); 
-  void InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, int group_id = -1, int forager_type = -1);   
+  void Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1); 
+  void InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, int group_id = -1, int forager_type = -1);   
   void InjectParasite(const cString& label, const InstructionSequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
@@ -170,10 +165,10 @@ public:
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
   
   //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx); 
+  void SeedDeme(cDeme& deme, Genome& genome, Systematics::Source src, cAvidaContext& ctx); 
 
   //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, Systematics::GroupPtr bg, eBioUnitSource src, cAvidaContext& ctx); 
+  void SeedDeme(cDeme& _deme, Systematics::GroupPtr bg, Systematics::Source src, cAvidaContext& ctx); 
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   bool SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
@@ -380,7 +375,7 @@ private:
   void UpdateDemeStats(cAvidaContext& ctx); 
   void UpdateOrganismStats(cAvidaContext& ctx); 
   
-  void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
+  void InjectClone(int cell_id, cOrganism& orig_org, Systematics::Source src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype

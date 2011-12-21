@@ -51,7 +51,6 @@ enum eHARDWARE_TYPE
   HARDWARE_TYPE_CPU_SMT,
   HARDWARE_TYPE_CPU_TRANSSMT,
   HARDWARE_TYPE_CPU_EXPERIMENTAL,
-  HARDWARE_TYPE_CPU_GX
 };
 
 enum eTIMESLICE
@@ -180,23 +179,6 @@ enum eVerbosity {
   VERBOSE_ON,           // 2: Verbose output, detailing progress
   VERBOSE_DETAILS,      // 3: High level of details, as available.
   VERBOSE_DEBUG         // 4: Print Debug Information, as applicable.
-};
-
-
-enum eBioUnitSource {
-  SRC_DEME_COMPETE,
-  SRC_DEME_COPY,
-  SRC_DEME_GERMLINE,
-  SRC_DEME_RANDOM,
-  SRC_DEME_REPLICATE,
-  SRC_DEME_SPAWN,
-  SRC_ORGANISM_COMPETE,
-  SRC_ORGANISM_DIVIDE,
-  SRC_ORGANISM_FILE_LOAD,
-  SRC_ORGANISM_RANDOM,
-  SRC_PARASITE_FILE_LOAD,
-  SRC_PARASITE_INJECT,
-  SRC_TEST_CPU
 };
 
 

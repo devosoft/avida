@@ -49,12 +49,10 @@ using namespace std;
 using namespace Avida;
 
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, eBioUnitSource src,
-                     const cString& src_args)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Avida::Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.GetInstSet()).GetNumNops())
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset")).GetNumNops())
   , m_src(src)
-  , m_src_args(src_args)
   , m_initial_genome(genome)
   , m_interface(NULL)
   , m_lineage_label(-1)
@@ -112,7 +110,9 @@ void cOrganism::initialize(cAvidaContext& ctx)
       m_max_executed += (int) (ctx.GetRandom().GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
     }
     if (m_world->GetConfig().DEATH_METHOD.Get() == DEATH_METHOD_MULTIPLE) {
-      m_max_executed *= m_initial_genome.GetSize();
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(m_initial_genome.Representation());
+      m_max_executed *= seq->GetSize();
     }
     
     // m_max_executed must be positive or an organism will not die!
@@ -139,7 +139,6 @@ cOrganism::~cOrganism()
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
-  for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
   if(m_neighborhood) delete m_neighborhood;
 }
 
@@ -219,33 +218,6 @@ int cOrganism::ReceiveValue()
   assert(m_interface);
   const int out_value = m_interface->ReceiveValue();
   return out_value;
-}
-
-void cOrganism::SellValue(const int data, const int label, const int sell_price)
-{
-	if (m_sold_items.GetSize() < 10)
-	{
-		assert (m_interface);
-		m_interface->SellValue(data, label, sell_price, m_id);
-		m_world->GetStats().AddMarketItemSold();
-	}
-}
-
-int cOrganism::BuyValue(const int label, const int buy_price)
-{
-	assert (m_interface);
-	const int receive_value = m_interface->BuyValue(label, buy_price);
-	if (receive_value != 0)
-	{
-		// put this value in storage place for recieved values
-		m_received_messages.Add(receive_value);
-		// update loss of buy_price to merit
-		double cur_merit = GetPhenotype().GetMerit().GetDouble();
-		cur_merit -= buy_price;
-		UpdateMerit(cur_merit);
-		m_world->GetStats().AddMarketItemBought();
-	}
-	return receive_value;
 }
 
 
@@ -630,7 +602,6 @@ bool cOrganism::ParasiteInfectHost(Systematics::UnitPtr parasite)
 
 void cOrganism::ClearParasites()
 {
-  for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
   m_parasites.Resize(0);
 }
 
@@ -716,7 +687,10 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
   } else {
     fp << endl;
     fp << "# Final Memory: " << m_hardware->GetMemory().AsString() << endl;
-    fp << "# Child Memory: " << m_offspring_genome.GetSequence().AsString() << endl;
+    
+    ConstInstructionSequencePtr seq;
+    seq.DynamicCastFrom(m_offspring_genome.Representation());
+    fp << "# Child Memory: " << seq->AsString() << endl;
   }
 }
 

@@ -23,32 +23,33 @@
 #define cDemePlaceholderUnit_h
 
 #include "avida/core/Genome.h"
+#include "avida/systematics/Unit.h"
 
-#ifndef cPhenotype_h
 #include "cPhenotype.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
 
 using namespace Avida;
 
 
-class cDemePlaceholderUnit : public cBioUnit
+class cDemePlaceholderUnit : public Systematics::Unit
 {
 private:
-  eBioUnitSource m_src;
+  Systematics::Source m_src;
   cString m_src_args;
-  Genome m_genome;
+  Avida::Genome m_genome;
   cPhenotype m_phenotype;
+  PropertyMap m_prop_map;
+  
   
 public:
-  cDemePlaceholderUnit(eBioUnitSource src, const Genome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
+  cDemePlaceholderUnit(Systematics::Source src, const Avida::Genome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
   ~cDemePlaceholderUnit() { ; }
   
-  eBioUnitSource GetUnitSource() const { return m_src; }
-  const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const Genome& GetGenome() const { return m_genome; }
+  Systematics::Source UnitSource() const { return m_src; }
+  const Avida::Genome& Genome() const { return m_genome; }
+  
+  const PropertyMap& Properties() const { return m_prop_map; }
+  
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 };
 

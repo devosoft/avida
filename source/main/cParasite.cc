@@ -21,13 +21,16 @@
 
 #include "cParasite.h"
 
+#include "avida/systematics/Group.h"
+
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 
 
-cParasite::cParasite(cWorld* world, const Genome& genome, int parent_generation, eBioUnitSource src, const cString& src_args)
-  : m_src(src), m_src_args(src_args), m_initial_genome(genome)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.GetInstSet()).GetNumNops())
+cParasite::cParasite(cWorld* world, const Avida::Genome& genome, int parent_generation, Systematics::Source src)
+  : m_src(src), m_initial_genome(genome)
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset")).GetNumNops())
 {
   // @TODO - properly construct cPhenotype
+  // @TODO - construct parasite property map...
 }

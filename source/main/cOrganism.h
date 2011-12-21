@@ -67,9 +67,10 @@ private:
   cWorld* m_world;
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
-  eBioUnitSource m_src;
-  cString m_src_args;
-  const class Genome m_initial_genome;         // Initial genome; can never be changed!
+  Systematics::Source m_src;
+  PropertyMap m_prop_map;
+  
+  const Avida::Genome m_initial_genome;         // Initial genome; can never be changed!
   tArray<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
@@ -79,7 +80,7 @@ private:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
   
 	// Other stats
-  class Genome m_offspring_genome;              // Child genome, while under construction.
+  Avida::Genome m_offspring_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -127,14 +128,14 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const class Genome& genome, int parent_generation,
-            eBioUnitSource src, const cString& src_args = "");
+  cOrganism(cWorld* world, cAvidaContext& ctx, const Avida::Genome& genome, int parent_generation, Systematics::Source src);
   ~cOrganism();
   
-  // --------  cBioUnit Methods  --------
-  eBioUnitSource GetUnitSource() const { return m_src; }
-  const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const class Genome& GetGenome() const { return m_initial_genome; }
+  // --------  Systematics::Unit Methods  --------
+  Systematics::Source UnitSource() const { return m_src; }
+  const Avida::Genome& Genome() const { return m_initial_genome; }
+  
+  const PropertyMap& Properties() const { return m_prop_map; }
   
 
   // --------  Support Methods  --------
@@ -156,6 +157,7 @@ public:
   
   
   // --------  Accessor Methods  --------
+  const Avida::Genome& GetGenome() const { return m_initial_genome; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
@@ -185,7 +187,7 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
   
-  class Genome& OffspringGenome() { return m_offspring_genome; }
+  Avida::Genome& OffspringGenome() { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
@@ -251,8 +253,6 @@ public:
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
   int ReceiveValue();
-  void SellValue(const int data, const int label, const int sell_price);
-  int BuyValue(const int label, const int buy_price);
   void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
 
   int GetPrevSeenCellID() const { return m_interface->GetPrevSeenCellID(); }

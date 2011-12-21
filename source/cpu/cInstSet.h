@@ -162,6 +162,8 @@ public:
   Instruction GetInstError() const { return Instruction(255); }
   
   bool LoadWithStringList(const cStringList& sl, cUserFeedback* errors = NULL);
+  
+  void SaveInstructionSequence(ofstream& of, const InstructionSequence& seq) const;
 };
 
 

@@ -198,7 +198,7 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(const cString& (), "name",         "Genotype Name",                 GetName,           SetName,       0, 0, 0);
   ADD_GDATA(bool (),           "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
   ADD_GDATA(int (),            "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
-  ADD_GDATA(int (),            "src",          "Genotype Source",               GetSource,         SetSource,     0, 0, 0);
+  ADD_GDATA(int (),            "src",          "Genotype Transmission Type",    GetSource,         SetSource,     0, 0, 0);
   ADD_GDATA(const cString& (), "src_args",     "Genotype Source Arguments",     GetSourceArgs,     SetSourceArgs, 0, "(none)", 0);
   ADD_GDATA(const cString& (), "tag",          "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
   ADD_GDATA(const cString& (), "parents",      "Parent String",                 GetParents,        SetParents,    0, "(none)", 0);
@@ -253,11 +253,7 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   
   // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
-  ADD_GDATA(const cString (), "mut_steps", "Mutation Steps from Parent", GetMutSteps,   SetMutSteps,   0, "", "");
-  
   ADD_GDATA(const cString& (), "task_order", "Task Performance Order",  GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(int (),            "hw_type",    "Hardware Type",           GetHWType,       SetHWType,   0, "(N/A)", "");
-  ADD_GDATA(const cString& (), "inst_set",   "Instruction Set",         GetInstSet,      SetInstSet,   0, "(N/A)", "");
   ADD_GDATA(cString (),        "sequence",   "Genome Sequence",         GetSequence,     SetSequence,   0, "(N/A)", "");
   ADD_GDATA(const cString& (), "alignment",  "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
@@ -700,15 +696,6 @@ void cAnalyzeGenotype::SetSequence(cString _sequence)
   m_genome.SetSequence(new_genome);
 }
 
-void cAnalyzeGenotype::SetMutSteps(const cString in_muts) 
-{ 
-  ConstInstructionSequencePtr seq_p;
-  GeneticRepresentationPtr rep_p = m_genome.Representation();
-  seq_p.DynamicCastFrom(rep_p);
-  const InstructionSequence& seq = *seq_p;
-  seq.GetMutationSteps().Set(in_muts); 
-}
-
 
 cString cAnalyzeGenotype::GetAlignmentExecutedFlags() const
 {
@@ -742,16 +729,6 @@ cString cAnalyzeGenotype::DescInstExe(int _inst_id) const
   desc += m_world->GetHardwareManager().GetInstSet(cString((const char*)m_genome.Properties().Get("instset").Value())).GetName(_inst_id);
   desc += " Executed";
   return desc;
-}
-
-const cString cAnalyzeGenotype::GetMutSteps() const 
-{ 
-  ConstInstructionSequencePtr seq_p;
-  ConstGeneticRepresentationPtr rep_p = m_genome.Representation();
-  seq_p.DynamicCastFrom(rep_p);
-  const InstructionSequence& seq = *seq_p;
-  const cMutationSteps& ms = seq.GetMutationSteps(); 
-  return ms.AsString(); 
 }
 
 int cAnalyzeGenotype::GetKO_DeadCount() const

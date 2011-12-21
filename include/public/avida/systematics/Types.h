@@ -63,16 +63,18 @@ namespace Avida {
     
     typedef Apto::Array<GroupMembershipPtr> ParentGroups;
     typedef Apto::Array<ConstGroupMembershipPtr> ConstParentGroups;
-    typedef Apto::SmartPtr<ParentGroups> ParentGroupsPtr;
+    typedef Apto::SmartPtr<ConstParentGroups> ParentGroupsPtr;
     typedef Apto::SmartPtr<const ConstParentGroups> ConstParentGroupsPtr;
     
     typedef Apto::String RoleID;
     
     enum TransmissionType {
+      UNKNOWN = 0,
       DIVISION,
       DUPLICATION,
       VERTICAL,
       HORIZONTAL
+      
     };
     
     typedef Apto::SmartPtr<Unit, Apto::InternalRCObject> UnitPtr;
