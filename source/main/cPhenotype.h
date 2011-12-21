@@ -155,7 +155,7 @@ private:
   
 
 
-  // 3. These mark the status of "in progess" variables at the last divide.
+  // 3. These mark the status of "in progress" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
   double last_bonus;
   double last_energy_bonus;
