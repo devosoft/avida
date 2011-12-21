@@ -36,12 +36,12 @@ class cWorld;
 using namespace Avida;
 
 
-class cParasite : public cBioUnit
+class cParasite : public Systematics::Unit
 {
 private:
   eBioUnitSource m_src;
   cString m_src_args;
-  const Genome m_initial_genome;
+  const class Genome m_initial_genome;
   cPhenotype m_phenotype;
   double virulence;
   
@@ -52,13 +52,13 @@ private:
   
 
 public:
-  cParasite(cWorld* world, const Genome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
+  cParasite(cWorld* world, const class Genome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
   ~cParasite() { ; }
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const Genome& GetGenome() const { return m_initial_genome; }  
+  const class Genome& GetGenome() const { return m_initial_genome; }  
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 
   // --------  cParasite Methods  --------

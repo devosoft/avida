@@ -154,7 +154,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length));
+    Genome mg(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(m_length));
     InstructionSequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
@@ -203,7 +203,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length + 1));
+      Genome mg(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(m_length + 1));
       InstructionSequence& seq = mg.GetSequence();
       for (int j = 0; j < m_length; j++) {
         Instruction inst = is.GetRandomInst(ctx);
@@ -398,7 +398,7 @@ public:
       ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
+      Genome genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
@@ -460,7 +460,7 @@ public:
       ctx.Driver().Feedback().Warning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
+      Genome genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
@@ -1156,7 +1156,12 @@ public:
       if (cell.IsOccupied() == false) continue;
       
       // count the number of target instructions in the genome
-      count = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
+      const Genome& genome = cell.GetOrganism()->GetGenome();
+      ConstInstructionSequencePtr seq_p;
+      ConstGeneticRepresentationPtr rep_p = genome.Representation();
+      seq_p.DynamicCastFrom(rep_p);
+      const InstructionSequence& seq = *seq_p;
+      count = seq.CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
@@ -1216,8 +1221,14 @@ public:
 			if (cell.IsOccupied() == false) continue;
 			
 			// get the number of instructions of each type.
-			count1 = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst1));
-			count2 = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst2));
+      const Genome& genome = cell.GetOrganism()->GetGenome();
+      ConstInstructionSequencePtr seq_p;
+      ConstGeneticRepresentationPtr rep_p = genome.Representation();
+      seq_p.DynamicCastFrom(rep_p);
+      const InstructionSequence& seq = *seq_p;
+
+			count1 = seq.CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst1));
+			count2 = seq.CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst2));
 			
 			// decide if it should be killed or not, based on the two counts and a the kill probability
 			if ((count1 >= m_limit) && (count2 >= m_limit)) {
@@ -1293,7 +1304,12 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-				int count = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
+        const Genome& genome = cell.GetOrganism()->GetGenome();
+        ConstInstructionSequencePtr seq_p;
+        ConstGeneticRepresentationPtr rep_p = genome.Representation();
+        seq_p.DynamicCastFrom(rep_p);
+        const InstructionSequence& seq = *seq_p;
+				int count = seq.CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1394,7 +1410,11 @@ public:
 				
 				// count the number of target instructions in the genome
         const Genome& mg = cell.GetOrganism()->GetGenome();
-				const InstructionSequence& genome = mg.GetSequence();
+        ConstInstructionSequencePtr mg_seq_p;
+        ConstGeneticRepresentationPtr mg_rep_p = mg.Representation();
+        mg_seq_p.DynamicCastFrom(mg_rep_p);
+        const InstructionSequence& genome = *mg_seq_p;
+
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
 				currentMinDist.Add(minDist);

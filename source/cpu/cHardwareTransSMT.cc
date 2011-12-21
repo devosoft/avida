@@ -524,7 +524,7 @@ int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
-                                          const Sequence & search_genome, int pos)
+                                          const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -1128,7 +1128,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   //bool parent_alive = m_organism->ActivateDivide(ctx);
   bool parent_alive = m_organism->ActivateDivide(ctx, &m_threads[m_cur_thread].context_phenotype);
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = Sequence("a"); 
+  m_mem_array[mem_space_used] = InstructionSequence("a"); 
 	
   // Division Methods:
   // 0 - DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
@@ -1765,7 +1765,7 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
   
   if (m_mem_array.GetSize() <= mem_space_used) return false;
   
-  m_mem_array[mem_space_used] = Sequence("a"); 
+  m_mem_array[mem_space_used] = InstructionSequence("a"); 
   
   for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
   //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();

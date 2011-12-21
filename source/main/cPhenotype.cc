@@ -534,7 +534,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
  *     - This is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupInject(const Sequence & _genome)
+void cPhenotype::SetupInject(const InstructionSequence & _genome)
 {
   // Setup reasonable initial values injected organism...
   genome_length   = _genome.GetSize();
@@ -711,7 +711,7 @@ void cPhenotype::SetupInject(const Sequence & _genome)
 }
 
 
-void cPhenotype::ResetMerit(const Sequence & _cgenome)
+void cPhenotype::ResetMerit(const InstructionSequence & _cgenome)
 {
   int cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
@@ -731,7 +731,7 @@ void cPhenotype::ResetMerit(const Sequence & _cgenome)
  * This function is run whenever an organism executes a successful divide.
  **/
 
-void cPhenotype::DivideReset(const Sequence & _genome)
+void cPhenotype::DivideReset(const InstructionSequence & _genome)
 {
   assert(time_used >= 0);
   assert(initialized == true);
@@ -938,7 +938,7 @@ void cPhenotype::DivideReset(const Sequence & _genome)
  * and copied size in its merit.
  **/
 
-void cPhenotype::TestDivideReset(const Sequence & _genome)
+void cPhenotype::TestDivideReset(const InstructionSequence & _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
@@ -2026,7 +2026,7 @@ void cPhenotype::NewTrial()
  * by another call (like NewTrial). It is a subset of DivideReset @JEB
  **/
 
-void cPhenotype::TrialDivideReset(const Sequence & _genome)
+void cPhenotype::TrialDivideReset(const InstructionSequence & _genome)
 {
   int cur_merit_base = CalcSizeMerit();
   

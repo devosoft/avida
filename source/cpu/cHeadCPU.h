@@ -34,7 +34,7 @@
  **/
 
 namespace Avida {
-  class Sequence;
+  class InstructionSequence;
 };
 class cCodeLabel;
 class cString;

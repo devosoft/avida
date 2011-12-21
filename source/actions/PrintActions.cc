@@ -2239,14 +2239,14 @@ public:
     tAutoRelease<tIterator<Systematics::Group> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     it->Next();
-    Sequence best_genome = Genome(it->Get()->GetProperty("genome").AsString()).GetSequence();
-    dom_dist = Sequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
+    InstructionSequence best_genome = Genome(it->Get()->GetProperty("genome").AsString()).GetSequence();
+    dom_dist = InstructionSequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
     hamming_m1 += dom_dist;
     hamming_m2 += dom_dist*dom_dist;
     count += it->Get()->NumUnits();
     // now cycle over the remaining genotypes
     while ((it->Next())) {
-      int dist = Sequence::FindHammingDistance(m_reference.GetSequence(), Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
+      int dist = InstructionSequence::FindHammingDistance(m_reference.GetSequence(), Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       hamming_m1 += dist;
       hamming_m2 += dist*dist;
       count += it->Get()->NumUnits();
@@ -2255,7 +2255,7 @@ public:
     hamming_m1 /= static_cast<double>(count);
     hamming_m2 /= static_cast<double>(count);
 
-    double hamming_best = Sequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
+    double hamming_best = InstructionSequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
 
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
@@ -2355,8 +2355,8 @@ public:
       df.Write(bg->GetProperty("name").AsString(), "Genotype Name");
       df.Write(bg->GetProperty("fitness").AsDouble(), "Fitness");
       df.Write(num_orgs, "Abundance");
-      df.Write(Sequence::FindHammingDistance(reference_genome.GetSequence(), genome.GetSequence()), "Hamming distance to reference");
-      df.Write(Sequence::FindEditDistance(reference_genome.GetSequence(), genome.GetSequence()), "Levenstein distance to reference");
+      df.Write(InstructionSequence::FindHammingDistance(reference_genome.GetSequence(), genome.GetSequence()), "Hamming distance to reference");
+      df.Write(InstructionSequence::FindEditDistance(reference_genome.GetSequence(), genome.GetSequence()), "Levenstein distance to reference");
       df.Write(genome.AsString(), "Genome");
 
       // save into archive
@@ -2618,13 +2618,17 @@ public:
       Systematics::GroupPtr bg = it->Get();
       const int num_organisms = bg->NumUnits();
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
-      const int length = genome.GetSize();
+      ConstInstructionSequencePtr seq_p;
+      ConstGeneticRepresentationPtr rep_p = genome.Representation();
+      seq_p.DynamicCastFrom(rep_p);
+      const InstructionSequence& seq = *seq_p;
+      const int length = seq.GetSize();
       if (genome.GetInstSet() != m_inst_set) continue;
 
       // Place this genotype into the histograms.
       for (int j = 0; j < length; j++) {
-        assert(genome.GetSequence()[j].GetOp() < num_inst);
-        inst_hist[j].Insert(genome.GetSequence()[j].GetOp(), num_organisms);
+        assert(seq[j].GetOp() < num_inst);
+        inst_hist[j].Insert(seq[j].GetOp(), num_organisms);
       }
 
       // Mark all instructions beyond the length as -1 in histogram...
@@ -2646,8 +2650,11 @@ public:
     }
 
     // Build the concensus genotype...
-    InstructionSequence& con_genome = mg.GetSequence();
-    con_genome = Sequence(con_length);
+    InstructionSequencePtr mg_seq_p;
+    ConstGeneticRepresentationPtr mg_rep_p = mg.Representation();
+    mg_seq_p.DynamicCastFrom(mg_rep_p);
+    InstructionSequence& con_genome = *mg_seq_p;
+    con_genome = InstructionSequence(con_length);
     double total_entropy = 0.0;
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) {
       const int mode = inst_hist[i].GetMode();
@@ -2685,7 +2692,7 @@ public:
     cDoubleSum distance_sum;
     while ((it->Next())) {
       const int num_organisms = it->Get()->NumUnits();
-      const int cur_dist = Sequence::FindEditDistance(con_genome, Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
+      const int cur_dist = InstructionSequence::FindEditDistance(con_genome, Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       distance_sum.Add(cur_dist, num_organisms);
     }
 
@@ -2694,7 +2701,7 @@ public:
     //    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
 
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
-    const int best_dist = Sequence::FindEditDistance(con_genome, Genome(it->Next()->GetProperty("genome").AsString()).GetSequence());
+    const int best_dist = InstructionSequence::FindEditDistance(con_genome, Genome(it->Next()->GetProperty("genome").AsString()).GetSequence());
 
     const double ave_dist = distance_sum.Average();
     const double var_dist = distance_sum.Variance();
@@ -2845,7 +2852,7 @@ protected:
 			organisms.pop_back();
 			cOrganism* b = organisms.back();
 			organisms.pop_back();
-			edit_distance.Add(Sequence::FindEditDistance(a->GetGenome().GetSequence(), b->GetGenome().GetSequence()));
+			edit_distance.Add(InstructionSequence::FindEditDistance(a->GetGenome().GetSequence(), b->GetGenome().GetSequence()));
 		}
 		
 		return edit_distance.Average();
@@ -3655,7 +3662,12 @@ public:
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          genome_seq = organism->GetGenome().GetSequence().AsString();
+          const Genome& genome = organism->GetGenome();
+          ConstInstructionSequencePtr seq_p;
+          ConstGeneticRepresentationPtr rep_p = genome.Representation();
+          seq_p.DynamicCastFrom(rep_p);
+          const InstructionSequence& seq = *seq_p;
+          genome_seq = seq.AsString();
         }
         else { genome_seq = "-1"; }
         fp << genome_seq << " ";

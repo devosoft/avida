@@ -33,7 +33,7 @@
 #include "cSensing.h"
 
 namespace Avida {
-  class Sequence;
+  class InstructionSequence;
 };
 
 class cAvidaContext;

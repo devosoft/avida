@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef Sequence_h
-#define Sequence_h
+#ifndef InstructionSequence_h
+#define InstructionSequence_h
 
 #include <cassert>
 
@@ -33,7 +33,7 @@
 
 namespace Avida {
   
-  // Sequence - a series of bytes containing a base level genetic sequence
+  // InstructionSequence - a series of bytes containing a base level genetic sequence
   // --------------------------------------------------------------------------------------------------------------
   
   class Instruction
@@ -119,7 +119,7 @@ namespace Avida {
     LIB_EXPORT inline bool HasInst(const Instruction& inst) const { return (FindInst(inst) >= 0); }
         
 
-    // Sequence Creation Methods
+    // InstructionSequence Creation Methods
     LIB_EXPORT InstructionSequence Crop(int start, int end) const;
     LIB_EXPORT InstructionSequence Cut(int start, int end) const;
     

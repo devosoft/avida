@@ -1127,7 +1127,7 @@ cHeadCPU cHardwareCPU::FindLabel(int direction)
 // to find search label's match inside another label.
 
 int cHardwareCPU::FindLabel_Forward(const cCodeLabel & search_label,
-                                    const Sequence & search_genome, int pos)
+                                    const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
   
@@ -1209,7 +1209,7 @@ int cHardwareCPU::FindLabel_Forward(const cCodeLabel & search_label,
 // to find search label's match inside another label.
 
 int cHardwareCPU::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const Sequence & search_genome, int pos)
+                                     const InstructionSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
   
@@ -4320,14 +4320,14 @@ bool cHardwareCPU::Inst_DonateEditDist(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       int edit_dist = max_dist + 1;
       if (neighbor != NULL) {
-        edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+        edit_dist = InstructionSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
                                                 neighbor->GetGenome().GetSequence());
       }
       if (edit_dist <= max_dist) {
         found = true;
 				
 	// Code to track the edit distance between edt donors and recipients
-	const int edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+	const int edit_dist = InstructionSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
                                                           neighbor->GetGenome().GetSequence());
 				
 	/*static ofstream edit_file("edit_dists.dat");*/
@@ -4512,7 +4512,7 @@ bool cHardwareCPU::Inst_DonateShadedGreenBeard(cAvidaContext& ctx)
       //			if (neighbor_shade_of_gb >=  shade_of_gb) {
       if (neighbor_shade_of_gb ==  shade_of_gb) {	
 	// Code to track the edit distance between shaded donors and recipients
-	const int edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+	const int edit_dist = InstructionSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
                                                           neighbor->GetGenome().GetSequence());
 				
 	/*static ofstream gb_file("shaded_gb_dists.dat");*/
@@ -4700,7 +4700,7 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 	const InstructionSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 	
 	// Code to track the edit distance between tgb donors and recipients
-	const int edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+	const int edit_dist = InstructionSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
                                                           neighbor->GetGenome().GetSequence());
 				
 	/*static ofstream tgb_file("thresh_gb_dists.dat");*/

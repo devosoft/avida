@@ -737,7 +737,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = Sequence("a"); 
+  m_mem_array[mem_space_used] = InstructionSequence("a"); 
 	
   for (int x = 0; x < NUM_EXTENDED_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
   for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
@@ -1063,7 +1063,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   bool parent_alive = m_organism->ActivateDivide(ctx);
 	
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = Sequence("a"); 
+  m_mem_array[mem_space_used] = InstructionSequence("a"); 
 	
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
