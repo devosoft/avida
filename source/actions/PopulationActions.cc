@@ -29,6 +29,8 @@
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
 
+#include "avida/private/util/GenomeLoader.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
@@ -102,9 +104,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    Genome genome;
+    GenomePtr genome;
     cUserFeedback feedback;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -113,7 +115,8 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false); 
+    if (!genome) return;
+    m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false); 
   }
 };
 
@@ -270,9 +273,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    Genome genome;
+    GenomePtr genome;
     cUserFeedback feedback;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -281,8 +284,9 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
+    if (!genome) return;
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+      m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -340,9 +344,9 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectRange has invalid range!");
     } else {
-      Genome genome;
+      GenomePtr genome;
       cUserFeedback feedback;
-      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
           case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -351,8 +355,9 @@ public:
         };
         cerr << feedback.GetMessage(i) << endl;
       }
+      if (!genome) return;
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -519,9 +524,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    Genome genome;
+    GenomePtr genome;
     cUserFeedback feedback;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -530,7 +535,8 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().InjectGroup(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
+    if (!genome) return;
+    m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
   }
 };
 
@@ -573,9 +579,9 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectParasite has invalid range!");
     } else {
-      Genome genome;
+      GenomePtr genome;
       cUserFeedback feedback;
-      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
           case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -584,8 +590,9 @@ public:
         };
         cerr << feedback.GetMessage(i) << endl;
       }
+      if (!genome) return;
       ConstInstructionSequencePtr seq;
-      seq.DynamicCastFrom(genome.Representation());
+      seq.DynamicCastFrom(genome->Representation());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().InjectParasite(m_label, *seq, i);
       }
@@ -651,10 +658,10 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectParasitePair has invalid range!");
     } else {
-      Genome genome, parasite;
+      GenomePtr genome, parasite;
       cUserFeedback feedback;
-      genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-      parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      genome = Util::LoadGenomeDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      parasite = Util::LoadGenomeDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
           case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -663,10 +670,11 @@ public:
         };
         cerr << feedback.GetMessage(i) << endl;
       }
+      if (!genome || !parasite) return;
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         ConstInstructionSequencePtr seq;
-        seq.DynamicCastFrom(parasite.Representation());
+        seq.DynamicCastFrom(parasite->Representation());
         m_world->GetPopulation().InjectParasite(m_label, *seq, i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -715,9 +723,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    Genome genome;
+    GenomePtr genome;
     cUserFeedback feedback;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -726,9 +734,10 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
+    if (!genome) return;
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -737,7 +746,7 @@ public:
       for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
-        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
+        m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -791,9 +800,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    Genome genome;
+    GenomePtr genome;
     cUserFeedback feedback;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -802,10 +811,11 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
+    if (!genome) return;
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {
-          m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
+          m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
                                           m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                           m_merit, m_lineage_label, m_neutral_metric); 
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -816,7 +826,7 @@ public:
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
         if (i==0 || (i % m_mod_num) ==0){
-          m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
+          m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
 																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
 																					m_merit, m_lineage_label, m_neutral_metric);  
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();

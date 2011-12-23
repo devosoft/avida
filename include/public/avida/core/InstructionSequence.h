@@ -51,7 +51,7 @@ namespace Avida {
     LIB_EXPORT inline void SetOp(int in_op) { assert(in_op < 256); m_operand = in_op; }
     
     LIB_EXPORT inline void operator=(const Instruction& inst) { m_operand = inst.m_operand; }
-    LIB_EXPORT inline bool operator==(const Instruction& inst) const { return (m_operand == inst.m_operand); }
+    LIB_EXPORT bool operator==(const Instruction& inst) const { return (m_operand == inst.m_operand); }
     LIB_EXPORT inline bool operator!=(const Instruction& inst) const { return (m_operand != inst.m_operand); }
     
     LIB_EXPORT Apto::String GetSymbol() const;
@@ -87,6 +87,8 @@ namespace Avida {
     // GeneticRepresentation Interface
     LIB_EXPORT Apto::String AsString() const;
 
+    LIB_EXPORT GeneticRepresentationPtr Clone() const;
+    
     LIB_EXPORT bool Serialize(ArchivePtr ar) const;
 
 
@@ -100,13 +102,13 @@ namespace Avida {
     LIB_EXPORT virtual void Replace(const InstructionSequence& g, int begin, int end);
     LIB_EXPORT virtual void Rotate(int n);
     
-    
+
+    // GeneticRepresentation Operators
+    LIB_EXPORT bool operator==(const GeneticRepresentation& other_seq) const;
+
     // Operators
     LIB_EXPORT virtual void operator=(const InstructionSequence& other_seq);
-    LIB_EXPORT virtual bool operator==(const InstructionSequence& other_seq) const;
     LIB_EXPORT virtual bool operator<(const InstructionSequence& other_seq) const { return AsString() < other_seq.AsString(); }
-
-    LIB_EXPORT inline bool operator!=(const InstructionSequence& other_seq) const { return !(this->operator==(other_seq)); }
 
     
     // Utility Methods

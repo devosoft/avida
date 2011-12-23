@@ -201,6 +201,11 @@ Apto::String Avida::InstructionSequence::AsString() const
 }
 
 
+Avida::GeneticRepresentationPtr Avida::InstructionSequence::Clone() const
+{
+  return GeneticRepresentationPtr(new InstructionSequence(*this));
+}
+
 bool Avida::InstructionSequence::Serialize(ArchivePtr ar) const
 {
   assert(false);
@@ -346,14 +351,17 @@ void Avida::InstructionSequence::operator=(const InstructionSequence& other_seq)
 }
 
 
-bool Avida::InstructionSequence::operator==(const InstructionSequence& other_seq) const
+bool Avida::InstructionSequence::operator==(const GeneticRepresentation& other_seq) const
 {
+  const InstructionSequence* seq = dynamic_cast<const InstructionSequence*>(&other_seq);
+  if (!seq) return false;
+  
   // Make sure the sizes are the same.
-  if (m_active_size != other_seq.m_active_size) return false;
+  if (m_active_size != seq->m_active_size) return false;
   
   // Then go through line by line.
   for (int i = 0; i < m_active_size; i++)
-    if (m_seq[i] != other_seq[i]) return false;
+    if (m_seq[i] != (*seq)[i]) return false;
   
   return true;
 }

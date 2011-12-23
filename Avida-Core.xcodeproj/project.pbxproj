@@ -291,6 +291,8 @@
 		7078B53A1386F6E800CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
 		7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
 		7078B53C1386F6F700CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
+		708D3E3314A429DF00204169 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
+		708D3E3614A42AA500204169 /* GenomeLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 708D3E3514A42AA500204169 /* GenomeLoader.h */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
 		7095867914439E5E00243303 /* Provider.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7095867814439E5E00243303 /* Provider.cc */; };
@@ -876,6 +878,8 @@
 		708D31321342315000AE5CEF /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		708D31331342315000AE5CEF /* RELEASE_NOTES */ = {isa = PBXFileReference; lastKnownFileType = text; path = RELEASE_NOTES; sourceTree = "<group>"; };
 		708D3135134231E500AE5CEF /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		708D3E3214A429DF00204169 /* GenomeLoader.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenomeLoader.cc; sourceTree = "<group>"; };
+		708D3E3514A42AA500204169 /* GenomeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenomeLoader.h; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
 		7090F57410D956A400ECFBA1 /* cParasite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParasite.cc; sourceTree = "<group>"; };
 		70920C1C0A9CCE2C00757CDB /* analyze_samples.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = analyze_samples.html; sourceTree = "<group>"; };
@@ -1388,6 +1392,7 @@
 			isa = PBXGroup;
 			children = (
 				709CDEC2149EE2C000995644 /* systematics */,
+				708D3E3414A42AA500204169 /* util */,
 				7035492A1333E39300D3865C /* viewer-core */,
 			);
 			name = private;
@@ -1587,6 +1592,14 @@
 			path = environment;
 			sourceTree = "<group>";
 		};
+		708D3E3414A42AA500204169 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				708D3E3514A42AA500204169 /* GenomeLoader.h */,
+			);
+			path = util;
+			sourceTree = "<group>";
+		};
 		70920C1A0A9CCE2C00757CDB /* documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1702,6 +1715,7 @@
 			isa = PBXGroup;
 			children = (
 				70A53BC8135B740100C3E661 /* CmdLine.cc */,
+				708D3E3214A429DF00204169 /* GenomeLoader.cc */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2209,6 +2223,7 @@
 				7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */,
 				4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */,
 				4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */,
+				708D3E3614A42AA500204169 /* GenomeLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2568,6 +2583,7 @@
 				7023EC930C0A431B00362B9C /* cStringList.cc in Sources */,
 				7023EC940C0A431B00362B9C /* cStringUtil.cc in Sources */,
 				7023EC9A0C0A431B00362B9C /* cWeightedIndex.cc in Sources */,
+				708D3E3314A429DF00204169 /* GenomeLoader.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

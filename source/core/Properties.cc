@@ -42,9 +42,23 @@ const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string"
 
 bool Avida::PropertyMap::operator==(const PropertyMap& p) const
 {
-  // @TODO
-  assert(false);
-  return false;
+  // Build distinct key sets
+  Apto::Set<PropertyID> pm1pids, pm2pids;
+  PropertyIDIterator it = m_prop_map.Keys();
+  while (it.Next()) pm1pids.Insert(*it.Get());
+  it = p.PropertyIDs();
+  while (it.Next()) pm2pids.Insert(*it.Get());
+  
+  // Compare key sets
+  if (pm1pids != pm2pids) return false;
+
+  // Compare values
+  it = m_prop_map.Keys();
+  while (it.Next()) {
+    if (m_prop_map.GetWithDefault(*it.Get(), m_default)->Value() != p.Get(*it.Get()).Value()) return false;
+  }
+
+  return true;
 }
 
 bool Avida::PropertyMap::Serialize(ArchivePtr ar) const

@@ -28,6 +28,8 @@
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
 
+#include "avida/private/util/GenomeLoader.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
@@ -2128,7 +2130,8 @@ public:
     // Load the genome of the reference creature
     creature_file.PopWord();
     if (creature_file == "" || creature_file == "START_ORGANISM") creature_file = m_world->GetConfig().START_ORGANISM.Get();
-    m_reference.LoadFromDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager(), feedback);
+    GenomePtr genome(Util::LoadGenomeDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager(), feedback));
+    m_reference = *genome;
     m_r_seq.DynamicCastFrom(m_reference.Representation());
 
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2217,11 +2220,9 @@ public:
     int sum_num_organisms = 0;
 
     // load the reference genome
-    Genome reference_genome;
+    GenomePtr reference_genome;
     cUserFeedback feedback;
-    reference_genome.LoadFromDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
-    InstructionSequencePtr r_seq;
-    r_seq.DynamicCastFrom(reference_genome.Representation());
+    reference_genome = Util::LoadGenomeDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -2230,6 +2231,10 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
+    if (!reference_genome) return;
+    
+    InstructionSequencePtr r_seq;
+    r_seq.DynamicCastFrom(reference_genome->Representation());
 
     // cycle over all genotypes
     Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());

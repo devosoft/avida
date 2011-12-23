@@ -27,6 +27,8 @@
 #include "avida/core/Types.h"
 #include "avida/core/WorldDriver.h"
 
+#include "avida/private/util/GenomeLoader.h"
+
 #include "cActionLibrary.h"
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeCommandAction.h"
@@ -174,9 +176,9 @@ void cAnalyze::LoadOrganism(cString cur_string)
   
   
   // Setup the genome...
-  Genome genome;
+  GenomePtr genome;
   cUserFeedback feedback;
-  genome.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+  genome = Util::LoadGenomeDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
       case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -185,9 +187,10 @@ void cAnalyze::LoadOrganism(cString cur_string)
     };
     cerr << feedback.GetMessage(i) << endl;
   }
+  if (!genome) return;
   
   // Construct the new genotype..
-  cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
+  cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, *genome);
   
   // Determine the organism's original name -- strip off directory...
   while (filename.Find('/') != -1) filename.Pop('/');

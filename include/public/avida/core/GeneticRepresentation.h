@@ -41,7 +41,12 @@ namespace Avida {
     LIB_EXPORT virtual bool Process(GeneticRepresentationDispatchTable tbl, GeneticRepresentationPtr ptr);
     LIB_EXPORT virtual bool Process(ConstGeneticRepresentationDispatchTable tbl, ConstGeneticRepresentationPtr ptr) const;
     
+    LIB_EXPORT virtual bool operator==(const GeneticRepresentation&) const = 0;
+    LIB_EXPORT inline bool operator!=(const GeneticRepresentation& rhs) const { return !this->operator==(rhs); }
+    
     LIB_EXPORT virtual Apto::String AsString() const = 0;
+    
+    LIB_EXPORT virtual GeneticRepresentationPtr Clone() const = 0;
     
     LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
   };

@@ -41,8 +41,11 @@ Avida::Genome::Genome() : m_hw_type(-1) { ; }
 Avida::Genome::Genome(HardwareTypeID hw, const PropertyMap& props, GeneticRepresentationPtr rep)
   : m_hw_type(hw), m_representation(rep)
 {
-  // @TODO - copy props
-  assert(false);
+  assert(rep);
+  
+  // Copy over properties
+  PropertyMap::PropertyIDIterator it = props.PropertyIDs();
+  while (it.Next()) m_props.Set(PropertyPtr(new StringProperty(props.Get(*it.Get()))));
 }
 
 Avida::Genome::Genome(const Apto::String& genome_str)
@@ -61,9 +64,15 @@ Apto::String Avida::Genome::AsString() const
 
 bool Avida::Genome::operator==(const Genome& genome) const
 {
-  // @TODO - genome operator==
-  assert(false);
-  return false;
+  // Simple hardware type comparision
+  if (m_hw_type != genome.m_hw_type) return false;
+  if (m_props != genome.m_props) return false;
+  
+  assert(m_representation);
+  assert(genome.m_representation);
+  if (*m_representation != *genome.m_representation) return false;
+
+  return true;
 }
 
 Avida::Genome& Avida::Genome::operator=(const Genome& genome)
