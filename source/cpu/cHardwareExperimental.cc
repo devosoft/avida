@@ -3880,10 +3880,10 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   setInternalValue(success_reg, 1, true);   
-  setInternalValue(bonus_reg, (int) target_bonus, true);
+  setInternalValue(bonus_reg, (int) (target_bonus), true);
   const int spec_bin = m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()];
   setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
-  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), m_organism->GetRBinsTotal(), true);
+  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   return true;
 } 		
 
@@ -4123,10 +4123,10 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   setInternalValue(success_reg, 1, true);   
-  setInternalValue(bonus_reg, (int) target_bonus, true);
+  setInternalValue(bonus_reg, (int) (target_bonus), true);
   const int spec_bin = m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()];
   setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
-  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), m_organism->GetRBinsTotal(), true);
+  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   return true;
 } 
 
@@ -4538,7 +4538,7 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    setInternalValue(rAX + i, m_organism->GetNextInput(), true);
+    setInternalValue(rAX + i, (int) (ctx.GetRandom().GetDouble()), true);
   }
   return true;
 }
@@ -5043,7 +5043,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
     stuff_seen.count = count;
-    stuff_seen.value = totalAmount;
+    stuff_seen.value = (int) (totalAmount);
     stuff_seen.group = -9;
     stuff_seen.forage = -9;
 
