@@ -281,21 +281,22 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 
   m_prop_map = new PropertyMap();
   
-#define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, VAL)));
-#define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, VAL)));
-  ADD_FUN_PROP("genome", "Genome", Apto::String, FunctorProperty<Apto::String>::Functor(&m_genome, &Genome::AsString));
-  ADD_REF_PROP("src_transmission_type", "Source Transmission Type", int, m_src.transmission_type); 
+#define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, FunctorProperty<TYPE>::VAL)));
+#define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, const_cast<TYPE&>(VAL))));
+#define ADD_STR_PROP(NAME, DESC, VAL) m_prop_map->Set(PropertyPtr(new StringProperty(NAME, DESC, VAL)));
+  ADD_FUN_PROP("genome", "Genome", Apto::String, GetFunctor(&m_genome, &Genome::AsString));
+  ADD_STR_PROP("src_transmission_type", "Source Transmission Type", (int)m_src.transmission_type); 
   ADD_REF_PROP("name", "Name", Apto::String, m_name);
   ADD_REF_PROP("parents", "Parent IDs", Apto::String, m_parent_str);
   ADD_REF_PROP("threshold", "Threshold", bool, m_threshold);
   ADD_REF_PROP("update_born", "Update Born", int, m_update_born);
   
-  ADD_FUN_PROP("ave_copy_size", "Average Copied Size", double, FunctorProperty<double>::Functor(&m_copied_size, &cDoubleSum::Average));
-  ADD_FUN_PROP("ave_exe_size", "Average Executed Size", double, FunctorProperty<double>::Functor(&m_exe_size, &cDoubleSum::Average));
-  ADD_FUN_PROP("ave_gestation_time", "Average Gestation Time", double, FunctorProperty<double>::Functor(&m_gestation_time, &cDoubleSum::Average));
-  ADD_FUN_PROP("ave_repro_rate", "Average Repro Rate", double, FunctorProperty<double>::Functor(&m_repro_rate, &cDoubleSum::Average));
-  ADD_FUN_PROP("ave_metabolic_rate", "Average Metabolic Rate", double, FunctorProperty<double>::Functor(&m_merit, &cDoubleSum::Average));
-  ADD_FUN_PROP("ave_fitness", "Average Fitness", double, FunctorProperty<double>::Functor(&m_fitness, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_copy_size", "Average Copied Size", double, GetFunctor(&m_copied_size, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_exe_size", "Average Executed Size", double, GetFunctor(&m_exe_size, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_gestation_time", "Average Gestation Time", double, GetFunctor(&m_gestation_time, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_repro_rate", "Average Repro Rate", double, GetFunctor(&m_repro_rate, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_metabolic_rate", "Average Metabolic Rate", double, GetFunctor(&m_merit, &cDoubleSum::Average));
+  ADD_FUN_PROP("ave_fitness", "Average Fitness", double, GetFunctor(&m_fitness, &cDoubleSum::Average));
   
   ADD_REF_PROP("recent_births", "Recent Births (during update)", int, m_births.GetCur());
   ADD_REF_PROP("recent_deaths", "Recent Deaths (during update)", int, m_deaths.GetCur());
@@ -314,5 +315,6 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_REF_PROP("last_group_id", "Last birth group", int, m_last_group_id);
   ADD_REF_PROP("last_forager_type", "Last birth forager type", int, m_last_forager_type);
 #undef ADD_FUN_PROP
-#undef Add_REF_PROP
+#undef ADD_REF_PROP
+#undef ADD_STR_PROP
 }

@@ -237,9 +237,7 @@ public:
   void CalcLandscape(cAvidaContext& ctx);
 
   // Set...
-  void SetHWType(int hw_type);
   void SetInstSet(const cString& inst_set);
-  void SetSequence(cString sequence);
   void SetName(const cString& _name) { name = _name; }
   void SetAlignedSequence(const cString & _seq) { aligned_sequence = _seq; }
   void SetTag(const cString& _tag) { tag = _tag; }

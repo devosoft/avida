@@ -30,8 +30,10 @@ Avida::PropertyTypeID Avida::Property::Null = "null";
 Avida::Property::~Property() { ; }
 
 Apto::String Avida::Property::Value() const { return ""; }
+bool Avida::Property::SetValue(const Apto::String& value) { return false; }
 
 Apto::String Avida::StringProperty::Value() const { return m_value; }
+bool Avida::StringProperty::SetValue(const Apto::String& value) { m_value = value; return true; }
 
 
 const Avida::PropertyTypeID Avida::PropertyTraits<bool>::Type = "bool";

@@ -55,6 +55,8 @@ namespace Avida {
     LIB_EXPORT inline const PropertyTypeID& Type() const { return m_type_id; }
     LIB_EXPORT inline const Apto::String& Description() const { return m_desc; }
     LIB_EXPORT virtual Apto::String Value() const;
+    LIB_EXPORT virtual bool SetValue(const Apto::String& value);
+    
     LIB_EXPORT inline operator Apto::String() const { return Value(); }
     LIB_EXPORT inline operator const char*() const { return (const char*)Value(); }
   };
@@ -66,15 +68,21 @@ namespace Avida {
   template <typename T> class FunctorProperty : public Property
   {
   public:
-    typedef Apto::Functor<T, Apto::NullType> Functor;
+    typedef Apto::Functor<T, Apto::NullType> GetFunctor;
+    typedef Apto::Functor<bool, Apto::TL::Create<const Apto::String&> > SetFunctor;
   private:
-    Functor m_fun;
+    GetFunctor m_g_fun;
+    SetFunctor m_s_fun;
     
   public:
-    LIB_EXPORT FunctorProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, Functor fun)
-      : Property(prop_id, PropertyTraits<T>::Type, desc), m_fun(fun) { ; }
+    LIB_EXPORT FunctorProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, GetFunctor gfun, SetFunctor sfun = SetFunctor(noSet))
+      : Property(prop_id, PropertyTraits<T>::Type, desc), m_g_fun(gfun), m_s_fun(sfun) { ; }
     
-    LIB_EXPORT Apto::String Value() const { return Apto::AsStr(m_fun()); }
+    LIB_EXPORT Apto::String Value() const { return Apto::AsStr(m_g_fun()); }
+    LIB_EXPORT bool SetValue(const Apto::String& value) { return m_s_fun(value); }
+    
+  private:
+    static bool noSet(const Apto::String&) { return false; }
   };
   
   
@@ -84,13 +92,14 @@ namespace Avida {
   template <typename T> class ReferenceProperty : public Property
   {
   private:
-    const T& m_value_ref;
+    T& m_value_ref;
     
   public:
-    LIB_EXPORT ReferenceProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, const T& value_ref)
+    LIB_EXPORT ReferenceProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, T& value_ref)
     : Property(prop_id, PropertyTraits<T>::Type, desc), m_value_ref(value_ref) { ; }
     
     LIB_EXPORT Apto::String Value() const { return Apto::AsStr(m_value_ref); }
+    LIB_EXPORT bool SetValue(const Apto::String& value) { m_value_ref = Apto::StrAs(value); return true; }
   };
   
 
@@ -105,11 +114,12 @@ namespace Avida {
   public:
     LIB_EXPORT inline explicit StringProperty(const Property& p) : Property(p.PropertyID(), p.Type(), p.Description()), m_value(p.Value()) { ; }
     template <typename T> LIB_EXPORT StringProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, const T& prop_value)
-      : Property(prop_id, PropertyTraits<T>::Type, desc), m_value(Apto::AsStr(prop_value)) { ; }
+      : Property(prop_id, PropertyTraits<T>::Type, desc), m_value((const char*)Apto::AsStr(prop_value)) { ; }
     LIB_EXPORT inline StringProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const Apto::String& desc, const Apto::String& prop_value)
       : Property(prop_id, type_id, desc), m_value(prop_value) { ; }
     
     LIB_EXPORT Apto::String Value() const;
+    LIB_EXPORT bool SetValue(const Apto::String& value);
   };
 
 
@@ -165,8 +175,10 @@ namespace Avida {
     
     LIB_EXPORT inline bool Has(const PropertyID& p_id) const { return m_prop_map.Has(p_id); }
     
+    LIB_EXPORT inline Property& Get(const PropertyID& p_id) { return *m_prop_map.GetWithDefault(p_id, PropertyPtr(new StringProperty(p_id, "", (const char*)""))); }
     LIB_EXPORT inline const Property& Get(const PropertyID& p_id) const { return *m_prop_map.GetWithDefault(p_id, m_default); }
-    LIB_EXPORT inline const Property& operator[](const PropertyID& p_id) const { return *m_prop_map.GetWithDefault(p_id, m_default); }
+    LIB_EXPORT inline Property& operator[](const PropertyID& p_id) { return Get(p_id); }
+    LIB_EXPORT inline const Property& operator[](const PropertyID& p_id) const { return Get(p_id); }
     
     LIB_EXPORT inline void Set(PropertyPtr p) { m_prop_map.Set(p->PropertyID(), p); }
     LIB_EXPORT inline bool Remove(const PropertyID& p_id) { return m_prop_map.Remove(p_id); }

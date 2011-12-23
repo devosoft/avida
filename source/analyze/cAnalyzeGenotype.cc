@@ -252,10 +252,10 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   
   
   // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
-  ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
-  ADD_GDATA(const cString& (), "task_order", "Task Performance Order",  GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(cString (),        "sequence",   "Genome Sequence",         GetSequence,     SetSequence,   0, "(N/A)", "");
-  ADD_GDATA(const cString& (), "alignment",  "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent",   GetParentMuts,   SetParentMuts, 0, "(none)", "");
+  ADD_GDATA(const cString& (), "task_order",  "Task Performance Order",  GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
+  ADD_GDATA(cString (),        "sequence",    "Genome Sequence",         GetSequence,     SetNULL,       0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "alignment",   "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
   ADD_GDATA(cString (), "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
   ADD_GDATA(cString (), "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
@@ -297,7 +297,7 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(int (),     "dom_num_cpus", "Number of Dominant Organisms",    GetNumCPUs,    SetNumCPUs,    0, 0, 0);
   ADD_GDATA(int (),     "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
   ADD_GDATA(int (),     "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
-  ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetSequence,   0, "(N/A)", "");
+  ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetNULL,       0, "(N/A)", "");
   
   
   return dcm;
@@ -680,20 +680,9 @@ void cAnalyzeGenotype::SetParent2ID(int _parent2_id)
   }
 }
 
-void cAnalyzeGenotype::SetHWType(int hw_type)
-{
-  m_genome.SetHardwareType(hw_type);
-}
-
 void cAnalyzeGenotype::SetInstSet(const cString& inst_set)
 {
-  m_genome.SetInstSet(inst_set);
-}
-
-void cAnalyzeGenotype::SetSequence(cString _sequence)
-{
-  Sequence new_genome(_sequence);
-  m_genome.SetSequence(new_genome);
+  m_genome.Properties().Get("instset").SetValue((const char*)inst_set);
 }
 
 

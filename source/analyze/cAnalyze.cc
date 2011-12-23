@@ -5521,7 +5521,7 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
     const Genome& genome = genotype->GetGenome();
     const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)genome.Properties().Get("instset").Value()));
     cInstSet* modify_inst_set = new cInstSet(original_inst_set);
-    cString isname = cString(genotype->GetGenome().GetInstSet()) + ":analyze_redundancy_by_inst_failure";
+    cString isname = cString(genotype->GetGenome().Properties().Get("instset")) + ":analyze_redundancy_by_inst_failure";
     if (!m_world->GetHardwareManager().RegisterInstSet(isname, modify_inst_set)) {
       delete modify_inst_set;
       modify_inst_set = &m_world->GetHardwareManager().GetInstSet(isname);
@@ -5536,7 +5536,7 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
       if (original_inst_set.GetProbFail(inst) > 0) num_pr_fail_insts++;
       modify_inst_set->SetProbFail(inst, 0);
     }
-    genotype->GetGenome().SetInstSet(isname);
+    genotype->GetGenome().Properties().Get("instset").SetValue((const char*)isname);
   
     // Avoid unintentional use with no instructions having a chance of failure
     if (num_pr_fail_insts == 0) {
