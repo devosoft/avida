@@ -207,7 +207,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const Genome& offspring, cOr
     }
   }
   
-  Systematics::ParentGroupsPtr pgrps(new Systematics::ConstParentGroups(1));
+  Systematics::ConstParentGroupsPtr pgrps(new Systematics::ConstParentGroups(1));
   (*pgrps)[0] = parent.SystematicsGroupMembership();
   child_array[0]->SelfClassify(pgrps);
 
@@ -387,7 +387,7 @@ void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, Instructio
 
 void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, Systematics::ConstGroupMembershipPtr p0grps, Systematics::ConstGroupMembershipPtr p1grps)
 {
-  Systematics::ParentGroupsPtr pgrps(new Systematics::ConstParentGroups);
+  Systematics::ConstParentGroupsPtr pgrps(new Systematics::ConstParentGroups);
   if (p0grps) pgrps->Push(p0grps);
   if (p1grps) pgrps->Push(p1grps);
   organism->SelfClassify(pgrps);

@@ -131,6 +131,11 @@ namespace Avida {
     static const PropertyTypeID Type;
   };
   
+  template <> struct PropertyTraits<const char*>
+  {
+    static const PropertyTypeID Type;
+  };
+
   template <> struct PropertyTraits<Apto::String>
   {
     static const PropertyTypeID Type;

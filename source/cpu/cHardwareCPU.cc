@@ -230,8 +230,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("IO-Feedback", &cHardwareCPU::Inst_TaskIO_Feedback, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?,  and push 1,0,  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
     tInstLibEntry<tMethod>("IO-bc-0.001", &cHardwareCPU::Inst_TaskIO_BonusCost_0_001, nInstFlag::STALL),
     tInstLibEntry<tMethod>("match-strings", &cHardwareCPU::Inst_MatchStrings, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sell", &cHardwareCPU::Inst_Sell, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("buy", &cHardwareCPU::Inst_Buy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("send", &cHardwareCPU::Inst_Send, nInstFlag::STALL),
     tInstLibEntry<tMethod>("receive", &cHardwareCPU::Inst_Receive, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
@@ -3519,25 +3517,6 @@ bool cHardwareCPU::Inst_MatchStrings(cAvidaContext& ctx)
   if (m_executedmatchstrings) return false;
   m_organism->DoOutput(ctx, 357913941);
   m_executedmatchstrings = true;
-
-  return true;
-}
-
-bool cHardwareCPU::Inst_Sell(cAvidaContext& ctx)
-{
-  int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
-  int send_value = GetRegister(REG_BX);
-  int sell_price = m_world->GetConfig().SELL_PRICE.Get();
-  m_organism->SellValue(send_value, search_label, sell_price);
-
-  return true;
-}
-
-bool cHardwareCPU::Inst_Buy(cAvidaContext& ctx)
-{
-  int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
-  int buy_price = m_world->GetConfig().BUY_PRICE.Get();
-  GetRegister(REG_BX) = m_organism->BuyValue(search_label, buy_price);
 
   return true;
 }

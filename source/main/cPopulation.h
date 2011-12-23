@@ -121,8 +121,6 @@ public:
   
   // cPopulation
   
-  bool InitiatePop(cUserFeedback* errors = NULL);
-
   void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
 
   // Activate the offspring of an organism in the population
@@ -232,7 +230,6 @@ public:
   // Saving and loading...
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false); 
-  bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
   void SetMiniTraceQueue(tSmartArray<Systematics::GroupPtr> new_queue, bool print_genomes);

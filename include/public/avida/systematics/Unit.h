@@ -80,7 +80,7 @@ namespace Avida {
       LIB_EXPORT bool AddClassification(GroupPtr g);
       LIB_EXPORT void Reclassify(GroupPtr g);
       
-      LIB_EXPORT void SelfClassify(ConstParentGroupsPtr parent_groups);
+      LIB_EXPORT void SelfClassify(ConstConstParentGroupsPtr parent_groups);
       
       LIB_EXPORT void HandleGestation();
     };

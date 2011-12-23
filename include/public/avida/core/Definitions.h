@@ -36,7 +36,6 @@ const int INPUT_SIZE_DEFAULT = 3;
 const int OUTPUT_SIZE_DEFAULT = 1;
 
 const int RECEIVED_MESSAGES_SIZE = 10;
-const int MARKET_SIZE = 10000;
 
 
 enum eFileType

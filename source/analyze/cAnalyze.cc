@@ -216,7 +216,9 @@ void cAnalyze::LoadSequence(cString cur_string)
   
   // Setup the genotype...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-  Genome genome(is.GetHardwareType(), is.GetInstSetName(), sequence);
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+  Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)sequence)));
   cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
   
   genotype->SetNumCPUs(1);      // Initialize to a single organism.
@@ -816,7 +818,9 @@ void cAnalyze::LoadFile(cString cur_string)
   
   // Setup the genome...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-  Genome default_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(1));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+  Genome default_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
   int load_count = 0;
   
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
@@ -4095,7 +4099,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     InstructionSequencePtr test_genome0_seq_p;
     GeneticRepresentationPtr test_genome0_rep_p = test_genome0.Representation();
     test_genome0_seq_p.DynamicCastFrom(test_genome0_rep_p);
-    const InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
+    InstructionSequence& test_genome0_seq = *test_genome0_seq_p;
 
     Genome test_genome1 = genotype2->GetGenome(); 
     InstructionSequencePtr test_genome1_seq_p;
@@ -4811,7 +4815,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << "<tr><th colspan=3>Base Creature";
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome null_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(1));
+      PropertyMap props;
+      props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+      Genome null_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
       cAnalyzeGenotype null_genotype(m_world, null_genome);
       while ((data_command = output_it.Next()) != NULL) {
         const cFlexVar cur_value = data_command->GetValue(genotype);
@@ -4855,7 +4861,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     // Loop through all the lines of code, testing the removal of each.
     for (int line_num = 0; line_num < max_line; line_num++) {
       int cur_inst = base_seq[line_num].GetOp();
-      char cur_symbol = base_seq[line_num].GetSymbol();
+      char cur_symbol = base_seq[line_num].GetSymbol()[0]; // hack to work around multichar symbols
       
       mod_seq[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome);
@@ -5709,7 +5715,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     // Loop through all the lines of code, testing all mutations...
     for (int line_num = 0; line_num < max_line; line_num++) {
       int cur_inst = base_seq[line_num].GetOp();
-      char cur_symbol = base_seq[line_num].GetSymbol();
+      char cur_symbol = base_seq[line_num].GetSymbol()[0]; // hack to work around multichar symbols
       int row_dead = 0, row_neg = 0, row_neut = 0, row_pos = 0;
       double row_fitness = 0.0;
       
@@ -6794,7 +6800,9 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       
       // Determine the fitness of the current sequence...
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome test_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(test_sequence));
+      PropertyMap props;
+      props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+      Genome test_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)test_sequence)));
       cCPUTestInfo test_info;
       testcpu->TestGenome(m_ctx, test_info, test_genome);
       const double fitness = test_info.GetGenotypeFitness();
@@ -6821,7 +6829,9 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     
     for (int i = 0; i <= total_diffs; i++) {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome max_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(max_sequence[i]));
+      PropertyMap props;
+      props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+      Genome max_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)max_sequence[i])));
       cAnalyzeGenotype max_genotype(m_world, max_genome);
       max_genotype.Recalculate(m_ctx);
       fp << i                                         << " "  //  1
@@ -6958,7 +6968,7 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    if (genotype->GetGenome().GetInstSet() != isname) continue;
+    if (genotype->GetGenome().Properties().Get("instset") != isname) continue;
     
     // Setup for counting...
     tArray<int> inst_bin(num_insts);
@@ -7046,7 +7056,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    if (genotype->GetGenome().GetInstSet() != isname) continue;
+    if (genotype->GetGenome().Properties().Get("instset") != isname) continue;
     
     num_orgs++; 
     
@@ -8276,7 +8286,9 @@ void cAnalyze::MutationRevert(cString cur_string)
 					}
 					
           const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-          Genome rev_genome(is.GetHardwareType(), is.GetInstSetName(), InstructionSequence(reverted));
+          PropertyMap props;
+          props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+          Genome rev_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)reverted)));
 					cAnalyzeGenotype new_genotype(m_world, rev_genome);  //Get likely fitness
 					new_genotype.Recalculate(m_ctx, &test_info, NULL, 50);
 					

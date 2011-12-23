@@ -2181,30 +2181,6 @@ public:
 };
 
 
-class cActionDumpMemory : public cAction
-{
-private:
-  cString m_filename;
-
-public:
-  cActionDumpMemory(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("memory_dump-%d.dat", m_world->GetStats().GetUpdate());
-    m_world->GetPopulation().DumpMemorySummary(m_world->GetDataFileOFStream(filename));
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
-
 /*
  This action goes through all genotypes currently present in the population,
  and writes into an output file the names of the genotypes, the fitness as
@@ -4108,7 +4084,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
 
   // Grid Information Dumps
-  action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpClassificationIDGrid>("DumpClassificationIDGrid");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");

@@ -25,6 +25,9 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Group.h"
+#include "avida/systematics/Manager.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
@@ -110,7 +113,7 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false); 
+    m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false); 
   }
 };
 
@@ -154,10 +157,14 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length));
-    InstructionSequence& seq = mg.GetSequence();
+    PropertyMap props;
+    props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+    Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(m_length)));
+    InstructionSequencePtr seq_p;
+    seq_p.DynamicCastFrom(genome.Representation());
+    InstructionSequence& seq = *seq_p;
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
-    m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
+    m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "random", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -203,8 +210,12 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length + 1));
-      InstructionSequence& seq = mg.GetSequence();
+      PropertyMap props;
+      props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+      Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(m_length + 1)));
+      InstructionSequencePtr seq_p;
+      seq_p.DynamicCastFrom(genome.Representation());
+      InstructionSequence& seq = *seq_p;
       for (int j = 0; j < m_length; j++) {
         Instruction inst = is.GetRandomInst(ctx);
         while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
@@ -213,7 +224,7 @@ public:
       if (m_sex) seq[m_length] = is.GetInst("repro-sex");
       else seq[m_length] = is.GetInst("repro");
       
-      m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "random", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
     }
   }
 };
@@ -271,7 +282,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-      m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+      m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -341,7 +352,7 @@ public:
         cerr << feedback.GetMessage(i) << endl;
       }
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -398,9 +409,11 @@ public:
       ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
+      PropertyMap props;
+      props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+      Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -460,9 +473,11 @@ public:
       ctx.Driver().Feedback().Warning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
+      PropertyMap props;
+      props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+      Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -515,7 +530,7 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-    m_world->GetPopulation().InjectGroup(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
+    m_world->GetPopulation().InjectGroup(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
   }
 };
 
@@ -569,8 +584,10 @@ public:
         };
         cerr << feedback.GetMessage(i) << endl;
       }
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(genome.Representation());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().InjectParasite(m_label, genome.GetSequence(), i);
+        m_world->GetPopulation().InjectParasite(m_label, *seq, i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -647,8 +664,10 @@ public:
         cerr << feedback.GetMessage(i) << endl;
       }
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
-        m_world->GetPopulation().InjectParasite(m_label, parasite.GetSequence(), i);
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(parasite.Representation());
+        m_world->GetPopulation().InjectParasite(m_label, *seq, i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -709,7 +728,7 @@ public:
     }
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx,
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -718,7 +737,7 @@ public:
       for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx,
+        m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -786,7 +805,7 @@ public:
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {
-          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx,
+          m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
                                           m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                           m_merit, m_lineage_label, m_neutral_metric); 
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -797,7 +816,7 @@ public:
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
         if (i==0 || (i % m_mod_num) ==0){
-          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx,
+          m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx,
 																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
 																					m_merit, m_lineage_label, m_neutral_metric);  
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -870,7 +889,7 @@ public:
       }
       
       if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
-        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE, ctx,
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), Systematics::Source(Systematics::DUPLICATION, "germline", true), ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(m_nest_cellid),
                                         m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -954,7 +973,7 @@ public:
         assert(target_cell > -1);
         assert(target_cell < m_world->GetPopulation().GetSize());
         
-        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE,
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), Systematics::Source(Systematics::DUPLICATION, "germline", true),
                                         ctx, target_cell, m_merit,
                                         m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -1156,7 +1175,10 @@ public:
       if (cell.IsOccupied() == false) continue;
       
       // count the number of target instructions in the genome
-      count = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
+      cString instset((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset"));
+			count = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
@@ -1216,8 +1238,11 @@ public:
 			if (cell.IsOccupied() == false) continue;
 			
 			// get the number of instructions of each type.
-			count1 = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst1));
-			count2 = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst2));
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
+      cString instset((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset"));
+			count1 = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst1));
+			count2 = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst2));
 			
 			// decide if it should be killed or not, based on the two counts and a the kill probability
 			if ((count1 >= m_limit) && (count2 >= m_limit)) {
@@ -1293,7 +1318,9 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-				int count = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
+				int count = seq->CountInst(m_world->GetHardwareManager().GetInstSet((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset")).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1394,9 +1421,11 @@ public:
 				
 				// count the number of target instructions in the genome
         const Genome& mg = cell.GetOrganism()->GetGenome();
-				const InstructionSequence& genome = mg.GetSequence();
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(mg.Representation());
+				const InstructionSequence& genome = *seq;
 				const double genomeSize = static_cast<double>(genome.GetSize());
-				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
+				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset")).GetInst(m_inst));
 				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));
@@ -2795,11 +2824,11 @@ protected:
 				if(cell.IsOccupied()) {
 					if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
 						m_world->GetPopulation().KillOrganism(cell, ctx); 
-						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest(), ctx); 
+						m_world->GetPopulation().InjectGenome(*i, Systematics::Source(Systematics::DUPLICATION, "germline", true), deme.GetGermline().GetLatest(), ctx); 
 					} else {
 						Genome genome(cell.GetOrganism()->GetGenome());
 						m_world->GetPopulation().KillOrganism(cell, ctx); 
-						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_RANDOM, genome, ctx); 
+						m_world->GetPopulation().InjectGenome(*i, Systematics::Source(Systematics::DUPLICATION, "random", true), genome, ctx); 
 					}
 					
 					m_world->GetPopulation().DemePostInjection(deme, cell);
@@ -2852,7 +2881,7 @@ public:
 					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
 					assert(deme.GetGermline().Size()>0);
 					m_world->GetPopulation().KillOrganism(cell, ctx); 
-					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest(), ctx); 
+					m_world->GetPopulation().InjectGenome(cell.GetID(), Systematics::Source(Systematics::DUPLICATION, "germline", true), deme.GetGermline().GetLatest(), ctx); 
 					m_world->GetPopulation().DemePostInjection(deme, cell);
 				}
 			}
@@ -5121,8 +5150,9 @@ public:
     // this will allow genotypes to wait until the next event (which will overwrite the array contents)
     // only tracing for orgs within threshold (unless none are, then just use first bg)
     
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    Systematics::GroupPtr bg = it->Next();
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
+    Systematics::GroupPtr bg = (it->Next());
     tSmartArray<Systematics::GroupPtr> bg_list;
     tSmartArray<int> fts_to_use;
     tSmartArray<int> groups_to_use;
@@ -5177,10 +5207,10 @@ public:
       if (bg_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
         if (i == 0 && m_save_dominants && num_doms > 0) {
           for (int j = 0; j < num_doms; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
+            if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || bg_list.GetSize() == 0)) {
               bg_list.Push(bg);
               if (m_save_foragers) {
-                int ft = bg->GetProperty("last_forager_type").AsInt(); 
+                int ft = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
                 if (fts_left > 0) {
                   for (int k = 0; k < fts_to_use.GetSize(); k++) {
                     if (ft == fts_to_use[k]) {
@@ -5199,7 +5229,7 @@ public:
                 }
               }
               if (m_save_groups) {
-                int grp = bg->GetProperty("last_group_id").AsInt(); 
+                int grp = Apto::StrAs(bg->Properties().Get("last_group_id")); 
                 if (groups_left > 0) {
                   for (int k = 0; k < groups_to_use.GetSize(); k++) {
                     if (grp == groups_to_use[k]) {
@@ -5223,7 +5253,7 @@ public:
               }
               else bg = it->Next();
             }
-            else if (bg && !bg->GetProperty("threshold").AsBool()) {      // no more above threshold
+            else if (bg && !((bool)Apto::StrAs(bg->Properties().Get("threshold")))) {      // no more above threshold
               doms_done = true; 
               break; 
             }
@@ -5233,8 +5263,8 @@ public:
         
         else if (i == 1 && m_save_foragers && fts_left > 0) {
           for (int j = 0; j < fts_left; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
-              int ft = bg->GetProperty("last_forager_type").AsInt(); 
+            if (bg && (((bool)Apto::StrAs(bg->Properties().Get("threshold"))) || bg_list.GetSize() == 0)) {
+              int ft = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
               bool found_one = false;
               for (int k = 0; k < fts_to_use.GetSize(); k++) {
                 if (ft == fts_to_use[k]) {
@@ -5252,7 +5282,7 @@ public:
                 }
               }
               if (m_save_groups) {
-                int grp = bg->GetProperty("last_group_id").AsInt(); 
+                int grp = Apto::StrAs(bg->Properties().Get("last_group_id")); 
                 if (groups_left > 0) {
                   for (int k = 0; k < groups_to_use.GetSize(); k++) {
                     if (grp == groups_to_use[k]) {
@@ -5277,7 +5307,7 @@ public:
               else bg = it->Next();
               if (!found_one) j--;
             }
-            else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
+            else if (bg && !((bool)Apto::StrAs(bg->Properties().Get("threshold")))) {  // no more above threshold
               fts_done = true; 
               break; 
             }
@@ -5287,8 +5317,8 @@ public:
         
         else if (i == 2 && m_save_groups && groups_left > 0) {
           for (int j = 0; j < groups_left; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
-              int grp = bg->GetProperty("last_group_id").AsInt(); 
+            if (bg && (((bool)Apto::StrAs(bg->Properties().Get("threshold"))) || bg_list.GetSize() == 0)) {
+              int grp = Apto::StrAs(bg->Properties().Get("last_group_id")); 
               bool found_one = false;
               for (int k = 0; k < groups_to_use.GetSize(); k++) {
                 if (grp == groups_to_use[k]) {
@@ -5312,7 +5342,7 @@ public:
               else bg = it->Next();
               if (!found_one) j--;
             }
-            else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
+            else if (bg && !((bool)Apto::StrAs(bg->Properties().Get("threshold")))) {  // no more above threshold
               grps_done = true; 
               break; 
             }

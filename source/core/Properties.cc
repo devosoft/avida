@@ -37,6 +37,7 @@ Apto::String Avida::StringProperty::Value() const { return m_value; }
 const Avida::PropertyTypeID Avida::PropertyTraits<bool>::Type = "bool";
 const Avida::PropertyTypeID Avida::PropertyTraits<int>::Type = "int";
 const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
+const Avida::PropertyTypeID Avida::PropertyTraits<const char*>::Type = "string";
 const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
 
 bool Avida::PropertyMap::operator==(const PropertyMap& p) const

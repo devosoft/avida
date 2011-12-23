@@ -483,8 +483,6 @@ private:
   bool Inst_TaskIO_BonusCost(cAvidaContext& ctx, double bonus_cost);
   bool Inst_TaskIO_BonusCost_0_001(cAvidaContext& ctx) { return Inst_TaskIO_BonusCost(ctx, 0.001); };
   bool Inst_MatchStrings(cAvidaContext& ctx);
-  bool Inst_Sell(cAvidaContext& ctx);
-  bool Inst_Buy(cAvidaContext& ctx);
   bool Inst_Send(cAvidaContext& ctx);
   bool Inst_Receive(cAvidaContext& ctx);
   bool Inst_SenseLog2(cAvidaContext& ctx);

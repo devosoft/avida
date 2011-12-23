@@ -61,7 +61,7 @@ void Avida::Systematics::Unit::Reclassify(GroupPtr g)
   m_groups->Push(g);  
 }
 
-void Avida::Systematics::Unit::SelfClassify(ConstParentGroupsPtr parent_groups)
+void Avida::Systematics::Unit::SelfClassify(ConstConstParentGroupsPtr parent_groups)
 {
   assert(parent_groups->GetSize() > 0);
 

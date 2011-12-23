@@ -63,8 +63,9 @@ namespace Avida {
     
     typedef Apto::Array<GroupMembershipPtr> ParentGroups;
     typedef Apto::Array<ConstGroupMembershipPtr> ConstParentGroups;
-    typedef Apto::SmartPtr<ConstParentGroups> ParentGroupsPtr;
-    typedef Apto::SmartPtr<const ConstParentGroups> ConstParentGroupsPtr;
+    typedef Apto::SmartPtr<ParentGroups> ParentGroupsPtr;
+    typedef Apto::SmartPtr<ConstParentGroups> ConstParentGroupsPtr;
+    typedef Apto::SmartPtr<const ConstParentGroups> ConstConstParentGroupsPtr;
     
     typedef Apto::String RoleID;
     

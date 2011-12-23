@@ -167,7 +167,6 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
   m_pop = Apto::SmartPtr<cPopulation, Apto::InternalRCObject>(new cPopulation(this));
-  if (!m_pop->InitiatePop(feedback)) success = false;
   
   // Setup Event List
   m_event_list = new cEventList(this);
