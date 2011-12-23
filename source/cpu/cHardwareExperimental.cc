@@ -261,6 +261,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly), 
     tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly),    
     tInstLibEntry<tMethod>("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly),  
+    tInstLibEntry<tMethod>("zero-position-offset", &cHardwareExperimental::Inst_ZeroPosOffset),  
     tInstLibEntry<tMethod>("get-position", &cHardwareExperimental::Inst_GetPosition),
     
     // Rotation
@@ -320,6 +321,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
     
+    // Control-type Instructions
+    tInstLibEntry<tMethod>("scramble-registers", &cHardwareExperimental::Inst_ScrambleReg, nInstFlag::STALL),
+
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
   };
@@ -2903,6 +2907,17 @@ bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareExperimental::Inst_ZeroPosOffset(cAvidaContext& ctx) {
+  const int offset = GetRegister(FindModifiedRegister(rBX)) % 3;
+  if (offset == 0) {
+    m_organism->ClearEasterly();
+    m_organism->ClearNortherly();    
+  }
+  else if (offset == 1) m_organism->ClearEasterly();
+  else if (offset == 2) m_organism->ClearNortherly();
+  return true;
+}
+
 /*! This method places the calling organism's x-y coordinates in ?BX? and ?++BX?.
  
  Note that this method *will not work* from within the test CPU, so we have to guard
@@ -4519,6 +4534,15 @@ void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ct
   m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
                                                      odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
+
+bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
+{
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    setInternalValue(rAX + i, m_organism->GetNextInput(), true);
+  }
+  return true;
+}
+
 
 cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs)
 {

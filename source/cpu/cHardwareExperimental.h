@@ -516,6 +516,7 @@ private:
   bool Inst_GetEasterly(cAvidaContext& ctx);
   bool Inst_ZeroEasterly(cAvidaContext& ctx);
   bool Inst_ZeroNortherly(cAvidaContext& ctx);
+  bool Inst_ZeroPosOffset(cAvidaContext& ctx);
   bool Inst_GetPosition(cAvidaContext& ctx);
   
   // Rotation
@@ -577,6 +578,8 @@ private:
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
+  // Control-type Instructions
+  bool Inst_ScrambleReg(cAvidaContext& ctx);
   
   // ---------- Some Instruction Helpers -----------
   struct searchInfo {
