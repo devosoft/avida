@@ -21,14 +21,14 @@
 #ifndef cPhenPlastSummary_h
 #define cPhenPlastSummary_h
 
-#ifndef cPhenPlastGenotype_h
-#include "cPhenPlastGenotype.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/systematics/Group.h"
 
-class cPhenPlastSummary{
+#include "cPhenPlastGenotype.h"
+#include "tArray.h"
+
+
+class cPhenPlastSummary : public Systematics::GroupData
+{
   public:
     int     m_recalculate_trials;  
     int     m_num_phenotypes;
@@ -72,7 +72,7 @@ class cPhenPlastSummary{
     m_task_probabilities = ps.m_task_probabilities;
   }
   
-  
+  bool Serialize(ArchivePtr ar) const { return false; }
 };
 
 #endif

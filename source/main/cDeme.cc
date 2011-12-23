@@ -20,6 +20,9 @@
 
 #include "cDeme.h"
 
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Manager.h"
+
 #include "cEnvironment.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -187,7 +190,7 @@ std::vector<int> cDeme::GetGenotypeIDs()
   std::vector<int> genotype_ids;
   for (int i = 0; i < GetSize(); i++) {
     cPopulationCell& cell = GetCell(i);
-    if (cell.IsOccupied()) genotype_ids.push_back(cell.GetOrganism()->GetBioGroup("genotype")->GetID());
+    if (cell.IsOccupied()) genotype_ids.push_back(cell.GetOrganism()->SystematicsGroup("genotype")->ID());
   }
 
   //assert(genotype_ids.size()>0); // How did we get to replication otherwise?
@@ -790,7 +793,7 @@ double cDeme::CalculateTotalInitialEnergyResources() const
 void cDeme::AddFounder(Systematics::GroupPtr bg, cPhenotype * _in_phenotype)
 {
   // save genotype id
-  m_founder_genotype_ids.Push( bg->GetID() );
+  m_founder_genotype_ids.Push( bg->ID() );
   cPhenotype phenotype;
   if (_in_phenotype) phenotype = *_in_phenotype;
   m_founder_phenotypes.Push( phenotype );
@@ -800,10 +803,11 @@ void cDeme::AddFounder(Systematics::GroupPtr bg, cPhenotype * _in_phenotype)
 
 void cDeme::ClearFounders()
 {
+  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+  
   // check for unused genotypes, now that we're done with these
   for (int i=0; i<m_founder_genotype_ids.GetSize(); i++) {
-    
-    Systematics::GroupPtr bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(m_founder_genotype_ids[i]);
+    Systematics::GroupPtr bg = classmgr->ArbiterForRole("genotype")->Group(m_founder_genotype_ids[i]);
     assert(bg);
     bg->RemovePassiveReference();
   }
@@ -816,16 +820,18 @@ void cDeme::ClearFounders()
 void cDeme::ReplaceGermline(Systematics::GroupPtr bg)
 {
   // same genotype, no changes
-  if (m_germline_genotype_id == bg->GetID()) return;
+  if (m_germline_genotype_id == bg->ID()) return;
   
   // first, save and put a hold on new germline genotype
   int prev_germline_genotype_id = m_germline_genotype_id;
-  m_germline_genotype_id = bg->GetID();
+  m_germline_genotype_id = bg->ID();
   bg->AddPassiveReference();
 
   
   // next, if we previously were saving a germline genotype, free it
-  Systematics::GroupPtr pbg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(prev_germline_genotype_id);
+  
+  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+  Systematics::GroupPtr pbg = classmgr->ArbiterForRole("genotype")->Group(prev_germline_genotype_id);
   if (pbg) pbg->RemovePassiveReference();
 }
 

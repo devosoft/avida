@@ -142,7 +142,12 @@ cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganis
 {
   m_functions = s_inst_slib->GetFunctions();
 	
-  m_mem_array[0] = in_organism->GetGenome().GetSequence();  // Initialize memory...
+  const Genome& org = in_organism->GetGenome();
+  InstructionSequencePtr org_seq_p;
+  org_seq_p.DynamicCastFrom(org.Representation());
+  InstructionSequence& org_genome = *org_seq_p;  
+
+  m_mem_array[0] = org_genome;  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = Instruction();
   Reset(ctx);                            // Setup the rest of the hardware...
@@ -711,7 +716,11 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
   assert(mem_space != -1);
-  m_mem_array[mem_space] = bu->GetGenome().GetSequence();
+  const Genome& bu_gen = bu->GetGenome();
+  InstructionSequencePtr bu_seq_p;
+  bu_seq_p.DynamicCastFrom(bu_gen.Representation());
+  InstructionSequence& bu_seq = *bu_seq_p;  
+  m_mem_array[mem_space] = bu_seq;
   
   // Setup the thread
   m_threads[thread_id].Reset(this, mem_space);
@@ -1145,8 +1154,13 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
         // Reset only the calling thread's state
         for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
         for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
-        if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
-          m_organism->GetPhenotype().ResetMerit(m_organism->GetGenome().GetSequence());
+        if(m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
+          const Genome& org_gen = m_organism->GetGenome();
+          InstructionSequencePtr org_seq_p;
+          org_seq_p.DynamicCastFrom(org_gen.Representation());
+          InstructionSequence& org_seq = *org_seq_p;  
+          m_organism->GetPhenotype().ResetMerit(org_seq);
+        }
         break;
         
       case DIVIDE_METHOD_OFFSPRING:

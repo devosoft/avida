@@ -73,6 +73,7 @@ private:
   // Base data
   // -----------------------------------------------------------------------------------------------------------------------
   Genome m_base_genome;
+  int m_base_genome_size;
   double m_base_fitness;
   double m_base_merit;
   double m_base_gestation;
@@ -279,6 +280,7 @@ private:
   inline int GetTargetTask() const { return m_target; }
 
   inline const Genome& GetBaseGenome() const { return m_base_genome; }
+  inline int GetBaseGenomeSize() const { return m_base_genome_size; }
   inline double GetBaseFitness() const { return m_base_fitness; }
   inline double GetBaseMerit() const { return m_base_merit; }
   inline double GetBaseGestation() const { return m_base_gestation; }

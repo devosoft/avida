@@ -352,7 +352,12 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
-  m_memory = in_organism->GetGenome().GetSequence();  // Initialize memory...
+  const Genome& in_genome = in_organism->GetGenome();
+  ConstInstructionSequencePtr in_seq_p;
+  in_seq_p.DynamicCastFrom(in_genome.Representation());
+  const InstructionSequence& in_seq = *in_seq_p;
+  
+  m_memory = in_seq;  // Initialize memory...
   Reset(ctx);                            // Setup the rest of the hardware...
 }
 
@@ -675,13 +680,18 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
 
 void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
 {
+  const Genome& in_genome = in_organism->GetGenome();
+  ConstInstructionSequencePtr in_seq_p;
+  in_seq_p.DynamicCastFrom(in_genome.Representation());
+  const InstructionSequence& in_seq = *in_seq_p;
+
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
   df.WriteComment(org_dat.Set("Org ID: %d", org_id));
   df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
-  df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
+  df.WriteComment(org_dat.Set("Genome Length: %d", in_seq.GetSize()));
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");
   df.WriteComment("CPU Cycle");
@@ -2636,18 +2646,27 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   for (int i = 0; i < m_memory.GetSize(); i++) if (m_memory.FlagExecuted(i)) lines_executed++;
   m_organism->GetPhenotype().SetLinesExecuted(lines_executed);
   
-  
+  const Genome& org = m_organism->GetGenome();
+  InstructionSequencePtr org_seq_p;
+  org_seq_p.DynamicCastFrom(org.Representation());
+  InstructionSequence& org_genome = *org_seq_p;  
+
+  const Genome& child = m_organism->OffspringGenome();
+  InstructionSequencePtr child_seq_p;
+  child_seq_p.DynamicCastFrom(child.Representation());
+  InstructionSequence& child_seq = *child_seq_p;  
+
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
     for (int i = 0; i < m_memory.GetSize(); i++) {
-      if (m_organism->TestCopyMut(ctx)) m_organism->OffspringGenome().GetSequence()[i] = m_inst_set->GetRandomInst(ctx);
+      if (m_organism->TestCopyMut(ctx)) child_seq[i] = m_inst_set->GetRandomInst(ctx);
     }
   }
   
   // Handle Divide Mutations...
   Divide_DoMutations(ctx);
   
-  const bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), m_organism->OffspringGenome().GetSize(), 1);
+  const bool viable = Divide_CheckViable(ctx, org_genome.GetSize(), child_seq.GetSize(), 1);
   if (viable == false) return false;
   
   // Many tests will require us to run the offspring through a test CPU;

@@ -27,7 +27,9 @@
 
 bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
 {
-  parent->GetPhenotype().TestDivideReset(parent->GetGenome().GetSequence());
+  ConstInstructionSequencePtr seq;
+  seq.DynamicCastFrom(parent->Genome().Representation());
+  parent->GetPhenotype().TestDivideReset(*seq);
   // @CAO in the future, we probably want to pass this offspring the test_cpu!
   return true;
 }

@@ -108,10 +108,11 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
     entry.merit = parent->GetPhenotype().GetMerit();
   }
   entry.timestamp = m_world->GetStats().GetUpdate();
-  entry.groups = parent->GetBioGroups();
+  entry.groups = Systematics::GroupMembershipPtr(new Systematics::GroupMembership);
+  *entry.groups = *parent->SystematicsGroupMembership();
   
-  for (int i = 0; i < entry.groups.GetSize(); i++) {
-    entry.groups[i]->AddActiveReference();
+  for (int i = 0; i < entry.groups->GetSize(); i++) {
+    (*entry.groups)[i]->AddActiveReference();
   }
 }
 
@@ -120,10 +121,10 @@ void cBirthChamber::ClearEntry(cBirthEntry& entry)
 {
   entry.timestamp = -1;
 
-  for (int i = 0; i < entry.groups.GetSize(); i++) {
-    entry.groups[i]->RemoveActiveReference();
+  for (int i = 0; i < entry.groups->GetSize(); i++) {
+    (*entry.groups)[i]->RemoveActiveReference();
   }
-  entry.groups.Resize(0);
+  entry.groups = Systematics::GroupMembershipPtr(NULL);
 }
 
 
@@ -181,7 +182,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const Genome& offspring, cOr
   // This is asexual who doesn't need to wait in the birth chamber
   // just build the child and return.
   child_array.Resize(1);
-  child_array[0] = new cOrganism(m_world, ctx, offspring, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
+  child_array[0] = new cOrganism(m_world, ctx, offspring, parent.GetPhenotype().GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
   merit_array.Resize(1);
   
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -206,8 +207,8 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const Genome& offspring, cOr
     }
   }
   
-  tArray<const tArray<Systematics::GroupPtr>*> pgrps(1);
-  pgrps[0] = &parent.GetBioGroups();
+  Systematics::ParentGroupsPtr pgrps(new Systematics::ConstParentGroups(1));
+  (*pgrps)[0] = parent.SystematicsGroupMembership();
   child_array[0]->SelfClassify(pgrps);
 
   return true;
@@ -218,8 +219,8 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
 {
   // Build both child organisms...
   child_array.Resize(2);
-  child_array[0] = new cOrganism(m_world, ctx, old_entry.genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
-  child_array[1] = new cOrganism(m_world, ctx, new_genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
+  child_array[0] = new cOrganism(m_world, ctx, old_entry.genome, parent.GetPhenotype().GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
+  child_array[1] = new cOrganism(m_world, ctx, new_genome, parent.GetPhenotype().GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
 
   // Setup the merits for both children...
   merit_array.Resize(2);
@@ -227,8 +228,8 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
   merit_array[1] = parent.GetPhenotype().GetMerit();
 
   // Setup the genotypes for both children...
-  SetupGenotypeInfo(child_array[0], &old_entry.groups);
-  SetupGenotypeInfo(child_array[1], &parent.GetBioGroups());
+  SetupGenotypeInfo(child_array[0], old_entry.groups);
+  SetupGenotypeInfo(child_array[1], parent.SystematicsGroupMembership());
 
   return true;
 }
@@ -384,11 +385,11 @@ void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, Instructio
 }
 
 
-void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, const tArray<Systematics::GroupPtr>* p0grps, const tArray<Systematics::GroupPtr>* p1grps)
+void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, Systematics::ConstGroupMembershipPtr p0grps, Systematics::ConstGroupMembershipPtr p1grps)
 {
-  tArray<const tArray<Systematics::GroupPtr>*> pgrps;
-  if (p0grps) pgrps.Push(p0grps);
-  if (p1grps) pgrps.Push(p1grps);
+  Systematics::ParentGroupsPtr pgrps(new Systematics::ConstParentGroups);
+  if (p0grps) pgrps->Push(p0grps);
+  if (p1grps) pgrps->Push(p1grps);
   organism->SelfClassify(pgrps);
 }
 
@@ -473,13 +474,13 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
 
   const int two_fold_cost = m_world->GetConfig().TWO_FOLD_COST_SEX.Get();
 
-  const tArray<Systematics::GroupPtr>* parent0_groups = &old_entry->groups;
-  const tArray<Systematics::GroupPtr>* parent1_groups = &parent->GetBioGroups();
+  Systematics::ConstGroupMembershipPtr parent0_groups = old_entry->groups;
+  Systematics::ConstGroupMembershipPtr parent1_groups = parent->SystematicsGroupMembership();
   
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
-    child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
-    child_array[1] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+    child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
+    child_array[1] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
     
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
@@ -502,7 +503,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
     merit_array.Resize(1);
 
     if (ctx.GetRandom().GetDouble() < 0.5) {
-      child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+      child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
         meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
@@ -513,7 +514,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const Genome& offspring,
       SetupGenotypeInfo(child_array[0], parent0_groups, parent1_groups);
     } 
     else {
-      child_array[0] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+      child_array[0] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), Systematics::Source(Systematics::DIVISION, ""));
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
         meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());

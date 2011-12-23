@@ -29,11 +29,10 @@
 
 int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
-  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  Apto::SmartPtr<cPhenPlastSummary> ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
-    assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
+    ps = Apto::SmartPtr<cPhenPlastSummary>(TestPlasticity(ctx, world, Genome(bg->Properties().Get("genome"))));
     bg->AttachData(ps);
   }
   
@@ -42,11 +41,10 @@ int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, Systemat
 
 double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
-  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  Apto::SmartPtr<cPhenPlastSummary> ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
-    assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
+    ps = Apto::SmartPtr<cPhenPlastSummary>(TestPlasticity(ctx, world, Genome(bg->Properties().Get("genome"))));
     bg->AttachData(ps);
   }
   
@@ -55,11 +53,10 @@ double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, S
 
 double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg, int task_id)
 {
-  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  Apto::SmartPtr<cPhenPlastSummary> ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
-    assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
+    ps = Apto::SmartPtr<cPhenPlastSummary>(TestPlasticity(ctx, world, Genome(bg->Properties().Get("genome"))));
     bg->AttachData(ps);
   }
   
@@ -68,11 +65,10 @@ double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, Sys
 
 const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
-  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  Apto::SmartPtr<cPhenPlastSummary> ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {
-    assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
+    ps = Apto::SmartPtr<cPhenPlastSummary>(TestPlasticity(ctx, world, Genome(bg->Properties().Get("genome"))));
     bg->AttachData(ps);
   }
   

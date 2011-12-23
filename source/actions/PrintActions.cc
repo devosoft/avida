@@ -24,7 +24,9 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
+#include "avida/systematics/Manager.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
@@ -323,7 +325,7 @@ public:
     const int num_cells = population.GetSize();
     for (int x = 0; x < num_cells; x++) {
       cPopulationCell& cell = population.GetCell(x);
-      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().GetInstSet() == is.GetInstSetName()) {
+      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().Properties().Get("instset") == is.GetInstSetName()) {
         // access this CPU's code block
         cCPUMemory& cpu_mem = cell.GetOrganism()->GetHardware().GetMemory();
         const int mem_size = cpu_mem.GetSize();
@@ -362,14 +364,13 @@ public:
     // Two pass method
 
     // Loop through all genotypes getting min and max values
-    cClassificationManager& classmgr = m_world->GetClassificationManager();
-    tAutoRelease<tIterator<Systematics::Group> > it;
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
 
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
       Systematics::GroupPtr bg = it->Get();
-      if (bg->GetDepth() < min) min = bg->GetDepth();
-      if (bg->GetDepth() > max) max = bg->GetDepth();
+      if (bg->Depth() < min) min = bg->Depth();
+      if (bg->Depth() > max) max = bg->Depth();
     }
     assert(max >= min);
 
@@ -378,9 +379,9 @@ public:
     n.SetAll(0);
 
     // Loop through all genotypes binning the values
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    it = classmgr->ArbiterForRole("genotype")->Begin();
     while (it->Next()) {
-      n[it->Get()->GetDepth() - min] += it->Get()->NumUnits();
+      n[it->Get()->Depth() - min] += it->Get()->NumUnits();
     }
 
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -415,16 +416,16 @@ public:
     // Two pass method
     
     // Loop through all genotypes getting min and max values
-    cClassificationManager& classmgr = m_world->GetClassificationManager();
-    tAutoRelease<tIterator<Systematics::Group> > it;
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
       Systematics::GroupPtr bg = it->Get();
-      if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
+      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
       {
-        if (bg->GetDepth() < min) min = bg->GetDepth();
-        if (bg->GetDepth() > max) max = bg->GetDepth();
+        if (bg->Depth() < min) min = bg->Depth();
+        if (bg->Depth() > max) max = bg->Depth();
       }
     }
     
@@ -438,12 +439,13 @@ public:
     n.SetAll(0);
     
     // Loop through all genotypes binning the values
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    it = classmgr->ArbiterForRole("genotype")->Begin();
     while (it->Next()) {
       Systematics::GroupPtr bg = it->Get();
-      if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
+      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
       {
-        n[bg->GetDepth() - min] += bg->NumUnits();
+        n[bg->Depth() - min] += bg->NumUnits();
       }
     }
     
@@ -479,16 +481,16 @@ public:
     // Two pass method
     
     // Loop through all genotypes getting min and max values
-    cClassificationManager& classmgr = m_world->GetClassificationManager();
-    tAutoRelease<tIterator<Systematics::Group> > it;
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
       Systematics::GroupPtr bg = it->Get();
-      if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
+      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
       {
-        if (bg->GetDepth() < min) min = bg->GetDepth();
-        if (bg->GetDepth() > max) max = bg->GetDepth();
+        if (bg->Depth() < min) min = bg->Depth();
+        if (bg->Depth() > max) max = bg->Depth();
       }
     }
     
@@ -499,12 +501,13 @@ public:
     n.SetAll(0);
     
     // Loop through all genotypes binning the values
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    it = classmgr->ArbiterForRole("genotype")->Begin();
     while (it->Next()) {
       Systematics::GroupPtr bg = it->Get();
-      if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      int transmission_type = Apto::StrAs(bg->Properties().Get("src_transmission_type"));
+      if(transmission_type == Systematics::HORIZONTAL || transmission_type == Systematics::VERTICAL)
       {
-        n[bg->GetDepth() - min] += bg->NumUnits();
+        n[bg->Depth() - min] += bg->NumUnits();
       }
     }
     
@@ -555,7 +558,8 @@ public:
   void Process(cAvidaContext& ctx)
   {
     // Allocate array for the histogram & zero it
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     tArray<int> hist(it->Next()->NumUnits());
     hist.SetAll(0);
 
@@ -572,112 +576,6 @@ public:
     df.Endl();
   }
 };
-
-// @TODO - needs species support
-//class cActionPrintSpeciesAbundanceHistogram : public cAction
-//{
-//private:
-//  cString m_filename;
-//public:
-//  cActionPrintSpeciesAbundanceHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-//  {
-//    cString largs(args);
-//    if (largs == "") m_filename = "species_abundance_histogram.dat"; else m_filename = largs.PopWord();
-//  }
-//
-//  static const cString GetDescription() { return "Arguments: [string fname=\"species_abundance_histogram.dat\"]"; }
-//
-//  void Process(cAvidaContext& ctx)
-//  {
-//    int max = 0;
-//
-//    // Find max species abundance...
-//    cClassificationManager& classmgr = m_world->GetClassificationManager();
-//    cSpecies* cur_species = classmgr.GetFirstSpecies();
-//    for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
-//      if (max < cur_species->GetNumOrganisms()) {
-//        max = cur_species->GetNumOrganisms();
-//      }
-//      cur_species = cur_species->GetNext();
-//    }
-//
-//    // Allocate array for the histogram & zero it
-//    tArray<int> hist(max);
-//    hist.SetAll(0);
-//
-//    // Loop through all species binning the values
-//    cur_species = classmgr.GetFirstSpecies();
-//    for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
-//      assert( cur_species->GetNumOrganisms() - 1 >= 0 );
-//      assert( cur_species->GetNumOrganisms() - 1 < hist.GetSize() );
-//      hist[cur_species->GetNumOrganisms() - 1]++;
-//      cur_species = cur_species->GetNext();
-//    }
-//
-//    // Actual output
-//    cDataFile& df = m_world->GetDataFile(m_filename);
-//    df.Write(m_world->GetStats().GetUpdate(), "Update");
-//    for (int i = 0; i < hist.GetSize(); i++) df.WriteAnonymous(hist[i]);
-//    df.Endl();
-//  }
-//};
-
-// @TODO - needs lineage support
-//class cActionPrintLineageTotals : public cAction
-//{
-//private:
-//  cString m_filename;
-//  int m_verbose;
-//public:
-//  cActionPrintLineageTotals(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
-//  {
-//    cString largs(args);
-//    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_totals.dat";
-//    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
-//  }
-//
-//  static const cString GetDescription() { return "Arguments: [string fname='lineage_totals.dat'] [int verbose=1]"; }
-//
-//  void Process(cAvidaContext& ctx)
-//  {
-//    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
-//      m_world->GetDataFileOFStream(m_filename) << "No lineage data available!" << endl;
-//      return;
-//    }
-//    m_world->GetClassificationManager().PrintLineageTotals(m_filename, m_verbose);
-//  }
-//};
-
-
-// @TODO - needs lineage support
-//class cActionPrintLineageCounts : public cAction
-//{
-//private:
-//  cString m_filename;
-//  int m_verbose;
-//public:
-//  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
-//  {
-//    cString largs(args);
-//    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
-//    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
-//  }
-//
-//  static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat'] [int verbose=1]"; }
-//
-//  void Process(cAvidaContext& ctx)
-//  {
-//    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
-//      m_world->GetDataFileOFStream(m_filename) << "No lineage data available!" << endl;
-//      return;
-//    }
-//    if (m_verbose) {    // verbose mode is the same in both methods
-//      m_world->GetClassificationManager().PrintLineageTotals(m_filename, m_verbose);
-//      return;
-//    }
-//    m_world->GetClassificationManager().PrintLineageCurCounts(m_filename);
-//  }
-//};
 
 
 /*
@@ -706,13 +604,14 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     Systematics::GroupPtr bg = it->Next();
     if (bg) {
       cString filename(m_filename);
-      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
+      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->Properties().Get("name"));
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-      testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
+      testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate());
       delete testcpu;
     }
   }
@@ -734,7 +633,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     int num_groups = 0;
     map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();    
     map <int,int>::iterator itr;    
@@ -748,10 +648,10 @@ public:
     
     for (int i = 0; i < num_groups; i++) {
       bool already_used = false;
-      if (bg && (bg->GetProperty("threshold").AsBool() || i == 0)) {
-        int last_birth_group_id = bg->GetProperty("last_group_id").AsInt(); 
-        int last_birth_cell = bg->GetProperty("last_birth_cell").AsInt();
-        int last_birth_forager_type = bg->GetProperty("last_forager_type").AsInt(); 
+      if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
+        int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
+        int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
+        int last_birth_forager_type = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
         if (i != 0) {
           for (int j = 0; j < birth_groups_checked.GetSize(); j++) {
             if (last_birth_group_id == birth_groups_checked[j]) { 
@@ -770,11 +670,11 @@ public:
           }
         }
         cString filename(m_filename);
-        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->GetProperty("name").AsString());
+        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name"));
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         
-        testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+        testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
         if (bg == it->Next()) break; // no more to check
         else bg = it->Next();
@@ -799,7 +699,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     int num_fts = 1;
     if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) num_fts = 2;
     else num_fts = 1;  // account for -1's
@@ -812,10 +713,10 @@ public:
     
     for (int i = 0; i < num_fts; i++) {
       bool already_used = false;
-      if (bg && (bg->GetProperty("threshold").AsBool() || i == 0)) {
-        int last_birth_group_id = bg->GetProperty("last_group_id").AsInt(); 
-        int last_birth_cell = bg->GetProperty("last_birth_cell").AsInt();
-        int last_birth_forager_type = bg->GetProperty("last_forager_type").AsInt(); 
+      if (bg && ((bool)Apto::StrAs(bg->Properties().Get("threshold")) || i == 0)) {
+        int last_birth_group_id = Apto::StrAs(bg->Properties().Get("last_group_id")); 
+        int last_birth_cell = Apto::StrAs(bg->Properties().Get("last_birth_cell"));
+        int last_birth_forager_type = Apto::StrAs(bg->Properties().Get("last_forager_type")); 
         if (i != 0) {
           for (int j = 0; j < birth_forage_types_checked.GetSize(); j++) {
             if (last_birth_forager_type == birth_forage_types_checked[j]) { 
@@ -834,11 +735,11 @@ public:
           }
         }
         cString filename(m_filename);
-        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->GetProperty("name").AsString());
+        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name"));
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         
-        testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+        testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
         if (bg == it->Next()) break; // no more to check
         else bg = it->Next();
@@ -921,7 +822,7 @@ public:
     double fave = 0;
     double fave_testCPU = 0;
     double max_fitness = -1; // we set this to -1, so that even 0 is larger...
-    Systematics::GroupPtr max_f_genotype = NULL;
+    Systematics::GroupPtr max_f_genotype;
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
 
@@ -929,10 +830,10 @@ public:
       if (pop.GetCell(i).IsOccupied() == false) continue;  // One use organisms.
 
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
 
       cCPUTestInfo test_info;
-      testcpu->TestGenome(ctx, test_info, Genome(genotype->GetProperty("genome").AsString()));
+      testcpu->TestGenome(ctx, test_info, Genome(genotype->Properties().Get("genome")));
       // We calculate the fitness based on the current merit,
       // but with the true gestation time. Also, we set the fitness
       // to zero if the creature is not viable.
@@ -967,10 +868,15 @@ public:
 
     // determine the name of the maximum fitness genotype
     cString max_f_name;
-    if (max_f_genotype->GetProperty("threshold").AsBool())
-      max_f_name = max_f_genotype->GetProperty("name").AsString();
-    else // we put the current update into the name, so that it becomes unique.
-      max_f_name.Set("%03d-no_name-u%i", Genome(max_f_genotype->GetProperty("genome").AsString()).GetSequence().GetSize(), update);
+    if ((bool)Apto::StrAs(max_f_genotype->Properties().Get("threshold")))
+      max_f_name = max_f_genotype->Properties().Get("name");
+    else {
+      // we put the current update into the name, so that it becomes unique.
+      Genome gen(max_f_genotype->Properties().Get("genome"));
+      InstructionSequencePtr seq;
+      seq.DynamicCastFrom(gen.Representation());
+      max_f_name.Set("%03d-no_name-u%i", seq->GetSize(), update);
+    }
 
     cDataFile& df = m_world->GetDataFile(m_filenames[0]);
     df.Write(update, "Update");
@@ -985,7 +891,7 @@ public:
     if (m_save_max) {
       cString filename;
       filename.Set("archive/%s", static_cast<const char*>(max_f_name));
-      testcpu->PrintGenome(ctx, Genome(max_f_genotype->GetProperty("genome").AsString()), filename);
+      testcpu->PrintGenome(ctx, Genome(max_f_genotype->Properties().Get("genome")), filename);
     }
 
     delete testcpu;
@@ -1204,7 +1110,7 @@ public:
       double fitness = 0.0;
       if (mode == "TEST_CPU" || mode == "ACTUAL"){
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
-        testcpu->TestGenome(ctx, test_info, Genome((*git)->GetProperty("genome").AsString()));
+        testcpu->TestGenome(ctx, test_info, Genome((*git)->Properties().Get("genome")));
       }
 
       if (mode == "TEST_CPU"){
@@ -1270,7 +1176,7 @@ public:
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
       orgs.Push(organism);
       gens.Push(genotype);
     }
@@ -1382,16 +1288,16 @@ public:
       cCPUTestInfo test_info;
       double fitness = 0.0;
       double parent_fitness = 1.0;
-      if ((*git)->GetProperty("parents") != "") {
-        cStringList parents((*git)->GetProperty("parents").AsString(), ',');
+      if ((*git)->Properties().Get("parents") != Apto::String("")) {
+        cStringList parents((const char*)(*git)->Properties().Get("parents"), ',');
 
-        Systematics::GroupPtr pbg = world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(parents.Pop().AsInt());
-        parent_fitness = pbg->GetProperty("fitness").AsDouble();
+        Systematics::GroupPtr pbg = Systematics::Manager::Of(world->GetNewWorld())->ArbiterForRole("genotype")->Group(parents.Pop().AsInt());
+        parent_fitness = Apto::StrAs(pbg->Properties().Get("fitness"));
       }
 
       if (mode == "TEST_CPU" || mode == "ACTUAL"){
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
-        testcpu->TestGenome(ctx, test_info, Genome((*git)->GetProperty("genome").AsString()));
+        testcpu->TestGenome(ctx, test_info, Genome((*git)->Properties().Get("genome")));
       }
 
       if (mode == "TEST_CPU"){
@@ -1410,7 +1316,7 @@ public:
 
       //Update the histogram
       if (parent_fitness <= 0.0) {
-        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->GetProperty("parents").AsString());
+        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->Properties().Get("parents"));
         ctx.Driver().Abort(Avida::INTERNAL_ERROR);
       }
 
@@ -1453,7 +1359,7 @@ public:
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
       orgs.Push(organism);
       gens.Push(genotype);
     }
@@ -1549,7 +1455,7 @@ public:
     for (int i = 0; i < pop.GetSize(); i++){
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
       int cladeID = organism->GetCCladeLabel();
 
       map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
@@ -1677,7 +1583,7 @@ public:
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      Systematics::GroupPtr genotype = organism->GetBioGroup("genotype");
+      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
       int cladeID = organism->GetCCladeLabel();
 
       map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
@@ -1771,7 +1677,9 @@ public:
       for (int i = 0; i < pop.GetSize(); i++)
       {
         if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
-        aligned.Push(pop.GetCell(i).GetOrganism()->GetGenome().GetSequence().AsString());
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(pop.GetCell(i).GetOrganism()->GetGenome().Representation());
+        aligned.Push((const char*)seq->AsString());
       }
       AlignStringArray(aligned);  //Align our population genomes
     }
@@ -1798,7 +1706,7 @@ public:
         char ch = aligned[seq][pos];
         if (ch == '_' && !m_use_gap) continue;                  //Skip gaps when applicable
         else if (ch == '_') site_entropy[num_insts]++;          //Update gap count at end
-        else inst_count[ Instruction::ConvertSymbol(ch) ]++;   //Update true instruction count
+        else inst_count[ Instruction(ch).GetOp() ]++;   //Update true instruction count
         total_count++;
       }
       for (int c = 0; c < inst_count.GetSize(); c++)
@@ -1884,7 +1792,7 @@ private:
     fot << endl;
   }
 
-  void PrintPPG(ofstream& fot, tAutoRelease<cPhenPlastGenotype>& ppgen, int id, const cString& pid)
+  void PrintPPG(ofstream& fot, Apto::SmartPtr<cPhenPlastGenotype> ppgen, int id, const cString& pid)
   {
 
     for (int k = 0; k < ppgen->GetNumPhenotypes(); k++){
@@ -1929,7 +1837,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while((genotype = batch_it.Next())){
-        tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, test_info, m_world, ctx));
+        Apto::SmartPtr<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, test_info, m_world, ctx));
         PrintPPG(fot, ppgen, genotype->GetID(), genotype->GetParents());
       }
       m_world->GetDataFileManager().Remove(this_path);
@@ -1938,12 +1846,12 @@ public:
       ofstream& fot = m_world->GetDataFileOFStream(this_path);
       PrintHeader(fot);
 
-      tAutoRelease<tIterator<Systematics::Group> > it;
-      it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+      Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
       while (it->Next()) {
         Systematics::GroupPtr bg = it->Get();
-        tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(Genome(bg->GetProperty("genome").AsString()), m_num_trials, test_info, m_world, ctx));
-        PrintPPG(fot, ppgen, bg->GetID(), bg->GetProperty("parents").AsString());
+        Apto::SmartPtr<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(Genome(bg->Properties().Get("genome")), m_num_trials, test_info, m_world, ctx));
+        PrintPPG(fot, ppgen, bg->ID(), (const char*)bg->Properties().Get("parents"));
       }
       m_world->GetDataFileManager().Remove(this_path);
     }
@@ -2017,9 +1925,8 @@ public:
       }
     }
     else {  // E X P E R I M E N T    M O D E  (See above for explination)
-      tAutoRelease<tIterator<Systematics::Group> > it;
-
-      it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+      Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
       while (it->Next()) {
         Systematics::GroupPtr bg = it->Get();
 
@@ -2138,8 +2045,8 @@ public:
       } // End looping through genotypes
     }
     else {  // E X P E R I M E N T    M O D E    (See above for explination)
-      tAutoRelease<tIterator<Systematics::Group> > it;
-      it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+      Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
       pp_entropy.ResizeClear(num_genotypes);
       pp_taskentropy.ResizeClear(num_genotypes);
       while (it->Next()) {
@@ -2208,6 +2115,7 @@ class cActionPrintGeneticDistanceData : public cAction
 {
 private:
   Genome m_reference;
+  InstructionSequencePtr m_r_seq;
   cString m_filename;
 
 public:
@@ -2221,6 +2129,7 @@ public:
     creature_file.PopWord();
     if (creature_file == "" || creature_file == "START_ORGANISM") creature_file = m_world->GetConfig().START_ORGANISM.Get();
     m_reference.LoadFromDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager(), feedback);
+    m_r_seq.DynamicCastFrom(m_reference.Representation());
 
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
@@ -2236,17 +2145,22 @@ public:
 
     // get the info for the dominant genotype
 
-    tAutoRelease<tIterator<Systematics::Group> > it;
-    it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     it->Next();
-    InstructionSequence best_genome = Genome(it->Get()->GetProperty("genome").AsString()).GetSequence();
-    dom_dist = InstructionSequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
+    Genome best_genome(it->Get()->Properties().Get("genome"));
+    InstructionSequencePtr best_seq;
+    best_seq.DynamicCastFrom(best_genome.Representation());
+    dom_dist = InstructionSequence::FindHammingDistance(*m_r_seq, *best_seq);
     hamming_m1 += dom_dist;
     hamming_m2 += dom_dist*dom_dist;
     count += it->Get()->NumUnits();
     // now cycle over the remaining genotypes
     while ((it->Next())) {
-      int dist = InstructionSequence::FindHammingDistance(m_reference.GetSequence(), Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
+      Genome cur_gen(it->Get()->Properties().Get("genome"));
+      InstructionSequencePtr cur_seq;
+      cur_seq.DynamicCastFrom(cur_gen.Representation());
+      int dist = InstructionSequence::FindHammingDistance(*m_r_seq, *cur_seq);
       hamming_m1 += dist;
       hamming_m2 += dist*dist;
       count += it->Get()->NumUnits();
@@ -2255,7 +2169,7 @@ public:
     hamming_m1 /= static_cast<double>(count);
     hamming_m2 /= static_cast<double>(count);
 
-    double hamming_best = InstructionSequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
+    double hamming_best = InstructionSequence::FindHammingDistance(*m_r_seq, *best_seq);
 
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
@@ -2330,6 +2244,8 @@ public:
     Genome reference_genome;
     cUserFeedback feedback;
     reference_genome.LoadFromDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    InstructionSequencePtr r_seq;
+    r_seq.DynamicCastFrom(reference_genome.Representation());
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
@@ -2340,29 +2256,31 @@ public:
     }
 
     // cycle over all genotypes
-    tAutoRelease<tIterator<Systematics::Group> > it;
-    it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     while ((it->Next())) {
       Systematics::GroupPtr bg = it->Get();
-      const Genome& genome = Genome(bg->GetProperty("genome").AsString());
+      const Genome genome(bg->Properties().Get("genome"));
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(genome.Representation());
       const int num_orgs = bg->NumUnits();
 
       // now output
 
-      sum_fitness += bg->GetProperty("fitness").AsDouble() * num_orgs;
+      sum_fitness += (double)Apto::StrAs(bg->Properties().Get("fitness")) * num_orgs;
       sum_num_organisms += num_orgs;
 
-      df.Write(bg->GetProperty("name").AsString(), "Genotype Name");
-      df.Write(bg->GetProperty("fitness").AsDouble(), "Fitness");
+      df.Write(bg->Properties().Get("name"), "Genotype Name");
+      df.Write((double)Apto::StrAs(bg->Properties().Get("fitness")), "Fitness");
       df.Write(num_orgs, "Abundance");
-      df.Write(InstructionSequence::FindHammingDistance(reference_genome.GetSequence(), genome.GetSequence()), "Hamming distance to reference");
-      df.Write(InstructionSequence::FindEditDistance(reference_genome.GetSequence(), genome.GetSequence()), "Levenstein distance to reference");
+      df.Write(InstructionSequence::FindHammingDistance(*r_seq, *seq), "Hamming distance to reference");
+      df.Write(InstructionSequence::FindEditDistance(*r_seq, *seq), "Levenstein distance to reference");
       df.Write(genome.AsString(), "Genome");
 
       // save into archive
       if (m_save_genotypes) {
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->GetProperty("name").AsString())));
+        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->Properties().Get("name"))));
         delete testcpu;
       }
 
@@ -2389,9 +2307,12 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname='dom-test.dat']"; }
   void Process(cAvidaContext& ctx)
   {
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     Systematics::GroupPtr bg = it->Next();
-    Genome genome(bg->GetProperty("genome").AsString());
+    Genome genome(bg->Properties().Get("genome"));
+    InstructionSequencePtr seq;
+    seq.DynamicCastFrom(genome.Representation());
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     cCPUTestInfo test_info;
@@ -2406,7 +2327,7 @@ public:
     df.Write(colony_phenotype.GetGestationTime(), "Gestation Time");
     df.Write(colony_phenotype.GetFitness(), "Fitness");
     df.Write(1.0 / (0.1 + colony_phenotype.GetGestationTime()), "Reproduction Rate");
-    df.Write(genome.GetSize(), "Genome Length");
+    df.Write(seq->GetSize(), "Genome Length");
     df.Write(colony_phenotype.GetCopiedSize(), "Copied Size");
     df.Write(colony_phenotype.GetExecutedSize(), "Executed Size");
     df.Endl();
@@ -2479,7 +2400,7 @@ public:
       df.Write(parent_sum_tasks_rewarded, "Parent Number of Tasks Rewared");
       df.Write(parent_sum_tasks_all, "Parent Total Number of Tasks Done");
       df.Write(test_info.GetColonyFitness(), "Genotype Fitness");
-      df.Write(organism->GetBioGroup("genotype")->GetID(), "Genotype ID");
+      df.Write(organism->SystematicsGroup("genotype")->ID(), "Genotype ID");
       df.Endl();
     }
 
@@ -2600,35 +2521,32 @@ public:
   static const cString GetDescription() { return "Arguments: [int lines_saved=0]"; }
   void Process(cAvidaContext& ctx)
   {
-    Genome mg;
-    mg.SetInstSet(m_inst_set);
-    mg.SetHardwareType(m_world->GetHardwareManager().GetInstSet(m_inst_set).GetHardwareType());
+    PropertyMap mg_props;
+    mg_props.Set(PropertyPtr(new Property("instset", "Instruction Set", (const char*)m_inst_set)));
+    Genome mg(m_world->GetHardwareManager().GetInstSet(m_inst_set).GetHardwareType(), mg_props, InstructionSequencePtr(new InstructionSequence));
     const int num_inst = m_world->GetHardwareManager().GetInstSet(m_inst_set).GetSize();
     const int update = m_world->GetStats().GetUpdate();
-    cClassificationManager& classmgr = m_world->GetClassificationManager();
 
     // Setup the histogtams...
     tArray<cHistogram> inst_hist(MAX_GENOME_LENGTH);
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) inst_hist[i].Resize(num_inst,-1);
 
     // Loop through all of the genotypes adding them to the histograms.
-    tAutoRelease<tIterator<Systematics::Group> > it;
-    it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     while ((it->Next())) {
       Systematics::GroupPtr bg = it->Get();
       const int num_organisms = bg->NumUnits();
-      const Genome& genome = Genome(bg->GetProperty("genome").AsString());
-      ConstInstructionSequencePtr seq_p;
-      ConstGeneticRepresentationPtr rep_p = genome.Representation();
-      seq_p.DynamicCastFrom(rep_p);
-      const InstructionSequence& seq = *seq_p;
-      const int length = seq.GetSize();
-      if (genome.GetInstSet() != m_inst_set) continue;
+      const Genome genome(bg->Properties().Get("genome"));
+      ConstInstructionSequencePtr seq;
+      seq.DynamicCastFrom(genome.Representation());
+      const int length = seq->GetSize();
+      if (Apto::StrAs(genome.Properties().Get("instset")) != m_inst_set) continue;
 
       // Place this genotype into the histograms.
       for (int j = 0; j < length; j++) {
-        assert(seq[j].GetOp() < num_inst);
-        inst_hist[j].Insert(seq[j].GetOp(), num_organisms);
+        assert((*seq)[j].GetOp() < num_inst);
+        inst_hist[j].Insert((*seq)[j].GetOp(), num_organisms);
       }
 
       // Mark all instructions beyond the length as -1 in histogram...
@@ -2650,10 +2568,9 @@ public:
     }
 
     // Build the concensus genotype...
-    InstructionSequencePtr mg_seq_p;
-    ConstGeneticRepresentationPtr mg_rep_p = mg.Representation();
-    mg_seq_p.DynamicCastFrom(mg_rep_p);
-    InstructionSequence& con_genome = *mg_seq_p;
+    InstructionSequencePtr con_genome_p;
+    con_genome_p.DynamicCastFrom(mg.Representation());
+    InstructionSequence& con_genome = *con_genome_p;
     con_genome = InstructionSequence(con_length);
     double total_entropy = 0.0;
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) {
@@ -2688,11 +2605,14 @@ public:
     // --- Study the consensus genome ---
 
     // Loop through genotypes again, and determine the average genetic distance.
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    it = classmgr->ArbiterForRole("genotype")->Begin();
     cDoubleSum distance_sum;
     while ((it->Next())) {
       const int num_organisms = it->Get()->NumUnits();
-      const int cur_dist = InstructionSequence::FindEditDistance(con_genome, Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
+      Genome cur_gen(it->Get()->Properties().Get("genome"));
+      InstructionSequencePtr cur_seq;
+      cur_seq.DynamicCastFrom(cur_gen.Representation());
+      const int cur_dist = InstructionSequence::FindEditDistance(con_genome, *cur_seq);
       distance_sum.Add(cur_dist, num_organisms);
     }
 
@@ -2700,8 +2620,11 @@ public:
     // @TODO - find consensus bio group
     //    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
 
-    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
-    const int best_dist = InstructionSequence::FindEditDistance(con_genome, Genome(it->Next()->GetProperty("genome").AsString()).GetSequence());
+    it = classmgr->ArbiterForRole("genotype")->Begin();
+    Genome best_genome(it->Next()->Properties().Get("genome"));
+    InstructionSequencePtr best_seq;
+    best_seq.DynamicCastFrom(best_genome.Representation());
+    const int best_dist = InstructionSequence::FindEditDistance(con_genome, *best_seq);
 
     const double ave_dist = distance_sum.Average();
     const double var_dist = distance_sum.Variance();
@@ -2852,7 +2775,11 @@ protected:
 			organisms.pop_back();
 			cOrganism* b = organisms.back();
 			organisms.pop_back();
-			edit_distance.Add(InstructionSequence::FindEditDistance(a->GetGenome().GetSequence(), b->GetGenome().GetSequence()));
+      
+      ConstInstructionSequencePtr a_seq, b_seq;
+      a_seq.DynamicCastFrom(a->GetGenome().Representation());
+      b_seq.DynamicCastFrom(b->GetGenome().Representation());
+			edit_distance.Add(InstructionSequence::FindEditDistance(*a_seq, *b_seq));
 		}
 		
 		return edit_distance.Average();
@@ -3009,7 +2936,7 @@ public:
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int id = (cell.IsOccupied() && cell.GetOrganism()->GetBioGroup(m_role)) ? cell.GetOrganism()->GetBioGroup(m_role)->GetID() : -1;
+        int id = (cell.IsOccupied() && cell.GetOrganism()->SystematicsGroup((const char*)m_role)) ? cell.GetOrganism()->SystematicsGroup((const char*)m_role)->ID() : -1;
         fp << id << " ";
       }
       fp << endl;
@@ -3049,13 +2976,14 @@ public:
     }
 
     // Add new entries where possible
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     for (int i = 0; (it->Next()) && i < m_threshold; i++) {
-      if (!isInChart(it->Get()->GetID())) {
+      if (!isInChart(it->Get()->ID())) {
         // Add to the genotype chart
         for (int j = 0; j < m_num_colors; j++) {
           if (m_genotype_chart[j] == 0) {
-            m_genotype_chart[j] = it->Get()->GetID();
+            m_genotype_chart[j] = it->Get()->ID();
             break;
           }
         }
@@ -3069,11 +2997,11 @@ public:
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        Systematics::GroupPtr bg = (cell.IsOccupied()) ? cell.GetOrganism()->GetBioGroup("genotype") : NULL;
+        Systematics::GroupPtr bg = (cell.IsOccupied()) ? cell.GetOrganism()->SystematicsGroup("genotype") : Systematics::GroupPtr(NULL);
         if (bg) {
           int color = 0;
-          for (; color < m_num_colors; color++) if (m_genotype_chart[color] == bg->GetID()) break;
-          if (color == m_num_colors && bg->GetProperty("threshold").AsBool()) color++;
+          for (; color < m_num_colors; color++) if (m_genotype_chart[color] == bg->ID()) break;
+          if (color == m_num_colors && (bool)Apto::StrAs(bg->Properties().Get("threshold"))) color++;
           fp << color << " ";
         } else {
           fp << "-1 ";
@@ -3087,10 +3015,11 @@ public:
 private:
   int FindPos(int gid)
   {
-    tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     int i = 0;
     while ((it->Next()) && i < m_num_colors) {
-      if (gid == it->Get()->GetID()) return i;
+      if (gid == it->Get()->ID()) return i;
       i++;
     }
 
@@ -3339,7 +3268,9 @@ public:
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          genome_length = organism->GetGenome().GetSize();
+          ConstInstructionSequencePtr seq;
+          seq.DynamicCastFrom(organism->GetGenome().Representation());
+          genome_length = seq->GetSize();
         }
         else { genome_length = -1; }
         fp << genome_length << " ";
@@ -3573,7 +3504,9 @@ public:
           if(organism->GetNumParasites() > 0)
           {
             tArray<Systematics::UnitPtr> parasites = organism->GetParasites();
-            virulence = dynamic_cast<cParasite*>(parasites[0])->GetVirulence();
+            Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite;
+            parasite.DynamicCastFrom(parasites[0]);
+            virulence = parasite->GetVirulence();
           }
           else { virulence = -1; }
         }
@@ -3662,12 +3595,9 @@ public:
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-          const Genome& genome = organism->GetGenome();
-          ConstInstructionSequencePtr seq_p;
-          ConstGeneticRepresentationPtr rep_p = genome.Representation();
-          seq_p.DynamicCastFrom(rep_p);
-          const InstructionSequence& seq = *seq_p;
-          genome_seq = seq.AsString();
+          ConstInstructionSequencePtr seq;
+          seq.DynamicCastFrom(organism->GetGenome().Representation());
+          genome_seq = seq->AsString();
         }
         else { genome_seq = "-1"; }
         fp << genome_seq << " ";
@@ -3709,8 +3639,10 @@ public:
           if(organism->GetNumParasites() > 0)
           {
             tArray<Systematics::UnitPtr> parasites = organism->GetParasites();
-            
-            genome_seq = dynamic_cast<cParasite*>(parasites[0])->GetGenome().GetSequence().AsString();
+            Genome para_genome(parasites[0]->Properties().Get("genome"));
+            ConstInstructionSequencePtr seq;
+            seq.DynamicCastFrom(para_genome.Representation());
+            genome_seq = seq->AsString();
           }
           else { genome_seq = "0"; }
         }
@@ -4033,7 +3965,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintFlowRateTuples>("PrintFlowRateTuples");
   action_lib->Register<cActionPrintErrorData>("PrintErrorData");
   action_lib->Register<cActionPrintVarianceData>("PrintVarianceData");
-  action_lib->Register<cActionPrintDominantData>("PrintDominantData");
   action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
@@ -4060,7 +3991,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
-  action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");

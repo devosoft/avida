@@ -28,9 +28,7 @@
 #include "cArgSchema.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
-#include "cHardwareSMT.h"
 #include "cHardwareTransSMT.h"
-#include "cHardwareGX.h"
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
@@ -125,18 +123,12 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
     case HARDWARE_TYPE_CPU_ORIGINAL:
       inst_set = new cInstSet(m_world, name, hw_type, cHardwareCPU::GetInstLib());
       break;
-    case HARDWARE_TYPE_CPU_SMT:
-      inst_set = new cInstSet(m_world, name, hw_type, cHardwareSMT::GetInstLib());
-      break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
       inst_set = new cInstSet(m_world, name, hw_type, cHardwareTransSMT::GetInstLib());
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
       inst_set = new cInstSet(m_world, name, hw_type, cHardwareExperimental::GetInstLib());
       break;
-    case HARDWARE_TYPE_CPU_GX:
-      inst_set = new cInstSet(m_world, name, hw_type, cHardwareGX::GetInstLib());
-      break;      
     default:
       if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);
       return false;
@@ -165,18 +157,12 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 		case HARDWARE_TYPE_CPU_ORIGINAL:
 			default_filename = cHardwareCPU::GetDefaultInstFilename();
 			break;
-		case HARDWARE_TYPE_CPU_SMT:
-			default_filename = cHardwareSMT::GetDefaultInstFilename();
-			break;
 		case HARDWARE_TYPE_CPU_TRANSSMT:
 			default_filename = cHardwareTransSMT::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_EXPERIMENTAL:
 			default_filename = cHardwareExperimental::GetDefaultInstFilename();
 			break;
-    case HARDWARE_TYPE_CPU_GX:
-			default_filename = cHardwareGX::GetDefaultInstFilename();
-			break;      
 		default:
       if (feedback) feedback->Error("unknown/unsupported HARDWARE_TYPE specified");
       return false;
@@ -220,28 +206,22 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  int inst_set_id = m_is_name_map.GetWithDefault(mg.GetInstSet(), -1);
+  int inst_set_id = m_is_name_map.GetWithDefault((const char*)mg.Properties().Get("instset"), -1);
   if (inst_set_id == -1) return NULL; // No valid instruction set found
   
   cInstSet* inst_set = m_inst_sets[inst_set_id];
-  if (inst_set->GetHardwareType() != mg.GetHardwareType()) return NULL; // inst_set/hw_type mismatch
+  if (inst_set->GetHardwareType() != mg.HardwareType()) return NULL; // inst_set/hw_type mismatch
   
   cHardwareBase* hw = 0;
   switch (inst_set->GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
       hw = new cHardwareCPU(ctx, m_world, org, inst_set);
       break;
-    case HARDWARE_TYPE_CPU_SMT:
-      hw = new cHardwareSMT(ctx, m_world, org, inst_set);
-      break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
       hw = new cHardwareTransSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
       hw = new cHardwareExperimental(ctx, m_world, org, inst_set);
-      break;
-    case HARDWARE_TYPE_CPU_GX:
-      hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
       assert(false);

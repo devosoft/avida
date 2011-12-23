@@ -1967,8 +1967,8 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
 
   if (base_bonus > 0.0) {
     bonus = pow(base_bonus, 2);
-    if (used_received) m_world->GetStats().AddMarketItemUsed();
-    else m_world->GetStats().AddMarketOwnItemUsed();
+//    if (used_received) m_world->GetStats().AddMarketItemUsed();
+//    else m_world->GetStats().AddMarketOwnItemUsed();
   }
   return bonus;
 }

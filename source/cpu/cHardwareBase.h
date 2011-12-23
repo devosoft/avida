@@ -30,18 +30,11 @@
 #include <climits>
 #include <iostream>
 
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
-#ifndef tBuffer_h
 #include "tBuffer.h"
-#endif
-#ifndef tSmartArray_h
 #include "tSmartArray.h"
-#endif
 
 class cAvidaContext;
-class cBioUnit;
 class cCodeLabel;
 class cCPUMemory;
 class cHardwareTracer;

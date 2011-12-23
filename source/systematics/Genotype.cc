@@ -284,6 +284,7 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 #define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, VAL)));
 #define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, VAL)));
   ADD_FUN_PROP("genome", "Genome", Apto::String, FunctorProperty<Apto::String>::Functor(&m_genome, &Genome::AsString));
+  ADD_REF_PROP("src_transmission_type", "Source Transmission Type", int, m_src.transmission_type); 
   ADD_REF_PROP("name", "Name", Apto::String, m_name);
   ADD_REF_PROP("parents", "Parent IDs", Apto::String, m_parent_str);
   ADD_REF_PROP("threshold", "Threshold", bool, m_threshold);

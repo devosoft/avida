@@ -29,42 +29,18 @@
 
 #include <fstream>
 
-#ifndef cCPUMemory_h
 #include "cCPUMemory.h"
-#endif
-#ifndef cGenotypeData_h
 #include "cGenotypeData.h"
-#endif
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
-#ifndef cLandscape_h
 #include "cLandscape.h"
-#endif
-#ifndef cPhenPlastGenotype_h
 #include "cPhenPlastGenotype.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef cStringList_h
 #include "cStringList.h"
-#endif
-#ifndef cStringUtil_h
 #include "cStringUtil.h"
-#endif
-#ifndef tArray_h
 #include "tArray.h"
-#endif
-#ifndef tArrayMap_h
 #include "tArrayMap.h"
-#endif
-#ifndef tRCPtr_h
 #include "tRCPtr.h"
-#endif
-#ifndef cPhenPlastSummary_h
 #include "cPhenPlastSummary.h"
-#endif
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
 
@@ -127,7 +103,7 @@ private:
 
   // Group 1 : Load-in Stats (Only obtained if available for input file)
   int id_num;
-  eBioUnitSource m_src;
+  Systematics::Source m_src;
   cString m_src_args;
   cString m_parent_str;
   int parent_id;
@@ -271,7 +247,7 @@ public:
   void SetViable(bool _viable) { viable = _viable; }
 
   void SetID(int _id) { id_num = _id; }
-  void SetSource(int _src) { m_src = (eBioUnitSource)_src; }
+  void SetSource(int _src) { m_src.transmission_type = (Systematics::TransmissionType)_src; }
   void SetSourceArgs(const cString& src_args) { m_src_args = src_args; }
   void SetParents(const cString& parent_str);
   void SetParentID(int _parent_id);
@@ -325,7 +301,7 @@ public:
   bool GetViable() const { return viable; }
 
   int GetID() const { return id_num; }
-  int GetSource() const { return m_src; }
+  int GetSource() const { return m_src.transmission_type; }
   const cString& GetSourceArgs() const { return m_src_args; }
   const cString& GetParents() const { return m_parent_str; }
   int GetParentID() const { return parent_id; }
@@ -404,7 +380,6 @@ public:
   const cString & GetTaskOrder() const { return task_order; }
   cString GetTaskList() const;
 
-  int GetHWType() const { return m_genome.HardwareType(); }
   cString GetInstSet() const { return cString((const char*)m_genome.Properties().Get("instset").Value()); }
   cString GetSequence() const;
   cString GetHTMLSequence() const;

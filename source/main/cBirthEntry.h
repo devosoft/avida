@@ -42,7 +42,7 @@ public:
   double energy4Offspring;
   cMerit merit;
   int timestamp; // -1 if empty
-  tArray<Systematics::GroupPtr> groups;
+  Systematics::GroupMembershipPtr groups;
   
   inline cBirthEntry() : timestamp(-1) { ; }
 };

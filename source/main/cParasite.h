@@ -23,13 +23,10 @@
 #define cParasite_h
 
 #include "avida/core/Genome.h"
+#include "avida/systematics/Unit.h"
 
-#ifndef cPhenotype_h
 #include "cPhenotype.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
 
 class cWorld;
 
@@ -39,33 +36,35 @@ using namespace Avida;
 class cParasite : public Systematics::Unit
 {
 private:
-  eBioUnitSource m_src;
-  cString m_src_args;
-  const class Genome m_initial_genome;
+  Systematics::Source m_src;
+  Apto::String m_src_args;
+  const Avida::Genome m_initial_genome;
+  
+  PropertyMap m_prop_map;
+  
   cPhenotype m_phenotype;
   double virulence;
   
   
-  cParasite(); // @not_implemented
-  cParasite(const cParasite&); // @not_implemented
-  cParasite& operator=(const cParasite&); // @not_implemented
-  
-
 public:
-  cParasite(cWorld* world, const class Genome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
+  cParasite(cWorld* world, const Avida::Genome& genome, int parent_generation, Systematics::Source src);
   ~cParasite() { ; }
   
-  // --------  cBioUnit Methods  --------
-  eBioUnitSource GetUnitSource() const { return m_src; }
-  const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const class Genome& GetGenome() const { return m_initial_genome; }  
-  const cPhenotype& GetPhenotype() const { return m_phenotype; }
+  // --------  Systematics::Unit Methods  --------
+  Systematics::Source UnitSource() const { return m_src; }
+  const Avida::Genome& Genome() const { return m_initial_genome; }  
+  
+  const PropertyMap& Properties() const { return m_prop_map; }
 
   // --------  cParasite Methods  --------
   cPhenotype& GetPhenotype() { return m_phenotype; }
   double GetVirulence() { return virulence; }
   void SetVirulence(double v) { virulence = v; }
 
+private:
+  cParasite(); // @not_implemented
+  cParasite(const cParasite&); // @not_implemented
+  cParasite& operator=(const cParasite&); // @not_implemented
 };
 
 #endif

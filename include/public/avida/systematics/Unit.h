@@ -50,6 +50,7 @@ namespace Avida {
       
       
       // Methods
+      LIB_EXPORT inline Source() : transmission_type(UNKNOWN), external(false), unused(0) { ; }
       LIB_EXPORT inline Source(TransmissionType t, const Apto::String& a, bool e = false)
         : transmission_type(t), external(e), unused(0), arguments(a) { ; }
     };
@@ -68,7 +69,6 @@ namespace Avida {
       LIB_EXPORT virtual ~Unit() = 0;
       
       LIB_EXPORT virtual Source UnitSource() const = 0;
-      LIB_EXPORT virtual Apto::String UnitSourceArguments() const = 0;
       LIB_EXPORT virtual const Genome& Genome() const = 0;
       
       LIB_EXPORT virtual const PropertyMap& Properties() const = 0;

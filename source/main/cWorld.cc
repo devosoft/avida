@@ -26,6 +26,7 @@
 
 #include "avida/data/Manager.h"
 #include "avida/environment/Manager.h"
+#include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Manager.h"
 
 #include "cAnalyze.h"
@@ -45,7 +46,7 @@ using namespace AvidaTools;
 
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
-  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL), m_class_mgr(NULL), m_datafile_mgr(NULL)
+  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL), m_datafile_mgr(NULL)
   , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL)
 {
 }
@@ -68,7 +69,7 @@ cWorld::~cWorld()
   delete m_analyze; m_analyze = NULL;
   
   // Forcefully clean up population before classification manager
-  m_pop = Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount>();
+  m_pop = Apto::SmartPtr<cPopulation, Apto::InternalRCObject>();
   
   delete m_env; m_env = NULL;
   delete m_event_list; m_event_list = NULL;
@@ -122,8 +123,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   
   
   // Setup Stats Object
-  m_stats = Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount>(new cStats(this));
-  m_class_mgr->GetBioGroupManager("genotype")->AddListener(Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount>::GetPointer(m_stats));
+  m_stats = Apto::SmartPtr<cStats, Apto::InternalRCObject>(new cStats(this));
 
   
   // Initialize the hardware manager, loading all of the instruction sets
@@ -166,7 +166,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   const bool sterilize_taskloss = m_conf->STERILIZE_TASKLOSS.Get() > 0.0;
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
-  m_pop = Apto::SmartPtr<cPopulation, Apto::ThreadSafeRefCount>(new cPopulation(this));
+  m_pop = Apto::SmartPtr<cPopulation, Apto::InternalRCObject>(new cPopulation(this));
   if (!m_pop->InitiatePop(feedback)) success = false;
   
   // Setup Event List

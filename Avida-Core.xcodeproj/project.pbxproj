@@ -85,9 +85,7 @@
 		7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA308C39F2100F50912 /* cHardwareBase.cc */; };
 		7023EC5F0C0A431B00362B9C /* cHardwareCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */; };
 		7023EC600C0A431B00362B9C /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
-		7023EC610C0A431B00362B9C /* cHardwareGX.cc in Sources */ = {isa = PBXBuildFile; fileRef = 423335880BC067E3000DF681 /* cHardwareGX.cc */; };
 		7023EC620C0A431B00362B9C /* cHardwareManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BD690905CE5F0028A785 /* cHardwareManager.cc */; };
-		7023EC630C0A431B00362B9C /* cHardwareSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02308C3C71300F50912 /* cHardwareSMT.cc */; };
 		7023EC640C0A431B00362B9C /* cHardwareStatusPrinter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */; };
 		7023EC650C0A431B00362B9C /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
 		7023EC660C0A431B00362B9C /* cHeadCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02608C3C71300F50912 /* cHeadCPU.cc */; };
@@ -599,8 +597,6 @@
 		4216165511DA45A800B49195 /* cMultiProcessWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMultiProcessWorld.cc; sourceTree = "<group>"; };
 		4216165611DA45A800B49195 /* cMultiProcessWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMultiProcessWorld.h; sourceTree = "<group>"; };
 		422B64520C8305C40012C545 /* cOrgMessagePredicate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessagePredicate.h; sourceTree = "<group>"; };
-		423335880BC067E3000DF681 /* cHardwareGX.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareGX.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cHardwareGX.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
 		42777E5B0C7F123600AFA4ED /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
 		42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeNetwork.cc; sourceTree = "<group>"; };
@@ -1093,12 +1089,10 @@
 		70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cHardwareCPU.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		70C1EFA308C39F2100F50912 /* cHardwareBase.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareBase.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareCPU.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		70C1F01408C3C6FC00F50912 /* cHardwareSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cHardwareSMT.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareStatusPrinter.h; sourceTree = "<group>"; };
 		70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer.h; sourceTree = "<group>"; };
 		70C1F01B08C3C6FC00F50912 /* cHeadCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cHeadCPU.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		70C1F01F08C3C6FC00F50912 /* cTestCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTestCPU.h; sourceTree = "<group>"; };
-		70C1F02308C3C71300F50912 /* cHardwareSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cHardwareSMT.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareStatusPrinter.cc; sourceTree = "<group>"; };
 		70C1F02608C3C71300F50912 /* cHeadCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHeadCPU.cc; sourceTree = "<group>"; };
 		70C1F02808C3C71300F50912 /* cTestCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPU.cc; sourceTree = "<group>"; };
@@ -1919,20 +1913,16 @@
 				70C1EF5808C3948C00F50912 /* cCPUMemory.cc */,
 				70C1EF6008C3953A00F50912 /* cCPUStack.h */,
 				70C1EF6108C3954700F50912 /* cCPUStack.cc */,
-				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
 				70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */,
-				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
+				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
 				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
-				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
+				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
 				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
+				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
 				70B1A6530B7E238F00067486 /* cHardwareExperimental.h */,
 				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
-				423335890BC067E3000DF681 /* cHardwareGX.h */,
-				423335880BC067E3000DF681 /* cHardwareGX.cc */,
 				70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */,
 				70C5BD690905CE5F0028A785 /* cHardwareManager.cc */,
-				70C1F01408C3C6FC00F50912 /* cHardwareSMT.h */,
-				70C1F02308C3C71300F50912 /* cHardwareSMT.cc */,
 				70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */,
 				70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */,
 				70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */,
@@ -2497,9 +2487,7 @@
 				7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */,
 				7023EC5F0C0A431B00362B9C /* cHardwareCPU.cc in Sources */,
 				7023EC600C0A431B00362B9C /* cHardwareExperimental.cc in Sources */,
-				7023EC610C0A431B00362B9C /* cHardwareGX.cc in Sources */,
 				7023EC620C0A431B00362B9C /* cHardwareManager.cc in Sources */,
-				7023EC630C0A431B00362B9C /* cHardwareSMT.cc in Sources */,
 				7023EC640C0A431B00362B9C /* cHardwareStatusPrinter.cc in Sources */,
 				7023EC650C0A431B00362B9C /* cHardwareTransSMT.cc in Sources */,
 				7023EC660C0A431B00362B9C /* cHeadCPU.cc in Sources */,

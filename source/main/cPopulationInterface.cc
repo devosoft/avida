@@ -837,10 +837,12 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 	}
 	assert(target != 0);
 	fragment_list_type fragments;
+  ConstInstructionSequencePtr seq;
+  seq.DynamicCastFrom(GetOrganism()->GetGenome().Representation());
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 GetOrganism()->GetGenome().GetSequence(),
+													 *seq,
 													 fragments);
 	target->GetOrganism()->GetOrgInterface().ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
 }
@@ -888,10 +890,12 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 	}
 	assert(source != 0);
 	fragment_list_type fragments;
+  ConstInstructionSequencePtr seq;
+  seq.DynamicCastFrom(source->GetOrganism()->GetGenome().Representation());
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 source->GetOrganism()->GetGenome().GetSequence(),
+													 *seq,
 													 fragments);
 	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);	
 }
@@ -935,7 +939,9 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				// this is a little hackish, but this is the cleanest way to make sure
 				// that all downstream stuff works right.
 				cell.ClearFragments(ctx);
-				cell.AddGenomeFragments(ctx, cell.GetOrganism()->GetGenome().GetSequence());
+        ConstInstructionSequencePtr seq;
+        seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
+				cell.AddGenomeFragments(ctx,*seq);
 				break;
 			}
 			default: { // error
@@ -997,7 +1003,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				break;
 			}
 			case 2: { // replace the instructions in the fragment with random instructions.
-				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(cString((const char*)offspring.Properties().GetWithDefault("instset",Property("instset","")).Value()));
+				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)offspring.Properties().Get("instset"));
 				for(int j=0; j<i->GetSize(); ++j) {
 					(*i)[j] = instset.GetRandomInst(ctx);
 				}
