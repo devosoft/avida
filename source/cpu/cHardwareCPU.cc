@@ -723,7 +723,7 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   
   // Initialize memory...
   const Genome& in_genome = in_organism->GetGenome();
-  InstructionSequencePtr in_seq_p;
+  ConstInstructionSequencePtr in_seq_p;
   in_seq_p.DynamicCastFrom(in_genome.Representation());
   m_memory = *in_seq_p;
   
@@ -1652,23 +1652,21 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
 	
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  const Genome& child = m_organism->OffspringGenome();
-  InstructionSequencePtr child_seq_p;
-  child_seq_p.DynamicCastFrom(child.Representation());
-  InstructionSequence& child_genome = *child_seq_p;
-  
-  child_genome = m_memory.Crop(div_point, div_point + child_size);
-  child.SetHardwareType(GetType());
-  child.SetInstSet(m_inst_set->GetInstSetName());
-  
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+    
   // Make sure it is an exact copy at this point (before divide mutations) if required
   const Genome& base_genome = m_organism->GetGenome();
   ConstInstructionSequencePtr seq_p;
   seq_p.DynamicCastFrom(base_genome.Representation());
   const InstructionSequence& seq = *seq_p;
-  if (m_world->GetConfig().REQUIRE_EXACT_COPY.Get() && (seq != child_genome) ) {
+  if (m_world->GetConfig().REQUIRE_EXACT_COPY.Get() && (seq != *offspring_seq) ) {
     return false;
   }
+  
+  m_organism->OffspringGenome() = offspring;
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1730,13 +1728,12 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  const Genome& child = m_organism->OffspringGenome();
-  InstructionSequencePtr child_seq_p;
-  child_seq_p.DynamicCastFrom(child.Representation());
-  InstructionSequence& child_genome = *child_seq_p;
-  child_genome = m_memory.Crop(div_point, div_point + child_size);
-  child_genome.SetHardwareType(GetType());
-  child_genome.SetInstSet(m_inst_set->GetInstSetName());
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+
+  m_organism->OffspringGenome() = offspring;
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1827,13 +1824,12 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  const Genome& child = m_organism->OffspringGenome();
-  InstructionSequencePtr child_seq_p;
-  child_seq_p.DynamicCastFrom(child.Representation());
-  InstructionSequence& child_genome = *child_seq_p;
-  child_genome = m_memory.Crop(div_point, div_point + child_size);
-  child.SetHardwareType(GetType());
-  child.SetInstSet(m_inst_set->GetInstSetName());
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+
+  m_organism->OffspringGenome() = offspring;
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1919,13 +1915,12 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  const Genome& child = m_organism->OffspringGenome();
-  InstructionSequencePtr child_seq_p;
-  child_seq_p.DynamicCastFrom(child.Representation());
-  InstructionSequence& child_genome = *child_seq_p;
-  child_genome = m_memory.Crop(div_point, div_point + child_size);
-  child.SetHardwareType(GetType());
-  child.SetInstSet(m_inst_set->GetInstSetName());
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+
+  m_organism->OffspringGenome() = offspring;
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -3163,7 +3158,7 @@ void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
   if (!transposon_in_use) return;
   
   static Instruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
-  const Genome& child = m_organism->OffspringGenome();
+  Genome& child = m_organism->OffspringGenome();
   InstructionSequencePtr child_seq_p;
   child_seq_p.DynamicCastFrom(child.Representation());
   InstructionSequence& child_genome = *child_seq_p;
@@ -3207,20 +3202,12 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   }
   
   // Setup child
-  const Genome& child = m_organism->OffspringGenome();
-  InstructionSequencePtr child_seq_p;
-  child_seq_p.DynamicCastFrom(child.Representation());
-  InstructionSequence& child_genome = *child_seq_p;  
-  
-  const Genome& org = m_organism->GetGenome();
-  InstructionSequencePtr org_seq_p;
-  org_seq_p.DynamicCastFrom(org.Representation());
-  InstructionSequence& org_genome = *org_seq_p;  
-  
-  child_genome = org_genome;
-  
-  m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
+  m_organism->OffspringGenome() = m_organism->GetGenome();
+  InstructionSequencePtr offspring_seq;
+  offspring_seq.DynamicCastFrom(m_organism->OffspringGenome().Representation());
+
+  ConstInstructionSequencePtr org_seq;
+  org_seq.DynamicCastFrom(m_organism->GetGenome().Representation());
   
   // Do transposon movement and copying before other mutations
   Divide_DoTransposons(ctx);
@@ -3229,7 +3216,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
     for (int i = 0; i < m_memory.GetSize(); i++) {
       if (m_organism->TestCopyMut(ctx)) {
-        child_genome[i] = m_inst_set->GetRandomInst(ctx);
+        (*offspring_seq)[i] = m_inst_set->GetRandomInst(ctx);
       }
     }
   }
@@ -3238,7 +3225,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   Divide_DoMutations(ctx);
   
   // Check viability
-  bool viable = Divide_CheckViable(ctx, org_genome.GetSize(), child_genome.GetSize(), 1);
+  bool viable = Divide_CheckViable(ctx, org_seq->GetSize(), offspring_seq->GetSize(), 1);
   if (!viable) { return false; }
   
   // Many tests will require us to run the offspring through a test CPU;
@@ -4270,18 +4257,18 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
-    Systematics::GroupPtr bg = m_organism->GetBioGroup("genotype");
+    Systematics::GroupPtr bg = m_organism->SystematicsGroup("genotype");
     if (!bg) return false;
-    cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+    Systematics::SexualAncestryPtr sa = bg->GetData<Systematics::SexualAncestry>();
     if (!sa) {
-      sa = new cSexualAncestry(bg);
+      sa = Systematics::SexualAncestryPtr(new Systematics::SexualAncestry(bg));
       bg->AttachData(sa);
     }
     
     while (neighbor_id < max_id) {
       neighbor = m_organism->GetNeighbor();
       if (neighbor != NULL) {
-        Systematics::GroupPtr nbg = neighbor->GetBioGroup("genotype");
+        Systematics::GroupPtr nbg = neighbor->SystematicsGroup("genotype");
         assert(nbg);
         if (sa->GetPhyloDistance(nbg) <= max_dist) {
           found = true;

@@ -143,9 +143,9 @@ cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganis
   m_functions = s_inst_slib->GetFunctions();
 	
   const Genome& org = in_organism->GetGenome();
-  InstructionSequencePtr org_seq_p;
+  ConstInstructionSequencePtr org_seq_p;
   org_seq_p.DynamicCastFrom(org.Representation());
-  InstructionSequence& org_genome = *org_seq_p;  
+  const InstructionSequence& org_genome = *org_seq_p;  
 
   m_mem_array[0] = org_genome;  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
@@ -193,13 +193,15 @@ void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_
   read_label.Clear();
   next_label.Clear();
   running = true;
-  owner = NULL;
+  owner = Systematics::UnitPtr(NULL);
   skipExecution = false;
 }
 
 Systematics::UnitPtr cHardwareTransSMT::ThreadGetOwner()
 {
-  return (m_threads[m_cur_thread].owner) ? (Systematics::UnitPtr) m_threads[m_cur_thread].owner : m_organism;
+  Systematics::UnitPtr orgp(m_organism);
+  orgp->AddReference(); // explicitly add reference to internally created smart pointer
+  return (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : orgp;
 }
 
 
@@ -223,9 +225,11 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_cur_thread++;
 		//Ignore incremeting the thread, set it to be the parasite, unless we draw something lower thean 0.8
 		//Then set it to the parasite
-    if (m_threads.GetSize() > 1 &&  m_threads[1].owner->IsParasite())
+    if (m_threads.GetSize() > 1 &&  m_threads[1].owner->UnitSource().transmission_type == Systematics::HORIZONTAL)
     {
-      parasiteVirulence = dynamic_cast<cParasite*>(m_threads[1].owner)->GetVirulence();
+      Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite;
+      parasite.DynamicCastFrom(m_threads[1].owner);
+      parasiteVirulence = parasite->GetVirulence();
     }
     else
     {
@@ -670,7 +674,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 	
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) {
-    Systematics::UnitPtr parent = (m_threads[m_cur_thread].owner) ? (Systematics::UnitPtr) m_threads[m_cur_thread].owner : m_organism;
+    Systematics::UnitPtr parent = ThreadGetOwner();
     inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
   }
 	
@@ -690,10 +694,10 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 
 bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
 {
-  assert(bu->GetGenome().GetHardwareType() == GetType() && bu->GetGenome().GetInstSet() == m_inst_set->GetInstSetName());
+  assert(bu->Genome().HardwareType() == GetType());
   
   cCodeLabel label;
-  label.ReadString(bu->GetUnitSourceArgs());
+  label.ReadString((const char*)bu->UnitSource().arguments);
   
   // Inject fails if the memory space is already in use
   if (label.GetSize() == 0 || MemorySpaceExists(label)) return false;
@@ -716,10 +720,10 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
   assert(mem_space != -1);
-  const Genome& bu_gen = bu->GetGenome();
-  InstructionSequencePtr bu_seq_p;
+  const Genome& bu_gen = bu->Genome();
+  ConstInstructionSequencePtr bu_seq_p;
   bu_seq_p.DynamicCastFrom(bu_gen.Representation());
-  InstructionSequence& bu_seq = *bu_seq_p;  
+  const InstructionSequence& bu_seq = *bu_seq_p;  
   m_mem_array[mem_space] = bu_seq;
   
   // Setup the thread
@@ -1117,9 +1121,13 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
-  m_organism->OffspringGenome().SetSequence(m_mem_array[mem_space_used]);
-  m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
+
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_mem_array[mem_space_used]));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+
+  m_organism->OffspringGenome() = offspring;
 	
   // Handle Divide Mutations...
   Divide_DoMutations(ctx, mut_multiplier);
@@ -1156,10 +1164,9 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
         for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
         if(m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
           const Genome& org_gen = m_organism->GetGenome();
-          InstructionSequencePtr org_seq_p;
+          ConstInstructionSequencePtr org_seq_p;
           org_seq_p.DynamicCastFrom(org_gen.Representation());
-          InstructionSequence& org_seq = *org_seq_p;  
-          m_organism->GetPhenotype().ResetMerit(org_seq);
+          m_organism->GetPhenotype().ResetMerit(*org_seq_p);
         }
         break;
         
@@ -1300,7 +1307,7 @@ bool cHardwareTransSMT::Inst_SetMemory(cAvidaContext& ctx)
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
   
-  if(ThreadGetOwner()->IsParasite())
+  if(ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL)
   {
 		if(m_world->GetConfig().PARASITE_MEM_SPACES.Get())
 		{
@@ -1345,7 +1352,7 @@ bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
   if(m_world->GetConfig().PARASITE_NO_COPY_MUT.Get())
   {
     //Parasites should not have any copy mutations;
-    if(ThreadGetOwner()->IsParasite()) toMutate = false;
+    if(ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL) toMutate = false;
   }
   
   if (m_organism->TestCopyMut(ctx) && toMutate) {
@@ -1537,7 +1544,7 @@ bool cHardwareTransSMT::Inst_IO(cAvidaContext& ctx)
   // Do the "put" component
   const int value_out = Stack(src).Top();
   
-  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->IsParasite(), &m_threads[m_cur_thread].context_phenotype);  // Check for tasks compleated.
+  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL, &m_threads[m_cur_thread].context_phenotype);  // Check for tasks compleated.
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
   Stack(dst).Push(value_in);
@@ -1602,7 +1609,7 @@ bool cHardwareTransSMT::Inst_Inject(cAvidaContext& ctx)
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
   
-  if(ThreadGetOwner()->IsParasite())
+  if(ThreadGetOwner()->UnitSource().transmission_type == Systematics::HORIZONTAL)
   {
 		if(m_world->GetConfig().PARASITE_MEM_SPACES.Get())
 		{

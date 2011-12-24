@@ -1361,9 +1361,12 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  m_organism->OffspringGenome().SetSequence(m_memory.Crop(div_point, div_point+child_size));
-  m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+
+  m_organism->OffspringGenome() = offspring;
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -2637,9 +2640,12 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  m_organism->OffspringGenome().SetSequence(m_memory);
-  m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
+  InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory));
+  PropertyMap props;
+  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  Genome offspring(GetType(), props, offspring_seq);
+
+  m_organism->OffspringGenome() = offspring;  
   m_organism->GetPhenotype().SetLinesCopied(m_memory.GetSize());
   
   int lines_executed = 0;
@@ -2647,11 +2653,11 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetLinesExecuted(lines_executed);
   
   const Genome& org = m_organism->GetGenome();
-  InstructionSequencePtr org_seq_p;
+  ConstInstructionSequencePtr org_seq_p;
   org_seq_p.DynamicCastFrom(org.Representation());
-  InstructionSequence& org_genome = *org_seq_p;  
+  const InstructionSequence& org_genome = *org_seq_p;  
 
-  const Genome& child = m_organism->OffspringGenome();
+  Genome& child = m_organism->OffspringGenome();
   InstructionSequencePtr child_seq_p;
   child_seq_p.DynamicCastFrom(child.Representation());
   InstructionSequence& child_seq = *child_seq_p;  
@@ -3863,15 +3869,15 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   
   bool is_kin = false;
   
-  Systematics::GroupPtr bg = m_organism->GetBioGroup("genotype");
+  Systematics::GroupPtr bg = m_organism->SystematicsGroup("genotype");
   if (!bg) return false;
-  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  Systematics::SexualAncestryPtr sa = bg->GetData<Systematics::SexualAncestry>();
   if (!sa) {
-    sa = new cSexualAncestry(bg);
+    sa = Systematics::SexualAncestryPtr(new Systematics::SexualAncestry(bg));
     bg->AttachData(sa);
   }
   
-  Systematics::GroupPtr nbg = neighbor->GetBioGroup("genotype");
+  Systematics::GroupPtr nbg = neighbor->SystematicsGroup("genotype");
   assert(nbg);
   if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
   
