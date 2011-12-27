@@ -3964,7 +3964,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   const int success_reg = FindModifiedNextRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   setInternalValue(success_reg, 1, true);   
-  setInternalValue(bonus_reg, (int) target_bonus, true);
+  setInternalValue(bonus_reg, (int) (target_bonus), true);
   return true;
 } 
 
