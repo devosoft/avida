@@ -115,7 +115,7 @@ public:
   AvidaEDPopViewStatViewOrgRecorder(AvidaEDPopViewStatView* view);
   
   Avida::Data::ConstDataSetPtr GetRequested() const;
-  void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retreive_data);
+  LIB_EXPORT void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retreive_data);
   
   void SetCoords(int x, int y);
 };
