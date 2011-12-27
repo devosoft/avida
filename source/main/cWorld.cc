@@ -29,6 +29,8 @@
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Manager.h"
 
+#include "avida/private/systematics/GenotypeArbiter.h"
+
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
 #include "cEnvironment.h"
@@ -108,7 +110,9 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
     Environment::ManagerPtr(new Environment::Manager)->AttachTo(new_world);
     
     // Systematics
-    Systematics::ManagerPtr(new Systematics::Manager)->AttachTo(new_world);
+    Systematics::ManagerPtr systematics(new Systematics::Manager);
+    systematics->AttachTo(new_world);
+    systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(m_conf->THRESHOLD.Get())));
   }
   
 

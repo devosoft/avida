@@ -70,7 +70,7 @@ void cDataFile::Write(long i, const char* descr, const char* format)
   }
 }
 
-void cDataFile::Write(unsigned int i, const char* descr, const char* format)
+void cDataFile::Write(unsigned int i, const char* descr, const char*)
 {
   if (!m_descr_written) {
     m_data << i << " ";

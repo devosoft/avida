@@ -62,7 +62,7 @@ private:
   double m_rescale_rate_max;
   
 public:
-  cFitnessMapMode(cWorld* world)
+  cFitnessMapMode(cWorld*)
     : m_color_count(SCALE_MAX + Avida::CoreView::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
     , m_cur_min(0.0), m_cur_max(0.0), m_target_min(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
   { ; }
@@ -79,7 +79,7 @@ public:
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
 
   bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
-  Apto::String GetProperty(const Apto::String& property) const { return ""; }
+  Apto::String GetProperty(const Apto::String&) const { return ""; }
 
   void Update(cPopulation& pop);
   
@@ -222,7 +222,7 @@ public:
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
   
   bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
-  Apto::String GetProperty(const Apto::String& property) const { return ""; }
+  Apto::String GetProperty(const Apto::String&) const { return ""; }
   
   void Update(cPopulation& pop);
   
@@ -261,12 +261,12 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       m_color_grid[i] = -4;
       m_color_count[0]++;
     } else {
-      Systematics::GroupPtr bg = org->GetBioGroup("genotype");
-      Avida::CoreView::ClassificationInfo::MapColor* mapcolor = bg->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
+      Systematics::GroupPtr bg = org->SystematicsGroup("genotype");
+      Avida::CoreView::ClassificationInfo::MapColorPtr mapcolor = bg->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;
         m_color_count[mapcolor->color + 4]++;
-        m_scale_labels[mapcolor->color + 4].label = bg->GetProperty("name").AsString();
+        m_scale_labels[mapcolor->color + 4].label = bg->Properties().Get("name").Value();
       } else {
         m_color_grid[i] = -1;
         m_color_count[3]++;
@@ -316,7 +316,7 @@ public:
   // DiscreteScale Interface
   int GetScaleRange() const { return 0; }
   int GetNumLabeledEntries() const { return 1; }
-  DiscreteScale::Entry GetEntry(int index) const { return m_scale_label_entry; }
+  DiscreteScale::Entry GetEntry(int) const { return m_scale_label_entry; }
   
   
 private:

@@ -266,12 +266,12 @@ Data::ConstDataSetPtr cStats::Provides() const
   return m_provides;
 }
 
-void cStats::UpdateProvidedValues(Update current_update)
+void cStats::UpdateProvidedValues(Update)
 {
   // Nothing for now, all handled by ProcessUpdate()
 }
 
-Data::PackagePtr cStats::GetProvidedValueForArgument(const Apto::String& data_id, const Data::Argument& arg) const
+Data::PackagePtr cStats::GetProvidedValueForArgument(const Apto::String& data_id, const Data::Argument&) const
 {
   Data::PackagePtr rtn;
 
@@ -301,7 +301,7 @@ Apto::String cStats::DescribeProvidedValue(const Apto::String& data_id) const
 }
 
 
-void cStats::SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args)
+void cStats::SetActiveArguments(const Data::DataID&, Data::ConstArgumentSetPtr)
 {
   // @TODO
 }
@@ -318,7 +318,7 @@ Data::ConstArgumentSetPtr cStats::GetValidArguments(const Data::DataID& data_id)
   return arg_set;
 }
 
-bool cStats::IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const
+bool cStats::IsValidArgument(const Data::DataID& data_id, Data::Argument) const
 {
   if (Data::IsStandardID(data_id)) return false;
   
@@ -1199,7 +1199,7 @@ void cStats::PrintResourceData(const cString& filename)
   df.Endl();
 }
 
-void cStats::PrintSpatialResData(const cString& filename, int i)
+void cStats::PrintSpatialResData(const cString&, int i)
 {
 
   // Write spatial resource data to a file that can easily be read into Matlab
@@ -1225,7 +1225,7 @@ void cStats::PrintSpatialResData(const cString& filename, int i)
 }
 
 // @WRE: Added method for printing out visit data
-void cStats::PrintCellVisitsData(const cString& filename)
+void cStats::PrintCellVisitsData(const cString&)
 {
   // Write cell visits data to a file that can easily be read into Matlab
 
@@ -1592,7 +1592,7 @@ void cStats::PrintPredSatFracDump(const cString& filename) {
   relative_pos_event_count.SetAll(0);
 }
 
-void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
+void cStats::DemePreReplication(cDeme& source_deme, cDeme&)
 {
   ++m_deme_num_repls;
 	++m_total_deme_num_repls;
@@ -1628,7 +1628,7 @@ currently only track the genotype ids of all the founders of each deme in the po
 Note that we capture genotype ids at the time of deme replication, so we unfortunately
 lose the ancestral deme founders.
 */
-void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
+void cStats::DemePostReplication(cDeme&, cDeme& target_deme)
 {
   m_deme_founders[target_deme.GetID()] = target_deme.GetGenotypeIDs();
 }
@@ -1636,7 +1636,7 @@ void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
 
 /*! Called immediately prior to germline replacement.
 */
-void cStats::GermlineReplication(cGermline& source_germline, cGermline& target_germline)
+void cStats::GermlineReplication(cGermline& source_germline, cGermline&)
 {
   m_germline_generation.Add(source_germline.Size());
 }
@@ -3173,13 +3173,13 @@ void cStats::PrintDemeNetworkTopology(const cString& filename) {
 
 /*! Called when an organism metabolizes a genome fragment.
  */
-void cStats::GenomeFragmentMetabolized(cOrganism* organism, const InstructionSequence& fragment) {
+void cStats::GenomeFragmentMetabolized(cOrganism*, const InstructionSequence& fragment) {
 	m_hgt_metabolized.Add(fragment.GetSize());
 }
 
 /*! Called when a fragment is inserted into an offspring's genome via HGT.
  */
-void cStats::GenomeFragmentInserted(cOrganism* organism, const InstructionSequence& fragment, const cGenomeUtil::substring_match& location) {
+void cStats::GenomeFragmentInserted(cOrganism*, const InstructionSequence& fragment, const cGenomeUtil::substring_match&) {
 	m_hgt_inserted.Add(fragment.GetSize());
 }
 
@@ -3240,7 +3240,7 @@ void cStats::PrintMessageLog(const cString& filename) {
 
 
 /* Add that an organism performed a task at a certain age */
-void cStats::AgeTaskEvent(int org_id, int task_id, int org_age) {
+void cStats::AgeTaskEvent(int, int task_id, int org_age) {
 	reaction_age_map[task_id].Add(org_age);
 }
 
@@ -3411,13 +3411,13 @@ void cStats::PrintWinningDeme(const cString& filename) {
 
 /*! Record information about an organism migrating from this population.
  */
-void cStats::OutgoingMigrant(const cOrganism* org) {
+void cStats::OutgoingMigrant(const cOrganism*) {
 	m_outgoing.Add(1);
 }
 
 /*! Record information about an organism migrating into this population.
  */
-void cStats::IncomingMigrant(const cOrganism* org) {
+void cStats::IncomingMigrant(const cOrganism*) {
 	m_incoming.Add(1);
 }
 

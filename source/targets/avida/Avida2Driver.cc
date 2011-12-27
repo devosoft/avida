@@ -131,7 +131,6 @@ void Avida2Driver::Run()
       if (m_world->GetVerbosity() >= VERBOSE_DEBUG) {
         cout << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  ";
         cout << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)m_world->CalculateUpdateSize()) * 100.0) << "%  ";
-        cout << "GSz: " << setw(4) << setprecision(3) << (double)((stats.GetNumGenotypes() + stats.GetNumGenotypesHistoric()) * sizeof(cBGGenotype)) / 1048576.0 << "m";
       }
 
       cout << endl;

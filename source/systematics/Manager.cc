@@ -36,6 +36,7 @@ bool Avida::Systematics::Manager::RegisterRole(const RoleID& role, ArbiterPtr ar
   }
   
   m_arbiters.Push(arbiter);
+  arbiter->SetRole(role);
   return true;
 }
 
@@ -60,7 +61,7 @@ bool Avida::Systematics::Manager::AttachTo(World* world)
   WorldFacetPtr ptr(this);
   AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
   
-  if (world->AttachFacet(Reserved::DataManagerFacetID, ptr)) {
+  if (world->AttachFacet(Reserved::SystematicsFacetID, ptr)) {
     return true;
   }
   return false;
@@ -75,7 +76,7 @@ Avida::Systematics::ManagerPtr Avida::Systematics::Manager::Of(World* world)
 }
 
 
-bool Avida::Systematics::Manager::Serialize(ArchivePtr ar) const
+bool Avida::Systematics::Manager::Serialize(ArchivePtr) const
 {
   // @TODO
   return false;

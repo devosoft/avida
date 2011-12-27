@@ -74,7 +74,7 @@ bool cIntegratedSchedule::OK()
   return true;
 }
 
-void cIntegratedSchedule::Adjust(int item_id, const cMerit& new_merit, int deme_id)
+void cIntegratedSchedule::Adjust(int item_id, const cMerit& new_merit, int)
 {
   // Grab the old_merit, the new merit, and compare them.
   const cMerit old_merit = merit_chart[item_id];

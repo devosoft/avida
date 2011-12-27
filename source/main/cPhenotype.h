@@ -297,7 +297,7 @@ public:
   
   enum energy_levels {ENERGY_LEVEL_LOW = 0, ENERGY_LEVEL_MEDIUM, ENERGY_LEVEL_HIGH};
 	
-  void ResetMerit(const InstructionSequence & _cgenome);
+  void ResetMerit();
   void Sterilize();
   // Run when being setup *as* and offspring.
   void SetupOffspring(const cPhenotype & parent_phenotype, const InstructionSequence & _genome);
@@ -616,7 +616,7 @@ public:
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
-  void IncSenseCount(const int i) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
+  void IncSenseCount(const int) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }

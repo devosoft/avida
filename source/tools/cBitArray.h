@@ -95,9 +95,8 @@ private:
   
   // Disallow default copy constructor and operator=
   // (we need to know the number of bits we're working with!)
-  cRawBitArray(const cRawBitArray & ) { assert(false); }
-  const cRawBitArray & operator=(const cRawBitArray & in_array)
-    { assert(false); return *this; }
+  cRawBitArray(const cRawBitArray&);
+  const cRawBitArray & operator=(const cRawBitArray&);
 
   inline int GetNumFields(const int num_bits) const { return 1 + ((num_bits - 1) >> 5); }
   inline int GetField(const int index) const { return index >> 5; }

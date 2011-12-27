@@ -50,15 +50,15 @@ public:
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }
-  void SetCellID(int in_id) { ; }
-  void SetDemeID(int in_id) { ; }
+  void SetCellID(int) { ; }
+  void SetDemeID(int) { ; }
   
   int GetCellData() { return -1; }
   int GetCellDataOrgID() { return -1; }
   int GetCellDataUpdate() { return -1; }
   int GetCellDataTerritory() { return -1; }
   int GetCellDataForagerType() { return -99; }
-  void SetCellData(const int newData) { ; }
+  void SetCellData(const int) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }
   int GetFacedCellDataUpdate() { return -1; }
@@ -68,8 +68,8 @@ public:
   int GetPrevTaskCellID() { return 0; }
   void AddReachedTaskCell() { }
   int GetNumTaskCellsReached() { return 0; }
-  void SetPrevSeenCellID(int in_id) { ; }
-  void SetPrevTaskCellID(int in_id) { ; }
+  void SetPrevSeenCellID(int) { ; }
+  void SetPrevTaskCellID(int) { ; }
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
@@ -87,19 +87,19 @@ public:
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   const tArray< tArray<int> >& GetCellIdLists();  
-  int GetCurrPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
-  int GetCurrPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
-  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
-  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
-  void TriggerDoUpdates(cAvidaContext& ctx) { }
+  int GetCurrPeakX(cAvidaContext&, int) { return 0; } 
+  int GetCurrPeakY(cAvidaContext&, int) { return 0; } 
+  int GetFrozenPeakX(cAvidaContext&, int) { return 0; } 
+  int GetFrozenPeakY(cAvidaContext&, int) { return 0; } 
+  void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
-  void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) {;}
+  void UpdateDemeResources(cAvidaContext&, const tArray<double>&) {;}
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
   void SpawnDeme(cAvidaContext& ctx); 
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
-  bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
+  bool NetRemoteValidate(cAvidaContext&, cOrgSinkMessage*) { return false; } // @DMB - todo: validate message
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
@@ -109,70 +109,69 @@ public:
   int GetFacing() { return 0; }
   int GetFacedCellID() { return -1; }
   int GetFacedDir() { return 0; }
-  bool SendMessage(cOrgMessage& msg) { return false; }
-  bool SendMessage(cOrganism* recvr, cOrgMessage& msg) { return false; }
-	bool BroadcastMessage(cOrgMessage& msg, int depth) { return false; }
-	bool BcastAlarm(int jump_label, int bcast_range) { return false; }
-  void DivideOrgTestamentAmongDeme(double value) {;}
+  bool SendMessage(cOrgMessage&) { return false; }
+  bool SendMessage(cOrganism*, cOrgMessage&) { return false; }
+	bool BroadcastMessage(cOrgMessage&, int) { return false; }
+	bool BcastAlarm(int, int) { return false; }
+  void DivideOrgTestamentAmongDeme(double) { ; }
 	void SendFlash() { }
   
   int GetNortherly() {return 0; }
   int GetEasterly() {return 0; }
 	
 	void RotateToGreatestReputation(){ }
-	void RotateToGreatestReputationWithDifferentTag(int tag){ }
-	void RotateToGreatestReputationWithDifferentLineage(int tag){ }	
+	void RotateToGreatestReputationWithDifferentTag(int) { ; }
+	void RotateToGreatestReputationWithDifferentLineage(int) { ; }	
   
   int GetStateGridID(cAvidaContext& ctx);
 	
 	//! Link this organism's cell to the cell it is currently facing.
-	void CreateLinkByFacing(double weight=1.0) { }
+	void CreateLinkByFacing(double) { ; }
 	//! Link this organism's cell to the cell with coordinates (x,y).
-	void CreateLinkByXY(int x, int y, double weight=1.0) { }
+	void CreateLinkByXY(int, int, double) { ; }
 	//! Link this organism's cell to the cell with index idx.
-	void CreateLinkByIndex(int idx, double weight=1.0) { }
+	void CreateLinkByIndex(int, double) { ; }
 	//! Broadcast a message to all organisms that are connected by this network.
-	bool NetworkBroadcast(cOrgMessage& msg) { return false; }
+	bool NetworkBroadcast(cOrgMessage&) { return false; }
 	//! Unicast a message to the current selected organism.
-	bool NetworkUnicast(cOrgMessage& msg) { return false; }
+	bool NetworkUnicast(cOrgMessage&) { return false; }
 	//! Rotate to select a new network link.
-	bool NetworkRotate(int x) { return false; }
+	bool NetworkRotate(int) { return false; }
 	//! Select a new network link.
-	bool NetworkSelect(int x) { return false; }	
+	bool NetworkSelect(int) { return false; }	
 
 	//! HGT donation (does nothing).
-	void DoHGTDonation(cAvidaContext& ctx) { }
+	void DoHGTDonation(cAvidaContext&) { ; }
 	//! HGT conjugation (does nothing).
-	void DoHGTConjugation(cAvidaContext& ctx) { }
+	void DoHGTConjugation(cAvidaContext&) { ; }
 	//! HGT mutation (does nothing).
-	void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) { }
+	void DoHGTMutation(cAvidaContext&, Genome&) { ; }
 	//! Receive HGT donation (does nothing).
-	void ReceiveHGTDonation(const InstructionSequence& fragment) { }
+	void ReceiveHGTDonation(const InstructionSequence&) { ; }
   
-  bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
+  bool Move(cAvidaContext&, int, int) { return false; }
   
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
   
-  bool HasOpinion(cOrganism* in_organism) { return false; }
-  void SetOpinion(int opinion, cOrganism* in_organism) { ; }
-  void ClearOpinion(cOrganism* in_organism) { ; }
+  bool HasOpinion(cOrganism*) { return false; }
+  void SetOpinion(int, cOrganism*) { ; }
+  void ClearOpinion(cOrganism*) { ; }
 
-  void JoinGroup(int group_id) { ; }
+  void JoinGroup(int) { ; }
   void MakeGroup() { ; }
-  void LeaveGroup(int group_id) { ; }
-  int NumberOfOrganismsInGroup(int group_id) {return 0; }
+  void LeaveGroup(int) { ; }
+  int NumberOfOrganismsInGroup(int) {return 0; }
     
-  int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism) {return 0; }
-  double CalcGroupOddsImmigrants(int group_id) {return 0.0; }
-  double CalcGroupOddsOffspring(cOrganism* parent) {return 0.0; }
-  double CalcGroupOddsOffspring(int group_id) {return 0.0; }
-  bool AttemptImmigrateGroup(int group_id, cOrganism* org) {return false; }
-  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) { ; }
+  int CalcGroupToleranceImmigrants(int) {return 0; }
+  int CalcGroupToleranceOffspring(cOrganism*) {return 0; }
+  double CalcGroupOddsImmigrants(int) {return 0.0; }
+  double CalcGroupOddsOffspring(cOrganism*) {return 0.0; }
+  double CalcGroupOddsOffspring(int) {return 0.0; }
+  bool AttemptImmigrateGroup(int, cOrganism*) {return false; }
+  void PushToleranceInstExe(int, int, int, double, double, double, double, int, int, int, int) { ; }
 
-  void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
+  void AttackFacedOrg(cAvidaContext&, int) { ; }
   
   void BeginSleep() { ; }
   void EndSleep() { ; }

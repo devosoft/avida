@@ -192,9 +192,9 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
   bool SupportsSpeculative() const { return false; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) { }
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { }
-  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { }
+  void SetupMiniTraceFileHeader(const cString&, cOrganism*, const int, const cString&) { ; }
+  void PrintMiniTraceStatus(cAvidaContext&, std::ostream&, const cString&) { ; }
+  void PrintMiniTraceSuccess(std::ostream&, const int) { }
 		
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
@@ -242,8 +242,8 @@ public:
   int GetCurThreadID() const { return m_cur_thread; }
   
   // interrupt current thread
-  bool InterruptThread(int interruptType) { return false; }
-  int GetThreadMessageTriggerType(int _index) { return -1; }
+  bool InterruptThread(int) { return false; }
+  int GetThreadMessageTriggerType(int) { return -1; }
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(Systematics::UnitPtr bu);

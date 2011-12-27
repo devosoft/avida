@@ -100,7 +100,7 @@ void build_grid(InputIterator begin, InputIterator end, unsigned int x_size, uns
 In a clique, each cell is connected to all other cells in the given range.
 */
 template< typename InputIterator >
-void build_clique(InputIterator begin, InputIterator end, unsigned int x_size, unsigned int y_size) {
+void build_clique(InputIterator begin, InputIterator end, unsigned int, unsigned int) {
   for(InputIterator i=begin; i!=end; ++i) {
     for(InputIterator j=begin; j!=end; ++j) {
       if(j!=i) {

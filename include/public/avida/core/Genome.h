@@ -29,6 +29,8 @@
 #include "avida/core/GeneticRepresentation.h"
 #include "avida/core/Properties.h"
 
+#include <typeinfo>
+
 
 namespace Avida {
   
@@ -99,6 +101,7 @@ namespace Avida {
 
     LIB_EXPORT bool Serialize(ArchivePtr ar) const;
     LIB_EXPORT static GenomePtr Deserialize(ArchivePtr ar);
+    LIB_EXPORT bool LegacySave(void* df) const;
   };  
 };
 

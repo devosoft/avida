@@ -115,18 +115,18 @@ bool Avida::World::Serialize(ArchivePtr ar) const
 }
 
 
-void Avida::WorldFacet::PerformUpdate(Context& ctx, Update current_update)
+void Avida::WorldFacet::PerformUpdate(Context&, Update)
 {
 }
 
 
-Avida::WorldFacetPtr Avida::WorldFacet::Deserialize(ArchivePtr ar)
+Avida::WorldFacetPtr Avida::WorldFacet::Deserialize(ArchivePtr)
 {
   // @TODO
   return WorldFacetPtr();
 }
 
-bool Avida::WorldFacet::RegisterFacetType(WorldFacetID facet_id, WorldFacetDeserializeFunctor facet_func)
+bool Avida::WorldFacet::RegisterFacetType(WorldFacetID, WorldFacetDeserializeFunctor)
 {
   // @TODO
   return false;

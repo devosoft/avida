@@ -25,6 +25,7 @@
 #include "avida/core/GeneticRepresentation.h"
 
 #include <cassert>
+#include <typeinfo>
 
 
 Avida::GeneticRepresentation::~GeneticRepresentation()

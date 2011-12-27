@@ -24,8 +24,14 @@
 #include "avida/private/systematics/Genotype.h"
 
 #include "avida/core/InstructionSequence.h"
+#include "avida/core/Properties.h"
 
 #include "avida/private/systematics/GenotypeArbiter.h"
+
+#include "cDataFile.h"
+#include "cStringList.h"
+#include "cStringUtil.h"
+#include "tDictionary.h"
 
 
 Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, UnitPtr founder, Update update,
@@ -71,6 +77,70 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   seq.DynamicCastFrom(m_genome.Representation());
   assert(seq);
   m_name = Apto::FormatStr("%03d-no_name", seq->GetSize());
+}
+
+
+Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, void* prop_p)
+: Group(in_id)
+, m_mgr(mgr)
+, m_handle(NULL)
+, m_name("001-no_name")
+, m_threshold(false)
+, m_active(true)
+, m_update_born(-1)
+, m_update_deactivated(-1)
+, m_depth(0)
+, m_active_offspring_genotypes(0)
+, m_num_organisms(1)
+, m_last_num_organisms(0)
+, m_total_organisms(1)
+, m_last_birth_cell(0)
+, m_last_group_id(-1)
+, m_last_forager_type(-1)
+, m_prop_map(NULL)
+{
+  const tDictionary<cString>& props = *static_cast<const tDictionary<cString>*>(prop_p);
+  
+  m_src.transmission_type = DIVISION;
+  m_src.external = true;
+  m_src.arguments = props.Get("src_args");
+  if (m_src.arguments == "(none)") m_src.arguments = "";
+  
+  PropertyMap prop_map;
+  prop_map.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)props.Get("inst_set"))));
+  m_genome = Avida::Genome(props.Get("hw_type").AsInt(), prop_map, GeneticRepresentationPtr(new InstructionSequence((const char*)props.Get("sequence"))));
+  
+  if (props.HasEntry("gen_born")) {
+    m_generation_born = props.Get("gen_born").AsInt();
+  } else {
+    m_generation_born = -1;
+  }
+  assert(props.HasEntry("update_born"));
+  m_update_born = props.Get("update_born").AsInt();
+  if (props.HasEntry("update_deactivated")) {
+    m_update_deactivated = props.Get("update_deactivated").AsInt();
+  } else {
+    m_update_deactivated = -1;
+  }
+  assert(props.HasEntry("depth"));  
+  m_depth = props.Get("depth").AsInt();
+  
+  if (props.HasEntry("parents")) {
+    m_parent_str = props.Get("parents");
+  } else if (props.HasEntry("parent_id")) { // Backwards compatible load
+    m_parent_str = props.Get("parent_id");
+  }
+  if (m_parent_str == "(none)") m_parent_str = "";
+  cStringList parents((const char*)m_parent_str,',');
+  
+  m_parents.Resize(parents.GetSize());
+  for (int i = 0; i < m_parents.GetSize(); i++) {
+    GenotypePtr g;
+    g.DynamicCastFrom(m_mgr->Group(parents.Pop().AsInt()));
+    m_parents[i] = g;
+    assert(m_parents[i]);
+    m_parents[i]->AddPassiveReference();
+  }
 }
 
 
@@ -122,7 +192,7 @@ void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
 }
 
 
-void Avida::Systematics::Genotype::RemoveUnit(UnitPtr u)
+void Avida::Systematics::Genotype::RemoveUnit(UnitPtr)
 {
   m_deaths.Inc();
   
@@ -143,34 +213,56 @@ const Avida::PropertyMap& Avida::Systematics::Genotype::Properties() const
   return *m_prop_map;
 }
 
-
-bool Avida::Systematics::Genotype::Serialize(ArchivePtr ar) const
+int Avida::Systematics::Genotype::Depth() const
 {
-  // @TODO
-//  df.Write(m_id, "ID", "id");
-//  df.Write(Avida::BioUnitSourceMap[m_src], "Source", "src");
-//  df.Write(m_src_args.GetSize() ? m_src_args : "(none)", "Source Args", "src_args");
-//  
-//  cString str("");
-//  if (m_parents.GetSize()) {
-//    str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
-//    for (int i = 1; i < m_parents.GetSize(); i++) {
-//      str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
-//    }
-//  }
-//  df.Write((str.GetSize()) ? str : "(none)", "Parent ID(s)", "parents");
-//  
-//  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
-//  df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");
-//  df.Write(m_genome.GetSequence().GetSize(), "Genome Length", "length");
-//  df.Write(m_merit.Average(), "Average Merit", "merit");
-//  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
-//  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
-//  df.Write(m_generation_born, "Generation Born", "gen_born");
-//  df.Write(m_update_born, "Update Born", "update_born");
-//  df.Write(m_update_deactivated, "Update Deactivated", "update_deactivated");
-//  df.Write(m_depth, "Phylogenetic Depth", "depth");
-//  m_genome.Save(df);
+  return m_depth;
+}
+
+int Avida::Systematics::Genotype::NumUnits() const
+{
+  return m_num_organisms;
+}
+
+bool Avida::Systematics::Genotype::Serialize(ArchivePtr) const
+{
+  // @TODO - serialize genotype
+  return false;
+}
+
+bool Avida::Systematics::Genotype::LegacySave(void* dfp) const
+{
+  cDataFile& df = *static_cast<cDataFile*>(dfp);
+  df.Write(m_id, "ID", "id");
+  
+  df.Write(m_src.AsString(), "Source", "src");
+  
+  df.Write(m_src.arguments.GetSize() ? (const char*)m_src.arguments : "(none)", "Source Args", "src_args");
+  
+  cString str("");
+  if (m_parents.GetSize()) {
+    str += cStringUtil::Stringf("%d", m_parents[0]->ID());
+    for (int i = 1; i < m_parents.GetSize(); i++) {
+      str += cStringUtil::Stringf(",%d", m_parents[i]->ID());
+    }
+  }
+  df.Write((str.GetSize()) ? str : "(none)", "Parent ID(s)", "parents");
+  
+  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
+  df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");
+  
+  ConstInstructionSequencePtr seq;
+  seq.DynamicCastFrom(m_genome.Representation());
+  df.Write(seq->GetSize(), "Genome Length", "length");
+  
+  df.Write(m_merit.Average(), "Average Merit", "merit");
+  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
+  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
+  df.Write(m_generation_born, "Generation Born", "gen_born");
+  df.Write(m_update_born, "Update Born", "update_born");
+  df.Write(m_update_deactivated, "Update Deactivated", "update_deactivated");
+  df.Write(m_depth, "Phylogenetic Depth", "depth");
+  m_genome.LegacySave(dfp);
+  
   return false;
 }
 

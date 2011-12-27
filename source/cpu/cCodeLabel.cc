@@ -161,7 +161,7 @@ int cCodeLabel::AsIntUnique(const int base) const
   return value;
 }
 
-int cCodeLabel::AsIntAdditivePolynomial(const int base) const
+int cCodeLabel::AsIntAdditivePolynomial(const int) const
 {
   double value = 0.0;
 

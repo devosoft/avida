@@ -46,14 +46,14 @@ in the population.  */
 class cOrgMovementPredicate : public std::unary_function<cOrganism, bool> 
 {
 public:
-  virtual ~cOrgMovementPredicate() { }
+  virtual ~cOrgMovementPredicate() { ; }
   virtual bool operator()(cOrganism& org) = 0;
-  virtual void Print(std::ostream& out) { }
+  virtual void Print(std::ostream&) { ; }
   virtual void Reset() { }
   virtual bool PreviouslySatisfied() = 0;
   virtual cString GetName() = 0;
-  virtual void UpdateStats(cStats& stats) {}
-  virtual cDemeCellEvent* GetEvent(int i) { return NULL; }
+  virtual void UpdateStats(cStats&) { ; }
+  virtual cDemeCellEvent* GetEvent(int) { return NULL; }
   virtual int GetNumEvents() { return 1; }
 };
 
@@ -93,7 +93,8 @@ struct cOrgMovementPred_EventMovedIntoCenter : public cOrgMovementPredicate {
     return m_event_received;
   }
   
-  virtual void Print(std::ostream& out) {
+  virtual void Print(std::ostream&)
+  {
     if(m_event->IsDead()) {
       return;
     }
@@ -106,7 +107,8 @@ struct cOrgMovementPred_EventMovedIntoCenter : public cOrgMovementPredicate {
     m_current_times = 0;
   }
 
-  virtual bool PreviouslySatisfied() {
+  virtual bool PreviouslySatisfied()
+  {
     return m_event_received;
   }
 
@@ -114,8 +116,9 @@ struct cOrgMovementPred_EventMovedIntoCenter : public cOrgMovementPredicate {
     return "EventMovedIntoCenter";
   }
 
-  virtual void UpdateStats(cStats& stats) {
-    if(m_event_received && !m_stats_updated) {
+  virtual void UpdateStats(cStats&)
+  {
+    if (m_event_received && !m_stats_updated) {
 /*      int eventCell = m_event->GetNextEventCellID();
       while(eventCell != -1) {
         stats.IncPredSat(eventCell);
@@ -125,7 +128,7 @@ struct cOrgMovementPred_EventMovedIntoCenter : public cOrgMovementPredicate {
     }
   }
   
-  cDemeCellEvent* GetEvent(int i) { return m_event; }
+  cDemeCellEvent* GetEvent(int) { return m_event; }
   
   cPopulation& pop;
   bool m_event_received;
@@ -234,7 +237,8 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
 
   } //End operator()
   
-  virtual void Print(std::ostream& out) {
+  virtual void Print(std::ostream&)
+  {
     // WHAT TO PRINT
   }
 
@@ -259,7 +263,8 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
     return "EventMovedBetweenTargets";
   }
 
-  virtual void UpdateStats(cStats& stats) {
+  virtual void UpdateStats(cStats&)
+  {
     if(m_event_received && !m_stats_updated) {
 /*      int eventCell = m_event->GetNextEventCellID();
       while(eventCell != -1) {
@@ -330,7 +335,8 @@ struct cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget : public cOrgMove
     return m_satisfied;
   }
   
-  virtual void Print(std::ostream& out) {
+  virtual void Print(std::ostream&)
+  {
     if(m_event->IsDead()) {
       return;
     }
@@ -343,7 +349,8 @@ struct cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget : public cOrgMove
     unique_org_ids.clear();
   }
   
-  virtual bool PreviouslySatisfied() {
+  virtual bool PreviouslySatisfied()
+  {
     return m_satisfied;
   }
   
@@ -351,13 +358,15 @@ struct cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget : public cOrgMove
     return "EventNUniqueIndividualsMovedIntoTarget";
   }
   
-  virtual void UpdateStats(cStats& stats) {
+  virtual void UpdateStats(cStats&)
+  {
     if(m_satisfied && !m_stats_updated) {
       m_stats_updated = true;
     }
   }
   
-  virtual cDemeCellEvent* GetEvent(int i) {
+  virtual cDemeCellEvent* GetEvent(int)
+  {
     return m_event;
   }
   

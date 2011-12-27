@@ -31,7 +31,7 @@ bool cConstSchedule::OK()
   return true;
 }
 
-void cConstSchedule::Adjust(int item_id, const cMerit& merit, int deme_id)
+void cConstSchedule::Adjust(int item_id, const cMerit& merit, int)
 {
   if (merit == 0.0) is_active[item_id] = false;
   else is_active[item_id] = true;

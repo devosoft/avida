@@ -69,16 +69,16 @@ public:
 	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=1.0) = 0;
 	
 	//! Broadcast a message to connected cells.
-	virtual void BroadcastToNeighbors(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) { }
+	virtual void BroadcastToNeighbors(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) { (void)s; (void)msg; (void)pop_interface; }
 
 	//! Unicast a message to the currently selected neighbor.
-	virtual void Unicast(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) { }
+	virtual void Unicast(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) { (void)s; (void)msg; (void)pop_interface; }
 	
 	//! Rotate the selected link from among the current neighbors.
-	virtual void Rotate(cPopulationCell& s, int x) { }
+	virtual void Rotate(cPopulationCell& s, int x) { (void)s; (void)x; }
 	
 	//! Select the current link from among the neighbors.
-	virtual void Select(cPopulationCell& s, int x) { }
+	virtual void Select(cPopulationCell& s, int x) { (void)s; (void)x; }
 
 	//! Called when the organism living in cell u dies.
 	virtual void OrganismDeath(cPopulationCell& u) = 0;

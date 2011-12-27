@@ -275,7 +275,7 @@ public:
   void SetTaskOrder(const cString & in_order) { task_order = in_order; }
 
   // A set of NULL accessors to simplyfy automated accesses.
-  void SetNULL(int idx, int dummy) { (void) dummy; }
+  void SetNULL(int, int) { ; }
   void SetNULL(int dummy) { (void) dummy; }
   void SetNULL(char dummy) { (void) dummy; }
   void SetNULL(double dummy) { (void) dummy; }
@@ -541,7 +541,7 @@ public:
 
     inline ReadToken(const cAnalyzeGenotype* ptr) : m_ptr(ptr) { ; }
     
-    inline void Validate(const cAnalyzeGenotype* ptr) { assert(ptr == m_ptr); }
+    inline void Validate(const cAnalyzeGenotype* ptr) { assert(ptr == m_ptr); (void) ptr; }
     
   public:
     ~ReadToken() { m_ptr->m_data->rwlock.ReadUnlock(); }

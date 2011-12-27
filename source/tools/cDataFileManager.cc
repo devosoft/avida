@@ -15,7 +15,7 @@
 using namespace std;
 
 
-cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_target_dir(target_dir)
+cDataFileManager::cDataFileManager(const cString& target_dir, bool) : m_target_dir(target_dir)
 {
   m_target_dir.Trim();
   

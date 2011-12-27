@@ -37,3 +37,19 @@ void Avida::Systematics::Arbiter::notifyListeners(GroupPtr g, EventType t, UnitP
 }
 
 Avida::Systematics::Arbiter::Iterator::~Iterator() { ; }
+
+bool Avida::Systematics::Arbiter::Serialize(ArchivePtr) const
+{
+  // @TODO - serialize arbiter
+  return false;
+}
+
+bool Avida::Systematics::Arbiter::LegacySave(void*) const
+{
+  return false;
+}
+
+Avida::Systematics::GroupPtr Avida::Systematics::Arbiter::LegacyLoad(void*)
+{
+  return GroupPtr();
+}

@@ -344,7 +344,7 @@ Data::ConstDataSetPtr cPopulation::Provides() const
   return provides;
 }
 
-void cPopulation::UpdateProvidedValues(Update current_update)
+void cPopulation::UpdateProvidedValues(Update)
 {
   // Nothing for now, all handled elsewhere
 }
@@ -383,7 +383,7 @@ Apto::String cPopulation::DescribeProvidedValue(const Apto::String& data_id) con
 }
 
 
-void cPopulation::SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args)
+void cPopulation::SetActiveArguments(const Data::DataID&, Data::ConstArgumentSetPtr)
 {
   // Nothing to do here
 }
@@ -3531,7 +3531,7 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
 }
 
 // Write spatial data to a file that can easily be read into Matlab
-void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext& ctx) const { 
+void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext&) const { 
   const char* tmpResName = res.GetResName(i);
   cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
   cDataFile& df = m_world->GetDataFile(tmpfilename);
@@ -3650,7 +3650,7 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
 
  @MRR May 2007
  **/
-void cPopulation::CCladeSetupOrganism(cOrganism* organism)
+void cPopulation::CCladeSetupOrganism(cOrganism*)
 {
   //  int gen_id = organism->GetBioGroup("genotype")->GetID();
   if (m_world->GetConfig().TRACK_CCLADES.Get() > 0) {
@@ -4593,7 +4593,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
   for (int i = 0; i < genotype_entries.GetSize(); i++) {
     Systematics::GroupPtr genotype = genotype_entries[i]->bg;
 
-    genotype->Save(df);
+    genotype->LegacySave(&df);
 
     tArray<sOrgInfo>& cells = genotype_entries[i]->orgs;
     cString cellstr;
@@ -4634,7 +4634,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
 
   // Output historic genotypes
   if (save_historic) {
-    Systematics::Manager::Of(m_world->GetNewWorld())->SaveBioGroups("genotype", df);
+    Systematics::Manager::Of(m_world->GetNewWorld())->ArbiterForRole("genotype")->LegacySave(&df);
   }
 
   m_world->GetDataFileManager().Remove(filename);
@@ -4693,7 +4693,9 @@ bool cPopulation::SaveFlameData(const cString& filename)
   for (int i = 0; i < genotype_entries.GetSize(); i++) {
     Systematics::GroupPtr genotype = genotype_entries[i]->bg;
     
-    genotype->DepthSave(df);
+    df.Write(genotype->ID(), "ID", "genotype_id");
+    df.Write(genotype->NumUnits(), "Number of currently living organisms", "num_units");
+    df.Write(genotype->Depth(), "Phylogenetic Depth", "depth");
     
     df.Endl();
     
@@ -4823,7 +4825,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     }
     genotypes[i].props->Set("parents", nparentstr);
 
-    genotypes[i].bg = bgm->LoadBioGroup(*genotypes[i].props);
+    genotypes[i].bg = bgm->LegacyLoad(genotypes[i].props);
   }
 
 
@@ -5334,7 +5336,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label, bool assign_group) 
+void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int, bool assign_group) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {

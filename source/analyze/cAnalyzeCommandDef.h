@@ -41,7 +41,7 @@ public:
     : cAnalyzeCommandDefBase(name), CommandFunction(cf) { ; }
   ~cAnalyzeCommandDef() { ; }
 
-  void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, Feedback& feedback) const
+  void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, Feedback&) const
   {
     (void) command; // used in other types of command defininitions.
     (analyze->*CommandFunction)(args);

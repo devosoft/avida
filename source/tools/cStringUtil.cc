@@ -279,23 +279,22 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
 
 
 
-const cString & cStringUtil::Convert(const cString& in_string,
-				     const cString& out_string)
+const cString & cStringUtil::Convert(const cString& in_string, const cString&)
 {
   return in_string;
 }
 
-bool cStringUtil::Convert(const cString& in_string, bool type_bool)
+bool cStringUtil::Convert(const cString& in_string, bool)
 {
   return (in_string.AsInt() != 0);
 }
 
-int cStringUtil::Convert(const cString& in_string, int type_int)
+int cStringUtil::Convert(const cString& in_string, int)
 {
   return in_string.AsInt();
 }
 
-double cStringUtil::Convert(const cString& in_string, double type_double)
+double cStringUtil::Convert(const cString& in_string, double)
 {
   return in_string.AsDouble();
 }

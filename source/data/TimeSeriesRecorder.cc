@@ -31,32 +31,32 @@ namespace Avida {
   namespace Data {
     
     template <>
-    void TimeSeriesRecorder<PackagePtr>::NotifyData(Update current_update, DataRetrievalFunctor retrieve_data)
+    void TimeSeriesRecorder<PackagePtr>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
     {
       m_data.Push(retrieve_data(m_data_id));
     }
     
     
     template <>
-    void TimeSeriesRecorder<bool>::NotifyData(Update current_update, DataRetrievalFunctor retrieve_data)
+    void TimeSeriesRecorder<bool>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
     {
       m_data.Push(retrieve_data(m_data_id)->BoolValue());
     }
     
     template <>
-    void TimeSeriesRecorder<int>::NotifyData(Update current_update, DataRetrievalFunctor retrieve_data)
+    void TimeSeriesRecorder<int>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
     {
       m_data.Push(retrieve_data(m_data_id)->IntValue());
     }
     
     template <>
-    void TimeSeriesRecorder<double>::NotifyData(Update current_update, DataRetrievalFunctor retrieve_data)
+    void TimeSeriesRecorder<double>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
     {
       m_data.Push(retrieve_data(m_data_id)->DoubleValue());
     }
 
     template <>
-    void TimeSeriesRecorder<Apto::String>::NotifyData(Update current_update, DataRetrievalFunctor retrieve_data)
+    void TimeSeriesRecorder<Apto::String>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
     {
       m_data.Push(retrieve_data(m_data_id)->StringValue());
     }

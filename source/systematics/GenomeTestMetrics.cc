@@ -51,7 +51,7 @@ Avida::Systematics::GenomeTestMetrics::GenomeTestMetrics(cWorld* world, cAvidaCo
 }
 
 
-bool Avida::Systematics::GenomeTestMetrics::Serialize(ArchivePtr ar) const
+bool Avida::Systematics::GenomeTestMetrics::Serialize(ArchivePtr) const
 {
   // @TODO
   return false;

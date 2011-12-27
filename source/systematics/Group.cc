@@ -31,9 +31,14 @@ Avida::Systematics::Group::~Group() { ; }
 Avida::Systematics::GroupData::~GroupData() { ; }
 
 
-bool Avida::Systematics::Group::Serialize(ArchivePtr ar) const
+bool Avida::Systematics::Group::Serialize(ArchivePtr) const
 {
   // @TODO - serialize attached data
+  return false;
+}
+
+bool Avida::Systematics::Group::LegacySave(void*) const
+{
   return false;
 }
 

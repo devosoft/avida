@@ -248,9 +248,9 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) { }
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { }
-  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { }
+  void SetupMiniTraceFileHeader(const cString&, cOrganism*, const int, const cString&) { ; }
+  void PrintMiniTraceStatus(cAvidaContext&, std::ostream&, const cString&) { ; }
+  void PrintMiniTraceSuccess(std::ostream&, const int) { ;  }
   
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
@@ -274,9 +274,9 @@ public:
   const cCPUMemory& GetMemory() const { return m_memory; }
   cCPUMemory& GetMemory() { return m_memory; }
   int GetMemSize() const { return m_memory.GetSize(); }
-  const cCPUMemory& GetMemory(int value) const { return m_memory; }
-  cCPUMemory& GetMemory(int value) { return m_memory; }
-  int GetMemSize(int value) const { return  m_memory.GetSize(); }
+  const cCPUMemory& GetMemory(int) const { return m_memory; }
+  cCPUMemory& GetMemory(int) { return m_memory; }
+  int GetMemSize(int) const { return  m_memory.GetSize(); }
   int GetNumMemSpaces() const { return 1; }
   
   
@@ -288,7 +288,7 @@ public:
   
   // --------  Thread Manipulation  --------
   bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
+  bool ThreadSelect(const cCodeLabel&) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
@@ -300,7 +300,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return m_threads[_index].getMessageTriggerType(); }
   
   // --------  Parasite Stuff  --------
-  bool ParasiteInfectHost(Systematics::UnitPtr bu) { return false; }
+  bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
   
   // Non-Standard Methods
@@ -362,12 +362,12 @@ private:
   bool Inst_Throw(cAvidaContext& ctx);
   bool Inst_ThrowIf0(cAvidaContext& ctx);
   bool Inst_ThrowIfNot0(cAvidaContext& ctx);  
-  bool Inst_Catch(cAvidaContext& ctx) { ReadLabel(); return true; };
+  bool Inst_Catch(cAvidaContext&) { ReadLabel(); return true; };
  
   bool Inst_Goto(cAvidaContext& ctx);
   bool Inst_GotoIf0(cAvidaContext& ctx);
   bool Inst_GotoIfNot0(cAvidaContext& ctx);  
-  bool Inst_Label(cAvidaContext& ctx) { ReadLabel(); return true; };
+  bool Inst_Label(cAvidaContext&) { ReadLabel(); return true; };
     
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);

@@ -1343,7 +1343,7 @@ void cAnalyze::FindClade(cString cur_string)
 }
 
 // @JEB 9-25-2008
-void cAnalyze::FindLastCommonAncestor(cString cur_string)
+void cAnalyze::FindLastCommonAncestor(cString)
 {  
 
   // Assumes that the current batch contains a population and all of its common ancestors
@@ -8717,7 +8717,7 @@ void cAnalyze::PrintDebug(cString cur_string)
   cout << "::: " << cur_string << '\n';
 }
 
-void cAnalyze::PrintTestInfo(cString cur_string)
+void cAnalyze::PrintTestInfo(cString)
 {
   cFlexVar var1(1), var2(2.0), var3('3'), var4("four");
   cFlexVar var5(9), var6(9.0), var7('9'), var8("9");

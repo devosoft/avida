@@ -190,11 +190,11 @@ public:
   
   
   // --------  State Transfer  --------
-  virtual void InheritState(cHardwareBase& in_hardware) { ; }
+  virtual void InheritState(cHardwareBase&) { ; }
   
   
   // --------  Alarm  --------
-  virtual bool Jump_To_Alarm_Label(int jump_label) { return false; }
+  virtual bool Jump_To_Alarm_Label(int) { return false; }
   
 
 	// -------- Synchronization --------

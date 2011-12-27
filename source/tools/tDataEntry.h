@@ -56,12 +56,12 @@ public:
   virtual ~tDataEntry() { ; }
   
   const cString& GetName() const { return m_name; }
-  virtual cString GetDesc(const TargetType* target, const cFlexVar& idx) const { return m_desc; }
+  virtual cString GetDesc(const TargetType*, const cFlexVar&) const { return m_desc; }
   int GetCompareType() const { return m_compare_type; }
   const cString& GetNull() const { return m_null_value; }
   const cString& GetHtmlCellFlags() const { return m_html_table_flags; }
   
-  virtual bool Set(TargetType* target, const cFlexVar&, const cStringList&, const cString&) const { return false; }
+  virtual bool Set(TargetType*, const cFlexVar&, const cStringList&, const cString&) const { return false; }
   virtual cFlexVar Get(const TargetType* target, const cFlexVar& idx, const cStringList& args) const = 0;
   virtual cFlexVar Get(const TargetType* target) const { return Get(target, 0, m_default_args); }
 };
@@ -167,7 +167,7 @@ public:
                   int compare_type = 0, const cString& null = "0", const cString& html_cell = "align=center")
   : tDataEntry<TargetType>(name, desc, compare_type, null, html_cell), DataRetrieval(_funR) { ; }
   
-  cFlexVar Get(const TargetType* target, const cFlexVar& idx, const cStringList& args) const
+  cFlexVar Get(const TargetType* target, const cFlexVar&, const cStringList&) const
   {
     assert(target != NULL);
     return (*DataRetrieval)(target);
@@ -193,7 +193,7 @@ public:
     return (*DescFunction)(target, idx.As<IdxType>());
   }
   
-  cFlexVar Get(const TargetType* target, const cFlexVar& idx, const cStringList& args) const
+  cFlexVar Get(const TargetType* target, const cFlexVar& idx, const cStringList&) const
   {
     assert(target != NULL);
     return (*DataRetrieval)(target, idx.As<IdxType>());

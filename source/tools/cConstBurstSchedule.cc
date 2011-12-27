@@ -26,7 +26,7 @@
 
 bool cConstBurstSchedule::OK() { return true; }
 
-void cConstBurstSchedule::Adjust(int item_id, const cMerit& merit, int deme_id)
+void cConstBurstSchedule::Adjust(int item_id, const cMerit& merit, int)
 {
   if (merit == 0.0) m_active[item_id] = false;
   else m_active[item_id] = true;

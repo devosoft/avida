@@ -60,11 +60,11 @@ class cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool>
 public:
   virtual ~cOrgMessagePredicate() { }
   virtual bool operator()(const cOrgMessage& msg) = 0;
-  virtual void Print(int update, std::ostream& out) { }
+  virtual void Print(int, std::ostream&) { ; }
   virtual void Reset() { }
   virtual bool PreviouslySatisfied() = 0;
   virtual cString GetName() = 0;
-  virtual void UpdateStats(cStats& stats) {}
+  virtual void UpdateStats(cStats&) { ; }
   virtual cDemeCellEvent* GetEvent() { return NULL; }
 };
 
@@ -101,7 +101,7 @@ struct cOrgMessagePred_CountDemeMessages : public cOrgMessagePredicate {
 	// What do these do, and why are they in the base struct?
   virtual bool PreviouslySatisfied() { return false; }
   virtual cString GetName() { return "cOrgMessagePred_CountDemeMessages"; }
-  virtual void UpdateStats(cStats& stats) { }
+  virtual void UpdateStats(cStats&) { ; }
   virtual cDemeCellEvent* GetEvent() { return NULL; }
 	
 	int GetMessageCount(const cDeme& deme) {
@@ -135,7 +135,7 @@ struct cOrgMessagePred_AllData : public cOrgMessagePredicate
   virtual void Reset() { m_msgs.clear(); }
   virtual bool PreviouslySatisfied() { return false; }
   virtual cString GetName() { return "cOrgMessagePred_All"; }
-  virtual void UpdateStats(cStats& stats) { }
+  virtual void UpdateStats(cStats&) { ; }
   virtual cDemeCellEvent* GetEvent() { return NULL; }
 	
 	cWorld* m_world;
@@ -156,7 +156,7 @@ struct cOrgMessagePred_DataEQU : public cOrgMessagePredicate
     return true;
   }
   
-  virtual void Print(int update, std::ostream& out) { 
+  virtual void Print(int, std::ostream& out) { 
     out << "data==" << m_data << ":{";
     for(std::set<int>::iterator i=m_cell_ids.begin(); i!=m_cell_ids.end(); ++i) {
       out << *i << ",";
@@ -191,7 +191,7 @@ struct cOrgMessagePred_SinkReceiverEQU : public cOrgMessagePredicate {
     return true;
   }
   
-  virtual void print(int update, std::ostream& out) { 
+  virtual void print(int, std::ostream&) { 
 //    cPopulationCell::t_id_map& ids = cPopulationCell::GetRandomCellIDMap();
 //    int badMSGs = 0;
 //    
@@ -262,7 +262,7 @@ struct cOrgMessagePred_EventReceivedCenter : public cOrgMessagePredicate {
   }
   
   //need to print update!!!
-  virtual void Print(int update, std::ostream& out) {
+  virtual void Print(int, std::ostream& out) {
     if(m_event->IsDead()) {
       return;
     }
@@ -354,7 +354,7 @@ struct cOrgMessagePred_EventReceivedLeftSide : public cOrgMessagePredicate {
     return m_event_received;
   }
   
-  virtual void Print(int update, std::ostream& out) {
+  virtual void Print(int, std::ostream& out) {
     if(m_event->IsDead()) {
       return;
     }

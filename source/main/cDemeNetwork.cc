@@ -49,7 +49,8 @@ using namespace Avida;
  
  WARNING: The returned pointer is owned by the caller (you're responsible for deleting it)!
  */
-cDemeNetwork* cDemeNetwork::DemeNetworkFactory(cWorld* world, cDeme& deme) {
+cDemeNetwork* cDemeNetwork::DemeNetworkFactory(cWorld* world, cDeme&)
+{
 #if BOOST_IS_AVAILABLE
 	switch(world->GetConfig().DEME_NETWORK_TYPE.Get()) {
 		case cDemeNetwork::TOPOLOGY: {

@@ -265,7 +265,7 @@ namespace std {
 /*! Draw a sample (without replacement) from an input range, copying to the output range.
  */
 template <typename ForwardIterator, typename OutputIterator, typename RNG>
-void sample_without_replacement(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG rng) {
+void sample_without_replacement(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG) {
 	std::size_t range = std::distance(first, last);
 	std::size_t output_range = std::distance(ofirst, olast);
 	

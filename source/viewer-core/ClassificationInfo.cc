@@ -24,18 +24,29 @@
 
 #include "avida/private/viewer-core/ClassificationInfo.h"
 
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Group.h"
+#include "avida/systematics/Manager.h"
+
+
 #include "cBitArray.h"
 #include "cPopulation.h"
 #include "cWorld.h"
-#include "tAutoRelease.h"
-#include "tIterator.h"
+
+
+bool Avida::CoreView::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
+{
+  // @TODO - map color serialize
+  assert(false);
+  return false;
+}
 
 
 Avida::CoreView::ClassificationInfo::ClassificationInfo(cWorld* in_world, const cString& role, int total_colors)
   : m_world(in_world)
   , m_role(role)
   , m_color_chart_id(total_colors, -1)
-  , m_color_chart_ptr(total_colors, NULL)
+, m_color_chart_ptr(total_colors, Systematics::GroupPtr(NULL))
   , m_threshold_colors(total_colors * 5 / 6)
   , m_next_color(0)
 {
@@ -49,11 +60,12 @@ void Avida::CoreView::ClassificationInfo::Update()
   free_color.SetAll();
 
   // Loop through all genotypes that should be colors to mark those that we can clear out.
-  tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager(m_role)->Iterator());
+  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+  Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole((const char*)m_role)->Begin();
   int count = 0;
   while (count < num_colors && it->Next()) {
     const int cur_color = getMapColor(it->Get())->color;
-    const int cur_id = it->Get()->GetID();
+    const int cur_id = it->Get()->ID();
     if (cur_color >= 0) {
       assert(m_color_chart_id[cur_color] == cur_id);     // If it has a color, the color should point back to it.
       assert(m_color_chart_ptr[cur_color] == it->Get());  // ...and so should the pointer.
@@ -68,7 +80,7 @@ void Avida::CoreView::ClassificationInfo::Update()
   }
 
   // Setup genotypes above threshold.
-  it.Set(m_world->GetClassificationManager().GetBioGroupManager(m_role)->Iterator());
+  it = classmgr->ArbiterForRole((const char*)m_role)->Begin();
   count = 0;
   while (it->Next() && count < m_threshold_colors) {
     if (getMapColor(it->Get())->color < 0) {
@@ -77,7 +89,7 @@ void Avida::CoreView::ClassificationInfo::Update()
       if (new_color == -1) new_color = free_color.FindBit1(0);
       assert(new_color != -1);
       m_next_color = new_color + 1;
-      m_color_chart_id[new_color] = it->Get()->GetID();
+      m_color_chart_id[new_color] = it->Get()->ID();
       m_color_chart_ptr[new_color] = it->Get();
       free_color[new_color] = false;
       getMapColor(it->Get())->color = new_color;
@@ -87,11 +99,11 @@ void Avida::CoreView::ClassificationInfo::Update()
 }
 
 
-Avida::CoreView::ClassificationInfo::MapColor* Avida::CoreView::ClassificationInfo::getMapColor(Systematics::GroupPtr bg)
+Avida::CoreView::ClassificationInfo::MapColorPtr Avida::CoreView::ClassificationInfo::getMapColor(Systematics::GroupPtr bg)
 {
-  MapColor* mc = bg->GetData<MapColor>();
+  MapColorPtr mc = bg->GetData<MapColor>();
   if (!mc) {
-    mc = new MapColor;
+    mc = MapColorPtr(new MapColor);
     bg->AttachData(mc);
   }
   return mc;

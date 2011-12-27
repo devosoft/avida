@@ -265,7 +265,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string env_string>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cUserFeedback feedback;
     m_world->GetEnvironment().LoadLine(env_string, feedback);
@@ -299,7 +299,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string env_string>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cUserFeedback feedback;
     m_world->GetEnvironment().LoadLine(env_string, feedback);
@@ -361,7 +361,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <double value>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetEnvironment().SetReactionValueMult(m_name, m_value);
   }
@@ -384,7 +384,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <string inst>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetEnvironment().SetReactionInst(m_name, m_inst);
   }
@@ -406,7 +406,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <int min_count>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetEnvironment().SetReactionMinTaskCount(m_name, m_min_count);
   }
@@ -428,7 +428,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <int max_count>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetEnvironment().SetReactionMaxTaskCount(m_name, m_max_count);
   }
@@ -450,7 +450,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <int reaction_min_count>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetEnvironment().SetReactionMinCount(m_name, m_reaction_min_count);
   }
@@ -472,7 +472,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <int reaction_max_count>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetEnvironment().SetReactionMaxCount(m_name, m_reaction_max_count);
   }
@@ -494,7 +494,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string reaction_name> <string task_name>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     bool success = m_world->GetEnvironment().SetReactionTask(m_name, m_task);
     if (!success) {
@@ -520,7 +520,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().SetResourceInflow(m_name, m_inflow);
   }
@@ -558,7 +558,7 @@ class cActionSetDemeResourceInflow : public cAction
     
     static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <double inflow>"; }
     
-    void Process(cAvidaContext& ctx)
+    void Process(cAvidaContext&)
     {
       m_world->GetPopulation().SetSingleDemeResourceInflow(m_demeid, m_name, m_inflow);
     }
@@ -583,7 +583,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().SetResourceOutflow(m_name, m_outflow);
   }
@@ -620,7 +620,7 @@ class cActionSetDemeResourceOutflow : public cAction
     
     static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <double outflow>"; }
     
-    void Process(cAvidaContext& ctx)
+    void Process(cAvidaContext&)
     {
       m_world->GetPopulation().SetSingleDemeResourceOutflow(m_demeid, m_name, m_outflow);
     }
@@ -718,7 +718,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int task> <int arg> <int value>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cEnvironment& env = m_world->GetEnvironment();
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
@@ -948,50 +948,11 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int new_value>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Set(newValue);
   }
 };
-
-/*
-class cActionSetDoublePeriodicResource : public cAction
-{
-private:
-  cString m_res_name;
-  double m_res_count;
-  double amplitude;
-  double frequency;
-  double phaseShift;
-  double initY;
-
-public:
-  cActionSetDoublePeriodicResource(cWorld* world, const cString& args, Feedback&): cAction(world, args), m_res_name(""), amplitude(1.0),
-                                                                  frequency(1.0), phaseShift(0.0), initY(0.0)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_res_name = largs.PopWord();
-    if (largs.GetSize()) amplitude = largs.PopWord().AsDouble();
-    if (largs.GetSize()) frequency = largs.PopWord().AsDouble();
-    if (largs.GetSize()) phaseShift = largs.PopWord().AsDouble();
-    if (largs.GetSize()) initY = largs.PopWord().AsDouble();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <string reaction_name> <string amplitude> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    int time = m_world->GetStats().GetUpdate();
-    m_res_count = ampliture*(sin(pi/frequency1*x-pi*phaseShift1)+1+cos(pi/frequency2*x-pi*phaseShift1)+1)/4;
-    
-    std::cout << "Update " << time << " Y = " << m_res_count << std::endl;
-//    std::cout << m_res_count <<" = " << amplitude <<" * sin("<<frequency <<" * " << time <<" - "<< phaseShift<<") + "<<initY<<std::endl;
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
-
-  }
-};
-*/
 
 class cActionSetTaskArgDouble : public cAction
 {
@@ -1011,7 +972,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int task> <int arg> <double value>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cEnvironment& env = m_world->GetEnvironment();
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
@@ -1042,7 +1003,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int task> <int arg> <string value>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cEnvironment& env = m_world->GetEnvironment();
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
@@ -1062,7 +1023,7 @@ class cActionSetOptimizeMinMax : public cAction
     
     static const cString GetDescription() { return "No Arguments"; }
     
-    void Process(cAvidaContext& ctx)
+    void Process(cAvidaContext&)
     {
       cEnvironment& env = m_world->GetEnvironment();
       for (int j = 0; j < env.GetNumTasks(); j++)
@@ -1127,7 +1088,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_events>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cPopulation& pop = m_world->GetPopulation();
     int numDemes = pop.GetNumDemes();
@@ -1180,7 +1141,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_slots_per_deme> <int total_events_per_slot_max> <int total_events_per_slot_min> <int tolal_event_flow_levels>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cPopulation& pop = m_world->GetPopulation();
     int numDemes = pop.GetNumDemes();
@@ -1235,7 +1196,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string config_var> <string value>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetConfig().Set(m_cvar, m_value);
   }

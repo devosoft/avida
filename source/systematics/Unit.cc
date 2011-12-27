@@ -27,6 +27,36 @@
 #include "avida/systematics/Group.h"
 
 
+Apto::String Avida::Systematics::Source::AsString() const
+{
+  Apto::String rtn;
+  
+  switch (transmission_type) {
+    case DIVISION:
+      rtn += "div";
+      break;
+    case DUPLICATION:
+      rtn += "dup";
+      break;
+    case HORIZONTAL:
+      rtn += "horz";
+      break;
+    case VERTICAL:
+      rtn += "vert";
+      break;
+    default:
+      rtn += "unknown";
+      break;
+  }
+  
+  rtn += ":";
+  rtn += (external ? "ext" : "int");
+  
+  // @TODO - should add arguments to source string in the future
+  
+  return rtn;
+}
+
 Avida::Systematics::Unit::~Unit()
 {
   for (int i = 0; i < m_groups->GetSize(); i++) {

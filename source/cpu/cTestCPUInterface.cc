@@ -25,7 +25,7 @@
 #include "cTestCPU.h"
 
 
-bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
+bool cTestCPUInterface::Divide(cAvidaContext&, cOrganism* parent, const Genome&)
 {
   ConstInstructionSequencePtr seq;
   seq.DynamicCastFrom(parent->Genome().Representation());
@@ -48,12 +48,12 @@ int cTestCPUInterface::GetNumNeighbors()
   return 0;
 }
 
-void cTestCPUInterface::GetNeighborhoodCellIDs(tArray<int>& list)
+void cTestCPUInterface::GetNeighborhoodCellIDs(tArray<int>&)
 {
   
 }
 
-void cTestCPUInterface::Rotate(int direction)
+void cTestCPUInterface::Rotate(int)
 {
 }
 
@@ -107,22 +107,22 @@ void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>
    m_testcpu->ModifyResources(ctx, res_change);
 }
 
-void cTestCPUInterface::Die(cAvidaContext& ctx) 
+void cTestCPUInterface::Die(cAvidaContext&) 
 {
 }
 
-void cTestCPUInterface::KillCellID(int target, cAvidaContext& ctx) 
+void cTestCPUInterface::KillCellID(int, cAvidaContext&) 
 {
 }
 
-void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
+void cTestCPUInterface::Kaboom(int distance, cAvidaContext&)
 {
   (void) distance;
   // @CAO We should keep a note that the organism tried to explode, and
   // record the probability it used.
 }
 
-void cTestCPUInterface::SpawnDeme(cAvidaContext& ctx)
+void cTestCPUInterface::SpawnDeme(cAvidaContext&)
 {
 }
 
@@ -131,7 +131,7 @@ int cTestCPUInterface::ReceiveValue()
   return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code)
+bool cTestCPUInterface::InjectParasite(cOrganism*, Systematics::UnitPtr, const cString&, const InstructionSequence&)
 {
   return false;
 }
@@ -142,7 +142,7 @@ bool cTestCPUInterface::UpdateMerit(double new_merit)
   return true;
 }
 
-int cTestCPUInterface::GetStateGridID(cAvidaContext& ctx)
+int cTestCPUInterface::GetStateGridID(cAvidaContext&)
 {
   return m_test_info.GetStateGridID();
 }

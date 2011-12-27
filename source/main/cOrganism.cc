@@ -843,7 +843,7 @@ void cOrganism::NewTrial()
 
 /*! Called as the bottom-half of a successfully sent message.
  */
-void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
+void cOrganism::MessageSent(cAvidaContext&, cOrgMessage& msg) {
 	// check to see if we should store it:
 	const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
 
@@ -1376,7 +1376,7 @@ bool cOrganism::ReceiveString(int string_tag, int amount, int donor_id)
 }
 
 /* Check to see if this amount is below the organism's cap*/
-bool cOrganism::CanReceiveString(int string_tag, int amount)
+bool cOrganism::CanReceiveString(int string_tag, int)
 {
 	bool val = false; 
 	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 

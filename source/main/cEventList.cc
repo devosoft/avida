@@ -374,7 +374,7 @@ void cEventList::QueueBirthInterruptEvent(double t_val)
 
 // Check to see whether or not a particular value is in the asynchronous
 // birth queue.
-bool cEventList::CheckBirthInterruptQueue(double t_val)
+bool cEventList::CheckBirthInterruptQueue(double)
 {
 	return false;
 	//Disabled for now...

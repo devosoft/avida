@@ -38,8 +38,8 @@ namespace Avida {
       virtual bool WantsMap() = 0;
       virtual bool WantsUpdate() = 0;
       
-      virtual void NotifyMap(Map* map) { ; }
-      virtual void NotifyUpdate(int update) { ; }      
+      virtual void NotifyMap(Map* map) { (void)map; }
+      virtual void NotifyUpdate(int update) { (void)update; }      
     };
     
   };

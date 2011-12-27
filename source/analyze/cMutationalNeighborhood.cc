@@ -548,7 +548,7 @@ double cMutationalNeighborhood::ProcessTwoStepGenome(cAvidaContext& ctx, cTestCP
   return test_fitness;
 }
 
-void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
+void cMutationalNeighborhood::ProcessComplete(cAvidaContext&)
 {
   m_op.peak_fitness = m_base_fitness;
   m_op.peak_genome = m_base_genome;

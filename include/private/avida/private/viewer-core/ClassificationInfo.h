@@ -48,10 +48,11 @@
 // or taking other desparate measures, we should just make the color less vibrant, and eventually become gray.
 // In the case of fitness, black is dead and gray is a fitness seriously below the dominant.
 
+#include "avida/systematics/Group.h"
+
 #include "cStringList.h"
 #include "tArray.h"
 #include "tList.h"
-#include "avida/systematics/Types.h"
 
 class cPopulation;
 class cWorld;
@@ -76,12 +77,16 @@ namespace Avida {
       int m_next_color;
     
     public:
-      struct MapColor
+      struct MapColor : public Systematics::GroupData
       {
         char color;
         
         MapColor() : color(-1) { ; }
-      };      
+        ~MapColor() { ; }
+        
+        bool Serialize(ArchivePtr ar) const;
+      };
+      typedef Apto::SmartPtr<MapColor> MapColorPtr;
       
     public:
       ClassificationInfo(cWorld* in_world, const cString& role, int total_colors);
@@ -91,7 +96,7 @@ namespace Avida {
       
       
     private:
-      MapColor* getMapColor(Systematics::GroupPtr bg);
+      MapColorPtr getMapColor(Systematics::GroupPtr bg);
     };
     
   };

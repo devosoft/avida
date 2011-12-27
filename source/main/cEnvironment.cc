@@ -1201,7 +1201,7 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
 }
 
 
-void cEnvironment::SwapInputs(cAvidaContext& ctx, tArray<int>& src_input_array, tArray<int>& dest_input_array) const
+void cEnvironment::SwapInputs(cAvidaContext&, tArray<int>& src_input_array, tArray<int>& dest_input_array) const
 {
   tArray<int> tmp_input_array = dest_input_array;
 
@@ -1210,8 +1210,7 @@ void cEnvironment::SwapInputs(cAvidaContext& ctx, tArray<int>& src_input_array, 
 }
 
 
-bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs,
-                             const tBuffer<int>& outputs, const tArray<double>& resource_count) const
+bool cEnvironment::TestInput(cReactionResult&, const tBuffer<int>&, const tBuffer<int>&, const tArray<double>&) const
 {
   // @CAO nothing for the moment...
   return false;

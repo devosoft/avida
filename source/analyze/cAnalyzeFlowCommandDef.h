@@ -49,7 +49,7 @@ public:
     : cAnalyzeCommandDefBase(name), CommandFunction(cf) { ; }
   virtual ~cAnalyzeFlowCommandDef() { ; }
 			 
-  virtual void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, Feedback& feedback) const
+  virtual void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, Feedback&) const
   {
     (analyze->*CommandFunction)(args, *(command.GetCommandList()));
   }

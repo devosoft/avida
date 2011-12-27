@@ -264,9 +264,9 @@ public:
   const cCPUMemory& GetMemory() const { return m_memory; }
   cCPUMemory& GetMemory() { return m_memory; }
   int GetMemSize() const { return m_memory.GetSize(); }
-  const cCPUMemory& GetMemory(int value) const { return m_memory; }
-  cCPUMemory& GetMemory(int value) { return m_memory; }
-  int GetMemSize(int value) const { return  m_memory.GetSize(); }
+  const cCPUMemory& GetMemory(int) const { return m_memory; }
+  cCPUMemory& GetMemory(int) { return m_memory; }
+  int GetMemSize(int) const { return  m_memory.GetSize(); }
   int GetNumMemSpaces() const { return 1; }
   
   
@@ -277,7 +277,7 @@ public:
   
   // --------  Thread Manipulation  --------
   bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
+  bool ThreadSelect(const cCodeLabel&) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
@@ -287,11 +287,11 @@ public:
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
   // interrupt current thread
-  bool InterruptThread(int interruptType) { return false; }
-  int GetThreadMessageTriggerType(int _index) { return -1; }
+  bool InterruptThread(int) { return false; }
+  int GetThreadMessageTriggerType(int) { return -1; }
 
   // --------  Parasite Stuff  --------
-  bool ParasiteInfectHost(Systematics::UnitPtr bu) { return false; }
+  bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
   
   // --------  Non-Standard Methods  --------  

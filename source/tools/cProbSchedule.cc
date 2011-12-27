@@ -35,7 +35,7 @@ int cProbSchedule::GetNextID()
 }
 
 
-void cProbSchedule::Adjust(int item_id, const cMerit& item_merit, int deme_id)
+void cProbSchedule::Adjust(int item_id, const cMerit& item_merit, int)
 {
   chart.SetWeight(item_id, item_merit.GetDouble());
 }

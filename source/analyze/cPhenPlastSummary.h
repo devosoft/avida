@@ -72,7 +72,7 @@ class cPhenPlastSummary : public Systematics::GroupData
     m_task_probabilities = ps.m_task_probabilities;
   }
   
-  bool Serialize(ArchivePtr ar) const { return false; }
+  bool Serialize(ArchivePtr) const { return false; }
 };
 
 #endif

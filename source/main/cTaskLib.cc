@@ -473,7 +473,7 @@ double cTaskLib::Task_Sub(cTaskContext& ctx) const
 }
 
 // @WRE DontCare task always succeeds.
-double cTaskLib::Task_DontCare(cTaskContext& ctx) const
+double cTaskLib::Task_DontCare(cTaskContext&) const
 {
   return 1.0;
 }
@@ -2094,7 +2094,7 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2265,7 +2265,7 @@ public:
 };
 
 
-void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2640,7 +2640,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2685,7 +2685,7 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2730,7 +2730,7 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2772,7 +2772,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2813,7 +2813,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2855,7 +2855,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2897,7 +2897,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2939,8 +2939,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs,
-			   Feedback& feedback)
+void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3225,7 +3224,7 @@ double cTaskLib::Task_EventKilled(cTaskContext& ctx) const
 
 
 
-void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
 
@@ -3320,8 +3319,7 @@ double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
-				     cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3360,8 +3358,7 @@ double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 /* Reward organisms for having a given group-id, provided the group is under the 
    max number of members. */
 
-void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr,
-					   cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3411,7 +3408,7 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 }
 
 /* Reward organisms for having a given group-id.*/
-void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3443,7 +3440,7 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
 }
 
 /* Reward organisms for having found a targeted resource*/
-void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3625,7 +3622,8 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 	
 	
 //! Load the command line for checking an opinion.
-void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback) {
+void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs&, Feedback& feedback)
+{
   cArgSchema schema;
   schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
   cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);

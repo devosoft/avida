@@ -29,6 +29,8 @@
 #include "avida/core/Types.h"
 #include "avida/systematics/Types.h"
 
+#include <typeinfo>
+
 
 namespace Avida {
   namespace Systematics {
@@ -73,6 +75,7 @@ namespace Avida {
       LIB_EXPORT virtual const PropertyMap& Properties() const = 0;
       
       LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const;
+      LIB_EXPORT virtual bool LegacySave(void* df) const;
       
       
       // Reference Management (Active for currently living units, Passive for all other group usage)

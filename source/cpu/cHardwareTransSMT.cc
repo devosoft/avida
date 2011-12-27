@@ -1036,7 +1036,7 @@ inline int cHardwareTransSMT::FindComplementStack(int base_stack)
 }
 
 
-int cHardwareTransSMT::calcCopiedSize(const int parent_size, const int child_size)
+int cHardwareTransSMT::calcCopiedSize(const int, const int)
 {
   int copied_size = 0;
   const cCPUMemory& memory = m_mem_array[m_cur_child];
@@ -1163,10 +1163,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
         for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
         for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
         if(m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
-          const Genome& org_gen = m_organism->GetGenome();
-          ConstInstructionSequencePtr org_seq_p;
-          org_seq_p.DynamicCastFrom(org_gen.Representation());
-          m_organism->GetPhenotype().ResetMerit(*org_seq_p);
+          m_organism->GetPhenotype().ResetMerit();
         }
         break;
         
@@ -1185,7 +1182,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 
 
 //6
-bool cHardwareTransSMT::Inst_ShiftR(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ShiftR(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int src = FindModifiedStack(dst);
@@ -1196,7 +1193,7 @@ bool cHardwareTransSMT::Inst_ShiftR(cAvidaContext& ctx)
 }
 
 //7
-bool cHardwareTransSMT::Inst_ShiftL(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ShiftL(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int src = FindModifiedStack(dst);
@@ -1207,7 +1204,7 @@ bool cHardwareTransSMT::Inst_ShiftL(cAvidaContext& ctx)
 }
 
 //8
-bool cHardwareTransSMT::Inst_Val_Nand(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Nand(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
@@ -1217,7 +1214,7 @@ bool cHardwareTransSMT::Inst_Val_Nand(cAvidaContext& ctx)
 }
 
 //9
-bool cHardwareTransSMT::Inst_Val_Add(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Add(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
@@ -1227,7 +1224,7 @@ bool cHardwareTransSMT::Inst_Val_Add(cAvidaContext& ctx)
 }
 
 //10
-bool cHardwareTransSMT::Inst_Val_Sub(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Sub(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
@@ -1237,7 +1234,7 @@ bool cHardwareTransSMT::Inst_Val_Sub(cAvidaContext& ctx)
 }
 
 //11
-bool cHardwareTransSMT::Inst_Val_Mult(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Mult(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
@@ -1247,7 +1244,7 @@ bool cHardwareTransSMT::Inst_Val_Mult(cAvidaContext& ctx)
 }
 
 //12
-bool cHardwareTransSMT::Inst_Val_Div(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Div(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
@@ -1265,7 +1262,7 @@ bool cHardwareTransSMT::Inst_Val_Div(cAvidaContext& ctx)
 }
 
 //13
-bool cHardwareTransSMT::Inst_Val_Mod(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Mod(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int op1 = FindModifiedStack(STACK_BX);
@@ -1283,7 +1280,7 @@ bool cHardwareTransSMT::Inst_Val_Mod(cAvidaContext& ctx)
 }
 
 //14
-bool cHardwareTransSMT::Inst_Val_Inc(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Inc(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int src = FindModifiedStack(dst);
@@ -1293,7 +1290,7 @@ bool cHardwareTransSMT::Inst_Val_Inc(cAvidaContext& ctx)
 }
 
 //15
-bool cHardwareTransSMT::Inst_Val_Dec(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Val_Dec(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int src = FindModifiedStack(dst);
@@ -1303,7 +1300,7 @@ bool cHardwareTransSMT::Inst_Val_Dec(cAvidaContext& ctx)
 }
 
 //16
-bool cHardwareTransSMT::Inst_SetMemory(cAvidaContext& ctx) 
+bool cHardwareTransSMT::Inst_SetMemory(cAvidaContext&) 
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
   
@@ -1370,7 +1367,7 @@ bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
 }
 
 //19
-bool cHardwareTransSMT::Inst_HeadWrite(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_HeadWrite(cAvidaContext&)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   const int src = FindModifiedStack(STACK_AX);
@@ -1398,7 +1395,7 @@ bool cHardwareTransSMT::Inst_HeadWrite(cAvidaContext& ctx)
 }
 
 //20
-bool cHardwareTransSMT::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if bx == ?cx?
+bool cHardwareTransSMT::Inst_IfEqual(cAvidaContext&)      // Execute next if bx == ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
@@ -1407,7 +1404,7 @@ bool cHardwareTransSMT::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if
 }
 
 //21
-bool cHardwareTransSMT::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next if bx != ?cx?
+bool cHardwareTransSMT::Inst_IfNotEqual(cAvidaContext&)     // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
@@ -1416,7 +1413,7 @@ bool cHardwareTransSMT::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next 
 }
 
 //22
-bool cHardwareTransSMT::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx? < ?cx?
+bool cHardwareTransSMT::Inst_IfLess(cAvidaContext&)       // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
@@ -1425,7 +1422,7 @@ bool cHardwareTransSMT::Inst_IfLess(cAvidaContext& ctx)       // Execute next if
 }
 
 //23
-bool cHardwareTransSMT::Inst_IfGreater(cAvidaContext& ctx)       // Execute next if bx > ?cx?
+bool cHardwareTransSMT::Inst_IfGreater(cAvidaContext&)       // Execute next if bx > ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);
@@ -1434,7 +1431,7 @@ bool cHardwareTransSMT::Inst_IfGreater(cAvidaContext& ctx)       // Execute next
 }
 
 //24
-bool cHardwareTransSMT::Inst_HeadPush(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_HeadPush(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int dst = FindModifiedStack(STACK_BX);
@@ -1443,7 +1440,7 @@ bool cHardwareTransSMT::Inst_HeadPush(cAvidaContext& ctx)
 }
 
 //25
-bool cHardwareTransSMT::Inst_HeadPop(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_HeadPop(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int src = FindModifiedStack(STACK_BX);
@@ -1452,7 +1449,7 @@ bool cHardwareTransSMT::Inst_HeadPop(cAvidaContext& ctx)
 }
 
 //26
-bool cHardwareTransSMT::Inst_HeadMove(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_HeadMove(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   if(head_used != nHardware::HEAD_FLOW)
@@ -1468,7 +1465,7 @@ bool cHardwareTransSMT::Inst_HeadMove(cAvidaContext& ctx)
 }
 
 //27
-bool cHardwareTransSMT::Inst_Search(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Search(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(2, NUM_NOPS);
@@ -1492,7 +1489,7 @@ bool cHardwareTransSMT::Inst_Search(cAvidaContext& ctx)
 }
 
 //28
-bool cHardwareTransSMT::Inst_PushNext(cAvidaContext& ctx) 
+bool cHardwareTransSMT::Inst_PushNext(cAvidaContext&) 
 {
   const int src = FindModifiedStack(STACK_AX);
   const int dst = FindModifiedNextStack(src);
@@ -1501,7 +1498,7 @@ bool cHardwareTransSMT::Inst_PushNext(cAvidaContext& ctx)
 }
 
 //29
-bool cHardwareTransSMT::Inst_PushPrevious(cAvidaContext& ctx) 
+bool cHardwareTransSMT::Inst_PushPrevious(cAvidaContext&) 
 {
   const int src = FindModifiedStack(STACK_BX);
   const int dst = FindModifiedPreviousStack(src);
@@ -1510,7 +1507,7 @@ bool cHardwareTransSMT::Inst_PushPrevious(cAvidaContext& ctx)
 }
 
 //30
-bool cHardwareTransSMT::Inst_PushComplement(cAvidaContext& ctx) 
+bool cHardwareTransSMT::Inst_PushComplement(cAvidaContext&) 
 {
   int src = FindModifiedStack(STACK_BX);
   const int dst = FindModifiedComplementStack(src);
@@ -1519,7 +1516,7 @@ bool cHardwareTransSMT::Inst_PushComplement(cAvidaContext& ctx)
 }
 
 //31
-bool cHardwareTransSMT::Inst_ValDelete(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ValDelete(cAvidaContext&)
 {
   int stack_used = FindModifiedStack(STACK_BX);
   Stack(stack_used).Pop();
@@ -1527,7 +1524,7 @@ bool cHardwareTransSMT::Inst_ValDelete(cAvidaContext& ctx)
 }
 
 //32
-bool cHardwareTransSMT::Inst_ValCopy(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ValCopy(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   const int src = FindModifiedStack(dst);
@@ -1560,7 +1557,7 @@ bool cHardwareTransSMT::Inst_IO(cAvidaContext& ctx)
 
 
 //34
-bool cHardwareTransSMT::Inst_ThreadCreate(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ThreadCreate(cAvidaContext&)
 {
   ReadLabel(MAX_THREAD_LABEL);
   bool success = ThreadCreate(GetLabel(), GetHead(nHardware::HEAD_FLOW).GetMemSpace());
@@ -1572,7 +1569,7 @@ bool cHardwareTransSMT::Inst_ThreadCreate(cAvidaContext& ctx)
 }
 
 //35
-bool cHardwareTransSMT::Inst_ThreadCancel(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ThreadCancel(cAvidaContext&)
 {
   bool success = ThreadKill(m_cur_thread);
   if (!success) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
@@ -1583,7 +1580,7 @@ bool cHardwareTransSMT::Inst_ThreadCancel(cAvidaContext& ctx)
 }
 
 //36
-bool cHardwareTransSMT::Inst_ThreadKill(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_ThreadKill(cAvidaContext&)
 {
   ReadLabel(MAX_THREAD_LABEL);
   bool success = ThreadKill(GetLabel());
@@ -1654,7 +1651,7 @@ bool cHardwareTransSMT::Inst_NetSend(cAvidaContext& ctx)
 }
 
 //41
-bool cHardwareTransSMT::Inst_NetReceive(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_NetReceive(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_BX);
   int val;
@@ -1664,7 +1661,7 @@ bool cHardwareTransSMT::Inst_NetReceive(cAvidaContext& ctx)
 }
 
 //42
-bool cHardwareTransSMT::Inst_NetLast(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_NetLast(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_CX);
   Stack(dst).Push(m_organism->NetLast());
@@ -1672,7 +1669,7 @@ bool cHardwareTransSMT::Inst_NetLast(cAvidaContext& ctx)
 }
 
 //43
-bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext&)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -1686,7 +1683,7 @@ bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext& ctx)
 }
 
 //44
-bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext&)
 {
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   
@@ -1700,7 +1697,7 @@ bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext& ctx)
 }
 
 //45
-bool cHardwareTransSMT::Inst_CallFlow(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_CallFlow(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_AX);
   
@@ -1717,7 +1714,7 @@ bool cHardwareTransSMT::Inst_CallFlow(cAvidaContext& ctx)
 }
 
 //46
-bool cHardwareTransSMT::Inst_CallLabel(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_CallLabel(cAvidaContext&)
 {
   const int dst = FindModifiedStack(STACK_AX);
   
@@ -1742,7 +1739,7 @@ bool cHardwareTransSMT::Inst_CallLabel(cAvidaContext& ctx)
 }
 
 //47
-bool cHardwareTransSMT::Inst_Return(cAvidaContext& ctx)
+bool cHardwareTransSMT::Inst_Return(cAvidaContext&)
 {
   const int src = FindModifiedStack(STACK_AX);
   const unsigned int ra = Stack(src).Pop();
@@ -1756,7 +1753,7 @@ bool cHardwareTransSMT::Inst_Return(cAvidaContext& ctx)
 }
 
 //48
-bool cHardwareTransSMT::Inst_IfGreaterEqual(cAvidaContext& ctx)      // Execute next if bx >= ?cx?
+bool cHardwareTransSMT::Inst_IfGreaterEqual(cAvidaContext&)      // Execute next if bx >= ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
   const int op2 = FindModifiedNextStack(op1);

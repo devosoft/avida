@@ -36,7 +36,7 @@ cBirthGenomeSizeHandler::~cBirthGenomeSizeHandler()
 }
 
 
-cBirthEntry* cBirthGenomeSizeHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
+cBirthEntry* cBirthGenomeSizeHandler::SelectOffspring(cAvidaContext&, const Genome& offspring, cOrganism* parent)
 {
   ConstInstructionSequencePtr offspring_seq_p;
   ConstGeneticRepresentationPtr offspring_rep_p = offspring.Representation();

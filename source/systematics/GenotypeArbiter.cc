@@ -29,6 +29,7 @@
 
 #include "avida/private/systematics/Genotype.h"
 
+#include "cDataFile.h"
 #include "cDoubleSum.h"
 
 #include <cmath>
@@ -68,7 +69,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::ClassifyNewUni
 }
 
 
-void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context& ctx, Update current_update)
+void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context&, Update current_update)
 {
   m_cur_update = current_update;
   
@@ -86,6 +87,34 @@ void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context& ctx, Update cur
 
   Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it(m_historic.Begin());
   while (list_it.Next() != NULL) if (!(*list_it.Get())->ReferenceCount()) removeGenotype(*list_it.Get());
+}
+
+
+bool Avida::Systematics::GenotypeArbiter::Serialize(ArchivePtr) const
+{
+  // @TOOD - serialize genotype arbiter
+  assert(false);
+  return false;
+}
+
+bool Avida::Systematics::GenotypeArbiter::LegacySave(void* dfp) const
+{
+  Apto::List<GenotypePtr, Apto::SparseVector>::ConstIterator list_it(m_historic.Begin());
+  while (list_it.Next() != NULL) {
+    (*list_it.Get())->LegacySave(dfp);
+    static_cast<cDataFile*>(dfp)->Endl();
+  }
+  return true;
+}
+
+Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::LegacyLoad(void* props)
+{
+  GenotypeArbiterPtr a(this);
+  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
+  
+  GenotypePtr g(new Genotype(a, m_next_id++, props));
+  m_historic.Push(g, &g->m_handle);
+  return g;
 }
 
 
@@ -365,7 +394,7 @@ template <class T> Avida::Data::PackagePtr Avida::Systematics::GenotypeArbiter::
   return Data::PackagePtr(new Data::Wrap<T>(val));
 }
 
-Avida::Data::ProviderPtr Avida::Systematics::GenotypeArbiter::activateProvider(World* world) 
+Avida::Data::ProviderPtr Avida::Systematics::GenotypeArbiter::activateProvider(World*) 
 {
   Data::ProviderPtr p(this);
   AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
@@ -509,7 +538,10 @@ void Avida::Systematics::GenotypeArbiter::updateCoalescent()
 }
 
 
-Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::GenotypeIterator::Get() { return *m_it.Get(); }
+Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::GenotypeIterator::Get()
+{
+  return m_it.Get() ? (GroupPtr)*m_it.Get() : GroupPtr(NULL);
+}
 
 
 Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::GenotypeIterator::Next()
@@ -524,5 +556,5 @@ Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::GenotypeIterat
     }
   }
   
-  return *m_it.Get();
+  return m_it.Get() ? (GroupPtr)*m_it.Get() : GroupPtr(NULL);
 }

@@ -32,11 +32,12 @@
 #include <cassert>
 
 
-static Avida::WorldFacetPtr DeserializeDataManager(Avida::ArchivePtr ar)
+static Avida::WorldFacetPtr DeserializeDataManager(Avida::ArchivePtr)
 {
   // @TODO
   return Avida::WorldFacetPtr();
 }
+
 bool Avida::Data::Manager::s_registered_with_facet_factory =
   Avida::WorldFacet::RegisterFacetType(Avida::Reserved::DataManagerFacetID, DeserializeDataManager);
 
@@ -274,7 +275,7 @@ Avida::Data::ManagerPtr Avida::Data::Manager::Of(World* world)
 }
 
 
-bool Avida::Data::Manager::Serialize(ArchivePtr ar) const
+bool Avida::Data::Manager::Serialize(ArchivePtr) const
 {
   // @TODO
   return false;
@@ -292,7 +293,7 @@ Avida::WorldFacetID Avida::Data::Manager::UpdateAfter() const
 }
 
 
-void Avida::Data::Manager::PerformUpdate(Context& ctx, Update current_update)
+void Avida::Data::Manager::PerformUpdate(Context&, Update current_update)
 {
   m_current_values.Clear();
   

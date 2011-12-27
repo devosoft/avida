@@ -34,6 +34,38 @@ const double MEMORY_INCREASE_FACTOR = 1.5;
 const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
 
 
+Avida::InstructionSequence::InstructionSequence(const InstructionSequence& seq)
+: m_seq(seq.GetSize()), m_active_size(seq.GetSize())
+{
+  for (int i = 0; i < m_active_size; i++)  m_seq[i] = seq[i];
+}
+
+Avida::InstructionSequence::InstructionSequence(const Apto::String& str)
+{
+  m_seq.ResizeClear(str.GetSize());
+  int size = 0;
+  for (int i = 0; i < str.GetSize(); i++) {
+    if (str[i] == '_') continue;
+    switch (str[i]) {
+      case '+':
+      case '-':
+      case '~':
+      case '?':
+        if (!m_seq[size].SetSymbol(str.Substring(i, 2))) continue;
+        i++;
+        break;
+      default:
+        if (!m_seq[size].SetSymbol(str.Substring(i, 1))) continue;
+    }
+    size++;
+  }
+  m_active_size = size;
+  m_seq.Resize(size);
+}
+
+Avida::InstructionSequence::~InstructionSequence() { ; }
+
+
 Apto::String Avida::Instruction::GetSymbol() const
 {
   // aA0 +a+A+0 -a-A-0 ~a~A~0 ?a
@@ -117,36 +149,6 @@ bool Avida::Instruction::SetSymbol(const Apto::String& symbol)
 
 
 
-Avida::InstructionSequence::InstructionSequence(const InstructionSequence& seq)
-  : m_seq(seq.GetSize()), m_active_size(seq.GetSize())
-{
-  for (int i = 0; i < m_active_size; i++)  m_seq[i] = seq[i];
-}
-
-Avida::InstructionSequence::InstructionSequence(const Apto::String& str)
-{
-  m_seq.ResizeClear(str.GetSize());
-  int size = 0;
-  for (int i = 0; i < str.GetSize(); i++) {
-    if (str[i] == '_') continue;
-    switch (str[i]) {
-      case '+':
-      case '-':
-      case '~':
-      case '?':
-        if (!m_seq[size].SetSymbol(str.Substring(i, 2))) continue;
-        i++;
-        break;
-      default:
-        if (!m_seq[size].SetSymbol(str.Substring(i, 1))) continue;
-    }
-    size++;
-  }
-  m_active_size = size;
-  m_seq.Resize(size);
-}
-
-
 void Avida::InstructionSequence::adjustCapacity(int new_size)
 {
   assert(new_size > 0);
@@ -206,7 +208,7 @@ Avida::GeneticRepresentationPtr Avida::InstructionSequence::Clone() const
   return GeneticRepresentationPtr(new InstructionSequence(*this));
 }
 
-bool Avida::InstructionSequence::Serialize(ArchivePtr ar) const
+bool Avida::InstructionSequence::Serialize(ArchivePtr) const
 {
   assert(false);
   // @TODO - InstructionSequence::Serialize

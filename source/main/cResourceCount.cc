@@ -207,19 +207,19 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
 				const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
 				const int& in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
 				tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
-				const int& in_peaks,
-				const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
-				const double& in_ah, const double& in_ar,
-				const double& in_acx, const double& in_acy,
-				const double& in_hstepscale, const double& in_rstepscale,
-				const double& in_cstepscalex, const double& in_cstepscaley,
-				const double& in_hstep, const double& in_rstep,
-				const double& in_cstepx, const double& in_cstepy,
-				const int& in_update_dynamic, const int& in_peakx, const int& in_peaky,
-				const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay, 
+				const int&,
+				const double&, const double&, const double&,
+				const double&, const double&,
+				const double&, const double&,
+				const double&, const double&,
+				const double&, const double&,
+				const double&, const double&,
+				const double&, const double&,
+				const int&, const int& in_peakx, const int& in_peaky,
+				const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay,
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
-        const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
+        const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, 
         const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
         const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
         const int& in_config, const int& in_count, const double& in_resistance, const bool& isgradient
@@ -439,7 +439,7 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaConte
 
 }
 
-const tArray<double> & cResourceCount::GetFrozenResources(cAvidaContext& ctx, int cell_id) const 
+const tArray<double> & cResourceCount::GetFrozenResources(cAvidaContext&, int cell_id) const 
 
 // Get amount of the resource for a given cell in the grid.  If it is a
 // global resource pass out the entire content of that resource.
@@ -572,12 +572,12 @@ int cResourceCount::GetCurrPeakY(cAvidaContext& ctx, int res_id) const
   return spatial_resource_count[res_id]->GetCurrPeakY();
 }
 
-int cResourceCount::GetFrozenPeakX(cAvidaContext& ctx, int res_id) const
+int cResourceCount::GetFrozenPeakX(cAvidaContext&, int res_id) const
 { 
   return spatial_resource_count[res_id]->GetCurrPeakX();
 }
 
-int cResourceCount::GetFrozenPeakY(cAvidaContext& ctx, int res_id) const
+int cResourceCount::GetFrozenPeakY(cAvidaContext&, int res_id) const
 { 
   return spatial_resource_count[res_id]->GetCurrPeakY();
 }

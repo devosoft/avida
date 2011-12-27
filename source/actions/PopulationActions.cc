@@ -1603,7 +1603,7 @@ public:
   
   static const cString GetDescription() { return "No Arguments"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetConfig().MERIT_BONUS_EFFECT.Set(-1* m_world->GetConfig().MERIT_BONUS_EFFECT.Get());
   }
@@ -1627,7 +1627,7 @@ public:
   
   static const cString GetDescription() { return "No Arguments"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     if(m_world->GetConfig().FITNESS_VALLEY.Get()) {m_world->GetConfig().FITNESS_VALLEY.Set(0);}
     else{m_world->GetConfig().FITNESS_VALLEY.Set(1);}
@@ -1798,7 +1798,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [double rate=0.0]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetConfig().MIGRATION_RATE.Set(m_rate);
   }
@@ -1876,7 +1876,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     if (m_setconf) {
       switch (m_mut_type) {
@@ -2011,7 +2011,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     double prob = m_prob;
     
@@ -2114,7 +2114,7 @@ class cActionZeroMuts : public cAction
 public:
   cActionZeroMuts(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       m_world->GetPopulation().GetCell(i).MutationRates().Clear();
@@ -2139,7 +2139,7 @@ public:
 	
   static const cString GetDescription() { return "No Arguments"; }
 	
-  void Process(cAvidaContext& ctx) {
+  void Process(cAvidaContext&) {
 		s_pred = new cOrgMessagePred_AllData(m_world);
 		m_world->GetStats().AddMessagePredicate(s_pred);
   }
@@ -2209,7 +2209,7 @@ public:
   static const cString GetDescription() { return "Arguments: [num_cells=deme_size]"; }
   
 	//! Process this event, setting the requested number of cell's data to a random value.
-  virtual void Process(cAvidaContext& ctx) {
+  virtual void Process(cAvidaContext&) {
 		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
       cDeme& deme = m_world->GetPopulation().GetDeme(i);
 			zero_cell_data(deme);
@@ -2427,7 +2427,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Calculate the current fitness of this deme.
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) {
+  virtual double Fitness(cDeme& deme, cAvidaContext&) {
 		return deme.GetNetwork().Fitness();
 	}
 };
@@ -2445,7 +2445,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Called to process this event.
-  virtual void Process(cAvidaContext& ctx) {
+  virtual void Process(cAvidaContext&) {
 		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {			
 			cDeme& deme = m_world->GetPopulation().GetDeme(i);
 			m_world->GetStats().NetworkTopology(deme.GetNetwork().Measure());
@@ -2485,7 +2485,7 @@ public:
 	}
 
 	//! Calculate the current fitness of this deme.
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) {
+	virtual double Fitness(cDeme& deme, cAvidaContext&) {
 		return pow((double)received_data(deme) + 1.0, 2.0);
 	}
 	
@@ -2523,7 +2523,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Calculate the current fitness of this deme.
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) {
+	virtual double Fitness(cDeme& deme, cAvidaContext&) {
 		// First, get the number that have received the data (and set their opinion):
 		unsigned int received = received_data(deme);
 		
@@ -2556,7 +2556,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Calculate the current fitness of this deme.
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) {
+	virtual double Fitness(cDeme& deme, cAvidaContext&) {
 		// First, get the number that have received the data (and set their opinion):
 		unsigned int received = received_data(deme);
 		
@@ -2718,7 +2718,7 @@ public:
 	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]"; }
 	
 	//! Calculate the current fitness of this deme.
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) {
+  virtual double Fitness(cDeme& deme, cAvidaContext&) {
 		return max_support(deme).first + 1;
 	}
 	
@@ -2945,7 +2945,7 @@ public:
 	 that have set their opinion to the desired value.  We're going to set fitness == number
 	 of organisms that have an opinion to get things jumpstarted.
    */
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+  virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		// the number of individuals that have set their opinion to _desired:
 		// s.first == support, s.second == have_opinion
 		std::pair<int, int> s = support(deme, _desired);
@@ -3047,7 +3047,7 @@ public:
 	 We're going to set fitness == number of organisms that have an opinion to get 
 	 things jumpstarted.
    */
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+  virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		
 		// How many opinions are set?
 		int ocount = count_opinions(deme);
@@ -3101,7 +3101,7 @@ public:
   /*! Fitness function.
 	 Functions as described in the comments above.
 	 */
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+  virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		
 		float val = 0.0;
 		double performed_t1=0.0;
@@ -3157,7 +3157,7 @@ public:
 	 Here we reward the deme based on the number of unique reactions that have been
 	 performed by the current individuals.
 	 */
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+  virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		std::set<int> uniq_reactions;
 		int performed=0;
 		for(int i=0; i<deme.GetSize(); ++i) {
@@ -3210,7 +3210,7 @@ public:
 	
 	static const cString GetDescription() { return "No arguments."; }
 	
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+	virtual double Fitness(cDeme&, cAvidaContext&) { 
 		return 1.0;
 	}
 };
@@ -3246,7 +3246,7 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme"; 
 	}
 	
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+	virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
     if (fitness == 0.0) fitness = 0.1;
     return fitness;
@@ -3312,7 +3312,7 @@ public:
 		return "Competes demes according to the distribution of energy among the organisms"; 
 	}
 	
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+	virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		const int numcells = deme.GetSize();
 		
 		double min_energy = -1;
@@ -3370,7 +3370,7 @@ public:
 	static const cString GetDescription() { return "No arguments"; }
 	
 	//! Process this event, sending a flash to each deme.
-	virtual void Process(cAvidaContext& ctx) {
+	virtual void Process(cAvidaContext&) {
 		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
 			SendFlash(m_world->GetPopulation().GetDeme(i));
 		}
@@ -3404,7 +3404,7 @@ public:
   /*! Calculate the fitness based on how well the organisms in this deme have
 	 synchronized their flashes.
    */
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+  virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -3477,7 +3477,7 @@ public:
   static const cString GetDescription() { return "No Arguments"; }
   
 	//! Calculate fitness based on how well organisms have spread throughout phase-space.
-	virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+	virtual double Fitness(cDeme& deme, cAvidaContext&) { 
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -3652,7 +3652,7 @@ public:
   
   static const cString GetDescription() { return "No Arguments"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().ResetDemes();
   }
@@ -3715,7 +3715,7 @@ public:
   
   static const cString GetDescription() { return "No Arguments"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     double decay_percent = (double) m_decay_percent / 100;
     double cur_points = 0;
@@ -4186,7 +4186,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: cString resourceName, cString comparisonOperator, double threasholdValue"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cPopulation& pop = m_world->GetPopulation();
 		const int numDemes = pop.GetNumDemes();
@@ -4213,7 +4213,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [int times=1]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().AddDemePred("EventMovedIntoCenter", m_times);
   }
@@ -4237,7 +4237,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [int times=1]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().AddDemePred("EventMovedBetweenTargets", m_times);
   }
@@ -4261,7 +4261,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [int numorgs=1]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().AddDemePred("EventNUniqueIndividualsMovedIntoTarget", m_numorgs);
   }
@@ -4922,7 +4922,7 @@ public:
     }
   }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
       cDeme& deme = m_world->GetPopulation().GetDeme(d);
@@ -4959,7 +4959,7 @@ public:
 	}
 	
 	//! Process this event.
-	void Process(cAvidaContext& ctx) {
+	void Process(cAvidaContext&) {
 		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
 			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
 		}
@@ -5148,7 +5148,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // setup the genotype 'list' which will be checked in activateorg
     // this should setup a 'list' of genotypes at each event update which should be followed (e.g. if orgs_per = 10, save top 10 prey genotypes + top 10 predator genotypes at this update or one org from top 10 most common genotypes over all)

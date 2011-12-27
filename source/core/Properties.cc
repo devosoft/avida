@@ -30,7 +30,7 @@ Avida::PropertyTypeID Avida::Property::Null = "null";
 Avida::Property::~Property() { ; }
 
 Apto::String Avida::Property::Value() const { return ""; }
-bool Avida::Property::SetValue(const Apto::String& value) { return false; }
+bool Avida::Property::SetValue(const Apto::String&) { return false; }
 
 Apto::String Avida::StringProperty::Value() const { return m_value; }
 bool Avida::StringProperty::SetValue(const Apto::String& value) { m_value = value; return true; }
@@ -63,7 +63,7 @@ bool Avida::PropertyMap::operator==(const PropertyMap& p) const
   return true;
 }
 
-bool Avida::PropertyMap::Serialize(ArchivePtr ar) const
+bool Avida::PropertyMap::Serialize(ArchivePtr) const
 {
   // @TODO
   assert(false);

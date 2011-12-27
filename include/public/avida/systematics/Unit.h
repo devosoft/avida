@@ -53,6 +53,8 @@ namespace Avida {
       LIB_EXPORT inline Source() : transmission_type(UNKNOWN), external(false), unused(0) { ; }
       LIB_EXPORT inline Source(TransmissionType t, const Apto::String& a, bool e = false)
         : transmission_type(t), external(e), unused(0), arguments(a) { ; }
+      
+      LIB_EXPORT Apto::String AsString() const;
     };
 
     

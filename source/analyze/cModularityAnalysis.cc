@@ -286,7 +286,7 @@ cFlexVar cModularityAnalysis::GetSitesPerTaskFor(const cAnalyzeGenotype* genotyp
   return cFlexVar(0);
 }
 
-cString cModularityAnalysis::DescSitesPerTask(const cAnalyzeGenotype* genotype, int idx)
+cString cModularityAnalysis::DescSitesPerTask(const cAnalyzeGenotype*, int idx)
 {
   return cStringUtil::Stringf("Number of Sites Per Task %d", idx);
 }
@@ -299,7 +299,7 @@ cFlexVar cModularityAnalysis::GetSitesInvolvedInXTasksFor(const cAnalyzeGenotype
   return cFlexVar(0);
 }
 
-cString cModularityAnalysis::DescSitesInvolvedInXTasks(const cAnalyzeGenotype* genotype, int idx)
+cString cModularityAnalysis::DescSitesInvolvedInXTasks(const cAnalyzeGenotype*, int idx)
 {
   return cStringUtil::Stringf("Number of Sites Involved in %d Tasks", idx);
 }
@@ -312,7 +312,7 @@ cFlexVar cModularityAnalysis::GetTaskLengthFor(const cAnalyzeGenotype* genotype,
   return cFlexVar(0);
 }
 
-cString cModularityAnalysis::DescTaskLength(const cAnalyzeGenotype* genotype, int idx)
+cString cModularityAnalysis::DescTaskLength(const cAnalyzeGenotype*, int idx)
 {
   return cStringUtil::Stringf("Task %d Length", idx);
 }
@@ -325,7 +325,7 @@ cFlexVar cModularityAnalysis::GetAveTaskPositionFor(const cAnalyzeGenotype* geno
   return cFlexVar(0.0);
 }
 
-cString cModularityAnalysis::DescAveTaskPosition(const cAnalyzeGenotype* genotype, int idx)
+cString cModularityAnalysis::DescAveTaskPosition(const cAnalyzeGenotype*, int idx)
 {
   return cStringUtil::Stringf("Task %d Position", idx);
 }

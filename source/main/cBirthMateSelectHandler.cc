@@ -34,7 +34,7 @@ cBirthMateSelectHandler::~cBirthMateSelectHandler()
 }
 
 
-cBirthEntry* cBirthMateSelectHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
+cBirthEntry* cBirthMateSelectHandler::SelectOffspring(cAvidaContext&, const Genome& offspring, cOrganism* parent)
 {
   int mate_id = parent->GetPhenotype().MateSelectID();
   

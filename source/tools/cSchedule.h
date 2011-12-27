@@ -48,7 +48,7 @@ public:
   virtual bool OK() { return true; }
   virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0) = 0;
   virtual int GetNextID() = 0;
-  virtual double GetStatus(int id) { return 0.0; }
+  virtual double GetStatus(int) { return 0.0; }
 };
 
 #endif

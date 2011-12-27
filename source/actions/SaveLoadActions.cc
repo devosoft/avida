@@ -111,7 +111,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1] [boolean save_groups=0]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     int update = m_world->GetStats().GetUpdate();
     cString filename = cStringUtil::Stringf("%s-%d.spop", (const char*)m_filename, update);
@@ -143,7 +143,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string filename='flame']"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     int update = m_world->GetStats().GetUpdate();
     cString filename = cStringUtil::Stringf("flamedat/%s-%d.spop", (const char*)m_filename, update);

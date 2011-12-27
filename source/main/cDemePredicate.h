@@ -89,7 +89,7 @@ public:
 		return true;
 	}
 	
-	void Print(std::ostream& out) {;}
+	void Print(std::ostream&) { ; }
 	void Reset() { previouslySatisfied = false; }
 	bool PreviouslySatisfied() { return previouslySatisfied; }
 	cString GetName() { return cString("cDemeResourceThreshold"); }

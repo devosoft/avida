@@ -31,11 +31,12 @@
 #include "avida/environment/Resource.h"
 
 
-static Avida::WorldFacetPtr DeserializeEnvironmentManager(Avida::ArchivePtr ar)
+static Avida::WorldFacetPtr DeserializeEnvironmentManager(Avida::ArchivePtr)
 {
   // @TODO
   return Avida::WorldFacetPtr();
 }
+
 bool Avida::Environment::Manager::s_registered_with_facet_factory =
   Avida::WorldFacet::RegisterFacetType(Avida::Reserved::EnvironmentFacetID, DeserializeEnvironmentManager);
 
@@ -154,7 +155,7 @@ Avida::Environment::ManagerPtr Avida::Environment::Manager::Of(World* world)
   return manager;
 }
 
-bool Avida::Environment::Manager::Serialize(ArchivePtr ar) const
+bool Avida::Environment::Manager::Serialize(ArchivePtr) const
 {
   // @TODO
   return false;

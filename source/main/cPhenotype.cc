@@ -711,7 +711,7 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
 }
 
 
-void cPhenotype::ResetMerit(const InstructionSequence& _cgenome)
+void cPhenotype::ResetMerit()
 {
   int cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
@@ -1304,7 +1304,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
 
 
 
-bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
+bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
 {
   assert(initialized == true);
   // For the moment, lets not worry about inputs...
@@ -1628,7 +1628,7 @@ double cPhenotype::CalcCurrentMerit() const
 }
 
 
-double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const
+double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation_time, int) const
 {
   double out_fitness = 0;
   switch (m_world->GetConfig().FITNESS_METHOD.Get()) {

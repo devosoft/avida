@@ -42,7 +42,7 @@ Avida::Systematics::SexualAncestry::SexualAncestry(GroupPtr g)
   
   ArbiterPtr arbiter = g->Arbiter();
   Apto::Array<GroupPtr> parents;
-  Apto::String parent_str = g->Properties().Get("parents");
+  Apto::String parent_str(g->Properties().Get("parents").Value());
   while (parent_str.GetSize()) {
     parents.Push(arbiter->Group(Apto::StrAs(parent_str.Pop(','))));
   }
@@ -76,7 +76,7 @@ Avida::Systematics::SexualAncestry::SexualAncestry(GroupPtr g)
 }
 
 
-bool Avida::Systematics::SexualAncestry::Serialize(ArchivePtr ar) const
+bool Avida::Systematics::SexualAncestry::Serialize(ArchivePtr) const
 {
   // @TODO
   return false;

@@ -59,7 +59,7 @@ namespace Avida {
       
       LIB_EXPORT virtual void PerformUpdate(Context& ctx, Update current_update) = 0;
       
-      LIB_EXPORT virtual IteratorPtr Begin();
+      LIB_EXPORT virtual IteratorPtr Begin() = 0;
       
       
       // Listeners
@@ -68,6 +68,8 @@ namespace Avida {
       
       // Serialization
       LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const;
+      LIB_EXPORT virtual bool LegacySave(void* df) const;
+      LIB_EXPORT virtual GroupPtr LegacyLoad(void* props);
       
       
     protected:

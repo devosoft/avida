@@ -39,7 +39,7 @@ class cActionExit : public cAction
 public:
   cActionExit(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext& ctx) { m_world->GetDriver().Finish(); }
+  void Process(cAvidaContext&) { m_world->GetDriver().Finish(); }
 };
 
 class cActionPause : public cAction
@@ -47,7 +47,7 @@ class cActionPause : public cAction
 public:
   cActionPause(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext& ctx) { m_world->GetDriver().Pause(); }
+  void Process(cAvidaContext&) { m_world->GetDriver().Pause(); }
 };
 
 class cActionExitAveLineageLabelGreater : public cAction
@@ -63,7 +63,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <double threshold>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     if (m_world->GetStats().GetAveLineageLabel() > m_threshold) {
       m_world->GetDriver().Finish();
@@ -84,7 +84,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <double threshold>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     if (m_world->GetStats().GetAveLineageLabel() < m_threshold) {
       m_world->GetDriver().Finish();
@@ -125,7 +125,7 @@ public:
   average generation is calculated differently based on whether demes / germlines
   are used.  This method is called based on the events file.
   */
-  void Process(cAvidaContext& ctx) {
+  void Process(cAvidaContext&) {
     if(m_world->GetConfig().NUM_DEMES.Get() > 1) {
       // Using demes; generation might be different.
       if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
@@ -171,7 +171,7 @@ public:
   /*! Check to see if we should exit Avida based on the elapsed time since construction
   of this object.  This method is called based on the events file.
   */
-  void Process(cAvidaContext& ctx) {
+  void Process(cAvidaContext&) {
     if((time(0) - m_then) >= m_time) {
       m_world->GetDriver().Finish();
     }
@@ -204,7 +204,7 @@ public:
   /*! Check to see if we should exit Avida based on the number of deme replications. 
 	 This method is called based on the events file.
 	 */
-  void Process(cAvidaContext& ctx) {
+  void Process(cAvidaContext&) {
     if(m_world->GetStats().GetNumDemeReplications() >= m_deme_rep) {
       m_world->GetDriver().Finish();
     }

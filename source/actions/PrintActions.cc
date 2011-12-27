@@ -75,7 +75,7 @@ cString largs(args);                                                            
 if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
 }                                                                                       /* 10 */ \
 static const cString GetDescription() { return "Arguments: [string fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
-void Process(cAvidaContext& ctx) { m_world->GetStats().METHOD(m_filename); }            /* 12 */ \
+void Process(cAvidaContext&) { m_world->GetStats().METHOD(m_filename); }            /* 12 */ \
 }                                                                                         /* 13 */ \
 
 STATS_OUT_FILE(PrintAverageData,            average.dat         );
@@ -191,7 +191,7 @@ cString largs(args);                                                            
 if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
 }                                                                                       /* 10 */ \
 static const cString GetDescription() { return "Arguments: [string fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
-void Process(cAvidaContext& ctx) { m_world->GetPopulation().METHOD(m_filename); }       /* 12 */ \
+void Process(cAvidaContext&) { m_world->GetPopulation().METHOD(m_filename); }       /* 12 */ \
 }                                                                                         /* 13 */ \
 
 POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
@@ -253,7 +253,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: <cString fname> <cString format>"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetStats().PrintDataFile(m_filename, m_format, ',');
   }
@@ -283,7 +283,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string fname=\"instruction-${inst_set}.dat\"] [string inst_set]"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetStats().PrintInstructionData(m_filename, m_inst_set);
   }
@@ -313,7 +313,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string fname=\"instruction_histogram-${inst_set}.dat\"] [string inst_set]"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cPopulation& population = m_world->GetPopulation();
 
@@ -357,7 +357,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string fname=\"depth_histogram.dat\"]"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // Output format:    update  min  max  histogram_values...
     int min = INT_MAX;
@@ -409,7 +409,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"depth_parasite_histogram.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // Output format:    update  min  max  histogram_values...
     int min = INT_MAX;
@@ -474,7 +474,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"depth_host_histogram.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // Output format:    update  min  max  histogram_values...
     int min = INT_MAX;
@@ -557,7 +557,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string fname=\"genotype_abundance_histogram.dat\"]"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // Allocate array for the histogram & zero it
     Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
@@ -2139,7 +2139,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string ref_creature_file='START_ORGANISM'] [string fname='genetic_distance.dat']"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     double hamming_m1 = 0;
     double hamming_m2 = 0;
@@ -2402,7 +2402,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cDataFile& df = m_world->GetDataFile(m_filename);
     cPopulation& pop = m_world->GetPopulation();
@@ -2784,7 +2784,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_energy.%d.dat", m_world->GetStats().GetUpdate());
@@ -2814,7 +2814,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_exe_ratio.%d.dat", m_world->GetStats().GetUpdate());
@@ -2844,7 +2844,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_cell_data.%d.dat", m_world->GetStats().GetUpdate());
@@ -2874,7 +2874,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_fitness-%d.dat", m_world->GetStats().GetUpdate());
@@ -2907,7 +2907,7 @@ public:
     if (largs.GetSize()) m_role = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname_prefix='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename = "grid_class_id";
@@ -2949,7 +2949,7 @@ public:
   static const cString GetDescription() { return "Arguments: [int num_colors=12] [string fname='']"; }
 
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // Update current entries in the color chart
     for (int i = 0; i < m_num_colors; i++) {
@@ -3029,7 +3029,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_phenotype_id.%d.dat", m_world->GetStats().GetUpdate());
@@ -3059,7 +3059,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();  
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("id_grid.%d.dat", m_world->GetStats().GetUpdate());
@@ -3092,7 +3092,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();  
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
@@ -3122,7 +3122,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();  
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
@@ -3203,7 +3203,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_sleep.%d.dat", m_world->GetStats().GetUpdate());
@@ -3234,7 +3234,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_genome_length.%d.dat", m_world->GetStats().GetUpdate());
@@ -3325,7 +3325,7 @@ class cActionDumpLastTaskGrid : public cAction
       if (largs.GetSize()) m_filename = largs.PopWord();  
     }
     static const cString GetDescription() { return "Arguments: [string fname='']"; }
-    void Process(cAvidaContext& ctx)
+    void Process(cAvidaContext&)
     {
       cString filename(m_filename);
       if (filename == "") filename.Set("grid_last_task.%d.dat", m_world->GetStats().GetUpdate());
@@ -3370,7 +3370,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_task_hosts.%d.dat", m_world->GetStats().GetUpdate());
@@ -3417,7 +3417,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_task_parasite.%d.dat", m_world->GetStats().GetUpdate());
@@ -3468,7 +3468,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_virulence.%d.dat", m_world->GetStats().GetUpdate());
@@ -3517,7 +3517,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_reactions.%d.dat", m_world->GetStats().GetUpdate());
@@ -3561,7 +3561,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_genome.%d.dat", m_world->GetStats().GetUpdate());
@@ -3602,7 +3602,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_genome_parasite.%d.dat", m_world->GetStats().GetUpdate());
@@ -3649,7 +3649,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_donor.%d.dat", m_world->GetStats().GetUpdate());
@@ -3680,7 +3680,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_receiver.%d.dat", m_world->GetStats().GetUpdate());
@@ -3706,7 +3706,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().PrintDonationStats();
   }
@@ -3743,7 +3743,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().PrintDemeEnergySharingStats();
   }
@@ -3769,7 +3769,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().PrintDemeDonor();
   }
@@ -3783,7 +3783,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().PrintDemeSpatialEnergyData();
   }
@@ -3796,7 +3796,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().PrintDemeSpatialSleepData();
   }
@@ -3842,7 +3842,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("deme_founders-%d.dat", m_world->GetStats().GetUpdate());
@@ -3864,7 +3864,7 @@ public:
     m_verbose.ToUpper();
   }
   static const cString GetDescription() { return "Arguments: [string verbosity='']"; }
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     // If no arguments are given, assume a basic toggle.
     // Otherwise, read in the argument to decide the new mode.
@@ -3900,7 +3900,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cDataFile & df = m_world->GetDataFile("deme_org_count.dat");
     df.WriteComment("Avida deme resource data");
@@ -3927,7 +3927,7 @@ public:
 
   static const cString GetDescription() { return "No Arguments"; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
   }
 };

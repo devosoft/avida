@@ -904,7 +904,7 @@ tBuffer<int>& cHardwareBase::GetOutputBuf()
 }
 
 
-bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
+bool cHardwareBase::Inst_Nop(cAvidaContext&)          // Do Nothing.
 {
   return true;
 }
@@ -927,7 +927,7 @@ void cHardwareBase::checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)
 }
 
 //This must be overridden by the specific CPU to function properly
-bool cHardwareBase::Inst_Repro(cAvidaContext& ctx) 
+bool cHardwareBase::Inst_Repro(cAvidaContext&) 
 {
   cout << "This hardware type does not have a =repro= instruction. IMPLICIT_REPRO conditions cannot be used!" << endl;
   exit(1);
@@ -935,7 +935,7 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
 }
 
 
-bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx)
+bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext&)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.DoubleEnergyUsage();
@@ -944,7 +944,7 @@ bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareBase::Inst_HalveEnergyUsage(cAvidaContext& ctx)
+bool cHardwareBase::Inst_HalveEnergyUsage(cAvidaContext&)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.HalveEnergyUsage();
@@ -953,7 +953,7 @@ bool cHardwareBase::Inst_HalveEnergyUsage(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
+bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext&)
 {
   cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.DefaultEnergyUsage();
@@ -966,7 +966,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
-bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id)
+bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext&, const Instruction& cur_inst, const int thread_id)
 { 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first

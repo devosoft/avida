@@ -29,7 +29,7 @@ cBirthGlobalHandler::~cBirthGlobalHandler()
   m_bc->ClearEntry(m_entry);
 }
 
-cBirthEntry* cBirthGlobalHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
+cBirthEntry* cBirthGlobalHandler::SelectOffspring(cAvidaContext&, const Genome& offspring, cOrganism* parent)
 {
   if (!m_bc->ValidBirthEntry(m_entry)) {
     m_bc->StoreAsEntry(offspring, parent, m_entry);
