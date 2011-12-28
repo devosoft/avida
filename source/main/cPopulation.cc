@@ -974,15 +974,10 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   cPopulationCell& src_cell = GetCell(src_cell_id);
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
   
-  bool faced_is_boundary = false;
-  bool curr_is_boundary = false;
   const int dest_x = dest_cell_id % m_world->GetConfig().WORLD_X.Get();  
   const int dest_y = dest_cell_id / m_world->GetConfig().WORLD_X.Get();
-  const int curr_x = src_cell_id % m_world->GetConfig().WORLD_X.Get();  
-  const int curr_y = src_cell_id / m_world->GetConfig().WORLD_X.Get();
-  
+  bool faced_is_boundary = false;
   if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
-  if (curr_x == 0 || curr_y == 0 || curr_x == m_world->GetConfig().WORLD_X.Get() - 1 || curr_y == m_world->GetConfig().WORLD_Y.Get() - 1) curr_is_boundary = true;
   
   // check for boundary effects on movement
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
@@ -1014,107 +1009,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       if (resource_lib.GetResource(i)->GetHabitat() == 2) { 
         // fail if faced cell has this wall resource
         if (dest_cell_resources[i] > 0) return false;     
-        // movement should also fail if walking on diag and facing a corner -- this can happen in diagonal walls or when two walls meet
-        int cur_facing = src_cell.GetOrganism()->GetFacedDir();
-        if (cur_facing % 2) {
-          int left_cell_id = src_cell_id;
-          int right_cell_id = src_cell_id;
-          // on diag walks, org is trying to cross boundary if both current and destination are on grid edge
-          if (!curr_is_boundary || !faced_is_boundary) {
-            if (cur_facing == 1) {
-              right_cell_id = src_cell_id + 1;
-              left_cell_id = src_cell_id - m_world->GetConfig().WORLD_X.Get();
-            }
-            else if (cur_facing == 3) {
-              left_cell_id = src_cell_id + 1;
-              right_cell_id = src_cell_id + m_world->GetConfig().WORLD_X.Get();
-            }
-            else if (cur_facing == 5) {
-              right_cell_id = src_cell_id - 1;
-              left_cell_id = src_cell_id + m_world->GetConfig().WORLD_X.Get();
-            }
-            else if (cur_facing == 7) {
-              left_cell_id = src_cell_id - 1;
-              right_cell_id = src_cell_id - m_world->GetConfig().WORLD_X.Get();
-            }
-          }
-          // ugly situation if you're crossing grid boundary
-          else if (curr_is_boundary && faced_is_boundary) {
-            if (cur_facing == 1) {
-              // east boundary
-              if (curr_x == m_world->GetConfig().WORLD_X.Get() - 1 && curr_y != 0) {
-                right_cell_id = dest_cell_id + m_world->GetConfig().WORLD_X.Get();
-                left_cell_id = src_cell_id - m_world->GetConfig().WORLD_X.Get();
-              }
-              // north boundary
-              else if (curr_x != m_world->GetConfig().WORLD_X.Get() - 1 && curr_y == 0) {
-                right_cell_id = src_cell_id + 1;
-                left_cell_id = dest_cell_id - 1;
-              }
-              // ne corner
-              else if (curr_x == m_world->GetConfig().WORLD_X.Get() - 1 && curr_y == 0) {
-                right_cell_id = 0;
-                left_cell_id = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
-              }
-            }
-            else if (cur_facing == 3) {
-              // east boundary
-              if (curr_x == m_world->GetConfig().WORLD_X.Get() - 1 && curr_y != m_world->GetConfig().WORLD_Y.Get() - 1) {
-                right_cell_id = src_cell_id + m_world->GetConfig().WORLD_X.Get();
-                left_cell_id = dest_cell_id - m_world->GetConfig().WORLD_X.Get();
-              }
-              // south boundary
-              else if (curr_x != m_world->GetConfig().WORLD_X.Get() - 1 && curr_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
-                right_cell_id = dest_cell_id - 1;
-                left_cell_id = src_cell_id + 1;
-              }
-              // se corner
-              else if (curr_x == m_world->GetConfig().WORLD_X.Get() - 1 && curr_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
-                right_cell_id = m_world->GetConfig().WORLD_X.Get() - 1;
-                left_cell_id = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() - 1);
-              }
-            }
-            else if (cur_facing == 5) {
-              // west boundary
-              if (curr_x == 0 && curr_y != m_world->GetConfig().WORLD_Y.Get() - 1) {
-                right_cell_id = dest_cell_id - m_world->GetConfig().WORLD_X.Get();
-                left_cell_id = src_cell_id + m_world->GetConfig().WORLD_X.Get();
-              }
-              // south boundary
-              else if (curr_x != 0 && curr_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
-                right_cell_id = src_cell_id - 1;
-                left_cell_id = dest_cell_id + 1;
-              }
-              // sw corner
-              else if (curr_x == 0 && curr_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
-                right_cell_id = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
-                left_cell_id = 0;
-              }
-            }
-            else if (cur_facing == 7) {
-              // west boundary
-              if (curr_x == 0 && curr_y != 0) {
-                right_cell_id = src_cell_id - m_world->GetConfig().WORLD_X.Get();
-                left_cell_id = dest_cell_id + m_world->GetConfig().WORLD_X.Get();
-              }
-              // north boundary
-              else if (curr_x != 0 && curr_y == 0) {
-                right_cell_id = dest_cell_id + 1;
-                left_cell_id = src_cell_id - 1;
-              }
-              // nw corner
-              else if (curr_x == 0 && curr_y == 0) {
-                right_cell_id = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() - 1);
-                left_cell_id = m_world->GetConfig().WORLD_X.Get() - 1;
-              }
-            }
-          }
-          tArray<double> left_cell_resources = m_world->GetPopulation().GetCellResources(left_cell_id, ctx);
-          tArray<double> right_cell_resources = m_world->GetPopulation().GetCellResources(right_cell_id, ctx);
-          if (left_cell_resources[i] > 0 && right_cell_resources[i] > 0) return false;
-        }
-      }
-    }    
+      }    
+    }
   }
   // if any of the resources in current cells are hills, find the id of the most resistant resource
   int steepest_hill = 0;
