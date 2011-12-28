@@ -32,10 +32,16 @@
 #import "AvidaRun.h"
 #import "NSStringAdditions.h"
 
+#include "avida/core/Properties.h"
 #include "avida/data/Package.h"
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Manager.h"
 #include "avida/environment/Product.h"
+
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Group.h"
+#include "avida/systematics/Manager.h"
+
 
 static const float PANEL_MIN_WIDTH = 300.0;
 
@@ -140,6 +146,7 @@ static const float PANEL_MIN_WIDTH = 300.0;
 
 @interface AvidaEDPopViewStatViewOrgValues : NSObject {
 @public
+  Avida::Update update;
   int genotype_id;
 }
 @end;
@@ -364,7 +371,33 @@ static const float PANEL_MIN_WIDTH = 300.0;
 }
 
 - (void) handleOrgData:(AvidaEDPopViewStatViewOrgValues*)values {
-  [txtOrgName setIntegerValue:values->genotype_id];
+  
+  Avida::World* world = [run world];
+  Avida::Systematics::ArbiterPtr g_arb = Avida::Systematics::Manager::Of(world)->ArbiterForRole("genotype");
+  Avida::Systematics::GroupPtr genotype = g_arb->Group(values->genotype_id);
+
+  if (!genotype) {
+    [self clearSelectedOrg];
+    return;
+  }
+  
+  Apto::String foo = genotype->Properties().Get("ave_fitness");
+  printf("genotype_id = %d -- %s\n", values->genotype_id, (const char*)foo);
+
+  [txtOrgName setStringValue:[NSString stringWithAptoString:genotype->Properties().Get("name")]];
+  [txtOrgFitness setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_fitness"))];
+  [txtOrgMetabolicRate setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_metabolic_rate"))];
+  [txtOrgGestation setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_gestation_time"))];
+  [txtOrgAge setIntValue:(values->update - (int)Apto::StrAs(genotype->Properties().Get("update_born")))];
+  
+  Apto::String parents(genotype->Properties().Get("parents").Value());
+  parents = parents.Pop(',');
+  if (parents.GetSize()) {
+    Avida::Systematics::GroupPtr parent_genotype = g_arb->Group(Apto::StrAs(parents));
+    [txtOrgAncestor setStringValue:[NSString stringWithAptoString:parent_genotype->Properties().Get("name")]];
+  } else {
+    [txtOrgAncestor setStringValue:@"-"];
+  }
 }
 
 @end
@@ -427,7 +460,7 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewOrgRecorder::GetRequested() c
   return m_requested;
 }
 
-void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data)
+void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update update, Avida::Data::DataRetrievalFunctor retrieve_data)
 {
   if (m_data_id == "") return;
   
@@ -440,6 +473,7 @@ void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update, Avida::Data::D
   } else {
     values->genotype_id = -1;
   }
+  values->update = update;
   
   [m_view performSelectorOnMainThread:@selector(handleOrgData:) withObject:values waitUntilDone:NO];
 }
