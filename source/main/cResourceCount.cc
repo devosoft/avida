@@ -355,6 +355,53 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   spatial_resource_count[res_index]->SetOutflowY2(in_outflowY2);
 }
 
+void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
+                      const int& height, const int& spread, const double& plateau, const int& decay, 
+                      const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
+                      const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
+                      const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
+                      const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
+                      const double& floor, const int& habitat, const int& min_size, const int& max_size,
+                      const int& config, const int& count, const double& resistance) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  int worldx = spatial_resource_count[res_id]->GetX();
+  int worldy = spatial_resource_count[res_id]->GetY();
+  
+  spatial_resource_count[res_id]->SetGradPeakX(peakx);
+  spatial_resource_count[res_id]->SetGradPeakY(peaky);
+  spatial_resource_count[res_id]->SetGradHeight(height);
+  spatial_resource_count[res_id]->SetGradSpread(spread);
+  spatial_resource_count[res_id]->SetGradPlateau(plateau);
+  spatial_resource_count[res_id]->SetGradDecay(decay);
+  spatial_resource_count[res_id]->SetGradMaxX(max_x);
+  spatial_resource_count[res_id]->SetGradMaxY(max_y);
+  spatial_resource_count[res_id]->SetGradMinX(min_x);
+  spatial_resource_count[res_id]->SetGradMinY(min_y);
+  spatial_resource_count[res_id]->SetGradMoveScaler(move_a_scaler);
+  spatial_resource_count[res_id]->SetGradUpdateStep(updatestep);
+
+  spatial_resource_count[res_id]->SetGradIsHalo(halo);
+  spatial_resource_count[res_id]->SetGradHaloInnerRad(halo_inner_radius);
+  spatial_resource_count[res_id]->SetGradHaloWidth(halo_width);
+  spatial_resource_count[res_id]->SetGradHaloX(halo_anchor_x);
+  spatial_resource_count[res_id]->SetGradHaloY(halo_anchor_y);
+  spatial_resource_count[res_id]->SetGradMoveSpeed(move_speed);
+  spatial_resource_count[res_id]->SetGradPlatInflow(plateau_inflow);
+  spatial_resource_count[res_id]->SetGradPlatOutflow(plateau_outflow);
+  spatial_resource_count[res_id]->SetGradPlatIsCommon(is_plateau_common);
+  spatial_resource_count[res_id]->SetGradFloor(floor);
+  spatial_resource_count[res_id]->SetGradHabitat(habitat);
+  spatial_resource_count[res_id]->SetGradMinSize(min_size);
+  spatial_resource_count[res_id]->SetGradMaxSize(max_size);
+  spatial_resource_count[res_id]->SetGradConfig(config);
+  spatial_resource_count[res_id]->SetGradCount(count);
+  spatial_resource_count[res_id]->SetGradResistance(resistance);
+
+  spatial_resource_count[res_id]->ResetGradRes(ctx, worldx, worldy);
+}
+
 /*
  * This is unnecessary now that a resource has an index
  * TODO: 

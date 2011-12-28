@@ -300,7 +300,7 @@ public:
   void UpdateResourceCount(const int Verbosity, cWorld* world);        
   
   // Let users change Gradient Resource variables during the run JW
-  void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

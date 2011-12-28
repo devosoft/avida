@@ -279,7 +279,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
         
-    m_world->GetPopulation().UpdateGradientCount(m_world->GetVerbosity(), m_world, m_res_name);        
+    m_world->GetPopulation().UpdateGradientCount(ctx, m_world->GetVerbosity(), m_world, m_res_name);        
   } 
 };
 

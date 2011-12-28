@@ -6346,7 +6346,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
  middle of a run.  This is designed to work with cActionSetGradient Count */
 //JW
 
-void cPopulation::UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name)
+void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -6357,34 +6357,14 @@ void cPopulation::UpdateGradientCount(const int Verbosity, cWorld* world, const 
     if (!res->GetDemeResource()) global_res_index++;
     
     if (res->GetName() == res_name) {
-      const double decay = 1.0 - res->GetOutflow();
-      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),
-                           res->GetInflow(), decay,
-                           res->GetGeometry(), res->GetXDiffuse(),
-                           res->GetXGravity(), res->GetYDiffuse(),
-                           res->GetYGravity(), res->GetInflowX1(),
-                           res->GetInflowX2(), res->GetInflowY1(),
-                           res->GetInflowY2(), res->GetOutflowX1(),
-                           res->GetOutflowX2(), res->GetOutflowY1(),
-                           res->GetOutflowY2(), res->GetCellListPtr(),
-                           res->GetCellIdListPtr(), Verbosity,
-                           res->GetDynamicResource(), res->GetPeaks(), 
-                           res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
-                           res->GetAh(), res->GetAr(),
-                           res->GetAcx(), res->GetAcy(),
-                           res->GetHStepscale(), res->GetRStepscale(),
-                           res->GetCStepscaleX(), res->GetCStepscaleY(),
-                           res->GetHStep(), res->GetRStep(),
-                           res->GetCStepX(), res->GetCStepY(),
-                           res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
+      resource_count.SetGradientCount(ctx, world, global_res_index, res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
-                           ); 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance()); 
     } 
   }
 }
@@ -6444,7 +6424,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
-        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);                                                
+        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);       
         // could add deme resources to global resource stats here
       }
     } else {

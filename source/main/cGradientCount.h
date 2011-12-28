@@ -64,6 +64,8 @@ private:
   int m_count;
   double m_resistance;
   
+  int m_geometry;
+  
   // Internal Values
   double m_move_y_scaler;
   
@@ -95,6 +97,37 @@ public:
 
   void UpdateCount(cAvidaContext& ctx);
   void StateAll();
+  
+  void SetGradPeakX(int peakx) { m_peakx = peakx; }
+  void SetGradPeakY(int peaky) { m_peaky = peaky; }
+  void SetGradHeight(int height) { m_height = height; }
+  void SetGradSpread(int spread) { m_spread = spread; }
+  void SetGradPlateau(double plateau) { m_plateau = plateau; }
+  void SetGradDecay(int decay) { m_decay = decay; }
+  void SetGradMaxX(int max_x) { m_max_x = max_x; }
+  void SetGradMaxY(int max_y) { m_max_y = max_y; }
+  void SetGradMinX(int min_x) { m_min_x = min_x; }
+  void SetGradMinY(int min_y) { m_min_y = min_y; }
+  void SetGradMoveScaler(double move_a_scaler) { m_move_a_scaler = move_a_scaler; }
+  void SetGradUpdateStep(int updatestep) { m_updatestep = updatestep; }
+  void SetGradIsHalo(bool halo) { m_halo = halo; }
+  void SetGradHaloInnerRad(int halo_inner_radius) { m_halo_inner_radius = halo_inner_radius; }
+  void SetGradHaloWidth(int halo_width) { m_halo_width = halo_width; }
+  void SetGradHaloX(int halo_anchor_x) { m_halo_anchor_x = halo_anchor_x; }
+  void SetGradHaloY(int halo_anchor_y) { m_halo_anchor_y = halo_anchor_y; }
+  void SetGradMoveSpeed(int move_speed) { m_move_speed = move_speed; }
+  void SetGradPlatInflow(double plateau_inflow) { m_plateau_inflow = plateau_inflow; }
+  void SetGradPlatOutflow(double plateau_outflow) { m_plateau_outflow = plateau_outflow; }
+  void SetGradPlatIsCommon(bool is_plateau_common) { m_is_plateau_common = is_plateau_common; }
+  void SetGradFloor(double floor) { m_floor = floor; }
+  void SetGradHabitat(int habitat) { m_habitat = habitat; }
+  void SetGradMinSize(int min_size) { m_min_size = min_size; }
+  void SetGradMaxSize(int max_size) { m_max_size = max_size; }
+  void SetGradConfig(int config) { m_config = config; }
+  void SetGradCount(int count) { m_count = count; }
+  void SetGradResistance(double resistance) { m_resistance = resistance; }
+ 
+  void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   
 private:
   void refreshResourceValues();

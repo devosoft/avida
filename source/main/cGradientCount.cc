@@ -81,6 +81,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
   , m_is_plateau_common(is_plateau_common), m_floor(floor) 
   , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count), m_resistance(resistance)
+  , m_geometry(geometry)
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
@@ -94,36 +95,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_common_plat_height(0.0)
   , m_skip_moves(0)
   , m_skip_counter(0)
-
 {
-  if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
-      && m_move_speed != 0) {
-    m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");    
-  }
-  if (m_halo == 1 && (m_halo_width < (2 * m_height) && plateau >= 0)) {
-    m_world->GetDriver().RaiseFatalException(-1, "Halo width < 2 * height (aka plateau radius)");
-  }
-  if (m_move_speed < 0) {
-    m_skip_moves = abs(m_move_speed);
-    m_move_speed = 1;
-  }
-  m_plateau_array.Resize(int(4 * m_height * m_height + 0.5));
-  m_plateau_array.SetAll(0);
-  m_plateau_cell_IDs.Resize(int(4 * m_height * m_height + 0.5));
-  m_plateau_cell_IDs.SetAll(0);
-  m_current_height = m_height;
-  m_common_plat_height = m_plateau;
-  ResizeClear(worldx, worldy, geometry);
-  if (m_habitat == 2) {
-    generateBarrier(m_world->GetDefaultContext());
-  }
-  else if (m_habitat == 1) {
-    generateHills(m_world->GetDefaultContext());
-  }
-  else {
-  generatePeak(m_world->GetDefaultContext());
-  UpdateCount(m_world->GetDefaultContext());
-  }
+  ResetGradRes(m_world->GetDefaultContext(), worldx, worldy);
 }
 
 void cGradientCount::StateAll()
@@ -741,4 +714,36 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
     }
   }
   else m_topo_counter++; 
+}
+
+void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
+{
+  if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
+      && m_move_speed != 0) {
+    m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");    
+  }
+  if (m_halo == 1 && (m_halo_width < (2 * m_height) && m_plateau >= 0)) {
+    m_world->GetDriver().RaiseFatalException(-1, "Halo width < 2 * height (aka plateau radius)");
+  }
+  if (m_move_speed < 0) {
+    m_skip_moves = abs(m_move_speed);
+    m_move_speed = 1;
+  }
+  m_plateau_array.Resize(int(4 * m_height * m_height + 0.5));
+  m_plateau_array.SetAll(0);
+  m_plateau_cell_IDs.Resize(int(4 * m_height * m_height + 0.5));
+  m_plateau_cell_IDs.SetAll(0);
+  m_current_height = m_height;
+  m_common_plat_height = m_plateau;
+  ResizeClear(worldx, worldy, m_geometry);
+  if (m_habitat == 2) {
+    generateBarrier(ctx);
+  }
+  else if (m_habitat == 1) {
+    generateHills(ctx);
+  }
+  else {
+    generatePeak(ctx);
+    UpdateCount(ctx);
+  }
 }

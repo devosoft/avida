@@ -75,7 +75,7 @@ public:
   void SetSize(int num_resources);
   void SetCellResources(int cell_id, const tArray<double> & res);
 
-void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      
+  void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      
 	   const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 	   const double& in_ydiffuse, const double& in_ygravity,
 	   const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
@@ -99,7 +99,16 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
      const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
      const int& in_config, const int& in_count, const double& in_resistance, const bool& isgradient
 	   ); 
-             
+  
+  void SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
+    const int& height, const int& spread, const double& plateau, const int& decay, 
+    const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
+    const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
+    const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
+    const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
+    const double& floor, const int& habitat, const int& min_size, const int& max_size,
+    const int& config, const int& count, const double& resistance); 
+            
   int GetResourceCountID(const cString& res_name);
   double GetInflow(const cString& name);
   void SetInflow(const cString& name, const double _inflow);
