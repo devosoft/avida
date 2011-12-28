@@ -51,7 +51,7 @@ using namespace Avida;
 
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset")).GetNumNops())
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").Value()).GetNumNops())
   , m_src(src)
   , m_initial_genome(genome)
   , m_interface(NULL)
@@ -127,6 +127,24 @@ void cOrganism::initialize(cAvidaContext& ctx)
 		int raw_mat = m_world->GetConfig().RAW_MATERIAL_AMOUNT.Get();
 		m_self_raw_materials = m_world->GetRandom().GetUInt(0, raw_mat+1); 
 	}
+
+
+#define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map.Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, FunctorProperty<TYPE>::VAL)));
+#define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map.Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, const_cast<TYPE&>(VAL))));
+#define ADD_STR_PROP(NAME, DESC, VAL) m_prop_map.Set(PropertyPtr(new StringProperty(NAME, DESC, VAL)));
+  ADD_FUN_PROP("genome", "Genome", Apto::String, GetFunctor(&m_initial_genome, &Genome::AsString));
+  ADD_STR_PROP("src_transmission_type", "Source Transmission Type", (int)m_src.transmission_type); 
+  
+  ADD_FUN_PROP("age", "Age", int, GetFunctor(&m_phenotype, &cPhenotype::GetAge));
+  ADD_FUN_PROP("last_copied_size", "Average Copied Size", double, GetFunctor(&m_phenotype, &cPhenotype::GetCopiedSize));
+  ADD_FUN_PROP("last_executed_size", "Average Executed Size", double, GetFunctor(&m_phenotype, &cPhenotype::GetExecutedSize));
+  ADD_FUN_PROP("last_gestation_time", "Average Gestation Time", double, GetFunctor(&m_phenotype, &cPhenotype::GetGestationTime));
+  ADD_FUN_PROP("last_metabolic_rate", "Metabolic Rate", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastMerit));
+  ADD_FUN_PROP("last_fitness", "Fitness", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastFitness));
+  
+#undef ADD_FUN_PROP
+#undef ADD_REF_PROP
+#undef ADD_STR_PROP
 }
 
 

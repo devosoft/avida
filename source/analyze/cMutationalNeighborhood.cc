@@ -39,7 +39,7 @@ using namespace std;
 
 cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const Genome& genome, int target)
   : m_world(world), m_initialized(false)
-  , m_inst_set(m_world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset")))
+  , m_inst_set(m_world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").Value()))
   , m_target(target), m_base_genome(genome)
 {
   InstructionSequencePtr seq;

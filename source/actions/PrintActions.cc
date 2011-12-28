@@ -327,7 +327,7 @@ public:
     const int num_cells = population.GetSize();
     for (int x = 0; x < num_cells; x++) {
       cPopulationCell& cell = population.GetCell(x);
-      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().Properties().Get("instset") == is.GetInstSetName()) {
+      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().Properties().Get("instset").Value() == is.GetInstSetName()) {
         // access this CPU's code block
         cCPUMemory& cpu_mem = cell.GetOrganism()->GetHardware().GetMemory();
         const int mem_size = cpu_mem.GetSize();
@@ -611,7 +611,7 @@ public:
     Systematics::GroupPtr bg = it->Next();
     if (bg) {
       cString filename(m_filename);
-      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->Properties().Get("name"));
+      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->Properties().Get("name").Value());
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
       testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate());
       delete testcpu;
@@ -672,7 +672,7 @@ public:
           }
         }
         cString filename(m_filename);
-        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name"));
+        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").Value());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         
@@ -737,7 +737,7 @@ public:
           }
         }
         cString filename(m_filename);
-        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name"));
+        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").Value());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         
@@ -871,7 +871,7 @@ public:
     // determine the name of the maximum fitness genotype
     cString max_f_name;
     if ((bool)Apto::StrAs(max_f_genotype->Properties().Get("threshold")))
-      max_f_name = max_f_genotype->Properties().Get("name");
+      max_f_name = max_f_genotype->Properties().Get("name").Value();
     else {
       // we put the current update into the name, so that it becomes unique.
       Genome gen(max_f_genotype->Properties().Get("genome"));
@@ -1290,8 +1290,8 @@ public:
       cCPUTestInfo test_info;
       double fitness = 0.0;
       double parent_fitness = 1.0;
-      if ((*git)->Properties().Get("parents") != Apto::String("")) {
-        cStringList parents((const char*)(*git)->Properties().Get("parents"), ',');
+      if ((*git)->Properties().Get("parents").Value() != "") {
+        cStringList parents((const char*)(*git)->Properties().Get("parents").Value(), ',');
 
         Systematics::GroupPtr pbg = Systematics::Manager::Of(world->GetNewWorld())->ArbiterForRole("genotype")->Group(parents.Pop().AsInt());
         parent_fitness = Apto::StrAs(pbg->Properties().Get("fitness"));
@@ -1318,7 +1318,7 @@ public:
 
       //Update the histogram
       if (parent_fitness <= 0.0) {
-        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->Properties().Get("parents"));
+        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->Properties().Get("parents").Value());
         ctx.Driver().Abort(Avida::INTERNAL_ERROR);
       }
 
@@ -1853,7 +1853,7 @@ public:
       while (it->Next()) {
         Systematics::GroupPtr bg = it->Get();
         Apto::SmartPtr<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(Genome(bg->Properties().Get("genome")), m_num_trials, test_info, m_world, ctx));
-        PrintPPG(fot, ppgen, bg->ID(), (const char*)bg->Properties().Get("parents"));
+        PrintPPG(fot, ppgen, bg->ID(), (const char*)bg->Properties().Get("parents").Value());
       }
       m_world->GetDataFileManager().Remove(this_path);
     }
@@ -2251,7 +2251,7 @@ public:
       sum_fitness += (double)Apto::StrAs(bg->Properties().Get("fitness")) * num_orgs;
       sum_num_organisms += num_orgs;
 
-      df.Write(bg->Properties().Get("name"), "Genotype Name");
+      df.Write(bg->Properties().Get("name").Value(), "Genotype Name");
       df.Write((double)Apto::StrAs(bg->Properties().Get("fitness")), "Fitness");
       df.Write(num_orgs, "Abundance");
       df.Write(InstructionSequence::FindHammingDistance(*r_seq, *seq), "Hamming distance to reference");
@@ -2261,7 +2261,7 @@ public:
       // save into archive
       if (m_save_genotypes) {
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->Properties().Get("name"))));
+        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->Properties().Get("name").Value())));
         delete testcpu;
       }
 

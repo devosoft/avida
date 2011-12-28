@@ -206,7 +206,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  int inst_set_id = m_is_name_map.GetWithDefault((const char*)mg.Properties().Get("instset"), -1);
+  int inst_set_id = m_is_name_map.GetWithDefault((const char*)mg.Properties().Get("instset").Value(), -1);
   if (inst_set_id == -1) return NULL; // No valid instruction set found
   
   cInstSet* inst_set = m_inst_sets[inst_set_id];

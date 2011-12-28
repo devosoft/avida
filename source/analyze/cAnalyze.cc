@@ -5521,7 +5521,7 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
     const Genome& genome = genotype->GetGenome();
     const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)genome.Properties().Get("instset").Value()));
     cInstSet* modify_inst_set = new cInstSet(original_inst_set);
-    cString isname = cString(genotype->GetGenome().Properties().Get("instset")) + ":analyze_redundancy_by_inst_failure";
+    cString isname = cString(genotype->GetGenome().Properties().Get("instset").Value()) + ":analyze_redundancy_by_inst_failure";
     if (!m_world->GetHardwareManager().RegisterInstSet(isname, modify_inst_set)) {
       delete modify_inst_set;
       modify_inst_set = &m_world->GetHardwareManager().GetInstSet(isname);
@@ -6971,7 +6971,7 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    if (genotype->GetGenome().Properties().Get("instset") != isname) continue;
+    if (genotype->GetGenome().Properties().Get("instset").Value() != isname) continue;
     
     // Setup for counting...
     tArray<int> inst_bin(num_insts);
@@ -7059,7 +7059,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    if (genotype->GetGenome().Properties().Get("instset") != isname) continue;
+    if (genotype->GetGenome().Properties().Get("instset").Value() != isname) continue;
     
     num_orgs++; 
     

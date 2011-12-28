@@ -1003,7 +1003,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				break;
 			}
 			case 2: { // replace the instructions in the fragment with random instructions.
-				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)offspring.Properties().Get("instset"));
+				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)offspring.Properties().Get("instset").Value());
 				for(int j=0; j<i->GetSize(); ++j) {
 					(*i)[j] = instset.GetRandomInst(ctx);
 				}

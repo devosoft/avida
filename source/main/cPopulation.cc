@@ -747,7 +747,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   // Pre-check target hardware
   const cHardwareBase& hw = target_organism->GetHardware();
   if (hw.GetType() != parent->UnitGenome().HardwareType() ||
-      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get("instset") ||
+      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get("instset").Value() ||
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
 
   //Handle host specific injection
@@ -958,7 +958,7 @@ void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 {
   const int target = in_organism->GetForageTarget();
   const int id = in_organism->GetID();
-  const char* genotype_name = in_organism->SystematicsGroup("genotype")->Properties().Get("name");
+  const char* genotype_name = in_organism->SystematicsGroup("genotype")->Properties().Get("name").Value();
   cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trc", id, target, genotype_name);
   if (in_organism->HasOpinion()) {
     filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, in_organism->GetOpinion().first, target, genotype_name);
@@ -1971,7 +1971,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     Genome next_germ(source_deme.GetGermline().GetLatest());
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(next_germ.Representation());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)next_germ.Properties().Get("instset"));
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)next_germ.Properties().Get("instset").Value());
 
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i = 0; i < seq->GetSize(); ++i) {
@@ -2025,7 +2025,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset"));
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").Value());
 
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i < new_genome.GetSize(); ++i) {
@@ -3328,7 +3328,7 @@ void cPopulation::PrintDemeInstructions()
       for (int i = 0; i < cur_deme.GetSize(); i++) {
         int cur_cell = cur_deme.GetCellID(i);
         if (!cell_array[cur_cell].IsOccupied()) continue;
-        if (cell_array[cur_cell].GetOrganism()->GetGenome().Properties().Get("instset") != inst_set) continue;
+        if (cell_array[cur_cell].GetOrganism()->GetGenome().Properties().Get("instset").Value() != inst_set) continue;
         cPhenotype& phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
 
         for (int j = 0; j < num_inst; j++) single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
@@ -4360,7 +4360,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
 
-    tArray<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset"));
+    tArray<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }

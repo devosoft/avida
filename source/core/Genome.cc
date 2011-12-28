@@ -69,7 +69,7 @@ Avida::Genome::Genome(const Genome& genome)
 Apto::String Avida::Genome::AsString() const
 {
   // @TODO - generate genome string more generally
-  return Apto::FormatStr("%d,%s,%s", m_hw_type, (const char*)m_props.Get("instset"), (const char*)m_representation->AsString());
+  return Apto::FormatStr("%d,%s,%s", m_hw_type, (const char*)m_props.Get("instset").Value(), (const char*)m_representation->AsString());
   return "";
 }
 
@@ -117,7 +117,7 @@ bool Avida::Genome::LegacySave(void* dfp) const
 {
   cDataFile& df = *static_cast<cDataFile*>(dfp);
   df.Write(m_hw_type, "Hardware Type ID", "hw_type");
-  df.Write(m_props.Get("instset"), "Inst Set Name" , "inst_set");
+  df.Write(m_props.Get("instset").Value(), "Inst Set Name" , "inst_set");
   df.Write(m_representation->AsString(), "Genome Sequence", "sequence");
   return false;
 }
