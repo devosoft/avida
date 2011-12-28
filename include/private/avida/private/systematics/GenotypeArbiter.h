@@ -156,7 +156,8 @@ namespace Avida {
       
       inline void resizeActiveList(int size);
       inline GenotypePtr getBest();
-            
+      
+      inline GenotypeArbiterPtr thisPtr();
       
       class GenotypeIterator : public Iterator
       {

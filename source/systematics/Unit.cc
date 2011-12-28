@@ -60,9 +60,7 @@ Apto::String Avida::Systematics::Source::AsString() const
 Avida::Systematics::Unit::~Unit()
 {
   for (int i = 0; i < m_groups->GetSize(); i++) {
-    UnitPtr u(this);
-    AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
-    m_groups->Get(i)->RemoveUnit(u);
+    m_groups->Get(i)->RemoveUnit(thisPtr());
   }
 }
 
@@ -95,9 +93,6 @@ void Avida::Systematics::Unit::SelfClassify(ConstConstParentGroupsPtr parent_gro
 {
   assert(parent_groups->GetSize() > 0);
 
-  UnitPtr u(this);
-  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
-
   if (parent_groups->GetSize() == 1) {
     // Handle Asexual Organisms
     GroupMembershipPtr pg(new GroupMembership(1));
@@ -105,7 +100,7 @@ void Avida::Systematics::Unit::SelfClassify(ConstConstParentGroupsPtr parent_gro
     // Loop through all parental groups and classify this bio unit with each one
     for (int i = 0; i < parent_groups->Get(0)->GetSize(); i++) {
       pg->Get(0) = parent_groups->Get(0)->Get(i);
-      GroupPtr group = parent_groups->Get(0)->Get(i)->ClassifyNewUnit(u, pg);
+      GroupPtr group = parent_groups->Get(0)->Get(i)->ClassifyNewUnit(thisPtr(), pg);
       if (group) m_groups->Push(group);
     }
   } else {
@@ -124,7 +119,7 @@ void Avida::Systematics::Unit::SelfClassify(ConstConstParentGroupsPtr parent_gro
     
     // Classify this bio unit with all distinct parental group roles
     for (Apto::Map<RoleID, GroupMembershipPtr>::ValueIterator role = pgs.Values(); (role.Next()); ) {
-      GroupPtr group = (*role.Get())->Get(0)->ClassifyNewUnit(u, *role.Get());
+      GroupPtr group = (*role.Get())->Get(0)->ClassifyNewUnit(thisPtr(), *role.Get());
       if (group) m_groups->Push(group);
     }
   }
@@ -132,7 +127,11 @@ void Avida::Systematics::Unit::SelfClassify(ConstConstParentGroupsPtr parent_gro
 
 void Avida::Systematics::Unit::HandleGestation()
 {
-  UnitPtr u(this);
-  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
-  for (int i = 0; i < m_groups->GetSize(); i++) m_groups->Get(i)->HandleUnitGestation(u);
+  for (int i = 0; i < m_groups->GetSize(); i++) m_groups->Get(i)->HandleUnitGestation(thisPtr());
+}
+
+inline Avida::Systematics::UnitPtr Avida::Systematics::Unit::thisPtr()
+{
+  AddReference(); // Explicitly add reference for newly created SmartPtr
+  return UnitPtr(this);
 }

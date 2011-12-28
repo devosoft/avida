@@ -170,8 +170,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::Genotype::ClassifyNewUnit(UnitP
     m_total_organisms++;
     m_num_organisms++;
     
-    GenotypePtr g(this);
-    AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
+    GenotypePtr g = thisPtr();
     m_mgr->AdjustGenotype(g, m_num_organisms - 1, m_num_organisms);
     AddActiveReference();
     return g;
@@ -201,9 +200,7 @@ void Avida::Systematics::Genotype::RemoveUnit(UnitPtr)
   assert(m_a_refs >= 0);
   
   m_num_organisms--;
-  GenotypePtr g(this);
-  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
-  m_mgr->AdjustGenotype(g, m_num_organisms + 1, m_num_organisms);
+  m_mgr->AdjustGenotype(thisPtr(), m_num_organisms + 1, m_num_organisms);
 }
 
 
@@ -272,9 +269,7 @@ void Avida::Systematics::Genotype::RemoveActiveReference()
   m_a_refs--;
   assert(m_a_refs >= 0);
   
-  GenotypePtr g(this);
-  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
-  if (!m_a_refs) m_mgr->AdjustGenotype(g, m_num_organisms, 0);
+  if (!m_a_refs) m_mgr->AdjustGenotype(thisPtr(), m_num_organisms, 0);
 }
 
 
@@ -349,9 +344,7 @@ void Avida::Systematics::Genotype::NotifyNewUnit(UnitPtr u)
   m_total_organisms++;
   m_num_organisms++;
 
-  GenotypePtr g(this);
-  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
-  m_mgr->AdjustGenotype(g, m_num_organisms - 1, m_num_organisms);
+  m_mgr->AdjustGenotype(thisPtr(), m_num_organisms - 1, m_num_organisms);
   AddActiveReference();
 }
 
@@ -409,4 +402,10 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 #undef ADD_FUN_PROP
 #undef ADD_REF_PROP
 #undef ADD_STR_PROP
+}
+
+inline Avida::Systematics::GenotypePtr Avida::Systematics::Genotype::thisPtr()
+{
+  AddReference(); // Explicitly add reference to internally created SmartPtr
+  return GenotypePtr(this);
 }

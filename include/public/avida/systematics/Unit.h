@@ -85,6 +85,9 @@ namespace Avida {
       LIB_EXPORT void SelfClassify(ConstConstParentGroupsPtr parent_groups);
       
       LIB_EXPORT void HandleGestation();
+      
+    private:
+      LIB_LOCAL inline UnitPtr thisPtr();
     };
     
   };

@@ -152,9 +152,10 @@ namespace Avida {
       inline void ClearThreshold() { m_threshold = false; }
       
       inline void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
-      
+            
     private:
       void setupPropertyMap() const;
+      inline GenotypePtr thisPtr();
     };
 
   };

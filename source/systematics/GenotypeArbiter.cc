@@ -109,10 +109,7 @@ bool Avida::Systematics::GenotypeArbiter::LegacySave(void* dfp) const
 
 Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::LegacyLoad(void* props)
 {
-  GenotypeArbiterPtr a(this);
-  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
-  
-  GenotypePtr g(new Genotype(a, m_next_id++, props));
+  GenotypePtr g(new Genotype(thisPtr(), m_next_id++, props));
   m_historic.Push(g, &g->m_handle);
   return g;
 }
@@ -136,9 +133,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::Group(GroupID 
 
 Avida::Systematics::Arbiter::IteratorPtr Avida::Systematics::GenotypeArbiter::Begin()
 {
-  GenotypeArbiterPtr a(this);
-  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
-  return IteratorPtr(new GenotypeIterator(a));
+  return IteratorPtr(new GenotypeIterator(thisPtr()));
 }
 
 
@@ -325,10 +320,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
   
   // No matching genotype (hinted or otherwise), so create a new one
   if (!found) {
-    GenotypeArbiterPtr a(this);
-    AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
-    
-    found = GenotypePtr(new Genotype(a, m_next_id++, u, m_cur_update, parents));
+    found = GenotypePtr(new Genotype(thisPtr(), m_next_id++, u, m_cur_update, parents));
     m_active_hash[list_num].Push(found);
     resizeActiveList(found->NumUnits());
     m_active_sz[found->NumUnits()].PushRear(found, &found->m_handle);
@@ -396,9 +388,7 @@ template <class T> Avida::Data::PackagePtr Avida::Systematics::GenotypeArbiter::
 
 Avida::Data::ProviderPtr Avida::Systematics::GenotypeArbiter::activateProvider(World*) 
 {
-  Data::ProviderPtr p(this);
-  AddReference(); // explictly add reference, since this is internally creating a smart pointer to itself
-  return p;
+  return thisPtr();
 }
 
 
@@ -535,6 +525,13 @@ void Avida::Systematics::GenotypeArbiter::updateCoalescent()
   
   m_coalescent = found_gen;
   m_coalescent_depth = m_coalescent->Depth();
+}
+
+
+inline Avida::Systematics::GenotypeArbiterPtr Avida::Systematics::GenotypeArbiter::thisPtr()
+{
+  AddReference(); // Explicitly add reference for newly created SmartPtr
+  return GenotypeArbiterPtr(this);
 }
 
 
