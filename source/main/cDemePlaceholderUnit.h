@@ -36,17 +36,17 @@ class cDemePlaceholderUnit : public Systematics::Unit
 private:
   Systematics::Source m_src;
   cString m_src_args;
-  Avida::Genome m_genome;
+  Genome m_genome;
   cPhenotype m_phenotype;
   PropertyMap m_prop_map;
   
   
 public:
-  cDemePlaceholderUnit(Systematics::Source src, const Avida::Genome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
+  cDemePlaceholderUnit(Systematics::Source src, const Genome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
   ~cDemePlaceholderUnit() { ; }
   
   Systematics::Source UnitSource() const { return m_src; }
-  const Avida::Genome& Genome() const { return m_genome; }
+  const Genome& UnitGenome() const { return m_genome; }
   
   const PropertyMap& Properties() const { return m_prop_map; }
   

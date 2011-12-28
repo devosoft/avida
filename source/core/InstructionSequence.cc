@@ -35,7 +35,7 @@ const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
 
 
 Avida::InstructionSequence::InstructionSequence(const InstructionSequence& seq)
-: m_seq(seq.GetSize()), m_active_size(seq.GetSize())
+: GeneticRepresentation(seq), m_seq(seq.GetSize()), m_active_size(seq.GetSize())
 {
   for (int i = 0; i < m_active_size; i++)  m_seq[i] = seq[i];
 }

@@ -52,7 +52,7 @@ public:
   
   // --------  Systematics::Unit Methods  --------
   Systematics::Source UnitSource() const { return m_src; }
-  const Avida::Genome& Genome() const { return m_initial_genome; }  
+  const Avida::Genome& UnitGenome() const { return m_initial_genome; }  
   
   const PropertyMap& Properties() const { return m_prop_map; }
 

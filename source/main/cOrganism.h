@@ -70,7 +70,7 @@ private:
   Systematics::Source m_src;
   PropertyMap m_prop_map;
   
-  const Avida::Genome m_initial_genome;         // Initial genome; can never be changed!
+  const Genome m_initial_genome;         // Initial genome; can never be changed!
   tArray<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
@@ -80,7 +80,7 @@ private:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
   
 	// Other stats
-  Avida::Genome m_offspring_genome;              // Child genome, while under construction.
+  Genome m_offspring_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -128,12 +128,12 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const Avida::Genome& genome, int parent_generation, Systematics::Source src);
+  cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src);
   ~cOrganism();
   
   // --------  Systematics::Unit Methods  --------
   Systematics::Source UnitSource() const { return m_src; }
-  const Avida::Genome& Genome() const { return m_initial_genome; }
+  const Genome& UnitGenome() const { return m_initial_genome; }
   
   const PropertyMap& Properties() const { return m_prop_map; }
   
@@ -157,7 +157,7 @@ public:
   
   
   // --------  Accessor Methods  --------
-  const Avida::Genome& GetGenome() const { return m_initial_genome; }
+  const Genome& GetGenome() const { return m_initial_genome; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
@@ -187,7 +187,7 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
   
-  Avida::Genome& OffspringGenome() { return m_offspring_genome; }
+  Genome& OffspringGenome() { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }

@@ -59,7 +59,7 @@ class cPhenPlastSummary : public Systematics::GroupData
     m_viable_probability = pp.GetViableProbability();
   }
   
-  cPhenPlastSummary(const cPhenPlastSummary& ps){
+  cPhenPlastSummary(const cPhenPlastSummary& ps) : Systematics::GroupData(ps) {
     m_recalculate_trials = ps.m_recalculate_trials;
     m_num_phenotypes = ps.m_num_phenotypes;
     m_min_fitness = ps.m_min_fitness;

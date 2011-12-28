@@ -63,10 +63,8 @@ namespace Avida {
       Genome m_genome;
       Apto::String m_name;
       
-      struct {
-        bool m_threshold:1;
-        bool m_active:1;
-      };
+      bool m_threshold;
+      bool m_active;
       
       int m_generation_born;
       int m_update_born;
@@ -140,7 +138,7 @@ namespace Avida {
       void NotifyNewUnit(UnitPtr u);
       void UpdateReset();
 
-      inline const Genome& Genome() const { return m_genome; }
+      inline const Genome& GroupGenome() const { return m_genome; }
       inline const Apto::Array<GenotypePtr> Parents() const { return m_parents; }
       
       inline void SetName(const Apto::String& name) { m_name = name; }

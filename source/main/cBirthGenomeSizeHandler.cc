@@ -20,7 +20,8 @@
  */
 
 #include "cBirthGenomeSizeHandler.h"
-#include "InstructionSequence.h"
+
+#include "avida/core/InstructionSequence.h"
 #include "avida/core/Genome.h"
 
 #include "cBirthChamber.h"

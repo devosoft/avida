@@ -188,7 +188,7 @@ void Avida::Systematics::GenotypeArbiter::UpdateProvidedValues(Update current_up
       sum_depth.Add(bg->Depth(), abundance);
       
       ConstInstructionSequencePtr seq;
-      seq.DynamicCastFrom(bg->Genome().Representation());
+      seq.DynamicCastFrom(bg->GroupGenome().Representation());
       assert(seq);
       sum_size.Add(seq->GetSize(), abundance);
       
@@ -263,7 +263,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
 {
   
   ConstInstructionSequencePtr seq;
-  seq.DynamicCastFrom(u->Genome().Representation());
+  seq.DynamicCastFrom(u->UnitGenome().Representation());
   assert(seq);
   int list_num = hashGenome(*seq);
   
@@ -290,7 +290,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
       while (list_it.Next() != NULL) {
         if ((*list_it.Get())->ID() == gid) {
           found = *list_it.Get();
-          seq.DynamicCastFrom(found->Genome().Representation());
+          seq.DynamicCastFrom(found->GroupGenome().Representation());
           assert(seq);
           
           m_active_hash[hashGenome(*seq)].Push(found);
@@ -336,7 +336,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
     if (found->NumUnits() > m_best) {
       m_best = found->NumUnits();
       found->SetThreshold();
-      seq.DynamicCastFrom(found->Genome().Representation());
+      seq.DynamicCastFrom(found->GroupGenome().Representation());
       assert(seq);
       found->SetName(nameGenotype(seq->GetSize()));
       m_num_threshold++;
@@ -380,7 +380,7 @@ void Avida::Systematics::GenotypeArbiter::AdjustGenotype(GenotypePtr genotype, i
   if (!genotype->IsThreshold() && (new_size >= m_threshold || genotype == getBest())) {
     genotype->SetThreshold();
     ConstInstructionSequencePtr seq;
-    seq.DynamicCastFrom(genotype->Genome().Representation());
+    seq.DynamicCastFrom(genotype->GroupGenome().Representation());
     assert(seq);
     genotype->SetName(nameGenotype(seq->GetSize()));
     m_num_threshold++;
@@ -483,7 +483,7 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   
   if (genotype->IsActive()) {
     ConstInstructionSequencePtr seq;
-    seq.DynamicCastFrom(genotype->Genome().Representation());
+    seq.DynamicCastFrom(genotype->GroupGenome().Representation());
     int list_num = hashGenome(*seq);
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_cur_update);

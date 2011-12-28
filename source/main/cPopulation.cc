@@ -746,8 +746,8 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
 
   // Pre-check target hardware
   const cHardwareBase& hw = target_organism->GetHardware();
-  if (hw.GetType() != parent->Genome().HardwareType() ||
-      hw.GetInstSet().GetInstSetName() != (const char*)parent->Genome().Properties().Get("instset") ||
+  if (hw.GetType() != parent->UnitGenome().HardwareType() ||
+      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get("instset") ||
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
 
   //Handle host specific injection
@@ -757,7 +757,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
 
   // Attempt actual parasite injection
 
-  Genome mg(parent->Genome().HardwareType(), parent->Genome().Properties(), GeneticRepresentationPtr(new InstructionSequence(injected_code)));
+  Genome mg(parent->UnitGenome().HardwareType(), parent->UnitGenome().Properties(), GeneticRepresentationPtr(new InstructionSequence(injected_code)));
   Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, Apto::StrAs(parent->Properties().Get("generation")), Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
 
   //Handle potential virulence evolution if this parasite is comming from a parasite 

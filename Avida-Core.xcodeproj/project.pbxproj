@@ -41,7 +41,6 @@
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
-		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EEA1332B6590037A393 /* cGradientCount.cc */; };
 		4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EEB1332B6590037A393 /* cGradientCount.h */; };
 		4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cSensing.cc */; };
@@ -935,6 +934,12 @@
 		709CDEC9149EEF6A00995644 /* SexualAncestry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SexualAncestry.cc; sourceTree = "<group>"; };
 		709CDECB149EFD4A00995644 /* Genotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Genotype.cc; sourceTree = "<group>"; };
 		709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenotypeArbiter.cc; sourceTree = "<group>"; };
+		709CDFD814AAD43100995644 /* avida-core-shared-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "avida-core-shared-Prefix.pch"; sourceTree = "<group>"; };
+		709CDFD914AAD43100995644 /* avida_core_sharedProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = avida_core_sharedProj.xcconfig; sourceTree = "<group>"; };
+		709CDFDA14AAD43100995644 /* avida_core_sharedTarget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = avida_core_sharedTarget.xcconfig; sourceTree = "<group>"; };
+		709CDFDB14AAD43100995644 /* avida_core_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = avida_core_shared.h; sourceTree = "<group>"; };
+		709CDFDC14AAD43100995644 /* avida_core_sharedPriv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = avida_core_sharedPriv.h; sourceTree = "<group>"; };
+		709CDFDD14AAD43100995644 /* avida_core_shared.cp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = avida_core_shared.cp; sourceTree = "<group>"; };
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -1682,6 +1687,27 @@
 			path = systematics;
 			sourceTree = "<group>";
 		};
+		709CDFD614AAD42A00995644 /* avida-core-shared */ = {
+			isa = PBXGroup;
+			children = (
+				709CDFD914AAD43100995644 /* avida_core_sharedProj.xcconfig */,
+				709CDFDA14AAD43100995644 /* avida_core_sharedTarget.xcconfig */,
+				709CDFDB14AAD43100995644 /* avida_core_shared.h */,
+				709CDFDC14AAD43100995644 /* avida_core_sharedPriv.h */,
+				709CDFDD14AAD43100995644 /* avida_core_shared.cp */,
+				709CDFD714AAD43100995644 /* Supporting Files */,
+			);
+			path = "avida-core-shared";
+			sourceTree = "<group>";
+		};
+		709CDFD714AAD43100995644 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				709CDFD814AAD43100995644 /* avida-core-shared-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		70A1E324125CDF2B00D56AC4 /* viewer-core */ = {
 			isa = PBXGroup;
 			children = (
@@ -1872,9 +1898,9 @@
 		70FEF65C1382C48900A9D082 /* data */ = {
 			isa = PBXGroup;
 			children = (
+				70FEF65D1382C48900A9D082 /* Manager.cc */,
 				70D3AD091455DFB4000FAB0F /* Package.cc */,
 				7095867814439E5E00243303 /* Provider.cc */,
-				70FEF65D1382C48900A9D082 /* Manager.cc */,
 				70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */,
 			);
 			path = data;
@@ -1894,6 +1920,7 @@
 				708D3135134231E500AE5CEF /* COPYING */,
 				708D31321342315000AE5CEF /* README */,
 				708D31331342315000AE5CEF /* RELEASE_NOTES */,
+				709CDFD614AAD42A00995644 /* avida-core-shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2521,7 +2548,6 @@
 				7023EC510C0A431B00362B9C /* cDeme.cc in Sources */,
 				B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */,
 				42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */,
-				42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */,
 				7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */,
 				7023EC550C0A431B00362B9C /* cEventList.cc in Sources */,
 				7023EC570C0A431B00362B9C /* cFile.cc in Sources */,
@@ -2686,7 +2712,6 @@
 		56F555D50C3B36AD00E2E929 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-text";
 			};
 			name = Debug;
@@ -2694,7 +2719,6 @@
 		56F555D60C3B36AD00E2E929 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-text";
 			};
 			name = Release;
@@ -2704,7 +2728,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-viewer";
 			};
 			name = Debug;
@@ -2714,7 +2737,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-viewer";
 			};
 			name = Release;
@@ -2722,7 +2744,6 @@
 		7023EC350C0A42BC00362B9C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Debug;
@@ -2730,7 +2751,6 @@
 		7023EC360C0A42BC00362B9C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Release;
@@ -2752,7 +2772,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = avida;
 			};
 			name = Debug;
@@ -2762,7 +2781,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = avida;
 			};
 			name = Release;
@@ -2776,6 +2794,7 @@
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
 					include/public/,
@@ -2809,6 +2828,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
@@ -2838,7 +2858,6 @@
 		706C7B65125F64B100EDB4B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "viewer-core";
 			};
 			name = Debug;
@@ -2846,7 +2865,6 @@
 		706C7B66125F64B100EDB4B9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "viewer-core";
 			};
 			name = Release;
@@ -2854,7 +2872,6 @@
 		70B651580BEA700B002472ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "unit-tests";
 			};
 			name = Debug;
@@ -2862,7 +2879,6 @@
 		70B651590BEA700B002472ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "unit-tests";
 			};
 			name = Release;
@@ -2870,7 +2886,6 @@
 		70DCAD18097AF7CC002F8733 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Debug;
@@ -2878,7 +2893,6 @@
 		70DCAD19097AF7CC002F8733 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Release;

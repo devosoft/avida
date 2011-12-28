@@ -694,7 +694,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 
 bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
 {
-  assert(bu->Genome().HardwareType() == GetType());
+  assert(bu->UnitGenome().HardwareType() == GetType());
   
   cCodeLabel label;
   label.ReadString((const char*)bu->UnitSource().arguments);
@@ -720,7 +720,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
   assert(mem_space != -1);
-  const Genome& bu_gen = bu->Genome();
+  const Genome& bu_gen = bu->UnitGenome();
   ConstInstructionSequencePtr bu_seq_p;
   bu_seq_p.DynamicCastFrom(bu_gen.Representation());
   const InstructionSequence& bu_seq = *bu_seq_p;  

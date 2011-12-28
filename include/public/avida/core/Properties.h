@@ -51,7 +51,7 @@ namespace Avida {
       : m_id(p_id), m_type_id(t_id), m_desc(desc) { ; }
     LIB_EXPORT virtual ~Property();
     
-    LIB_EXPORT inline const PropertyID& PropertyID() const { return m_id; }
+    LIB_EXPORT inline const PropertyID& ID() const { return m_id; }
     LIB_EXPORT inline const PropertyTypeID& Type() const { return m_type_id; }
     LIB_EXPORT inline const Apto::String& Description() const { return m_desc; }
     LIB_EXPORT virtual Apto::String Value() const;
@@ -112,7 +112,7 @@ namespace Avida {
     Apto::String m_value;
     
   public:
-    LIB_EXPORT inline explicit StringProperty(const Property& p) : Property(p.PropertyID(), p.Type(), p.Description()), m_value(p.Value()) { ; }
+    LIB_EXPORT inline explicit StringProperty(const Property& p) : Property(p.ID(), p.Type(), p.Description()), m_value(p.Value()) { ; }
     template <typename T> LIB_EXPORT StringProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, const T& prop_value)
       : Property(prop_id, PropertyTraits<T>::Type, desc), m_value((const char*)Apto::AsStr(prop_value)) { ; }
     LIB_EXPORT inline StringProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const Apto::String& desc, const Apto::String& prop_value)
@@ -180,7 +180,7 @@ namespace Avida {
     LIB_EXPORT inline Property& operator[](const PropertyID& p_id) { return Get(p_id); }
     LIB_EXPORT inline const Property& operator[](const PropertyID& p_id) const { return Get(p_id); }
     
-    LIB_EXPORT inline void Set(PropertyPtr p) { m_prop_map.Set(p->PropertyID(), p); }
+    LIB_EXPORT inline void Set(PropertyPtr p) { m_prop_map.Set(p->ID(), p); }
     LIB_EXPORT inline bool Remove(const PropertyID& p_id) { return m_prop_map.Remove(p_id); }
     
     LIB_EXPORT PropertyIDIterator PropertyIDs() const { return m_prop_map.Keys(); }

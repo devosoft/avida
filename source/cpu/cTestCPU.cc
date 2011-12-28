@@ -137,7 +137,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
   // Determine how long this organism should be tested for...
   ConstInstructionSequencePtr seq;
-  seq.DynamicCastFrom(organism.Genome().Representation());
+  seq.DynamicCastFrom(organism.UnitGenome().Representation());
   int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * seq->GetSize();
   time_allocated += m_res_cpu_cycle_offset; // If the resource offset has us starting at a different time, adjust @JEB
 

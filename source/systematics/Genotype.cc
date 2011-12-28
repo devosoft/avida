@@ -40,7 +40,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   , m_mgr(mgr)
   , m_handle(NULL)
   , m_src(founder->UnitSource())
-  , m_genome(founder->Genome())
+  , m_genome(founder->UnitGenome())
   , m_name("001-no_name")
   , m_threshold(false)
   , m_active(true)
@@ -328,7 +328,7 @@ bool Avida::Systematics::Genotype::Matches(UnitPtr u)
   }
   
   // Compare the genomes
-  return (m_genome == u->Genome());
+  return (m_genome == u->UnitGenome());
 }
 
 void Avida::Systematics::Genotype::NotifyNewUnit(UnitPtr u)

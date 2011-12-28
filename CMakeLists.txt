@@ -136,24 +136,10 @@ SET(ANALYZE_SOURCES
   ${ANALYZE_DIR}/cGenotypeData.cc
   ${ANALYZE_DIR}/cModularityAnalysis.cc
   ${ANALYZE_DIR}/cMutationalNeighborhood.cc
-  ${ANALYZE_DIR}/cPhenPlastSummary.h
 )
 SOURCE_GROUP(analyze FILES ${ANALYZE_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${ANALYZE_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${ANALYZE_DIR})
-
-
-# The classification directory
-SET(CLASSIFICATION_DIR ${PROJECT_SOURCE_DIR}/source/classification)
-SET(CLASSIFICATION_SOURCES
-  ${CLASSIFICATION_DIR}/cBGGenotype.cc
-  ${CLASSIFICATION_DIR}/cBGGenotypeManager.cc
-  ${CLASSIFICATION_DIR}/cGenomeTestMetrics.cc
-  ${CLASSIFICATION_DIR}/cSexualAncestry.cc
-)
-SOURCE_GROUP(classification FILES ${CLASSIFICATION_SOURCES})
-LIST(APPEND AVIDA_CORE_SOURCES ${CLASSIFICATION_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
 
 
 # The core directory
@@ -161,10 +147,13 @@ SET(CORE_DIR ${PROJECT_SOURCE_DIR}/source/core)
 SET(CORE_SOURCES
   ${CORE_DIR}/Avida.cc
   ${CORE_DIR}/Definitions.cc
+  ${CORE_DIR}/GeneticRepresentation.cc
   ${CORE_DIR}/Genome.cc
   ${CORE_DIR}/GlobalObject.cc
-  ${CORE_DIR}/Sequence.cc
+  ${CORE_DIR}/InstructionSequence.cc
+  ${CORE_DIR}/Properties.cc
   ${CORE_DIR}/Version.cc
+  ${CORE_DIR}/World.cc
 )
 SOURCE_GROUP(core FILES ${CORE_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})
@@ -180,9 +169,7 @@ SET(CPU_SOURCES
   ${CPU_DIR}/cHardwareBase.cc
   ${CPU_DIR}/cHardwareCPU.cc
   ${CPU_DIR}/cHardwareExperimental.cc
-  ${CPU_DIR}/cHardwareGX.cc
   ${CPU_DIR}/cHardwareManager.cc
-  ${CPU_DIR}/cHardwareSMT.cc
   ${CPU_DIR}/cHardwareStatusPrinter.cc
   ${CPU_DIR}/cHardwareTransSMT.cc
   ${CPU_DIR}/cHeadCPU.cc
@@ -199,6 +186,9 @@ LIST(APPEND ALL_INC_DIRS ${CPU_DIR})
 SET(DATA_DIR ${PROJECT_SOURCE_DIR}/source/data)
 SET(DATA_SOURCES
   ${DATA_DIR}/Manager.cc
+  ${DATA_DIR}/Package.cc
+  ${DATA_DIR}/Provider.cc
+  ${DATA_DIR}/TimeSeriesRecorder.cc
 )
 SOURCE_GROUP(data FILES ${DATA_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${DATA_SOURCES})
@@ -206,15 +196,16 @@ LIST(APPEND AVIDA_CORE_SOURCES ${DATA_SOURCES})
 
 # The drivers directory
 SET(DRIVERS_DIR ${PROJECT_SOURCE_DIR}/source/drivers)
-SET(DRIVERS_SOURCES
-  ${DRIVERS_DIR}/cDefaultAnalyzeDriver.cc
-  ${DRIVERS_DIR}/cDefaultRunDriver.cc
-  ${DRIVERS_DIR}/cFallbackWorldDriver.cc
-)
-SOURCE_GROUP(drivers FILES ${DRIVERS_SOURCES})
-LIST(APPEND AVIDA_CORE_SOURCES ${DRIVERS_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${DRIVERS_DIR})
 
+
+# The core directory
+SET(ENVIRONMENT_DIR ${PROJECT_SOURCE_DIR}/source/environment)
+SET(ENVIRONMENT_SOURCES
+  ${ENVIRONMENT_DIR}/Manager.cc
+)
+SOURCE_GROUP(environment FILES ${ENVIRONMENT_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${ENVIRONMENT_SOURCES})
 
 # The main directory
 SET(MAIN_DIR ${PROJECT_SOURCE_DIR}/source/main)
@@ -231,13 +222,11 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cContextPhenotype.cc
   ${MAIN_DIR}/cDeme.cc
   ${MAIN_DIR}/cDemeNetwork.cc
-  ${MAIN_DIR}/cDemeTopologyNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
   ${MAIN_DIR}/cGenomeUtil.cc
   ${MAIN_DIR}/cGradientCount.cc
-  ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cOrganism.cc
@@ -266,6 +255,22 @@ SET(MAIN_SOURCES
 SOURCE_GROUP(main FILES ${MAIN_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${MAIN_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
+
+
+# The core viewer directory
+SET(SYSTEMATICS_DIR ${PROJECT_SOURCE_DIR}/source/systematics)
+SET(SYSTEMATICS_SOURCES
+  ${SYSTEMATICS_DIR}/Arbiter.cc
+  ${SYSTEMATICS_DIR}/GenomeTestMetrics.cc
+  ${SYSTEMATICS_DIR}/Genotype.cc
+  ${SYSTEMATICS_DIR}/GenotypeArbiter.cc
+  ${SYSTEMATICS_DIR}/Group.cc
+  ${SYSTEMATICS_DIR}/Manager.cc
+  ${SYSTEMATICS_DIR}/SexualAncestry.cc
+  ${SYSTEMATICS_DIR}/Unit.cc
+)
+SOURCE_GROUP(systematics FILES ${SYSTEMATICS_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${SYSTEMATICS_SOURCES})
 
 
 # The tools directory
@@ -312,6 +317,7 @@ LIST(APPEND ALL_INC_DIRS ${TOOLS_DIR})
 SET(UTIL_DIR ${PROJECT_SOURCE_DIR}/source/util)
 SET(UTIL_SOURCES
   ${UTIL_DIR}/CmdLine.cc
+  ${UTIL_DIR}/GenomeLoader.cc
 )
 SOURCE_GROUP(util FILES ${UTIL_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${UTIL_SOURCES})
@@ -320,8 +326,10 @@ LIST(APPEND AVIDA_CORE_SOURCES ${UTIL_SOURCES})
 # The core viewer directory
 SET(VIEWERCORE_DIR ${PROJECT_SOURCE_DIR}/source/viewer-core)
 SET(VIEWERCORE_SOURCES
-  ${VIEWERCORE_DIR}/cCoreView_Info.cc
-  ${VIEWERCORE_DIR}/cCoreView_Map.cc
+  ${VIEWERCORE_DIR}/AvidaViewer.cc
+  ${VIEWERCORE_DIR}/ClassificationInfo.cc
+  ${VIEWERCORE_DIR}/Driver.cc
+  ${VIEWERCORE_DIR}/Map.cc
 )
 SOURCE_GROUP(viewer-core FILES ${VIEWERCORE_SOURCES})
 
@@ -341,11 +349,27 @@ ENDIF(NOT TARGET aptostatic)
 
 # Create the static library from the master source list
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${APTO_INCLUDE_DIR})
-ADD_LIBRARY(avidacore ${AVIDA_CORE_SOURCES})
+ADD_LIBRARY(avida-core ${AVIDA_CORE_SOURCES})
 IF(WIN32)
-  SET_TARGET_PROPERTIES(avidacore PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
+  SET_TARGET_PROPERTIES(avida-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
+ENDIF(WIN32)
+ADD_LIBRARY(avida-coreshared SHARED ${AVIDA_CORE_SOURCES})
+SET_TARGET_PROPERTIES(avida-coreshared PROPERTIES OUTPUT_NAME avida-core)
+TARGET_LINK_LIBRARIES(avida-coreshared aptoshared)
+IF(WIN32)
+  SET_TARGET_PROPERTIES(avida-coreshared PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
 ENDIF(WIN32)
 
+ADD_LIBRARY(viewer-core ${AVIDA_CORE_SOURCES})
+IF(WIN32)
+  SET_TARGET_PROPERTIES(viewer-core PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
+ENDIF(WIN32)
+ADD_LIBRARY(viewer-coreshared SHARED ${AVIDA_CORE_SOURCES})
+SET_TARGET_PROPERTIES(viewer-coreshared PROPERTIES OUTPUT_NAME viewer-core)
+TARGET_LINK_LIBRARIES(viewer-coreshared aptoshared)
+IF(WIN32)
+  SET_TARGET_PROPERTIES(viewer-coreshared PROPERTIES COMPILE_DEFINITIONS BUILDING_DLL)
+ENDIF(WIN32)
 
 
 # Locate TCMalloc
@@ -380,7 +404,7 @@ ENDIF(AVD_ENABLE_TCMALLOC)
 
 # Target Processing
 # - For each enabled target, process its build instructions.  Must occur after
-# - avidacore has been defined.
+# - avida-core has been defined.
 # ------------------------------------------------------------------------------
 OPTION(AVD_CMDLINE
   "Enable building standard command line Avida (fastest version)."
@@ -388,11 +412,11 @@ OPTION(AVD_CMDLINE
 )
 IF(AVD_CMDLINE)
   SET(AVIDA_CMDLINE_DIR source/targets/avida)
-  SET(AVIDA_CMDLINE_SOURCES ${AVIDA_CMDLINE_DIR}/primitive.cc)
+  SET(AVIDA_CMDLINE_SOURCES ${AVIDA_CMDLINE_DIR}/primitive.cc ${AVIDA_CMDLINE_DIR}/Avida2Driver.cc)
   SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
   ADD_EXECUTABLE(avida ${AVIDA_CMDLINE_SOURCES})
 
-  SET(AVIDA_CMDLINE_LIBS avidacore aptostatic)  
+  SET(AVIDA_CMDLINE_LIBS avida-core aptostatic)  
   IF(AVD_ENABLE_TCMALLOC)
     LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
   ENDIF(AVD_ENABLE_TCMALLOC)  
@@ -408,7 +432,7 @@ ENDIF(AVD_CMDLINE)
 # By default, do not build the console interface to Avida.
 OPTION(AVD_GUI_NCURSES
   "Enable building Avida console interface."
-  ON
+  OFF
 )
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
@@ -451,7 +475,7 @@ IF(AVD_GUI_NCURSES)
     SOURCE_GROUP(targets\\avida-viewer FILES ${AVIDA_VIEWER_SOURCES})
     ADD_EXECUTABLE(avida-viewer ${AVIDA_VIEWER_SOURCES})
     
-    SET(AVIDA_VIEWER_LIBS avidacore aptostatic ${NCURSES_LIBRARY})
+    SET(AVIDA_VIEWER_LIBS avida-core aptostatic ${NCURSES_LIBRARY})
     IF(NOT MSVC)
       LIST(APPEND AVIDA_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)
@@ -499,7 +523,7 @@ IF(AVD_GUI_PROTOTYPE_TEXT)
     SOURCE_GROUP(targets\\viewer-text FILES ${AVIDA_TEXT_VIEWER_SOURCES})
     ADD_EXECUTABLE(avida-text ${AVIDA_TEXT_VIEWER_SOURCES} ${COREVIEW_SOURCES} ${COREGUI_SOURCES})
     
-    SET(AVIDA_TEXT_VIEWER_LIBS avidacore ${NCURSES_LIBRARY})
+    SET(AVIDA_TEXT_VIEWER_LIBS avida-core ${NCURSES_LIBRARY})
     IF(NOT MSVC)
       LIST(APPEND AVIDA_TEXT_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)

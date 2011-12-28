@@ -27,7 +27,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/Types.h"
-#include "avida/systematics/Types.h"
+#include "avida/systematics/Unit.h"
 
 
 namespace Avida {

@@ -49,7 +49,7 @@ using namespace std;
 using namespace Avida;
 
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Avida::Genome& genome, int parent_generation, Systematics::Source src)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
   , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset")).GetNumNops())
   , m_src(src)

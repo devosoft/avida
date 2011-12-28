@@ -71,7 +71,7 @@ namespace Avida {
       LIB_EXPORT virtual ~Unit() = 0;
       
       LIB_EXPORT virtual Source UnitSource() const = 0;
-      LIB_EXPORT virtual const Genome& Genome() const = 0;
+      LIB_EXPORT virtual const Genome& UnitGenome() const = 0;
       
       LIB_EXPORT virtual const PropertyMap& Properties() const = 0;
       
