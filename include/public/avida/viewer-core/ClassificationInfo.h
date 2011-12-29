@@ -50,13 +50,6 @@
 
 #include "avida/systematics/Group.h"
 
-#include "cStringList.h"
-#include "tArray.h"
-#include "tList.h"
-
-class cPopulation;
-class cWorld;
-
 
 namespace Avida {
   namespace CoreView {
@@ -67,12 +60,12 @@ namespace Avida {
     class ClassificationInfo
     {
     protected:
-      cWorld* m_world;
-      cString m_role;
+      World* m_world;
+      Systematics::RoleID m_role;
       
       // Constant Inforation setup by specific viewer.
-      tArray<int> m_color_chart_id;
-      tArray<Systematics::GroupPtr> m_color_chart_ptr;
+      Apto::Array<int> m_color_chart_id;
+      Apto::Array<Systematics::GroupPtr> m_color_chart_ptr;
       int m_threshold_colors;
       int m_next_color;
     
@@ -89,14 +82,12 @@ namespace Avida {
       typedef Apto::SmartPtr<MapColor> MapColorPtr;
       
     public:
-      ClassificationInfo(cWorld* in_world, const cString& role, int total_colors);
-      ~ClassificationInfo() { ; }
+      LIB_EXPORT ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors);
+      LIB_EXPORT ~ClassificationInfo() { ; }
       
-      void Update();
+      LIB_EXPORT void Update();      
       
-      
-    private:
-      MapColorPtr getMapColor(Systematics::GroupPtr bg);
+      LIB_EXPORT static MapColorPtr MapColorOf(Systematics::GroupPtr bg);
     };
     
   };

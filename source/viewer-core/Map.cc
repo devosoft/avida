@@ -24,7 +24,7 @@
 
 #include "avida/viewer-core/Map.h"
 
-#include "avida/private/viewer-core/ClassificationInfo.h"
+#include "avida/viewer-core/ClassificationInfo.h"
 
 #include "cEnvironment.h"
 #include "cOrganism.h"
@@ -235,7 +235,7 @@ public:
 };
 
 cGenotypeMapMode::cGenotypeMapMode(cWorld* world)
-  : m_info(new Avida::CoreView::ClassificationInfo(world, "genotype", NUM_COLORS))
+  : m_info(new Avida::CoreView::ClassificationInfo(world->GetNewWorld(), "genotype", NUM_COLORS))
   , m_color_count(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
   , m_scale_labels(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
 {
