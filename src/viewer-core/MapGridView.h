@@ -71,6 +71,8 @@ namespace Avida {
 
 - (void) mouseDown:(NSEvent*)event;
 
+- (NSColor*) colorOfX:(int)x Y:(int)y;
+
 @property (readwrite, nonatomic) double zoom;
 @property (readwrite, retain) id<MapSelectionDelegate> selectionDelegate;
 

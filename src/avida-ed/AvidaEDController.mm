@@ -361,6 +361,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 @synthesize listener;
+@synthesize mapView;
 
 
 - (void) handleMap:(CoreViewMap*)pkg {

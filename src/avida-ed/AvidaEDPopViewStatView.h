@@ -35,12 +35,15 @@
 #import "OrgColorBox.h"
 
 @class AvidaRun;
+@class AvidaEDController;
 class AvidaEDPopViewStatViewRecorder;
 class AvidaEDPopViewStatViewOrgRecorder;
 @class AvidaEDPopViewStatViewEnvActions;
 
 
 @interface AvidaEDPopViewStatView : NSView <MapSelectionDelegate> {
+  IBOutlet AvidaEDController* ctlr;
+  
   IBOutlet NSView* popStatsView;
   IBOutlet NSTextField* txtPopSize;
   IBOutlet NSTextField* txtFitness;

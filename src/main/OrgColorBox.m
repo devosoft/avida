@@ -33,6 +33,11 @@
 
 @synthesize color;
 
+- (void) setColor:(NSColor*)new_color {
+  color = new_color;
+  [self setNeedsDisplay:YES];
+}
+
 - (id) initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];

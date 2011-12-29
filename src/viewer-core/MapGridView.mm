@@ -222,6 +222,18 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
 }
 
+- (NSColor*) colorOfX:(int)x Y:(int)y {
+  int color = map_colors[x * map_width + y];
+  switch (color) {
+    case -4:  return [NSColor blackColor];
+    case -3:  return [NSColor darkGrayColor];
+    case -2:  return [NSColor grayColor];
+    case -1:  return [NSColor whiteColor];
+    default:  return (NSColor*)[color_cache objectAtIndex:color];
+  }
+  return [NSColor blackColor];
+}
+
 @synthesize zoom;
 - (void) setZoom:(double)zval {
   zoom = round(zval);

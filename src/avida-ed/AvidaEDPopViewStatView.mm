@@ -30,6 +30,7 @@
 #import "AvidaEDPopViewStatView.h"
 
 #import "AvidaRun.h"
+#import "AvidaEDController.h"
 #import "NSStringAdditions.h"
 
 #include "avida/core/Properties.h"
@@ -41,6 +42,8 @@
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
+
+#include "avida/viewer-core/ClassificationInfo.h"
 
 
 static const float PANEL_MIN_WIDTH = 300.0;
@@ -148,6 +151,8 @@ static const float PANEL_MIN_WIDTH = 300.0;
 @public
   Avida::Update update;
   int genotype_id;
+  int x;
+  int y;
 }
 @end;
 @implementation AvidaEDPopViewStatViewOrgValues
@@ -341,6 +346,7 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [txtOrgAncestor setStringValue:empty_str];  
   [orgEnvActions clearEntries];
   [tblOrgEnvActions reloadData];
+  [boxOrgColor reset];
 }
 
 
@@ -382,7 +388,6 @@ static const float PANEL_MIN_WIDTH = 300.0;
   }
   
   Apto::String foo = genotype->Properties().Get("ave_fitness");
-  printf("genotype_id = %d -- %s\n", values->genotype_id, (const char*)foo);
 
   [txtOrgName setStringValue:[NSString stringWithAptoString:genotype->Properties().Get("name")]];
   [txtOrgFitness setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_fitness"))];
@@ -398,6 +403,8 @@ static const float PANEL_MIN_WIDTH = 300.0;
   } else {
     [txtOrgAncestor setStringValue:@"-"];
   }
+  
+  [boxOrgColor setColor:[[ctlr mapView] colorOfX:values->x Y:values->y]];
 }
 
 @end
@@ -474,6 +481,8 @@ void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update update, Avida::
     values->genotype_id = -1;
   }
   values->update = update;
+  values->x = m_x;
+  values->y = m_y;
   
   [m_view performSelectorOnMainThread:@selector(handleOrgData:) withObject:values waitUntilDone:NO];
 }

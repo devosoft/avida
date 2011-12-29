@@ -125,6 +125,8 @@
 // Listener Methods
 @property (readonly) Avida::CoreView::Listener* listener;
 
+@property (readonly) MapGridView* mapView;
+
 - (void) handleMap:(CoreViewMap*)object;
 - (void) handleUpdate:(CoreViewUpdate*)object;
 
