@@ -29,11 +29,26 @@
 		703549EB1337D25300D3865C /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EA1337D25300D3865C /* libapto.a */; };
 		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
+		7038059214ACF616002FA72A /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
+		7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
 		70D0455C13C6351D00E6E5AC /* NSStringAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7038059614ACF76A002FA72A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
@@ -72,6 +87,7 @@
 		703549EA1337D25300D3865C /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7038059114ACF616002FA72A /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CorePlot.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/CorePlot.framework"; sourceTree = "<group>"; };
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -87,6 +103,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */,
+				7038059214ACF616002FA72A /* CorePlot.framework in Frameworks */,
 				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
 				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
 				703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */,
@@ -120,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				7035497513379FBD00D3865C /* Cocoa.framework */,
+				7038059114ACF616002FA72A /* CorePlot.framework */,
 				7035497713379FBD00D3865C /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -267,6 +285,7 @@
 				7035496D13379FBD00D3865C /* Sources */,
 				7035496E13379FBD00D3865C /* Frameworks */,
 				7035496F13379FBD00D3865C /* Resources */,
+				7038059614ACF76A002FA72A /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -374,6 +393,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -401,6 +424,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_ENABLE_OBJC_GC = required;

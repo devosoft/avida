@@ -133,6 +133,34 @@ static const float PANEL_MIN_WIDTH = 300.0;
 @end
 
 
+@interface AvidaEDPopViewStatViewGraphData : NSObject <CPTPlotDataSource> {
+  
+}
+
+@end
+
+
+@implementation AvidaEDPopViewStatViewGraphData
+- (NSUInteger) numberOfRecordsForPlot:(CPTPlot*)plot
+{
+  return 8;
+}
+
+- (NSNumber*) numberForPlot:(CPTPlot*)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index
+{
+  NSNumber* num;
+  num = [NSNumber numberWithDouble:(100*index)];
+  if (fieldEnum == CPTScatterPlotFieldY) {
+    num = [NSNumber numberWithDouble:(2.5 * index)];	
+  }
+
+  return num;
+}
+
+@end
+
+
+
 
 @interface AvidaEDPopViewStatViewValues : NSObject {
 @public
@@ -207,6 +235,117 @@ static const float PANEL_MIN_WIDTH = 300.0;
   [dec2format setNegativeFormat:@"-#0.00"];
   [txtAge setFormatter:dec2format];
   [txtOrgAge setFormatter:dec2format];
+  
+  // Setup Graph
+  graph = [[CPTXYGraph alloc] initWithFrame:NSRectToCGRect(graphView.bounds)];
+	CPTTheme* theme = [CPTTheme themeNamed:kCPTPlainWhiteTheme];
+  [graph applyTheme:theme];
+	graphView.hostedGraph = graph;
+  
+  graph.paddingLeft = 0.0;
+  graph.paddingTop = 0.0;
+  graph.paddingRight = 0.0;
+  graph.paddingBottom = 0.0;    
+
+  
+  // Setup scatter plot space
+  CPTXYPlotSpace* plotSpace = (CPTXYPlotSpace*)graph.defaultPlotSpace;
+  plotSpace.allowsUserInteraction = YES;
+  
+  // Grid line styles
+  CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
+  majorGridLineStyle.lineWidth = 0.75;
+  majorGridLineStyle.lineColor = [[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75];
+  
+  CPTMutableLineStyle *minorGridLineStyle = [CPTMutableLineStyle lineStyle];
+  minorGridLineStyle.lineWidth = 0.25;
+  minorGridLineStyle.lineColor = [[CPTColor whiteColor] colorWithAlphaComponent:0.1];    
+  
+  // Axes
+
+  // Label x axis with a fixed interval policy
+	CPTXYAxisSet* axisSet = (CPTXYAxisSet *)graph.axisSet;
+  
+  CPTXYAxis* x = axisSet.xAxis;
+  x.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  x.minorTicksPerInterval = 5;
+  x.preferredNumberOfMajorTicks = 5;
+//  x.majorGridLineStyle = majorGridLineStyle;
+//  x.minorGridLineStyle = minorGridLineStyle;
+  
+  x.axisConstraints = [CPTConstraints constraintWithLowerOffset:40.0];
+  
+	x.title = @"Updates";
+	x.titleOffset = 20.0;
+  
+	// Label y with an automatic label policy. 
+  CPTXYAxis *y = axisSet.yAxis;
+  y.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  y.minorTicksPerInterval = 2;
+  y.preferredNumberOfMajorTicks = 8;
+//  y.majorGridLineStyle = majorGridLineStyle;
+//  y.minorGridLineStyle = minorGridLineStyle;
+  
+  y.axisConstraints = [CPTConstraints constraintWithLowerOffset:55.0];
+
+	y.title = @"Fitness?";
+	y.titleOffset = 35.0;
+  
+  // Set axes
+  graph.axisSet.axes = [NSArray arrayWithObjects:x, y, nil];
+  
+  
+  
+  graphData = [[AvidaEDPopViewStatViewGraphData alloc] init];
+  
+ 
+  // Create plot that uses the graphData data source
+	CPTScatterPlot *dataSourceLinePlot = [[[CPTScatterPlot alloc] init] autorelease];
+  dataSourceLinePlot.identifier = @"graph";
+	dataSourceLinePlot.cachePrecision = CPTPlotCachePrecisionDouble;
+  
+  CPTMutableLineStyle* lineStyle = [[dataSourceLinePlot.dataLineStyle mutableCopy] autorelease];
+	lineStyle.miterLimit = 1.0;
+	lineStyle.lineWidth = 3.0;
+	lineStyle.lineColor = [CPTColor blueColor];
+  dataSourceLinePlot.dataLineStyle = lineStyle;
+  
+  dataSourceLinePlot.dataSource = graphData;
+  
+//	CPTMutableTextStyle *whiteTextStyle = [CPTMutableTextStyle textStyle];
+//  whiteTextStyle.color = [CPTColor whiteColor];
+//	dataSourceLinePlot.labelTextStyle = whiteTextStyle;
+//  
+//	dataSourceLinePlot.labelOffset = 5.0;
+//	dataSourceLinePlot.labelRotation = M_PI_4;
+  [graph addPlot:dataSourceLinePlot];
+  
+  // Make the data source line use stepped interpolation
+//  dataSourceLinePlot.interpolation = CPTScatterPlotInterpolationLinear;
+  
+  // Put an area gradient under the plot above
+  CPTColor* areaColor = [CPTColor colorWithComponentRed:0.3 green:0.3 blue:0.3 alpha:0.8];
+  CPTGradient* areaGradient = [CPTGradient gradientWithBeginningColor:areaColor endingColor:[CPTColor clearColor]];
+  areaGradient.angle = -90.0;
+  CPTFill* areaGradientFill = [CPTFill fillWithGradient:areaGradient];
+  dataSourceLinePlot.areaFill = areaGradientFill;
+  dataSourceLinePlot.areaBaseValue = CPTDecimalFromString(@"0");
+	
+  
+  // Auto scale the plot space to fit the plot data
+  // Extend the y range by 10% for neatness
+  [plotSpace scaleToFitPlots:[NSArray arrayWithObjects:dataSourceLinePlot, nil]];
+  CPTPlotRange* yRange = plotSpace.yRange;
+  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
+  plotSpace.yRange = yRange;
+
+  CPTPlotRange* xRange = plotSpace.xRange;
+  [xRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
+  plotSpace.xRange = xRange;
+  
+  // Restrict y range to a global range
+//  CPTPlotRange* globalYRange = [CPTPlotRange plotRangeWithLocation:CPTDecimalFromFloat(0.0f) length:CPTDecimalFromFloat(6.0f)];
+//  plotSpace.globalYRange = globalYRange;  
 }
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
@@ -274,10 +413,10 @@ static const float PANEL_MIN_WIDTH = 300.0;
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize {
+  const CGFloat spacing = 7.0;
   NSRect bounds = [self bounds];
   
   if (bounds.size.width != oldBoundsSize.width && bounds.size.width >= PANEL_MIN_WIDTH) {
-    const CGFloat spacing = 7.0;
     CGFloat stat_panel_width = floor((bounds.size.width - 3 * spacing) / 2.0);
 
     NSRect panel_bounds;
@@ -292,6 +431,25 @@ static const float PANEL_MIN_WIDTH = 300.0;
     panel_bounds.origin.x = 2.0 * spacing + stat_panel_width;
     [popStatsView setFrame:panel_bounds];
     [popStatsView setNeedsDisplay:YES];
+  }
+  
+  printf("bounds %f %f\n", bounds.size.width, bounds.size.height);
+  
+  if (bounds.size.width != oldBoundsSize.width || bounds.size.height != oldBoundsSize.height) {
+    NSRect panel_bounds;
+    
+    panel_bounds.size = [btnGraphSelect bounds].size;
+    panel_bounds.origin.x = floor((bounds.size.width - panel_bounds.size.width) / 2.0);
+    panel_bounds.origin.y = 322 + spacing;
+    [btnGraphSelect setFrame:panel_bounds];
+    [btnGraphSelect setNeedsDisplay:YES];
+    
+    panel_bounds.size.width = floor(bounds.size.width - 2 * spacing);
+    panel_bounds.size.height = floor(bounds.size.height - 322.0 - (2 * spacing) - 32.0 - 100.0);
+    panel_bounds.origin.x = spacing;
+    panel_bounds.origin.y = 322.0 + spacing + 32.0;
+    [graphView setFrame:panel_bounds];
+    [graphView setNeedsDisplay:YES];
   }
 }
 

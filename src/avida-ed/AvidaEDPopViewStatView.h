@@ -28,6 +28,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <CorePlot/CorePlot.h>
 
 #include "avida/data/Recorder.h"
 
@@ -39,6 +40,7 @@
 class AvidaEDPopViewStatViewRecorder;
 class AvidaEDPopViewStatViewOrgRecorder;
 @class AvidaEDPopViewStatViewEnvActions;
+@class AvidaEDPopViewStatViewGraphData;
 
 
 @interface AvidaEDPopViewStatView : NSView <MapSelectionDelegate> {
@@ -68,6 +70,11 @@ class AvidaEDPopViewStatViewOrgRecorder;
   AvidaEDPopViewStatViewEnvActions* envActions;
   AvidaEDPopViewStatViewEnvActions* orgEnvActions;
   IBOutlet id envActionChangeDelegate;
+  
+  IBOutlet NSPopUpButton* btnGraphSelect;
+  IBOutlet CPTGraphHostingView* graphView;
+  CPTXYGraph* graph;
+  AvidaEDPopViewStatViewGraphData* graphData;
 }
 
 - (id) initWithFrame:(NSRect)frame;
