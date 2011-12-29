@@ -26,6 +26,7 @@
 
 #include "avida/core/Properties.h"
 #include "avida/data/Provider.h"
+#include "avida/environment/Types.h"
 #include "avida/systematics/Arbiter.h"
 
 #include "avida/private/systematics/Genotype.h"
@@ -98,6 +99,7 @@ namespace Avida {
       
       int m_dom_id;
       
+      Apto::Array<Environment::ActionTriggerID> m_env_action_ids;
       
 
       struct ProvidedData
@@ -114,7 +116,7 @@ namespace Avida {
       
       
     public:
-      GenotypeArbiter(int threshold);
+      GenotypeArbiter(World* world, int threshold);
       ~GenotypeArbiter();
       
       // Arbiter Interface Methods
@@ -141,6 +143,8 @@ namespace Avida {
       // Methods called by Genotype
       GenotypePtr ClassifyNewUnit(UnitPtr bu, ConstGroupMembershipPtr parents, const ClassificationHints* hints = NULL);
       void AdjustGenotype(GenotypePtr genotype, int old_size, int new_size);
+      
+      inline const Apto::Array<Environment::ActionTriggerID>& EnvironmentActionTriggerIDs() const { return m_env_action_ids; }
       
       
     private:

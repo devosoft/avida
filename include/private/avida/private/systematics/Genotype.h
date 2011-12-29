@@ -30,6 +30,7 @@
 
 #include "cCountTracker.h"
 #include "cDoubleSum.h"
+#include "cIntSum.h"
 
 
 namespace Avida {
@@ -94,6 +95,8 @@ namespace Avida {
       int m_last_birth_cell;
       int m_last_group_id;
       int m_last_forager_type;
+      
+      Apto::Array<cIntSum> m_task_counts;
       
       mutable PropertyMap* m_prop_map;
       

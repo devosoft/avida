@@ -26,6 +26,7 @@
 #include "avida/core/InstructionSequence.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
+#include "avida/environment/Manager.h"
 
 #include "avida/private/systematics/Genotype.h"
 
@@ -35,7 +36,7 @@
 #include <cmath>
 
 
-Avida::Systematics::GenotypeArbiter::GenotypeArbiter(int threshold)
+Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold)
   : m_threshold(threshold)
   , m_active_sz(1)
   , m_coalescent(NULL)
@@ -47,6 +48,13 @@ Avida::Systematics::GenotypeArbiter::GenotypeArbiter(int threshold)
   , m_tot_genotypes(0)
   , m_coalescent_depth(-1)
 {
+  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(world);
+  Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
+  m_env_action_ids.Resize(trigger_ids->GetSize());
+  int idx = 0;
+  for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next(); idx++) {
+    m_env_action_ids[idx] = *it.Get();
+  }
 }
 
 Avida::Systematics::GenotypeArbiter::~GenotypeArbiter()

@@ -109,10 +109,6 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
     // Environment
     Environment::ManagerPtr(new Environment::Manager)->AttachTo(new_world);
     
-    // Systematics
-    Systematics::ManagerPtr systematics(new Systematics::Manager);
-    systematics->AttachTo(new_world);
-    systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(m_conf->THRESHOLD.Get())));
   }
   
 
@@ -125,6 +121,12 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
     success = false;
   }
   
+  
+  // Systematics
+  Systematics::ManagerPtr systematics(new Systematics::Manager);
+  systematics->AttachTo(new_world);
+  systematics->RegisterRole("genotype", Systematics::ArbiterPtr(new Systematics::GenotypeArbiter(new_world, m_conf->THRESHOLD.Get())));
+
   
   // Setup Stats Object
   m_stats = Apto::SmartPtr<cStats, Apto::InternalRCObject>(new cStats(this));

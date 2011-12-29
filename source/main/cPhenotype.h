@@ -420,6 +420,7 @@ public:
   double GetLastMerit() const { assert(initialized == true); return last_merit_base*last_bonus; }
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
+  int GetLastCountForTask(int idx) const { assert(initialized == true); return last_task_count[idx]; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
   void SetLastTaskCount(tArray<int> tasks) { assert(initialized == true); last_task_count = tasks; }
   const tArray<int>& GetLastHostTaskCount() const { assert(initialized == true); return last_host_tasks; }

@@ -142,6 +142,17 @@ void cOrganism::initialize(cAvidaContext& ctx)
   ADD_FUN_PROP("last_metabolic_rate", "Metabolic Rate", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastMerit));
   ADD_FUN_PROP("last_fitness", "Fitness", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastFitness));
   
+  const cEnvironment& env = m_world->GetEnvironment();
+  Apto::Functor<int, Apto::TL::Create<int> > getLastTaskFun(&m_phenotype, &cPhenotype::GetLastCountForTask);
+  for(int i = 0; i < env.GetNumTasks(); i++) {
+    Apto::String task_id("environment.triggers.");
+    task_id += env.GetTask(i).GetName();
+    task_id += ".count";
+
+    m_prop_map.Set(PropertyPtr(new FunctorProperty<int>(task_id, (const char*)env.GetTask(i).GetName(), Apto::BindFirst(getLastTaskFun, i))));
+	}
+
+  
 #undef ADD_FUN_PROP
 #undef ADD_REF_PROP
 #undef ADD_STR_PROP

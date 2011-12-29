@@ -55,6 +55,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   , m_last_birth_cell(0)
   , m_last_group_id(-1)
   , m_last_forager_type(-1)
+  , m_task_counts(mgr->EnvironmentActionTriggerIDs().GetSize())
   , m_prop_map(NULL)
 {
   AddActiveReference();
@@ -188,6 +189,16 @@ void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
   m_repro_rate.Add(1.0 / (double)Apto::StrAs(u->Properties().Get("last_gestation_time")));
   m_merit.Add(Apto::StrAs(u->Properties().Get("last_metabolic_rate")));
   m_fitness.Add(Apto::StrAs(u->Properties().Get("last_fitness")));
+
+  // Collect all relevant action trigger counts
+  for (int i = 0; i < m_mgr->EnvironmentActionTriggerIDs().GetSize(); i++) {
+    PropertyID prop_id("environment.triggers.");
+    prop_id += m_mgr->EnvironmentActionTriggerIDs()[i];
+    prop_id += ".count";
+    
+    int task_count = Apto::StrAs(u->Properties().Get(prop_id));
+    m_task_counts[i].Add(task_count);
+  }
 }
 
 
@@ -369,6 +380,7 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 #define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, FunctorProperty<TYPE>::VAL)));
 #define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map->Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, const_cast<TYPE&>(VAL))));
 #define ADD_STR_PROP(NAME, DESC, VAL) m_prop_map->Set(PropertyPtr(new StringProperty(NAME, DESC, VAL)));
+  
   ADD_FUN_PROP("genome", "Genome", Apto::String, GetFunctor(&m_genome, &Genome::AsString));
   ADD_STR_PROP("src_transmission_type", "Source Transmission Type", (int)m_src.transmission_type); 
   ADD_REF_PROP("name", "Name", Apto::String, m_name);
@@ -399,6 +411,16 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_REF_PROP("last_birth_cell", "Last birth cell", int, m_last_birth_cell);
   ADD_REF_PROP("last_group_id", "Last birth group", int, m_last_group_id);
   ADD_REF_PROP("last_forager_type", "Last birth forager type", int, m_last_forager_type);
+  
+  // Collect all relevant action trigger counts
+  for (int i = 0; i < m_mgr->EnvironmentActionTriggerIDs().GetSize(); i++) {
+    PropertyID prop_id("environment.triggers.");
+    prop_id += m_mgr->EnvironmentActionTriggerIDs()[i];
+    prop_id += ".average";
+    
+    ADD_FUN_PROP(prop_id, Apto::String("Average ") + m_mgr->EnvironmentActionTriggerIDs()[i], double, GetFunctor(&m_task_counts[i], &cIntSum::Average));
+  }
+  
 #undef ADD_FUN_PROP
 #undef ADD_REF_PROP
 #undef ADD_STR_PROP
