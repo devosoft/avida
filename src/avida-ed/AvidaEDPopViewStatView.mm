@@ -383,20 +383,30 @@ static const float PANEL_MIN_WIDTH = 300.0;
   Avida::Systematics::GroupPtr genotype = g_arb->Group(values->genotype_id);
 
   if (!genotype) {
-    [self clearSelectedOrg];
+    NSString* empty_str = @"-";
+    [txtOrgName setStringValue:empty_str];
+    [txtOrgFitness setStringValue:empty_str];
+    [txtOrgMetabolicRate setStringValue:empty_str];
+    [txtOrgGestation setStringValue:empty_str];
+    [txtOrgAge setStringValue:empty_str];
+    [txtOrgAncestor setStringValue:empty_str];  
+    for (NSUInteger i = 0; i < [orgEnvActions entryCount]; i++) {
+      [orgEnvActions updateEntry:[orgEnvActions entryAtIndex:i] withValue:[NSNumber numberWithInt:0]];
+    }
+    [tblOrgEnvActions reloadData];
+    [boxOrgColor reset];
     return;
   }
   
-  Apto::String foo = genotype->Properties().Get("ave_fitness");
-
   [txtOrgName setStringValue:[NSString stringWithAptoString:genotype->Properties().Get("name")]];
   [txtOrgFitness setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_fitness"))];
   [txtOrgMetabolicRate setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_metabolic_rate"))];
   [txtOrgGestation setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_gestation_time"))];
   [txtOrgAge setIntValue:(values->update - (int)Apto::StrAs(genotype->Properties().Get("update_born")))];
   
+  // Set the name of the parent genotype
   Apto::String parents(genotype->Properties().Get("parents").Value());
-  parents = parents.Pop(',');
+  parents = parents.Pop(','); // extracts the first parent only
   if (parents.GetSize()) {
     Avida::Systematics::GroupPtr parent_genotype = g_arb->Group(Apto::StrAs(parents));
     [txtOrgAncestor setStringValue:[NSString stringWithAptoString:parent_genotype->Properties().Get("name")]];
@@ -404,7 +414,19 @@ static const float PANEL_MIN_WIDTH = 300.0;
     [txtOrgAncestor setStringValue:@"-"];
   }
   
+  // Set box color based on color from the map object
   [boxOrgColor setColor:[[ctlr mapView] colorOfX:values->x Y:values->y]];
+
+  // Update the data source for the organism environment actions
+  for (NSUInteger i = 0; i < [orgEnvActions entryCount]; i++) {
+    NSString* entry_name = [orgEnvActions entryAtIndex:i];
+    Apto::String data_id("environment.triggers.");
+    data_id += [entry_name UTF8String];
+    data_id += ".average";
+    double count = Apto::StrAs(genotype->Properties().Get(data_id));
+    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
+  }
+  [tblOrgEnvActions reloadData];
 }
 
 @end
@@ -499,6 +521,4 @@ void AvidaEDPopViewStatViewOrgRecorder::SetCoords(int x, int y)
   m_data_id += "]";
   m_requested->Clear();
   m_requested->Insert(m_data_id);
-
-  printf("%s\n", (const char*)m_data_id);
 }
