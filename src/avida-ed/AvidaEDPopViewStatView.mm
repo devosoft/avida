@@ -240,12 +240,21 @@ static const float PANEL_MIN_WIDTH = 300.0;
   graph = [[CPTXYGraph alloc] initWithFrame:NSRectToCGRect(graphView.bounds)];
 	CPTTheme* theme = [CPTTheme themeNamed:kCPTPlainWhiteTheme];
   [graph applyTheme:theme];
-	graphView.hostedGraph = graph;
+  
+  graph.fill = nil;
+	graph.plotAreaFrame.fill = nil; 
+	graph.plotAreaFrame.borderLineStyle = nil;
+	
+  graphView.hostedGraph = graph;
   
   graph.paddingLeft = 0.0;
   graph.paddingTop = 0.0;
   graph.paddingRight = 0.0;
-  graph.paddingBottom = 0.0;    
+  graph.paddingBottom = 0.0;
+  graph.plotAreaFrame.paddingLeft = 65.0;
+  graph.plotAreaFrame.paddingTop = 5.0;
+  graph.plotAreaFrame.paddingRight = 5.0;
+  graph.plotAreaFrame.paddingBottom = 42.0;
 
   
   // Setup scatter plot space
@@ -261,34 +270,42 @@ static const float PANEL_MIN_WIDTH = 300.0;
   minorGridLineStyle.lineWidth = 0.25;
   minorGridLineStyle.lineColor = [[CPTColor whiteColor] colorWithAlphaComponent:0.1];    
   
+  
   // Axes
 
   // Label x axis with a fixed interval policy
 	CPTXYAxisSet* axisSet = (CPTXYAxisSet *)graph.axisSet;
+  CPTMutableTextStyle* textStyle = [CPTMutableTextStyle textStyle];
+  textStyle.fontName = @"Helvetica";
+  textStyle.fontSize = 10;
+  CPTMutableTextStyle* titleTextStyle = [CPTMutableTextStyle textStyle];
+  titleTextStyle.fontName = @"Helvetica";
+  titleTextStyle.fontSize = 11;
   
   CPTXYAxis* x = axisSet.xAxis;
+  x.titleTextStyle = titleTextStyle;
   x.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
   x.minorTicksPerInterval = 5;
   x.preferredNumberOfMajorTicks = 5;
+  x.labelTextStyle = textStyle;
 //  x.majorGridLineStyle = majorGridLineStyle;
 //  x.minorGridLineStyle = minorGridLineStyle;
-  
-  x.axisConstraints = [CPTConstraints constraintWithLowerOffset:40.0];
-  
+    
 	x.title = @"Updates";
 	x.titleOffset = 20.0;
   
+  
 	// Label y with an automatic label policy. 
   CPTXYAxis *y = axisSet.yAxis;
+  y.titleTextStyle = titleTextStyle;
   y.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
   y.minorTicksPerInterval = 2;
   y.preferredNumberOfMajorTicks = 8;
+  y.labelTextStyle = textStyle;
 //  y.majorGridLineStyle = majorGridLineStyle;
 //  y.minorGridLineStyle = minorGridLineStyle;
   
-  y.axisConstraints = [CPTConstraints constraintWithLowerOffset:55.0];
-
-	y.title = @"Fitness?";
+	y.title = @"Fitness";
 	y.titleOffset = 35.0;
   
   // Set axes
@@ -336,12 +353,13 @@ static const float PANEL_MIN_WIDTH = 300.0;
   // Extend the y range by 10% for neatness
   [plotSpace scaleToFitPlots:[NSArray arrayWithObjects:dataSourceLinePlot, nil]];
   CPTPlotRange* yRange = plotSpace.yRange;
-  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
+//  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
   plotSpace.yRange = yRange;
 
   CPTPlotRange* xRange = plotSpace.xRange;
-  [xRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
+//  [xRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
   plotSpace.xRange = xRange;
+  
   
   // Restrict y range to a global range
 //  CPTPlotRange* globalYRange = [CPTPlotRange plotRangeWithLocation:CPTDecimalFromFloat(0.0f) length:CPTDecimalFromFloat(6.0f)];
