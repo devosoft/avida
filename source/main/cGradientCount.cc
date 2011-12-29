@@ -99,6 +99,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   ResetGradRes(m_world->GetDefaultContext(), worldx, worldy);
 }
 
+cGradientCount::~cGradientCount() { ; }
+
 void cGradientCount::StateAll()
 {
   return;

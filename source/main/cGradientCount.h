@@ -94,6 +94,7 @@ public:
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
                  int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double resistance);
+  ~cGradientCount();
 
   void UpdateCount(cAvidaContext& ctx);
   void StateAll();

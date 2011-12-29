@@ -3830,6 +3830,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
+  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) return false;
+  
   cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
@@ -3895,7 +3897,9 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
-  
+
+  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) return false;
+
   cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
@@ -4080,6 +4084,8 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
+  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) return false;
+
   cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
   if (target->IsDead()) return false;  
   
