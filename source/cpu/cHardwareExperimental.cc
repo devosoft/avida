@@ -3830,62 +3830,70 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) return false;
-  
-  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
-  if (target->IsDead()) return false;  
-  
-  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-    return false;
-  }
-  
-  // prevent killing on nests/safe havens
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
-  }
-  
-  // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-    attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
-    m_organism->UpdateMerit(attacker_merit);
-  }
-  
-  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-  for (int i = 0; i < org_reactions.GetSize(); i++) {
-    org_reactions[i] += target_reactions[i];
-    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
-  }
-  
-  // and add current merit bonus after adjusting for conversion efficiency
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
-  
-  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    tArray<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
-    }
-  }
-  
-  // if you weren't a predator before, you are now!
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
-  
-  target->Die(ctx);
-  
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  setInternalValue(success_reg, 1, true);   
-  setInternalValue(bonus_reg, (int) (target_bonus), true);
   const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-  setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
-  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
+
+  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+    setInternalValue(success_reg, -1, true);   
+    setInternalValue(bonus_reg, -1, true);
+    setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), -1, true);
+    return false;
+  }
+  else {
+    cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
+    if (target->IsDead()) return false;  
+    
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
+      return false;
+    }
+    
+    // prevent killing on nests/safe havens
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i = 0; i < resource_lib.GetSize(); i++) {
+      if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
+    }
+    
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+    tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      org_reactions[i] += target_reactions[i];
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      tArray<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+      }
+    }
+    
+    // if you weren't a predator before, you are now!
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
+    
+    target->Die(ctx);
+    
+    setInternalValue(success_reg, 1, true);   
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
+  }
   return true;
 } 		
 
@@ -3897,78 +3905,89 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
-
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) return false;
-
-  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
-  if (target->IsDead()) return false;  
   
-  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-    return false;
-  }
-  
-  // prevent killing on nests/safe havens
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
-  }
-  
-  const int target_reg = FindModifiedRegister(rBX);
-  int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
-  
-  // a little mod help...and allow pred to target juveniles
-  int num_fts = 0;
-  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-  set <int>::iterator itr;    
-  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-  if (!m_world->GetEnvironment().IsTargetID(target_org_type) && target_org_type != -1) {
-    // ft's may not be sequentially numbered
-    int ft_num = abs(target_org_type) % num_fts;
-    itr = fts_avail.begin();
-    for (int i = 0; i < ft_num; i++) itr++;
-    target_org_type = *itr;
-  }
-  
-  if (target_org_type != target->GetForageTarget()) return false;
-
-  // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-    attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
-    m_organism->UpdateMerit(attacker_merit);
-  }
-  
-  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-  for (int i = 0; i < org_reactions.GetSize(); i++) {
-    org_reactions[i] += target_reactions[i];
-    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
-  }
-  
-  // and add current merit bonus after adjusting for conversion efficiency
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
-  
-  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    tArray<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
-    }
-  }
-  
-  // if you weren't a predator before, you are now!
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
-  
-  target->Die(ctx);
-  
-  const int success_reg = FindModifiedNextRegister(rBX);   
+  const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  setInternalValue(success_reg, 1, true);   
-  setInternalValue(bonus_reg, (int) (target_bonus), true);
+  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+  
+  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+    setInternalValue(success_reg, -1, true);   
+    setInternalValue(bonus_reg, -1, true);
+    setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), -1, true);
+    return false;    
+  }
+  else {
+    cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
+    if (target->IsDead()) return false;  
+    
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
+      return false;
+    }
+    
+    // prevent killing on nests/safe havens
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i = 0; i < resource_lib.GetSize(); i++) {
+      if (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetHabitat() == 3) return false;
+    }
+    
+    const int target_reg = FindModifiedRegister(rBX);
+    int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
+    
+    // a little mod help...and allow pred to target juveniles
+    int num_fts = 0;
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;    
+    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+    if (!m_world->GetEnvironment().IsTargetID(target_org_type) && target_org_type != -1) {
+      // ft's may not be sequentially numbered
+      int ft_num = abs(target_org_type) % num_fts;
+      itr = fts_avail.begin();
+      for (int i = 0; i < ft_num; i++) itr++;
+      target_org_type = *itr;
+    }
+    
+    if (target_org_type != target->GetForageTarget()) return false;
+    
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+    tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      org_reactions[i] += target_reactions[i];
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      tArray<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+      }
+    }
+    
+    // if you weren't a predator before, you are now!
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
+    
+    target->Die(ctx);
+    
+    setInternalValue(success_reg, 1, true);   
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
+  }
   return true;
 } 
 
@@ -4084,55 +4103,63 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) return false;
-
-  cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
-  if (target->IsDead()) return false;  
-  
-  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
-    return false;
-  }
-    
-  // add victim's merit to attacker's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
-  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
-    double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-    attacker_merit += target_merit * 0.1; //m_world->GetConfig().PRED_EFFICIENCY.Get();
-    m_organism->UpdateMerit(attacker_merit);
-  }
-  
-  // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-  tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-  for (int i = 0; i < org_reactions.GetSize(); i++) {
-    org_reactions[i] += target_reactions[i];
-    m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
-  }
-  
-  // and add current merit bonus after adjusting for conversion efficiency
-  const double target_bonus = target->GetPhenotype().GetCurBonus();
-  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * 0.1)); //m_world->GetConfig().PRED_EFFICIENCY.Get()));
-  
-  // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-    tArray<double> target_bins = target->GetRBins();
-    for (int i = 0; i < target_bins.GetSize(); i++) {
-      m_organism->AddToRBin(i, target_bins[i] * 0.1); //m_world->GetConfig().PRED_EFFICIENCY.Get());
-    }
-  }
-  
-  // if you weren't a top predator before, you are now!
-//  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-3);
-  
-  target->Die(ctx);
-  
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  setInternalValue(success_reg, 1, true);   
-  setInternalValue(bonus_reg, (int) (target_bonus), true);
   const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-  setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
-  setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
+  
+  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+    setInternalValue(success_reg, -1, true);   
+    setInternalValue(bonus_reg, -1, true);
+    setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), -1, true);
+    return false;    
+  }
+  else {
+    cOrganism* target = m_organism->GetOrgInterface().GetNeighbor();
+    if (target->IsDead()) return false;  
+    
+    if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) {
+      return false;
+    }
+    
+    // add victim's merit to attacker's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * 0.1; //m_world->GetConfig().PRED_EFFICIENCY.Get();
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+    tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      org_reactions[i] += target_reactions[i];
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * 0.1)); //m_world->GetConfig().PRED_EFFICIENCY.Get()));
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      tArray<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * 0.1); //m_world->GetConfig().PRED_EFFICIENCY.Get());
+      }
+    }
+    
+    // if you weren't a top predator before, you are now!
+    //  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-3);
+    
+    target->Die(ctx);
+    
+    setInternalValue(success_reg, 1, true);   
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
+  }
   return true;
 } 
 
