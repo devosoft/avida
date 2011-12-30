@@ -41,19 +41,39 @@ namespace Avida {
     private:
       DataID m_data_id;
       ConstDataSetPtr m_requested;
-      Apto::Array<T, Apto::Smart> m_data;
+      
+      struct DataEntry;
+      Apto::Array<DataEntry, Apto::Smart> m_data;
       
     public:
       LIB_EXPORT TimeSeriesRecorder(const DataID& data_id);
+      LIB_EXPORT TimeSeriesRecorder(const DataID& data_id, Apto::String str);
       
       // Data::Recorder Interface
-      LIB_EXPORT ConstDataSetPtr GetRequested() const { return m_requested; }
+      LIB_EXPORT inline ConstDataSetPtr GetRequested() const { return m_requested; }
       LIB_EXPORT void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data);
       
       // Value Access
-      LIB_EXPORT inline int GetNumPoints() const { return m_data.GetSize(); }
-      LIB_EXPORT inline T GetDataPoint(int idx) const { return m_data[idx]; }
-      LIB_EXPORT inline const Apto::Array<T, Apto::Smart>& GetData() const { return m_data; }
+      LIB_EXPORT inline int NumPoints() const { return m_data.GetSize(); }
+      LIB_EXPORT inline T DataPoint(int idx) const { return m_data[idx].data; }
+      LIB_EXPORT inline Update DataTime(int idx) const { return m_data[idx].update; }
+      
+      LIB_EXPORT Apto::String AsString() const;
+      
+    protected:
+      LIB_EXPORT virtual bool shouldRecordValue(Update update) = 0;
+      LIB_EXPORT virtual void didRecordValue() { ; }
+      
+      
+    private:
+      struct DataEntry
+      {
+        T data;
+        Update update;
+        
+        LIB_LOCAL inline DataEntry() : update(-1) { ; }
+        LIB_LOCAL inline DataEntry(Update in_update, const T& in_data) : data(in_data), update(in_update) { ; }
+      };
     };
     
   };

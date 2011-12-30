@@ -113,7 +113,7 @@ namespace Avida {
   public:
     LIB_EXPORT inline explicit StringProperty(const Property& p) : Property(p.ID(), p.Type(), p.Description()), m_value(p.Value()) { ; }
     template <typename T> LIB_EXPORT StringProperty(const Avida::PropertyID& prop_id, const Apto::String& desc, const T& prop_value)
-      : Property(prop_id, PropertyTraits<T>::Type, desc), m_value((const char*)Apto::AsStr(prop_value)) { ; }
+      : Property(prop_id, PropertyTraits<T>::Type, desc), m_value(Apto::AsStr(prop_value)) { ; }
     LIB_EXPORT inline StringProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const Apto::String& desc, const Apto::String& prop_value)
       : Property(prop_id, type_id, desc), m_value(prop_value) { ; }
     

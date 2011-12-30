@@ -31,37 +31,229 @@ namespace Avida {
   namespace Data {
     
     template <>
-    void TimeSeriesRecorder<PackagePtr>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
+    TimeSeriesRecorder<PackagePtr>::TimeSeriesRecorder(const DataID& data_id) : m_data_id(data_id)
     {
-      m_data.Push(retrieve_data(m_data_id));
-    }
-    
-    
-    template <>
-    void TimeSeriesRecorder<bool>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
-    {
-      m_data.Push(retrieve_data(m_data_id)->BoolValue());
-    }
-    
-    template <>
-    void TimeSeriesRecorder<int>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
-    {
-      m_data.Push(retrieve_data(m_data_id)->IntValue());
-    }
-    
-    template <>
-    void TimeSeriesRecorder<double>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
-    {
-      m_data.Push(retrieve_data(m_data_id)->DoubleValue());
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
     }
 
     template <>
-    void TimeSeriesRecorder<Apto::String>::NotifyData(Update, DataRetrievalFunctor retrieve_data)
+    TimeSeriesRecorder<bool>::TimeSeriesRecorder(const DataID& data_id) : m_data_id(data_id)
     {
-      m_data.Push(retrieve_data(m_data_id)->StringValue());
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
     }
     
-  };
+    template <>
+    TimeSeriesRecorder<int>::TimeSeriesRecorder(const DataID& data_id) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+    }
+
+    template <>
+    TimeSeriesRecorder<double>::TimeSeriesRecorder(const DataID& data_id) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+    }
+
+    template <>
+    TimeSeriesRecorder<Apto::String>::TimeSeriesRecorder(const DataID& data_id) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+    }
+    
+    
+    template <>
+    TimeSeriesRecorder<PackagePtr>::TimeSeriesRecorder(const DataID& data_id, Apto::String str) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+      
+      while (str.GetSize()) {
+        Apto::String entry_str = str.Pop(',');
+        Update update = Apto::StrAs(entry_str.Pop(':'));
+        PackagePtr package(new Wrap<Apto::String>(entry_str));
+        m_data.Push(DataEntry(update, package));
+      }
+    }
+    
+    template <>
+    TimeSeriesRecorder<bool>::TimeSeriesRecorder(const DataID& data_id, Apto::String str) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+
+      while (str.GetSize()) {
+        Apto::String entry_str = str.Pop(',');
+        Update update = Apto::StrAs(entry_str.Pop(':'));
+        bool value = Apto::StrAs(entry_str);
+        m_data.Push(DataEntry(update, value));
+      }
+    }
+    
+    template <>
+    TimeSeriesRecorder<int>::TimeSeriesRecorder(const DataID& data_id, Apto::String str) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+      
+      while (str.GetSize()) {
+        Apto::String entry_str = str.Pop(',');
+        Update update = Apto::StrAs(entry_str.Pop(':'));
+        int value = Apto::StrAs(entry_str);
+        m_data.Push(DataEntry(update, value));
+      }
+    }
+    
+    template <>
+    TimeSeriesRecorder<double>::TimeSeriesRecorder(const DataID& data_id, Apto::String str) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+      
+      while (str.GetSize()) {
+        Apto::String entry_str = str.Pop(',');
+        Update update = Apto::StrAs(entry_str.Pop(':'));
+        double value = Apto::StrAs(entry_str);
+        m_data.Push(DataEntry(update, value));
+      }
+    }
+    
+    template <>
+    TimeSeriesRecorder<Apto::String>::TimeSeriesRecorder(const DataID& data_id, Apto::String str) : m_data_id(data_id)
+    {
+      DataSetPtr ds(new DataSet);
+      ds->Insert(m_data_id);
+      m_requested = ds;
+      
+      while (str.GetSize()) {
+        Apto::String entry_str = str.Pop(',');
+        Update update = Apto::StrAs(entry_str.Pop(':'));
+        m_data.Push(DataEntry(update, entry_str));
+      }
+    }
+    
+
+    
+    template <>
+    void TimeSeriesRecorder<PackagePtr>::NotifyData(Update update, DataRetrievalFunctor retrieve_data)
+    {
+      if (shouldRecordValue(update)) {
+        m_data.Push(DataEntry(update, retrieve_data(m_data_id)));
+        didRecordValue();
+      }
+    }
+    
+    
+    template <>
+    void TimeSeriesRecorder<bool>::NotifyData(Update update, DataRetrievalFunctor retrieve_data)
+    {
+      if (shouldRecordValue(update)) {
+        m_data.Push(DataEntry(update, retrieve_data(m_data_id)->BoolValue()));
+        didRecordValue();
+      }
+    }
+    
+    template <>
+    void TimeSeriesRecorder<int>::NotifyData(Update update, DataRetrievalFunctor retrieve_data)
+    {
+      if (shouldRecordValue(update)) {
+        m_data.Push(DataEntry(update, retrieve_data(m_data_id)->IntValue()));
+        didRecordValue();
+      }
+    }
+    
+    template <>
+    void TimeSeriesRecorder<double>::NotifyData(Update update, DataRetrievalFunctor retrieve_data)
+    {
+      if (shouldRecordValue(update)) {
+        m_data.Push(DataEntry(update, retrieve_data(m_data_id)->DoubleValue()));
+        didRecordValue();
+      }
+    }
+
+    template <>
+    void TimeSeriesRecorder<Apto::String>::NotifyData(Update update, DataRetrievalFunctor retrieve_data)
+    {
+      if (shouldRecordValue(update)) {
+        m_data.Push(DataEntry(update, retrieve_data(m_data_id)->StringValue()));
+        didRecordValue();
+      }
+    }
+    
+    
+    template <>
+    Apto::String TimeSeriesRecorder<PackagePtr>::AsString() const
+    {
+      if (m_data.GetSize() == 0) return "";
+      
+      Apto::String rtn = Apto::FormatStr("%d:%s", m_data[0].update, (const char*)m_data[0].data->StringValue());
+      for (int i = 1; i < m_data.GetSize(); i++) {
+        rtn += Apto::FormatStr(",%d:%s", m_data[i].update, (const char*)m_data[i].data->StringValue());
+      }
+      return rtn;
+    }
+
+    template <>
+    Apto::String TimeSeriesRecorder<bool>::AsString() const
+    {
+      if (m_data.GetSize() == 0) return "";
+      
+      Apto::String rtn = Apto::FormatStr("%d:%d", m_data[0].update, m_data[0].data);
+      for (int i = 1; i < m_data.GetSize(); i++) {
+        rtn += Apto::FormatStr(",%d:%d", m_data[i].update, m_data[i].data);
+      }
+      return rtn;
+    }
+
+    template <>
+    Apto::String TimeSeriesRecorder<int>::AsString() const
+    {
+      if (m_data.GetSize() == 0) return "";
+      
+      Apto::String rtn = Apto::FormatStr("%d:%d", m_data[0].update, m_data[0].data);
+      for (int i = 1; i < m_data.GetSize(); i++) {
+        rtn += Apto::FormatStr(",%d:%d", m_data[i].update, m_data[i].data);
+      }
+      return rtn;
+    }
+
+    template <>
+    Apto::String TimeSeriesRecorder<double>::AsString() const
+    {
+      if (m_data.GetSize() == 0) return "";
+      
+      Apto::String rtn = Apto::FormatStr("%d:%f", m_data[0].update, m_data[0].data);
+      for (int i = 1; i < m_data.GetSize(); i++) {
+        rtn += Apto::FormatStr(",%d:%f", m_data[i].update, m_data[i].data);
+      }
+      return rtn;
+    }
+  
+    template <>
+    Apto::String TimeSeriesRecorder<Apto::String>::AsString() const
+    {
+      if (m_data.GetSize() == 0) return "";
+      
+      Apto::String rtn = Apto::FormatStr("%d:%s", m_data[0].update, (const char*)m_data[0].data);
+      for (int i = 1; i < m_data.GetSize(); i++) {
+        rtn += Apto::FormatStr(",%d:%s", m_data[i].update, (const char*)m_data[i].data);
+      }
+      return rtn;
+    }
+};
 };
 
 
