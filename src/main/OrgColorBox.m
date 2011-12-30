@@ -56,6 +56,7 @@
 
 - (void) reset {
   color = [NSColor darkGrayColor];
+  [self setNeedsDisplay:YES];
 }
 
 @end

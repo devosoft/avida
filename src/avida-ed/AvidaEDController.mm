@@ -42,7 +42,7 @@ static const float MAIN_SPLIT_LEFT_MIN = 140.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 650.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
 static const float POP_SPLIT_LEFT_MIN = 350.0;
-static const float POP_SPLIT_RIGHT_MIN = 305.0;
+static const float POP_SPLIT_RIGHT_MIN = 360.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 @interface AvidaEDController (hidden)

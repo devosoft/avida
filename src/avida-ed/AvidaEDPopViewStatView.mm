@@ -46,7 +46,7 @@
 #include "avida/viewer-core/ClassificationInfo.h"
 
 
-static const float PANEL_MIN_WIDTH = 300.0;
+static const float PANEL_MIN_WIDTH = 360.0;
 
 @interface AvidaEDPopViewStatViewEnvActions : NSObject <NSTableViewDataSource> {
   NSMutableArray* entries;
@@ -254,12 +254,12 @@ static const float PANEL_MIN_WIDTH = 300.0;
   graph.plotAreaFrame.paddingLeft = 65.0;
   graph.plotAreaFrame.paddingTop = 5.0;
   graph.plotAreaFrame.paddingRight = 5.0;
-  graph.plotAreaFrame.paddingBottom = 42.0;
+  graph.plotAreaFrame.paddingBottom = 55.0;
 
   
   // Setup scatter plot space
   CPTXYPlotSpace* plotSpace = (CPTXYPlotSpace*)graph.defaultPlotSpace;
-  plotSpace.allowsUserInteraction = YES;
+  plotSpace.allowsUserInteraction = NO;
   
   // Grid line styles
   CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
@@ -285,28 +285,36 @@ static const float PANEL_MIN_WIDTH = 300.0;
   CPTXYAxis* x = axisSet.xAxis;
   x.titleTextStyle = titleTextStyle;
   x.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  x.orthogonalCoordinateDecimal = CPTDecimalFromUnsignedInteger(0);
   x.minorTicksPerInterval = 5;
   x.preferredNumberOfMajorTicks = 5;
+  x.labelOffset = 5.0;
   x.labelTextStyle = textStyle;
 //  x.majorGridLineStyle = majorGridLineStyle;
 //  x.minorGridLineStyle = minorGridLineStyle;
     
 	x.title = @"Updates";
-	x.titleOffset = 20.0;
+	x.titleOffset = 35.0;
+  
+  x.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
   
 	// Label y with an automatic label policy. 
   CPTXYAxis *y = axisSet.yAxis;
   y.titleTextStyle = titleTextStyle;
   y.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  y.orthogonalCoordinateDecimal = CPTDecimalFromUnsignedInteger(0);
   y.minorTicksPerInterval = 2;
   y.preferredNumberOfMajorTicks = 8;
+  y.labelOffset = 5.0;
   y.labelTextStyle = textStyle;
 //  y.majorGridLineStyle = majorGridLineStyle;
 //  y.minorGridLineStyle = minorGridLineStyle;
   
 	y.title = @"Fitness";
 	y.titleOffset = 35.0;
+
+	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
   // Set axes
   graph.axisSet.axes = [NSArray arrayWithObjects:x, y, nil];
@@ -329,17 +337,8 @@ static const float PANEL_MIN_WIDTH = 300.0;
   
   dataSourceLinePlot.dataSource = graphData;
   
-//	CPTMutableTextStyle *whiteTextStyle = [CPTMutableTextStyle textStyle];
-//  whiteTextStyle.color = [CPTColor whiteColor];
-//	dataSourceLinePlot.labelTextStyle = whiteTextStyle;
-//  
-//	dataSourceLinePlot.labelOffset = 5.0;
-//	dataSourceLinePlot.labelRotation = M_PI_4;
   [graph addPlot:dataSourceLinePlot];
-  
-  // Make the data source line use stepped interpolation
-//  dataSourceLinePlot.interpolation = CPTScatterPlotInterpolationLinear;
-  
+    
   // Put an area gradient under the plot above
   CPTColor* areaColor = [CPTColor colorWithComponentRed:0.3 green:0.3 blue:0.3 alpha:0.8];
   CPTGradient* areaGradient = [CPTGradient gradientWithBeginningColor:areaColor endingColor:[CPTColor clearColor]];
@@ -350,20 +349,12 @@ static const float PANEL_MIN_WIDTH = 300.0;
 	
   
   // Auto scale the plot space to fit the plot data
-  // Extend the y range by 10% for neatness
   [plotSpace scaleToFitPlots:[NSArray arrayWithObjects:dataSourceLinePlot, nil]];
-  CPTPlotRange* yRange = plotSpace.yRange;
-//  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
-  plotSpace.yRange = yRange;
 
-  CPTPlotRange* xRange = plotSpace.xRange;
-//  [xRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
-  plotSpace.xRange = xRange;
-  
-  
-  // Restrict y range to a global range
-//  CPTPlotRange* globalYRange = [CPTPlotRange plotRangeWithLocation:CPTDecimalFromFloat(0.0f) length:CPTDecimalFromFloat(6.0f)];
-//  plotSpace.globalYRange = globalYRange;  
+//  CPTPlotRange* yRange = plotSpace.yRange;
+//  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
+//  plotSpace.yRange = yRange;
+
 }
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
