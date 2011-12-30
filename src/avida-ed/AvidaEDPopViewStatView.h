@@ -31,6 +31,7 @@
 #import <CorePlot/CorePlot.h>
 
 #include "avida/data/Recorder.h"
+#include "avida/data/TimeSeriesRecorder.h"
 
 #import "MapGridView.h"
 #import "OrgColorBox.h"
@@ -39,6 +40,7 @@
 @class AvidaEDController;
 class AvidaEDPopViewStatViewRecorder;
 class AvidaEDPopViewStatViewOrgRecorder;
+class AvidaEDPopViewStatViewTimeRecorder;
 @class AvidaEDPopViewStatViewEnvActions;
 @class AvidaEDPopViewStatViewGraphData;
 
@@ -75,6 +77,8 @@ class AvidaEDPopViewStatViewOrgRecorder;
   IBOutlet CPTGraphHostingView* graphView;
   CPTXYGraph* graph;
   AvidaEDPopViewStatViewGraphData* graphData;
+  
+  Apto::Array<Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> > timeRecorders;
 }
 
 - (id) initWithFrame:(NSRect)frame;
@@ -94,6 +98,9 @@ class AvidaEDPopViewStatViewOrgRecorder;
 
 - (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point;
 - (void) mapViewSelectionChanged:(MapGridView*)mapView;
+
+- (IBAction) changeGraph:(id)sender;
+- (void) handleNewGraphData;
 
 @end
 
@@ -128,4 +135,22 @@ public:
   LIB_EXPORT void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retreive_data);
   
   void SetCoords(int x, int y);
+};
+
+
+class AvidaEDPopViewStatViewTimeRecorder : public Avida::Data::TimeSeriesRecorder<double>
+{
+private:
+  AvidaEDPopViewStatView* m_view;
+  bool m_active;
+  
+public:
+  AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id);
+  
+  inline void SetActive() { m_active = true; }
+  inline void SetInactive() { m_active = false; }
+
+protected:
+  bool shouldRecordValue(Avida::Update update);
+  void didRecordValue();
 };

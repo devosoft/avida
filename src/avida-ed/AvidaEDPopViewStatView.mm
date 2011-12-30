@@ -134,29 +134,41 @@ static const float PANEL_MIN_WIDTH = 360.0;
 
 
 @interface AvidaEDPopViewStatViewGraphData : NSObject <CPTPlotDataSource> {
-  
+  Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> recorder;
 }
 
+- (Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>) recorder;
+- (void) setRecorder:(Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>)in_recorder;
 @end
 
 
 @implementation AvidaEDPopViewStatViewGraphData
 - (NSUInteger) numberOfRecordsForPlot:(CPTPlot*)plot
 {
-  return 8;
+  return (recorder) ? recorder->NumPoints() : 0;
 }
 
 - (NSNumber*) numberForPlot:(CPTPlot*)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index
 {
+  assert(recorder);
   NSNumber* num;
-  num = [NSNumber numberWithDouble:(100*index)];
-  if (fieldEnum == CPTScatterPlotFieldY) {
-    num = [NSNumber numberWithDouble:(2.5 * index)];	
+  if (fieldEnum == CPTScatterPlotFieldX) {
+    num = [NSNumber numberWithDouble:recorder->DataTime(static_cast<int>(index))];
+  } else if (fieldEnum == CPTScatterPlotFieldY) {
+    num = [NSNumber numberWithDouble:recorder->DataPoint(static_cast<int>(index))];	
   }
 
   return num;
 }
 
+- (Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>) recorder {
+  return recorder;
+}
+
+- (void) setRecorder:(Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>)in_recorder
+{
+  recorder = in_recorder;
+}
 @end
 
 
@@ -354,7 +366,11 @@ static const float PANEL_MIN_WIDTH = 360.0;
 //  CPTPlotRange* yRange = plotSpace.yRange;
 //  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
 //  plotSpace.yRange = yRange;
-
+  
+  
+  [btnGraphSelect removeAllItems];
+  [btnGraphSelect setEnabled:NO];
+  [btnGraphSelect addItemWithTitle:@"Data Unavailable"];
 }
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
@@ -442,8 +458,6 @@ static const float PANEL_MIN_WIDTH = 360.0;
     [popStatsView setNeedsDisplay:YES];
   }
   
-  printf("bounds %f %f\n", bounds.size.width, bounds.size.height);
-  
   if (bounds.size.width != oldBoundsSize.width || bounds.size.height != oldBoundsSize.height) {
     NSRect panel_bounds;
     
@@ -481,6 +495,28 @@ static const float PANEL_MIN_WIDTH = 360.0;
 
   recorder = Avida::Data::RecorderPtr(new AvidaEDPopViewStatViewRecorder(self));
   [run attachRecorder:recorder];
+  
+  
+  timeRecorders.ResizeClear(4);
+  timeRecorders[0] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_fitness"));
+  timeRecorders[1] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_gestation_time"));
+  timeRecorders[2] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_metabolic_rate"));
+  timeRecorders[3] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.organisms"));
+  
+  for (int i = 0; i < timeRecorders.GetSize(); i++) [run attachRecorder:timeRecorders[i]];
+  
+  [graphData setRecorder:timeRecorders[0]];
+  timeRecorders[0]->SetActive();
+  CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
+  [plot reloadData];
+  [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
+
+  [btnGraphSelect removeAllItems];
+  [btnGraphSelect setEnabled:YES];
+  [btnGraphSelect addItemWithTitle:@"Average Fitness"];
+  [btnGraphSelect addItemWithTitle:@"Average Gestation Time"];
+  [btnGraphSelect addItemWithTitle:@"Average Metabolic Rate"];
+  [btnGraphSelect addItemWithTitle:@"Number of Organisms"];
 }
 
 - (void) clearAvidaRun {
@@ -489,6 +525,11 @@ static const float PANEL_MIN_WIDTH = 360.0;
     [run detachRecorder:recorder];
     recorder = Avida::Data::RecorderPtr(NULL);
   }
+  for (int i = 0; i < timeRecorders.GetSize(); i++) {
+    [run detachRecorder:timeRecorders[i]];
+    timeRecorders[i] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(NULL);
+  }
+  timeRecorders.Resize(0);
   run = nil;
   
   NSString* empty_str = @"-";
@@ -501,6 +542,13 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [tblEnvActions reloadData];
   
   [self clearSelectedOrg];
+  
+  [graphData setRecorder:Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(NULL)];
+  [[graph plotWithIdentifier:@"graph"] reloadData];
+
+  [btnGraphSelect removeAllItems];
+  [btnGraphSelect setEnabled:NO];
+  [btnGraphSelect addItemWithTitle:@"Data Unavailable"];
 }
 
 - (void) clearSelectedOrg {
@@ -596,6 +644,23 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [tblOrgEnvActions reloadData];
 }
 
+
+- (IBAction) changeGraph:(id)sender {
+  graphData.recorder->SetInactive();
+  [graphData setRecorder:timeRecorders[static_cast<int>([btnGraphSelect indexOfSelectedItem])]];
+  graphData.recorder->SetActive();
+  
+  CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
+  [plot reloadData];
+  [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
+}
+
+- (void) handleNewGraphData {
+  CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
+  [plot reloadData];
+  [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
+}
+
 @end
 
 
@@ -688,4 +753,20 @@ void AvidaEDPopViewStatViewOrgRecorder::SetCoords(int x, int y)
   m_data_id += "]";
   m_requested->Clear();
   m_requested->Insert(m_data_id);
+}
+
+
+AvidaEDPopViewStatViewTimeRecorder::AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id)
+  : Avida::Data::TimeSeriesRecorder<double>(data_id), m_view(view), m_active(false)
+{
+}
+
+bool AvidaEDPopViewStatViewTimeRecorder::shouldRecordValue(Avida::Update update)
+{
+  return ((update % 10) == 0);
+}
+
+void AvidaEDPopViewStatViewTimeRecorder::didRecordValue()
+{
+  if (m_active) [m_view performSelectorOnMainThread:@selector(handleNewGraphData) withObject:nil waitUntilDone:NO];
 }
