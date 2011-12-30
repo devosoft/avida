@@ -52,6 +52,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   , m_num_organisms(1)
   , m_last_num_organisms(0)
   , m_total_organisms(1)
+  , m_provisional_stats(true)
   , m_last_birth_cell(0)
   , m_last_group_id(-1)
   , m_last_forager_type(-1)
@@ -69,6 +70,23 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
       m_parents[i]->AddPassiveReference();
       if (i > 0) m_parent_str += ",";
       m_parent_str += Apto::AsStr(m_parents[i]->ID());
+      
+      m_copied_size.Add(Apto::StrAs(p->Properties().Get("ave_copy_size")));
+      m_exe_size.Add(Apto::StrAs(p->Properties().Get("ave_exe_size")));
+      m_gestation_time.Add(Apto::StrAs(p->Properties().Get("ave_gestation_time")));
+      m_repro_rate.Add(Apto::StrAs(p->Properties().Get("ave_repro_rate")));
+      m_merit.Add(Apto::StrAs(p->Properties().Get("ave_metabolic_rate")));
+      m_fitness.Add(Apto::StrAs(p->Properties().Get("ave_fitness")));
+      
+      // Collect all relevant action trigger counts
+      for (int i = 0; i < m_mgr->EnvironmentActionTriggerIDs().GetSize(); i++) {
+        PropertyID prop_id("environment.triggers.");
+        prop_id += m_mgr->EnvironmentActionTriggerIDs()[i];
+        prop_id += ".average";
+        
+        int task_count = Apto::StrAs(p->Properties().Get(prop_id));
+        m_task_counts[i].Add(task_count);
+      }
     }
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->Depth() + 1;
@@ -183,6 +201,18 @@ Avida::Systematics::GroupPtr Avida::Systematics::Genotype::ClassifyNewUnit(UnitP
 
 void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
 {
+  if (m_provisional_stats) {
+    m_copied_size.Clear();
+    m_exe_size.Clear();
+    m_gestation_time.Clear();
+    m_repro_rate.Clear();
+    m_merit.Clear();
+    m_fitness.Clear();
+    
+    for (int i = 0; i < m_task_counts.GetSize(); i++) m_task_counts[i].Clear();
+    m_provisional_stats = false;
+  }
+  
   m_copied_size.Add(Apto::StrAs(u->Properties().Get("last_copied_size")));
   m_exe_size.Add(Apto::StrAs(u->Properties().Get("last_executed_size")));
   m_gestation_time.Add(Apto::StrAs(u->Properties().Get("last_gestation_time")));

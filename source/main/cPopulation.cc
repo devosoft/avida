@@ -361,7 +361,7 @@ Data::PackagePtr cPopulation::GetProvidedValueForArgument(const Apto::String& da
       int y = Apto::StrAs(coordstr);
       if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
         // Valid X and Y coordinates, return genotype ID @ cell if applicable
-        const cPopulationCell& cell = cell_array[world_y * y + x];
+        const cPopulationCell& cell = cell_array[world_x * x + y];
         if (cell.IsOccupied()) {
           rtn = Data::PackagePtr(new Data::Wrap<int>(cell.GetOrganism()->SystematicsGroup("genotype")->ID()));
           assert(rtn);
@@ -466,6 +466,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   ConstInstructionSequencePtr seq;
   seq.DynamicCastFrom(parent_organism->GetGenome().Representation());
   parent_phenotype.DivideReset(*seq);
+
+  // Do any statistics on the parent that just gave birth...
+  parent_organism->HandleGestation();
+  
 
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
 
@@ -617,9 +621,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       }
     }
   }
-
-  // Do any statistics on the parent that just gave birth...
-  parent_organism->HandleGestation();
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {

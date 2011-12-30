@@ -380,6 +380,7 @@ public:
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
   int GetCurNumDonates() const { assert(initialized == true); return cur_num_donates; }
+  int GetCurCountForTask(int idx) const { assert(initialized == true); return cur_task_count[idx]; }
   const tArray<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
   const tArray<int>& GetCurHostTaskCount() const { assert(initialized == true); return cur_host_tasks; }
   const tArray<int>& GetCurParasiteTaskCount() const { assert(initialized == true); return cur_para_tasks; }
