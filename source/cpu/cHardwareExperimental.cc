@@ -538,7 +538,8 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
-          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
           // record execution success
           exec_success = 1;
         }
@@ -3834,7 +3835,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
 
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
@@ -3910,7 +3911,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
   
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
@@ -4107,7 +4108,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
   
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);

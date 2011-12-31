@@ -244,7 +244,8 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
-          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
           // record execution success
           exec_success = 1;
         }

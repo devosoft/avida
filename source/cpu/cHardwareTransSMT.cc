@@ -276,7 +276,10 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
+      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) { 
+        SingleProcess_PayPostResCosts(ctx, cur_inst); 
+        SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
+      }
 			
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.

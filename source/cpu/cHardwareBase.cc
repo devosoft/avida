@@ -1017,10 +1017,6 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   if (m_has_costs) {
     per_use_cost = m_thread_inst_cost[cur_inst.GetOp()]; //*THIS IS THE LINE!!!!
   }
-  int per_use_post_cost = 0;
-  if (m_has_post_costs) {
-    per_use_post_cost = m_thread_inst_post_cost[cur_inst.GetOp()];
-  }
   bool add_female_costs = false;
   if (m_has_female_costs) {
     if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
@@ -1042,30 +1038,26 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   // Next, look at the per use costs
   if (m_has_costs | add_female_costs | add_choosy_female_costs | m_has_post_costs) {    
     // Current ACTIVE thread-specific execution cost being paid, decrement and return false 
-    // if ACTIVE post cost already being paid, pay this before doing anything else
+    // if ACTIVE post cost already being paid (from previous executed instruction), pay this before doing anything else
     if (m_active_thread_post_costs[thread_id] > 1) {
       m_active_thread_post_costs[thread_id]--;
       return false;
     }
+    if (m_active_thread_post_costs[thread_id] == 1) m_active_thread_post_costs[thread_id] = 0;
+    
     if (m_active_thread_costs[thread_id] > 1) { 
       m_active_thread_costs[thread_id]--;
       return false;
     }
     
     // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false 
-    // if active PRE cost, handle this before executing instruction and setting up any post-costs
+    // if active PRE costs, pay these before executing instruction
     if (!m_active_thread_costs[thread_id] && per_use_cost > 1) { //used to be: m_thread_inst_cost[cur_inst.GetOp()] > 1) {
       m_active_thread_costs[thread_id] = per_use_cost - 1;
       return false;
     }     
-    // for post-cost, setup the new counter, but allow initial execution to proceed
-    if (!m_active_thread_post_costs[thread_id] && per_use_post_cost > 1) { 
-      m_active_thread_post_costs[thread_id] = per_use_post_cost - 1;
-    }      
-    
-    // If we fall to here, execution is allowed now...any pre-cost is paid, any post cost will kick in AFTER instruction executed this time 
+    // If we fall to here, execution is allowed now...any pre-cost is paid 
     if (m_active_thread_costs[thread_id] == 1) m_active_thread_costs[thread_id] = 0;
-    if (m_active_thread_post_costs[thread_id] == 1) m_active_thread_post_costs[thread_id] = 0;
   }
   
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
@@ -1075,10 +1067,10 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
 }
 
 
-void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
   if (m_has_res_costs) {
-  
+    
     double res_req = m_inst_set->GetResCost(cur_inst); 
     
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
@@ -1098,11 +1090,22 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
     } 
     if (res_stored < res_req) {
       m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
-      return;
     }
   }
+  return;
 }
 
+void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id)
+{
+  if (m_has_post_costs) {
+    int per_use_post_cost = m_thread_inst_post_cost[cur_inst.GetOp()];
+    // for post-cost, setup the new counter after allowing initial execution to proceed...this will cause the next instruction to pause before execution
+    if (!m_active_thread_post_costs[thread_id] && per_use_post_cost > 1) { 
+      m_active_thread_post_costs[thread_id] = per_use_post_cost;
+    }      
+  }
+  return;
+}
 
 //! Called when the organism that owns this CPU has received a flash from a neighbor.
 void cHardwareBase::ReceiveFlash()

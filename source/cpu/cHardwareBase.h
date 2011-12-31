@@ -223,7 +223,8 @@ public:
 protected:
   // --------  Core Execution Methods  --------
   bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
-  void SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
   virtual void internalReset() = 0;
 	virtual void internalResetOnFailedDivide() = 0;
   
