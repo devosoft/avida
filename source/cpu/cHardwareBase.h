@@ -71,7 +71,9 @@ protected:
   tArray<double> m_inst_energy_cost;
   tArray<double> m_inst_res_cost; 
   tArray<int> m_thread_inst_cost;
+  tArray<int> m_thread_inst_post_cost;
   tArray<int> m_active_thread_costs;
+  tArray<int> m_active_thread_post_costs;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
@@ -80,6 +82,7 @@ protected:
 	int m_task_switching_cost;
   bool m_has_female_costs;
   bool m_has_choosy_female_costs;
+  bool m_has_post_costs;
 
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;
