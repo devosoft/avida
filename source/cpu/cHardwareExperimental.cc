@@ -4613,8 +4613,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
   int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > max_dist) distance_sought = long_axis;
-  
+  else if (distance_sought > max_dist) distance_sought = max_dist;
+
   // third register gives type of search used for food resources (habitat 0) and org hunting (habitat -2)
   // env res search_types (habitat 0): 0 or 1
   // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
