@@ -129,6 +129,7 @@ private:
   int m_config;
   int m_count; 
   double m_resistance;
+  double m_init_plat;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
@@ -210,6 +211,7 @@ public:
   int GetCount() { return m_count; }
   double GetResistance() { return m_resistance; }
   bool GetGradient() { return isgradient; }
+  double GetInitialPlatVal() { return m_init_plat; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -255,6 +257,7 @@ public:
   void SetCStepX(double _cstepx) { cstepx = _cstepx; } //JW
   void SetCStepY(double _cstepy) { cstepy = _cstepy; } //JW
   void SetUpdateDynamic(int _update_dynamic) { update_dynamic = _update_dynamic; } //JW
+  
   void SetPeakX(int _peakx) { m_peakx = _peakx; }
   void SetPeakY(int _peaky) { m_peaky = _peaky; }
   void SetHeight(int _height) { m_height = _height; }
@@ -275,6 +278,7 @@ public:
   void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
   void SetPlateauInflow(double _plateau_inflow) { m_plateau_inflow = _plateau_inflow; }  
   void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
+  void SetPlatInitial(double _initial_plat_val) { m_init_plat = _initial_plat_val; } 
   void SetIsPlateauCommon(int _is_plateau_common) { m_is_plateau_common = _is_plateau_common; }
   void SetFloor(double _floor) { m_floor = _floor; }
   void SetHabitat(int _habitat) { m_habitat = _habitat; }

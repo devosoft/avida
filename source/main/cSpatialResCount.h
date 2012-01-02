@@ -108,6 +108,7 @@ public:
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
   
+  virtual void SetGradInitialPlatVal(int plat_val) {}
   virtual void SetGradPeakX(int peakx) {}
   virtual void SetGradPeakY(int peaky) {}
   virtual void SetGradHeight(int height) {}

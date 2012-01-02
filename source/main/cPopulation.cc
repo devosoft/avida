@@ -306,7 +306,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                           res->GetInitialPlatVal(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -6364,11 +6365,41 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance()); 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
+                           res->GetInitialPlatVal()); 
     } 
   }
 }
 
+void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPlateauInflow(inflow);
+      resource_count.SetGradientInflow(global_res_index, inflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientOutflow(const cString res_name, const double outflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPlateauOutflow(outflow);
+      resource_count.SetGradientOutflow(global_res_index, outflow);
+    }
+  } 
+}
 
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -6418,7 +6449,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                           res->GetInitialPlatVal(), res->GetGradient()
                            ); 
       
     } else if (res->GetDemeResource()) {

@@ -63,10 +63,13 @@ private:
   int m_config; 
   int m_count;
   double m_resistance;
+  double m_initial_plat;
   
   int m_geometry;
   
   // Internal Values
+  bool m_initial;
+  
   double m_move_y_scaler;
   
   int m_counter;
@@ -93,12 +96,13 @@ public:
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
                  int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count, 
-                 double resistance);
+                 double resistance, double init_plat);
   ~cGradientCount();
 
   void UpdateCount(cAvidaContext& ctx);
   void StateAll();
   
+  void SetGradInitialPlat(int plat_val) { m_initial_plat = plat_val; m_initial = true; }
   void SetGradPeakX(int peakx) { m_peakx = peakx; }
   void SetGradPeakY(int peaky) { m_peaky = peaky; }
   void SetGradHeight(int height) { m_height = height; }

@@ -896,6 +896,10 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "plateau_outflow", var_type, feedback)) return false;
         new_resource->SetPlateauOutflow( var_value.AsDouble() );
       } 
+      else if (var_name == "initial") {
+        if (!AssertInputDouble(var_value, "initial", var_type, feedback)) return false;
+        new_resource->SetPlatInitial( var_value.AsDouble() );
+      } 
       else if (var_name == "common") {
         if (!AssertInputInt(var_value, "common", var_type, feedback)) return false;
         new_resource->SetIsPlateauCommon( var_value.AsInt() );
