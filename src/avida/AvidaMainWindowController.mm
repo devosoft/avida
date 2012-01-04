@@ -139,12 +139,12 @@
 @synthesize listener;
 
 
-- (void) handleMap: (CoreViewMap*)pkg {
+- (void) handleMap: (ViewerMap*)pkg {
   [mapView updateState: [pkg map]];
 }
 
 
-- (void) handleUpdate: (CoreViewUpdate*)pkg {
+- (void) handleUpdate: (ViewerUpdate*)pkg {
   NSString* str = [NSString stringWithFormat:@"Update: %d", [pkg update]];
   [txtUpdate setStringValue:str]; 
 }

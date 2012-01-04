@@ -114,14 +114,14 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
         colorRect.origin.y = 22.0;
       }
       
-      if (color_count[i + Avida::CoreView::MAP_RESERVED_COLORS] == 0) {
+      if (color_count[i + Avida::Viewer::MAP_RESERVED_COLORS] == 0) {
         [[[color_cache objectAtIndex:i] colorWithAlphaComponent:0.3] set];
       } else {
         [(NSColor*)[color_cache objectAtIndex:i] set];
       }
       [NSBezierPath fillRect:colorRect];
 
-      NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i + Avida::CoreView::MAP_RESERVED_COLORS].label];
+      NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].label];
       CGFloat offset = -[lbl sizeWithAttributes:str_attributes].height / 2.0;
       NSPoint lbl_location = NSMakePoint(colorRect.origin.x + 22.0, colorRect.origin.y + (colorRect.size.height / 2.0) + offset);
       [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
@@ -155,7 +155,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 
-- (void) updateState:(Avida::CoreView::Map*)state {
+- (void) updateState:(Avida::Viewer::Map*)state {
   state->Retain();
   
   map_colors = state->GetColors();

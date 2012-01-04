@@ -29,14 +29,14 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "CoreViewListener.h"
+#import "ViewerListener.h"
 
 @class AvidaAppDelegate;
 @class AvidaRun;
 @class MapGridView;
 
 
-@interface AvidaMainWindowController : NSWindowController <CoreViewListener, NSPathControlDelegate, NSWindowDelegate> {
+@interface AvidaMainWindowController : NSWindowController <ViewerListener, NSPathControlDelegate, NSWindowDelegate> {
   IBOutlet NSPathControl* runDirControl;
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
@@ -45,7 +45,7 @@
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
-  Avida::CoreView::Listener* listener;
+  Avida::Viewer::Listener* listener;
 }
 
 // Init and Dealloc Methods
@@ -73,10 +73,10 @@
 
 
 // Listener Methods
-@property (readonly) Avida::CoreView::Listener* listener;
+@property (readonly) Avida::Viewer::Listener* listener;
 
--(void)handleMap:(CoreViewMap*)object;
--(void)handleUpdate:(CoreViewUpdate*)object;
+-(void)handleMap:(ViewerMap*)object;
+-(void)handleUpdate:(ViewerUpdate*)object;
 
 
 @end

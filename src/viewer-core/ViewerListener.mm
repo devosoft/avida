@@ -1,5 +1,5 @@
 //
-//  CoreViewListener.h
+//  ViewerListener.mm
 //  avida/apps/viewer-macos
 //
 //  Created by David Bryson on 11/11/10.
@@ -27,55 +27,38 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Foundation/Foundation.h>
+#include "ViewerListener.h"
 
-#include "avida/viewer-core/Listener.h"
-
-@class CoreViewMap;
-@class CoreViewUpdate;
-
-namespace Avida {
-  namespace CoreView {
-    class Map;
-  };
-};
+#include <cassert>
 
 
-@protocol CoreViewListener
-@property (readonly) Avida::CoreView::Listener* listener;
-@optional
-- (void) handleMap:(CoreViewMap*)pkg;
-- (void) handleUpdate:(CoreViewUpdate*)pkg;
+@implementation ViewerMap
+- (id) initWithMap:(Avida::Viewer::Map*)map {
+  m_map = map;
+  return self;
+}
+@synthesize map = m_map;
 @end
 
 
-@interface CoreViewMap : NSObject {
-  Avida::CoreView::Map* m_map;
+@implementation ViewerUpdate
+- (id) initWithUpdate:(int)update {
+  m_update = update;
+  return self;
 }
-- (id) initWithMap:(Avida::CoreView::Map*)map;
-@property (readonly) Avida::CoreView::Map* map;
-@end;
-
-
-@interface CoreViewUpdate : NSObject {
-  int m_update;
-}
-- (id) initWithUpdate:(int)update;
-@property (readonly) int update;
+@synthesize update = m_update;
 @end
 
 
-class MainThreadListener : public Avida::CoreView::Listener
+void MainThreadListener::NotifyMap(Avida::Viewer::Map* map)
 {
-private:
-  id m_target;
-  
-public:
-  MainThreadListener(id <CoreViewListener> target) : m_target(target) { ; }
-  
-  bool WantsMap() { return true; }
-  bool WantsUpdate() { return true; }
-  
-  void NotifyMap(Avida::CoreView::Map* map);
-  void NotifyUpdate(int update);
-};
+  ViewerMap* cvm = [[ViewerMap alloc] initWithMap:map];
+  [m_target performSelectorOnMainThread:@selector(handleMap:) withObject:cvm waitUntilDone:NO];
+}
+
+
+void MainThreadListener::NotifyUpdate(int update)
+{
+  ViewerUpdate* cvu = [[ViewerUpdate alloc] initWithUpdate:update];
+  [m_target performSelectorOnMainThread:@selector(handleUpdate:) withObject:cvu waitUntilDone:NO];
+}

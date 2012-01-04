@@ -29,8 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "apto/core.h"
-#include "avida/viewer-core/Map.h"
+#include "avida/viewer.h"
 
 
 @interface MapScaleView : NSView {
@@ -38,7 +37,7 @@
   bool is_categorical;
   
   Apto::Array<int> map_colors;
-  Apto::Array<Avida::CoreView::DiscreteScale::Entry> scale_entries;
+  Apto::Array<Avida::Viewer::DiscreteScale::Entry> scale_entries;
   Apto::Array<int> color_count;
   NSMutableArray* color_cache;
   NSString* scale_label;
@@ -48,6 +47,6 @@
 
 - (void) drawRect:(NSRect)rect;
 
-- (void) updateState:(Avida::CoreView::Map*)state;
+- (void) updateState:(Avida::Viewer::Map*)state;
 
 @end

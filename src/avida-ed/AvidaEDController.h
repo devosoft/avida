@@ -29,9 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "apto/core.h"
-
-#import "CoreViewListener.h"
+#import "ViewerListener.h"
 
 
 @class AvidaAppDelegate;
@@ -42,10 +40,19 @@
 @class AvidaEDPopViewStatView;
 
 
-@interface AvidaEDController : NSWindowController <CoreViewListener, NSSplitViewDelegate, NSWindowDelegate> {
+@interface AvidaEDController : NSWindowController <ViewerListener, NSSplitViewDelegate, NSWindowDelegate,
+                                                   NSOutlineViewDelegate, NSOutlineViewDataSource>
+{
   
   IBOutlet NSSplitView* mainSplitView;
 
+  Avida::Viewer::FreezerPtr freezer;
+  NSMutableArray* freezerConfigs;
+  NSMutableArray* freezerGenomes;
+  NSMutableArray* freezerWorlds;
+  IBOutlet NSPathControl* pathWorkspace;
+  IBOutlet NSOutlineView* outlineFreezer;
+  
   // Population View
   // --------------------------------------------------------------------------------------------------------------  
   IBOutlet NSView* popView;
@@ -70,7 +77,6 @@
   IBOutlet NSButton* btnTogglePopViewStatView;
   CGFloat lastPopViewStatViewWidth;
   BOOL popSplitViewIsAnimating;
-  
 
   // Analyze View
   // --------------------------------------------------------------------------------------------------------------  
@@ -84,13 +90,14 @@
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
-  Avida::CoreView::Listener* listener;
-  Avida::CoreView::Map* map;
+  Avida::Viewer::Listener* listener;
+  Avida::Viewer::Map* map;
   Apto::Map<NSInteger, int> map_mode_to_color;
 }
 
 // Init and Dealloc Methods
 - (id) initWithAppDelegate:(AvidaAppDelegate*)delegate;
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate InWorkspace:(NSURL*)dir;
 
 - (void) dealloc;
 - (void) finalize;
@@ -122,13 +129,23 @@
 - (void) windowWillClose:(NSNotification*)notification;
 
 
+// NSOutlineViewDelegate Protocol
+- (BOOL)outlineView:(NSOutlineView*)outlineView shouldEditTableColumn:(NSTableColumn*)tableColumn item:(id)item;
+
+// NSOutlineViewDataSource Protocol
+- (id) outlineView:(NSOutlineView*)outlineView child:(NSInteger)index ofItem:(id)item;
+- (BOOL) outlineView:(NSOutlineView*)outlineView isItemExpandable:(id)item;
+- (NSInteger) outlineView:(NSOutlineView*)outlineView numberOfChildrenOfItem:(id)item;
+- (id) outlineView:(NSOutlineView*)outlineView objectValueForTableColumn:(NSTableColumn*)tableColumn byItem:(id)item;
+
+
 // Listener Methods
-@property (readonly) Avida::CoreView::Listener* listener;
+@property (readonly) Avida::Viewer::Listener* listener;
 
 @property (readonly) MapGridView* mapView;
 
-- (void) handleMap:(CoreViewMap*)object;
-- (void) handleUpdate:(CoreViewUpdate*)object;
+- (void) handleMap:(ViewerMap*)object;
+- (void) handleUpdate:(ViewerUpdate*)object;
 
 
 @end

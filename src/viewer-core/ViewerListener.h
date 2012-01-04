@@ -1,5 +1,5 @@
 //
-//  CoreViewListener.mm
+//  ViewerListener.h
 //  avida/apps/viewer-macos
 //
 //  Created by David Bryson on 11/11/10.
@@ -27,38 +27,49 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#include "CoreViewListener.h"
+#import <Foundation/Foundation.h>
 
-#include <cassert>
+#include "avida/viewer.h"
+
+@class ViewerMap;
+@class ViewerUpdate;
 
 
-@implementation CoreViewMap
-- (id) initWithMap:(Avida::CoreView::Map*)map {
-  m_map = map;
-  return self;
-}
-@synthesize map = m_map;
+@protocol ViewerListener
+@property (readonly) Avida::Viewer::Listener* listener;
+@optional
+- (void) handleMap:(ViewerMap*)pkg;
+- (void) handleUpdate:(ViewerUpdate*)pkg;
 @end
 
 
-@implementation CoreViewUpdate
-- (id) initWithUpdate:(int)update {
-  m_update = update;
-  return self;
+@interface ViewerMap : NSObject {
+  Avida::Viewer::Map* m_map;
 }
-@synthesize update = m_update;
+- (id) initWithMap:(Avida::Viewer::Map*)map;
+@property (readonly) Avida::Viewer::Map* map;
+@end;
+
+
+@interface ViewerUpdate : NSObject {
+  int m_update;
+}
+- (id) initWithUpdate:(int)update;
+@property (readonly) int update;
 @end
 
 
-void MainThreadListener::NotifyMap(Avida::CoreView::Map* map)
+class MainThreadListener : public Avida::Viewer::Listener
 {
-  CoreViewMap* cvm = [[CoreViewMap alloc] initWithMap:map];
-  [m_target performSelectorOnMainThread:@selector(handleMap:) withObject:cvm waitUntilDone:NO];
-}
-
-
-void MainThreadListener::NotifyUpdate(int update)
-{
-  CoreViewUpdate* cvu = [[CoreViewUpdate alloc] initWithUpdate:update];
-  [m_target performSelectorOnMainThread:@selector(handleUpdate:) withObject:cvu waitUntilDone:NO];
-}
+private:
+  id m_target;
+  
+public:
+  MainThreadListener(id <ViewerListener> target) : m_target(target) { ; }
+  
+  bool WantsMap() { return true; }
+  bool WantsUpdate() { return true; }
+  
+  void NotifyMap(Avida::Viewer::Map* map);
+  void NotifyUpdate(int update);
+};

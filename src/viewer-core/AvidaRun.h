@@ -31,19 +31,14 @@
 
 #include "avida/core/Types.h"
 #include "avida/data/Types.h"
+#include "avida/viewer.h"
 
-@protocol CoreViewListener;
-
-namespace Avida {
-  namespace CoreView {
-    class Driver;
-  };
-};
+@protocol ViewerListener;
 
 
 @interface AvidaRun : NSObject {
 @protected
-  Avida::CoreView::Driver* driver;
+  Avida::Viewer::Driver* driver;
 }
 
 - (id) init;
@@ -61,8 +56,8 @@ namespace Avida {
 - (void) end;
 
 
-- (void) attachListener:(id<CoreViewListener>)listener;
-- (void) detachListener:(id<CoreViewListener>)listener;
+- (void) attachListener:(id<ViewerListener>)listener;
+- (void) detachListener:(id<ViewerListener>)listener;
 
 - (void) attachRecorder:(Avida::Data::RecorderPtr)recorder;
 - (void) detachRecorder:(Avida::Data::RecorderPtr)recorder;

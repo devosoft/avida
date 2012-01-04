@@ -20,7 +20,7 @@
 		703549BA1337AD2600D3865C /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549B61337AD2600D3865C /* main.mm */; };
 		703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 703549B81337AD2600D3865C /* SubtleSplitView.m */; };
 		703549C21337AD4300D3865C /* AvidaRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BD1337AD4300D3865C /* AvidaRun.mm */; };
-		703549C31337AD4300D3865C /* CoreViewListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BF1337AD4300D3865C /* CoreViewListener.mm */; };
+		703549C31337AD4300D3865C /* ViewerListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BF1337AD4300D3865C /* ViewerListener.mm */; };
 		703549C41337AD4300D3865C /* MapGridView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549C11337AD4300D3865C /* MapGridView.mm */; };
 		703549D41337CAA100D3865C /* pause_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D01337CAA100D3865C /* pause_blue.png */; };
 		703549D51337CAA100D3865C /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D11337CAA100D3865C /* pause.png */; };
@@ -76,8 +76,8 @@
 		703549B81337AD2600D3865C /* SubtleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubtleSplitView.m; sourceTree = "<group>"; };
 		703549BC1337AD4300D3865C /* AvidaRun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaRun.h; sourceTree = "<group>"; };
 		703549BD1337AD4300D3865C /* AvidaRun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaRun.mm; sourceTree = "<group>"; };
-		703549BE1337AD4300D3865C /* CoreViewListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreViewListener.h; sourceTree = "<group>"; };
-		703549BF1337AD4300D3865C /* CoreViewListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreViewListener.mm; sourceTree = "<group>"; };
+		703549BE1337AD4300D3865C /* ViewerListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewerListener.h; sourceTree = "<group>"; };
+		703549BF1337AD4300D3865C /* ViewerListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewerListener.mm; sourceTree = "<group>"; };
 		703549C01337AD4300D3865C /* MapGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapGridView.h; sourceTree = "<group>"; };
 		703549C11337AD4300D3865C /* MapGridView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapGridView.mm; sourceTree = "<group>"; };
 		703549D01337CAA100D3865C /* pause_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_blue.png; sourceTree = "<group>"; };
@@ -243,8 +243,8 @@
 			children = (
 				703549BC1337AD4300D3865C /* AvidaRun.h */,
 				703549BD1337AD4300D3865C /* AvidaRun.mm */,
-				703549BE1337AD4300D3865C /* CoreViewListener.h */,
-				703549BF1337AD4300D3865C /* CoreViewListener.mm */,
+				703549BE1337AD4300D3865C /* ViewerListener.h */,
+				703549BF1337AD4300D3865C /* ViewerListener.mm */,
 				703549C01337AD4300D3865C /* MapGridView.h */,
 				703549C11337AD4300D3865C /* MapGridView.mm */,
 				70D3C086135739E1008374E3 /* MapScaleView.h */,
@@ -352,7 +352,7 @@
 				703549BA1337AD2600D3865C /* main.mm in Sources */,
 				703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */,
 				703549C21337AD4300D3865C /* AvidaRun.mm in Sources */,
-				703549C31337AD4300D3865C /* CoreViewListener.mm in Sources */,
+				703549C31337AD4300D3865C /* ViewerListener.mm in Sources */,
 				703549C41337AD4300D3865C /* MapGridView.mm in Sources */,
 				70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */,
 				7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */,

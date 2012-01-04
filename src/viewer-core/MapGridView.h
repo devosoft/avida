@@ -29,13 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "apto/core.h"
-
-namespace Avida {
-  namespace CoreView {
-    class Map;
-  };
-};
+#include "avida/viewer.h"
 
 @class MapGridView;
 
@@ -67,7 +61,7 @@ namespace Avida {
 - (void) drawRect:(NSRect)rect;
 - (BOOL) isOpaque;
 
-- (void) updateState:(Avida::CoreView::Map*)state;
+- (void) updateState:(Avida::Viewer::Map*)state;
 
 - (void) mouseDown:(NSEvent*)event;
 

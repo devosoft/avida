@@ -33,28 +33,68 @@
 #import "AvidaRun.h"
 #import "CenteringClipView.h"
 #import "MapGridView.h"
+#import "NSStringAdditions.h"
 
 #import "AvidaEDPopViewStatView.h"
 
-#include "avida/viewer-core/Map.h"
+#include "avida/viewer/Map.h"
 
 static const float MAIN_SPLIT_LEFT_MIN = 140.0;
-static const float MAIN_SPLIT_RIGHT_MIN = 650.0;
+static const float MAIN_SPLIT_RIGHT_MIN = 710.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
 static const float POP_SPLIT_LEFT_MIN = 350.0;
 static const float POP_SPLIT_RIGHT_MIN = 360.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
+
+
+@interface FreezerItem : NSObject {
+  Avida::Viewer::FreezerID freezerID;
+}
+- (id) initWithFreezerID:(Avida::Viewer::FreezerID)init_id;
+@property (readwrite) Avida::Viewer::FreezerID freezerID;
+@end;
+@implementation FreezerItem
+- (id) initWithFreezerID:(Avida::Viewer::FreezerID)init_id {
+  freezerID = init_id;
+  return self;
+}
+
+@synthesize freezerID;
+@end
+
+
 @interface AvidaEDController (hidden)
 - (void) popSplitViewAnimationEnd:(NSNumber*)collapsed;
+- (void) setupFreezer;
 @end
+
 @implementation AvidaEDController (hidden)
+
 - (void) popSplitViewAnimationEnd:(NSNumber*)collapsed {
   popSplitViewIsAnimating = NO;
   if ([collapsed boolValue]) {
     [popViewStatView setHidden:YES];
   }
 }
+
+- (void) setupFreezer {
+  freezerConfigs = [[NSMutableArray alloc] initWithCapacity:freezer->NumEntriesOfType(Avida::Viewer::CONFIG)];
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
+    [freezerConfigs addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
+  }
+  
+  freezerWorlds = [[NSMutableArray alloc] initWithCapacity:freezer->NumEntriesOfType(Avida::Viewer::WORLD)];
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::WORLD); it.Next();) {
+    [freezerWorlds addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
+  }
+
+  freezerGenomes = [[NSMutableArray alloc] initWithCapacity:freezer->NumEntriesOfType(Avida::Viewer::GENOME)];
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::GENOME); it.Next();) {
+    [freezerGenomes addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
+  }
+}
+
 @end
 
 @implementation AvidaEDController
@@ -69,6 +109,37 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     listener = NULL;
     map = NULL;
         
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+    
+    if ([urls count] == 0) return nil;
+    
+    NSURL* userDocumentsURL = [urls objectAtIndex:0];
+    NSURL* freezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+    Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
+    freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+    [self setupFreezer];
+    
+    [self showWindow:self];
+  }
+  
+  return self;
+}
+
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate InWorkspace:(NSURL*)dir {
+  self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
+  
+  if (self != nil) {
+    app = delegate;
+    
+    currentRun = nil;
+    listener = NULL;
+    map = NULL;
+    
+    Apto::String freezer_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
+    freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+    [self setupFreezer];
+    
     [self showWindow:self];
   }
   
@@ -100,6 +171,15 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   [mapScrollView setContentView:clipView];
   [mapScrollView setDocumentView:mapView];
   [mapScrollView setScrollsDynamically:YES];
+  
+  [outlineFreezer setDataSource:self];
+  [outlineFreezer setDelegate:self];
+  [outlineFreezer reloadData];
+  [outlineFreezer expandItem:freezerConfigs];
+  [outlineFreezer expandItem:freezerGenomes];
+  [outlineFreezer expandItem:freezerWorlds];  
+  
+  [btnRunState becomeFirstResponder];
 }
 
 
@@ -360,18 +440,76 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 
+- (BOOL)outlineView:(NSOutlineView*)outlineView shouldEditTableColumn:(NSTableColumn*)tableColumn item:(id)item
+{
+  if (item == nil || item == freezerConfigs || item == freezerGenomes || item == freezerWorlds) {
+    return NO;
+  }
+  
+  return YES;
+}
+
+
+- (id) outlineView:(NSOutlineView*)outlineView child:(NSInteger)index ofItem:(id)item {
+  if (item == nil) {
+    switch (index) {
+      case 0:
+        return freezerConfigs;
+      case 1:
+        return freezerGenomes;
+      case 2:
+        return freezerWorlds;
+      default:
+        return nil;
+    }
+  } else if (item == freezerConfigs || item == freezerGenomes || item == freezerWorlds) {
+    return [item objectAtIndex:index];
+  }
+  
+  return nil;
+}
+
+- (BOOL) outlineView:(NSOutlineView*)outlineView isItemExpandable:(id)item {
+  if (item == nil || item == freezerConfigs || item == freezerGenomes || item == freezerWorlds) {
+    return YES;
+  }
+  
+  return NO;
+}
+
+
+- (NSInteger) outlineView:(NSOutlineView*)outlineView numberOfChildrenOfItem:(id)item {
+  if (item == nil) return 3; // Top level items
+  
+  if (item == freezerConfigs || item == freezerGenomes || item == freezerWorlds) return [item count];
+  
+  return -1;
+}
+
+- (id) outlineView:(NSOutlineView*)outlineView objectValueForTableColumn:(NSTableColumn*)tableColumn byItem:(id)item {
+  if (item == nil) return @"";
+  
+  if (item == freezerConfigs) return @"Configured Dishes";
+  if (item == freezerWorlds) return @"Populated Dishes";
+  if (item == freezerGenomes) return @"Organisms";
+  
+  return [NSString stringWithAptoString:freezer->NameOf([item freezerID])];
+}
+
+
+
 @synthesize listener;
 @synthesize mapView;
 
 
-- (void) handleMap:(CoreViewMap*)pkg {
+- (void) handleMap:(ViewerMap*)pkg {
   if (!map) {
     map = [pkg map];
     [mapViewMode removeAllItems];
     map_mode_to_color.Clear();
     int idx = 0;
     for (int i = 0; i < map->GetNumModes(); i++) {
-      if (!(map->GetModeSupportedTypes(i) & Avida::CoreView::MAP_GRID_VIEW_COLOR)) continue;
+      if (!(map->GetModeSupportedTypes(i) & Avida::Viewer::MAP_GRID_VIEW_COLOR)) continue;
       [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
       map_mode_to_color[idx++] = i;
     }
@@ -387,7 +525,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 
-- (void) handleUpdate:(CoreViewUpdate*)pkg {
+- (void) handleUpdate:(ViewerUpdate*)pkg {
   NSString* str = [NSString stringWithFormat:@"%d updates", [pkg update]];
   [txtUpdate setStringValue:str]; 
 }

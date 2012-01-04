@@ -29,9 +29,9 @@
 
 #import "AvidaRun.h"
 
-#include "avida/viewer-core/Driver.h"
+#include "avida/viewer/Driver.h"
 
-#import "CoreViewListener.h"
+#import "ViewerListener.h"
 
 #include <Foundation/Foundation.h>
 #include <objc/objc-auto.h>
@@ -80,7 +80,7 @@ void handleDriverCallback(Avida::DriverEvent event)
   
   if (self) { 
     Apto::String config_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
-    driver = Avida::CoreView::Driver::InitWithDirectory(config_path);
+    driver = Avida::Viewer::Driver::InitWithDirectory(config_path);
     if (!driver) return nil;
     driver->RegisterCallback(&handleDriverCallback);
     driver->Start();
@@ -110,7 +110,7 @@ void handleDriverCallback(Avida::DriverEvent event)
 
 
 - (bool) isPaused {
-  return (self->driver->GetPauseState() == Avida::CoreView::DRIVER_PAUSED);
+  return (self->driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
 }
 
 
@@ -129,12 +129,12 @@ void handleDriverCallback(Avida::DriverEvent event)
 }
 
 
-- (void) attachListener:(id<CoreViewListener>)listener {
+- (void) attachListener:(id<ViewerListener>)listener {
   if (driver) driver->AttachListener([listener listener]);
 }
 
 
-- (void) detachListener:(id<CoreViewListener>)listener {
+- (void) detachListener:(id<ViewerListener>)listener {
   if (driver) driver->DetachListener([listener listener]);
 }
 

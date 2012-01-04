@@ -43,7 +43,7 @@
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
 
-#include "avida/viewer-core/ClassificationInfo.h"
+#include "avida/viewer/ClassificationInfo.h"
 
 
 static const float PANEL_MIN_WIDTH = 360.0;
@@ -263,7 +263,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   graph.paddingTop = 0.0;
   graph.paddingRight = 0.0;
   graph.paddingBottom = 0.0;
-  graph.plotAreaFrame.paddingLeft = 65.0;
+  graph.plotAreaFrame.paddingLeft = 50.0;
   graph.plotAreaFrame.paddingTop = 5.0;
   graph.plotAreaFrame.paddingRight = 5.0;
   graph.plotAreaFrame.paddingBottom = 55.0;
@@ -323,8 +323,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
 //  y.majorGridLineStyle = majorGridLineStyle;
 //  y.minorGridLineStyle = minorGridLineStyle;
   
-	y.title = @"Fitness";
-	y.titleOffset = 35.0;
+//	y.title = @"Fitness";
+//	y.titleOffset = 35.0;
 
 	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
