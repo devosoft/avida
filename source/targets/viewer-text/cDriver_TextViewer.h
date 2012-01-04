@@ -24,7 +24,7 @@
 
 #include "avida/core/WorldDriver.h"
 
-#include "cCoreView_Info.h"
+#include "cViewer_Info.h"
 #include "cScreen_Map.h"
 #include "cTextWindow.h"
 #include "ncurses-defs.h"
@@ -42,7 +42,7 @@ using namespace Avida;
 class cDriver_TextViewer : public WorldDriver {
 private:
   cWorld* m_world;
-  cCoreView_Info m_info;
+  cViewer_Info m_info;
   cTextWindow m_main_window;
   cTextWindow m_bar_window;
 

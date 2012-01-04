@@ -1,6 +1,6 @@
 /*
- *  private/viewer-core/ClassificationInfo.h
- *  Avida
+ *  viewer/ClassificationInfo.h
+ *  avida-core
  *
  *  Created by Charles on 7-9-07
  *  Copyright 2007-2011 Michigan State University. All rights reserved.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef AvidaCoreViewClassificationInfo_h
-#define AvidaCoreViewClassificationInfo_h
+#ifndef AvidaViewerClassificationInfo_h
+#define AvidaViewerClassificationInfo_h
 
 // The ClassificationInfo object is responsible for holding on to all of the general information about the state of
 // a specified classification role for the population in the view.  It does not process any of this information, rather
@@ -52,7 +52,7 @@
 
 
 namespace Avida {
-  namespace CoreView {
+  namespace Viewer {
 
     // ClassificationInfo Definition
     // --------------------------------------------------------------------------------------------------------------  

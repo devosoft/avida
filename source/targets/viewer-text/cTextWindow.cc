@@ -21,20 +21,20 @@
 
 #include "cTextWindow.h"
 
-#include "cCoreView_Info.h"
+#include "cViewer_Info.h"
 
 #include <cstdlib>
 
 using namespace std;
 
 
-cTextWindow::cTextWindow(cTextWindow * parent, cCoreView_Info & info)
+cTextWindow::cTextWindow(cTextWindow * parent, cViewer_Info & info)
   : m_win_id(NULL), m_parent_window(parent), m_info(info)
 {
 }
 
 
-cTextWindow::cTextWindow(cTextWindow * parent, cCoreView_Info & info, int y_size, int x_size, int y_start, int x_start)
+cTextWindow::cTextWindow(cTextWindow * parent, cViewer_Info & info, int y_size, int x_size, int y_start, int x_start)
   : m_parent_window(parent), m_info(info)
 {
   // Build this window.

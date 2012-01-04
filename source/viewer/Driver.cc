@@ -1,5 +1,5 @@
 /*
- *  viewer-core/Driver.cc
+ *  viewer/Driver.cc
  *  Avida
  *
  *  Created by David on 10/28/10.
@@ -21,12 +21,12 @@
  *  Authors: David M. Bryson <david@programerror.com>
  */
 
-#include "avida/viewer-core/Driver.h"
+#include "avida/viewer/Driver.h"
 
 #include "avida/core/Context.h"
 #include "avida/data/Manager.h"
-#include "avida/viewer-core/Map.h"
-#include "avida/viewer-core/Listener.h"
+#include "avida/viewer/Map.h"
+#include "avida/viewer/Listener.h"
 
 #include "cAvidaContext.h"
 #include "cHardwareBase.h"
@@ -42,13 +42,13 @@
 #include <iostream>
 
 
-Avida::CoreView::Driver::Driver(cWorld* world, World* new_world)
+Avida::Viewer::Driver::Driver(cWorld* world, World* new_world)
 : Apto::Thread(), m_world(world), m_new_world(new_world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
   GlobalObjectManager::Register(this);
 }
 
-Avida::CoreView::Driver::~Driver()
+Avida::Viewer::Driver::~Driver()
 {
   m_mutex.Lock();
   m_done = true;
@@ -63,7 +63,7 @@ Avida::CoreView::Driver::~Driver()
 }
 
 
-Avida::CoreView::Driver* Avida::CoreView::Driver::InitWithDirectory(const Apto::String& config_path)
+Avida::Viewer::Driver* Avida::Viewer::Driver::InitWithDirectory(const Apto::String& config_path)
 {
   cAvidaConfig* cfg = new cAvidaConfig;
   
@@ -95,11 +95,11 @@ Avida::CoreView::Driver* Avida::CoreView::Driver::InitWithDirectory(const Apto::
   
   
   if (!world) return NULL;
-  return new Avida::CoreView::Driver(world, new_world);
+  return new Avida::Viewer::Driver(world, new_world);
 }
 
 
-void Avida::CoreView::Driver::Pause()
+void Avida::Viewer::Driver::Pause()
 {
   m_mutex.Lock();
   m_pause_state = DRIVER_PAUSED;
@@ -107,7 +107,7 @@ void Avida::CoreView::Driver::Pause()
   m_pause_cv.Broadcast();
 }
 
-void Avida::CoreView::Driver::Resume()
+void Avida::Viewer::Driver::Resume()
 {
   m_mutex.Lock();
   m_pause_state = DRIVER_UNPAUSED;
@@ -115,7 +115,7 @@ void Avida::CoreView::Driver::Resume()
   m_pause_cv.Broadcast();
 }
 
-void Avida::CoreView::Driver::Finish()
+void Avida::Viewer::Driver::Finish()
 {
   m_mutex.Lock();
   m_done = true;
@@ -123,18 +123,18 @@ void Avida::CoreView::Driver::Finish()
   m_pause_cv.Broadcast();
 }
 
-void Avida::CoreView::Driver::Abort(AbortCondition condition)
+void Avida::Viewer::Driver::Abort(AbortCondition condition)
 {
   throw condition;
 }
 
 
-void Avida::CoreView::Driver::RegisterCallback(DriverCallback callback)
+void Avida::Viewer::Driver::RegisterCallback(DriverCallback callback)
 {
   m_callback = callback;
 }
 
-void Avida::CoreView::Driver::Run()
+void Avida::Viewer::Driver::Run()
 {
   m_callback(THREAD_START);
   try {
@@ -228,7 +228,7 @@ void Avida::CoreView::Driver::Run()
 }
 
 
-void Avida::CoreView::Driver::StdIOFeedback::Error(const char* fmt, ...)
+void Avida::Viewer::Driver::StdIOFeedback::Error(const char* fmt, ...)
 {
   printf("error: ");
   va_list args;
@@ -238,7 +238,7 @@ void Avida::CoreView::Driver::StdIOFeedback::Error(const char* fmt, ...)
   printf("\n");
 }
 
-void Avida::CoreView::Driver::StdIOFeedback::Warning(const char* fmt, ...)
+void Avida::Viewer::Driver::StdIOFeedback::Warning(const char* fmt, ...)
 {
   printf("warning: ");
   va_list args;
@@ -248,7 +248,7 @@ void Avida::CoreView::Driver::StdIOFeedback::Warning(const char* fmt, ...)
   printf("\n");
 }
 
-void Avida::CoreView::Driver::StdIOFeedback::Notify(const char* fmt, ...)
+void Avida::Viewer::Driver::StdIOFeedback::Notify(const char* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
@@ -258,19 +258,19 @@ void Avida::CoreView::Driver::StdIOFeedback::Notify(const char* fmt, ...)
 }
 
 
-void Avida::CoreView::Driver::AttachListener(Listener* listener)
+void Avida::Viewer::Driver::AttachListener(Listener* listener)
 {
   m_listeners.Insert(listener);
   
   if (listener->WantsMap() && !m_map) m_map = new Map(m_world);
 }
 
-void Avida::CoreView::Driver::AttachRecorder(Data::RecorderPtr recorder)
+void Avida::Viewer::Driver::AttachRecorder(Data::RecorderPtr recorder)
 {
   m_world->GetDataManager()->AttachRecorder(recorder);
 }
 
-void Avida::CoreView::Driver::DetachRecorder(Data::RecorderPtr recorder)
+void Avida::Viewer::Driver::DetachRecorder(Data::RecorderPtr recorder)
 {
   m_world->GetDataManager()->DetachRecorder(recorder);
 }

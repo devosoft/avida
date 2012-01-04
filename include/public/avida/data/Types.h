@@ -25,7 +25,6 @@
 #ifndef AvidaDataTypes_h
 #define AvidaDataTypes_h
 
-#include "apto/core.h"
 #include "avida/core/Types.h"
 
 namespace Avida {

@@ -1,5 +1,5 @@
 /*
- *  viewer-core/Map.h
+ *  viewer/Map.h
  *  avida-core
  *
  *  Created by Charles on 7-9-07
@@ -21,8 +21,8 @@
  *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <ofria@msu.edu>
  */
 
-#ifndef AvidaCoreViewMap_h
-#define AvidaCoreViewMap_h
+#ifndef AvidaViewerMap_h
+#define AvidaViewerMap_h
 
 #include "apto/core.h"
 
@@ -31,7 +31,7 @@ class cWorld;
 
 
 namespace Avida {
-  namespace CoreView {
+  namespace Viewer {
     
     // Map Mode/Type Enumerations
     // --------------------------------------------------------------------------------------------------------------  

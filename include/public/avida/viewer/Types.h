@@ -1,9 +1,9 @@
 /*
- *  AvidaViewer.h
- *  Avida
+ *  viewer/Types.h
+ *  avida-core
  *
- *  Created by David on 11/11/10.
- *  Copyright 2010-2011 Michigan State University. All rights reserved.
+ *  Created by David on 1/3/12.
+ *  Copyright 2012 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,11 +22,30 @@
  *
  */
 
-#ifndef AvidaAvidaViewer_h
-#define AvidaAvidaViewer_h
+#ifndef AvidaViewerTypes_h
+#define AvidaViewerTypes_h
 
-#include "avida/viewer-core/Driver.h"
-#include "avida/viewer-core/Listener.h"
-#include "avida/viewer-core/Map.h"
+#include "apto/core.h"
+
+namespace Avida {
+  namespace Viewer {
+    
+    // Class Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    class ClassificationInfo;
+    class Driver;
+    class Freezer;
+    struct FreezerID;
+    class Listener;
+    class Map;
+    
+    
+    // Type Declarations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    typedef Apto::SmartPtr<Freezer> FreezerPtr;
+  };
+};
 
 #endif

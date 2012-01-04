@@ -369,21 +369,21 @@ void cDriver_TextViewer::DoUpdate()
   const int pause_level = m_info.GetPauseLevel();
 
   // If we are stepping in some way, we've come to a stop, so revert to a normal pause.
-  if (pause_level == cCoreView_Info::PAUSE_ADVANCE_INST) {
+  if (pause_level == cViewer_Info::PAUSE_ADVANCE_INST) {
     m_info.ExitStepMode();
   }
 
-  if (pause_level == cCoreView_Info::PAUSE_ADVANCE_UPDATE ||
-      pause_level == cCoreView_Info::PAUSE_ADVANCE_DIVIDE) {
-    m_info.SetPauseLevel(cCoreView_Info::PAUSE_ON);
+  if (pause_level == cViewer_Info::PAUSE_ADVANCE_UPDATE ||
+      pause_level == cViewer_Info::PAUSE_ADVANCE_DIVIDE) {
+    m_info.SetPauseLevel(cViewer_Info::PAUSE_ON);
   }
 
   // If we are paused at all, delay doing anything else until we recieve user input.
-  if (pause_level != cCoreView_Info::PAUSE_OFF) nodelay(stdscr, false);
+  if (pause_level != cViewer_Info::PAUSE_OFF) nodelay(stdscr, false);
 
   // If there is any input in the buffer, process all of it.
   int cur_char = ERR;
-  while ((cur_char = GetKeypress()) != ERR || m_info.GetPauseLevel() == cCoreView_Info::PAUSE_ON) {
+  while ((cur_char = GetKeypress()) != ERR || m_info.GetPauseLevel() == cViewer_Info::PAUSE_ON) {
     ProcessKeypress(cur_char);
 
     //bool found_keypress = ProcessKeypress(cur_char);

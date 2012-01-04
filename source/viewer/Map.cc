@@ -22,9 +22,9 @@
  *
  */
 
-#include "avida/viewer-core/Map.h"
+#include "avida/viewer/Map.h"
 
-#include "avida/viewer-core/ClassificationInfo.h"
+#include "avida/viewer/ClassificationInfo.h"
 
 #include "cEnvironment.h"
 #include "cOrganism.h"
@@ -37,11 +37,11 @@
 #include <iostream>
 
 
-Avida::CoreView::MapMode::~MapMode() { ; }
-Avida::CoreView::DiscreteScale::~DiscreteScale() { ; }
+Avida::Viewer::MapMode::~MapMode() { ; }
+Avida::Viewer::DiscreteScale::~DiscreteScale() { ; }
 
 
-class cFitnessMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
+class cFitnessMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
 {
 private:
   static const int SCALE_MAX = 201;
@@ -63,7 +63,7 @@ private:
   
 public:
   cFitnessMapMode(cWorld*)
-    : m_color_count(SCALE_MAX + Avida::CoreView::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
+    : m_color_count(SCALE_MAX + Avida::Viewer::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
     , m_cur_min(0.0), m_cur_max(0.0), m_target_min(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
   { ; }
   ~cFitnessMapMode() { ; }
@@ -76,7 +76,7 @@ public:
   const DiscreteScale& GetScale() const { return *this; }
   const Apto::String& GetScaleLabel() const;
   
-  int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
+  int GetSupportedTypes() const { return Avida::Viewer::MAP_GRID_VIEW_COLOR; }
 
   bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
   Apto::String GetProperty(const Apto::String&) const { return ""; }
@@ -85,7 +85,7 @@ public:
   
   
   // DiscreteScale Interface
-  int GetScaleRange() const { return m_color_count.GetSize() - Avida::CoreView::MAP_RESERVED_COLORS; }
+  int GetScaleRange() const { return m_color_count.GetSize() - Avida::Viewer::MAP_RESERVED_COLORS; }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
   DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }  
 };
@@ -159,15 +159,15 @@ void cFitnessMapMode::Update(cPopulation& pop)
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism* org = pop.GetCell(i).GetOrganism();
     if (org == NULL) {
-      m_color_grid[i] = Avida::CoreView::MAP_RESERVED_COLOR_BLACK;
-      m_color_count[Avida::CoreView::MAP_RESERVED_COLORS - Avida::CoreView::MAP_RESERVED_COLOR_BLACK]++;
+      m_color_grid[i] = Avida::Viewer::MAP_RESERVED_COLOR_BLACK;
+      m_color_count[Avida::Viewer::MAP_RESERVED_COLORS - Avida::Viewer::MAP_RESERVED_COLOR_BLACK]++;
       continue;
     }
 
     double fit = org->GetPhenotype().GetFitness();
     if (fit == 0.0) {
-      m_color_grid[i] = Avida::CoreView::MAP_RESERVED_COLOR_DARK_GRAY;
-      m_color_count[Avida::CoreView::MAP_RESERVED_COLORS - Avida::CoreView::MAP_RESERVED_COLOR_DARK_GRAY]++;
+      m_color_grid[i] = Avida::Viewer::MAP_RESERVED_COLOR_DARK_GRAY;
+      m_color_count[Avida::Viewer::MAP_RESERVED_COLORS - Avida::Viewer::MAP_RESERVED_COLOR_DARK_GRAY]++;
       continue;
     }
     
@@ -175,12 +175,12 @@ void cFitnessMapMode::Update(cPopulation& pop)
     
     fit = (fit - m_cur_min) / (m_cur_max - m_cur_min);
     if (fit > 1.0) {
-      m_color_grid[i] = Avida::CoreView::MAP_RESERVED_COLOR_WHITE;
-      m_color_count[Avida::CoreView::MAP_RESERVED_COLORS - Avida::CoreView::MAP_RESERVED_COLOR_WHITE]++;
+      m_color_grid[i] = Avida::Viewer::MAP_RESERVED_COLOR_WHITE;
+      m_color_count[Avida::Viewer::MAP_RESERVED_COLORS - Avida::Viewer::MAP_RESERVED_COLOR_WHITE]++;
     } else {
       int color = fit * static_cast<double>(SCALE_MAX - 1);
       m_color_grid[i] = color;
-      m_color_count[color + Avida::CoreView::MAP_RESERVED_COLORS]++;
+      m_color_count[color + Avida::Viewer::MAP_RESERVED_COLORS]++;
     }
   }
 }
@@ -197,12 +197,12 @@ const Apto::String& cFitnessMapMode::GetScaleLabel() const
 
 
 
-class cGenotypeMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
+class cGenotypeMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
 {
 private:
   static const int NUM_COLORS = 10;
 private:
-  Avida::CoreView::ClassificationInfo* m_info;
+  Avida::Viewer::ClassificationInfo* m_info;
   Apto::Array<int> m_color_grid;
   Apto::Array<int> m_color_count;
   Apto::Array<DiscreteScale::Entry> m_scale_labels;
@@ -219,7 +219,7 @@ public:
   const DiscreteScale& GetScale() const { return *this; }
   const Apto::String& GetScaleLabel() const { static const Apto::String name("Most Abundant Genotypes"); return name; }
   
-  int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
+  int GetSupportedTypes() const { return Avida::Viewer::MAP_GRID_VIEW_COLOR; }
   
   bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
   Apto::String GetProperty(const Apto::String&) const { return ""; }
@@ -228,16 +228,16 @@ public:
   
   
   // DiscreteScale Interface
-  int GetScaleRange() const { return m_color_count.GetSize() - Avida::CoreView::MAP_RESERVED_COLORS; }
+  int GetScaleRange() const { return m_color_count.GetSize() - Avida::Viewer::MAP_RESERVED_COLORS; }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
   DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }
   bool IsCategorical() const { return true; }
 };
 
 cGenotypeMapMode::cGenotypeMapMode(cWorld* world)
-  : m_info(new Avida::CoreView::ClassificationInfo(world->GetNewWorld(), "genotype", NUM_COLORS))
-  , m_color_count(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
-  , m_scale_labels(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
+  : m_info(new Avida::Viewer::ClassificationInfo(world->GetNewWorld(), "genotype", NUM_COLORS))
+  , m_color_count(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
+  , m_scale_labels(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
 {
   m_scale_labels[0].index = -4;
   m_scale_labels[0].label = "Unoccupied";
@@ -262,7 +262,7 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       m_color_count[0]++;
     } else {
       Systematics::GroupPtr bg = org->SystematicsGroup("genotype");
-      Avida::CoreView::ClassificationInfo::MapColorPtr mapcolor = bg->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
+      Avida::Viewer::ClassificationInfo::MapColorPtr mapcolor = bg->GetData<Avida::Viewer::ClassificationInfo::MapColor>();
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;
         m_color_count[mapcolor->color + 4]++;
@@ -278,7 +278,7 @@ void cGenotypeMapMode::Update(cPopulation& pop)
 
 
 
-class EnvActionMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
+class EnvActionMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
 {
 private:
   cWorld* m_world;
@@ -305,7 +305,7 @@ public:
   const DiscreteScale& GetScale() const { return *this; }
   const Apto::String& GetScaleLabel() const { return m_scale_label; }
   
-  int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_TAGS; }
+  int GetSupportedTypes() const { return Avida::Viewer::MAP_GRID_VIEW_TAGS; }
   
   bool SetProperty(const Apto::String& property, const Apto::String& value);
   Apto::String GetProperty(const Apto::String& property) const;
@@ -325,7 +325,7 @@ private:
 
 
 EnvActionMapMode::EnvActionMapMode(cWorld* world)
- : m_world(world), m_action_counts(Avida::CoreView::MAP_RESERVED_COLORS)
+ : m_world(world), m_action_counts(Avida::Viewer::MAP_RESERVED_COLORS)
 {
   cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -430,7 +430,7 @@ void EnvActionMapMode::updateTagStates()
 
 
 
-Avida::CoreView::Map::Map(cWorld* world)
+Avida::Viewer::Map::Map(cWorld* world)
   : m_width(world->GetPopulation().GetWorldX())
   , m_height(world->GetPopulation().GetWorldY())
   , m_num_viewer_colors(-1)
@@ -445,12 +445,12 @@ Avida::CoreView::Map::Map(cWorld* world)
   m_view_modes[2] = new EnvActionMapMode(world);
 
   
-//  AddViewMode("Genome Length",  &cCoreView_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
+//  AddViewMode("Genome Length",  &cViewer_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
 
-//  AddViewMode("None",           &cCoreView_Map::TagCells_None,      VIEW_TAGS);
+//  AddViewMode("None",           &cViewer_Map::TagCells_None,      VIEW_TAGS);
 //
-//  AddViewMode("Square",         &cCoreView_Map::SetSymbol_Square,   VIEW_SYMBOLS);
-//  AddViewMode("Facing",         &cCoreView_Map::SetSymbol_Facing,   VIEW_SYMBOLS);
+//  AddViewMode("Square",         &cViewer_Map::SetSymbol_Square,   VIEW_SYMBOLS);
+//  AddViewMode("Facing",         &cViewer_Map::SetSymbol_Facing,   VIEW_SYMBOLS);
 
   // Load tasks...
 //  const cEnvironment& env = world->GetEnvironment();
@@ -458,16 +458,16 @@ Avida::CoreView::Map::Map(cWorld* world)
 //  for (int i = 0; i < num_tasks; i++) {
 //    cString mode_name = env.GetTask(i).GetDesc();
 //    mode_name.Insert("Task/");
-//    AddViewMode(mode_name, &cCoreView_Map::TagCells_Task, VIEW_TAGS, i);
+//    AddViewMode(mode_name, &cViewer_Map::TagCells_Task, VIEW_TAGS, i);
 //  }
 }
 
-Avida::CoreView::Map::~Map()
+Avida::Viewer::Map::~Map()
 {
   for (int i = 0; i < m_view_modes.GetSize(); i++) delete m_view_modes[i];
 }
 
-bool Avida::CoreView::Map::SetModeProperty(int idx, const Apto::String& property, const Apto::String& value)
+bool Avida::Viewer::Map::SetModeProperty(int idx, const Apto::String& property, const Apto::String& value)
 {
   m_rw_lock.WriteLock();
   bool rval = m_view_modes[idx]->SetProperty(property, value);
@@ -475,7 +475,7 @@ bool Avida::CoreView::Map::SetModeProperty(int idx, const Apto::String& property
   return rval;
 }
 
-void Avida::CoreView::Map::UpdateMaps(cPopulation& pop)
+void Avida::Viewer::Map::UpdateMaps(cPopulation& pop)
 {
   m_rw_lock.WriteLock();
   
@@ -485,7 +485,7 @@ void Avida::CoreView::Map::UpdateMaps(cPopulation& pop)
 }
 
 
-void Avida::CoreView::Map::SetMode(int mode)
+void Avida::Viewer::Map::SetMode(int mode)
 {
   int type = m_view_modes[mode]->GetSupportedTypes();
   if (type == MAP_GRID_VIEW_COLOR) m_color_mode = mode;
@@ -496,14 +496,14 @@ void Avida::CoreView::Map::SetMode(int mode)
 
 
 //
-//void cCoreView_Map::TagCells_None(cPopulation& pop, int ignore)
+//void cViewer_Map::TagCells_None(cPopulation& pop, int ignore)
 //{
 //  m_tag_grid.Resize(pop.GetSize());
 //  m_tag_grid.SetAll(0);
 //}
 //
 //
-//void cCoreView_Map::TagCells_Task(cPopulation& pop, int task_id)
+//void cViewer_Map::TagCells_Task(cPopulation& pop, int task_id)
 //{
 //  m_tag_grid.Resize(pop.GetSize());
 //  for (int i = 0; i < pop.GetSize(); i++) {

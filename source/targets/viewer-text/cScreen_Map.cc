@@ -23,7 +23,7 @@
 
 #include "cPopulation.h"
 
-cScreen_Map::cScreen_Map(cCoreView_Info & info, cTextWindow & window)
+cScreen_Map::cScreen_Map(cViewer_Info & info, cTextWindow & window)
   : cTextScreen(info, window)
   , m_map_info(info)
 {

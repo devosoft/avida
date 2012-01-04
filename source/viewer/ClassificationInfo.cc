@@ -1,5 +1,5 @@
 /*
- *  viewer-core/ClassificationInfo.cc
+ *  viewer/ClassificationInfo.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,7 +22,7 @@
  *
  */
 
-#include "avida/viewer-core/ClassificationInfo.h"
+#include "avida/viewer/ClassificationInfo.h"
 
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
@@ -32,7 +32,7 @@
 #include "cBitArray.h"
 
 
-bool Avida::CoreView::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
+bool Avida::Viewer::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
 {
   // @TODO - map color serialize
   assert(false);
@@ -40,7 +40,7 @@ bool Avida::CoreView::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
 }
 
 
-Avida::CoreView::ClassificationInfo::ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors)
+Avida::Viewer::ClassificationInfo::ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors)
   : m_world(in_world)
   , m_role(role)
   , m_color_chart_id(total_colors)
@@ -53,7 +53,7 @@ Avida::CoreView::ClassificationInfo::ClassificationInfo(World* in_world, const S
 }
 
 
-void Avida::CoreView::ClassificationInfo::Update()
+void Avida::Viewer::ClassificationInfo::Update()
 {
   const int num_colors = m_color_chart_id.GetSize();
   cBitArray free_color(num_colors);   // Keep track of genotypes still using their color.
@@ -99,7 +99,7 @@ void Avida::CoreView::ClassificationInfo::Update()
 }
 
 
-Avida::CoreView::ClassificationInfo::MapColorPtr Avida::CoreView::ClassificationInfo::MapColorOf(Systematics::GroupPtr bg)
+Avida::Viewer::ClassificationInfo::MapColorPtr Avida::Viewer::ClassificationInfo::MapColorOf(Systematics::GroupPtr bg)
 {
   MapColorPtr mc = bg->GetData<MapColor>();
   if (!mc) {

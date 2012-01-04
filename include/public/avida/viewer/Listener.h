@@ -1,9 +1,10 @@
 /*
- *  cScreen_Map.h
- *  Avida
+ *  viewer/Listener.h
+ *  avida-core
  *
- *  Created by Charles on 7-1-07
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Created by David on 11/11/10.
+ *  Copyright 2010-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,31 +18,33 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef cScreen_Map_h
-#define cScreen_Map_h
+#ifndef AvidaViewerListener_h
+#define AvidaViewerListener_h
 
-#ifndef cViewer_Map_h
-#include "cViewer_Map.h"
-#endif
+#include "apto/platform.h"
+#include "avida/viewer/Types.h"
 
-#ifndef cTextScreen_h
-#include "cTextScreen.h"
-#endif
 
-class cScreen_Map : public cTextScreen {
-private:
-  cViewer_Map m_map_info;
-
-  void SetGenotypeColor(int color_id);
-public:
-  cScreen_Map(cViewer_Info & info, cTextWindow & window);
-  ~cScreen_Map();
-
-  void Draw();
-  void Update();
-  bool DoInput(int input);
+namespace Avida {
+  namespace Viewer {
+    
+    class Listener
+    {
+    public:
+      LIB_EXPORT virtual ~Listener() = 0;
+      
+      LIB_EXPORT virtual bool WantsMap() = 0;
+      LIB_EXPORT virtual bool WantsUpdate() = 0;
+      
+      LIB_EXPORT virtual void NotifyMap(Map* map);
+      LIB_EXPORT virtual void NotifyUpdate(int update);
+    };
+    
+  };
 };
 
 #endif

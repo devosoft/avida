@@ -1,5 +1,5 @@
 /*
- *  viewer-core/Driver.h
+ *  viewer/Driver.h
  *  avida-core
  *
  *  Created by David on 10/28/10.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef AvidaCoreViewDriver_h
-#define AvidaCoreViewDriver_h
+#ifndef AvidaViewerDriver_h
+#define AvidaViewerDriver_h
 
 #include "apto/core.h"
 #include "avida/core/Feedback.h"
@@ -34,7 +34,7 @@ class cWorld;
 
 
 namespace Avida {
-  namespace CoreView {
+  namespace Viewer {
 
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------  
@@ -120,7 +120,7 @@ namespace Avida {
       // ------------------------------------------------------------------------------------------------------------  
       
     protected:
-      void Run();
+      LIB_LOCAL void Run();
     };
 
   };

@@ -22,8 +22,8 @@
 #ifndef cTextScreen_h
 #define cTextScreen_h
 
-#ifndef cCoreView_Info_h
-#include "cCoreView_Info.h"
+#ifndef cViewer_Info_h
+#include "cViewer_Info.h"
 #endif
 
 #ifndef cTextWindow_h
@@ -32,11 +32,11 @@
 
 class cTextScreen  {
 protected:
-  cCoreView_Info & m_info;
+  cViewer_Info & m_info;
   cTextWindow & m_window;
 
 public:
-  cTextScreen(cCoreView_Info & info, cTextWindow & window) : m_info(info), m_window(window) { ; }
+  cTextScreen(cViewer_Info & info, cTextWindow & window) : m_info(info), m_window(window) { ; }
   virtual ~cTextScreen() { ; }
 
   virtual void Draw() = 0;

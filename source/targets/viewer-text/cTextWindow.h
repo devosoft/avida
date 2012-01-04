@@ -34,7 +34,7 @@
 #include "ncurses-defs.h"
 #endif
 
-class cCoreView_Info;
+class cViewer_Info;
 
 class cTextWindow {
 protected:
@@ -43,15 +43,15 @@ protected:
   cTextWindow * m_parent_window;
   tArray<cTextWindow *> m_sub_windows;
 
-  cCoreView_Info & m_info;
+  cViewer_Info & m_info;
 
   // Internal Functions
   void RefreshSelf() { wrefresh(m_win_id); }
   void RedrawSelf() { touchwin(m_win_id); wrefresh(m_win_id); }
 
 public:
-  cTextWindow(cTextWindow * parent, cCoreView_Info & info);
-  cTextWindow(cTextWindow * parent, cCoreView_Info & info, int y_size, int x_size, int y_start=0, int x_start=0);
+  cTextWindow(cTextWindow * parent, cViewer_Info & info);
+  cTextWindow(cTextWindow * parent, cViewer_Info & info, int y_size, int x_size, int y_start=0, int x_start=0);
   ~cTextWindow();
 
   void Construct(int y_size, int x_size, int y_start=0, int x_start=0);
