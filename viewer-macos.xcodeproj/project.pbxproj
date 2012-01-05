@@ -33,8 +33,9 @@
 		7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
-		70D0455C13C6351D00E6E5AC /* NSStringAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */; };
+		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
+		70E1E5D014B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E1E5CF14B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,10 +92,12 @@
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		70D0455A13C6351D00E6E5AC /* NSStringAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringAdditions.h; sourceTree = "<group>"; };
-		70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSStringAdditions.mm; sourceTree = "<group>"; };
+		70D0455A13C6351D00E6E5AC /* NSString+Apto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Apto.h"; sourceTree = "<group>"; };
+		70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
+		70E1E5CE14B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+TemporaryDirectory.h"; sourceTree = "<group>"; };
+		70E1E5CF14B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+TemporaryDirectory.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,8 +252,10 @@
 				703549C11337AD4300D3865C /* MapGridView.mm */,
 				70D3C086135739E1008374E3 /* MapScaleView.h */,
 				70D3C087135739E1008374E3 /* MapScaleView.mm */,
-				70D0455A13C6351D00E6E5AC /* NSStringAdditions.h */,
-				70D0455B13C6351D00E6E5AC /* NSStringAdditions.mm */,
+				70E1E5CE14B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.h */,
+				70E1E5CF14B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.m */,
+				70D0455A13C6351D00E6E5AC /* NSString+Apto.h */,
+				70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */,
 			);
 			name = "Viewer-Core";
 			path = "viewer-core";
@@ -357,8 +362,9 @@
 				70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */,
 				7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */,
 				7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */,
-				70D0455C13C6351D00E6E5AC /* NSStringAdditions.mm in Sources */,
+				70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */,
 				701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */,
+				70E1E5D014B63F0C0058A3F4 /* NSFileManager+TemporaryDirectory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

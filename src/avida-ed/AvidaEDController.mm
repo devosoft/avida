@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David on 11/30/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Copyright 2010-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -33,7 +33,8 @@
 #import "AvidaRun.h"
 #import "CenteringClipView.h"
 #import "MapGridView.h"
-#import "NSStringAdditions.h"
+#import "NSFileManager+TemporaryDirectory.h"
+#import "NSString+Apto.h"
 
 #import "AvidaEDPopViewStatView.h"
 
@@ -67,6 +68,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 @interface AvidaEDController (hidden)
 - (void) popSplitViewAnimationEnd:(NSNumber*)collapsed;
 - (void) setupFreezer;
+- (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -95,6 +97,25 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   }
 }
 
+- (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID {
+  // clean up old run
+  // @TODO
+  
+  // create working directory
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* runPath = [fileManager createTemporaryDirectory];
+  
+  // instantiate config
+  freezer->Instantiate(freezerID, [runPath cStringUsingEncoding:NSASCIIStringEncoding]);
+  
+  // create run object
+  currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
+  
+  // update interface
+  [txtRun setStringValue:[NSString stringWithAptoString:freezer->NameOf(freezerID)]];
+  [btnRunState setState:NSOffState];
+}
+
 @end
 
 @implementation AvidaEDController
@@ -115,10 +136,16 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     if ([urls count] == 0) return nil;
     
     NSURL* userDocumentsURL = [urls objectAtIndex:0];
-    NSURL* freezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+    freezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+    
     Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
     freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
     [self setupFreezer];
+
+    // Hide freezer extension
+    NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
+    [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
+    
     
     [self showWindow:self];
   }
@@ -178,37 +205,39 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   [outlineFreezer expandItem:freezerConfigs];
   [outlineFreezer expandItem:freezerGenomes];
   [outlineFreezer expandItem:freezerWorlds];  
+  [pathWorkspace setURL:freezerURL];
+  
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
+    if (freezer->NameOf(*it.Get()) == "@default") {
+      [self loadRunFromFreezer:(*it.Get())];
+      break;
+    }
+  }
   
   [btnRunState becomeFirstResponder];
 }
 
 
 - (IBAction) toggleRunState:(id)sender {
-  if ([sender state] == NSOnState && currentRun == nil) {
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+  if ([sender state] == NSOnState && listener == NULL) {
     
-    if ([urls count] > 0) {
-      NSURL* userDocumentsURL = [urls objectAtIndex:0];
-      NSURL* runURL = [NSURL URLWithString:@"test" relativeToURL:userDocumentsURL];
-      currentRun = [[AvidaRun alloc] initWithDirectory:runURL];
-    }
-    if (currentRun == nil) {
+    if ([currentRun numOrganisms] == 0) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
-      NSString* msgText = [NSString stringWithFormat:@"Unable to load run configuration in \"test\""];
-      [alert setMessageText:msgText];
-      [alert setInformativeText:@"Check the run log for details on how to correct your configuration files."];
+      [alert setMessageText:@"Unable to start experiment, the petri dish has not been inoculated."];
+      [alert setInformativeText:@"Please drag an organisms from the freezer to inoculate the petri dish."];
       [alert setAlertStyle:NSWarningAlertStyle];
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
       [sender setState:NSOffState];
-    } else {
-      if (!listener) listener = new MainThreadListener(self);
-      [currentRun attachListener:self];
-      [popViewStatView setAvidaRun:currentRun];
-      
-      [txtUpdate setStringValue:@"0 updates"];
+      return;
     }
+    
+    listener = new MainThreadListener(self);
+    [currentRun attachListener:self];
+    [popViewStatView setAvidaRun:currentRun];
+    
+    [txtUpdate setStringValue:@"0 updates"];
+    [currentRun resume];
   } else {
     if ([sender state] == NSOnState) {
       [currentRun resume];
@@ -448,6 +477,17 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   
   return YES;
 }
+
+
+- (BOOL)outlineView:(NSOutlineView*)outlineView shouldSelectItem:(id)item
+{
+  if (item == nil || item == freezerConfigs || item == freezerGenomes || item == freezerWorlds) {
+    return NO;
+  }
+  
+  return YES;
+}
+
 
 
 - (id) outlineView:(NSOutlineView*)outlineView child:(NSInteger)index ofItem:(id)item {

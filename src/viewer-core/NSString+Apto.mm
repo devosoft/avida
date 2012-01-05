@@ -1,9 +1,9 @@
 //
-//  NSStringAdditions.h
+//  NSString+Apto.mm
 //  viewer-macos
 //
 //  Created by David Michael Bryson on 7/7/11.
-//  Copyright 2011 Michigan State University. All rights reserved.
+//  Copyright 2011-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,10 +27,13 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Foundation/Foundation.h>
+#import "NSString+Apto.h"
 
-#include "apto/core/String.h"
+@implementation NSString (Apto)
 
-@interface NSString (AptoAdditions)
-+ (NSString*) stringWithAptoString:(const Apto::String&)string;
++ (NSString*) stringWithAptoString:(const Apto::String&)string
+{
+  return [NSString stringWithUTF8String:(const char*)string];
+}
+
 @end

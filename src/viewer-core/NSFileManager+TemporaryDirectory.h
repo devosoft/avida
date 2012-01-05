@@ -1,9 +1,9 @@
 //
-//  NSStringAdditions.m
+//  NSFileManager+TemporaryDirectory.h
 //  viewer-macos
 //
-//  Created by David Michael Bryson on 7/7/11.
-//  Copyright 2011 Michigan State University. All rights reserved.
+//  Created by David Michael Bryson on 1/5/12.
+//  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,13 +27,8 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "NSStringAdditions.h"
+#import <Foundation/Foundation.h>
 
-@implementation NSString (AptoAdditions)
-
-+ (NSString*) stringWithAptoString:(const Apto::String&)string
-{
-  return [NSString stringWithUTF8String:(const char*)string];
-}
-
+@interface NSFileManager (TemporaryDirectory)
+- (NSString*) createTemporaryDirectory;
 @end

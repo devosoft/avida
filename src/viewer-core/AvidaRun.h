@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David on 10/27/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Copyright 2010-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -42,15 +42,18 @@
 }
 
 - (id) init;
-- (AvidaRun*) initWithDirectory:(NSURL*)dir;
+- (AvidaRun*) initWithDirectory:(NSString*)dir;
 
 - (Avida::World*) world;
 
 - (void) dealloc;
 - (void) finalize;
 
+- (int) numOrganisms;
 
 - (bool) isPaused;
+- (bool) hasFinished;
+
 - (void) pause;
 - (void) resume;
 - (void) end;

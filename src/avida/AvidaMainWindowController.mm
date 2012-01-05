@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David Bryson on 10/21/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Copyright 2010-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -91,7 +91,7 @@
 
 - (IBAction) toggleRunState:(id)sender {
   if (currentRun == nil) {
-    currentRun = [[AvidaRun alloc] initWithDirectory:[runDirControl URL]];
+    currentRun = [[AvidaRun alloc] initWithDirectory:[[runDirControl URL] path]];
     if (currentRun == nil) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];

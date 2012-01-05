@@ -1,9 +1,9 @@
 //
-//  OrgColorBox.h
-//  avida/apps/viewer-macos
+//  NSFileManager+TemporaryDirectory.m
+//  viewer-macos
 //
-//  Created by David Bryson on 7/14/11.
-//  Copyright 2011-2012 Michigan State University. All rights reserved.
+//  Created by David Michael Bryson on 1/5/12.
+//  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,11 +27,20 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import "NSFileManager+TemporaryDirectory.h"
 
-@interface OrgColorBox : NSView {
-  NSColor* color;
+@implementation NSFileManager (TemporaryDirectory)
+
+- (NSString*) createTemporaryDirectory {
+  // Create a unique directory in the system temporary directory
+  NSString* guid = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString* path = [NSTemporaryDirectory() stringByAppendingPathComponent:guid];
+  
+  if (![self createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:nil]) {
+    return nil;
+  }
+  
+  return path;
 }
-- (void) reset;
-@property (readwrite, retain) NSColor* color;
+
 @end

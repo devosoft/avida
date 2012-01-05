@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David on 10/27/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Copyright 2010-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -75,14 +75,15 @@ void handleDriverCallback(Avida::DriverEvent event)
 }
 
 
-- (AvidaRun*) initWithDirectory:(NSURL*)dir {
+- (AvidaRun*) initWithDirectory:(NSString*)dir {
   self = [super init];
   
   if (self) { 
-    Apto::String config_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
+    Apto::String config_path([dir cStringUsingEncoding:NSASCIIStringEncoding]);
     driver = Avida::Viewer::Driver::InitWithDirectory(config_path);
     if (!driver) return nil;
     driver->RegisterCallback(&handleDriverCallback);
+    driver->Pause();
     driver->Start();
   }
   
@@ -109,8 +110,17 @@ void handleDriverCallback(Avida::DriverEvent event)
 }
 
 
+- (int) numOrganisms {
+  return driver->NumOrganisms();
+}
+
+
 - (bool) isPaused {
-  return (self->driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
+  return (driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
+}
+
+- (bool) hasFinished {
+  return driver->HasFinished();
 }
 
 

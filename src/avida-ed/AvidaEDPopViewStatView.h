@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David Bryson on 4/15/11.
-//  Copyright 2011 Michigan State University. All rights reserved.
+//  Copyright 2011-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the

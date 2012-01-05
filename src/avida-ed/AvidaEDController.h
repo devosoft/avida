@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David on 11/30/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Copyright 2010-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -46,6 +46,9 @@
   
   IBOutlet NSSplitView* mainSplitView;
 
+  // Freezer
+  // --------------------------------------------------------------------------------------------------------------  
+  NSURL* freezerURL;
   Avida::Viewer::FreezerPtr freezer;
   NSMutableArray* freezerConfigs;
   NSMutableArray* freezerGenomes;
@@ -59,6 +62,7 @@
   IBOutlet NSSplitView* popSplitView;
 
   IBOutlet NSButton* btnRunState;
+  IBOutlet NSTextField* txtRun;
   IBOutlet NSTextField* txtUpdate;
 
   IBOutlet NSButton* btnPopView;
@@ -131,6 +135,7 @@
 
 // NSOutlineViewDelegate Protocol
 - (BOOL)outlineView:(NSOutlineView*)outlineView shouldEditTableColumn:(NSTableColumn*)tableColumn item:(id)item;
+- (BOOL)outlineView:(NSOutlineView*)outlineView shouldSelectItem:(id)item;
 
 // NSOutlineViewDataSource Protocol
 - (id) outlineView:(NSOutlineView*)outlineView child:(NSInteger)index ofItem:(id)item;

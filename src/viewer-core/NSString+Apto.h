@@ -1,8 +1,8 @@
 //
-//  OrgColorBox.h
-//  avida/apps/viewer-macos
+//  NSString+Apto.h
+//  viewer-macos
 //
-//  Created by David Bryson on 7/14/11.
+//  Created by David Michael Bryson on 7/7/11.
 //  Copyright 2011-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,11 +27,10 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-@interface OrgColorBox : NSView {
-  NSColor* color;
-}
-- (void) reset;
-@property (readwrite, retain) NSColor* color;
+#include "apto/core/String.h"
+
+@interface NSString (Apto)
++ (NSString*) stringWithAptoString:(const Apto::String&)string;
 @end
