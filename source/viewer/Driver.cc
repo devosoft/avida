@@ -152,13 +152,14 @@ void Avida::Viewer::Driver::Run()
   
   // Support initial pause
   m_mutex.Lock();
-  while (m_pause_state == DRIVER_PAUSED) {
+  while (!m_done && m_pause_state == DRIVER_PAUSED) {
     m_paused = true;
     m_pause_cv.Wait(m_mutex);
   }
   m_paused = false;
   m_mutex.Unlock();
   
+  if (m_done) return;
   
   try {
     cPopulation& population = m_world->GetPopulation();
