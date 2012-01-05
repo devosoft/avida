@@ -28,6 +28,8 @@
 #include "avida/core/Types.h"
 #include "avida/viewer/Types.h"
 
+class cWorld;
+
 
 namespace Avida {
   namespace Viewer {
@@ -66,6 +68,7 @@ namespace Avida {
       
     private:
       Apto::String m_dir;
+      bool m_opened;
       
       struct Entry {
         Apto::String name;
@@ -88,9 +91,9 @@ namespace Avida {
       
       LIB_EXPORT inline Iterator EntriesOfType(FreezerObjectType type) const { return Iterator(type, m_entries[type]); }
       
-      LIB_EXPORT FreezerID SaveConfig(World* world, const Apto::String& name);
+      LIB_EXPORT FreezerID SaveConfig(cWorld* world, const Apto::String& name);
       LIB_EXPORT FreezerID SaveGenome(GenomePtr genome);
-      LIB_EXPORT FreezerID SaveWorld(World* world, const Apto::String& name);
+      LIB_EXPORT FreezerID SaveWorld(cWorld* world, const Apto::String& name);
       
       LIB_EXPORT bool Instantiate(FreezerID entry_id, const Apto::String& working_directory) const;
       
