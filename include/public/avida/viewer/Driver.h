@@ -91,6 +91,7 @@ namespace Avida {
       
       LIB_EXPORT DriverPauseState GetPauseState() const { return m_pause_state; }
       LIB_EXPORT bool IsPaused() const { return m_paused; }
+      LIB_EXPORT bool HasFinished() const { return m_done; }
       LIB_EXPORT void Resume();
       
       LIB_EXPORT void AttachListener(Listener* listener);
@@ -98,6 +99,11 @@ namespace Avida {
 
       LIB_EXPORT void AttachRecorder(Data::RecorderPtr recorder);
       LIB_EXPORT void DetachRecorder(Data::RecorderPtr recorder);
+      
+      
+      // Hacks to get things working
+      LIB_EXPORT int NumOrganisms() const;
+      LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y);
 
       
       // WorldDriver Protocol

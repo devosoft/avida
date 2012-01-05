@@ -141,7 +141,7 @@ namespace Avida {
         file_path = Apto::FileSystem::PathAppend(path, "entryname.txt");
         file.Open((const char*)file_path, std::ios::out);
         fs = file.GetFileStream();
-        *fs << "@example" << std::endl;
+        *fs << "@default" << std::endl;
         file.Close();
       }
       

@@ -99,6 +99,18 @@ Avida::Viewer::Driver* Avida::Viewer::Driver::InitWithDirectory(const Apto::Stri
 }
 
 
+int Avida::Viewer::Driver::NumOrganisms() const
+{
+  return m_world->GetPopulation().GetNumOrganisms();
+}
+
+
+void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y)
+{
+  
+}
+
+
 void Avida::Viewer::Driver::Pause()
 {
   m_mutex.Lock();
@@ -137,6 +149,17 @@ void Avida::Viewer::Driver::RegisterCallback(DriverCallback callback)
 void Avida::Viewer::Driver::Run()
 {
   m_callback(THREAD_START);
+  
+  // Support initial pause
+  m_mutex.Lock();
+  while (m_pause_state == DRIVER_PAUSED) {
+    m_paused = true;
+    m_pause_cv.Wait(m_mutex);
+  }
+  m_paused = false;
+  m_mutex.Unlock();
+  
+  
   try {
     cPopulation& population = m_world->GetPopulation();
     cStats& stats = m_world->GetStats();
@@ -219,7 +242,7 @@ void Avida::Viewer::Driver::Run()
         m_pause_cv.Wait(m_mutex);
       }
       m_paused = false;
-    }  
+    }
     m_mutex.Unlock();
   } catch (Avida::AbortCondition condition) {
     cerr << "abort: " << condition << endl;
