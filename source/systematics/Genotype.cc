@@ -116,6 +116,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
 , m_last_birth_cell(0)
 , m_last_group_id(-1)
 , m_last_forager_type(-1)
+, m_task_counts(mgr->EnvironmentActionTriggerIDs().GetSize())
 , m_prop_map(NULL)
 {
   const tDictionary<cString>& props = *static_cast<const tDictionary<cString>*>(prop_p);

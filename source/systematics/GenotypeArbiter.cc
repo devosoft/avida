@@ -298,6 +298,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
           
           m_active_hash[hashGenome(*seq)].Push(found);
           found->m_handle->Remove(); // Remove from historic list
+          resizeActiveList(found->NumUnits());
           m_active_sz[found->NumUnits()].PushRear(found, &found->m_handle);
           found->NotifyNewUnit(u);
           m_tot_genotypes++;

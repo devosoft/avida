@@ -4846,8 +4846,6 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
       }
 
-      cAvidaContext& ctx = m_world->GetDefaultContext();
-
       assert(tmp.bg->Properties().Has("genome"));
       Genome mg(tmp.bg->Properties().Get("genome"));
       cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, Systematics::Source(Systematics::DIVISION, (const char*)filename, true));

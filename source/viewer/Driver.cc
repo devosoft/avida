@@ -43,7 +43,8 @@
 
 
 Avida::Viewer::Driver::Driver(cWorld* world, World* new_world)
-: Apto::Thread(), m_world(world), m_new_world(new_world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
+: Apto::Thread(), m_world(world), m_new_world(new_world), m_pause_state(DRIVER_UNPAUSED), m_started(false), m_done(false)
+, m_paused(false), m_pause_at(-2), m_map(NULL)
 {
   GlobalObjectManager::Register(this);
 }
@@ -161,6 +162,8 @@ void Avida::Viewer::Driver::Run()
   
   if (m_done) return;
   
+  m_started = true;
+  
   try {
     cPopulation& population = m_world->GetPopulation();
     cStats& stats = m_world->GetStats();
@@ -237,7 +240,10 @@ void Avida::Viewer::Driver::Run()
       
       // Exit conditons...
       m_mutex.Lock();
-      if (population.GetNumOrganisms() == 0) m_done = true;
+      if (population.GetNumOrganisms() == 0 || stats.GetUpdate() == m_pause_at) {
+        m_pause_state = DRIVER_PAUSED;
+        m_pause_at = -2;
+      }
       while (!m_done && m_pause_state == DRIVER_PAUSED) {
         m_paused = true;
         m_pause_cv.Wait(m_mutex);

@@ -64,8 +64,11 @@ namespace Avida {
       Apto::Mutex m_mutex;
       Apto::ConditionVariable m_pause_cv;
       DriverPauseState m_pause_state;
+      bool m_started;
       bool m_done;
       bool m_paused;
+      
+      Update m_pause_at;
       
       Avida::DriverCallback m_callback;
       
@@ -89,6 +92,8 @@ namespace Avida {
       
       LIB_EXPORT inline World* GetWorld() { return m_new_world; }
       
+      LIB_EXPORT bool HasStarted() const { return m_started; }
+      LIB_EXPORT void PauseAt(Update update) { m_pause_at = update; }
       LIB_EXPORT DriverPauseState GetPauseState() const { return m_pause_state; }
       LIB_EXPORT bool IsPaused() const { return m_paused; }
       LIB_EXPORT bool HasFinished() const { return m_done; }
