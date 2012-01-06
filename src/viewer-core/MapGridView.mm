@@ -56,7 +56,6 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   zoom = -1;
   selected_x = -1;
   selected_y = -1;
-  [self setWantsLayer:YES];  
 }
 @end
 

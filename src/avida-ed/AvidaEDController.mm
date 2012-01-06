@@ -29,9 +29,12 @@
 
 #import "AvidaEDController.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "AvidaAppDelegate.h"
 #import "AvidaRun.h"
 #import "CenteringClipView.h"
+#import "FlipView.h"
 #import "MapGridView.h"
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
@@ -349,6 +352,18 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 
+- (IBAction) toggleMapSettingsView:(id)sender {  
+  // Hold the shift key to flip the window in slo-mo
+  CGFloat flipDuration = 0.5 * (self.window.currentEvent.modifierFlags & NSShiftKeyMask ? 10.0 : 1.0);
+  [mapFlipView flip:sender withDuration:flipDuration];
+  if ([mapFlipView isCurrentView:[mapFlipView view1]]) {
+    [btnMapSettingsFlip setTitle:@"Setup"];
+  } else {
+    [btnMapSettingsFlip setTitle:@"Map"];
+  }
+}
+
+
 - (void) envActionStateChange:(NSMutableDictionary*)newState
 {
   Apto::String enabled_actions;
@@ -366,7 +381,6 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   map->SetModeProperty(map->GetTagMode(), "enabled_actions", enabled_actions);
   [mapView updateState:map];
 }
-
 
 
 - (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {

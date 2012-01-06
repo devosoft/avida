@@ -34,6 +34,7 @@
 
 @class AvidaAppDelegate;
 @class AvidaRun;
+@class FlipView;
 @class MapGridView;
 @class MapScaleView;
 
@@ -60,6 +61,8 @@
   // --------------------------------------------------------------------------------------------------------------  
   IBOutlet NSView* popView;
   IBOutlet NSSplitView* popSplitView;
+  IBOutlet NSButton* btnMapSettingsFlip;
+  IBOutlet FlipView* mapFlipView;
 
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtRun;
@@ -116,6 +119,7 @@
 - (IBAction) changeMapViewMode:(id)sender;
 - (IBAction) changeMapZoom:(id)sender;
 - (IBAction) togglePopViewStatView:(id)sender;
+- (IBAction) toggleMapSettingsView:(id)sender;
 
 - (IBAction) changeView:(id)sender;
 
