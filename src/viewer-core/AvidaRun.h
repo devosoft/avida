@@ -43,6 +43,7 @@
 
 - (id) init;
 - (AvidaRun*) initWithDirectory:(NSString*)dir;
+- (AvidaRun*) initWithDirectory:(NSString*)dir shouldPauseAt:(Avida::Update)update;
 
 - (Avida::World*) world;
 
@@ -51,10 +52,12 @@
 
 - (int) numOrganisms;
 
+- (bool) hasStarted;
 - (bool) isPaused;
 - (bool) hasFinished;
 
 - (void) pause;
+- (void) pauseAt:(Avida::Update)update;
 - (void) resume;
 - (void) end;
 

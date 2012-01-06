@@ -74,8 +74,11 @@ void handleDriverCallback(Avida::DriverEvent event)
   return nil;
 }
 
-
 - (AvidaRun*) initWithDirectory:(NSString*)dir {
+  return [self initWithDirectory:dir shouldPauseAt:-1];
+}
+
+- (AvidaRun*) initWithDirectory:(NSString*)dir shouldPauseAt:(Avida::Update)update {
   self = [super init];
   
   if (self) { 
@@ -83,7 +86,10 @@ void handleDriverCallback(Avida::DriverEvent event)
     driver = Avida::Viewer::Driver::InitWithDirectory(config_path);
     if (!driver) return nil;
     driver->RegisterCallback(&handleDriverCallback);
-    driver->Pause();
+    
+    if (update == -1) driver->Pause();
+    else driver->PauseAt(update);
+    
     driver->Start();
   }
   
@@ -114,6 +120,9 @@ void handleDriverCallback(Avida::DriverEvent event)
   return driver->NumOrganisms();
 }
 
+- (bool) hasStarted {
+  return driver->HasStarted();
+}
 
 - (bool) isPaused {
   return (driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
@@ -126,6 +135,10 @@ void handleDriverCallback(Avida::DriverEvent event)
 
 - (void) pause {
   driver->Pause();
+}
+
+- (void) pauseAt:(Avida::Update)update {
+  driver->PauseAt(update);
 }
 
 

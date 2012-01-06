@@ -144,7 +144,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
           case -4:  continue;
           case -3:  [[NSColor darkGrayColor] set]; break;
           case -2:  [[NSColor grayColor] set]; break;
-          case -1:  [[NSColor whiteColor] set]; break;
+          case -1:  [[NSColor cyanColor] set]; break;
           default:  continue;
         }
       }

@@ -104,6 +104,8 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   // clean up old run
   // @TODO
   
+  runConfigChanged = YES;
+  
   // create working directory
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* runPath = [fileManager createTemporaryDirectory];
@@ -112,11 +114,22 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   freezer->Instantiate(freezerID, [runPath cStringUsingEncoding:NSASCIIStringEncoding]);
   
   // create run object
-  currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
+  if (freezerID.type == Avida::Viewer::CONFIG) {
+    currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
+    [txtUpdate setStringValue:@"-1 updates"];
+  } else {
+    currentRun = [[AvidaRun alloc] initWithDirectory:runPath shouldPauseAt:0];
+    runConfigChanged = NO;
+    [popViewStatView setAvidaRun:currentRun];
+    [txtUpdate setStringValue:@"0 updates"];
+  }
   
   // update interface
   [txtRun setStringValue:[NSString stringWithAptoString:freezer->NameOf(freezerID)]];
   [btnRunState setState:NSOffState];
+
+  listener = new MainThreadListener(self);
+  [currentRun attachListener:self];  
 }
 
 @end
@@ -210,8 +223,8 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   [outlineFreezer expandItem:freezerWorlds];  
   [pathWorkspace setURL:freezerURL];
   
-  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
-    if (freezer->NameOf(*it.Get()) == "@default") {
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::WORLD); it.Next();) {
+    if (freezer->NameOf(*it.Get()) == "@example") {
       [self loadRunFromFreezer:(*it.Get())];
       break;
     }
@@ -222,12 +235,11 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 - (IBAction) toggleRunState:(id)sender {
-  if ([sender state] == NSOnState && listener == NULL) {
-    
+  if ([sender state] == NSOnState) {
     if ([currentRun numOrganisms] == 0) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
-      [alert setMessageText:@"Unable to start experiment, the petri dish has not been inoculated."];
+      [alert setMessageText:@"Unable to resume experiment, the petri dish has not been inoculated."];
       [alert setInformativeText:@"Please drag an organisms from the freezer to inoculate the petri dish."];
       [alert setAlertStyle:NSWarningAlertStyle];
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
@@ -235,18 +247,14 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
       return;
     }
     
-    listener = new MainThreadListener(self);
-    [currentRun attachListener:self];
-    [popViewStatView setAvidaRun:currentRun];
-    
-    [txtUpdate setStringValue:@"0 updates"];
+    if (runConfigChanged) {
+      runConfigChanged = NO;
+      [popViewStatView setAvidaRun:currentRun];
+    }
+
     [currentRun resume];
   } else {
-    if ([sender state] == NSOnState) {
-      [currentRun resume];
-    } else {
-      [currentRun pause];
-    }
+    [currentRun pause];
   }
 }
 
@@ -580,8 +588,13 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 - (void) handleUpdate:(ViewerUpdate*)pkg {
-  NSString* str = [NSString stringWithFormat:@"%d updates", [pkg update]];
-  [txtUpdate setStringValue:str]; 
+  int update = [pkg update];
+  if (update == 1) {
+    [txtUpdate setStringValue:@"1 update"];
+  } else {
+    NSString* str = [NSString stringWithFormat:@"%d updates", update];
+    [txtUpdate setStringValue:str]; 
+  }
 }
 
 

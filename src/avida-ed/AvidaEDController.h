@@ -100,6 +100,7 @@
   Avida::Viewer::Listener* listener;
   Avida::Viewer::Map* map;
   Apto::Map<NSInteger, int> map_mode_to_color;
+  BOOL runConfigChanged;
 }
 
 // Init and Dealloc Methods
