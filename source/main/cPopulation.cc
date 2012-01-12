@@ -2402,9 +2402,10 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           }
           
           // pick a random founder...
-          int r = random.GetUInt(potential_founders.GetSize());
-          founders.Push(potential_founders[r]);
-          
+          if (potential_founders.GetSize() > 0) {
+            int r = random.GetUInt(potential_founders.GetSize());
+            founders.Push(potential_founders[r]);
+          }
           source_founders = founders;
           target_founders = founders;
           break;          
