@@ -283,6 +283,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
@@ -319,6 +320,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-pred", &cHardwareExperimental::Inst_FightMeritPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
     
     // Control-type Instructions
@@ -459,7 +461,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000);
+  assert(m_cycle_count < 0x8000); //APW
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
@@ -3415,6 +3417,66 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   
   // Set the new target and return the value
   m_organism->SetForageTarget(prop_target);
+  m_organism->RecordFTSet();
+	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->HasSetFT()) return false;
+  int prop_target = GetRegister(FindModifiedRegister(rBX));
+  
+  // a little mod help...can't set to -1, that's for juevniles only
+  int num_fts = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  set <int>::iterator itr;    
+  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
+    // ft's may not be sequentially numbered
+    int ft_num = abs(prop_target) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    prop_target = *itr;
+  }
+  
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator; -1 (nothing) is default
+  //  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+  
+  /*  int prop_target = GetRegister(FindModifiedRegister(rBX));
+   
+   // a little mod help...can't set to -1, that's for juevniles only
+   int num_fts = 0;
+   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+   set <int>::iterator itr;    
+   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+   if (abs(prop_target) >= num_fts && prop_target != -2) prop_target = abs(prop_target) % num_fts;
+   
+   */
+  //  const int prop_target = GetRegister(FindModifiedRegister(rBX));
+  
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator; -1 (nothing) is default
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+
+  //return false if org setting target to current one (avoid paying costs for not switching)
+  const int old_target = m_organism->GetForageTarget();
+  if (old_target == prop_target) return false;
+  
+  // return false if predator trying to become prey and this has been disallowed
+  if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
+  
+  // return false if trying to become predator and there are none in the experiment
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
+  
+  // return false if trying to become predator this has been disallowed via setforagetarget
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
+  
+  // Set the new target and return the value
+  m_organism->SetForageTarget(prop_target);
+  m_organism->RecordFTSet();
 	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
   return true;
 }
@@ -4298,7 +4360,13 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
-  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->HadParentTeacher()) m_organism->CopyParentFT();
   return true;
 }
 

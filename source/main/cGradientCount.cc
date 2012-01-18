@@ -684,20 +684,23 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
       // decide the size of the current hill
       int rand_hill_radius = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
       
-      // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
-      int chooseEW = rng.GetUInt(0,2);
-      if (chooseEW == 0) {
-        m_peakx = rng.GetUInt(rand_hill_radius, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
-      } else {
-        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1 - rand_hill_radius);
+      // generate random hills, if config == 0, otherwise generate 1 hill at peakx X peaky
+      if (m_config == 0) {
+        // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
+        int chooseEW = rng.GetUInt(0,2);
+        if (chooseEW == 0) {
+          m_peakx = rng.GetUInt(rand_hill_radius, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
+        } else {
+          m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1 - rand_hill_radius);
+        }
+        int chooseNS = rng.GetUInt(0,2);
+        if (chooseNS == 0) { 
+          m_peaky = rng.GetUInt(rand_hill_radius, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
+        } else {
+          m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1 - rand_hill_radius);
+        }
       }
-      int chooseNS = rng.GetUInt(0,2);
-      if (chooseNS == 0) { 
-        m_peaky = rng.GetUInt(rand_hill_radius, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
-      } else {
-        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1 - rand_hill_radius);
-      }
-
+      
       // figure the coordinate extent of each hill (box)
       int max_pos_x = min(m_peakx + rand_hill_radius + 1, GetX() - 1);
       int min_pos_x = max(m_peakx - rand_hill_radius - 1, 0);

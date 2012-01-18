@@ -538,6 +538,7 @@ private:
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);
+  bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
   bool Inst_SenseDiffFaced(cAvidaContext& ctx);
@@ -576,6 +577,7 @@ private:
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
+  bool Inst_LearnParent(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
   // Control-type Instructions

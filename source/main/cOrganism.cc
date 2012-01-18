@@ -89,7 +89,10 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_northerly(0)
   , m_easterly(0)
   , m_forage_target(-1)
+  , m_has_set_ft(false)
   , m_teach(false)
+  , m_parent_teacher(false)
+  , m_parent_ft(-1)
   , m_num_point_mut(0)
 {
 	// initializing this here because it may be needed during hardware creation:

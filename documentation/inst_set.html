@@ -120,8 +120,8 @@ define how that instruction should be used.  The exact format is as follows:
 </dd>
 <dt><strong>post_cost</strong>	
   <dd>
-    CPU cost to be paid AFTER the instruction is executed successfully the first time (e.g. post-kill handling
-    time in predators.
+    CPU cost to be paid AFTER the instruction is executed the first time (e.g. pseudo post-kill handling time in 
+    predators). Post costs are only applied if the instruction executes successfully (differs from regular costs).
   </dd>
 </dl>
 
