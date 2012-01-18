@@ -554,6 +554,7 @@
 		709A1E540EB69DA6006090AF /* cResourceHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cResourceHistory.h; sourceTree = "<group>"; };
 		709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgMovementPredicate.h; sourceTree = "<group>"; };
 		709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceHistory.cc; sourceTree = "<group>"; };
+		709B860D14BF7C62009F0F4A /* apto.dylib */ = {isa = PBXFileReference; lastKnownFileType = file; name = apto.dylib; path = ../libs/apto/build/Release/apto.dylib; sourceTree = "<group>"; };
 		709CDEA2149BF18100995644 /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		709CDEA5149BF69000995644 /* Arbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Arbiter.cc; sourceTree = "<group>"; };
 		709CDEA6149BF69000995644 /* Group.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Group.cc; sourceTree = "<group>"; };
@@ -1319,6 +1320,7 @@
 		70A1E4B01266249900D56AC4 /* libraries */ = {
 			isa = PBXGroup;
 			children = (
+				709B860D14BF7C62009F0F4A /* apto.dylib */,
 				70FEF6231381B04500A9D082 /* libapto.a */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 				7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */,
@@ -1858,9 +1860,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		7023EC320C0A426900362B9C /* avida-core */ = {
+		7023EC320C0A426900362B9C /* avida-core (static) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core" */;
+			buildConfigurationList = 7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core (static)" */;
 			buildPhases = (
 				7023EC2F0C0A426900362B9C /* Headers */,
 				7023EC300C0A426900362B9C /* Sources */,
@@ -1870,14 +1872,14 @@
 			);
 			dependencies = (
 			);
-			name = "avida-core";
+			name = "avida-core (static)";
 			productName = "avida-core";
 			productReference = 7023EC330C0A426900362B9C /* libavida-core.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		706C7B63125F64B000EDB4B9 /* avida-viewer */ = {
+		706C7B63125F64B000EDB4B9 /* avida-viewer (static) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 706C7B6E125F64F100EDB4B9 /* Build configuration list for PBXNativeTarget "avida-viewer" */;
+			buildConfigurationList = 706C7B6E125F64F100EDB4B9 /* Build configuration list for PBXNativeTarget "avida-viewer (static)" */;
 			buildPhases = (
 				706C7B60125F64B000EDB4B9 /* Headers */,
 				706C7B61125F64B000EDB4B9 /* Sources */,
@@ -1887,7 +1889,7 @@
 			);
 			dependencies = (
 			);
-			name = "avida-viewer";
+			name = "avida-viewer (static)";
 			productName = "viewer-core";
 			productReference = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */;
 			productType = "com.apple.product-type.library.static";
@@ -1951,8 +1953,8 @@
 			targets = (
 				DCC3164C07626CF3008F7A48 /* avida */,
 				70B6514B0BEA6FAD002472ED /* avida-tests */,
-				7023EC320C0A426900362B9C /* avida-core */,
-				706C7B63125F64B000EDB4B9 /* avida-viewer */,
+				7023EC320C0A426900362B9C /* avida-core (static) */,
+				706C7B63125F64B000EDB4B9 /* avida-viewer (static) */,
 			);
 		};
 /* End PBXProject section */
@@ -2247,7 +2249,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core" */ = {
+		7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core (static)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7023EC350C0A42BC00362B9C /* Debug */,
@@ -2274,7 +2276,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		706C7B6E125F64F100EDB4B9 /* Build configuration list for PBXNativeTarget "avida-viewer" */ = {
+		706C7B6E125F64F100EDB4B9 /* Build configuration list for PBXNativeTarget "avida-viewer (static)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				706C7B65125F64B100EDB4B9 /* Debug */,

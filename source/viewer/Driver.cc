@@ -29,6 +29,7 @@
 #include "avida/viewer/Listener.h"
 
 #include "cAvidaContext.h"
+#include "cFile.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -94,9 +95,26 @@ Avida::Viewer::Driver* Avida::Viewer::Driver::InitWithDirectory(const Apto::Stri
     cerr << feedback.GetMessage(i) << endl;
   }
   
+  Apto::String path = Apto::FileSystem::PathAppend(config_path, "update");
+  if (Apto::FileSystem::IsFile(path)) {
+    // Open name file and read contents
+    cFile file;
+    file.Open((const char*)path, std::ios::in);
+    cString line;
+    if (!file.Eof() && file.ReadLine(line)) {
+      world->GetStats().SetCurrentUpdate(line.AsInt());
+    }
+    file.Close();
+  }
+
   
   if (!world) return NULL;
   return new Avida::Viewer::Driver(world, new_world);
+}
+
+int Avida::Viewer::Driver::CurrentUpdate() const
+{
+  return m_world->GetStats().GetUpdate();
 }
 
 
@@ -111,6 +129,21 @@ void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y)
   
 }
 
+int Avida::Viewer::Driver::WorldX()
+{
+  return m_world->GetConfig().WORLD_X.Get();
+}
+
+int Avida::Viewer::Driver::WorldY()
+{
+  return m_world->GetConfig().WORLD_Y.Get();
+}
+
+void Avida::Viewer::Driver::SetWorldSize(int x, int y)
+{
+  m_world->GetConfig().WORLD_X.Set(x);
+  m_world->GetConfig().WORLD_Y.Set(y);  
+}
 
 void Avida::Viewer::Driver::Pause()
 {

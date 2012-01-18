@@ -668,7 +668,7 @@ namespace Avida {
         
         // Update events.cfg
         file_path = Apto::FileSystem::PathAppend(path, "events.cfg");
-        file.Open((const char*)file_path, std::ios::app);
+        file.Open((const char*)file_path, std::ios::out);
         fs = file.GetFileStream();
         *fs << "u begin LoadPopulation detail.spop" << std::endl;
         file.Close();
@@ -830,7 +830,7 @@ Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveWorld(cWorld* world, const 
 {
   if (!m_opened) return FreezerID(WORLD, -1);
 
-  Apto::String entry_path = Apto::FormatStr("c%d", m_next_id[WORLD]++);
+  Apto::String entry_path = Apto::FormatStr("w%d", m_next_id[WORLD]++);
   Apto::String full_path = Apto::FileSystem::PathAppend(m_dir, entry_path);
   
   if (!Apto::FileSystem::MkDir(full_path)) return FreezerID(WORLD, -1);
@@ -846,7 +846,7 @@ Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveWorld(cWorld* world, const 
     Apto::FileSystem::RmDir(full_path, true);
     return FreezerID(CONFIG, -1);    
   }
-  
+    
   // On success, save name file
   Apto::String name_path = Apto::FileSystem::PathAppend(full_path, "entryname.txt");
   cFile file;
@@ -862,7 +862,10 @@ Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveWorld(cWorld* world, const 
   
   // Create entry and return
   m_entries[WORLD].Push(Entry(name, entry_path));
-  return FreezerID(WORLD, m_entries[WORLD].GetSize() - 1);
+  
+  FreezerID new_id(WORLD, m_entries[WORLD].GetSize() - 1);
+  SaveAttachment(new_id, "update", Apto::AsStr(world->GetStats().GetUpdate()));
+  return new_id;
 }
 
 
@@ -894,6 +897,49 @@ Apto::String Avida::Viewer::Freezer::PathOf(FreezerID entry_id) const
 }
 
 
+
+bool Avida::Viewer::Freezer::SaveAttachment(FreezerID entry_id, const Apto::String& name, const Apto::String& value)
+{
+  if (!IsValid(entry_id) || entry_id.type == GENOME) return false;
+  
+  // On success, save name file
+  Apto::String name_path = Apto::FileSystem::PathAppend(PathOf(entry_id), name);
+  cFile file;
+  if (!file.Open((const char*)name_path, std::ios::out)) {
+    return false;
+  }
+  
+  std::fstream& nfs = *file.GetFileStream();
+  nfs << value;
+  
+  file.Close();
+  
+  return true;
+}
+
+Apto::String Avida::Viewer::Freezer::LoadAttachment(FreezerID entry_id, const Apto::String& name)
+{
+  if (!IsValid(entry_id) || entry_id.type == GENOME) return "";
+  
+  Apto::String rtn;
+  Apto::String name_path = Apto::FileSystem::PathAppend(PathOf(entry_id), name);
+  if (Apto::FileSystem::IsFile(name_path)) {
+    // Open name file and read contents
+    cFile file;
+    file.Open((const char*)name_path, std::ios::in);
+    cString line;
+    if (!file.Eof() && file.ReadLine(line)) rtn = line;
+    while (!file.Eof() && file.ReadLine(line)) {
+      rtn += "\n";
+      rtn += line;
+    }
+    file.Close();
+  }
+  return rtn;
+}
+
+
+
 bool Avida::Viewer::Freezer::Rename(FreezerID entry_id, const Apto::String& name)
 {
   if (!m_opened) return false;
@@ -919,3 +965,8 @@ bool Avida::Viewer::Freezer::Rename(FreezerID entry_id, const Apto::String& name
   return true;
 }
 
+Apto::String Avida::Viewer::Freezer::NewUniqueNameForType(FreezerObjectType type)
+{
+  // @TODO - create actual unique freezer item names
+  return "Untitled";
+}

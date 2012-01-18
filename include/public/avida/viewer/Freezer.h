@@ -101,8 +101,13 @@ namespace Avida {
       LIB_EXPORT inline const Apto::String& NameOf(FreezerID eid) const { return m_entries[eid.type][eid.identifier].name; }
       LIB_EXPORT inline bool IsActive(FreezerID eid) const { return m_entries[eid.type][eid.identifier].active; }
       
+      LIB_EXPORT bool SaveAttachment(FreezerID entry_id, const Apto::String& name, const Apto::String& value);
+      LIB_EXPORT Apto::String LoadAttachment(FreezerID entry_id, const Apto::String& name);
+      
       
       LIB_EXPORT bool Rename(FreezerID entry_id, const Apto::String& name);
+      LIB_EXPORT Apto::String NewUniqueNameForType(FreezerObjectType type);
+      
       
       LIB_EXPORT inline void Remove(FreezerID eid) { m_entries[eid.type][eid.identifier].active = false; }
       LIB_EXPORT inline void Restore(FreezerID eid) { m_entries[eid.type][eid.identifier].active = true; }
@@ -110,7 +115,7 @@ namespace Avida {
       
       LIB_EXPORT inline bool IsValid(FreezerID eid) const
       {
-        return (eid.identifier > 0 && eid.identifier < m_entries[eid.type].GetSize());
+        return (eid.identifier >= 0 && eid.identifier < m_entries[eid.type].GetSize());
       }
       
       

@@ -97,6 +97,16 @@ void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context&, Update current
   while (list_it.Next() != NULL) if (!(*list_it.Get())->ReferenceCount()) removeGenotype(*list_it.Get());
 }
 
+void Avida::Systematics::GenotypeArbiter::PrintListStatus()
+{
+  Apto::List<GenotypePtr, Apto::SparseVector>::Iterator list_it2(m_historic.Begin());
+  printf("genotype_historic: ");
+  while (list_it2.Next() != NULL) {
+    printf("%d, ", (*list_it2.Get())->ID());
+  }
+  printf("\n\n");
+
+}
 
 bool Avida::Systematics::GenotypeArbiter::Serialize(ArchivePtr) const
 {
@@ -300,6 +310,7 @@ Avida::Systematics::GenotypePtr Avida::Systematics::GenotypeArbiter::ClassifyNew
           found->m_handle->Remove(); // Remove from historic list
           resizeActiveList(found->NumUnits());
           m_active_sz[found->NumUnits()].PushRear(found, &found->m_handle);
+          found->Reactivate();
           found->NotifyNewUnit(u);
           m_tot_genotypes++;
           if (found->NumUnits() > m_best) {
@@ -496,7 +507,7 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   }
   
   if (genotype->PassiveReferenceCount()) return;
-  
+    
   const Apto::Array<GenotypePtr>& parents = genotype->Parents();
   for (int i = 0; i < parents.GetSize(); i++) {
     parents[i]->RemovePassiveReference();

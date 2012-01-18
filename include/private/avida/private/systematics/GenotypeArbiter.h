@@ -146,6 +146,7 @@ namespace Avida {
       
       inline const Apto::Array<Environment::ActionTriggerID>& EnvironmentActionTriggerIDs() const { return m_env_action_ids; }
       
+      void PrintListStatus();
       
     private:
       void setupProvidedData(World* world);

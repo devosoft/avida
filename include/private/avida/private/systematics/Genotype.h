@@ -157,6 +157,7 @@ namespace Avida {
       inline void ClearThreshold() { m_threshold = false; }
       
       inline void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
+      inline void Reactivate() { m_active = true; m_update_deactivated = -1; }
             
     private:
       void setupPropertyMap() const;
