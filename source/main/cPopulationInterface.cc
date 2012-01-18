@@ -1138,6 +1138,11 @@ bool cPopulationInterface::AttemptImmigrateGroup(int group_id, cOrganism* org)
   return m_world->GetPopulation().AttemptImmigrateGroup(group_id, org);
 }
 
+void cPopulationInterface::PushToleranceInstExe(int tol_inst)
+{
+  m_world->GetStats().PushToleranceInstExe(tol_inst);
+}
+
 void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
             double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
 {

@@ -3176,6 +3176,19 @@ void cStats::PrintToleranceData(const cString& filename)
   }
 }
 
+void cStats::PushToleranceInstExe(int tol_inst)
+{
+  const int num_tol_inst = 8;
+  if (m_is_tolerance_exe_counts.GetSize() != num_tol_inst) m_is_tolerance_exe_counts.Resize(num_tol_inst);
+
+  if (m_is_tolerance_exe_counts[tol_inst].first == m_update) {
+    m_is_tolerance_exe_counts[tol_inst].second++;
+  } else {
+    m_is_tolerance_exe_counts[tol_inst].first = m_update;
+    m_is_tolerance_exe_counts[tol_inst].second = 1;
+  }
+}
+
 // Adds a record of a tolerance instruction execution w its circumstances. @JJB
 void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
           double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)

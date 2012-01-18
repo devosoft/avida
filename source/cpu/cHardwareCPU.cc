@@ -9762,6 +9762,11 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 // Pushes the circumstances of a tolerance instruction execution to stats. @JJB
 void cHardwareCPU::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
 {
+  if (!m_world->GetConfig().PUSH_TOL_INST.Get()) {
+    m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst);
+    return;
+  }
+
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
 
   int group_id = m_organism->GetOpinion().first;
