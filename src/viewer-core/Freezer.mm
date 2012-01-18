@@ -23,6 +23,7 @@ NSString* const AvidaPasteboardTypeFreezerID = @"org.devosoft.avida.freezer.id";
 
 @synthesize freezerID;
 
+
 - (void) encodeWithCoder:(NSCoder*)encoder {
   [encoder encodeInt:freezerID.type forKey:@"type"];
   [encoder encodeInt:freezerID.identifier forKey:@"identifier"];

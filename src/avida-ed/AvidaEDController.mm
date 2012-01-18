@@ -53,6 +53,18 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 
+static NSInteger sortFreezerItems(id f1, id f2, void* context)
+{
+  Avida::Viewer::FreezerPtr freezer = *(Avida::Viewer::FreezerPtr*)context;
+  Apto::String f1s = freezer->NameOf([f1 freezerID]);
+  Apto::String f2s = freezer->NameOf([f2 freezerID]);
+  
+  if (f1s < f2s) return NSOrderedAscending;
+  if (f1s > f2s) return NSOrderedDescending;
+  return NSOrderedSame;
+}
+
+
 
 
 @interface AvidaEDController (hidden)
@@ -77,16 +89,19 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   freezerConfigs = [[NSMutableArray alloc] initWithCapacity:freezer->NumEntriesOfType(Avida::Viewer::CONFIG)];
   for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
     [freezerConfigs addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
+    [freezerConfigs sortUsingFunction:&sortFreezerItems context:&freezer];
   }
   
   freezerWorlds = [[NSMutableArray alloc] initWithCapacity:freezer->NumEntriesOfType(Avida::Viewer::WORLD)];
   for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::WORLD); it.Next();) {
     [freezerWorlds addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
+    [freezerWorlds sortUsingFunction:&sortFreezerItems context:&freezer];
   }
 
   freezerGenomes = [[NSMutableArray alloc] initWithCapacity:freezer->NumEntriesOfType(Avida::Viewer::GENOME)];
   for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::GENOME); it.Next();) {
     [freezerGenomes addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
+    [freezerGenomes sortUsingFunction:&sortFreezerItems context:&freezer];
   }
 }
 
@@ -127,15 +142,17 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     [txtUpdate setStringValue:@"-1 updates"];
     [mapView setDimensions:[currentRun worldSize]];    
   } else {
-    currentRun = [[AvidaRun alloc] initWithDirectory:runPath shouldPauseAt:0];
+    currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
     runConfigChanged = NO;
     [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:freezerID];
     [txtUpdate setStringValue:[NSString stringWithFormat:@"%d updates", [currentRun currentUpdate]]];
+    [currentRun pauseAt:[currentRun currentUpdate] + 1];
+    [currentRun resume];
   }
   
   // update interface
   [txtRun setStringValue:[NSString stringWithAptoString:freezer->NameOf(freezerID)]];
-  [btnRunState setState:NSOffState];
+  [btnRunState setTitle:@"Run"];
 
   listener = new MainThreadListener(self);
   [currentRun attachListener:self];  
@@ -189,13 +206,15 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   while (![currentRun isPaused]);
   
 
-  Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], freezer->NewUniqueNameForType(Avida::Viewer::WORLD));
+  Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], [[txtRun stringValue] UTF8String]);
   if (freezer->IsValid(f)) {
     // Save plot info
     [popViewStatView saveRunToFreezer:freezer withID:f];
     
-    [freezerWorlds addObject:[[FreezerItem alloc] initWithFreezerID:f]];  
+    FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
+    [freezerWorlds addObject:fi];
     [outlineFreezer reloadData];
+    [outlineFreezer editColumn:0 row:[outlineFreezer rowForItem:fi] withEvent:nil select:YES];
   }
 }
 
@@ -273,7 +292,8 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 - (void) windowDidLoad {
   [mainSplitView replaceSubview:[[mainSplitView subviews] objectAtIndex:1] with:popView];
-  [btnRunState setState:NSOffState];
+  [btnRunState setTitle:@"Run"];
+  
   
   // Replace NSClipView of mapView's scrollView with a CenteringClipView
   NSClipView* clipView = [[CenteringClipView alloc] initWithFrame:[mapScrollView frame]];
@@ -302,7 +322,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 - (IBAction) toggleRunState:(id)sender {
-  if ([sender state] == NSOnState) {
+  if ([currentRun willPause]) {
     if ([currentRun numOrganisms] == 0) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
@@ -320,8 +340,10 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     }
 
     [currentRun resume];
+    [btnRunState setTitle:@"Pause"];
   } else {
     [currentRun pause];
+    [btnRunState setTitle:@"Run"];
   }
 }
 
@@ -564,6 +586,10 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     return NO;
   }
   
+  if ([item freezerID].type == Avida::Viewer::CONFIG && freezer->NameOf([item freezerID]) == "@default") return NO;
+  if ([item freezerID].type == Avida::Viewer::GENOME && freezer->NameOf([item freezerID]) == "@ancestor") return NO;
+  if ([item freezerID].type == Avida::Viewer::WORLD && freezer->NameOf([item freezerID]) == "@example") return NO;
+  
   return YES;
 }
 
@@ -623,6 +649,18 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   if (item == freezerGenomes) return @"Organisms";
   
   return [NSString stringWithAptoString:freezer->NameOf([item freezerID])];
+}
+
+- (void) outlineView:(NSOutlineView*)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn byItem:(id)item
+{
+  freezer->Rename([item freezerID], Apto::String([object UTF8String]));
+  switch ([item freezerID].type) {
+    case Avida::Viewer::CONFIG: [freezerConfigs sortUsingFunction:&sortFreezerItems context:&freezer]; break;
+    case Avida::Viewer::GENOME: [freezerGenomes sortUsingFunction:&sortFreezerItems context:&freezer]; break;
+    case Avida::Viewer::WORLD:  [freezerWorlds sortUsingFunction:&sortFreezerItems context:&freezer]; break;
+    default: break;
+  }
+  [outlineView reloadData];
 }
 
 
