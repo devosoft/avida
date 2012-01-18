@@ -101,6 +101,11 @@ void handleDriverCallback(Avida::DriverEvent event)
   return driver->GetWorld();
 }
 
+- (cWorld*) oldworld
+{
+  return driver->GetOldWorld();
+}
+
 
 - (void) dealloc {
   delete driver;
@@ -120,12 +125,32 @@ void handleDriverCallback(Avida::DriverEvent event)
   return driver->NumOrganisms();
 }
 
+- (int) currentUpdate {
+  return driver->CurrentUpdate();
+}
+
+
+- (NSSize) worldSize {
+  NSSize size;
+  size.width = driver->WorldX();
+  size.height = driver->WorldY();
+  return size;
+}
+
+- (void) setWorldSize:(NSSize)size {
+  driver->SetWorldSize(size.width, size.height);
+}
+
 - (bool) hasStarted {
   return driver->HasStarted();
 }
 
-- (bool) isPaused {
+- (bool) willPause {
   return (driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
+}
+
+- (bool) isPaused {
+  return driver->IsPaused();
 }
 
 - (bool) hasFinished {

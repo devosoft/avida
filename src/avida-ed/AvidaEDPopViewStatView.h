@@ -91,7 +91,8 @@ class AvidaEDPopViewStatViewTimeRecorder;
 
 - (void) resizeSubviewsWithOldSize:(NSSize)oldBoundsSize;
 
-- (void) setAvidaRun:(AvidaRun*)avidarun;
+- (void) setAvidaRun:(AvidaRun*)avidarun fromFreezer:(Avida::Viewer::FreezerPtr)freezer withID:(Avida::Viewer::FreezerID)fid;
+- (void) saveRunToFreezer:(Avida::Viewer::FreezerPtr)freezer withID:(Avida::Viewer::FreezerID)fid;
 - (void) clearAvidaRun;
 
 - (void) clearSelectedOrg;
@@ -145,7 +146,7 @@ private:
   bool m_active;
   
 public:
-  AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id);
+  AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id, const Apto::String& loaded_data);
   
   inline void SetActive() { m_active = true; }
   inline void SetInactive() { m_active = false; }

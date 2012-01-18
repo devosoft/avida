@@ -31,6 +31,8 @@
 
 #include "avida/viewer/Map.h"
 
+#import "Freezer.h"
+
 #include <cassert>
 #include <iostream>
 
@@ -45,6 +47,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 @interface MapGridView (hidden) {  
 }
 - (void) setup;
+- (void) adjustZoom;
 @end
 
 @implementation MapGridView (hidden)
@@ -53,9 +56,29 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_height = 0;
   num_colors = 0;
   color_cache = [NSMutableArray arrayWithCapacity:255];
+  [color_cache retain];
   zoom = -1;
   selected_x = -1;
   selected_y = -1;
+  
+  [self registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, nil]];
+}
+
+- (void)adjustZoom {
+  if (zoom < 0) {
+    NSScrollView* scrollView = [self enclosingScrollView];
+    assert(scrollView != nil);
+    
+    NSSize bounds = [scrollView bounds].size;
+    double z1 = bounds.width / map_width;
+    double z2 = bounds.height / map_height;
+    double zval = (z1 > z2) ? z2 : z1;
+    if (zval > 15.0) zval = 15.0;
+    zval = floor(zval);
+    [self setZoom:zval];
+  } else {
+    [self setNeedsDisplay:YES];
+  }  
 }
 @end
 
@@ -73,6 +96,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 
 - (void) awakeFromNib {
+  
   [self setup];
 }
 
@@ -165,6 +189,14 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   return YES;
 }
 
+- (void) setDimensions:(NSSize)size {
+  map_width = size.width;
+  map_height = size.height;
+  map_colors.Resize(map_width * map_height);
+  map_colors.SetAll(-4);
+  [self adjustZoom];
+}
+
 
 - (void) updateState:(Avida::Viewer::Map*)state {
   state->Retain();
@@ -179,21 +211,19 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
   state->Release();
   
-  
-  if (zoom < 0) {
-    NSScrollView* scrollView = [self enclosingScrollView];
-    assert(scrollView != nil);
-    
-    NSSize bounds = [scrollView bounds].size;
-    double z1 = bounds.width / map_width;
-    double z2 = bounds.height / map_height;
-    double zval = (z1 > z2) ? z2 : z1;
-    if (zval > 15.0) zval = 15.0;
-    zval = floor(zval);
-    [self setZoom:zval];
-  } else {
-    [self setNeedsDisplay:YES];
-  }
+  [self adjustZoom];
+}
+
+- (void) clearMap {
+  map_width = 0;
+  map_height = 0;
+  num_colors = 0;
+  [color_cache removeAllObjects];
+  map_colors.ResizeClear(0);
+  zoom = -1;
+  selected_x = -1;
+  selected_y = -1;
+  [self setNeedsDisplay:YES];
 }
 
 
@@ -293,5 +323,96 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   [super setFrameRotation:angle];
 }
 
+// NSDraggingDestination
+- (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender
+{
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    if (sourceDragMask & NSDragOperationGeneric) {
+      return NSDragOperationGeneric;
+    }
+  }
+  
+  return NSDragOperationNone;
+}
+
+- (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender
+{
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    if (sourceDragMask & NSDragOperationGeneric) {
+      return NSDragOperationGeneric;
+    }
+  }
+  
+  return NSDragOperationNone;
+}
+
+- (BOOL) prepareForDragOperation:(id<NSDraggingInfo>)sender
+{
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    if (sourceDragMask & NSDragOperationGeneric) {
+      return YES;
+    }
+  }
+  
+  return NO;
+}
+
+- (BOOL) performDragOperation:(id<NSDraggingInfo>)sender
+{
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+    switch (fid.type) {
+      case Avida::Viewer::CONFIG: [dragDelegate mapView:self handleDraggedConfig:fid]; break;
+      case Avida::Viewer::GENOME:
+        {
+          NSPoint location = [self convertPoint:[sender draggingLocation] fromView:nil];
+          CGFloat block_size = zoom;
+          
+          int x = floor(location.x / block_size);
+          int y = floor(location.y / block_size);
+          [dragDelegate mapView:self handleDraggedGenome:fid atX:x Y:y];
+        }        
+        break;
+      case Avida::Viewer::WORLD:  [dragDelegate mapView:self handleDraggedWorld:fid]; break;
+      default: break;
+    }
+  }
+  
+  return YES;
+}
+
+- (BOOL) wantsPeriodicDraggingUpdates
+{
+  return NO;
+}
+
+
+- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
+  switch (context) {
+    case NSDraggingContextWithinApplication:
+      return NSDragOperationCopy;
+      
+    case NSDraggingContextOutsideApplication:
+    default:
+      return NSDragOperationNone;
+      break;
+  }
+}
+
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session
+{
+  return YES;
+}
 
 @end

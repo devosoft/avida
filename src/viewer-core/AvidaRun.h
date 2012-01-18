@@ -46,13 +46,18 @@
 - (AvidaRun*) initWithDirectory:(NSString*)dir shouldPauseAt:(Avida::Update)update;
 
 - (Avida::World*) world;
+- (cWorld*) oldworld;
 
 - (void) dealloc;
 - (void) finalize;
 
 - (int) numOrganisms;
+- (int) currentUpdate;
+
+@property (nonatomic, readwrite) NSSize worldSize;
 
 - (bool) hasStarted;
+- (bool) willPause;
 - (bool) isPaused;
 - (bool) hasFinished;
 

@@ -477,7 +477,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
 }
 
 
-- (void) setAvidaRun:(AvidaRun*)avidarun {
+- (void) setAvidaRun:(AvidaRun*)avidarun fromFreezer:(Avida::Viewer::FreezerPtr)freezer withID:(Avida::Viewer::FreezerID)fid {
   [self clearAvidaRun];
   run = avidarun;
 
@@ -497,11 +497,16 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [run attachRecorder:recorder];
   
   
+  Apto::String loaded_data;
   timeRecorders.ResizeClear(4);
-  timeRecorders[0] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_fitness"));
-  timeRecorders[1] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_gestation_time"));
-  timeRecorders[2] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_metabolic_rate"));
-  timeRecorders[3] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.organisms"));
+  loaded_data = freezer->LoadAttachment(fid, "tr0");
+  timeRecorders[0] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_fitness", loaded_data));
+  loaded_data = freezer->LoadAttachment(fid, "tr1");
+  timeRecorders[1] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_gestation_time", loaded_data));
+  loaded_data = freezer->LoadAttachment(fid, "tr2");
+  timeRecorders[2] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_metabolic_rate", loaded_data));
+  loaded_data = freezer->LoadAttachment(fid, "tr3");
+  timeRecorders[3] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.organisms", loaded_data));
   
   for (int i = 0; i < timeRecorders.GetSize(); i++) [run attachRecorder:timeRecorders[i]];
   
@@ -518,6 +523,16 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [btnGraphSelect addItemWithTitle:@"Average Metabolic Rate"];
   [btnGraphSelect addItemWithTitle:@"Number of Organisms"];
 }
+
+
+- (void) saveRunToFreezer:(Avida::Viewer::FreezerPtr)freezer withID:(Avida::Viewer::FreezerID)fid
+{
+  freezer->SaveAttachment(fid, "tr0", timeRecorders[0]->AsString());
+  freezer->SaveAttachment(fid, "tr1", timeRecorders[1]->AsString());
+  freezer->SaveAttachment(fid, "tr2", timeRecorders[2]->AsString());
+  freezer->SaveAttachment(fid, "tr3", timeRecorders[3]->AsString());  
+}
+
 
 - (void) clearAvidaRun {
   if (recorder) {
@@ -756,8 +771,9 @@ void AvidaEDPopViewStatViewOrgRecorder::SetCoords(int x, int y)
 }
 
 
-AvidaEDPopViewStatViewTimeRecorder::AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id)
-  : Avida::Data::TimeSeriesRecorder<double>(data_id), m_view(view), m_active(false)
+AvidaEDPopViewStatViewTimeRecorder::AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id,
+                                                                       const Apto::String& loaded_data)
+  : Avida::Data::TimeSeriesRecorder<double>(data_id, loaded_data), m_view(view), m_active(false)
 {
 }
 

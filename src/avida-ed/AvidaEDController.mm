@@ -35,6 +35,7 @@
 #import "AvidaRun.h"
 #import "CenteringClipView.h"
 #import "FlipView.h"
+#import "Freezer.h"
 #import "MapGridView.h"
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
@@ -52,26 +53,15 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 
-@interface FreezerItem : NSObject {
-  Avida::Viewer::FreezerID freezerID;
-}
-- (id) initWithFreezerID:(Avida::Viewer::FreezerID)init_id;
-@property (readwrite) Avida::Viewer::FreezerID freezerID;
-@end;
-@implementation FreezerItem
-- (id) initWithFreezerID:(Avida::Viewer::FreezerID)init_id {
-  freezerID = init_id;
-  return self;
-}
-
-@synthesize freezerID;
-@end
 
 
 @interface AvidaEDController (hidden)
 - (void) popSplitViewAnimationEnd:(NSNumber*)collapsed;
 - (void) setupFreezer;
 - (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID;
+- (void) loadRunFromFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
+- (void) clearCurrentRun;
+- (void) freezeCurrentRun;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -101,8 +91,26 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 - (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID {
+  if (!freezer->IsValid(freezerID)) return;
+  
   // clean up old run
-  // @TODO
+  if (currentRun != nil) {
+    if (runConfigChanged == NO) {
+      // Offer to freeze current run...
+      NSAlert* alert = [[NSAlert alloc] init];
+      [alert addButtonWithTitle:@"Freeze"];
+      [alert addButtonWithTitle:@"Discard"];
+      [alert addButtonWithTitle:@"Cancel"];
+      [alert setMessageText:@"The petri dish of the current experiment has not been saved in the freezer."];
+      [alert setInformativeText:@"Would you like to save or discard the current petri dish before starting a new experiment?"];
+      [alert setAlertStyle:NSWarningAlertStyle];
+      void* contextInfo = new Avida::Viewer::FreezerID(freezerID);
+      [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(loadRunFromFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:contextInfo];
+      return;
+    }
+    
+    [self clearCurrentRun];
+  }
   
   runConfigChanged = YES;
   
@@ -117,11 +125,12 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   if (freezerID.type == Avida::Viewer::CONFIG) {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
     [txtUpdate setStringValue:@"-1 updates"];
+    [mapView setDimensions:[currentRun worldSize]];    
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath shouldPauseAt:0];
     runConfigChanged = NO;
-    [popViewStatView setAvidaRun:currentRun];
-    [txtUpdate setStringValue:@"0 updates"];
+    [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:freezerID];
+    [txtUpdate setStringValue:[NSString stringWithFormat:@"%d updates", [currentRun currentUpdate]]];
   }
   
   // update interface
@@ -130,6 +139,64 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
   listener = new MainThreadListener(self);
   [currentRun attachListener:self];  
+}
+
+- (void) loadRunFromFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo
+{
+  Avida::Viewer::FreezerID* freezerID = (Avida::Viewer::FreezerID*)contextInfo;
+  
+  switch (returnCode) {
+    case NSAlertFirstButtonReturn:
+      [self freezeCurrentRun];
+      
+    case NSAlertSecondButtonReturn:
+      [self clearCurrentRun];
+      [self loadRunFromFreezer:*freezerID];
+      break;
+      
+    case NSAlertThirdButtonReturn:
+    default:
+      break;
+  }
+  
+  delete freezerID;
+}
+
+
+- (void) clearCurrentRun {
+  // Clear main listener
+  [currentRun detachListener:self];
+  delete listener;
+  listener = NULL;
+  
+  // Clear map view
+  [mapView clearMap];
+  map = NULL;
+
+  // Clear stats panel
+  [popViewStatView clearAvidaRun];
+  
+  // End run
+  [currentRun end];
+  currentRun = nil;
+}
+
+
+- (void) freezeCurrentRun {
+  [currentRun pause];
+  
+  // @TODO - fix this ugly busy wait
+  while (![currentRun isPaused]);
+  
+
+  Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], freezer->NewUniqueNameForType(Avida::Viewer::WORLD));
+  if (freezer->IsValid(f)) {
+    // Save plot info
+    [popViewStatView saveRunToFreezer:freezer withID:f];
+    
+    [freezerWorlds addObject:[[FreezerItem alloc] initWithFreezerID:f]];  
+    [outlineFreezer reloadData];
+  }
 }
 
 @end
@@ -249,7 +316,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     
     if (runConfigChanged) {
       runConfigChanged = NO;
-      [popViewStatView setAvidaRun:currentRun];
+      [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:Avida::Viewer::FreezerID()];
     }
 
     [currentRun resume];
@@ -557,6 +624,37 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   
   return [NSString stringWithAptoString:freezer->NameOf([item freezerID])];
 }
+
+
+- (BOOL) outlineView:(NSOutlineView*)outlineView writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard
+{
+  int written = 0;
+  for (int i = 0; i < [items count]; i++) {
+    id item = [items objectAtIndex:i];
+    if (item == nil || item == freezerConfigs || item == freezerWorlds || item == freezerGenomes) continue;
+    Avida::Viewer::FreezerID fid = [(FreezerItem*)item freezerID];
+    [Freezer writeFreezerID:fid toPasteboard:pboard];
+    written++;
+  }
+  return (written) ? YES : NO;
+}
+
+
+
+- (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid
+{
+  [self loadRunFromFreezer:fid];
+}
+
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y
+{
+  // @TODO place genome in population
+}
+
+- (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid {
+  [self loadRunFromFreezer:fid];
+}
+
 
 
 

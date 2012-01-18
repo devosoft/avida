@@ -109,7 +109,7 @@
       [txtUpdate setStringValue:@"Update: 0"];
     }
   } else {
-    if ([currentRun isPaused]) {
+    if ([currentRun willPause]) {
       [currentRun resume];
       [btnRunState setTitle:@"Pause"];
     } else {

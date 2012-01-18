@@ -39,8 +39,15 @@
 - (void) mapViewSelectionChanged:(MapGridView*)mapView;
 @end
 
+@protocol MapDragDelegate <NSObject>
+@required
+- (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid;
+@end
 
-@interface MapGridView : NSView {
+
+@interface MapGridView : NSView <NSDraggingDestination> {
   int map_width;
   int map_height;
   int num_colors;
@@ -50,6 +57,7 @@
   Apto::Array<int> map_tags;
   NSMutableArray* color_cache;
   
+  IBOutlet id<MapDragDelegate> dragDelegate;
   IBOutlet id<MapSelectionDelegate> selectionDelegate;
   int selected_x;
   int selected_y;
@@ -61,7 +69,9 @@
 - (void) drawRect:(NSRect)rect;
 - (BOOL) isOpaque;
 
+- (void) setDimensions:(NSSize)size;
 - (void) updateState:(Avida::Viewer::Map*)state;
+- (void) clearMap;
 
 - (void) mouseDown:(NSEvent*)event;
 
@@ -73,4 +83,18 @@
 @property (readwrite, nonatomic) NSPoint selectedObject;
 - (void) clearSelectedObject;
 
+
+// NSDraggingDestination
+- (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;
+- (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender;
+- (BOOL) prepareForDragOperation:(id<NSDraggingInfo>)sender;
+- (BOOL) performDragOperation:(id<NSDraggingInfo>)sender;
+- (BOOL) wantsPeriodicDraggingUpdates;
+
+
+// NSDraggingSource
+- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session;
+
 @end
+

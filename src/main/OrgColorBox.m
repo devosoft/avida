@@ -31,7 +31,9 @@
 
 @implementation OrgColorBox
 
-@synthesize color;
+- (NSColor*) color {
+  return color;
+}
 
 - (void) setColor:(NSColor*)new_color {
   color = new_color;

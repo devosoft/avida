@@ -147,6 +147,13 @@
 - (BOOL) outlineView:(NSOutlineView*)outlineView isItemExpandable:(id)item;
 - (NSInteger) outlineView:(NSOutlineView*)outlineView numberOfChildrenOfItem:(id)item;
 - (id) outlineView:(NSOutlineView*)outlineView objectValueForTableColumn:(NSTableColumn*)tableColumn byItem:(id)item;
+- (BOOL) outlineView:(NSOutlineView*)outlineView writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard;
+
+
+// MapDragDelegate
+- (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid;
 
 
 // Listener Methods
