@@ -2388,6 +2388,31 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           target_founders = founders;
           break;
         }
+        case 8: { // Grab a random org from the set of orgs that have
+          // flagged themselves as part of the germline.
+          tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          
+          // Get list of potential founders
+          for (int i = 0; i<source_deme.GetSize(); ++i) {
+            cPopulationCell& cell = GetCell(i);
+            if (cell.IsOccupied()) {
+              cOrganism* o = cell.GetOrganism();
+              if (o->IsGermline()) {
+                potential_founders.Push(o);
+              }
+            }
+          }
+          
+          // pick a random founder...
+          if (potential_founders.GetSize() > 0) {
+            int r = random.GetUInt(potential_founders.GetSize());
+            founders.Push(potential_founders[r]);
+          }
+          source_founders = founders;
+          target_founders = founders;
+          break;          
+        }
         case 2:
         case 3:
         case 4:

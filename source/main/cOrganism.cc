@@ -94,8 +94,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_parent_teacher(false)
   , m_parent_ft(-1)
   , m_num_point_mut(0)
-  , m_germline(false)
-
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
@@ -123,6 +121,8 @@ void cOrganism::initialize(cAvidaContext& ctx)
     // m_max_executed must be positive or an organism will not die!
     if (m_max_executed < 1) m_max_executed = 1;
   }
+  
+  m_germline = (m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get());
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
 	

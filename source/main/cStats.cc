@@ -1928,7 +1928,7 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   if (n_mut >= 0) {
     m_ave_germ_mut.push_back(n_mut); 
     m_ave_non_germ_mut.push_back(source_deme.GetAveNonGermMut());
-    m_ave_germ_size.push_back(source_deme.GetGermlineSize());
+    m_ave_germ_size.push_back(source_deme.GetGermlinePercent());
   }
 }
 

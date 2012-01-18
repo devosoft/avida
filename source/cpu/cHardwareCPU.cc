@@ -702,6 +702,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
     tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -9877,6 +9878,11 @@ bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
   m_organism->JoinGermline();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
+  m_organism->ExitGermline();
   return true;
 }
 

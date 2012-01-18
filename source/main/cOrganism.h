@@ -678,6 +678,7 @@ public:
 	int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
   void IncPointMutations(int n) {m_num_point_mut+=n;} 
   void JoinGermline() {m_germline = true;}
+  void ExitGermline() {m_germline = false;}
   bool IsGermline() { return m_germline; }
 private: 
   int m_num_point_mut;
