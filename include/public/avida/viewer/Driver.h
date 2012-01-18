@@ -101,7 +101,7 @@ namespace Avida {
       LIB_EXPORT void Resume();
       
       LIB_EXPORT void AttachListener(Listener* listener);
-      LIB_EXPORT void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
+      LIB_EXPORT void DetachListener(Listener* listener);
 
       LIB_EXPORT void AttachRecorder(Data::RecorderPtr recorder);
       LIB_EXPORT void DetachRecorder(Data::RecorderPtr recorder);

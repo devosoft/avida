@@ -251,6 +251,8 @@ void Avida::Viewer::Driver::Run()
       population.ProcessPostUpdate(ctx);
       
       
+      // Listeners can be attached and detached asynchronously, must lock while working with them
+      m_mutex.Lock();
       if (m_map) m_map->UpdateMaps(population);
       for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
         if ((*it.Get())->WantsMap()) {
@@ -258,6 +260,7 @@ void Avida::Viewer::Driver::Run()
         }
         if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
       }
+      m_mutex.Unlock();
       
       
       // Do Point Mutations
@@ -323,9 +326,18 @@ void Avida::Viewer::Driver::StdIOFeedback::Notify(const char* fmt, ...)
 
 void Avida::Viewer::Driver::AttachListener(Listener* listener)
 {
+  m_mutex.Lock();
   m_listeners.Insert(listener);
   
   if (listener->WantsMap() && !m_map) m_map = new Map(m_world);
+  m_mutex.Unlock();
+}
+
+void Avida::Viewer::Driver::DetachListener(Listener* listener)
+{
+  m_mutex.Lock();
+  m_listeners.Remove(listener);
+  m_mutex.Unlock();
 }
 
 void Avida::Viewer::Driver::AttachRecorder(Data::RecorderPtr recorder)
