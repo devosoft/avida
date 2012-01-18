@@ -3833,7 +3833,6 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
@@ -3892,6 +3891,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
+    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
     setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
@@ -3909,7 +3909,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
   
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
@@ -3986,6 +3985,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
+    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
     setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
@@ -4106,7 +4106,6 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
   
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
@@ -4158,6 +4157,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
+    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
     setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
