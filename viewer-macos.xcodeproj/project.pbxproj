@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7015B89A14C87DB50031B60B /* DraggableImageView.m */; };
+		7015B89F14C883C60031B60B /* genome65.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89D14C883C60031B60B /* genome65.png */; };
+		7015B8A014C883C60031B60B /* petri128empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89E14C883C60031B60B /* petri128empty.png */; };
+		7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7015B8A214C886820031B60B /* FreezerOutlineView.mm */; };
 		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7029A49C1361CDBD0031433A /* CenteringClipView.m */; };
@@ -22,10 +26,6 @@
 		703549C21337AD4300D3865C /* AvidaRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BD1337AD4300D3865C /* AvidaRun.mm */; };
 		703549C31337AD4300D3865C /* ViewerListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BF1337AD4300D3865C /* ViewerListener.mm */; };
 		703549C41337AD4300D3865C /* MapGridView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549C11337AD4300D3865C /* MapGridView.mm */; };
-		703549D41337CAA100D3865C /* pause_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D01337CAA100D3865C /* pause_blue.png */; };
-		703549D51337CAA100D3865C /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D11337CAA100D3865C /* pause.png */; };
-		703549D61337CAA100D3865C /* play_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D21337CAA100D3865C /* play_blue.png */; };
-		703549D71337CAA100D3865C /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D31337CAA100D3865C /* play.png */; };
 		703549EB1337D25300D3865C /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EA1337D25300D3865C /* libapto.a */; };
 		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
@@ -58,6 +58,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7015B89914C87DB50031B60B /* DraggableImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DraggableImageView.h; sourceTree = "<group>"; };
+		7015B89A14C87DB50031B60B /* DraggableImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DraggableImageView.m; sourceTree = "<group>"; };
+		7015B89D14C883C60031B60B /* genome65.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = genome65.png; sourceTree = "<group>"; };
+		7015B89E14C883C60031B60B /* petri128empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128empty.png; sourceTree = "<group>"; };
+		7015B8A114C886820031B60B /* FreezerOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FreezerOutlineView.h; sourceTree = "<group>"; };
+		7015B8A214C886820031B60B /* FreezerOutlineView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FreezerOutlineView.mm; sourceTree = "<group>"; };
 		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
 		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
 		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
@@ -87,10 +93,6 @@
 		703549BF1337AD4300D3865C /* ViewerListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewerListener.mm; sourceTree = "<group>"; };
 		703549C01337AD4300D3865C /* MapGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapGridView.h; sourceTree = "<group>"; };
 		703549C11337AD4300D3865C /* MapGridView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapGridView.mm; sourceTree = "<group>"; };
-		703549D01337CAA100D3865C /* pause_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_blue.png; sourceTree = "<group>"; };
-		703549D11337CAA100D3865C /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
-		703549D21337CAA100D3865C /* play_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_blue.png; sourceTree = "<group>"; };
-		703549D31337CAA100D3865C /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		703549EA1337D25300D3865C /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -200,11 +202,9 @@
 		703549981337A27400D3865C /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				703549D01337CAA100D3865C /* pause_blue.png */,
-				703549D11337CAA100D3865C /* pause.png */,
+				7015B89D14C883C60031B60B /* genome65.png */,
+				7015B89E14C883C60031B60B /* petri128empty.png */,
 				701E3A1413576BD2000BFFBC /* petri128.png */,
-				703549D21337CAA100D3865C /* play_blue.png */,
-				703549D31337CAA100D3865C /* play.png */,
 			);
 			name = Images;
 			path = resources/images;
@@ -251,8 +251,12 @@
 				703549B51337AD2600D3865C /* AvidaAppDelegate.mm */,
 				7029A49B1361CDBD0031433A /* CenteringClipView.h */,
 				7029A49C1361CDBD0031433A /* CenteringClipView.m */,
+				7015B89914C87DB50031B60B /* DraggableImageView.h */,
+				7015B89A14C87DB50031B60B /* DraggableImageView.m */,
 				708308F314B6AA9C0051B354 /* FlipView.h */,
 				708308F414B6AA9C0051B354 /* FlipView.m */,
+				7015B8A114C886820031B60B /* FreezerOutlineView.h */,
+				7015B8A214C886820031B60B /* FreezerOutlineView.mm */,
 				708308E914B6A6E50051B354 /* ImageFlipperView.h */,
 				708308EA14B6A6E50051B354 /* ImageFlipperView.m */,
 				703549B61337AD2600D3865C /* main.mm */,
@@ -363,12 +367,10 @@
 				703549A91337A4B100D3865C /* Avida-ED-MainWindow.xib in Resources */,
 				703549AA1337A4B100D3865C /* Avida-MainWindow.xib in Resources */,
 				703549AB1337A4B100D3865C /* MainMenu.xib in Resources */,
-				703549D41337CAA100D3865C /* pause_blue.png in Resources */,
-				703549D51337CAA100D3865C /* pause.png in Resources */,
-				703549D61337CAA100D3865C /* play_blue.png in Resources */,
-				703549D71337CAA100D3865C /* play.png in Resources */,
 				708D31301342312100AE5CEF /* README in Resources */,
 				701E3A1513576BD2000BFFBC /* petri128.png in Resources */,
+				7015B89F14C883C60031B60B /* genome65.png in Resources */,
+				7015B8A014C883C60031B60B /* petri128empty.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,6 +399,8 @@
 				708308F214B6A7650051B354 /* NSFileManager+TemporaryDirectory.m in Sources */,
 				708308F514B6AA9C0051B354 /* FlipView.m in Sources */,
 				7083E58414BE1E2900E4023E /* Freezer.mm in Sources */,
+				7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */,
+				7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

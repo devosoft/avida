@@ -52,6 +52,57 @@ static const float POP_SPLIT_RIGHT_MIN = 360.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
+NSString* const AvidaPasteboardTypePopulation = @"org.devosoft.avida.population";
+
+@interface Population : NSObject <NSCoding, NSPasteboardWriting, NSPasteboardReading> {
+}
+@end;
+
+
+@implementation Population
+
+- (void) encodeWithCoder:(NSCoder*)encoder {
+}
+
+- (id) initWithCoder:(NSCoder*)decoder {
+  return self;
+}
+
+
+- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pboard {
+  static NSArray* writableTypes = nil;
+  if (!writableTypes) {
+    writableTypes = [[NSArray alloc] initWithObjects:AvidaPasteboardTypePopulation, nil];
+  }
+  return writableTypes;
+}
+
+- (id) pasteboardPropertyListForType:(NSString*)type {
+  if ([type isEqualToString:AvidaPasteboardTypeFreezerID]) {
+    return [NSKeyedArchiver archivedDataWithRootObject:self];
+  }
+  return nil;
+}
+
+
++ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard {
+  static NSArray* readableTypes = nil;
+  if (!readableTypes) {
+    readableTypes = [[NSArray alloc] initWithObjects:AvidaPasteboardTypePopulation, nil];
+  }
+  return readableTypes;
+}
+
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pboard {
+  if ([type isEqualToString:AvidaPasteboardTypePopulation]) {
+    return NSPasteboardReadingAsKeyedArchive;
+  }
+  return 0;
+}
+@end
+
+
+
 
 static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
@@ -102,7 +153,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::GENOME); it.Next();) {
     [freezerGenomes addObject:[[FreezerItem alloc] initWithFreezerID:*it.Get()]];
     [freezerGenomes sortUsingFunction:&sortFreezerItems context:&freezer];
-  }
+  }  
 }
 
 - (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID {
@@ -113,7 +164,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     if (runConfigChanged == NO) {
       // Offer to freeze current run...
       NSAlert* alert = [[NSAlert alloc] init];
-      [alert addButtonWithTitle:@"Freeze"];
+      [alert addButtonWithTitle:@"Save"];
       [alert addButtonWithTitle:@"Discard"];
       [alert addButtonWithTitle:@"Cancel"];
       [alert setMessageText:@"The petri dish of the current experiment has not been saved in the freezer."];
@@ -692,6 +743,30 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid {
   [self loadRunFromFreezer:fid];
+}
+
+
+
+- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
+  switch (context) {
+    case NSDraggingContextWithinApplication:
+      return NSDragOperationCopy | NSDragOperationLink;
+      
+    case NSDraggingContextOutsideApplication:
+    default:
+      return NSDragOperationNone;
+      break;
+  }
+}
+
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session
+{
+  return NO;
+}
+
+
+- (void) draggableImageView:(DraggableImageView*)imageView writeToPasteboard:(NSPasteboard*)pboard {
+  [pboard writeObjects:[[NSArray alloc] initWithObjects:[[Population alloc] init], nil]];
 }
 
 

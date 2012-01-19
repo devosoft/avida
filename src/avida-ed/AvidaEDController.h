@@ -29,6 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "DraggableImageView.h"
 #import "ViewerListener.h"
 
 
@@ -41,7 +42,7 @@
 @class AvidaEDPopViewStatView;
 
 
-@interface AvidaEDController : NSWindowController <ViewerListener, NSSplitViewDelegate, NSWindowDelegate,
+@interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, ViewerListener, NSDraggingSource, NSSplitViewDelegate, NSWindowDelegate,
                                                    NSOutlineViewDelegate, NSOutlineViewDataSource>
 {
   
@@ -65,6 +66,7 @@
   IBOutlet FlipView* mapFlipView;
 
   IBOutlet NSButton* btnRunState;
+  IBOutlet NSImageView* imgViewPopIcon;
   IBOutlet NSTextField* txtRun;
   IBOutlet NSTextField* txtUpdate;
 
@@ -155,6 +157,15 @@
 - (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
 - (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
 - (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid;
+
+
+// NSDraggingSource
+- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session;
+
+// DraggableImageViewDelegate
+- (void) draggableImageView:(DraggableImageView*)imageView writeToPasteboard:(NSPasteboard*)pboard;
+
 
 
 // Listener Methods
