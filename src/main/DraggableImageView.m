@@ -24,7 +24,8 @@
   location.x = ([self bounds].size.width - size.width) / 2;
   location.y = ([self bounds].size.height - size.height) / 2;
   
-  [self dragImage:[self image] at:location offset:NSMakeSize(0,0) event:event pasteboard:pboard source:self slideBack:YES];
+  id<NSDraggingSource> src = (delegate != nil) ? (id<NSDraggingSource>)delegate : (id<NSDraggingSource>)self;
+  [self dragImage:[self image] at:location offset:NSMakeSize(0,0) event:event pasteboard:pboard source:src slideBack:YES];
 }
 
 - (BOOL) shouldDelayWindowOrderingForEvent:(NSEvent*)event {

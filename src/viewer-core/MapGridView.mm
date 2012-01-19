@@ -177,7 +177,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       NSBezierPath* tagPath = [NSBezierPath bezierPathWithRect:gridCellRect];
       [tagPath setLineWidth:2.0];
       [tagPath setLineCapStyle:NSSquareLineCapStyle];
-      [tagPath setClip];
+      [tagPath addClip];
       [tagPath stroke];
       [NSGraphicsContext restoreGraphicsState];
     }

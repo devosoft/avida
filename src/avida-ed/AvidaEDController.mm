@@ -123,7 +123,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) setupFreezer;
 - (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID;
 - (void) loadRunFromFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
+- (void) saveRunToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
 - (void) clearCurrentRun;
+- (void) freezeCurrentConfig;
 - (void) freezeCurrentRun;
 @end
 
@@ -231,6 +233,24 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
+- (void) saveRunToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo
+{
+  switch (returnCode) {
+    case NSAlertFirstButtonReturn:
+      [self freezeCurrentRun];
+      break;
+      
+    case NSAlertSecondButtonReturn:
+      [self freezeCurrentConfig];
+      break;
+      
+    case NSAlertThirdButtonReturn:
+    default:
+      break;
+  }
+}
+
+
 - (void) clearCurrentRun {
   // Clear main listener
   [currentRun detachListener:self];
@@ -265,6 +285,17 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
     [freezerWorlds addObject:fi];
+    [outlineFreezer reloadData];
+    [outlineFreezer editColumn:0 row:[outlineFreezer rowForItem:fi] withEvent:nil select:YES];
+  }
+}
+
+- (void) freezeCurrentConfig {
+  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::CONFIG, [[txtRun stringValue] UTF8String]);
+  Avida::Viewer::FreezerID f = freezer->SaveConfig([currentRun oldworld], name);
+  if (freezer->IsValid(f)) {    
+    FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
+    [freezerConfigs addObject:fi];
     [outlineFreezer reloadData];
     [outlineFreezer editColumn:0 row:[outlineFreezer rowForItem:fi] withEvent:nil select:YES];
   }
@@ -359,7 +390,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer reloadData];
   [outlineFreezer expandItem:freezerConfigs];
   [outlineFreezer expandItem:freezerGenomes];
-  [outlineFreezer expandItem:freezerWorlds];  
+  [outlineFreezer expandItem:freezerWorlds];
+  [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, nil]];
+
   [pathWorkspace setURL:freezerURL];
   
   for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::WORLD); it.Next();) {
@@ -655,6 +688,46 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   return YES;
 }
 
+
+
+- (BOOL) outlineView:(NSOutlineView*)outlineView acceptDrop:(id<NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
+{
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypePopulation]] != nil) {
+    switch ([info draggingSourceOperationMask]) {
+      case (NSDragOperationCopy | NSDragOperationLink):
+      {
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert addButtonWithTitle:@"Population"];
+        [alert addButtonWithTitle:@"Config"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert setMessageText:@"What would you like to save to the freezer?"];
+        [alert setInformativeText:@"Population saves organisms and experiment history.\nConfig saves the experiment settings only."];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+        return YES;
+      }
+      case NSDragOperationCopy:
+        [self freezeCurrentRun];
+        return YES;
+      case NSDragOperationLink:
+        [self freezeCurrentConfig];
+        return YES;
+    }
+  }
+  
+  return NO;
+}
+
+
+- (NSDragOperation) outlineView:(NSOutlineView*)outlineView validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index
+{
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypePopulation]] != nil) {
+    [outlineView setDropItem:nil dropChildIndex:NSOutlineViewDropOnItemIndex];
+    return [info draggingSourceOperationMask];
+  }
+  
+  return NSDragOperationNone;
+}
 
 
 - (id) outlineView:(NSOutlineView*)outlineView child:(NSInteger)index ofItem:(id)item {

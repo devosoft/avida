@@ -145,6 +145,8 @@
 - (BOOL)outlineView:(NSOutlineView*)outlineView shouldSelectItem:(id)item;
 
 // NSOutlineViewDataSource Protocol
+- (BOOL) outlineView:(NSOutlineView*)outlineView acceptDrop:(id <NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index;
+- (NSDragOperation) outlineView:(NSOutlineView*)outlineView validateDrop:(id<NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
 - (id) outlineView:(NSOutlineView*)outlineView child:(NSInteger)index ofItem:(id)item;
 - (BOOL) outlineView:(NSOutlineView*)outlineView isItemExpandable:(id)item;
 - (NSInteger) outlineView:(NSOutlineView*)outlineView numberOfChildrenOfItem:(id)item;
