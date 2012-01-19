@@ -603,7 +603,7 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetPlateauInflow(), res->GetPlateauOutflow(),                            
                             res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                             res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                            res->GetInitialPlatVal(), res->GetGradient()
+                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetGradient()
                             ); 
   
   if(res->GetEnergyResource()) {

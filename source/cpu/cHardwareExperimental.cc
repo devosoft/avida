@@ -3988,6 +3988,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
@@ -3997,8 +3999,6 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
@@ -4082,6 +4082,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
@@ -4091,8 +4093,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
@@ -5133,7 +5133,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
             found = true;
             totalAmount += cellResultInfo.amountFound;
             if (cellResultInfo.has_edible) {
-              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
+              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >= threshold)
               found_edible = true;
               if (first_success_cell == cCoords(-1, -1)) first_success_cell = this_cell;
               if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
@@ -5241,31 +5241,32 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     for (int k = 0; k < val_res.GetSize(); k++) { 
       if (habitat_used == 0) {
-        if (search_type == 0 && cell_res[val_res[k]] >= 1) {
+        if (search_type == 0 && cell_res[val_res[k]] >= resource_lib.GetResource(val_res[k])->GetThreshold()) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res[val_res[k]];                                                         
           }
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < 1 && cell_res[val_res[k]] > 0) {                        // only get sum amounts when < 1 if search = get counts
+        else if (search_type == 1 && cell_res[val_res[k]] < resource_lib.GetResource(val_res[k])->GetThreshold() && 
+                 cell_res[val_res[k]] > 0) {                                                                        // only get sum amounts when < threshold if search = get counts
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res[val_res[k]];                                                         
            }
         } 
       }
-      else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0
+      else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0, not the threshold default of 1
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
         returnInfo.has_edible = true;
         returnInfo.amountFound += cell_res[val_res[k]];
       }
       else if (habitat_used == 4) { 
-        if (search_type == 0 && cell_res[val_res[k]] >= m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get()) {   // dens only work above a config set level
+        if (search_type == 0 && cell_res[val_res[k]] >= resource_lib.GetResource(val_res[k])->GetThreshold()) {     // dens only work above a config set level, but threshold will override this for sensing
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
           returnInfo.amountFound += cell_res[val_res[k]];        
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get() && cell_res[val_res[k]] > 0) {
+        else if (search_type == 1 && cell_res[val_res[k]] < resource_lib.GetResource(val_res[k])->GetThreshold() && cell_res[val_res[k]] > 0) {
           returnInfo.amountFound += cell_res[val_res[k]];        
        }
       }

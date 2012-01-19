@@ -932,6 +932,10 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "resistance", var_type, feedback)) return false;
         new_resource->SetResistance( var_value.AsDouble() );
       } 
+      else if (var_name == "threshold") {
+        if (!AssertInputDouble(var_value, "threshold", var_type, feedback)) return false;
+        new_resource->SetThreshold( var_value.AsDouble() );
+      } 
       else {
         feedback.Error("unknown variable '%s' in gradient resource '%s'",
                                       (const char*)var_name, (const char*)name);
