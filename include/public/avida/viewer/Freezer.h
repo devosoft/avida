@@ -77,7 +77,7 @@ namespace Avida {
         bool active;
         
         LIB_EXPORT inline Entry() : active(false) { ; }
-        LIB_EXPORT inline Entry(const Apto::String& in_name, const Apto::String& in_path) : name(in_name), path(in_path) { ; }
+        LIB_EXPORT inline Entry(const Apto::String& in_name, const Apto::String& in_path) : name(in_name), path(in_path), active(true) { ; }
       };
       Apto::Array<Entry> m_entries[3];
       int m_next_id[3];
