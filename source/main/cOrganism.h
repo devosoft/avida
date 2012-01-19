@@ -611,7 +611,10 @@ public:
   bool HadParentTeacher() const { return m_parent_teacher; }
   void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
   void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
+  int GetParentFT() const { return m_parent_ft; } 
   void CopyParentFT() { SetForageTarget(m_parent_ft); }
+  void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
+  int GetParentGroup() const { return m_parent_group; } 
   
 protected:
 	// The organism's own raw materials
@@ -646,6 +649,7 @@ protected:
   bool m_teach;
   bool m_parent_teacher;
   int m_parent_ft;
+  int m_parent_group;
   
   /*! Contains all the different data structures needed to
 	 track strings, production of strings, and donation/trade

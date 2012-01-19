@@ -62,7 +62,7 @@ protected:
   cOrganism* m_organism;     // Organism using this hardware.
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
-  cHardwareTracer* m_minitracer; // Set this if you want execution traced.
+  cHardwareTracer* m_minitracer; // Set this if you want execution traced in a condensed and tractable format.
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;

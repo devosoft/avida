@@ -485,6 +485,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // is successfully born into the parent's group or successfully immigrates
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
+      if (parent_organism->HasOpinion()) offspring_array[i]->SetParentGroup(parent_organism->GetOpinion().first);
       // If tolerances are on ... @JJB
       if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
@@ -894,13 +895,17 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     }
     
     in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
-    in_organism->GetPhenotype().SetBirthGroupID(op);
-    in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
+    if (m_world->GetConfig().INHERIT_OPINION.Get()) in_organism->GetPhenotype().SetBirthGroupID(op);
+    else in_organism->GetPhenotype().SetBirthGroupID(in_organism->GetParentGroup());
+    in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetParentFT());
+    
     cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
     assert(genotype);    
-    genotype->SetLastGroupID(op);
+    
     genotype->SetLastBirthCell(target_cell.GetID());
-    genotype->SetLastForagerType(in_organism->GetForageTarget());      
+    if (m_world->GetConfig().INHERIT_OPINION.Get()) genotype->SetLastGroupID(op);
+    else genotype->SetLastGroupID(in_organism->GetParentGroup());
+    genotype->SetLastForagerType(in_organism->GetParentFT());      
   }
   
   // are there mini traces we need to test for?
@@ -5171,6 +5176,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         new_organism->GetPhenotype().SetBirthGroupID(group_id);
         new_organism->GetPhenotype().SetBirthForagerType(forager_type);
+        new_organism->SetParentGroup(group_id);
+        new_organism->SetParentFT(forager_type);
         ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
       }
     }
