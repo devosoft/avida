@@ -965,8 +965,20 @@ bool Avida::Viewer::Freezer::Rename(FreezerID entry_id, const Apto::String& name
   return true;
 }
 
-Apto::String Avida::Viewer::Freezer::NewUniqueNameForType(FreezerObjectType type)
+Apto::String Avida::Viewer::Freezer::NewUniqueNameForType(FreezerObjectType type, const Apto::String& name)
 {
-  // @TODO - create actual unique freezer item names
-  return "Untitled";
+  int suffix = 1;
+  Apto::String suggest = name;
+  for (int i = 0; i < m_entries[type].GetSize(); i++) {
+    if (m_entries[type][i].name == suggest) {
+      suggest = name;
+      suggest += " ";
+      suggest += Apto::AsStr(suffix++);
+      
+      // reset index to re-check with new suggestion
+      i = 0;
+    }
+  }
+  
+  return suggest;
 }

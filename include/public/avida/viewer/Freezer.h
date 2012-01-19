@@ -106,7 +106,7 @@ namespace Avida {
       
       
       LIB_EXPORT bool Rename(FreezerID entry_id, const Apto::String& name);
-      LIB_EXPORT Apto::String NewUniqueNameForType(FreezerObjectType type);
+      LIB_EXPORT Apto::String NewUniqueNameForType(FreezerObjectType type, const Apto::String& name = "Untitled");
       
       
       LIB_EXPORT inline void Remove(FreezerID eid) { m_entries[eid.type][eid.identifier].active = false; }
