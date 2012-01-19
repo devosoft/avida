@@ -127,6 +127,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) clearCurrentRun;
 - (void) freezeCurrentConfig;
 - (void) freezeCurrentRun;
+- (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -299,6 +300,31 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [outlineFreezer reloadData];
     [outlineFreezer editColumn:0 row:[outlineFreezer rowForItem:fi] withEvent:nil select:YES];
   }
+}
+
+
+- (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID {
+  if (freezerID.type == Avida::Viewer::CONFIG && freezer->NameOf(freezerID) == "@default") return;
+  if (freezerID.type == Avida::Viewer::GENOME && freezer->NameOf(freezerID) == "@ancestor") return;
+  if (freezerID.type == Avida::Viewer::WORLD && freezer->NameOf(freezerID) == "@example") return;
+
+  freezer->Remove(freezerID);
+  
+  NSMutableArray* freezer_array = freezerConfigs;
+  switch (freezerID.type) {
+    case Avida::Viewer::CONFIG: break;
+    case Avida::Viewer::GENOME: freezer_array = freezerGenomes; break;
+    case Avida::Viewer::WORLD:  freezer_array = freezerWorlds;  break;
+  }
+
+  for (int i = 0; i < [freezer_array count]; i++) {
+    if ([[freezer_array objectAtIndex:i] freezerID].identifier == freezerID.identifier) {
+      [freezer_array removeObjectAtIndex:i];
+      break;
+    }
+  }
+  
+  [outlineFreezer reloadData];
 }
 
 @end
@@ -661,6 +687,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [currentRun end];
     currentRun = nil;
   }
+  freezer = Avida::Viewer::FreezerPtr(NULL); // Force freezer cleanup
   [app removeWindow:self];
 }
 
@@ -776,8 +803,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   return [NSString stringWithAptoString:freezer->NameOf([item freezerID])];
 }
 
-- (void) outlineView:(NSOutlineView*)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn byItem:(id)item
-{
+- (void) outlineView:(NSOutlineView*)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn byItem:(id)item {
   freezer->Rename([item freezerID], Apto::String([object UTF8String]));
   switch ([item freezerID].type) {
     case Avida::Viewer::CONFIG: [freezerConfigs sortUsingFunction:&sortFreezerItems context:&freezer]; break;
@@ -789,8 +815,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
-- (BOOL) outlineView:(NSOutlineView*)outlineView writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard
-{
+- (BOOL) outlineView:(NSOutlineView*)outlineView writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard {
   int written = 0;
   for (int i = 0; i < [items count]; i++) {
     id item = [items objectAtIndex:i];
@@ -801,6 +826,22 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   return (written) ? YES : NO;
 }
+
+
+- (void) outlineViewDidReceiveDeleteKey:(NSOutlineView*)outlineView {
+  Avida::Viewer::FreezerID fid = [[outlineView itemAtRow:[outlineView selectedRow]] freezerID];
+  [self removeFromFreezer:fid];
+}
+
+- (void) outlineViewDidReceiveEnterOrSpaceKey:(NSOutlineView*)outlineView {
+  Avida::Viewer::FreezerID fid = [[outlineView itemAtRow:[outlineView selectedRow]] freezerID];
+  if (fid.type == Avida::Viewer::CONFIG || fid.type == Avida::Viewer::WORLD) {
+    [self loadRunFromFreezer:fid];
+  } else {
+    // @TODO handle genome
+  }
+}
+
 
 
 

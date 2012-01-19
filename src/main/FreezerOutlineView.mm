@@ -41,9 +41,34 @@
   location.x = ([self bounds].size.width - size.width) / 2;
   location.y = imageLoc.y - ([anImage size].height / 2) + (size.height / 2);
   
-  printf("imageLoc: (%f, %f) loc: (%f, %f)\n", imageLoc.x, imageLoc.y, location.x, location.y);
-
   [super dragImage:selImage at:location offset:NSMakeSize(0,0) event:theEvent pasteboard:pboard source:sourceObject slideBack:slideBack];
+}
+
+- (BOOL) performKeyEquivalent:(NSEvent*)theEvent {
+  NSString* chars = [theEvent charactersIgnoringModifiers];
+  
+  if ([theEvent type] == NSKeyDown && [chars length] == 1) {
+    int val = [chars characterAtIndex:0];
+    
+    // check for a delete
+    if (val == 127 || val == 63272) {
+      if ([[self delegate] respondsToSelector:@selector(outlineViewDidReceiveDeleteKey:)]) {
+        [[self delegate] performSelector:@selector(outlineViewDidReceiveDeleteKey:) withObject:self];
+        return YES;
+      }
+    }
+    
+    // check for the enter / space to open it up
+    else if (val == 13 /*return*/ || val == 32 /*space bar*/) {
+      
+      if ([[self delegate] respondsToSelector:@selector(outlineViewDidReceiveEnterOrSpaceKey:)]) {
+        [[self delegate] performSelector:@selector(outlineViewDidReceiveEnterOrSpaceKey:) withObject:self];
+        return YES;
+      }
+    }
+  }
+  
+  return [super performKeyEquivalent:theEvent];
 }
 
 @end

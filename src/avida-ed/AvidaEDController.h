@@ -154,6 +154,10 @@
 - (void) outlineView:(NSOutlineView*)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn byItem:(id)item;
 - (BOOL) outlineView:(NSOutlineView*)outlineView writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard;
 
+// FreezerOutlineViewDataSource Informal Protocol
+- (void) outlineViewDidReceiveDeleteKey:(NSOutlineView*)outlineView;
+- (void) outlineViewDidReceiveEnterOrSpaceKey:(NSOutlineView*)outlineView;
+
 
 // MapDragDelegate
 - (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
