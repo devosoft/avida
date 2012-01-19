@@ -509,9 +509,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       if (parent_organism->GetForageTarget() == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) offspring_array[i]->SetForageTarget(-1);
       else { 
         offspring_array[i]->SetParentTeacher(true);
-        offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
       }
     }
+    offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
   }
   
   // If we're not about to kill the parent, do some extra work on it.
@@ -945,19 +945,18 @@ void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 
 void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 {
-  const int target = in_organism->GetForageTarget();
+  const int target = in_organism->GetParentFT();
   const int id = in_organism->GetID();
-  cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trc", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-  if (in_organism->HasOpinion()) {
-    filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-  }
+  int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
+  if (in_organism->HasOpinion()) group_id = in_organism->GetOpinion().first;
+  else group_id = in_organism->GetParentGroup();
+  
+  cString filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  
   in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   
   if (print_mini_trace_genomes) {
-    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-ft%d-%s.trcgeno", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-    if (in_organism->HasOpinion()) {
-      gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-    }
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
     PrintMiniTraceGenome(ctx, in_organism, gen_file);
   }
 }
