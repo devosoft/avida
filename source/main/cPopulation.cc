@@ -307,7 +307,7 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                           res->GetInitialPlatVal(), res->GetGradient()
+                           res->GetThreshold(), res->GetInitialPlatVal(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -6401,7 +6401,7 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
-                           res->GetInitialPlatVal()); 
+                           res->GetInitialPlatVal(), res->GetThreshold()); 
     } 
   }
 }
@@ -6485,7 +6485,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                           res->GetInitialPlatVal(), res->GetGradient()
+                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetGradient()
                            ); 
       
     } else if (res->GetDemeResource()) {

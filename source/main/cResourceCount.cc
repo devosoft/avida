@@ -223,7 +223,8 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
         const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
         const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
         const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
-        const int& in_config, const int& in_count, const double& in_resistance, const double& in_init_plat, const bool& isgradient
+        const int& in_config, const int& in_count, const double& in_resistance, const double& in_init_plat, 
+        const double& in_threshold, const bool& isgradient
 				)
 {
   assert(res_index >= 0 && res_index < resource_count.GetSize());
@@ -363,7 +364,7 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
                       const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
                       const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
                       const double& floor, const int& habitat, const int& min_size, const int& max_size,
-                      const int& config, const int& count, const double& resistance, const int& plat_val) 
+                      const int& config, const int& count, const double& resistance, const int& plat_val, const double& threshold) 
 {
   assert(res_id >= 0 && res_id < resource_count.GetSize());
   assert(spatial_resource_count[res_id]->GetSize() > 0);
@@ -400,7 +401,8 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
   spatial_resource_count[res_id]->SetGradConfig(config);
   spatial_resource_count[res_id]->SetGradCount(count);
   spatial_resource_count[res_id]->SetGradResistance(resistance);
-
+  spatial_resource_count[res_id]->SetGradThreshold(threshold);
+  
   spatial_resource_count[res_id]->ResetGradRes(ctx, worldx, worldy);
 }
 

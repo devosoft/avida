@@ -130,6 +130,7 @@ private:
   int m_count; 
   double m_resistance;
   double m_init_plat;
+  double m_threshold;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
@@ -212,6 +213,7 @@ public:
   double GetResistance() { return m_resistance; }
   bool GetGradient() { return isgradient; }
   double GetInitialPlatVal() { return m_init_plat; }
+  double GetThreshold() { return m_threshold; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -287,6 +289,7 @@ public:
   void SetConfig(int _config) { m_config = _config; }
   void SetCount(int _count) { m_count = _count; }
   void SetResistance(double _resistance) { m_resistance = _resistance; }
+  void SetThreshold(double _threshold) { m_threshold = _threshold; } 
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
