@@ -206,7 +206,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   while (![currentRun isPaused]);
   
 
-  Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], [[txtRun stringValue] UTF8String]);
+  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::WORLD, [[txtRun stringValue] UTF8String]);
+  Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], name);
   if (freezer->IsValid(f)) {
     // Save plot info
     [popViewStatView saveRunToFreezer:freezer withID:f];
