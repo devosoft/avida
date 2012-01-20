@@ -438,6 +438,7 @@ public:
   // -------- CPU Archetecture
   CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");
   CONFIG_ADD_VAR(IO_EXPIRE, bool, 1, "Is the expiration functionality of '-expire' I/O instructions enabled?");
+  CONFIG_ADD_VAR(POISON_PENALTY, double, 0.01, "Metabolic rate penalty applied when the 'poison' instruction is executed.");
 
   
   // -------- Pprocessing of multiple, distributed populations config options --------

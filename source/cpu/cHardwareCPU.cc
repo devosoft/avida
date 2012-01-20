@@ -473,6 +473,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
     tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, nInstFlag::STALL),		
     tInstLibEntry<tMethod>("relinquishEnergyToFutureDeme", &cHardwareCPU::Inst_RelinquishEnergyToFutureDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("relinquishEnergyToNeighborOrganisms", &cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms, nInstFlag::STALL),
@@ -3338,6 +3339,13 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die(ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Poison(cAvidaContext& ctx)
+{
+  double poison_multiplier = 1.0 - m_world->GetConfig().POISON_PENALTY.Get();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() * poison_multiplier);
   return true;
 }
 
