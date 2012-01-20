@@ -1000,3 +1000,20 @@ Apto::String Avida::Viewer::Freezer::NewUniqueNameForType(FreezerObjectType type
   
   return suggest;
 }
+
+
+void Avida::Viewer::Freezer::DuplicateFreezerAt(Apto::String destination)
+{
+  // Copy the workspace
+  Apto::FileSystem::CpDir(m_dir, destination);
+  
+  // Delete any inactive items from new duplicate
+  // Search for inactive entries and remove them from the freezer
+  for (FreezerObjectType t = CONFIG; t <= WORLD; t++) {
+    for (int i = 0; i < m_entries[t].GetSize(); i++) {
+      if (!m_entries[t][i].active) {
+        Apto::FileSystem::RmDir(Apto::FileSystem::PathAppend(destination, m_entries[t][i].path), true);
+      }
+    }
+  }
+}

@@ -119,6 +119,8 @@ namespace Avida {
         return (eid.identifier >= 0 && eid.identifier < m_entries[eid.type].GetSize());
       }
       
+      LIB_EXPORT void DuplicateFreezerAt(Apto::String destination);
+      
       
     public:
       class Iterator
