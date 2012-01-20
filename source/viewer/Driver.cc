@@ -126,7 +126,16 @@ int Avida::Viewer::Driver::NumOrganisms() const
 
 void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y)
 {
-  
+  m_mutex.Lock();
+  m_inject_queue.Push(new InjectGenomeInfo(genome, x, y));
+  m_mutex.Unlock();
+}
+
+bool Avida::Viewer::Driver::HasPendingInjects() const
+{
+  // This is reading out a queue size that is drained asynchronously, should it use a memory barrier or something?
+  bool has_pending = m_inject_queue.GetSize();
+  return has_pending;
 }
 
 int Avida::Viewer::Driver::WorldX()
@@ -210,6 +219,15 @@ void Avida::Viewer::Driver::Run()
     Avida::Context new_ctx(this, &m_world->GetRandom());
     
     m_mutex.Lock();
+
+    // Handle initial inject queue requests
+    while (m_inject_queue.GetSize()) {
+      InjectGenomeInfo* info = m_inject_queue.Pop();
+      int cell_id = info->x * population.GetWorldX() + info->y;
+      population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx);          
+      delete info;
+    }
+
     while (!m_done) {
       m_mutex.Unlock();
       
@@ -251,14 +269,24 @@ void Avida::Viewer::Driver::Run()
       population.ProcessPostUpdate(ctx);
       
       
-      // Listeners can be attached and detached asynchronously, must lock while working with them
       m_mutex.Lock();
-      if (m_map) m_map->UpdateMaps(population);
-      for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
-        if ((*it.Get())->WantsMap()) {
-          (*it.Get())->NotifyMap(m_map);
+      {
+        // Handle inject queue requests
+        while (m_inject_queue.GetSize()) {
+          InjectGenomeInfo* info = m_inject_queue.Pop();
+          int cell_id = info->x * population.GetWorldX() + info->y;
+          population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx);          
+          delete info;
         }
-        if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
+        
+        // Listeners can be attached and detached asynchronously, must be locked while working with them
+        if (m_map) m_map->UpdateMaps(population);
+        for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+          if ((*it.Get())->WantsMap()) {
+            (*it.Get())->NotifyMap(m_map);
+          }
+          if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
+        }
       }
       m_mutex.Unlock();
       

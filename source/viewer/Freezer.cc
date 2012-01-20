@@ -153,7 +153,7 @@ namespace Avida {
         cFile file;
         file.Open((const char*)file_path, std::ios::out);
         std::fstream* fs = file.GetFileStream();
-        *fs << "0,default_heads,wzcagcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab" << std::endl;
+        *fs << "0,heads_default,wzcagcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab" << std::endl;
         file.Close();
         
         // entryname.txt
@@ -869,7 +869,7 @@ Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveWorld(cWorld* world, const 
 }
 
 
-bool Avida::Viewer::Freezer::Instantiate(FreezerID entry_id, const Apto::String& working_directory) const
+bool Avida::Viewer::Freezer::InstantiateWorkingDir(FreezerID entry_id, const Apto::String& working_directory) const
 {
   if (!m_opened) return false;
 
@@ -880,6 +880,24 @@ bool Avida::Viewer::Freezer::Instantiate(FreezerID entry_id, const Apto::String&
   Apto::FileSystem::CpDir(src_path, working_directory);
   
   return true;
+}
+
+Avida::GenomePtr Avida::Viewer::Freezer::InstantiateGenome(FreezerID entry_id) const
+{
+  if (!m_opened) return GenomePtr();
+  if (entry_id.type != GENOME || entry_id.identifier >= m_entries[GENOME].GetSize()) return GenomePtr();
+  
+  Apto::String seq_str;
+  if (Apto::FileSystem::IsFile(PathOf(entry_id))) {
+    // Open name file and read contents
+    cFile file;
+    file.Open((const char*)PathOf(entry_id), std::ios::in);
+    cString line;
+    if (!file.Eof() && file.ReadLine(line)) seq_str = line;
+    file.Close();
+  }
+
+  return GenomePtr(new Genome(seq_str));
 }
 
 

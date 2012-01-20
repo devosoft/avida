@@ -95,7 +95,8 @@ namespace Avida {
       LIB_EXPORT FreezerID SaveGenome(GenomePtr genome);
       LIB_EXPORT FreezerID SaveWorld(cWorld* world, const Apto::String& name);
       
-      LIB_EXPORT bool Instantiate(FreezerID entry_id, const Apto::String& working_directory) const;
+      LIB_EXPORT bool InstantiateWorkingDir(FreezerID entry_id, const Apto::String& working_directory) const;
+      LIB_EXPORT GenomePtr InstantiateGenome(FreezerID entry_id) const;
       
       LIB_EXPORT Apto::String PathOf(FreezerID entry_id) const;
       LIB_EXPORT inline const Apto::String& NameOf(FreezerID eid) const { return m_entries[eid.type][eid.identifier].name; }

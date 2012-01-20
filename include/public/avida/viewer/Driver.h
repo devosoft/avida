@@ -27,6 +27,7 @@
 
 #include "apto/core.h"
 #include "avida/core/Feedback.h"
+#include "avida/core/Genome.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Recorder.h"
 
@@ -58,6 +59,9 @@ namespace Avida {
     class Driver : public Apto::Thread, public Avida::WorldDriver
     {
     private:
+      struct InjectGenomeInfo;
+      
+    private:
       cWorld* m_world;
       World* m_new_world;
       
@@ -82,6 +86,8 @@ namespace Avida {
         void Warning(const char* fmt, ...);
         void Notify(const char* fmt, ...);
       } m_feedback;
+      
+      Apto::List<InjectGenomeInfo*, Apto::DL> m_inject_queue;
 
       
     public:
@@ -100,6 +106,9 @@ namespace Avida {
       LIB_EXPORT bool HasFinished() const { return m_done; }
       LIB_EXPORT void Resume();
       
+      LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y);
+      LIB_EXPORT bool HasPendingInjects() const;
+
       LIB_EXPORT void AttachListener(Listener* listener);
       LIB_EXPORT void DetachListener(Listener* listener);
 
@@ -110,7 +119,7 @@ namespace Avida {
       // Hacks to get things working
       LIB_EXPORT int CurrentUpdate() const;
       LIB_EXPORT int NumOrganisms() const;
-      LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y);
+      
       LIB_EXPORT int WorldX();
       LIB_EXPORT int WorldY();
       LIB_EXPORT void SetWorldSize(int x, int y);
@@ -137,6 +146,21 @@ namespace Avida {
       
     protected:
       LIB_LOCAL void Run();
+      
+      
+      // Private Implementation Details
+      // ------------------------------------------------------------------------------------------------------------  
+      
+    private:
+      struct InjectGenomeInfo
+      {
+        GenomePtr genome;
+        int x;
+        int y;
+        
+        LIB_LOCAL inline InjectGenomeInfo(GenomePtr in_genome, int in_x, int in_y) : genome(in_genome), x(in_x), y(in_y) { ; }
+      };
+      
     };
 
   };
