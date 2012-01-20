@@ -398,7 +398,7 @@ public:
 	void ClearShannonInformationStats();
   double GetAveGermMut();
   double GetAveNonGermMut();
-  int GetGermlineSize();
+  double GetGermlinePercent();
 	void ClearTotalResourceAmountConsumed() {m_total_res_consumed = 0;}
     
 private:

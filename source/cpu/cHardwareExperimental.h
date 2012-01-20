@@ -537,7 +537,9 @@ private:
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
+  bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);
+  bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
   bool Inst_SenseDiffFaced(cAvidaContext& ctx);
@@ -576,6 +578,7 @@ private:
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
+  bool Inst_LearnParent(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
   // Control-type Instructions
@@ -617,13 +620,14 @@ private:
   
   searchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
                       const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step);  
-  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs);
-  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought);
-  lookOut FindOrg(cOrganism* target_org, const int distance);
+  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int search_dir);
+  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int search_dir);
+  lookOut FindOrg(cOrganism* target_org, const int distance, const int search_dir);
   lookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
   void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
   int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
-  int GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, const int distance_sought, const int facing);
+  int GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, const int distance_sought, 
+                 const int facing);
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& res_bounds);
   bounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
   bool TestBounds(const cCoords cell_id, bounds& bounds_set);

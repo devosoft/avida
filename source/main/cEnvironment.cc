@@ -896,6 +896,10 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "plateau_outflow", var_type, feedback)) return false;
         new_resource->SetPlateauOutflow( var_value.AsDouble() );
       } 
+      else if (var_name == "initial") {
+        if (!AssertInputDouble(var_value, "initial", var_type, feedback)) return false;
+        new_resource->SetPlatInitial( var_value.AsDouble() );
+      } 
       else if (var_name == "common") {
         if (!AssertInputInt(var_value, "common", var_type, feedback)) return false;
         new_resource->SetIsPlateauCommon( var_value.AsInt() );
@@ -927,6 +931,10 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
       else if (var_name == "resistance") {
         if (!AssertInputDouble(var_value, "resistance", var_type, feedback)) return false;
         new_resource->SetResistance( var_value.AsDouble() );
+      } 
+      else if (var_name == "threshold") {
+        if (!AssertInputDouble(var_value, "threshold", var_type, feedback)) return false;
+        new_resource->SetThreshold( var_value.AsDouble() );
       } 
       else {
         feedback.Error("unknown variable '%s' in gradient resource '%s'",

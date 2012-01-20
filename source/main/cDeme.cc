@@ -602,7 +602,8 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                             res->GetPlateauInflow(), res->GetPlateauOutflow(),                            
                             res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
+                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetGradient()
                             ); 
   
   if(res->GetEnergyResource()) {
@@ -1292,8 +1293,9 @@ double cDeme::GetAveNonGermMut()
   return (mut_count);
 }
 
-int cDeme::GetGermlineSize() {
-  int count = 0;
+double cDeme::GetGermlinePercent() {
+  double count = 0;
+  double total_count = 0;
   for (int i=0; i<GetSize(); ++i) {
     
     cPopulationCell& cell = GetCell(i);
@@ -1302,7 +1304,9 @@ int cDeme::GetGermlineSize() {
       if (o->IsGermline()) {
         ++count; 
       }
+      ++total_count;
     }
   }
-  return count;
+  total_count = (count/total_count) * 100;
+  return total_count;
 }

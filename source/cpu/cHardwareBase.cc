@@ -52,10 +52,12 @@ cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* in
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts()) 
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
+, m_has_post_costs(inst_set->HasPostCosts())
 {
 	m_task_switching_cost=0;
 	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost | m_has_female_costs | m_has_choosy_female_costs );
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost | m_has_female_costs | 
+                     m_has_choosy_female_costs | m_has_post_costs);
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||
@@ -73,6 +75,8 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   m_inst_cost = 0;
   m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
   m_active_thread_costs.SetAll(0);
+  m_active_thread_post_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
+  m_active_thread_post_costs.SetAll(0);
   m_female_cost = 0;
   
   const int num_inst_cost = m_inst_set->GetSize();
@@ -95,6 +99,11 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   if (m_has_costs) {
     m_thread_inst_cost.Resize(num_inst_cost);
     for (int i = 0; i < num_inst_cost; i++) m_thread_inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
+  }
+
+  if (m_has_post_costs) {
+    m_thread_inst_post_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_thread_inst_post_cost[i] = m_inst_set->GetPostCost(cInstruction(i));
   }
 
   internalReset();
@@ -1026,34 +1035,42 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
       }
     }
   }
-  // Next, look at the per use cost
-  if (m_has_costs | add_female_costs | add_choosy_female_costs) {    
-      // Current active thread-specific execution cost being paid, decrement and return false 
-      if (m_active_thread_costs[thread_id] > 1) { 
-        m_active_thread_costs[thread_id]--;
-        return false;
-      }
-      // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false      
-      if (!m_active_thread_costs[thread_id] && per_use_cost > 1) { //used to be: m_thread_inst_cost[cur_inst.GetOp()] > 1) {
-        m_active_thread_costs[thread_id] = per_use_cost - 1;
-        return false;
-      }      
-      // If we fall to here, reset the current cost count for the current thread to zero
-      m_active_thread_costs[thread_id] = 0;
+  // Next, look at the per use costs
+  if (m_has_costs | add_female_costs | add_choosy_female_costs | m_has_post_costs) {    
+    // Current ACTIVE thread-specific execution cost being paid, decrement and return false 
+    // if ACTIVE post cost already being paid (from previous executed instruction), pay this before doing anything else
+    if (m_active_thread_post_costs[thread_id] > 1) {
+      m_active_thread_post_costs[thread_id]--;
+      return false;
+    }
+    if (m_active_thread_post_costs[thread_id] == 1) m_active_thread_post_costs[thread_id] = 0;
+    
+    if (m_active_thread_costs[thread_id] > 1) { 
+      m_active_thread_costs[thread_id]--;
+      return false;
+    }
+    
+    // no already active thread-specific execution cost, but this instruction has a cost, setup the counter and return false 
+    // if active PRE costs, pay these before executing instruction
+    if (!m_active_thread_costs[thread_id] && per_use_cost > 1) { //used to be: m_thread_inst_cost[cur_inst.GetOp()] > 1) {
+      m_active_thread_costs[thread_id] = per_use_cost - 1;
+      return false;
+    }     
+    // If we fall to here, execution is allowed now...any pre-cost is paid 
+    if (m_active_thread_costs[thread_id] == 1) m_active_thread_costs[thread_id] = 0;
   }
   
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     m_inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
   }
-
   return true;
 }
 
 
-void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
   if (m_has_res_costs) {
-  
+    
     double res_req = m_inst_set->GetResCost(cur_inst); 
     
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
@@ -1073,11 +1090,22 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
     } 
     if (res_stored < res_req) {
       m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
-      return;
     }
   }
+  return;
 }
 
+void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id)
+{
+  if (m_has_post_costs) {
+    int per_use_post_cost = m_thread_inst_post_cost[cur_inst.GetOp()];
+    // for post-cost, setup the new counter after allowing initial execution to proceed...this will cause the next instruction to pause before execution
+    if (!m_active_thread_post_costs[thread_id] && per_use_post_cost > 1) { 
+      m_active_thread_post_costs[thread_id] = per_use_post_cost;
+    }      
+  }
+  return;
+}
 
 //! Called when the organism that owns this CPU has received a flash from a neighbor.
 void cHardwareBase::ReceiveFlash()

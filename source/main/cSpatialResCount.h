@@ -108,6 +108,7 @@ public:
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
   
+  virtual void SetGradInitialPlatVal(int plat_val) {}
   virtual void SetGradPeakX(int peakx) {}
   virtual void SetGradPeakY(int peaky) {}
   virtual void SetGradHeight(int height) {}
@@ -136,6 +137,7 @@ public:
   virtual void SetGradConfig(int config) {}
   virtual void SetGradCount(int count) {}
   virtual void SetGradResistance(double resistance) {}
+  virtual void SetGradThreshold(double threshold) {}
 
   virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) {}
   

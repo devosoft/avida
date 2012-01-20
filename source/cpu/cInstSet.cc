@@ -50,6 +50,7 @@ cInstSet::cInstSet(const cInstSet& _in)
   , m_has_res_costs(_in.m_has_res_costs)
   , m_has_female_costs(_in.m_has_female_costs)
   , m_has_choosy_female_costs(_in.m_has_choosy_female_costs)
+  , m_has_post_costs(_in.m_has_post_costs)
 {
   m_mutation_index = new cOrderedWeightedIndex(*_in.m_mutation_index);
 }
@@ -68,6 +69,7 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
   m_has_res_costs = _in.m_has_res_costs;
   m_has_female_costs = _in.m_has_female_costs;
   m_has_choosy_female_costs = _in.m_has_choosy_female_costs;
+  m_has_post_costs = _in.m_has_post_costs;
 
   m_mutation_index = new cOrderedWeightedIndex(*_in.m_mutation_index);
   return *this;
@@ -106,6 +108,7 @@ cInstruction cInstSet::ActivateNullInst()
   m_lib_name_map[inst_id].prob_fail = 0.0;
   m_lib_name_map[inst_id].addl_time_cost = 0;
   m_lib_name_map[inst_id].res_cost = 0.0; 
+  m_lib_name_map[inst_id].post_cost = 0;
   
   return cInstruction(inst_id);
 }
@@ -151,6 +154,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
   schema.AddEntry("addl_time_cost", 3, 0);
   schema.AddEntry("female_cost", 4, 0); //@CHC
   schema.AddEntry("choosy_female_cost", 5, 0); //@CHC
+  schema.AddEntry("post_cost", 6, 0);
 
   // Double
   schema.AddEntry("prob_fail", 0, 0.0);
@@ -224,13 +228,15 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     m_lib_name_map[inst_id].res_cost = args->GetDouble(1); 
     m_lib_name_map[inst_id].female_cost = args->GetInt(4);
     m_lib_name_map[inst_id].choosy_female_cost = args->GetInt(5);
-
+    m_lib_name_map[inst_id].post_cost = args->GetInt(6);
+    
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
     if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;
     if (m_lib_name_map[inst_id].res_cost) m_has_res_costs = true;   
     if (m_lib_name_map[inst_id].female_cost) m_has_female_costs = true;
     if (m_lib_name_map[inst_id].choosy_female_cost) m_has_choosy_female_costs = true;
+    if (m_lib_name_map[inst_id].post_cost > 1) m_has_post_costs = true;
     
     // Parse the instruction code
     cString inst_code = args->GetString(0);

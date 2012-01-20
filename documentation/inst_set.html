@@ -118,6 +118,11 @@ define how that instruction should be used.  The exact format is as follows:
   declared in environment file, likely with initial=0). Note that the use of res_cost typically needs to be coupled with 
   RESOURCE_GIVEN_ON_INJECT and RESOURCE_GIVEN_AT_BIRTH in avida.cfg. The default res_cost is 0.
 </dd>
+<dt><strong>post_cost</strong>	
+  <dd>
+    CPU cost to be paid AFTER the instruction is executed the first time (e.g. pseudo post-kill handling time in 
+    predators). Post costs are only applied if the instruction executes successfully (differs from regular costs).
+  </dd>
 </dl>
 
 <p>&nbsp;</p>

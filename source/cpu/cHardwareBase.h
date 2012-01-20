@@ -62,7 +62,7 @@ protected:
   cOrganism* m_organism;     // Organism using this hardware.
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
-  cHardwareTracer* m_minitracer; // Set this if you want execution traced.
+  cHardwareTracer* m_minitracer; // Set this if you want execution traced in a condensed and tractable format.
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
@@ -71,7 +71,9 @@ protected:
   tArray<double> m_inst_energy_cost;
   tArray<double> m_inst_res_cost; 
   tArray<int> m_thread_inst_cost;
+  tArray<int> m_thread_inst_post_cost;
   tArray<int> m_active_thread_costs;
+  tArray<int> m_active_thread_post_costs;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
@@ -80,6 +82,7 @@ protected:
 	int m_task_switching_cost;
   bool m_has_female_costs;
   bool m_has_choosy_female_costs;
+  bool m_has_post_costs;
 
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;
@@ -220,7 +223,8 @@ public:
 protected:
   // --------  Core Execution Methods  --------
   bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
-  void SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
   virtual void internalReset() = 0;
 	virtual void internalResetOnFailedDivide() = 0;
   

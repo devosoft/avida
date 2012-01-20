@@ -599,13 +599,22 @@ public:
   // get the organism's relative position (from birth place)
   int GetNortherly() { return m_northerly; }
 	int GetEasterly() { return m_easterly; } 
-	void ClearEasterly() {m_easterly = 0; }
-	void ClearNortherly() {m_northerly = 0; }
+	void ClearEasterly() { m_easterly = 0; }
+	void ClearNortherly() { m_northerly = 0; }
   
   int GetForageTarget() const { return m_forage_target; }
   void SetForageTarget(int m_forage_target);
+  bool HasSetFT() const { return m_has_set_ft; }
+  void RecordFTSet() { m_has_set_ft = true; }
   bool IsTeacher() const { return m_teach; }
   void Teach(bool m_teach);
+  bool HadParentTeacher() const { return m_parent_teacher; }
+  void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
+  void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
+  int GetParentFT() const { return m_parent_ft; } 
+  void CopyParentFT() { SetForageTarget(m_parent_ft); }
+  void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
+  int GetParentGroup() const { return m_parent_group; } 
   
 protected:
 	// The organism's own raw materials
@@ -636,7 +645,11 @@ protected:
   int m_easterly;
 	
   int m_forage_target;
+  bool m_has_set_ft;
   bool m_teach;
+  bool m_parent_teacher;
+  int m_parent_ft;
+  int m_parent_group;
   
   /*! Contains all the different data structures needed to
 	 track strings, production of strings, and donation/trade
@@ -669,6 +682,7 @@ public:
 	int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
   void IncPointMutations(int n) {m_num_point_mut+=n;} 
   void JoinGermline() {m_germline = true;}
+  void ExitGermline() {m_germline = false;}
   bool IsGermline() { return m_germline; }
 private: 
   int m_num_point_mut;

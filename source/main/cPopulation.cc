@@ -306,7 +306,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                           res->GetThreshold(), res->GetInitialPlatVal(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -484,6 +485,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // is successfully born into the parent's group or successfully immigrates
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
+      if (parent_organism->HasOpinion()) offspring_array[i]->SetParentGroup(parent_organism->GetOpinion().first);
       // If tolerances are on ... @JJB
       if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
@@ -502,11 +504,14 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         }
       }
     }
-    // if parent org has executed teach_offspring intruction, teach the offspring the parent's learned foraging/targeting behavior
+    // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
     if (parent_organism->IsTeacher()) {
       if (parent_organism->GetForageTarget() == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) offspring_array[i]->SetForageTarget(-1);
-      else offspring_array[i]->SetForageTarget(parent_organism->GetForageTarget());
+      else { 
+        offspring_array[i]->SetParentTeacher(true);
+      }
     }
+    offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
   }
   
   // If we're not about to kill the parent, do some extra work on it.
@@ -890,13 +895,17 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     }
     
     in_organism->GetPhenotype().SetBirthCellID(target_cell.GetID());
-    in_organism->GetPhenotype().SetBirthGroupID(op);
-    in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetForageTarget());
+    if (m_world->GetConfig().INHERIT_OPINION.Get()) in_organism->GetPhenotype().SetBirthGroupID(op);
+    else in_organism->GetPhenotype().SetBirthGroupID(in_organism->GetParentGroup());
+    in_organism->GetPhenotype().SetBirthForagerType(in_organism->GetParentFT());
+    
     cBGGenotype* genotype = dynamic_cast<cBGGenotype*>(in_organism->GetBioGroup("genotype"));
     assert(genotype);    
-    genotype->SetLastGroupID(op);
+    
     genotype->SetLastBirthCell(target_cell.GetID());
-    genotype->SetLastForagerType(in_organism->GetForageTarget());      
+    if (m_world->GetConfig().INHERIT_OPINION.Get()) genotype->SetLastGroupID(op);
+    else genotype->SetLastGroupID(in_organism->GetParentGroup());
+    genotype->SetLastForagerType(in_organism->GetParentFT());      
   }
   
   // are there mini traces we need to test for?
@@ -936,19 +945,18 @@ void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 
 void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 {
-  const int target = in_organism->GetForageTarget();
+  const int target = in_organism->GetParentFT();
   const int id = in_organism->GetID();
-  cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trc", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-  if (in_organism->HasOpinion()) {
-    filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-  }
+  int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
+  if (in_organism->HasOpinion()) group_id = in_organism->GetOpinion().first;
+  else group_id = in_organism->GetParentGroup();
+  
+  cString filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  
   in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   
   if (print_mini_trace_genomes) {
-    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-ft%d-%s.trcgeno", id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-    if (in_organism->HasOpinion()) {
-      gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, in_organism->GetOpinion().first, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-    }
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
     PrintMiniTraceGenome(ctx, in_organism, gen_file);
   }
 }
@@ -2383,6 +2391,31 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           source_founders = founders;
           target_founders = founders;
           break;
+        }
+        case 8: { // Grab a random org from the set of orgs that have
+          // flagged themselves as part of the germline.
+          tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          
+          // Get list of potential founders
+          for (int i = 0; i<source_deme.GetSize(); ++i) {
+            cPopulationCell& cell = GetCell(i);
+            if (cell.IsOccupied()) {
+              cOrganism* o = cell.GetOrganism();
+              if (o->IsGermline()) {
+                potential_founders.Push(o);
+              }
+            }
+          }
+          
+          // pick a random founder...
+          if (potential_founders.GetSize() > 0) {
+            int r = random.GetUInt(potential_founders.GetSize());
+            founders.Push(potential_founders[r]);
+          }
+          source_founders = founders;
+          target_founders = founders;
+          break;          
         }
         case 2:
         case 3:
@@ -5142,6 +5175,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
         new_organism->GetPhenotype().SetBirthGroupID(group_id);
         new_organism->GetPhenotype().SetBirthForagerType(forager_type);
+        new_organism->SetParentGroup(group_id);
+        new_organism->SetParentFT(forager_type);
         ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
       }
     }
@@ -6364,11 +6399,41 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance()); 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
+                           res->GetInitialPlatVal(), res->GetThreshold()); 
     } 
   }
 }
 
+void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPlateauInflow(inflow);
+      resource_count.SetGradientInflow(global_res_index, inflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientOutflow(const cString res_name, const double outflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPlateauOutflow(outflow);
+      resource_count.SetGradientOutflow(global_res_index, outflow);
+    }
+  } 
+}
 
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -6418,7 +6483,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetGradient()
                            ); 
       
     } else if (res->GetDemeResource()) {

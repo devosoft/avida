@@ -313,6 +313,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetEnvironmentRandomMask">SetEnvironmentRandomMask</a><br>
       <a href="#SetFracDemeTreatable">SetFracDemeTreatable</a><br>
       <a href="#SetGradientResource">SetGradientResource</a><br>
+      <a href="#SetGradientInflow">SetGradientInflow</a><br>
+      <a href="#SetGradientOutflow">SetGradientOutflow</a><br>
       <a href="#SetMigrationRate">SetMigrationRate</a><br>
       <a href="#SetMutProb">SetMutProb</a><br>
       <a href="#SetNumInstBefore0Energy">SetNumInstBefore0Energy</a><br>
@@ -572,6 +574,24 @@ and reaction parameters.
     change this resource. <br>
     Unlike with ChangeEnvironment, no resources other than the one specified in the event
     will be affected.
+    </p>
+  </li>  
+  <li><p>
+    <strong><a name="SetGradientInflow">SetGradientInflow</a></strong>
+    <i>&lt;string res_name&gt; &lt;double res_inflow&gt;</i>
+    </p>
+    <p>
+    Set existing gradient resource plateau inflow rate to a new value, without redrawing
+    the entire resource.
+    </p>
+  </li>  
+  <li><p>
+    <strong><a name="SetGradientInflow">SetGradientOutflow</a></strong>
+    <i>&lt;string res_name&gt; &lt;double res_outflow&gt;</i>
+    </p>
+    <p>
+    Set existing gradient resource plateau outflow rate to a new value, without redrawing
+    the entire resource.
     </p>
   </li>  
 <li><p>
@@ -2480,7 +2500,7 @@ a single, complete file for each trigger.
     </p>
     <p>Prints a condensed trace of execution during a lifetime. Who is traced is determined by arguements.
     E.g. with the args <it>save_dominants=1:orgs_per=2</t>, at the specified update(s) a list is
-    created containing the two most abundant genotypes. The next offspring born with those specified
+    created containing the two most abundant genotypes. The next offspring born <i>to parents</i> with those specified
     genotypes will then be traced for their entire lifetimes. If save_foragers is set to 1, the list 
     would contain the two most abundant genotypes for EACH existing forager type. Multiple types can
     be saved without duplicating traces. E.g. <it>save_dominants=1:save_foragers=1:orgs_per=2</t> would

@@ -70,7 +70,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
                                double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor,
-                               int habitat, int min_size, int max_size, int config, int count, double resistance)
+                               int habitat, int min_size, int max_size, int config, int count, double resistance, double init_plat)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -80,8 +80,10 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y)
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
   , m_is_plateau_common(is_plateau_common), m_floor(floor) 
-  , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count), m_resistance(resistance)
+  , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count)
+  , m_resistance(resistance), m_initial_plat(init_plat)
   , m_geometry(geometry)
+  , m_initial(false)
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
@@ -463,7 +465,8 @@ void cGradientCount::refreshResourceValues()
             else if (m_is_plateau_common == 1) {   
               thisheight = m_common_plat_height;
             }
-          } 
+          }
+          if (m_initial && m_initial_plat != -1) thisheight = m_initial_plat;
           if (thisheight < 0) thisheight = 0;
           m_plateau_array[plateau_cell] = thisheight;
           m_plateau_cell_IDs[plateau_cell] = jj * GetX() + ii;
@@ -681,20 +684,23 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
       // decide the size of the current hill
       int rand_hill_radius = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
       
-      // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
-      int chooseEW = rng.GetUInt(0,2);
-      if (chooseEW == 0) {
-        m_peakx = rng.GetUInt(rand_hill_radius, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
-      } else {
-        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1 - rand_hill_radius);
+      // generate random hills, if config == 0, otherwise generate 1 hill at peakx X peaky
+      if (m_config == 0) {
+        // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
+        int chooseEW = rng.GetUInt(0,2);
+        if (chooseEW == 0) {
+          m_peakx = rng.GetUInt(rand_hill_radius, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
+        } else {
+          m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1 - rand_hill_radius);
+        }
+        int chooseNS = rng.GetUInt(0,2);
+        if (chooseNS == 0) { 
+          m_peaky = rng.GetUInt(rand_hill_radius, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
+        } else {
+          m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1 - rand_hill_radius);
+        }
       }
-      int chooseNS = rng.GetUInt(0,2);
-      if (chooseNS == 0) { 
-        m_peaky = rng.GetUInt(rand_hill_radius, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
-      } else {
-        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1 - rand_hill_radius);
-      }
-
+      
       // figure the coordinate extent of each hill (box)
       int max_pos_x = min(m_peakx + rand_hill_radius + 1, GetX() - 1);
       int min_pos_x = max(m_peakx - rand_hill_radius - 1, 0);
@@ -737,6 +743,7 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_plateau_cell_IDs.SetAll(0);
   m_current_height = m_height;
   m_common_plat_height = m_plateau;
+  m_initial = true;
   ResizeClear(worldx, worldy, m_geometry);
   if (m_habitat == 2) {
     generateBarrier(ctx);
@@ -748,4 +755,5 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
     generatePeak(ctx);
     UpdateCount(ctx);
   }
+  m_initial = false;
 }

@@ -282,7 +282,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
@@ -319,6 +321,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-pred", &cHardwareExperimental::Inst_FightMeritPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
     
     // Control-type Instructions
@@ -459,7 +462,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000);
+  assert(m_cycle_count < 0x8000); //APW
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
@@ -538,7 +541,8 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
-          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
           // record execution success
           exec_success = 1;
         }
@@ -3326,7 +3330,50 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   look_results.group = -9;
   look_results.forage = -9;
   
-  look_results = SetLooking(ctx, reg_defs);
+  look_results = SetLooking(ctx, reg_defs, 0);
+  LookResults (reg_defs, look_results);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx) 
+{
+  // temp check on world geometry until code can handle other geometries
+  if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) m_world->GetDriver().RaiseFatalException(-1, "Look instructions only written to work in bounded grids");
+  
+  if (NUM_REGISTERS < 8) m_world->GetDriver().RaiseFatalException(-1, "Look instructions require at least 8 registers");
+  if (m_organism->GetNeighborhoodSize() == 0) return false;
+  
+  // define our input (4) and output registers (8)
+  lookRegAssign reg_defs;
+  reg_defs.habitat = FindModifiedRegister(rBX);
+  // fail if the org is trying to sense a nest/hidden habitat
+  int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
+  if (habitat_used == 3) return false;
+  reg_defs.distance = FindModifiedNextRegister(reg_defs.habitat);
+  reg_defs.search_type = FindModifiedNextRegister(reg_defs.distance);
+  reg_defs.id_sought = FindModifiedNextRegister(reg_defs.search_type);
+  reg_defs.count = FindModifiedNextRegister(reg_defs.id_sought);
+  reg_defs.value = FindModifiedNextRegister(reg_defs.count);
+  reg_defs.group = FindModifiedNextRegister(reg_defs.value);
+  reg_defs.ft = FindModifiedNextRegister(reg_defs.group);
+  
+  lookOut look_results;
+  look_results.report_type = 0;
+  look_results.habitat = 0;
+  look_results.distance = -1;
+  look_results.search_type = 0;
+  look_results.id_sought = -1;
+  look_results.count = 0;
+  look_results.value = 0;
+  look_results.group = -9;
+  look_results.forage = -9;
+  
+  int search_dir = 0;
+  if (abs(m_threads[m_cur_thread].reg[reg_defs.count].value) == 1) {
+    search_dir = m_organism->GetOrgInterface().GetFacedDir() + m_threads[m_cur_thread].reg[reg_defs.count].value;
+  }
+  
+  look_results = SetLooking(ctx, reg_defs, search_dir);
   LookResults (reg_defs, look_results);
   return true;
 }
@@ -3414,6 +3461,66 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   
   // Set the new target and return the value
   m_organism->SetForageTarget(prop_target);
+  m_organism->RecordFTSet();
+	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->HasSetFT()) return false;
+  int prop_target = GetRegister(FindModifiedRegister(rBX));
+  
+  // a little mod help...can't set to -1, that's for juevniles only
+  int num_fts = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  set <int>::iterator itr;    
+  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
+    // ft's may not be sequentially numbered
+    int ft_num = abs(prop_target) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    prop_target = *itr;
+  }
+  
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator; -1 (nothing) is default
+  //  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+  
+  /*  int prop_target = GetRegister(FindModifiedRegister(rBX));
+   
+   // a little mod help...can't set to -1, that's for juevniles only
+   int num_fts = 0;
+   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+   set <int>::iterator itr;    
+   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+   if (abs(prop_target) >= num_fts && prop_target != -2) prop_target = abs(prop_target) % num_fts;
+   
+   */
+  //  const int prop_target = GetRegister(FindModifiedRegister(rBX));
+  
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator; -1 (nothing) is default
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+
+  //return false if org setting target to current one (avoid paying costs for not switching)
+  const int old_target = m_organism->GetForageTarget();
+  if (old_target == prop_target) return false;
+  
+  // return false if predator trying to become prey and this has been disallowed
+  if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
+  
+  // return false if trying to become predator and there are none in the experiment
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
+  
+  // return false if trying to become predator this has been disallowed via setforagetarget
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
+  
+  // Set the new target and return the value
+  m_organism->SetForageTarget(prop_target);
+  m_organism->RecordFTSet();
 	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
   return true;
 }
@@ -3832,9 +3939,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
 
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
@@ -3882,6 +3988,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
@@ -3891,7 +3999,6 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
@@ -3908,9 +4015,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
   
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
@@ -3976,6 +4082,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
@@ -3985,7 +4093,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
@@ -4105,9 +4212,8 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
   
-  if (m_world->GetRandom().GetDouble(0,1) > m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
@@ -4157,6 +4263,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
+    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
     setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
     setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
@@ -4297,7 +4404,13 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
-  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->HadParentTeacher()) m_organism->CopyParentFT();
   return true;
 }
 
@@ -4577,13 +4690,13 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 }
 
 
-cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs)
+cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs, int search_dir)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
   const int search_reg = in_defs.search_type;
   const int id_reg = in_defs.id_sought;
-  
+
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -4612,8 +4725,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
   int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
-  else if (distance_sought > max_dist) distance_sought = long_axis;
-  
+  else if (distance_sought > max_dist) distance_sought = max_dist;
+
   // third register gives type of search used for food resources (habitat 0) and org hunting (habitat -2)
   // env res search_types (habitat 0): 0 or 1
   // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
@@ -4664,7 +4777,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     // if number didn't represent a living org, we default to WalkCells searching for anybody, skipping FindOrg
     if (!done_setting_org && id_sought != -1) id_sought = -1;    
     // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
-    if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought);
+    if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought, search_dir);
   }
 
   /*  APW TODO
@@ -4696,10 +4809,10 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
       if (all_global) return GlobalVal(ctx, habitat_used, -1, search_type);       // if all global, but none edible
     }
   }
-  return WalkCells(ctx, resource_lib, habitat_used, search_type, distance_sought, id_sought);
+  return WalkCells(ctx, resource_lib, habitat_used, search_type, distance_sought, id_sought, search_dir);
 }    
 
-cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought)
+cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought, const int search_dir)
 {
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int target_org_cell = target_org->GetCellID();
@@ -4712,7 +4825,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
   const int y_dist = target_y - searching_y;
   // is the target org close enough to see and in my line of sight?
   bool org_in_sight = true;
-  const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  const int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
   const int travel_dist = max(abs(x_dist), abs(y_dist));
   
   // if simply too far or behind you
@@ -4810,7 +4923,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& c
 }
 
 cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, 
-                                                                const int search_type, const int distance_sought, const int id_sought)
+                                                                const int search_type, const int distance_sought, const int id_sought,
+                                                                const int search_dir)
 {
   // rather than doing doupdates at every cell check inside TestCell, we just do it once now since we're in a stall
   // we need to do this before getfrozenres and getfrozenpeak
@@ -4839,7 +4953,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   cCoords center_cell(cell % worldx, cell / worldx);
   cCoords this_cell = center_cell;
   
-  const int facing = m_organism->GetOrgInterface().GetFacedDir();
+  const int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
   bool diagonal = true;
   if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
@@ -5019,7 +5133,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
             found = true;
             totalAmount += cellResultInfo.amountFound;
             if (cellResultInfo.has_edible) {
-              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >=1)
+              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >= threshold)
               found_edible = true;
               if (first_success_cell == cCoords(-1, -1)) first_success_cell = this_cell;
               if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
@@ -5127,31 +5241,32 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     for (int k = 0; k < val_res.GetSize(); k++) { 
       if (habitat_used == 0) {
-        if (search_type == 0 && cell_res[val_res[k]] >= 1) {
+        if (search_type == 0 && cell_res[val_res[k]] >= resource_lib.GetResource(val_res[k])->GetThreshold()) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res[val_res[k]];                                                         
           }
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < 1 && cell_res[val_res[k]] > 0) {                        // only get sum amounts when < 1 if search = get counts
+        else if (search_type == 1 && cell_res[val_res[k]] < resource_lib.GetResource(val_res[k])->GetThreshold() && 
+                 cell_res[val_res[k]] > 0) {                                                                        // only get sum amounts when < threshold if search = get counts
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res[val_res[k]];                                                         
            }
         } 
       }
-      else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0
+      else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0, not the threshold default of 1
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
         returnInfo.has_edible = true;
         returnInfo.amountFound += cell_res[val_res[k]];
       }
       else if (habitat_used == 4) { 
-        if (search_type == 0 && cell_res[val_res[k]] >= m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get()) {   // dens only work above a config set level
+        if (search_type == 0 && cell_res[val_res[k]] >= resource_lib.GetResource(val_res[k])->GetThreshold()) {     // dens only work above a config set level, but threshold will override this for sensing
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
           returnInfo.amountFound += cell_res[val_res[k]];        
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get() && cell_res[val_res[k]] > 0) {
+        else if (search_type == 1 && cell_res[val_res[k]] < resource_lib.GetResource(val_res[k])->GetThreshold() && cell_res[val_res[k]] > 0) {
           returnInfo.amountFound += cell_res[val_res[k]];        
        }
       }
@@ -5211,7 +5326,8 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
   return;
 }
 
-int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, const int distance_sought, const int facing)
+int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, 
+                                      const int distance_sought, const int facing)
 {
   const int org_x = cell_id % worldx;
   const int org_y = cell_id / worldx;

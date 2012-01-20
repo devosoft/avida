@@ -283,6 +283,55 @@ public:
   } 
 };
 
+class cActionSetGradientInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow;
+  
+public:
+  cActionSetGradientInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateGradientInflow(m_res_name, m_inflow);        
+  } 
+};
+
+class cActionSetGradientOutflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_outflow;
+  
+public:
+  cActionSetGradientOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateGradientOutflow(m_res_name, m_outflow);        
+  } 
+};
 
 /* Change Environment settings */
 class cActionChangeEnvironment : public cAction
@@ -1250,6 +1299,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionMergeResourceAcrossDemes>("MergeResourceAcrossDemes");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
   action_lib->Register<cActionSetGradientResource>("SetGradientResource");
+  action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
+  action_lib->Register<cActionSetGradientOutflow>("SetGradientOutflow");
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");
