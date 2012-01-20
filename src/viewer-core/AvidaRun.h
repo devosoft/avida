@@ -66,6 +66,9 @@
 - (void) resume;
 - (void) end;
 
+- (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y;
+- (bool) hasPendingInjects;
+
 
 - (void) attachListener:(id<ViewerListener>)listener;
 - (void) detachListener:(id<ViewerListener>)listener;

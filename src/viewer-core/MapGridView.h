@@ -73,6 +73,9 @@
 - (void) updateState:(Avida::Viewer::Map*)state;
 - (void) clearMap;
 
+- (void) setPendingActionColorAtX:(int)x Y:(int)y;
+
+
 - (void) mouseDown:(NSEvent*)event;
 
 - (NSColor*) colorOfX:(int)x Y:(int)y;

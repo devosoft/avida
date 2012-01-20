@@ -176,6 +176,14 @@ void handleDriverCallback(Avida::DriverEvent event)
   driver->Finish();
 }
 
+- (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y {
+  driver->InjectGenomeAt(genome, x, y);
+}
+
+- (bool) hasPendingInjects {
+  return driver->HasPendingInjects();
+}
+
 
 - (void) attachListener:(id<ViewerListener>)listener {
   if (driver) driver->AttachListener([listener listener]);

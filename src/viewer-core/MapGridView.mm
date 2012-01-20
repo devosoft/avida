@@ -194,6 +194,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_height = size.height;
   map_colors.Resize(map_width * map_height);
   map_colors.SetAll(-4);
+  map_tags.Resize(map_width * map_height);
+  map_tags.SetAll(-4);
   [self adjustZoom];
 }
 
@@ -220,12 +222,21 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   num_colors = 0;
   [color_cache removeAllObjects];
   map_colors.ResizeClear(0);
+  map_tags.ResizeClear(0);
   zoom = -1;
   selected_x = -1;
   selected_y = -1;
   [self setNeedsDisplay:YES];
 }
 
+
+- (void) setPendingActionColorAtX:(int)x Y:(int)y {
+  assert(x < map_width);
+  assert(y < map_height);
+  
+  map_colors[x * map_width + y] = -2;
+  [self setNeedsDisplay:YES];
+}
 
 - (void) mouseDown:(NSEvent*)event {
   
@@ -294,6 +305,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       selected_x = floor(point.x);
       selected_y = floor(point.y);
       [selectionDelegate mapViewSelectionChanged:self];
+      [self setNeedsDisplay:YES];
     }
   }
 }
@@ -303,6 +315,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     selected_x = -1;
     selected_y = -1;
     [selectionDelegate mapViewSelectionChanged:self];
+    [self setNeedsDisplay:YES];
   }
 }
 

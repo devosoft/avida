@@ -188,7 +188,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSString* runPath = [fileManager createTemporaryDirectory];
   
   // instantiate config
-  freezer->Instantiate(freezerID, [runPath cStringUsingEncoding:NSASCIIStringEncoding]);
+  freezer->InstantiateWorkingDir(freezerID, [runPath cStringUsingEncoding:NSASCIIStringEncoding]);
   
   // create run object
   if (freezerID.type == Avida::Viewer::CONFIG) {
@@ -421,8 +421,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
   [pathWorkspace setURL:freezerURL];
   
-  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::WORLD); it.Next();) {
-    if (freezer->NameOf(*it.Get()) == "@example") {
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
+    if (freezer->NameOf(*it.Get()) == "@default") {
       [self loadRunFromFreezer:(*it.Get())];
       break;
     }
@@ -434,7 +434,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (IBAction) toggleRunState:(id)sender {
   if ([currentRun willPause]) {
-    if ([currentRun numOrganisms] == 0) {
+    if ([currentRun numOrganisms] == 0 && ![currentRun hasPendingInjects]) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
       [alert setMessageText:@"Unable to resume experiment, the petri dish has not been inoculated."];
@@ -852,7 +852,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y
 {
-  // @TODO place genome in population
+  Avida::GenomePtr genome(freezer->InstantiateGenome(fid));
+  if (genome) {
+    [currentRun injectGenome:genome atX:x Y:y];
+    [mapView setPendingActionColorAtX:x Y:y];
+  }
 }
 
 - (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid {
