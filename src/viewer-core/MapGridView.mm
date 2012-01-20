@@ -256,6 +256,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
         selected_x = selectedOrg.x;
         selected_y = selectedOrg.y;
         [selectionDelegate mapViewSelectionChanged:self];
+        [self setNeedsDisplay:YES];
       }
     }
   }

@@ -577,6 +577,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [orgEnvActions clearEntries];
   [tblOrgEnvActions reloadData];
   [boxOrgColor reset];
+  genome = "";
 }
 
 
@@ -625,6 +626,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
     }
     [tblOrgEnvActions reloadData];
     [boxOrgColor reset];
+    genome = "";
     return;
   }
   
@@ -657,6 +659,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
     [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
   }
   [tblOrgEnvActions reloadData];
+  
+  genome = genotype->Properties().Get("genome");
 }
 
 
@@ -675,6 +679,12 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [plot reloadData];
   [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
 }
+
+
+- (Apto::String) selectedOrgGenome {
+  return genome;
+}
+
 
 @end
 

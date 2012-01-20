@@ -102,15 +102,18 @@
   Avida::Viewer::Listener* listener;
   Avida::Viewer::Map* map;
   Apto::Map<NSInteger, int> map_mode_to_color;
-  BOOL runConfigChanged;
+  BOOL runActive;
 }
 
 // Init and Dealloc Methods
 - (id) initWithAppDelegate:(AvidaAppDelegate*)delegate;
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate InWorkspace:(NSURL*)dir;
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir;
 
 - (void) dealloc;
 - (void) finalize;
+
+
+- (void) duplicateFreezerAtURL:(NSURL*)url;
 
 
 // NSWindowController Methods
@@ -126,7 +129,17 @@
 
 - (IBAction) changeView:(id)sender;
 
+
+- (IBAction) saveCurrentRun:(id)sender;
+- (IBAction) saveCurrentConfig:(id)sender;
+- (IBAction) saveSelectedOrganism:(id)sender;
+
+
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
+
+
+// NSMenuValidation Informal Protocol
+- (BOOL) validateMenuItem:(NSMenuItem*)item;
 
 
 // NSSplitViewDelegate Protocol

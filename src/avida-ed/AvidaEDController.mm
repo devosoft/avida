@@ -164,7 +164,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   // clean up old run
   if (currentRun != nil) {
-    if (runConfigChanged == NO) {
+    if (runActive == YES) {
       // Offer to freeze current run...
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"Save"];
@@ -181,7 +181,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [self clearCurrentRun];
   }
   
-  runConfigChanged = YES;
+  runActive = NO;
   
   // create working directory
   NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -197,7 +197,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [mapView setDimensions:[currentRun worldSize]];    
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
-    runConfigChanged = NO;
+    runActive = YES;
     [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:freezerID];
     [txtUpdate setStringValue:[NSString stringWithFormat:@"%d updates", [currentRun currentUpdate]]];
     [currentRun pauseAt:[currentRun currentUpdate] + 1];
@@ -304,9 +304,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID {
-  if (freezerID.type == Avida::Viewer::CONFIG && freezer->NameOf(freezerID) == "@default") return;
-  if (freezerID.type == Avida::Viewer::GENOME && freezer->NameOf(freezerID) == "@ancestor") return;
-  if (freezerID.type == Avida::Viewer::WORLD && freezer->NameOf(freezerID) == "@example") return;
+  if (freezerID.identifier == 0) return;
 
   freezer->Remove(freezerID);
   
@@ -364,7 +362,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   return self;
 }
 
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate InWorkspace:(NSURL*)dir {
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir {
   self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
   
   if (self != nil) {
@@ -374,10 +372,17 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     listener = NULL;
     map = NULL;
     
-    Apto::String freezer_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
+    freezerURL = dir;
+
+    Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
     freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
     [self setupFreezer];
     
+    // Hide freezer extension
+    NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
+
     [self showWindow:self];
   }
   
@@ -397,6 +402,14 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   listener = NULL;
   [super finalize];
 }
+
+
+
+- (void) duplicateFreezerAtURL:(NSURL*)url {
+  Apto::String path = [[url path] cStringUsingEncoding:NSASCIIStringEncoding];
+  freezer->DuplicateFreezerAt(path);
+}
+
 
 
 - (void) windowDidLoad {
@@ -445,8 +458,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       return;
     }
     
-    if (runConfigChanged) {
-      runConfigChanged = NO;
+    if (runActive == NO) {
+      runActive = YES;
       [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:Avida::Viewer::FreezerID()];
     }
 
@@ -572,6 +585,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
+- (IBAction) saveCurrentRun:(id)sender {
+  [self freezeCurrentRun];
+}
+
+- (IBAction) saveCurrentConfig:(id)sender {
+  [self freezeCurrentConfig];
+}
+
+- (IBAction) saveSelectedOrganism:(id)sender {
+  // @TODO
+}
+
 - (void) envActionStateChange:(NSMutableDictionary*)newState
 {
   Apto::String enabled_actions;
@@ -590,6 +615,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [mapView updateState:map];
 }
 
+
+- (BOOL) validateMenuItem:(NSMenuItem*)item {
+  if ([item action] == @selector(saveCurrentRun:) && runActive == NO) return NO;
+  if ([item action] == @selector(saveSelectedOrganism:) && [popViewStatView selectedOrgGenome] == "") return NO;
+  return YES;
+}
 
 - (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
   if (splitView == mainSplitView) {
@@ -698,9 +729,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     return NO;
   }
   
-  if ([item freezerID].type == Avida::Viewer::CONFIG && freezer->NameOf([item freezerID]) == "@default") return NO;
-  if ([item freezerID].type == Avida::Viewer::GENOME && freezer->NameOf([item freezerID]) == "@ancestor") return NO;
-  if ([item freezerID].type == Avida::Viewer::WORLD && freezer->NameOf([item freezerID]) == "@example") return NO;
+  if ([item freezerID].identifier == 0) return NO;
   
   return YES;
 }

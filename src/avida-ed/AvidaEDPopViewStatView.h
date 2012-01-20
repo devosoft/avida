@@ -65,6 +65,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
   IBOutlet NSTextField* txtOrgAge;
   IBOutlet NSTextField* txtOrgAncestor;
   IBOutlet NSTableView* tblOrgEnvActions;
+  Apto::String genome;
   
   AvidaRun* run;
   Avida::Data::RecorderPtr recorder;
@@ -102,6 +103,8 @@ class AvidaEDPopViewStatViewTimeRecorder;
 
 - (IBAction) changeGraph:(id)sender;
 - (void) handleNewGraphData;
+
+- (Apto::String) selectedOrgGenome;
 
 @end
 

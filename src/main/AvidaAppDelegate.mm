@@ -36,9 +36,26 @@
 @implementation AvidaAppDelegate
 
 - (void) applicationDidFinishLaunching:(NSNotification*)aNotification {
-	// Insert code here to initialize your application
-  [self newAvidaED:self];
+  if ([windows count] == 0) {
+    // @TODO Should pop up welcome window instead of default workspace
+    
+    [self newAvidaED:self]; 
+  }
 }
+
+- (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename {
+  NSURL* fileURL = [NSURL fileURLWithPath:filename];
+  AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
+  if (ctrl == nil) {
+    NSLog(@"Error loading Avida-ED-MainWindow NIB");
+    return NO;
+  } else {
+    [windows addObject:ctrl];
+  }
+
+  return YES;
+}
+
 
 
 - (IBAction) newAvida:(id)sender {
@@ -59,6 +76,61 @@
     [windows addObject:ctrl];
   }
 }
+
+
+- (IBAction) openAvidaEDWorkspace:(id)sender {
+
+  NSOpenPanel* openDlg = [NSOpenPanel openPanel];  
+  [openDlg setCanChooseFiles:YES];
+  [openDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-workspace"]];
+  
+  // Display the dialog.  If the OK button was pressed, process the files.
+  if ([openDlg runModal] == NSOKButton) {
+    NSArray* files = [openDlg URLs];    
+    NSURL* fileURL = [files objectAtIndex:0];
+    
+    AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
+    if (ctrl == nil) {
+      NSLog(@"Error loading Avida-ED-MainWindow NIB");
+    } else {
+      [windows addObject:ctrl];
+    }
+  }
+}
+
+
+- (IBAction) duplicateAvidaEDWorkspace:(id)sender {
+  NSSavePanel* saveDlg = [NSSavePanel savePanel];  
+  [saveDlg setCanCreateDirectories:YES];
+  [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-workspace"]];
+  
+  // Display the dialog.  If the OK button was pressed, process the files.
+  if ([saveDlg runModal] == NSOKButton) {
+    NSURL* fileURL = [saveDlg URL];
+    NSWindowController* cur_ctrl = [[[NSApplication sharedApplication] mainWindow] windowController];
+    if (cur_ctrl != nil && [cur_ctrl respondsToSelector:@selector(duplicateFreezerAtURL:)]) {
+      [(AvidaEDController*)cur_ctrl duplicateFreezerAtURL:fileURL];
+    }
+    
+    AvidaEDController* new_ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
+    if (new_ctrl == nil) {
+      NSLog(@"Error loading Avida-ED-MainWindow NIB");
+    } else {
+      [windows addObject:new_ctrl];
+    }
+  }  
+}
+
+
+- (BOOL) validateMenuItem:(NSMenuItem*)item {
+  if ([item action] == @selector(duplicateAvidaEDWorkspace:)) {
+    NSWindowController* ctrl = [[[NSApplication sharedApplication] mainWindow] windowController];
+    if (ctrl == nil || ![ctrl respondsToSelector:@selector(duplicateFreezerAtURL:)]) return NO;
+  }
+  return YES;
+}
+
+
 
 
 - (void) removeWindow:(id)sender {

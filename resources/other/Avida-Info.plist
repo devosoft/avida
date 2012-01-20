@@ -57,7 +57,12 @@
 			<key>UTTypeIdentifier</key>
 			<string>org.devosoft.avida.avida-ed-workspace</string>
 			<key>UTTypeTagSpecification</key>
-			<dict/>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>avidaedworkspace</string>
+				</array>
+			</dict>
 		</dict>
 	</array>
 </dict>

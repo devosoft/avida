@@ -35,7 +35,17 @@
 
 - (IBAction) newAvida:(id)sender;
 - (IBAction) newAvidaED:(id)sender;
+- (IBAction) openAvidaEDWorkspace:(id)sender;
+- (IBAction) duplicateAvidaEDWorkspace:(id)sender;
+
+// NSMenuValidation Informal Protocol
+- (BOOL) validateMenuItem:(NSMenuItem*)item;
 
 - (void) removeWindow:(id)sender;
+
+
+// NSApplicationDelegate Protocol
+- (void) applicationDidFinishLaunching:(NSNotification*)aNotification;
+- (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename;
 
 @end
