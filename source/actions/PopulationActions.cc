@@ -5136,7 +5136,7 @@ public:
           
           if( (src_cellid != -1) && (dest_cellid != -1) ) {
             
-            m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid);
+            m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid, -1);
             
             deme.DecOrgCount();
             target_deme.IncOrgCount();

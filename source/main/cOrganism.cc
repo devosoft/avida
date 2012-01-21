@@ -51,54 +51,54 @@ using namespace Avida;
 
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, eBioUnitSource src,
                      const cString& src_args)
-  : m_world(world)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.GetInstSet()).GetNumNops())
-  , m_src(src)
-  , m_src_args(src_args)
-  , m_initial_genome(genome)
-  , m_interface(NULL)
-  , m_lineage_label(-1)
-  , m_lineage(NULL)
-  , m_input_pointer(0)
-  , m_input_buf(world->GetEnvironment().GetInputSize())
-  , m_output_buf(world->GetEnvironment().GetOutputSize())
-  , m_received_messages(RECEIVED_MESSAGES_SIZE)
-  , m_cur_sg(0)
-  , m_sent_value(0)
-  , m_sent_active(false)
-  , m_test_receive_pos(0)
-  , m_pher_drop(false)
-  , frac_energy_donating(m_world->GetConfig().ENERGY_SHARING_PCT.Get())
-  , m_max_executed(-1)
-  , m_is_running(false)
-  , m_is_sleeping(false)
-  , m_is_dead(false)
-  , killed_event(false)
-  , m_net(NULL)
-  , m_msg(0)
-  , m_opinion(0)
-  , m_neighborhood(0)
-  , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
-  , m_other_raw_materials(0)
-  , m_num_donate(0)
-  , m_num_donate_received(0)
-  , m_amount_donate_received(0)
-  , m_num_reciprocate(0)
-  , m_failed_reputation_increases(0)
-  , m_tag(make_pair(-1, 0))
-  , m_northerly(0)
-  , m_easterly(0)
-  , m_forage_target(-1)
-  , m_has_set_ft(false)
-  , m_teach(false)
-  , m_parent_teacher(false)
-  , m_parent_ft(-1)
-  , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
-  , m_num_point_mut(0)
+: m_world(world)
+, m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.GetInstSet()).GetNumNops())
+, m_src(src)
+, m_src_args(src_args)
+, m_initial_genome(genome)
+, m_interface(NULL)
+, m_lineage_label(-1)
+, m_lineage(NULL)
+, m_input_pointer(0)
+, m_input_buf(world->GetEnvironment().GetInputSize())
+, m_output_buf(world->GetEnvironment().GetOutputSize())
+, m_received_messages(RECEIVED_MESSAGES_SIZE)
+, m_cur_sg(0)
+, m_sent_value(0)
+, m_sent_active(false)
+, m_test_receive_pos(0)
+, m_pher_drop(false)
+, frac_energy_donating(m_world->GetConfig().ENERGY_SHARING_PCT.Get())
+, m_max_executed(-1)
+, m_is_running(false)
+, m_is_sleeping(false)
+, m_is_dead(false)
+, killed_event(false)
+, m_net(NULL)
+, m_msg(0)
+, m_opinion(0)
+, m_neighborhood(0)
+, m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
+, m_other_raw_materials(0)
+, m_num_donate(0)
+, m_num_donate_received(0)
+, m_amount_donate_received(0)
+, m_num_reciprocate(0)
+, m_failed_reputation_increases(0)
+, m_tag(make_pair(-1, 0))
+, m_northerly(0)
+, m_easterly(0)
+, m_forage_target(-1)
+, m_has_set_ft(false)
+, m_teach(false)
+, m_parent_teacher(false)
+, m_parent_ft(-1)
+, m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+, m_num_point_mut(0)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
-
+  
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
   
   initialize(ctx);
@@ -271,7 +271,8 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
 {
   if (m_net) m_net->valid = false;
-  doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
+  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
+  else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
 }
 
 
@@ -279,21 +280,24 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
   NetValidate(ctx, value);
-  doOutput(ctx, m_input_buf, m_output_buf, false, false);
+  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, false);
+  else doOutput(ctx, m_input_buf, m_output_buf, false, false);
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite, cContextPhenotype* context_phenotype) 
 {
   m_output_buf.Add(value);
   NetValidate(ctx, value);
-  doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
+  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
+  else doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   output_buffer.Add(value);
   NetValidate(ctx, value);
-  doOutput(ctx, input_buffer, output_buffer, false, false);
+  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false, false);
+  else doOutput(ctx, input_buffer, output_buffer, false, false);
 }
 
 
@@ -350,7 +354,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   
   cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
                        m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
-                       
+  
   //combine global and deme resource counts
   tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
   tArray<double> globalAndDeme_res_change = global_res_change + deme_res_change;
@@ -375,22 +379,20 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 	  }
   }
   
-	
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
                                                insts_triggered, is_parasite, context_phenotype);
-											   
-	
+  
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();
     if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(cur_merit);
   }
- 
-  //disassemble global and deme resource counts
+  
+  //disassemble global and deme resource counts 
   global_res_change = globalAndDeme_res_change.Subset(0, global_res_change.GetSize());
   deme_res_change = globalAndDeme_res_change.Subset(global_res_change.GetSize(), globalAndDeme_res_change.GetSize());
-    
+  
   if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
@@ -403,8 +405,118 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   m_interface->UpdateResources(ctx, global_res_change);
 
   //update deme resources
-  m_interface->UpdateDemeResources(ctx, deme_res_change);  
+  m_interface->UpdateDemeResources(ctx, deme_res_change);
 
+  for (int i = 0; i < insts_triggered.GetSize(); i++) 
+    m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
+}
+
+void cOrganism::doAVOutput(cAvidaContext& ctx, 
+                         tBuffer<int>& input_buffer, 
+                         tBuffer<int>& output_buffer,
+                         const bool on_divide,
+                         bool is_parasite, 
+                         cContextPhenotype* context_phenotype)
+{  
+  //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
+//  const int deme_id = m_interface->GetDemeID();
+  const tArray<double> & avatar_resource_count = m_interface->GetAVResources(ctx); 
+//  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
+  const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
+  
+  tList<tBuffer<int> > other_input_list;
+  tList<tBuffer<int> > other_output_list;
+  
+  // If tasks require us to consider neighbor inputs, collect them...
+  if (m_world->GetEnvironment().UseNeighborInput()) {
+    const int num_neighbors = m_interface->GetAVNumNeighbors();
+    for (int i = 0; i < num_neighbors; i++) {
+      m_interface->Rotate();
+      tArray<cOrganism*> cur_neighbors = m_interface->GetAVNeighbors();
+      for (int i = 0; i < cur_neighbors.GetSize(); i++) {
+        if (cur_neighbors[i] == NULL) continue;
+        other_input_list.Push( &(cur_neighbors[i]->m_input_buf) );
+      }
+    }
+  }
+  
+  // If tasks require us to consider neighbor outputs, collect them...
+  if (m_world->GetEnvironment().UseNeighborOutput()) {
+    const int num_neighbors = m_interface->GetAVNumNeighbors();
+    for (int i = 0; i < num_neighbors; i++) {
+      m_interface->Rotate();
+      tArray<cOrganism*> cur_neighbors = m_interface->GetAVNeighbors();
+      for (int i = 0; i < cur_neighbors.GetSize(); i++) {
+        if (cur_neighbors[i] == NULL) continue;
+        other_output_list.Push( &(cur_neighbors[i]->m_output_buf) );
+      }
+    }
+  }
+  
+  // Do the testing of tasks performed...
+  tArray<double> avatar_res_change(avatar_resource_count.GetSize());
+  avatar_res_change.SetAll(0.0);
+//  tArray<double> deme_res_change(deme_resource_count.GetSize());
+//  deme_res_change.SetAll(0.0);
+  tArray<cString> insts_triggered;
+  
+  tBuffer<int>* received_messages_point = &m_received_messages;
+  if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
+  
+  cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
+                       m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
+  
+  //combine global and deme resource counts
+  tArray<double> avatarAndDeme_resource_count = avatar_resource_count; // + deme_resource_count;
+  tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
+  
+  // set any resource amount to 0 if a cell cannot access this resource
+  int cell_id=GetAVCellID();
+  if (cell_id_lists.GetSize())
+  {
+	  for (int i=0; i<cell_id_lists.GetSize(); i++)
+	  {
+		  // if cell_id_lists have been set then we have to check if this cell is in the list
+		  if (cell_id_lists[i].GetSize()) {
+			  int j;
+			  for (j=0; j<cell_id_lists[i].GetSize(); j++)
+			  {
+				  if (cell_id==cell_id_lists[i][j])
+					  break;
+			  }
+			  if (j==cell_id_lists[i].GetSize())
+				  avatarAndDeme_resource_count[i]=0;
+		  }
+	  }
+  }
+  
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, avatarAndDeme_resource_count, 
+                                               m_phenotype.GetCurRBinsAvail(), avatarAndDeme_res_change, 
+                                               insts_triggered, is_parasite, context_phenotype);
+  
+  // Handle merit increases that take the organism above it's current population merit
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    double cur_merit = m_phenotype.CalcCurrentMerit();
+    if (m_phenotype.GetMerit().GetDouble() < cur_merit) m_interface->UpdateMerit(cur_merit);
+  }
+  
+  //disassemble avatar and deme resource counts
+  avatar_res_change = avatarAndDeme_res_change.Subset(0, avatar_res_change.GetSize());
+//  deme_res_change = avatarAndDeme_res_change.Subset(avatar_res_change.GetSize(), avatarAndDeme_res_change.GetSize());
+  
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
+    m_phenotype.RefreshEnergy();
+    m_phenotype.ApplyToEnergyStore();
+    double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
+		m_interface->UpdateMerit(newMerit);
+		if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
+			GetPhenotype().SetToDie();
+		}
+  }
+  m_interface->UpdateAVResources(ctx, avatar_res_change);
+  //update deme resources
+//  m_interface->UpdateDemeResources(ctx, deme_res_change);
+  
   for (int i = 0; i < insts_triggered.GetSize(); i++) 
     m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
 }
@@ -488,7 +600,7 @@ bool cOrganism::NetReceive(int& value)
 void cOrganism::NetValidate(cAvidaContext& ctx, int value)
 {
   if (!m_net) return;
-
+  
   m_net->valid = false;
   
   if (0xFFFF0000 & value) return;
@@ -507,7 +619,7 @@ void cOrganism::NetValidate(cAvidaContext& ctx, int value)
 bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
 {
   assert(m_net);
-
+  
   bool found = false;
   for (int i = m_net->last_seq; i < m_net->seq.GetSize(); i++) {
     cOrgSeqMessage& msg = m_net->seq[i];
@@ -518,7 +630,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     }
   }
   if (!found) return false;
-
+  
   m_net->valid = false;
   int& completed = m_net->completed;
   completed = 0;
@@ -557,12 +669,12 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
         other_output_list.Push( &(cur_neighbor->m_output_buf) );
       }
     }
-        
+    
     // Do the testing of tasks performed...
     m_output_buf.Add(value);
     tArray<double> res_change(resource_count.GetSize());
     tArray<cString> insts_triggered;
-
+    
     cTaskContext taskctx(this, m_input_buf, m_output_buf, other_input_list, other_output_list,
                          m_hardware->GetExtendedMemory());
     m_phenotype.TestOutput(ctx, taskctx, resource_count, m_phenotype.GetCurRBinsAvail(), res_change, insts_triggered);
@@ -584,14 +696,14 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
     const cStateGrid& sg = GetStateGrid();
     
     tArray<int> sg_state(3 + sg.GetNumStates(), 0);
-	
-      sg_state[0] = sg.GetInitialX();
-      sg_state[1] = sg.GetInitialY();
-      sg_state[2] = sg.GetInitialFacing(); 
+    
+    sg_state[0] = sg.GetInitialX();
+    sg_state[1] = sg.GetInitialY();
+    sg_state[2] = sg.GetInitialFacing(); 
     
     m_hardware->SetupExtendedMemory(sg_state);
   }
-
+  
   if (m_net) {
     while (m_net->pending.GetSize()) delete m_net->pending.Pop();
     for (int i = 0; i < m_net->received.GetSize(); i++) delete m_net->received[i];
@@ -613,7 +725,7 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
     m_is_sleeping = false;
     GetDeme()->DecSleepingCount();
   }
-
+  
   // Return currently stored internal resources to the world
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
   	m_interface->UpdateResources(ctx, GetRBins());
@@ -680,7 +792,7 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   m_hardware->PrintStatus(fp);
   m_phenotype.PrintStatus(fp);
   fp << endl;
-
+  
   fp << setbase(16) << setfill('0');
   
   fp << "Input (env):";
@@ -693,13 +805,13 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   fp << "Input (buf):";
   for (int i = 0; i < m_hardware->GetInputBuf().GetNumStored(); i++) fp << " 0x" << setw(8) << m_hardware->GetInputBuf()[i];
   fp << endl;
-
+  
   fp << "Output:     ";
   for (int i = 0; i < m_hardware->GetOutputBuf().GetNumStored(); i++) fp << " 0x" << setw(8) << m_hardware->GetOutputBuf()[i];
   fp << endl;
   
   fp << setfill(' ') << setbase(10);
-    
+  
   fp << "---------------------------" << endl;
   fp << "ABOUT TO EXECUTE: " << next_name << endl;
 }
@@ -719,7 +831,7 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
   fp << "---------------------------" << endl;
   m_phenotype.PrintStatus(fp);
   fp << endl;
-
+  
   if (time_used == time_allocated) {
     fp << endl << "# TIMEOUT: No offspring produced." << endl;
   } else if (m_hardware->GetMemory().GetSize() == 0) {
@@ -741,11 +853,17 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   if (m_forage_target == -2) {
     const int habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
     if (habitat_required != -1) {
-      const tArray<double>& resource_count = m_interface->GetResources(ctx); 
+      tArray<double> resource_count;
+      if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
+      else resource_count = m_interface->GetAVResources(ctx);
       const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
       const double required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
       bool has_req_res = false;
       for (int i = 0; i < resource_count.GetSize(); i ++) {
+        // check for refuge, then required habitat
+        if (resource_lib.GetResource(i)->GetRefuge()) {
+          break;
+        }        
         if (resource_lib.GetResource(i)->GetHabitat() == habitat_required && resource_count[i] >= required_value) {
           has_req_res = true;
           break;
@@ -768,12 +886,12 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
   const int single_reaction = m_world->GetConfig().REQUIRE_SINGLE_REACTION.Get();
-
+  
   if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0 && \
       m_phenotype.GetStolenReactionCount()[required_reaction] == 0)   {
     if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
+            cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
       return false; //  (divide fails)
     }
   }
@@ -795,7 +913,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
         if (stolenReactions[i] > 0) toFail = false;
       }
     }
-
+    
     if(toFail)
     {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
@@ -811,7 +929,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     const double resource_level = m_phenotype.GetCurRBinAvail(required_resource);
     if ((required_resource_level > 0.0 && resource_level < required_resource_level) ||
         (required_resource_level == 0.0 && resource_level == 0.0)) 
-        return false;
+      return false;
   }
   
   // Make sure the parent is fertile
@@ -819,7 +937,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Infertile organism");
     return false; //  (divide fails)
   }
-
+  
   return true;  // Organism has no problem with divide...
 }
 
@@ -849,26 +967,26 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
   (void) fault_loc;
   (void) fault_type;
   (void) fault_desc;
-
+  
   // FATAL_ERRORS
 #if 0
   if (fault_type == FAULT_TYPE_ERROR) {
     m_phenotype.IsFertile() = false;
   }
 #endif
-
- // FATAL_WARNINGS
+  
+  // FATAL_WARNINGS
 #if 0
   if (fault_type == FAULT_TYPE_WARNING) {
     m_phenotype.IsFertile() = false;
   }
 #endif
-
+  
   // BREAKPOINTS
 #if 0
   m_phenotype.SetFault(fault_desc);
 #endif
-
+  
   m_phenotype.IncErrors();
 }
 
@@ -887,7 +1005,7 @@ void cOrganism::NewTrial()
 void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
 	// check to see if we should store it:
 	const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
-
+  
 	if((bsize > 0) || (bsize == -1)) {
 		// yep; store it:
 		m_msg->sent.push_back(msg);
@@ -910,7 +1028,7 @@ void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
 bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   assert(m_interface);
   InitMessaging();
-
+  
   // check to see if we've performed any tasks:
   if (m_world->GetConfig().CHECK_TASK_ON_SEND.Get()) {
     DoOutput(ctx, static_cast<int>(msg.GetData()));
@@ -961,7 +1079,7 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 				assert(false);
 		}
 	}
-
+  
 	msg.SetReceiver(this);
 	m_msg->received.push_back(msg);
   
@@ -1049,7 +1167,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
   // Pheromone drop stuff
   double pher_amount = 0; // this is used in the logging
   int drop_mode = -1;
-
+  
   // If organism is dropping pheromones, mark the appropriate cell(s)
   if (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1 && GetPheromoneStatus() == true) {
     pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
@@ -1131,11 +1249,11 @@ void cOrganism::moveIPtoAlarmLabel(int jump_label) {
 void cOrganism::SetOpinion(const Opinion& opinion) {
   InitOpinions();
   const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
-
+  
   if(bsize == 0) {
     m_world->GetDriver().RaiseFatalException(-1, "OPINION_BUFFER_SIZE is set to an invalid value.");
   }	
-
+  
   if((bsize > 0) || (bsize == -1)) {
     m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
     // if our buffer is too large, chop off old messages:
@@ -1155,7 +1273,7 @@ bool cOrganism::HasOpinion() {
 void cOrganism::SetForageTarget(int forage_target) {
   m_forage_target = forage_target;
 }
-  
+
 void cOrganism::Teach(bool teach) {
   m_teach = teach;
 }
@@ -1443,3 +1561,53 @@ void cOrganism::DonateResConsumedToDeme()
 	}	
 	return;
 }
+
+bool cOrganism::MoveAV(cAvidaContext& ctx)
+{
+  assert(m_interface);
+  if (m_is_dead) return false;  
+  
+  int fromcellID = GetAVCellID();
+  int destcellID = GetAVFacedCellID();
+  int true_cell = GetCellID();
+  
+  int facing = GetAVFacedDir();
+  
+  // Actually perform the move
+  if (m_interface->MoveAvatar(ctx, fromcellID, destcellID, true_cell)) {
+    //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
+    //Skip counting if random < chance of miscounting a step.
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+      if (facing == 0) m_northerly = m_northerly - 1;       // N
+      else if (facing == 1) {                           // NE
+        m_northerly = m_northerly - 1; 
+        m_easterly = m_easterly + 1;
+      }  
+      else if (facing == 2) m_easterly = m_easterly + 1;    // E
+      else if (facing == 3) {                           // SE
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly + 1;
+      }
+      else if (facing == 4) m_northerly = m_northerly + 1;  // S
+      else if (facing == 5) {                           // SW
+        m_northerly = m_northerly + 1; 
+        m_easterly = m_easterly - 1;
+      }
+      else if (facing == 6) m_easterly = m_easterly - 1;    // W    
+      else if (facing == 7) {                           // NW
+        m_northerly = m_northerly - 1; 
+        m_easterly = m_easterly - 1;
+      }      
+    }
+    else return false;                  
+    SetAVCellID(destcellID);
+  }
+  
+  // Check to make sure the organism is alive after the move
+  if (m_phenotype.GetToDelete()) return false;
+  
+  // updates movement predicates
+  //  m_world->GetStats().Move(*this);
+  
+  return true;    
+} 

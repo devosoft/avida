@@ -185,6 +185,8 @@ private:
   int m_thread_id_chart;
   int m_cur_thread;
   
+  int m_avatar;
+  
   struct {
     unsigned int m_cycle_count:16;
     unsigned int m_last_output:16;
@@ -571,8 +573,8 @@ private:
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
   bool Inst_AttackPred(cAvidaContext& ctx); 
+  bool Inst_KillPred(cAvidaContext& ctx); 
   bool Inst_FightPred(cAvidaContext& ctx); 
-  bool Inst_FightMeritPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
   bool Inst_MarkPredCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
@@ -618,10 +620,11 @@ private:
     int max_y;
   };
   
+  bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id);
   searchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
                       const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step);  
-  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int search_dir);
-  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int search_dir);
+  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int search_dir, int cell_id);
+  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int search_dir, const int cell_id);
   lookOut FindOrg(cOrganism* target_org, const int distance, const int search_dir);
   lookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
   void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);

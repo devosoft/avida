@@ -56,6 +56,9 @@ cPopulationInterface::cPopulationInterface(cWorld* world)
 : m_world(world)
 , m_cell_id(-1)
 , m_deme_id(-1)
+, m_av_cell_id(-1)
+, m_av_facing(0)
+, m_av_cell_faced(-1)
 , m_prevseen_cell_id(-1)
 , m_prev_task_cell(-1)
 , m_num_task_cells(0)
@@ -75,6 +78,15 @@ cOrganism* cPopulationInterface::GetOrganism() {
 
 cPopulationCell* cPopulationInterface::GetCell() { 
 	return &m_world->GetPopulation().GetCell(m_cell_id);
+}
+
+cPopulationCell* cPopulationInterface::GetAVCell() { 
+	return &m_world->GetPopulation().GetCell(m_av_cell_id);
+}
+
+int cPopulationInterface::GetAVCellID()
+{
+	return m_av_cell_id;
 }
 
 cPopulationCell* cPopulationInterface::GetCellFaced() {
@@ -126,9 +138,30 @@ int cPopulationInterface::GetFacedCellDataTerritory() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataTerritory();
 }
 
+int cPopulationInterface::GetFacedAVData() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellData();
+}
+
+int cPopulationInterface::GetFacedAVDataOrgID() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataOrgID();
+}
+
+int cPopulationInterface::GetFacedAVDataUpdate() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataUpdate();
+}
+
+int cPopulationInterface::GetFacedAVDataTerritory() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataTerritory();
+}
+
 void cPopulationInterface::SetCellData(const int newData) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   cell.SetCellData(newData, cell.GetOrganism()->GetID());
+}
+
+void cPopulationInterface::SetAVCellData(const int newData, const int org_id) {
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+  cell.SetCellData(newData, org_id);
 }
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
@@ -146,15 +179,58 @@ cOrganism* cPopulationInterface::GetNeighbor()
   return cell.ConnectionList().GetFirst()->GetOrganism();
 }
 
+cOrganism* cPopulationInterface::GetAVRandNeighbor()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAvatar();
+}
+
+cOrganism* cPopulationInterface::GetAVRandNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAVPrey();
+}
+
+cOrganism* cPopulationInterface::GetAVRandNeighborPred()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAVPred();
+}
+
+tArray<cOrganism*> cPopulationInterface::GetAVNeighbors()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAvatars();
+}
+
 bool cPopulationInterface::IsNeighborCellOccupied() {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   return cell.ConnectionList().GetFirst()->IsOccupied();
+}
+
+bool cPopulationInterface::HasAVNeighbor()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAvatar();
+}
+
+bool cPopulationInterface::HasAVNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAVPrey();
+}
+
+bool cPopulationInterface::HasAVNeighborPred()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAVPred();
 }
 
 int cPopulationInterface::GetNumNeighbors()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
+  
+  return cell.ConnectionList().GetSize();
+}
+
+int cPopulationInterface::GetAVNumNeighbors()
+{
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+  assert(cell.HasAvatar());
   
   return cell.ConnectionList().GetSize();
 }
@@ -183,11 +259,21 @@ int cPopulationInterface::GetFacedCellID()
 	return cell.GetID();
 }
 
+int cPopulationInterface::GetAVFacedCellID()
+{
+	return m_av_cell_faced;
+}
+
 int cPopulationInterface::GetFacedDir()
 {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	assert(cell.IsOccupied());
 	return cell.GetFacedDir();
+}
+
+int cPopulationInterface::GetAVFacedDir()
+{
+	return m_av_facing;
 }
 
 int cPopulationInterface::GetNeighborCellContents() {
@@ -202,6 +288,17 @@ void cPopulationInterface::Rotate(int direction)
 	
   if (direction >= 0) cell.ConnectionList().CircNext();
   else cell.ConnectionList().CircPrev();
+
+  if (m_world->GetConfig().USE_AVATARS.Get()) {
+    cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+    assert(av_cell.HasAvatar());
+    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
+      av_cell.ConnectionList().CircNext();
+      if (av_cell.GetFacedDir() == cell.GetFacedDir()) break;
+    }
+    m_av_facing = cell.GetFacedDir();
+    m_av_cell_faced = av_cell.ConnectionList().GetFirst()->GetID();
+  }
 }
 
 int cPopulationInterface::GetInputAt(int& input_pointer)
@@ -226,9 +323,19 @@ const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx)
   return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
+const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx) 
+{
+  return m_world->GetPopulation().GetCellResources(m_av_cell_id, ctx); 
+}
+
 const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
+}
+
+const tArray<double>& cPopulationInterface::GetFacedAVResources(cAvidaContext& ctx) 
+{
+  return m_world->GetPopulation().GetCellResources(m_world->GetPopulation().GetCell(m_av_cell_faced).GetID(), ctx); 
 }
 
 const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
@@ -279,6 +386,11 @@ void cPopulationInterface::TriggerDoUpdates(cAvidaContext& ctx)
 void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
   return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_cell_id);
+}
+
+void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change)
+{
+  return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_av_cell_id);
 }
 
 void cPopulationInterface::UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change)
@@ -1090,7 +1202,23 @@ void cPopulationInterface::ReceiveHGTDonation(const Sequence& fragment) {
 
 bool cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
-  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
+  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, -1);
+}
+
+bool cPopulationInterface::MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell)
+{
+  bool success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
+  if (success) { 
+    m_world->GetPopulation().GetCell(src_id).RemoveAvatar(GetOrganism());
+    m_world->GetPopulation().GetCell(dest_id).AddAvatar(GetOrganism());
+  }
+  return success;
+}
+
+void cPopulationInterface::SetAVCellID(int av_cell_id) 
+{ 
+  m_av_cell_id = av_cell_id; 
+  m_av_cell_faced = m_world->GetPopulation().GetCell(m_av_cell_id).GetCellFaced().GetID();
 }
 
 void cPopulationInterface::AddLiveOrg()  

@@ -703,7 +703,9 @@ public:
   CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
   CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
   CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
-  
+  CONFIG_ADD_VAR(USE_AVATARS, int, 0, "Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions).");
+  CONFIG_ADD_VAR(AVATAR_BIRTH, int, 0, "0 Same as parent \n 1 Random \n 2 Cell faced by parent avatar \n 3 next grid cell");
+
   // -------- Sensing config options --------
   CONFIG_ADD_VAR(LOOK_DIST, int, -1, "-1: use limits set inside look instructions \n >-1: limit sight distance of look instructions to this number of cells");
 

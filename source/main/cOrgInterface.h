@@ -70,10 +70,20 @@ public:
   virtual int GetCellDataTerritory() = 0;
   virtual int GetCellDataForagerType() = 0;
   virtual void SetCellData(const int newData) = 0;
+  virtual void SetAVCellData(const int newData, const int org_id) = 0;
   virtual int GetFacedCellData() = 0;
   virtual int GetFacedCellDataOrgID() = 0;
   virtual int GetFacedCellDataUpdate() = 0;
   virtual int GetFacedCellDataTerritory() = 0;
+  virtual int GetFacedAVData() = 0;
+  virtual int GetFacedAVDataOrgID() = 0;
+  virtual int GetFacedAVDataUpdate() = 0;
+  virtual int GetFacedAVDataTerritory() = 0;
+  
+  virtual int GetAVCellID() = 0;
+  virtual void SetAVCellID(int av_cell_id) = 0;
+  virtual int GetAVFacedCellID() = 0;
+  virtual int GetAVFacedDir() = 0; 
   
   virtual int GetPrevSeenCellID() = 0;
   virtual int GetPrevTaskCellID() = 0;
@@ -85,8 +95,16 @@ public:
   virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome) = 0;
   
   virtual cOrganism* GetNeighbor() = 0;
+  virtual cOrganism* GetAVRandNeighbor() = 0;
+  virtual cOrganism* GetAVRandNeighborPrey() = 0;
+  virtual cOrganism* GetAVRandNeighborPred() = 0;
+  virtual tArray<cOrganism*> GetAVNeighbors() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
+  virtual bool HasAVNeighbor() = 0;
+  virtual bool HasAVNeighborPrey() = 0;
+  virtual bool HasAVNeighborPred() = 0;
   virtual int GetNumNeighbors() = 0;
+  virtual int GetAVNumNeighbors() = 0;
   virtual void GetNeighborhoodCellIDs(tArray<int>& list) = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
@@ -100,7 +118,9 @@ public:
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const tArray<int>& GetInputs() const = 0;
   virtual const tArray<double>& GetResources(cAvidaContext& ctx) = 0; 
+  virtual const tArray<double>& GetAVResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
+  virtual const tArray<double>& GetFacedAVResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
@@ -111,6 +131,7 @@ public:
   virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
+  virtual void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
@@ -149,6 +170,7 @@ public:
 	virtual void ReceiveHGTDonation(const Sequence& fragment) = 0;
   
   virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
+  virtual bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell) = 0;
 
   virtual void AddLiveOrg() = 0;
   virtual void RemoveLiveOrg() = 0;

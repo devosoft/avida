@@ -89,6 +89,10 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
       if (use_color) color_method = &cSymbolUtil::GetForagerColor;
       map_method = &cSymbolUtil::GetForagerSymbol;
       break;
+    case MAP_AVATAR:
+      if (use_color) color_method = &cSymbolUtil::GetAVForagerColor;
+      map_method = &cSymbolUtil::GetAVForagerSymbol;
+      break;
     case MAP_TERRITORIES:
       if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 0) {
         if (use_color) color_method = &cSymbolUtil::GetTerritoryColor;

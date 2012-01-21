@@ -383,6 +383,7 @@ void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* 
   df.WriteComment("Forager Type");
   df.WriteComment("Group ID (opinion)");
   df.WriteComment("Current Cell");
+  df.WriteComment("Avatar Cell");
   df.WriteComment("Faced Direction");
   df.WriteComment("Faced Cell Occupied?");
   df.WriteComment("Faced Cell Has Hill?");
@@ -419,7 +420,8 @@ void cHardwareSMT::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   else fp << -99 << " ";
   // environment info / things that affect movement
   fp << m_organism->GetCellID() << " ";
-  fp << m_organism->GetFacedDir() << " ";
+  fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
+  fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
   fp << m_organism->IsNeighborCellOccupied() << " ";  
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);

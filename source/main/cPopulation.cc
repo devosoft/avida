@@ -307,7 +307,7 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                           res->GetThreshold(), res->GetInitialPlatVal(), res->GetGradient()
+                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -565,15 +565,23 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   
   // Do any statistics on the parent that just gave birth...
   parent_organism->HandleGestation();
-  
+
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
     //@JEB - we may want to pass along some state information from parent to offspring
     if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
         || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
       offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
-    }    
+    }
+    int avatar_target_cell = PlaceAvatar(parent_organism);
     ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
+    // only assign an avatar cell if the org lived through birth
+    if (m_world->GetConfig().USE_AVATARS.Get()) {
+      if (GetCell(target_cells[i]).IsOccupied() && GetCell(target_cells[i]).GetOrganism() == offspring_array[i]) {
+        offspring_array[i]->GetOrgInterface().SetAVCellID(avatar_target_cell);
+        GetCell(avatar_target_cell).AddAvatar(offspring_array[i]);
+      }
+    }
   }
   return parent_alive;
 }
@@ -977,7 +985,7 @@ void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, const boo
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
 // movement that cannot be directly handled in cHardwareCPU.cc
-bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id)
+bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int true_cell)
 {
   cPopulationCell& src_cell = GetCell(src_cell_id);
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
@@ -985,14 +993,17 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   const int dest_x = dest_cell_id % m_world->GetConfig().WORLD_X.Get();  
   const int dest_y = dest_cell_id / m_world->GetConfig().WORLD_X.Get();
   bool faced_is_boundary = false;
-  if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
+  if (dest_x == 0 || dest_y == 0 || 
+      dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || 
+      dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
   
   // check for boundary effects on movement
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
     // Fail if we're running in the test CPU.
     if(src_cell_id < 0) return false;
     if (faced_is_boundary) {
-      src_cell.GetOrganism()->Die(ctx); 
+      if (true_cell != -1) GetCell(true_cell).GetOrganism()->Die(ctx);
+      else if (true_cell == -1) src_cell.GetOrganism()->Die(ctx);
       return false; 
     }
   }    
@@ -1038,90 +1049,86 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      
   }      
   
-  if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
-    if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return false;
-    bool kill_source = true;
-    switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
-      case 0: // 50% chance, no modifiers
-      default:
-        kill_source = ctx.GetRandom().P(0.5);
-        break;
-        
-      case 1: // binned vitality based on age
-        double src_vitality = src_cell.GetOrganism()->GetVitality();
-        double dest_vitality = dest_cell.GetOrganism()->GetVitality();
-        kill_source = (src_vitality < ctx.GetRandom().GetDouble(src_vitality + dest_vitality));
-        break;
+  if (true_cell == -1) {
+    if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
+      if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return false;
+      bool kill_source = true;
+      switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
+        case 0: // 50% chance, no modifiers
+        default:
+          kill_source = ctx.GetRandom().P(0.5);
+          break;
+          
+        case 1: // binned vitality based on age
+          double src_vitality = src_cell.GetOrganism()->GetVitality();
+          double dest_vitality = dest_cell.GetOrganism()->GetVitality();
+          kill_source = (src_vitality < ctx.GetRandom().GetDouble(src_vitality + dest_vitality));
+          break;
+      }      
+      if (kill_source) {
+        KillOrganism(src_cell, ctx); 
+        // Killing the moving organism means that we shouldn't actually do the swap, so return
+        return false;
+      }
+      KillOrganism(dest_cell, ctx); 
     }
+    SwapCells(src_cell_id, dest_cell_id, ctx); 
     
-    if (kill_source) {
-      KillOrganism(src_cell, ctx); 
-      
-      // Killing the moving organism means that we shouldn't actually do the swap, so return
-      return false;
-    }
-    
-    KillOrganism(dest_cell, ctx); 
-  }
-  
-  SwapCells(src_cell_id, dest_cell_id, ctx); 
-  
-  
-  // Declarations
-  int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
+    // Declarations
+    int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
 #ifdef DEBBUG
-  int sID, dID, xx1, yy1, xx2, yy2;
+    int sID, dID, xx1, yy1, xx2, yy2;
 #endif
-  
-  // Swap inputs between cells to fix bus error when Avidian moves into an unoccupied cell
-  environment.SwapInputs(ctx, src_cell.m_inputs, dest_cell.m_inputs);
-  
-  // Find neighborhood size for facing
-  if (NULL != dest_cell.GetOrganism()) {
-    actualNeighborhoodSize = dest_cell.GetOrganism()->GetNeighborhoodSize();
-  } else {
-    if (NULL != src_cell.GetOrganism()) {
-      actualNeighborhoodSize = src_cell.GetOrganism()->GetNeighborhoodSize();
+    
+    // Swap inputs between cells to fix bus error when Avidian moves into an unoccupied cell
+    environment.SwapInputs(ctx, src_cell.m_inputs, dest_cell.m_inputs);
+    
+    // Find neighborhood size for facing
+    if (NULL != dest_cell.GetOrganism()) {
+      actualNeighborhoodSize = dest_cell.GetOrganism()->GetNeighborhoodSize();
     } else {
-      // Punt
-      actualNeighborhoodSize = 8;
+      if (NULL != src_cell.GetOrganism()) {
+        actualNeighborhoodSize = src_cell.GetOrganism()->GetNeighborhoodSize();
+      } else {
+        // Punt
+        actualNeighborhoodSize = 8;
+      }
+    }
+    
+    // Swap cell facings between cells, so that if movement is directed, it continues to be associated with
+    // the same organism
+    // Determine absolute facing for each cell
+    fromFacing = src_cell.GetFacing();
+    destFacing = dest_cell.GetFacing();
+    
+    // Set facing in source cell
+    success = 0;
+    newFacing = destFacing;
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+      if (src_cell.GetFacing() != newFacing) {
+        src_cell.ConnectionList().CircNext();
+        //cout << "MO: src_cell facing not yet at " << newFacing << endl;
+      } else {
+        //cout << "MO: src_cell facing successfully set to " << newFacing << endl;
+        success = 1;
+        break;
+      }
+    }
+    
+    // Set facing in destinatiion cell
+    success = 0;
+    newFacing = fromFacing;
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+      if (dest_cell.GetFacing() != newFacing) {
+        dest_cell.ConnectionList().CircNext();
+        // cout << "MO: dest_cell facing not yet at " << newFacing << endl;
+      } else {
+        // cout << "MO: dest_cell facing successfully set to " << newFacing << endl;
+        success = 1;
+        break;
+      }
     }
   }
-  
-  // Swap cell facings between cells, so that if movement is directed, it continues to be associated with
-  // the same organism
-  // Determine absolute facing for each cell
-  fromFacing = src_cell.GetFacing();
-  destFacing = dest_cell.GetFacing();
-  
-  // Set facing in source cell
-  success = 0;
-  newFacing = destFacing;
-  for(int i = 0; i < actualNeighborhoodSize; i++) {
-    if (src_cell.GetFacing() != newFacing) {
-      src_cell.ConnectionList().CircNext();
-      //cout << "MO: src_cell facing not yet at " << newFacing << endl;
-    } else {
-      //cout << "MO: src_cell facing successfully set to " << newFacing << endl;
-      success = 1;
-      break;
-    }
-  }
-  
-  // Set facing in destinatiion cell
-  success = 0;
-  newFacing = fromFacing;
-  for(int i = 0; i < actualNeighborhoodSize; i++) {
-    if (dest_cell.GetFacing() != newFacing) {
-      dest_cell.ConnectionList().CircNext();
-      // cout << "MO: dest_cell facing not yet at " << newFacing << endl;
-    } else {
-      // cout << "MO: dest_cell facing successfully set to " << newFacing << endl;
-      success = 1;
-      break;
-    }
-  }
-  
   return true;
 }
 
@@ -1158,6 +1165,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   cOrganism* organism = in_cell.GetOrganism();
   m_world->GetStats().RecordDeath();
   
+  if (m_world->GetConfig().USE_AVATARS.Get() && organism->GetAVCellID() != -1 ) { 
+    GetCell(organism->GetAVCellID()).RemoveAvatar(organism);
+  }
   RemoveLiveOrg(organism); 
   
   int cellID = in_cell.GetID();
@@ -5316,6 +5326,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
+  if(m_world->GetConfig().USE_AVATARS.Get()) cell_array[cell_id].GetOrganism()->SetAVCellID(cell_id);
 }
 
 void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
@@ -6400,7 +6411,7 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
-                           res->GetInitialPlatVal(), res->GetThreshold()); 
+                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge()); 
     } 
   }
 }
@@ -6484,7 +6495,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetGradient()
+                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
       
     } else if (res->GetDemeResource()) {
@@ -6511,13 +6522,14 @@ void  cPopulation::AddLiveOrg(cOrganism* org)
 // Remove an organism from live org list  
 void  cPopulation::RemoveLiveOrg(cOrganism* org)
 {
-  for (int i = 0; i < live_org_list.GetSize(); i++)
+  for (int i = 0; i < live_org_list.GetSize(); i++) {
     if (live_org_list[i] == org) {
       unsigned int last = live_org_list.GetSize() - 1;
       live_org_list.Swap(i, last);
       live_org_list.Pop();
       break;
     }
+  }
 }
 
 
@@ -6992,4 +7004,24 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
       AdjustSchedule(cell_array[i], cell_array[i].GetOrganism()->GetPhenotype().GetMerit());
     }
   }
+}
+
+int cPopulation::PlaceAvatar(cOrganism* parent)
+{
+  int avatar_target_cell = parent->GetAVCellID();
+  const int parent_facing = parent->GetAVFacedDir();
+  const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
+  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(0, world_x * world_y);
+  else if (avatar_birth == 2) {
+    if (parent_facing == 0) avatar_target_cell -= world_x;
+    else if (parent_facing == 1) avatar_target_cell -= world_x + 1;
+    else if (parent_facing == 2) avatar_target_cell += 1;
+    else if (parent_facing == 3) avatar_target_cell += world_x + 1;
+    else if (parent_facing == 4) avatar_target_cell += world_x;
+    else if (parent_facing == 5) avatar_target_cell += world_x - 1;
+    else if (parent_facing == 6) avatar_target_cell -= 1;
+    else if (parent_facing == 7) avatar_target_cell -= world_x - 1;
+  } 
+  else if (avatar_birth == 3) avatar_target_cell += 1;
+  return avatar_target_cell;
 }

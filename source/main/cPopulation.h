@@ -132,7 +132,7 @@ public:
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
-  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
+  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
@@ -386,6 +386,8 @@ private:
   void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
   void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
   void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  
+  int PlaceAvatar(cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

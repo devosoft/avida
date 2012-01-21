@@ -936,6 +936,10 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "threshold", var_type, feedback)) return false;
         new_resource->SetThreshold( var_value.AsDouble() );
       } 
+      else if (var_name == "refuge") {
+        if (!AssertInputInt(var_value, "refuge", var_type, feedback)) return false;
+        new_resource->SetRefuge( var_value.AsInt() );
+      } 
       else {
         feedback.Error("unknown variable '%s' in gradient resource '%s'",
                                       (const char*)var_name, (const char*)name);
@@ -1393,7 +1397,6 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
       }
     }
 
-
     if (context_phenotype != 0) {
       tArray<int> blank_tasks;
       tArray<int> blank_reactions;
@@ -1414,8 +1417,6 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
         }
       }
     }
-
-
 
     const double task_quality = m_tasklib.TestOutput(taskctx);
     assert(task_quality >= 0.0);
@@ -1661,24 +1662,24 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
 
     } else if (in_resource->GetHGTMetabolize()) {
       /* HGT Metabolism
-	 This bit of code is triggered when ENABLE_HGT=1 and a resource has hgt=1.
-	 Here's the idea: Each cell in the environment holds a buffer of genome fragments,
-	 where these fragments are drawn from the remains of organisms that have died.
-	 These remains are a potential source of energy to the current inhabitant of the
-	 cell.  This code metabolizes one of those fragments by pretending that it's just
-	 another resource.  Task quality can be used to control the conversion of fragments
-	 to bonus, but the amount of resource consumed is always equal to the length of the
-	 fragment.
-      */
+       This bit of code is triggered when ENABLE_HGT=1 and a resource has hgt=1.
+       Here's the idea: Each cell in the environment holds a buffer of genome fragments,
+       where these fragments are drawn from the remains of organisms that have died.
+       These remains are a potential source of energy to the current inhabitant of the
+       cell.  This code metabolizes one of those fragments by pretending that it's just
+       another resource.  Task quality can be used to control the conversion of fragments
+       to bonus, but the amount of resource consumed is always equal to the length of the
+       fragment.
+       */
       int cellid = taskctx.GetOrganism()->GetCellID();
       if (cellid != -1) { // can't do this in the test cpu
-	cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-	if (cell.CountGenomeFragments() > 0) {
-	  Sequence fragment = cell.PopGenomeFragment();
-	  consumed = local_task_quality * fragment.GetSize();
-	  result.Consume(in_resource->GetID(), fragment.GetSize(), true);
-	  m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);
-	}
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+        if (cell.CountGenomeFragments() > 0) {
+          Sequence fragment = cell.PopGenomeFragment();
+          consumed = local_task_quality * fragment.GetSize();
+          result.Consume(in_resource->GetID(), fragment.GetSize(), true);
+          m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);
+        }
       }
       // if we can't metabolize a fragment, stop here.
       if (consumed == 0.0) { continue; }
@@ -1841,7 +1842,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.Detect(detected_id, estimated_amount);
       }
     }
-
+    
     // Determine byproducts
     cResource* product = cur_process->GetProduct();
     if (product != NULL) {
@@ -1851,7 +1852,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.Produce(product_id, product_size, true);
       else
         result.Produce(product_id, product_size, false);
-
     }
 
     // Determine what instructions should be run...

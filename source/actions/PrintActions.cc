@@ -3328,17 +3328,35 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
   void Process(cAvidaContext& ctx)
   {
+    const int worldx = m_world->GetPopulation().GetWorldX();
     cString filename(m_filename);
-    if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-
-    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetForageTarget() : -99;
-        fp << target << " ";
+    
+    if (m_world->GetConfig().USE_AVATARS.Get()) {
+      if (filename == "") filename.Set("avatar_grid.%d.dat", m_world->GetStats().GetUpdate());
+      ofstream& fp = m_world->GetDataFileOFStream(filename);
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        for (int i = 0; i < worldx; i++) {
+          cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
+          int target = -99;
+          if (cell.HasAvatar()) target = cell.GetRandAvatar()->GetForageTarget();
+          fp << target << " ";
+        }
+        fp << endl;
       }
-      fp << endl;
+    }    
+    
+    else {
+      if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
+      ofstream& fp = m_world->GetDataFileOFStream(filename);
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        for (int i = 0; i < worldx; i++) {
+          cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
+          int target = -99;
+          if (cell.IsOccupied()) target = cell.GetOrganism()->GetForageTarget();
+          fp << target << " ";
+        }
+        fp << endl;
+      }
     }
     m_world->GetDataFileManager().Remove(filename);
   }
