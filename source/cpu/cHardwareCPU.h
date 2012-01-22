@@ -466,6 +466,7 @@ private:
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
+  bool Inst_Poison(cAvidaContext& ctx);
 	bool Inst_Suicide(cAvidaContext& ctx);
   bool Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx);
   bool Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx);
