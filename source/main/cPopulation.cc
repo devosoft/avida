@@ -442,8 +442,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
      */
     target_cells[i] = PositionOffspring(parent_cell, ctx, m_world->GetConfig().ALLOW_PARENT.Get()).GetID(); 
     // If we replaced the parent, make a note of this.
-    if (target_cells[i] == parent_cell.GetID()) parent_alive = false;
-    
+    if (target_cells[i] == parent_cell.GetID()) {
+      parent_alive = false;
+      if (m_world->GetConfig().USE_AVATARS.Get()) GetCell(parent_organism->GetAVCellID()).RemoveAvatar(parent_organism);
+    }
     const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
     if (mut_source == 1) {
       // Update the mutation rates of each offspring from the environment....
@@ -575,9 +577,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     }
     int avatar_target_cell = PlaceAvatar(parent_organism);
     ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
-    // only assign an avatar cell if the org lived through birth
+    // only assign an avatar cell if the org lived through birth and it isn't the parent
     if (m_world->GetConfig().USE_AVATARS.Get()) {
-      if (GetCell(target_cells[i]).IsOccupied() && GetCell(target_cells[i]).GetOrganism() == offspring_array[i]) {
+      if (target_cells[i] != parent_cell.GetID() && GetCell(target_cells[i]).IsOccupied() && GetCell(target_cells[i]).GetOrganism() == offspring_array[i]) {
         offspring_array[i]->GetOrgInterface().SetAVCellID(avatar_target_cell);
         offspring_array[i]->GetOrgInterface().SetAvatarFacing(offspring_array[i]->GetOrgInterface().GetFacedDir());
         offspring_array[i]->GetOrgInterface().SetAvatarFacedCell(avatar_target_cell);
@@ -1051,6 +1053,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      
   }      
   
+  // effects not applied to avatars:
   if (true_cell == -1) {
     if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
       if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return false;
@@ -1166,8 +1169,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Statistics...
   cOrganism* organism = in_cell.GetOrganism();
   m_world->GetStats().RecordDeath();
-  
-  if (m_world->GetConfig().USE_AVATARS.Get() && organism->GetAVCellID() != -1 ) { 
+
+  // orgs killed during birth wont have avatars
+  if (m_world->GetConfig().USE_AVATARS.Get() && organism->GetAVCellID() != -1) {
     GetCell(organism->GetAVCellID()).RemoveAvatar(organism);
   }
   RemoveLiveOrg(organism); 
@@ -5332,6 +5336,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->SetAVCellID(cell_id);
     cell_array[cell_id].GetOrganism()->SetAvatarFacing(cell_array[cell_id].GetOrganism()->GetFacedDir());
     cell_array[cell_id].GetOrganism()->SetAvatarFacedCell(cell_id);
+    GetCell(cell_id).AddAvatar(cell_array[cell_id].GetOrganism());
   }
 }
 
