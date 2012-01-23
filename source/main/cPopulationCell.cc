@@ -307,21 +307,12 @@ void cPopulationCell::AddAvatar(cOrganism* org)
   m_avatars.Pop();
   m_avatars.Push(swap_org);
 */
-  m_avatars.Push(org);
   if (org->GetForageTarget() == -2) m_av_predators.Push(org); 
   else m_av_prey.Push(org); 
 }
 
 void cPopulationCell::RemoveAvatar(cOrganism* org) 
 {
-  for (int i = 0; i < m_avatars.GetSize(); i++) {
-    if (m_avatars[i] == org) {
-      unsigned int last = m_avatars.GetSize() - 1;
-      m_avatars.Swap(i, last);
-      m_avatars.Pop();
-      break;
-    }
-  }
   if (org->GetForageTarget() == -2) {
     for (int i = 0; i < m_av_predators.GetSize(); i++) {
       if (m_av_predators[i] == org) {
@@ -347,29 +338,31 @@ void cPopulationCell::RemoveAvatar(cOrganism* org)
 tArray<cOrganism*> cPopulationCell::GetCellAvatars()
 {
   tArray<cOrganism*> avatar_orgs;
-  avatar_orgs.Resize(m_avatars.GetSize());
+  avatar_orgs.Resize(m_av_prey.GetSize() + m_av_predators.GetSize());
   for (int i = 0; i < avatar_orgs.GetSize(); i++) {
-    avatar_orgs[i] = m_avatars[i];
+    avatar_orgs[i] = m_av_prey[i];
+    avatar_orgs[i + m_av_prey.GetSize()] = m_av_predators[i];
   }
   return avatar_orgs;
 }
 
 cOrganism* cPopulationCell::GetRandAvatar() const
 {
-  int rand = m_world->GetRandom().GetUInt(0, m_avatars.GetSize());
-  return m_avatars[rand];
+  assert (m_av_prey.GetSize() != 0 || m_av_predators.GetSize() != 0);
+  if (m_av_prey.GetSize() != 0 && (m_world->GetRandom().GetUInt(0,2) == 0 || m_av_predators.GetSize() == 0)) { 
+    return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
+  }
+  else return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
 }
 
 cOrganism* cPopulationCell::GetRandAVPred() const
 {
-  int rand = m_world->GetRandom().GetUInt(0, m_av_predators.GetSize());
-  return m_av_predators[rand];
+  return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
 }
 
 cOrganism* cPopulationCell::GetRandAVPrey() const
 {
-  int rand = m_world->GetRandom().GetUInt(0, m_av_prey.GetSize());
-  return m_av_prey[rand];
+  return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
 }
 
 /*! Diffuse genome fragments from this cell to its neighbors.

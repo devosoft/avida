@@ -1567,9 +1567,9 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   assert(m_interface);
   if (m_is_dead) return false;  
   
-  int fromcellID = GetAVCellID();
-  int destcellID = GetAVFacedCellID();
-  int true_cell = GetCellID();
+  int fromcellID = GetAVCellID();         // facing unique to this avatar
+  int destcellID = GetAVFacedCellID();    // facing unique to this avatar
+  int true_cell = GetCellID();            // where the real org is...in case we need to kill it
   
   int facing = GetAVFacedDir();
   
@@ -1601,6 +1601,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
     }
     else return false;                  
     SetAVCellID(destcellID);
+    SetAvatarFacedCell(destcellID);
   }
   
   // Check to make sure the organism is alive after the move

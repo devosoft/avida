@@ -292,12 +292,14 @@ void cPopulationInterface::Rotate(int direction)
   if (m_world->GetConfig().USE_AVATARS.Get()) {
     cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
     assert(av_cell.HasAvatar());
+    // rotate the avatar cell to match the direction of the true org cell
     for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
       av_cell.ConnectionList().CircNext();
       if (av_cell.GetFacedDir() == cell.GetFacedDir()) break;
     }
-    m_av_facing = cell.GetFacedDir();
-    m_av_cell_faced = av_cell.ConnectionList().GetFirst()->GetID();
+    // save the avatar facing and faced cell data for this org...we cannot rely on av_cell facing after this b/c other avatars could rotate same cell
+    SetAvatarFacing(cell.GetFacedDir());
+    SetAvatarFacedCell(av_cell.ConnectionList().GetFirst()->GetID());
   }
 }
 
@@ -1215,10 +1217,29 @@ bool cPopulationInterface::MoveAvatar(cAvidaContext& ctx, int src_id, int dest_i
   return success;
 }
 
+// ALWAYS set cell first, facing second, faced cell third.
+// record avatar cell location any time avatar is moved, injected, or born into cell (not on rotate)
 void cPopulationInterface::SetAVCellID(int av_cell_id) 
 { 
   m_av_cell_id = av_cell_id; 
-  m_av_cell_faced = m_world->GetPopulation().GetCell(m_av_cell_id).GetCellFaced().GetID();
+}
+
+// needs to be called on inject, birth, and rotate (not on move)
+void cPopulationInterface::SetAvatarFacing(int facing)
+{
+  m_av_facing = facing;
+}
+
+// record avatar faced cell any time avatar is moved, injected, born into cell, or rotates
+void cPopulationInterface::SetAvatarFacedCell(int av_cell_id) 
+{ 
+  // rotate avatar cell to correct direction for this avatar, then get faced cell
+  cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+  for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
+    av_cell.ConnectionList().CircNext();
+    if (av_cell.GetFacedDir() == m_av_facing) break;
+  }
+  m_av_cell_faced = m_world->GetPopulation().GetCell(m_av_cell_id).GetCellFaced().GetID();    
 }
 
 void cPopulationInterface::AddLiveOrg()  

@@ -579,6 +579,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     if (m_world->GetConfig().USE_AVATARS.Get()) {
       if (GetCell(target_cells[i]).IsOccupied() && GetCell(target_cells[i]).GetOrganism() == offspring_array[i]) {
         offspring_array[i]->GetOrgInterface().SetAVCellID(avatar_target_cell);
+        offspring_array[i]->GetOrgInterface().SetAvatarFacing(offspring_array[i]->GetOrgInterface().GetFacedDir());
+        offspring_array[i]->GetOrgInterface().SetAvatarFacedCell(avatar_target_cell);
         GetCell(avatar_target_cell).AddAvatar(offspring_array[i]);
       }
     }
@@ -5326,7 +5328,11 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
-  if(m_world->GetConfig().USE_AVATARS.Get()) cell_array[cell_id].GetOrganism()->SetAVCellID(cell_id);
+  if(m_world->GetConfig().USE_AVATARS.Get()) {
+    cell_array[cell_id].GetOrganism()->SetAVCellID(cell_id);
+    cell_array[cell_id].GetOrganism()->SetAvatarFacing(cell_array[cell_id].GetOrganism()->GetFacedDir());
+    cell_array[cell_id].GetOrganism()->SetAvatarFacedCell(cell_id);
+  }
 }
 
 void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 

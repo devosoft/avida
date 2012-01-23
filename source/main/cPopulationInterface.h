@@ -83,6 +83,8 @@ public:
   
   int GetAVCellID();
   void SetAVCellID(int av_cell_id); 
+  void SetAvatarFacing(int facing);
+  void SetAvatarFacedCell(int av_cell_id);
   int GetAVFacedCellID();
   int GetAVFacedDir();
   

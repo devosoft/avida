@@ -705,6 +705,8 @@ public:
   bool MoveAV(cAvidaContext& ctx);
   int GetAVCellID() { return m_interface->GetAVCellID(); }
   void SetAVCellID(int av_cell_id) { m_interface->SetAVCellID(av_cell_id); }
+  void SetAvatarFacing(int facing) { m_interface->SetAvatarFacing(facing); }
+  void SetAvatarFacedCell(int av_cell_id) { m_interface->SetAvatarFacedCell(av_cell_id); }
   int GetAVFacedCellID() { return m_interface->GetAVFacedCellID(); }
   int GetAVFacedDir() { assert(m_interface); return m_interface->GetAVFacedDir(); }  
     

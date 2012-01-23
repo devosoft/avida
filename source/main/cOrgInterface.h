@@ -82,6 +82,8 @@ public:
   
   virtual int GetAVCellID() = 0;
   virtual void SetAVCellID(int av_cell_id) = 0;
+  virtual void SetAvatarFacing(int facing) = 0;
+  virtual void SetAvatarFacedCell(int av_cell_id) = 0;
   virtual int GetAVFacedCellID() = 0;
   virtual int GetAVFacedDir() = 0; 
   
