@@ -3487,8 +3487,16 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
+  // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
+  if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target != -2)) && 
+      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
+    m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
+    m_organism->SetForageTarget(prop_target);
+    m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).AddAvatar(m_organism);
+  }
+  else m_organism->SetForageTarget(prop_target);
+  
   // Set the new target and return the value
-  m_organism->SetForageTarget(prop_target);
   m_organism->RecordFTSet();
 	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
   return true;
@@ -3546,8 +3554,16 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
+  // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
+  if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target != -2)) && 
+      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
+    m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
+    m_organism->SetForageTarget(prop_target);
+    m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).AddAvatar(m_organism);
+  }
+  else m_organism->SetForageTarget(prop_target);
+  
   // Set the new target and return the value
-  m_organism->SetForageTarget(prop_target);
   m_organism->RecordFTSet();
 	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
   return true;
@@ -4079,8 +4095,15 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
-    
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && m_organism->GetForageTarget() != -2) { 
+      // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
+      if (m_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
+        m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
+        m_organism->SetForageTarget(-2);
+        m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).AddAvatar(m_organism);
+      }
+      else m_organism->SetForageTarget(-2);
+    }    
     target->Die(ctx);
     
     setInternalValue(success_reg, 1, true);   
@@ -4178,8 +4201,15 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-2);
-    
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && m_organism->GetForageTarget() != -2) { 
+      // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
+      if (m_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
+        m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
+        m_organism->SetForageTarget(-2);
+        m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).AddAvatar(m_organism);
+      }
+      else m_organism->SetForageTarget(-2);
+    }    
     target->Die(ctx);
     
     setInternalValue(success_reg, 1, true);   

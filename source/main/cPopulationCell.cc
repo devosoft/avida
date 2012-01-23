@@ -313,6 +313,7 @@ void cPopulationCell::AddAvatar(cOrganism* org)
 
 void cPopulationCell::RemoveAvatar(cOrganism* org) 
 {
+  assert (HasAvatar());
   if (org->GetForageTarget() == -2) {
     for (int i = 0; i < m_av_predators.GetSize(); i++) {
       if (m_av_predators[i] == org) {
@@ -337,6 +338,7 @@ void cPopulationCell::RemoveAvatar(cOrganism* org)
 
 tArray<cOrganism*> cPopulationCell::GetCellAvatars()
 {
+  assert (HasAvatar());
   tArray<cOrganism*> avatar_orgs;
   avatar_orgs.Resize(m_av_prey.GetSize() + m_av_predators.GetSize());
   for (int i = 0; i < avatar_orgs.GetSize(); i++) {
@@ -348,7 +350,7 @@ tArray<cOrganism*> cPopulationCell::GetCellAvatars()
 
 cOrganism* cPopulationCell::GetRandAvatar() const
 {
-  assert (m_av_prey.GetSize() != 0 || m_av_predators.GetSize() != 0);
+  assert (HasAvatar());
   if (m_av_prey.GetSize() != 0 && (m_world->GetRandom().GetUInt(0,2) == 0 || m_av_predators.GetSize() == 0)) { 
     return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
   }
@@ -357,11 +359,13 @@ cOrganism* cPopulationCell::GetRandAvatar() const
 
 cOrganism* cPopulationCell::GetRandAVPred() const
 {
+  assert (HasAvatar());
   return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
 }
 
 cOrganism* cPopulationCell::GetRandAVPrey() const
 {
+  assert (HasAvatar());
   return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
 }
 

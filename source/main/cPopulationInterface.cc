@@ -1211,6 +1211,7 @@ bool cPopulationInterface::MoveAvatar(cAvidaContext& ctx, int src_id, int dest_i
 {
   bool success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
   if (success) { 
+    assert (m_world->GetPopulation().GetCell(src_id).HasAvatar());
     m_world->GetPopulation().GetCell(src_id).RemoveAvatar(GetOrganism());
     m_world->GetPopulation().GetCell(dest_id).AddAvatar(GetOrganism());
   }

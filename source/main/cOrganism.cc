@@ -1261,6 +1261,7 @@ void cOrganism::SetOpinion(const Opinion& opinion) {
       m_opinion->opinion_list.pop_front();
     }
   }
+  // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }
 
 // Checks if the organism has an opinion.
@@ -1272,6 +1273,7 @@ bool cOrganism::HasOpinion() {
 
 void cOrganism::SetForageTarget(int forage_target) {
   m_forage_target = forage_target;
+  // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }
 
 void cOrganism::Teach(bool teach) {
@@ -1598,10 +1600,10 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
         m_northerly = m_northerly - 1; 
         m_easterly = m_easterly - 1;
       }      
+      SetAVCellID(destcellID);
+      SetAvatarFacedCell(destcellID);
     }
     else return false;                  
-    SetAVCellID(destcellID);
-    SetAvatarFacedCell(destcellID);
   }
   
   // Check to make sure the organism is alive after the move
