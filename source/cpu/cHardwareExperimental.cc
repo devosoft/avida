@@ -5122,6 +5122,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   
   int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
   if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
+  if (facing == -1) facing = 7;
+  else if (facing == 9) facing = 1;
+  else if (facing == 8) facing = 0;
   
   bool diagonal = true;
   if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
