@@ -3488,7 +3488,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-  if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target != -2)) && 
+  if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
     m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
     m_organism->SetForageTarget(prop_target);
@@ -3555,7 +3555,7 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-  if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target != -2)) && 
+  if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
     m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
     m_organism->SetForageTarget(prop_target);
@@ -4095,7 +4095,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && m_organism->GetForageTarget() != -2) { 
+    if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
         m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
@@ -4201,7 +4201,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && m_organism->GetForageTarget() != -2) { 
+    if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
         m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
@@ -4591,7 +4591,18 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->HadParentTeacher()) m_organism->CopyParentFT();
+  int old_target = m_organism->GetForageTarget();
+  int prop_target = -1;
+  if (m_organism->HadParentTeacher()) {
+    prop_target = m_organism->GetParentFT();
+    if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
+        (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
+      m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).RemoveAvatar(m_organism);
+      m_organism->CopyParentFT();
+      m_world->GetPopulation().GetCell(m_organism->GetOrgInterface().GetAVCellID()).AddAvatar(m_organism);
+    }
+    else m_organism->CopyParentFT();
+  }
   return true;
 }
 
