@@ -45,9 +45,12 @@ namespace Avida {
       
     private:
       World* m_world;
+      
+      mutable Apto::RWLock m_rwlock;
+      
       Apto::Map<DataID, ProviderActivateFunctor> m_provider_map;
       Apto::Map<DataID, ArgumentedProviderActivateFunctor> m_arg_provider_map;
-      mutable DataSetPtr m_available;
+      DataSetPtr m_available;
       
       Apto::Set<RecorderPtr> m_recorders;
       
@@ -57,6 +60,7 @@ namespace Avida {
       Apto::Map<DataID, ArgumentedProviderPtr> m_active_arg_provider_map;
       Apto::Map<DataID, ArgMultiSetPtr> m_active_args;
       
+      mutable Apto::Mutex m_current_value_mutex;
       mutable Apto::Map<DataID, PackagePtr> m_current_values;
       
       static bool s_registered_with_facet_factory;
@@ -69,7 +73,7 @@ namespace Avida {
       LIB_EXPORT bool IsAvailable(const DataID& data_id) const;
       LIB_EXPORT bool IsActive(const DataID& data_id) const;
       
-      LIB_EXPORT bool AttachRecorder(RecorderPtr recorder);
+      LIB_EXPORT bool AttachRecorder(RecorderPtr recorder, bool concurrent_update = false);
       LIB_EXPORT bool DetachRecorder(RecorderPtr recorder);
       
       LIB_EXPORT bool Register(const DataID& data_id, ProviderActivateFunctor functor);

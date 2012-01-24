@@ -183,18 +183,6 @@ enum eVerbosity {
 
 namespace Avida
 {
-  enum AbortCondition {
-    INVALID_CONFIG = 2,
-    IO_ERROR = 3,
-    INTERNAL_ERROR = 50
-  };
-  
-  
-  enum DriverEvent {
-    THREAD_START,
-    THREAD_END
-  };
-
   extern const char* const BioUnitSourceMap[];
 };
 

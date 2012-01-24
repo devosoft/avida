@@ -46,6 +46,8 @@ namespace Avida {
       
       LIB_EXPORT virtual PackagePtr GetProvidedValue(const DataID& data_id) const = 0;
       LIB_EXPORT virtual Apto::String DescribeProvidedValue(const DataID& data_id) const = 0;
+      
+      LIB_EXPORT virtual bool SupportsConcurrentUpdate() const;
     };
     
     

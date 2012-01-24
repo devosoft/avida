@@ -368,9 +368,9 @@ void Avida::Viewer::Driver::DetachListener(Listener* listener)
   m_mutex.Unlock();
 }
 
-void Avida::Viewer::Driver::AttachRecorder(Data::RecorderPtr recorder)
+void Avida::Viewer::Driver::AttachRecorder(Data::RecorderPtr recorder, bool concurrent_update)
 {
-  m_world->GetDataManager()->AttachRecorder(recorder);
+  m_world->GetDataManager()->AttachRecorder(recorder, concurrent_update);
 }
 
 void Avida::Viewer::Driver::DetachRecorder(Data::RecorderPtr recorder)

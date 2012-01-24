@@ -28,6 +28,12 @@
 #include "avida/data/Util.h"
 
 
+bool Avida::Data::Provider::SupportsConcurrentUpdate() const
+{
+  return false;
+}
+
+
 Avida::Data::PackagePtr Avida::Data::ArgumentedProvider::GetProvidedValuesForArguments(const DataID& data_id,
                                                                                        ConstArgumentSetPtr args) const
 {

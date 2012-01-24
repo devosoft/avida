@@ -382,6 +382,11 @@ Apto::String cPopulation::DescribeProvidedValue(const Apto::String& data_id) con
   return rtn;
 }
 
+bool cPopulation::SupportsConcurrentUpdate() const
+{ 
+  return true;
+}
+
 
 void cPopulation::SetActiveArguments(const Data::DataID&, Data::ConstArgumentSetPtr)
 {

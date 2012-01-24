@@ -52,6 +52,21 @@ namespace Avida {
   class WorldFacet;
 
   
+  // Enumeration Declarations
+  // --------------------------------------------------------------------------------------------------------------  
+  
+  enum AbortCondition {
+    INVALID_CONFIG = 2,
+    IO_ERROR = 3,
+    INTERNAL_ERROR = 50
+  };
+  
+  enum DriverEvent {
+    THREAD_START,
+    THREAD_END
+  };
+
+
   // Type Declarations
   // --------------------------------------------------------------------------------------------------------------  
   
@@ -99,6 +114,12 @@ namespace Avida {
   typedef Apto::Functor<WorldFacetPtr, Apto::TL::Create<ArchivePtr> > WorldFacetDeserializeFunctor;
   
   typedef Apto::Functor<void, Apto::TL::Create<DriverEvent> > DriverCallback;
+
+  
+  // Constant Declarations
+  // --------------------------------------------------------------------------------------------------------------  
+  
+  extern Update UPDATE_CONCURRENT;
 };
 
 #endif

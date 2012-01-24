@@ -167,6 +167,7 @@
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BEC9E13B3C9C2004CB59D /* Manager.cc */; };
+		70C0588414CF106200AB38C5 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
 		70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C11F3412B944F40092B40D /* cContextPhenotype.cc */; };
 		70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3512B944F40092B40D /* cContextPhenotype.h */; };
 		70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3612B944F40092B40D /* cContextReactionRequisite.h */; };
@@ -554,7 +555,7 @@
 		709A1E540EB69DA6006090AF /* cResourceHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cResourceHistory.h; sourceTree = "<group>"; };
 		709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgMovementPredicate.h; sourceTree = "<group>"; };
 		709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceHistory.cc; sourceTree = "<group>"; };
-		709B860D14BF7C62009F0F4A /* apto.dylib */ = {isa = PBXFileReference; lastKnownFileType = file; name = apto.dylib; path = ../libs/apto/build/Release/apto.dylib; sourceTree = "<group>"; };
+		709B860D14BF7C62009F0F4A /* apto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = apto.dylib; path = ../libs/apto/build/Release/apto.dylib; sourceTree = "<group>"; };
 		709CDEA2149BF18100995644 /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		709CDEA5149BF69000995644 /* Arbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Arbiter.cc; sourceTree = "<group>"; };
 		709CDEA6149BF69000995644 /* Group.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Group.cc; sourceTree = "<group>"; };
@@ -716,6 +717,7 @@
 		70BCB2470AB7B634003FF331 /* cArgSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgSchema.h; sourceTree = "<group>"; };
 		70C054C80A4F6E19002703C1 /* PopulationActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationActions.h; sourceTree = "<group>"; };
 		70C054C90A4F6E19002703C1 /* PopulationActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = PopulationActions.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		70C0588314CF106200AB38C5 /* Types.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Types.cc; sourceTree = "<group>"; };
 		70C11F3412B944F40092B40D /* cContextPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cContextPhenotype.cc; sourceTree = "<group>"; };
 		70C11F3512B944F40092B40D /* cContextPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cContextPhenotype.h; sourceTree = "<group>"; };
 		70C11F3612B944F40092B40D /* cContextReactionRequisite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cContextReactionRequisite.h; sourceTree = "<group>"; };
@@ -1088,6 +1090,7 @@
 				70A53BA9135A29AA00C3E661 /* GlobalObject.cc */,
 				7061AB811358BD6F0000B036 /* InstructionSequence.cc */,
 				70B1B1D913F43016005DDF90 /* Properties.cc */,
+				70C0588314CF106200AB38C5 /* Types.cc */,
 				70A53BBE135B5F2200C3E661 /* Version.cc */,
 				70DF728F13BE20130085F85E /* World.cc */,
 			);
@@ -2092,6 +2095,7 @@
 				7023EC940C0A431B00362B9C /* cStringUtil.cc in Sources */,
 				7023EC9A0C0A431B00362B9C /* cWeightedIndex.cc in Sources */,
 				708D3E3314A429DF00204169 /* GenomeLoader.cc in Sources */,
+				70C0588414CF106200AB38C5 /* Types.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

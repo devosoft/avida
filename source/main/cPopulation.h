@@ -108,6 +108,7 @@ public:
   Data::ConstDataSetPtr Provides() const;
   void UpdateProvidedValues(Update current_update);
   Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
+  bool SupportsConcurrentUpdate() const;
   
   // Data::ArgumentedProvider
   void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args);
