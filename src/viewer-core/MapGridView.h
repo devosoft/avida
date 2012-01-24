@@ -31,7 +31,10 @@
 
 #include "avida/viewer.h"
 
+#import "Genome.h"
+
 @class MapGridView;
+
 
 @protocol MapSelectionDelegate <NSObject>
 @optional
@@ -43,7 +46,8 @@
 @protocol MapDragDelegate <NSObject>
 @required
 - (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
-- (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedFreezerGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(Genome*)genome atX:(int)x Y:(int)y;
 - (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid;
 @end
 

@@ -105,7 +105,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
 - (IBAction) changeGraph:(id)sender;
 - (void) handleNewGraphData;
 
-- (Apto::String) selectedOrgGenome;
+- (Genome*) selectedOrgGenome;
 
 
 // NSDraggingSource

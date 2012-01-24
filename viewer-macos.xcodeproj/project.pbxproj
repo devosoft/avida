@@ -40,6 +40,7 @@
 		708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 708308F614B6ADEB0051B354 /* OpenGL.framework */; };
 		7083E58414BE1E2900E4023E /* Freezer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7083E58314BE1E2900E4023E /* Freezer.mm */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
+		709D24C714CF500400AB0425 /* Genome.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709D24C414CF4B8100AB0425 /* Genome.mm */; };
 		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 /* End PBXBuildFile section */
@@ -112,6 +113,8 @@
 		7083E58214BE1E2900E4023E /* Freezer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Freezer.h; sourceTree = "<group>"; };
 		7083E58314BE1E2900E4023E /* Freezer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Freezer.mm; sourceTree = "<group>"; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		709D24C314CF4B8100AB0425 /* Genome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Genome.h; sourceTree = "<group>"; };
+		709D24C414CF4B8100AB0425 /* Genome.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Genome.mm; sourceTree = "<group>"; };
 		70D0455A13C6351D00E6E5AC /* NSString+Apto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Apto.h"; sourceTree = "<group>"; };
 		70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
@@ -280,6 +283,8 @@
 				703549BD1337AD4300D3865C /* AvidaRun.mm */,
 				7083E58214BE1E2900E4023E /* Freezer.h */,
 				7083E58314BE1E2900E4023E /* Freezer.mm */,
+				709D24C314CF4B8100AB0425 /* Genome.h */,
+				709D24C414CF4B8100AB0425 /* Genome.mm */,
 				703549C01337AD4300D3865C /* MapGridView.h */,
 				703549C11337AD4300D3865C /* MapGridView.mm */,
 				70D3C086135739E1008374E3 /* MapScaleView.h */,
@@ -401,6 +406,7 @@
 				7083E58414BE1E2900E4023E /* Freezer.mm in Sources */,
 				7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */,
 				7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */,
+				709D24C714CF500400AB0425 /* Genome.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

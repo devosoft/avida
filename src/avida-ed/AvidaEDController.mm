@@ -36,6 +36,7 @@
 #import "CenteringClipView.h"
 #import "FlipView.h"
 #import "Freezer.h"
+#import "Genome.h"
 #import "MapGridView.h"
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
@@ -127,6 +128,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) clearCurrentRun;
 - (void) freezeCurrentConfig;
 - (void) freezeCurrentRun;
+- (void) freezeGenome:(Genome*)genome;
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID;
 @end
 
@@ -302,6 +304,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
 }
 
+- (void) freezeGenome:(Genome*)genome {
+  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::GENOME, [[genome name] UTF8String]);
+  Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
+  Avida::Viewer::FreezerID f = freezer->SaveGenome(genome_ptr, name);
+  if (freezer->IsValid(f)) {
+    FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
+    [freezerGenomes addObject:fi];
+    [outlineFreezer reloadData];
+    [outlineFreezer editColumn:0 row:[outlineFreezer rowForItem:fi] withEvent:nil select:YES];
+  }
+}
+
 
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID {
   if (freezerID.identifier == 0) return;
@@ -430,7 +444,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer expandItem:freezerConfigs];
   [outlineFreezer expandItem:freezerGenomes];
   [outlineFreezer expandItem:freezerWorlds];
-  [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, nil]];
+  [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, AvidaPasteboardTypeGenome, nil]];
 
   [pathWorkspace setURL:freezerURL];
   
@@ -594,7 +608,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (IBAction) saveSelectedOrganism:(id)sender {
-  // @TODO
+  [self freezeGenome:[popViewStatView selectedOrgGenome]];
 }
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState
@@ -618,7 +632,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (BOOL) validateMenuItem:(NSMenuItem*)item {
   if ([item action] == @selector(saveCurrentRun:) && runActive == NO) return NO;
-  if ([item action] == @selector(saveSelectedOrganism:) && [popViewStatView selectedOrgGenome] == "") return NO;
+  if ([item action] == @selector(saveSelectedOrganism:) && [popViewStatView selectedOrgGenome] == nil) return NO;
   return YES;
 }
 
@@ -770,7 +784,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
         return YES;
     }
   }
-  
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+    [self freezeGenome:[Genome genomeFromPasteboard:[info draggingPasteboard]]];
+    return YES;
+  }
   return NO;
 }
 
@@ -781,7 +798,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [outlineView setDropItem:nil dropChildIndex:NSOutlineViewDropOnItemIndex];
     return [info draggingSourceOperationMask];
   }
-  
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+    [outlineView setDropItem:nil dropChildIndex:NSOutlineViewDropOnItemIndex];
+    return NSDragOperationCopy;    
+  }
   return NSDragOperationNone;
 }
 
@@ -879,11 +899,20 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [self loadRunFromFreezer:fid];
 }
 
-- (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y
+- (void) mapView:(MapGridView*)map handleDraggedFreezerGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y
 {
   Avida::GenomePtr genome(freezer->InstantiateGenome(fid));
   if (genome) {
     [currentRun injectGenome:genome atX:x Y:y];
+    [mapView setPendingActionColorAtX:x Y:y];
+  }
+}
+
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(Genome*)genome atX:(int)x Y:(int)y
+{
+  Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
+  if (genome_ptr) {
+    [currentRun injectGenome:genome_ptr atX:x Y:y];
     [mapView setPendingActionColorAtX:x Y:y];
   }
 }

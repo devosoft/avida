@@ -61,7 +61,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   selected_x = -1;
   selected_y = -1;
   
-  [self registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, nil]];
+  [self registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
 }
 
 - (void)adjustZoom {
@@ -273,6 +273,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     
     
     NSPasteboard* pboard = [NSPasteboard pasteboardWithName:(NSString*)NSDragPboard];
+    [pboard clearContents];
+    
     if (![selectionDelegate mapView:self writeSelectionToPasteboard:pboard]) return;
 
     NSPoint location = [self convertPoint:[event locationInWindow] fromView:nil];
@@ -370,6 +372,12 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   
+  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    if (sourceDragMask & NSDragOperationCopy) {
+      return NSDragOperationCopy;
+    }
+  }
+  
   return NSDragOperationNone;
 }
 
@@ -383,6 +391,11 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       return NSDragOperationGeneric;
     }
   }
+  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    if (sourceDragMask & NSDragOperationCopy) {
+      return NSDragOperationCopy;
+    }
+  }
   
   return NSDragOperationNone;
 }
@@ -394,6 +407,11 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
     if (sourceDragMask & NSDragOperationGeneric) {
+      return YES;
+    }
+  }
+  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    if (sourceDragMask & NSDragOperationCopy) {
       return YES;
     }
   }
@@ -416,11 +434,22 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
           
           int x = floor(location.x / block_size);
           int y = floor(location.y / block_size);
-          [dragDelegate mapView:self handleDraggedGenome:fid atX:x Y:y];
+          [dragDelegate mapView:self handleDraggedFreezerGenome:fid atX:x Y:y];
         }        
         break;
       case Avida::Viewer::WORLD:  [dragDelegate mapView:self handleDraggedWorld:fid]; break;
       default: break;
+    }
+  }
+  if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+    Genome* genome = [Genome genomeFromPasteboard:pboard];
+    if (genome != nil) {
+      NSPoint location = [self convertPoint:[sender draggingLocation] fromView:nil];
+      CGFloat block_size = zoom;
+      
+      int x = floor(location.x / block_size);
+      int y = floor(location.y / block_size);
+      [dragDelegate mapView:self handleDraggedGenome:genome atX:x Y:y];
     }
   }
   

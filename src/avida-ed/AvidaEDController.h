@@ -30,19 +30,20 @@
 #import <Cocoa/Cocoa.h>
 
 #import "DraggableImageView.h"
+#import "MapGridView.h"
 #import "ViewerListener.h"
 
 
 @class AvidaAppDelegate;
 @class AvidaRun;
 @class FlipView;
-@class MapGridView;
 @class MapScaleView;
 
 @class AvidaEDPopViewStatView;
 
 
-@interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, ViewerListener, NSDraggingSource, NSSplitViewDelegate, NSWindowDelegate,
+@interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, MapDragDelegate, ViewerListener,
+                                                   NSDraggingSource, NSSplitViewDelegate, NSWindowDelegate,
                                                    NSOutlineViewDelegate, NSOutlineViewDataSource>
 {
   
@@ -66,7 +67,6 @@
   IBOutlet FlipView* mapFlipView;
 
   IBOutlet NSButton* btnRunState;
-  IBOutlet NSImageView* imgViewPopIcon;
   IBOutlet NSTextField* txtRun;
   IBOutlet NSTextField* txtUpdate;
 
@@ -174,7 +174,8 @@
 
 // MapDragDelegate
 - (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
-- (void) mapView:(MapGridView*)map handleDraggedGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedFreezerGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(Genome*)fid atX:(int)x Y:(int)y;
 - (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid;
 
 

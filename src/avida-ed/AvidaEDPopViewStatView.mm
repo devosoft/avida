@@ -31,6 +31,7 @@
 
 #import "AvidaRun.h"
 #import "AvidaEDController.h"
+#import "Genome.h"
 #import "NSString+Apto.h"
 
 #include "avida/core/Properties.h"
@@ -600,7 +601,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
 - (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard {
   if (genome == "") return NO;
   
-  // @TODO - write genome to pasteboard
+  [Genome writeGenome:[[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome] name:[txtOrgName stringValue]] toPasteboard:pboard];
   
   return YES;
 }
@@ -635,6 +636,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
 }
 
 - (void) handleOrgData:(AvidaEDPopViewStatViewOrgValues*)values {
+  if (run == nil) return;
   
   Avida::World* world = [run world];
   Avida::Systematics::ArbiterPtr g_arb = Avida::Systematics::Manager::Of(world)->ArbiterForRole("genotype");
@@ -708,9 +710,12 @@ static const float PANEL_MIN_WIDTH = 360.0;
 }
 
 
-- (Apto::String) selectedOrgGenome {
-  return genome;
+- (Genome*) selectedOrgGenome {
+  if (genome == "") return nil;
+  return [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome] name:[txtOrgName stringValue]];
 }
+
+
 
 
 @end

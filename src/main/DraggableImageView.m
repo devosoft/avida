@@ -14,6 +14,7 @@
   NSPoint location;
   NSSize size = [[self image] size];
   NSPasteboard* pboard = [NSPasteboard pasteboardWithName:(NSString*)NSDragPboard];
+  [pboard clearContents];
   
   if (delegate != nil) {
     [delegate draggableImageView:self writeToPasteboard:pboard];
