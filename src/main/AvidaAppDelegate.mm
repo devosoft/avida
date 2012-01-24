@@ -82,7 +82,7 @@
 
   NSOpenPanel* openDlg = [NSOpenPanel openPanel];  
   [openDlg setCanChooseFiles:YES];
-  [openDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-workspace"]];
+  [openDlg setAllowedFileTypes:[NSArray arrayWithObjects:@"org.devosoft.avida.avida-ed-workspace", @"avidaedworkspace", nil]];
   
   // Display the dialog.  If the OK button was pressed, process the files.
   if ([openDlg runModal] == NSOKButton) {

@@ -260,8 +260,29 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       }
     }
   }
-  
 }
+
+
+- (void) mouseDragged:(NSEvent*)event {
+  if (selectionDelegate != nil && [selectionDelegate respondsToSelector:@selector(mapView:writeSelectionToPasteboard:)]) {
+    NSImage* image = [[NSImage alloc] initWithSize:NSMakeSize(40.0, 40.0)];
+    [image lockFocus];
+    [[self colorOfX:selected_x Y:selected_y] set];
+    [NSBezierPath fillRect:NSMakeRect(0, 0, 40, 40)];
+    [image unlockFocus];
+    
+    
+    NSPasteboard* pboard = [NSPasteboard pasteboardWithName:(NSString*)NSDragPboard];
+    if (![selectionDelegate mapView:self writeSelectionToPasteboard:pboard]) return;
+
+    NSPoint location = [self convertPoint:[event locationInWindow] fromView:nil];
+    location.x -= 20;
+    location.y -= 20;
+
+    [self dragImage:image at:location offset:NSMakeSize(0,0) event:event pasteboard:pboard source:selectionDelegate slideBack:YES];
+  }
+}
+
 
 - (NSColor*) colorOfX:(int)x Y:(int)y {
   int color = map_colors[x * map_width + y];

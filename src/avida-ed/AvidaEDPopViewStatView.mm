@@ -593,7 +593,34 @@ static const float PANEL_MIN_WIDTH = 360.0;
     org_recorder = Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewOrgRecorder(self));
   }
   org_recorder->SetCoords([mapView selectedObject].x, [mapView selectedObject].y);
-  [run attachRecorder:org_recorder];
+  [run attachRecorder:org_recorder concurrentUpdate:YES];
+}
+
+
+- (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard {
+  if (genome == "") return NO;
+  
+  // @TODO - write genome to pasteboard
+  
+  return YES;
+}
+
+
+- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
+  switch (context) {
+    case NSDraggingContextWithinApplication:
+      return NSDragOperationCopy;
+      
+    case NSDraggingContextOutsideApplication:
+    default:
+      return NSDragOperationNone;
+      break;
+  }
+}
+
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session
+{
+  return NO;
 }
 
 

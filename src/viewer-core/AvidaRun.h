@@ -74,6 +74,7 @@
 - (void) detachListener:(id<ViewerListener>)listener;
 
 - (void) attachRecorder:(Avida::Data::RecorderPtr)recorder;
+- (void) attachRecorder:(Avida::Data::RecorderPtr)recorder concurrentUpdate:(BOOL)concurrentUpdate;
 - (void) detachRecorder:(Avida::Data::RecorderPtr)recorder;
 
 @end

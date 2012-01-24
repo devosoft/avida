@@ -198,6 +198,10 @@ void handleDriverCallback(Avida::DriverEvent event)
   if (driver) driver->AttachRecorder(recorder);
 }
 
+- (void) attachRecorder:(Avida::Data::RecorderPtr)recorder concurrentUpdate:(BOOL)concurrentUpdate {
+  if (driver) driver->AttachRecorder(recorder, (concurrentUpdate) ? true : false);
+}
+
 - (void) detachRecorder:(Avida::Data::RecorderPtr)recorder {
   if (driver) driver->DetachRecorder(recorder);
 }

@@ -11,6 +11,8 @@
 			<array>
 				<string>avidaedworkspace</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>petri128</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>org.devosoft.avida.avida-ed-workspace</string>
@@ -54,6 +56,8 @@
 		<dict>
 			<key>UTTypeDescription</key>
 			<string>Avida-ED Workspace</string>
+			<key>UTTypeIconFile</key>
+			<string>petri128</string>
 			<key>UTTypeIdentifier</key>
 			<string>org.devosoft.avida.avida-ed-workspace</string>
 			<key>UTTypeTagSpecification</key>

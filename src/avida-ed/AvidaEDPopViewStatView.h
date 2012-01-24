@@ -45,7 +45,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
 @class AvidaEDPopViewStatViewGraphData;
 
 
-@interface AvidaEDPopViewStatView : NSView <MapSelectionDelegate> {
+@interface AvidaEDPopViewStatView : NSView <MapSelectionDelegate, NSDraggingSource> {
   IBOutlet AvidaEDController* ctlr;
   
   IBOutlet NSView* popStatsView;
@@ -100,11 +100,17 @@ class AvidaEDPopViewStatViewTimeRecorder;
 
 - (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point;
 - (void) mapViewSelectionChanged:(MapGridView*)mapView;
+- (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard;
 
 - (IBAction) changeGraph:(id)sender;
 - (void) handleNewGraphData;
 
 - (Apto::String) selectedOrgGenome;
+
+
+// NSDraggingSource
+- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session;
 
 @end
 

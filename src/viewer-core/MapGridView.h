@@ -37,6 +37,7 @@
 @optional
 - (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point;
 - (void) mapViewSelectionChanged:(MapGridView*)mapView;
+- (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard;
 @end
 
 @protocol MapDragDelegate <NSObject>
@@ -77,6 +78,7 @@
 
 
 - (void) mouseDown:(NSEvent*)event;
+- (void) mouseDragged:(NSEvent*)event;
 
 - (NSColor*) colorOfX:(int)x Y:(int)y;
 
@@ -93,11 +95,6 @@
 - (BOOL) prepareForDragOperation:(id<NSDraggingInfo>)sender;
 - (BOOL) performDragOperation:(id<NSDraggingInfo>)sender;
 - (BOOL) wantsPeriodicDraggingUpdates;
-
-
-// NSDraggingSource
-- (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
-- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session;
 
 @end
 
