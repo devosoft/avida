@@ -298,15 +298,6 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
 
 void cPopulationCell::AddAvatar(cOrganism* org) 
 {
-/*  // scramble orgs in cell each time so that when we select one, we can just take first
-  m_avatars.Push(org);
-  unsigned int last = m_avatars.GetSize() - 1;
-  int swap = m_world->GetRandom().GetUInt(0, last + 1);
-  cOrganism* swap_org = m_avatars[swap];
-  m_avatars.Swap(swap, last);
-  m_avatars.Pop();
-  m_avatars.Push(swap_org);
-*/
   if (org->GetForageTarget() == -2) m_av_predators.Push(org); 
   else m_av_prey.Push(org); 
 }

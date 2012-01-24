@@ -3342,8 +3342,12 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
 {
   int cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_avatar) cell = m_organism->GetAVCellID();
-  return GoLook(ctx, 0, cell);
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (m_avatar) {
+    cell = m_organism->GetAVCellID();
+    facing = m_organism->GetOrgInterface().GetAVFacedDir();
+  }
+  return GoLook(ctx, facing, cell);
 }
 
 bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
@@ -3357,12 +3361,16 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   if (search_dir == 1) search_dir = -1;
   else if (search_dir == 2) search_dir = 1;
-  if (!m_avatar) search_dir = m_organism->GetOrgInterface().GetFacedDir() + m_threads[m_cur_thread].reg[dir_reg].value;
-  else if (m_avatar) search_dir = m_organism->GetOrgInterface().GetAVFacedDir() + m_threads[m_cur_thread].reg[dir_reg].value;
+  
+  int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
+  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
+  if (facing == -1) facing = 7;
+  else if (facing == 9) facing = 1;
+  else if (facing == 8) facing = 0;
 
   int cell = m_organism->GetOrgInterface().GetCellID();
   if (m_avatar) cell = m_organism->GetAVCellID();
-  return GoLook(ctx, search_dir, cell);
+  return GoLook(ctx, facing, cell);
 }
 
 bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id) 
@@ -4591,9 +4599,9 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  int old_target = m_organism->GetForageTarget();
-  int prop_target = -1;
   if (m_organism->HadParentTeacher()) {
+    int old_target = m_organism->GetForageTarget();
+    int prop_target = -1;
     prop_target = m_organism->GetParentFT();
     if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
         (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
@@ -4888,7 +4896,7 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
   return true;
 }
 
-cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs, int search_dir, int cell_id)
+cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs, int facing, int cell_id)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
@@ -4975,7 +4983,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     // if number didn't represent a living org, we default to WalkCells searching for anybody, skipping FindOrg
     if (!done_setting_org && id_sought != -1) id_sought = -1;    
     // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
-    if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought, search_dir);
+    if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought, facing);
   }
 
   /*  APW TODO
@@ -5007,10 +5015,10 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
       if (all_global) return GlobalVal(ctx, habitat_used, -1, search_type);       // if all global, but none edible
     }
   }
-  return WalkCells(ctx, resource_lib, habitat_used, search_type, distance_sought, id_sought, search_dir, cell_id);
+  return WalkCells(ctx, resource_lib, habitat_used, search_type, distance_sought, id_sought, facing, cell_id);
 }    
 
-cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought, const int search_dir)
+cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought, const int facing)
 {
   lookOut org_search;
   org_search.report_type = 1;
@@ -5039,8 +5047,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
   const int y_dist = target_y - searching_y;
   // is the target org close enough to see and in my line of sight?
   bool org_in_sight = true;
-  int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
-  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
+
   const int travel_dist = max(abs(x_dist), abs(y_dist));
   
   // if simply too far or behind you
@@ -5132,7 +5139,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& c
 
 cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, 
                                                                 const int search_type, const int distance_sought, const int id_sought,
-                                                                const int search_dir, const int cell)
+                                                                const int facing, const int cell)
 {
   // rather than doing doupdates at every cell check inside TestCell, we just do it once now since we're in a stall
   // we need to do this before getfrozenres and getfrozenpeak
@@ -5160,13 +5167,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   
   cCoords center_cell(cell % worldx, cell / worldx);
   cCoords this_cell = center_cell;
-  
-  int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
-  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
-  if (facing == -1) facing = 7;
-  else if (facing == 9) facing = 1;
-  else if (facing == 8) facing = 0;
-  
+    
   bool diagonal = true;
   if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   

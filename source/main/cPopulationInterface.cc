@@ -292,6 +292,7 @@ void cPopulationInterface::Rotate(int direction)
   if (m_world->GetConfig().USE_AVATARS.Get()) {
     cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
     assert(av_cell.HasAvatar());
+    int org_facing = av_cell.GetFacedDir();
     // rotate the avatar cell to match the direction of the true org cell
     for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
       av_cell.ConnectionList().CircNext();
@@ -300,6 +301,12 @@ void cPopulationInterface::Rotate(int direction)
     // save the avatar facing and faced cell data for this org...we cannot rely on av_cell facing after this b/c other avatars could rotate same cell
     SetAvatarFacing(cell.GetFacedDir());
     SetAvatarFacedCell(av_cell.ConnectionList().GetFirst()->GetID());
+    
+    // now put the avatar cell back where it belongs in case there is a real org in the avatar cell
+    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
+      av_cell.ConnectionList().CircNext();
+      if (av_cell.GetFacedDir() == org_facing) break;
+    }    
   }
 }
 
