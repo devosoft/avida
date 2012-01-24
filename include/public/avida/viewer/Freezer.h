@@ -92,7 +92,7 @@ namespace Avida {
       LIB_EXPORT inline Iterator EntriesOfType(FreezerObjectType type) const { return Iterator(type, m_entries[type]); }
       
       LIB_EXPORT FreezerID SaveConfig(cWorld* world, const Apto::String& name);
-      LIB_EXPORT FreezerID SaveGenome(GenomePtr genome);
+      LIB_EXPORT FreezerID SaveGenome(GenomePtr genome, const Apto::String& name);
       LIB_EXPORT FreezerID SaveWorld(cWorld* world, const Apto::String& name);
       
       LIB_EXPORT bool InstantiateWorkingDir(FreezerID entry_id, const Apto::String& working_directory) const;

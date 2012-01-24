@@ -784,14 +784,12 @@ Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveConfig(cWorld* world, const
 }
 
 
-Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveGenome(GenomePtr genome)
+Avida::Viewer::FreezerID Avida::Viewer::Freezer::SaveGenome(GenomePtr genome, const Apto::String& name)
 {
   if (!m_opened) return FreezerID(GENOME, -1);
   
   Apto::String entry_path = Apto::FormatStr("g%d", m_next_id[GENOME]++);
   Apto::String full_path = Apto::FileSystem::PathAppend(m_dir, entry_path);
-  
-  Apto::String name = genome->Properties().Get("Name");
   
   if (!Apto::FileSystem::MkDir(full_path)) return FreezerID(GENOME, -1);
   

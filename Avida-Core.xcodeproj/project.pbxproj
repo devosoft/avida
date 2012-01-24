@@ -569,12 +569,6 @@
 		709CDEC9149EEF6A00995644 /* SexualAncestry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SexualAncestry.cc; sourceTree = "<group>"; };
 		709CDECB149EFD4A00995644 /* Genotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Genotype.cc; sourceTree = "<group>"; };
 		709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenotypeArbiter.cc; sourceTree = "<group>"; };
-		709CDFD814AAD43100995644 /* avida-core-shared-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "avida-core-shared-Prefix.pch"; sourceTree = "<group>"; };
-		709CDFD914AAD43100995644 /* avida_core_sharedProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = avida_core_sharedProj.xcconfig; sourceTree = "<group>"; };
-		709CDFDA14AAD43100995644 /* avida_core_sharedTarget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = avida_core_sharedTarget.xcconfig; sourceTree = "<group>"; };
-		709CDFDB14AAD43100995644 /* avida_core_shared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = avida_core_shared.h; sourceTree = "<group>"; };
-		709CDFDC14AAD43100995644 /* avida_core_sharedPriv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = avida_core_sharedPriv.h; sourceTree = "<group>"; };
-		709CDFDD14AAD43100995644 /* avida_core_shared.cp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = avida_core_shared.cp; sourceTree = "<group>"; };
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -1287,27 +1281,6 @@
 			path = systematics;
 			sourceTree = "<group>";
 		};
-		709CDFD614AAD42A00995644 /* avida-core-shared */ = {
-			isa = PBXGroup;
-			children = (
-				709CDFD914AAD43100995644 /* avida_core_sharedProj.xcconfig */,
-				709CDFDA14AAD43100995644 /* avida_core_sharedTarget.xcconfig */,
-				709CDFDB14AAD43100995644 /* avida_core_shared.h */,
-				709CDFDC14AAD43100995644 /* avida_core_sharedPriv.h */,
-				709CDFDD14AAD43100995644 /* avida_core_shared.cp */,
-				709CDFD714AAD43100995644 /* Supporting Files */,
-			);
-			path = "avida-core-shared";
-			sourceTree = "<group>";
-		};
-		709CDFD714AAD43100995644 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				709CDFD814AAD43100995644 /* avida-core-shared-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		70A1E324125CDF2B00D56AC4 /* viewer */ = {
 			isa = PBXGroup;
 			children = (
@@ -1522,7 +1495,6 @@
 				708D3135134231E500AE5CEF /* COPYING */,
 				708D31321342315000AE5CEF /* README */,
 				708D31331342315000AE5CEF /* RELEASE_NOTES */,
-				709CDFD614AAD42A00995644 /* avida-core-shared */,
 			);
 			sourceTree = "<group>";
 		};
