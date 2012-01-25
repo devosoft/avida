@@ -4187,7 +4187,9 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
         PushToleranceInstExe(0, ctx);
         
         // Update tolerance list by removing the most recent dec_tolerance record
-        delete m_organism->GetPhenotype().GetToleranceImmigrants().Pop();
+        int* ptr = m_organism->GetPhenotype().GetToleranceImmigrants().Pop();
+        if(ptr != NULL)
+          delete ptr;
 
         // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetIntolerances()[0].second != 0) {
@@ -4206,7 +4208,9 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
         PushToleranceInstExe(1, ctx);
         
         // Update tolerance list by removing the most recent dec_tolerance record
-        delete m_organism->GetPhenotype().GetToleranceOffspringOwn().Pop();
+        int *ptr = m_organism->GetPhenotype().GetToleranceOffspringOwn().Pop();
+        if(ptr != NULL)
+          delete ptr;
         
         // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetIntolerances()[1].second != 0) {
@@ -4225,7 +4229,9 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
         PushToleranceInstExe(2, ctx);
         
         // Update tolerance list by removing the most recent dec_tolerance record
-        delete m_organism->GetPhenotype().GetToleranceOffspringOthers().Pop();
+        int *ptr = m_organism->GetPhenotype().GetToleranceOffspringOthers().Pop();
+        if(ptr != NULL)
+          delete ptr;
         
         // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetIntolerances()[2].second != 0) {
@@ -4273,7 +4279,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
         tList<int> &tol_list = m_organism->GetPhenotype().GetToleranceImmigrants();
         tol_list.Push(new int(cur_update));
         if(tol_list.GetSize() > tolerance_max)
-          delete tol_list.PopRear();
+/*          delete*/ tol_list.PopRear();
 
         // If not at min tolerance, decrease the cache
         if (m_organism->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {

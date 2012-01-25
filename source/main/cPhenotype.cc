@@ -1676,7 +1676,7 @@ int cPhenotype::CalcToleranceImmigrants()
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
   
   // Update the tolerance list by getting rid of outdated records
-  while (*tolerance_immigrants.GetLast() <= cur_update - update_window)
+  while (tolerance_immigrants.GetSize() && *tolerance_immigrants.GetLast() <= cur_update - update_window)
     delete tolerance_immigrants.PopRear();
   
   // And prune the list down to MAX_TOLERANCE entries.
@@ -1708,7 +1708,7 @@ int cPhenotype::CalcToleranceOffspringOwn()
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
   
   // Update the tolerance list by getting rid of outdated records
-  while (*tolerance_offspring_own.GetLast() <= cur_update - update_window)
+  while (tolerance_offspring_own.GetSize() && *tolerance_offspring_own.GetLast() <= cur_update - update_window)
     delete tolerance_offspring_own.PopRear();
   
   // And prune the list down to MAX_TOLERANCE entries.
@@ -1741,7 +1741,7 @@ int cPhenotype::CalcToleranceOffspringOthers()
 
   
   // Update the tolerance list by getting rid of outdated records
-  while (*tolerance_offspring_others.GetLast() <= cur_update - update_window)
+  while (tolerance_offspring_others.GetSize() &&*tolerance_offspring_others.GetLast() <= cur_update - update_window)
     delete tolerance_offspring_others.PopRear();
   
   // And prune the list down to MAX_TOLERANCE entries.

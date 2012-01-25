@@ -6156,9 +6156,9 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
   int cur_update = m_world->GetStats().GetUpdate();
-  //if (group_intolerances[group_id][0].first == cur_update) {
-  //  return max(0 , tolerance_max - group_intolerances[group_id][0].second);
-  //}
+//  if (group_intolerances[group_id][0].first == cur_update) {
+//    return max(0 , tolerance_max - group_intolerances[group_id][0].second);
+//  }
 
   int group_intolerance = 0;
   int single_member_intolerance = 0;
@@ -6168,14 +6168,14 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
     group_intolerance += single_member_intolerance;
   }
 
-  if (group_intolerances[group_id][0].first == cur_update) {
-    if (group_intolerances[group_id][0].second != group_intolerance) {
+//  if (group_intolerances[group_id][0].first == cur_update) {
+//    if (group_intolerances[group_id][0].second != group_intolerance) {
 //      cout << "Actual  Cache" << endl;
 //      cout << cur_update << "       " << group_intolerances[group_id][0].first << endl;
-      cout << "!!!!!!!!!!!!!!!!!!  " << group_intolerance << "       " << group_intolerances[group_id][0].second << endl;
+//      cout << "!!!!!!!!!!!!!!!!!!  " << group_intolerance << "       " << group_intolerances[group_id][0].second << endl;
 //      cout << "group_id " << group_id << endl;
-    }
-  }
+//    }
+//  }
 
   // Save current update and current intolerance to cache
   group_intolerances[group_id][0].first = cur_update;
