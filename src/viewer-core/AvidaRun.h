@@ -55,6 +55,8 @@
 - (int) currentUpdate;
 
 @property (nonatomic, readwrite) NSSize worldSize;
+@property (nonatomic, readwrite) int placementMode;
+@property (nonatomic, readwrite) int randomSeed;
 
 - (bool) hasStarted;
 - (bool) willPause;

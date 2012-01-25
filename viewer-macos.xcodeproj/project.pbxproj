@@ -31,6 +31,7 @@
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
 		7038059214ACF616002FA72A /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
 		7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
+		7046CF7714D0B5320030F1DF /* petri.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7046CF7614D0B5320030F1DF /* petri.icns */; };
 		7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7047394714B65F19009D285C /* QuartzCore.framework */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EA14B6A6E50051B354 /* ImageFlipperView.m */; };
@@ -98,6 +99,8 @@
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7038059114ACF616002FA72A /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CorePlot.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/CorePlot.framework"; sourceTree = "<group>"; };
+		7046CF7414D0B4F80030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
+		7046CF7614D0B5320030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
 		7047394714B65F19009D285C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 		7035496113379F3F00D3865C = {
 			isa = PBXGroup;
 			children = (
+				7046CF7614D0B5320030F1DF /* petri.icns */,
 				703549991337A30500D3865C /* Source */,
 				703549961337A11C00D3865C /* Resources */,
 				7035497413379FBD00D3865C /* Frameworks */,
@@ -205,6 +209,7 @@
 		703549981337A27400D3865C /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				7046CF7414D0B4F80030F1DF /* petri.icns */,
 				7015B89D14C883C60031B60B /* genome65.png */,
 				7015B89E14C883C60031B60B /* petri128empty.png */,
 				701E3A1413576BD2000BFFBC /* petri128.png */,
@@ -376,6 +381,7 @@
 				701E3A1513576BD2000BFFBC /* petri128.png in Resources */,
 				7015B89F14C883C60031B60B /* genome65.png in Resources */,
 				7015B8A014C883C60031B60B /* petri128empty.png in Resources */,
+				7046CF7714D0B5320030F1DF /* petri.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,6 +468,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
 				WRAPPER_EXTENSION = app;
@@ -490,6 +497,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
 				WRAPPER_EXTENSION = app;

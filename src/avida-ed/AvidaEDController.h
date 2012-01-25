@@ -87,6 +87,20 @@
   CGFloat lastPopViewStatViewWidth;
   BOOL popSplitViewIsAnimating;
 
+  // Config View
+  // --------------------------------------------------------------------------------------------------------------  
+  IBOutlet NSSlider* sldCfgMutRate;
+  IBOutlet NSTextField* txtCfgMutRate;
+  IBOutlet NSTextField* txtCfgWorldX;
+  IBOutlet NSTextField* txtCfgWorldY;
+  IBOutlet NSMatrix* matCfgPlacement;
+  IBOutlet NSMatrix* matCfgEnv;
+  IBOutlet NSMatrix* matCfgRepeatability;
+  IBOutlet NSMatrix* matCfgPauseAt;
+  IBOutlet NSTextField* txtCfgPauseAt;
+  IBOutlet NSStepper* stpCfgPauseAt;
+
+  
   // Analyze View
   // --------------------------------------------------------------------------------------------------------------  
   IBOutlet NSView* analyzeView;
@@ -133,6 +147,14 @@
 - (IBAction) saveCurrentRun:(id)sender;
 - (IBAction) saveCurrentConfig:(id)sender;
 - (IBAction) saveSelectedOrganism:(id)sender;
+
+
+- (IBAction) changeMutationRate:(id)sender;
+- (IBAction) changeWorldSize:(id)sender;
+- (IBAction) changePlacement:(id)sender;
+- (IBAction) changeEnvironment:(id)sender;
+- (IBAction) changeRepeatability:(id)sender;
+- (IBAction) changePauseAt:(id)sender;
 
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;

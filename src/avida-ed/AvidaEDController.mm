@@ -130,6 +130,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) freezeCurrentRun;
 - (void) freezeGenome:(Genome*)genome;
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID;
+- (void) activateRun;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -199,8 +200,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [mapView setDimensions:[currentRun worldSize]];    
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
-    runActive = YES;
-    [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:freezerID];
+    [self activateRun];
     [txtUpdate setStringValue:[NSString stringWithFormat:@"%d updates", [currentRun currentUpdate]]];
     [currentRun pauseAt:[currentRun currentUpdate] + 1];
     [currentRun resume];
@@ -339,6 +339,15 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer reloadData];
 }
 
+
+- (void) activateRun {
+  runActive = YES;
+  [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:Avida::Viewer::FreezerID()];
+  [matCfgRepeatability setEnabled:NO];
+  [txtCfgWorldX setEnabled:NO];
+  [txtCfgWorldY setEnabled:NO];
+}
+
 @end
 
 @implementation AvidaEDController
@@ -473,8 +482,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     }
     
     if (runActive == NO) {
-      runActive = YES;
-      [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:Avida::Viewer::FreezerID()];
+      [self activateRun];
     }
 
     [currentRun resume];
@@ -610,6 +618,66 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (IBAction) saveSelectedOrganism:(id)sender {
   [self freezeGenome:[popViewStatView selectedOrgGenome]];
 }
+
+
+
+
+- (IBAction) changeMutationRate:(id)sender {
+  
+}
+
+
+- (IBAction) changeWorldSize:(id)sender {
+  
+}
+
+
+- (IBAction) changePlacement:(id)sender {
+  if ([[matCfgPlacement selectedCell] tag] == 0) {
+    [currentRun setPlacementMode:0]; // neighborhood
+  } else {    
+    [currentRun setPlacementMode:4]; // well-mixed
+  }
+}
+
+
+- (IBAction) changeEnvironment:(id)sender {
+  
+}
+
+
+- (IBAction) changeRepeatability:(id)sender {
+  if ([[matCfgRepeatability selectedCell] tag] == 0) {
+    [currentRun setRandomSeed:0]; // full random
+  } else {    
+    [currentRun setRandomSeed:100]; // fixed seed
+  }  
+}
+
+
+- (IBAction) changePauseAt:(id)sender {
+  
+  
+  // Make sure pause value is a positive integer
+  int pause_value = [txtCfgPauseAt intValue];
+  if (sender == stpCfgPauseAt) pause_value = [stpCfgPauseAt intValue];
+  if (pause_value < 0) pause_value = 0;
+  
+  [txtCfgPauseAt setIntValue:pause_value];
+  [stpCfgPauseAt setIntValue:pause_value];
+
+  // If pause at selected, set the value on the current run
+  if ([[matCfgPauseAt selectedCell] tag] == 1) {
+    [currentRun pauseAt:pause_value];
+  } else {
+    [currentRun pauseAt:-1]; // effectively clear pause at
+  }
+}
+
+
+
+
+
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState
 {

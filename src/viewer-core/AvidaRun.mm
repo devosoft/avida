@@ -141,6 +141,23 @@ void handleDriverCallback(Avida::DriverEvent event)
   driver->SetWorldSize(size.width, size.height);
 }
 
+
+- (int) placementMode {
+  return driver->PlacementMode();
+}
+
+- (void) setPlacementMode:(int)mode {
+  driver->SetPlacementMode(mode);
+}
+
+- (int) randomSeed {
+  return driver->RandomSeed();
+}
+
+- (void) setRandomSeed:(int)seed {
+  driver->SetRandomSeed(seed);
+}
+
 - (bool) hasStarted {
   return driver->HasStarted();
 }
