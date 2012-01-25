@@ -154,6 +154,30 @@ void Avida::Viewer::Driver::SetWorldSize(int x, int y)
   m_world->GetConfig().WORLD_Y.Set(y);  
 }
 
+
+int Avida::Viewer::Driver::PlacementMode()
+{
+  return m_world->GetConfig().BIRTH_METHOD.Get();
+}
+
+void Avida::Viewer::Driver::SetPlacementMode(int mode)
+{
+  m_world->GetConfig().BIRTH_METHOD.Set(mode);
+}
+
+
+int Avida::Viewer::Driver::RandomSeed()
+{
+  return m_world->GetConfig().RANDOM_SEED.Get();
+}
+
+void Avida::Viewer::Driver::SetRandomSeed(int seed)
+{
+  m_world->GetConfig().RANDOM_SEED.Set(seed);
+  m_world->GetRandom().ResetSeed(seed);
+}
+
+
 void Avida::Viewer::Driver::Pause()
 {
   m_mutex.Lock();

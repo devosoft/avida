@@ -123,6 +123,11 @@ namespace Avida {
       LIB_EXPORT int WorldX();
       LIB_EXPORT int WorldY();
       LIB_EXPORT void SetWorldSize(int x, int y);
+      
+      LIB_EXPORT int PlacementMode();
+      LIB_EXPORT void SetPlacementMode(int mode);
+      LIB_EXPORT int RandomSeed();
+      LIB_EXPORT void SetRandomSeed(int seed);
 
       
       // WorldDriver Protocol
