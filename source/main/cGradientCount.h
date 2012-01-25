@@ -102,7 +102,7 @@ public:
   void UpdateCount(cAvidaContext& ctx);
   void StateAll();
   
-  void SetGradInitialPlat(int plat_val) { m_initial_plat = plat_val; m_initial = true; }
+  void SetGradInitialPlat(double plat_val) { m_initial_plat = plat_val; m_initial = true; }
   void SetGradPeakX(int peakx) { m_peakx = peakx; }
   void SetGradPeakY(int peaky) { m_peaky = peaky; }
   void SetGradHeight(int height) { m_height = height; }

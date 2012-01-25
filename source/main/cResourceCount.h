@@ -108,7 +108,7 @@ public:
     const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
     const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
     const double& floor, const int& habitat, const int& min_size, const int& max_size,
-    const int& config, const int& count, const double& resistance, const int& plat_val, const double& threshold, 
+    const int& config, const int& count, const double& resistance, const double& plat_val, const double& threshold, 
     const int& refuge); 
   void SetGradientInflow(const int& res_id, const double& inflow);
   void SetGradientOutflow(const int& res_id, const double& outflow);

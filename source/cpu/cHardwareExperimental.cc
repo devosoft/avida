@@ -5107,7 +5107,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
 
 cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type) 
 {
-  int val = 0;
+  double val = 0;
   if (id_sought != -1) {
     tArray<double> res_count;
     if (!m_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
