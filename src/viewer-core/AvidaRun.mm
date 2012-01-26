@@ -142,6 +142,15 @@ void handleDriverCallback(Avida::DriverEvent event)
 }
 
 
+- (double) mutationRate {
+  return driver->MutationRate();
+}
+
+- (void) setMutationRate:(double)rate {
+  driver->SetMutationRate(rate);
+}
+
+
 - (int) placementMode {
   return driver->PlacementMode();
 }
@@ -150,6 +159,7 @@ void handleDriverCallback(Avida::DriverEvent event)
   driver->SetPlacementMode(mode);
 }
 
+
 - (int) randomSeed {
   return driver->RandomSeed();
 }
@@ -157,6 +167,7 @@ void handleDriverCallback(Avida::DriverEvent event)
 - (void) setRandomSeed:(int)seed {
   driver->SetRandomSeed(seed);
 }
+
 
 - (bool) hasStarted {
   return driver->HasStarted();

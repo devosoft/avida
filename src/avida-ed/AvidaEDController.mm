@@ -361,6 +361,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = nil;
     listener = NULL;
     map = NULL;
+    numCfgMutRate = [[NSNumber alloc] init];
         
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
@@ -394,6 +395,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = nil;
     listener = NULL;
     map = NULL;
+    numCfgMutRate = [[NSNumber alloc] init];
     
     freezerURL = dir;
 
@@ -621,9 +623,21 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 
-
 - (IBAction) changeMutationRate:(id)sender {
-  
+  double rate;
+  if (sender == sldCfgMutRate) {
+    rate = [sldCfgMutRate floatValue];
+    if (rate < round([sldCfgMutRate minValue])) {
+      rate = 0;
+    } else {
+      rate = pow(10, rate);
+    }
+  } else {
+    rate = [txtCfgMutRate floatValue];
+  }
+  [sldCfgMutRate setFloatValue:(rate == 0) ? [sldCfgMutRate minValue] : log10(rate)];
+  [txtCfgMutRate setFloatValue:rate];
+  [currentRun setMutationRate:rate];
 }
 
 

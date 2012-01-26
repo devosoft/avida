@@ -55,6 +55,7 @@
 - (int) currentUpdate;
 
 @property (nonatomic, readwrite) NSSize worldSize;
+@property (nonatomic, readwrite) double mutationRate;
 @property (nonatomic, readwrite) int placementMode;
 @property (nonatomic, readwrite) int randomSeed;
 
