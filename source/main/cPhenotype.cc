@@ -1737,18 +1737,18 @@ int cPhenotype::CalcToleranceOffspringOthers()
   if (intolerances[2].first == cur_update) return tolerance_max - intolerances[2].second;
 
   int intolerance_count = 0;
-  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-
+  const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();  
   
   // Update the tolerance list by getting rid of outdated records
-  while (tolerance_offspring_others.GetSize() &&*tolerance_offspring_others.GetLast() <= cur_update - update_window)
+  while (tolerance_offspring_others.GetSize() && *tolerance_offspring_others.GetLast() <= cur_update - update_window) {
     delete tolerance_offspring_others.PopRear();
+  }
   
   // And prune the list down to MAX_TOLERANCE entries.
   while (tolerance_offspring_others.GetSize() > tolerance_max)
     delete tolerance_offspring_others.PopRear();
   
-  const int tolerance = tolerance_max - tolerance_immigrants.GetSize();
+  const int tolerance = tolerance_max - tolerance_offspring_others.GetSize();
   // Update cached values
   intolerances[2].first = cur_update;
   intolerances[2].second = intolerance_count;
