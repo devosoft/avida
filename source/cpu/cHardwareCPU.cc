@@ -9541,9 +9541,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         PushToleranceInstExe(0, ctx);
 
         // Update tolerance list by removing the most recent dec_tolerance record
-        int *ptr = m_organism->GetPhenotype().GetToleranceImmigrants().Pop();
-        if(ptr != NULL) delete ptr;
-
+        delete m_organism->GetPhenotype().GetToleranceImmigrants().Pop();
+        
         // If not at individual's max tolerance, adjust both caches
         if (m_organism->GetPhenotype().GetIntolerances()[0].second != 0) {
           m_organism->GetPhenotype().GetIntolerances()[0].second--;
@@ -9562,9 +9561,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         PushToleranceInstExe(1, ctx);
 
         // Update tolerance list by removing the most recent dec_tolerance record
-        int *ptr = m_organism->GetPhenotype().GetToleranceOffspringOwn().Pop();
-        if(ptr != NULL) delete ptr;
-
+        delete  m_organism->GetPhenotype().GetToleranceOffspringOwn().Pop();
+        
         // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetIntolerances()[1].second != 0) {
           m_organism->GetPhenotype().GetIntolerances()[1].second--;
@@ -9582,8 +9580,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         PushToleranceInstExe(2, ctx);
 
         // Update tolerance list by removing the most recent dec_tolerance record
-        int *ptr = m_organism->GetPhenotype().GetToleranceOffspringOthers().Pop();
-        if(ptr != NULL) delete ptr;
+        delete m_organism->GetPhenotype().GetToleranceOffspringOthers().Pop();
+        
         
         // If not at max tolerance, increase the cache
         if (m_organism->GetPhenotype().GetIntolerances()[2].second != 0) {
