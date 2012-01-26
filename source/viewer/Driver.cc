@@ -148,10 +148,24 @@ int Avida::Viewer::Driver::WorldY()
   return m_world->GetConfig().WORLD_Y.Get();
 }
 
-void Avida::Viewer::Driver::SetWorldSize(int x, int y)
+bool Avida::Viewer::Driver::SetWorldSize(int x, int y)
 {
   m_world->GetConfig().WORLD_X.Set(x);
   m_world->GetConfig().WORLD_Y.Set(y);  
+  return true;
+}
+
+
+double Avida::Viewer::Driver::MutationRate()
+{
+  return m_world->GetConfig().COPY_MUT_PROB.Get();
+}
+
+void Avida::Viewer::Driver::SetMutationRate(double rate)
+{
+  m_world->GetConfig().COPY_MUT_PROB.Set(rate);
+  cPopulation& pop = m_world->GetPopulation();
+  for (int i = 0; i < pop.GetSize(); i++) pop.GetCell(i).MutationRates().SetCopyMutProb(rate);
 }
 
 
