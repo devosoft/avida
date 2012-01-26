@@ -165,7 +165,7 @@ public:
   void PushToleranceInstExe(int tol_inst) { ; }
   void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
             double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) { ; }
-  int& GetGroupIntolerances(int group_id, int tol_num) { int temp = 0; return temp; }
+  int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
   void BeginSleep() { ; }
   void EndSleep() { ; }
