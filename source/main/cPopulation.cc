@@ -381,6 +381,13 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   // or the merit doesn't get passed onto the offspring correctly
   cPhenotype& parent_phenotype = parent_organism->GetPhenotype();
   parent_phenotype.DivideReset(parent_organism->GetGenome().GetSequence());
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+      int group_id = parent_organism->GetOpinion().first;
+      group_intolerances[group_id][0].first = -1;
+      group_intolerances[group_id][1].first = -1;
+    }
+  }
 
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
 
@@ -6156,9 +6163,9 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
   int cur_update = m_world->GetStats().GetUpdate();
-  //if (group_intolerances[group_id][0].first == cur_update) {
-  //  return max(0 , tolerance_max - group_intolerances[group_id][0].second);
-  //}
+  if (group_intolerances[group_id][0].first == cur_update) {
+    return max(0 , tolerance_max - group_intolerances[group_id][0].second);
+  }
 
   int group_intolerance = 0;
   int single_member_intolerance = 0;
@@ -6197,7 +6204,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   int cur_update = m_world->GetStats().GetUpdate();
   int parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
   int group_intolerance = 0;
-  if (false) { //(group_intolerances[group_id][1].first == cur_update) {
+  if (group_intolerances[group_id][1].first == cur_update) {
     group_intolerance = group_intolerances[group_id][1].second;
   } else {
     int single_member_intolerance = 0;
