@@ -9750,44 +9750,7 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 // Pushes the circumstances of a tolerance instruction execution to stats. @JJB
 void cHardwareCPU::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
 {
-  if (!m_world->GetConfig().TRACK_TOLERANCE.Get()) {
-    m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst);
-    return;
-  }
-
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-
-  int group_id = m_organism->GetOpinion().first;
-  int group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
-  double resource_level = res_count[group_id];
-  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-
-  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
-  double offspring_own_odds;
-  double offspring_others_odds;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
-  int tol_own;
-  int tol_others;
-
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
-    offspring_own_odds = 1.0;
-    offspring_others_odds = 1.0;
-    tol_own = tol_max;
-    tol_others = tol_max;
-  } else {
-    offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-    offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-    tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-    tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-  }
-
-  double odds_immi = immigrant_odds * 100;
-  double odds_own = offspring_own_odds * 100;
-  double odds_others = offspring_others_odds * 100;
-
-  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
-           odds_others, tol_immi, tol_own, tol_others, tol_max);
-  return;
+  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, ctx);
 }
 
 /*! Create a link to the currently-faced cell.

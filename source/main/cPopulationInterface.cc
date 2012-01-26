@@ -1138,9 +1138,45 @@ bool cPopulationInterface::AttemptImmigrateGroup(int group_id, cOrganism* org)
   return m_world->GetPopulation().AttemptImmigrateGroup(group_id, org);
 }
 
-void cPopulationInterface::PushToleranceInstExe(int tol_inst)
+void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
 {
-  m_world->GetStats().PushToleranceInstExe(tol_inst);
+  if(!m_world->GetConfig().TRACK_TOLERANCE.Get()) {
+    m_world->GetStats().PushToleranceInstExe(tol_inst);
+    return;
+  }
+  
+  const tArray<double> res_count = GetResources(ctx);
+  
+  int group_id = GetOrganism()->GetOpinion().first;
+  int group_size = NumberOfOrganismsInGroup(group_id);
+  double resource_level = res_count[group_id];
+  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  double immigrant_odds = CalcGroupOddsImmigrants(group_id);
+  double offspring_own_odds;
+  double offspring_others_odds;
+  int tol_immi = GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
+  int tol_own;
+  int tol_others;
+  
+  if(m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
+    offspring_own_odds = 1.0;
+    offspring_others_odds = 1.0;
+    tol_own = tol_max;
+    tol_others = tol_max;
+  } else {
+    offspring_own_odds = CalcGroupOddsOffspring(GetOrganism());
+    offspring_others_odds = CalcGroupOddsOffspring(group_id);
+    tol_own = GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
+    tol_others = GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
+  }
+  
+  double odds_immi = immigrant_odds * 100;
+  double odds_own = offspring_own_odds * 100;
+  double odds_others = offspring_others_odds * 100;
+  
+  PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
+  return;
 }
 
 void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
