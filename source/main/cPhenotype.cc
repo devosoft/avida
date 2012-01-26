@@ -1670,7 +1670,7 @@ int cPhenotype::CalcToleranceImmigrants()
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
   // Check if cached value is up-to-date, return
-//  if (intolerances[0].first == cur_update) return tolerance_max - intolerances[0].second;
+  if (intolerances[0].first == cur_update) return tolerance_max - intolerances[0].second;
 
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
   
@@ -1701,7 +1701,7 @@ int cPhenotype::CalcToleranceOffspringOwn()
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
 
   // Check if cached value is up-to-date, return
-//  if (intolerances[1].first == cur_update) return tolerance_max - intolerances[1].second;
+  if (intolerances[1].first == cur_update) return tolerance_max - intolerances[1].second;
 
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
   
@@ -1732,7 +1732,7 @@ int cPhenotype::CalcToleranceOffspringOthers()
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
 
   // Check if cached value is up-to-date, return
-//  if (intolerances[2].first == cur_update) return tolerance_max - intolerances[2].second;
+  if (intolerances[2].first == cur_update) return tolerance_max - intolerances[2].second;
 
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();  
   
