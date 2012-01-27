@@ -287,8 +287,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     if (![selectionDelegate mapView:self writeSelectionToPasteboard:pboard]) return;
 
     NSPoint location = [self convertPoint:[event locationInWindow] fromView:nil];
-    location.x -= 20;
-    location.y -= 20;
+    location.y -= 40;
 
     [self dragImage:image at:location offset:NSMakeSize(0,0) event:event pasteboard:pboard source:selectionDelegate slideBack:YES];
   }
@@ -296,7 +295,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 
 - (NSColor*) colorOfX:(int)x Y:(int)y {
-  int color = map_colors[x * map_width + y];
+  int color = map_colors[x + (y * map_width)];
   switch (color) {
     case -4:  return [NSColor blackColor];
     case -3:  return [NSColor darkGrayColor];
