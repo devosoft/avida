@@ -45,6 +45,10 @@ public:
     : m_testcpu(testcpu), m_test_info(test_info), m_cur_depth(cur_depth) { ; }
   virtual ~cTestCPUInterface() { ; }
 
+  
+  tSmartArray <cOrganism*> GetLiveOrgList();
+  cPopulationCell* GetCell() { return NULL; }
+	cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }

@@ -31,6 +31,7 @@
 #ifndef cOrgInterface_h
 #define cOrgInterface_h
 
+
 namespace Avida {
   class Genome;
   class Sequence;
@@ -42,8 +43,10 @@ class cDeme;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
+class cPopulationCell;
 class cString;
 template <class T> class tArray;
+template <class T> class tSmartArray;
 
 using namespace Avida;
 
@@ -58,7 +61,10 @@ public:
   cOrgInterface() { ; }
   virtual ~cOrgInterface() { ; }
 
+  virtual tSmartArray <cOrganism*> GetLiveOrgList() = 0;
   virtual int GetCellID() = 0;
+	virtual cPopulationCell* GetCell() = 0;
+	virtual cPopulationCell* GetCell(int cell_id) = 0;
   virtual int GetDemeID() = 0;
   virtual cDeme* GetDeme() = 0;
   virtual void SetCellID(int in_id) = 0;

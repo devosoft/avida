@@ -66,12 +66,14 @@ public:
   cPopulationInterface(cWorld* world);
   virtual ~cPopulationInterface();
 
+  tSmartArray <cOrganism*> GetLiveOrgList();
 	//! Retrieve this organism.
 	cOrganism* GetOrganism();
 	//! Retrieve the ID of this cell.
   int GetCellID() { return m_cell_id; }
 	//! Retrieve the cell in which this organism lives.
 	cPopulationCell* GetCell();
+	cPopulationCell* GetCell(int cell_id);
 	cPopulationCell* GetAVCell();
 	//! Retrieve the cell currently faced by this organism.
 	cPopulationCell* GetCellFaced();

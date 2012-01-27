@@ -519,7 +519,6 @@ private:
   bool Inst_ZeroEasterly(cAvidaContext& ctx);
   bool Inst_ZeroNortherly(cAvidaContext& ctx);
   bool Inst_ZeroPosOffset(cAvidaContext& ctx);
-  bool Inst_GetPosition(cAvidaContext& ctx);
   
   // Rotation
   bool Inst_RotateLeftOne(cAvidaContext& ctx);
