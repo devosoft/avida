@@ -376,18 +376,20 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   tArray<cOrganism*> offspring_array;
   tArray<cMerit> merit_array;
 
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+      int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+      int group_id = parent_organism->GetOpinion().first;
+      group_intolerances[group_id][0].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceImmigrants();
+      group_intolerances[group_id][1].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
+    }
+  }
+
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the offspring correctly
   cPhenotype& parent_phenotype = parent_organism->GetPhenotype();
   parent_phenotype.DivideReset(parent_organism->GetGenome().GetSequence());
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-      int group_id = parent_organism->GetOpinion().first;
-      group_intolerances[group_id][0].first = -1;
-      group_intolerances[group_id][1].first = -1;
-    }
-  }
 
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
 
@@ -6084,8 +6086,9 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   m_groups[group_id]++;
   group_list[group_id].Push(org);
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
-    group_intolerances[group_id][0].first = -1;
-    group_intolerances[group_id][1].first = -1;
+    int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+    group_intolerances[group_id][0].second += tol_max - org->GetPhenotype().CalcToleranceImmigrants();
+    group_intolerances[group_id][1].second += tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
   }
 }
 
@@ -6122,8 +6125,9 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
   }
 
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
-    group_intolerances[group_id][0].first = -1;
-    group_intolerances[group_id][1].first = -1;
+    int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+    group_intolerances[group_id][0].first -= tol_max - org->GetPhenotype().CalcToleranceImmigrants();
+    group_intolerances[group_id][1].first -= tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
   }
 
   for (int i = 0; i < group_list[group_id].GetSize(); i++) {
