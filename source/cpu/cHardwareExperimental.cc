@@ -4183,7 +4183,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
       
       // If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
       if (tolerance_to_modify == rAX) {
-        PushToleranceInstExe(0, ctx);
+        m_organism->GetOrgInterface().PushToleranceInstExe(0, ctx);
         
         // Update tolerance list by removing the most recent dec_tolerance record
         delete m_organism->GetPhenotype().GetToleranceImmigrants().Pop();
@@ -4202,7 +4202,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
       
       // If ?BX? move updates of own offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
       if ((tolerance_to_modify == rBX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(1, ctx);
+        m_organism->GetOrgInterface().PushToleranceInstExe(1, ctx);
         
         // Update tolerance list by removing the most recent dec_tolerance record
         delete m_organism->GetPhenotype().GetToleranceOffspringOwn().Pop();
@@ -4221,7 +4221,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
       
       // If ?CX? move updates of others offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
       if ((tolerance_to_modify == rCX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(2, ctx);
+        m_organism->GetOrgInterface().PushToleranceInstExe(2, ctx);
         
         // Update tolerance list by removing the most recent dec_tolerance record
         delete m_organism->GetPhenotype().GetToleranceOffspringOthers().Pop();
@@ -4252,84 +4252,29 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 {
+  // Exit if the org is not a predator
   if (m_organism->GetForageTarget() != -2) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      // If this instruction is not nop modified it fails to execute and does nothing
-      if (!(m_inst_set->IsNop(getIP().GetNextInst())) || m_organism->GetOpinion().first == -1) return false;
-      
-      const int cur_update = m_world->GetStats().GetUpdate();
-      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-      
-      const int tolerance_to_modify = FindModifiedRegister(rBX);
-      int tolerance_count = 0;
-      
-      // If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
-      if (tolerance_to_modify == rAX) {
-        PushToleranceInstExe(3, ctx);
-        
-        // Update tolerance list by storing the current update at the front of the list.
-        tList<int> &tol_list = m_organism->GetPhenotype().GetToleranceImmigrants();
-        tol_list.Push(new int(cur_update));
-        if (tol_list.GetSize() > tolerance_max) delete tol_list.PopRear();
-
-        // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
-          m_organism->GetPhenotype().GetIntolerances()[0].second++;
-        }
-        // Retrieve modified tolerance total for immigrants.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
-        
-        // Output tolerance total to BX register.
-        setInternalValue(rBX, tolerance_count, true);
-        return true;
-      }
-      
-      // If ?BX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
-      if ((tolerance_to_modify == rBX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(4, ctx);
-        
-        // Update tolerance list by storing the current update at the front of the list.
-        tList<int> &tol_list = m_organism->GetPhenotype().GetToleranceOffspringOwn();
-        tol_list.Push(new int(cur_update));
-        if(tol_list.GetSize() > tolerance_max) delete tol_list.PopRear();
-        
-        // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetIntolerances()[1].second != tolerance_max) {
-          m_organism->GetPhenotype().GetIntolerances()[1].second++;
-        }
-        // Retrieve modified tolerance total for own offspring.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-        
-        // Output tolerance total to BX register.
-        setInternalValue(rBX, tolerance_count, true);
-        return true;
-      }
-      
-      // If ?CX? move update records of other offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
-      if ((tolerance_to_modify == rCX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(5, ctx);
-        
-        // Update tolerance list by storing the current update at the front of the list.
-        tList<int> &tol_list = m_organism->GetPhenotype().GetToleranceOffspringOthers();
-        tol_list.Push(new int(cur_update));
-        if(tol_list.GetSize() > tolerance_max) delete tol_list.PopRear();
-
-        // If not at min tolerance, decrease the cache
-        if (m_organism->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
-          m_organism->GetPhenotype().GetIntolerances()[2].second++;
-        }
-        // Retrieve modified tolerance total for other offspring in the group.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        
-        // Output tolerance total to BX register.
-        setInternalValue(rBX, tolerance_count, true);
-        return true;
-      } 
-      return false;
-    }
-  }
-  return false;
+  // Exit if tolerance is not enabled
+  if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
+  if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  // Exit if organism is not in a group
+  if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+  // Exit if the instruction is not nop-modified
+  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  
+  const int tolerance_to_modify = FindModifiedRegister(rBX);
+  
+  int toleranceType = -1;
+  if (tolerance_to_modify == rAX) toleranceType = 0;
+  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
+  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
+  
+  // Not a recognized register
+  if (toleranceType == -1) return false;
+  
+  // Update the tolerance and store the result in register B
+  setInternalValue(rBX, m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx));
+  return true;
 }
 
 /* Retrieve current tolerance levels, placing each tolerance in a different register.
@@ -4343,7 +4288,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
-      PushToleranceInstExe(6, ctx);
+      m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
       
       int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
       int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
@@ -4368,7 +4313,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      PushToleranceInstExe(7, ctx);
+      m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
       
       const int group_id = m_organism->GetOpinion().first;
       if (group_id == -1) return false;
@@ -4390,43 +4335,5 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
     }
   }
   return false;
-}
-
-// Pushes the circumstances of a tolerance instruction execution to stats. @JJB
-void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
-{
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  
-  int group_id = m_organism->GetOpinion().first;
-  if (group_id == -1) return;
-  int group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
-  double resource_level = res_count[group_id];
-  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-  
-  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
-  double offspring_own_odds;
-  double offspring_others_odds;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
-  int tol_own;
-  int tol_others;
-  
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
-    offspring_own_odds = 1.0;
-    offspring_others_odds = 1.0;
-    tol_own = tol_max;
-    tol_others = tol_max;
-  } else {
-    offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-    offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-    tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-    tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-  }
-
-  double odds_immi = immigrant_odds * 100;
-  double odds_own = offspring_own_odds * 100;
-  double odds_others = offspring_others_odds * 100;
-  
-  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
-                                                     odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 

@@ -955,7 +955,6 @@ public:
 	bool Inst_GetTolerance(cAvidaContext& ctx);
 	// Get group tolerance levels @JJB
 	bool Inst_GetGroupTolerance(cAvidaContext& ctx);
-    void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx); // @JJB
   
 	// -------- Network creation support --------
 public:
