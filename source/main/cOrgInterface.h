@@ -156,6 +156,7 @@ public:
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
     
+  virtual int DecTolerance(int toleranceType, cAvidaContext &ctx) = 0;
   virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
   virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism) = 0;
   virtual double CalcGroupOddsImmigrants(int group_id) = 0;
