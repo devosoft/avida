@@ -131,6 +131,8 @@ namespace Avida {
       LIB_EXPORT int RandomSeed();
       LIB_EXPORT void SetRandomSeed(int seed);
 
+      LIB_EXPORT double ReactionValue(const Apto::String& name);
+      LIB_EXPORT void SetReactionValue(const Apto::String& name, double value);
       
       // WorldDriver Protocol
       // ------------------------------------------------------------------------------------------------------------  

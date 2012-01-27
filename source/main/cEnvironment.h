@@ -133,6 +133,7 @@ public:
   int GetOutputSize() const { return m_output_size; };
 
   const cString& GetReactionName(int reaction_id) const;
+  double GetReactionValue(const cString& name);
   double GetReactionValue(int reaction_id);
   bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);
   bool SetReactionValueMult(const cString& name, double value_mult);

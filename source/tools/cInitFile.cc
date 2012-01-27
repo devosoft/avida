@@ -369,7 +369,9 @@ cString cInitFile::ReadString(const tArray<cString>& names, cString def, bool wa
   }
 
   if (found == false) {
-    m_feedback.Warning("%s not in '%s', defaulting to: %s", (const char*) names[0], (const char*)m_filename, (const char*)def);
+    if (warn_default) {
+      m_feedback.Warning("%s not in '%s', defaulting to: %s", (const char*) names[0], (const char*)m_filename, (const char*)def);
+    }
     return def;
   }
 

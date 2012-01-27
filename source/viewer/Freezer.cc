@@ -26,6 +26,7 @@
 #include "avida/core/Genome.h"
 
 #include "cAvidaConfig.h"
+#include "cEnvironment.h"
 #include "cFile.h"
 #include "cPopulation.h"
 #include "cWorld.h"
@@ -640,15 +641,16 @@ namespace Avida {
         fs = file.GetFileStream();
         
         // @TODO 
-        *fs << "REACTION  NOT  not   process:value=1.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  NAND nand  process:value=1.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  AND  and   process:value=2.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  ORN  orn   process:value=2.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  OR   or    process:value=3.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  ANDN andn  process:value=3.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  NOR  nor   process:value=4.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  XOR  xor   process:value=4.0:type=pow  requisite:max_count=1" << std::endl;
-        *fs << "REACTION  EQU  equ   process:value=5.0:type=pow  requisite:max_count=1" << std::endl;
+        cEnvironment& env = world->GetEnvironment();
+        *fs << "REACTION  NOT  not   process:value=" << env.GetReactionValue("NOT")  << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  NAND nand  process:value=" << env.GetReactionValue("NAND") << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  AND  and   process:value=" << env.GetReactionValue("AND")  << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  ORN  orn   process:value=" << env.GetReactionValue("ORN")  << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  OR   or    process:value=" << env.GetReactionValue("OR")   << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  ANDN andn  process:value=" << env.GetReactionValue("ANDN") << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  NOR  nor   process:value=" << env.GetReactionValue("NOR")  << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  XOR  xor   process:value=" << env.GetReactionValue("XOR")  << ":type=pow  requisite:max_count=1" << std::endl;
+        *fs << "REACTION  EQU  equ   process:value=" << env.GetReactionValue("EQU")  << ":type=pow  requisite:max_count=1" << std::endl;
         
         file.Close();
         

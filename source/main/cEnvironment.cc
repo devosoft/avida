@@ -1744,6 +1744,13 @@ const cString& cEnvironment::GetReactionName(int reaction_id) const
   return reaction_lib.GetReaction(reaction_id)->GetName();
 }
 
+double cEnvironment::GetReactionValue(const cString& name)
+{
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return 0.0;
+  return found_reaction->GetValue();
+}
+
 double cEnvironment::GetReactionValue(int reaction_id)
 {
   cReaction* found_reaction = reaction_lib.GetReaction(reaction_id);

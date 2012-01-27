@@ -29,6 +29,7 @@
 #include "avida/viewer/Listener.h"
 
 #include "cAvidaContext.h"
+#include "cEnvironment.h"
 #include "cFile.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
@@ -195,6 +196,17 @@ void Avida::Viewer::Driver::SetRandomSeed(int seed)
 }
 
 
+double Avida::Viewer::Driver::ReactionValue(const Apto::String& name)
+{
+  return m_world->GetEnvironment().GetReactionValue((const char*)name);
+}
+
+void Avida::Viewer::Driver::SetReactionValue(const Apto::String& name, double value)
+{
+  cAvidaContext ctx(this, m_world->GetRandom());
+  m_world->GetEnvironment().SetReactionValue(ctx, (const char*)name, value);
+}
+
 void Avida::Viewer::Driver::Pause()
 {
   m_mutex.Lock();
@@ -264,7 +276,7 @@ void Avida::Viewer::Driver::Run()
     // Handle initial inject queue requests
     while (m_inject_queue.GetSize()) {
       InjectGenomeInfo* info = m_inject_queue.Pop();
-      int cell_id = info->x * population.GetWorldX() + info->y;
+      int cell_id = info->x + population.GetWorldX() * info->y;
       population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx);          
       delete info;
     }
