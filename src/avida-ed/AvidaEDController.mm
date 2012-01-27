@@ -811,7 +811,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     } else {
       CGFloat diffWidth = floor(newFrame.size.width - oldSize.width);
       
-      if (rightFrame.size.width <= POP_SPLIT_RIGHT_MIN) {
+      if (rightFrame.size.width <= POP_SPLIT_RIGHT_MIN && !popSplitViewIsAnimating) {
         leftFrame.size.width = newFrame.size.width - dividerThickness - POP_SPLIT_RIGHT_MIN;
         rightFrame.size.width = POP_SPLIT_RIGHT_MIN;
       } else if (leftFrame.size.width > POP_SPLIT_LEFT_MIN) {
