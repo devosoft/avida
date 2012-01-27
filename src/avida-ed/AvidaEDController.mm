@@ -185,6 +185,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   
   runActive = NO;
+  [matCfgRepeatability setEnabled:YES];
+  [txtCfgWorldX setEnabled:YES];
+  [txtCfgWorldY setEnabled:YES];
+
   
   // create working directory
   NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -197,7 +201,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   if (freezerID.type == Avida::Viewer::CONFIG) {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
     [txtUpdate setStringValue:@"-1 updates"];
-    [mapView setDimensions:[currentRun worldSize]];    
+    [mapView setDimensions:[currentRun worldSize]];
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
     [self activateRun];
@@ -209,9 +213,19 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // update interface
   [txtRun setStringValue:[NSString stringWithAptoString:freezer->NameOf(freezerID)]];
   [btnRunState setTitle:@"Run"];
+  
+  double mutrate = [currentRun mutationRate];
+  [sldCfgMutRate setFloatValue:(mutrate == 0) ? [sldCfgMutRate minValue] : log10(mutrate)];
+  [txtCfgMutRate setFloatValue:mutrate];
+  NSSize worldsize = [currentRun worldSize];
+  [txtCfgWorldX setIntValue:worldsize.width];
+  [txtCfgWorldY setIntValue:worldsize.height];
+  [matCfgPlacement selectCellWithTag:([currentRun placementMode] == 0) ? 0 : 1];
+  [matCfgRepeatability selectCellWithTag:([currentRun randomSeed] == 0) ? 0 : 1];
+  [matCfgPauseAt selectCellWithTag:0];
 
   listener = new MainThreadListener(self);
-  [currentRun attachListener:self];  
+  [currentRun attachListener:self];
 }
 
 - (void) loadRunFromFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo
@@ -361,7 +375,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = nil;
     listener = NULL;
     map = NULL;
-    numCfgMutRate = [[NSNumber alloc] init];
         
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
@@ -395,7 +408,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = nil;
     listener = NULL;
     map = NULL;
-    numCfgMutRate = [[NSNumber alloc] init];
     
     freezerURL = dir;
 
@@ -642,7 +654,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) changeWorldSize:(id)sender {
-  
+  [currentRun setWorldSize:NSMakeSize([txtCfgWorldX intValue], [txtCfgWorldY intValue])];
+  [mapView setDimensions:[currentRun worldSize]];
 }
 
 
@@ -965,12 +978,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (void) outlineViewDidReceiveEnterOrSpaceKey:(NSOutlineView*)outlineView {
-  Avida::Viewer::FreezerID fid = [[outlineView itemAtRow:[outlineView selectedRow]] freezerID];
-  if (fid.type == Avida::Viewer::CONFIG || fid.type == Avida::Viewer::WORLD) {
-    [self loadRunFromFreezer:fid];
-  } else {
-    // @TODO handle genome
-  }
+//  Avida::Viewer::FreezerID fid = [[outlineView itemAtRow:[outlineView selectedRow]] freezerID];
+//  if (fid.type == Avida::Viewer::CONFIG || fid.type == Avida::Viewer::WORLD) {
+//    [self loadRunFromFreezer:fid];
+//  } else {
+//    // @TODO handle genome
+//  }
 }
 
 

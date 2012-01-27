@@ -77,6 +77,14 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     zval = floor(zval);
     [self setZoom:zval];
   } else {
+    CGFloat block_size = zoom;
+    CGFloat grid_width = (block_size > 5.0) ? 1.0 : 0.0;
+
+    NSSize mapSize;
+    mapSize.width = map_width * block_size - grid_width;
+    mapSize.height = map_height * block_size - grid_width;    
+    [self setFrameSize:mapSize];
+
     [self setNeedsDisplay:YES];
   }  
 }
@@ -149,7 +157,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   for (int i = 0; i < map_width; i++) {
     for (int j = 0; j < map_height; j++) {
       gridCellRect.origin = NSMakePoint(mapRect.origin.x + block_size * i, mapRect.origin.y + block_size * j);
-      int color = map_colors[i * map_width + j];
+      int color = map_colors[i + j * map_width];
       switch (color) {
         case -4:  break;
         case -3:  [[NSColor darkGrayColor] set]; [NSBezierPath fillRect:gridCellRect]; break;
@@ -163,7 +171,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
         [[NSColor greenColor] set];
       } else {
         // Handle tag coloration
-        int tag = map_tags[i * map_width + j];
+        int tag = map_tags[i + j * map_width];
         switch (tag) {
           case -4:  continue;
           case -3:  [[NSColor darkGrayColor] set]; break;
@@ -234,7 +242,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   assert(x < map_width);
   assert(y < map_height);
   
-  map_colors[x * map_width + y] = -2;
+  map_colors[x + y * map_width] = -2;
   [self setNeedsDisplay:YES];
 }
 
