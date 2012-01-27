@@ -22,26 +22,35 @@
 }
 
 
-- (void) dragImage:(NSImage*)anImage at:(NSPoint)imageLoc offset:(NSSize)mouseOffset event:(NSEvent*)theEvent 
+- (void) dragImage:(NSImage*)anImage at:(NSPoint)imageLoc offset:(NSSize)mouseOffset event:(NSEvent*)event 
          pasteboard:(NSPasteboard*)pboard source:(id)sourceObject slideBack:(BOOL)slideBack
 {
   Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
   
+  NSPoint clickLocation = [self convertPoint:[event locationInWindow] fromView:nil];
+  NSPoint dragLocation;
   NSImage* selImage = anImage;
   
   switch (fid.type) {
-    case Avida::Viewer::CONFIG: selImage = imgConfig; break;
-    case Avida::Viewer::GENOME: selImage = imgGenome; break;
-    case Avida::Viewer::WORLD:  selImage = imgWorld;  break;
+    case Avida::Viewer::CONFIG:
+      selImage = imgConfig;
+      dragLocation.x = clickLocation.x - ([selImage size].width / 2);
+      dragLocation.y = clickLocation.y + ([selImage size].height / 2);
+      break;
+    case Avida::Viewer::GENOME:
+      selImage = imgGenome;
+      dragLocation.x = clickLocation.x;
+      dragLocation.y = clickLocation.y + [selImage size].height;
+      break;
+    case Avida::Viewer::WORLD:
+      selImage = imgWorld;
+      dragLocation.x = clickLocation.x - ([selImage size].width / 2);
+      dragLocation.y = clickLocation.y + ([selImage size].height / 2);
+      break;
     default: break;
   }
   
-  NSPoint location;
-  NSSize size = [selImage size];
-  location.x = ([self bounds].size.width - size.width) / 2;
-  location.y = imageLoc.y - ([anImage size].height / 2) + (size.height / 2);
-  
-  [super dragImage:selImage at:location offset:NSMakeSize(0,0) event:theEvent pasteboard:pboard source:sourceObject slideBack:slideBack];
+  [super dragImage:selImage at:dragLocation offset:NSMakeSize(0,0) event:event pasteboard:pboard source:sourceObject slideBack:slideBack];
 }
 
 - (BOOL) performKeyEquivalent:(NSEvent*)theEvent {
