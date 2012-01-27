@@ -388,6 +388,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = nil;
     listener = NULL;
     map = NULL;
+    popSplitViewIsAnimating = NO;
         
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
@@ -421,6 +422,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = nil;
     listener = NULL;
     map = NULL;
+    popSplitViewIsAnimating = NO;
     
     freezerURL = dir;
 
@@ -566,12 +568,14 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (IBAction) togglePopViewStatView:(id)sender {
-  CGFloat dividerThickness = [popSplitView dividerThickness];
   
   if (popSplitViewIsAnimating) return;
   
   if ([sender state] == NSOnState) {
     // uncollapse
+    [popSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    CGFloat dividerThickness = [popSplitView dividerThickness];
+
     NSRect oldPopViewStatViewFrame = popViewStatView.frame;
     oldPopViewStatViewFrame.size.width = 0;
     oldPopViewStatViewFrame.origin.x = popSplitView.frame.size.width;
@@ -599,6 +603,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     // collapse
     // Store last width so we can jump back
     lastPopViewStatViewWidth = popViewStatView.frame.size.width;
+    if (lastPopViewStatViewWidth < POP_SPLIT_RIGHT_MIN) lastPopViewStatViewWidth = POP_SPLIT_RIGHT_MIN;
+    [popSplitView setDividerStyle:NSSplitViewDividerStylePaneSplitter];
+    CGFloat dividerThickness = [popSplitView dividerThickness];
     
     NSMutableDictionary *collapseMainAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
     [collapseMainAnimationDict setObject:popViewDishView forKey:NSViewAnimationTargetKey];
@@ -764,12 +771,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     int diffWidth = newFrame.size.width - oldSize.width;
     
-    if ((leftFrame.size.width <= MAIN_SPLIT_LEFT_MIN && diffWidth < 0) || diffWidth > 0) {
-      rightFrame.size.width += diffWidth;
-      leftFrame.size.width = newFrame.size.width - rightFrame.size.width - dividerThickness;
-    } else if (rightFrame.size.width <= MAIN_SPLIT_RIGHT_MIN && diffWidth < 0) {
-      leftFrame.size.width += diffWidth;
-      rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
+    if (leftFrame.size.width <= MAIN_SPLIT_LEFT_MIN) {
+      leftFrame.size.width = MAIN_SPLIT_LEFT_MIN;
+      rightFrame.size.width = newFrame.size.width - dividerThickness - MAIN_SPLIT_LEFT_MIN;
+    } else if (rightFrame.size.width <= MAIN_SPLIT_RIGHT_MIN) {
+      leftFrame.size.width = newFrame.size.width - dividerThickness - MAIN_SPLIT_RIGHT_MIN;
+      rightFrame.size.width = MAIN_SPLIT_RIGHT_MIN;
     } else {
       leftFrame.size.width += diffWidth * MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE;
       rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
@@ -780,8 +787,14 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     rightFrame.size.height = newFrame.size.height;
     rightFrame.origin.x = leftFrame.size.width + dividerThickness;
     
+//    printf("outer = %d x %d @ (%d, %d)  right = %d x %d @ (%d, %d)  left = %d x %d @ (%d, %d)\n",
+//           (int)newFrame.size.width, (int)newFrame.size.height, (int)newFrame.origin.x, (int)newFrame.origin.y,
+//           (int)rightFrame.size.width, (int)rightFrame.size.height, (int)rightFrame.origin.x, (int)rightFrame.origin.y,
+//           (int)leftFrame.size.width, (int)leftFrame.size.height, (int)leftFrame.origin.x, (int)leftFrame.origin.y);
+
     [leftView setFrame:leftFrame];
     [rightView setFrame:rightFrame];
+    [mainSplitView adjustSubviews];
   } else if (splitView == popSplitView) {
     NSView* leftView = [[splitView subviews] objectAtIndex:0];
     NSView* rightView = [[splitView subviews] objectAtIndex:1];
@@ -791,22 +804,37 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     CGFloat dividerThickness = [splitView dividerThickness];
     
-    CGFloat diffWidth = floor(newFrame.size.width - oldSize.width);
-    
-    leftFrame.size.height = newFrame.size.height;
-    leftFrame.origin = NSMakePoint(0, 0);
-    if ((rightFrame.size.width <= POP_SPLIT_RIGHT_MIN && diffWidth < 0) || diffWidth > 0) {
-      leftFrame.size.width += diffWidth;
-    } else if (leftFrame.size.width > POP_SPLIT_LEFT_MIN) {
-      leftFrame.size.width += floor(diffWidth * POP_SPLIT_LEFT_PROPORTIONAL_RESIZE);
+    if ([splitView isSubviewCollapsed:popViewStatView]) {
+      leftFrame.size.height = newFrame.size.height;
+      leftFrame.origin = NSMakePoint(0, 0);
+      leftFrame.size.width = newFrame.size.width - dividerThickness;      
+    } else {
+      CGFloat diffWidth = floor(newFrame.size.width - oldSize.width);
+      
+      if (rightFrame.size.width <= POP_SPLIT_RIGHT_MIN) {
+        leftFrame.size.width = newFrame.size.width - dividerThickness - POP_SPLIT_RIGHT_MIN;
+        rightFrame.size.width = POP_SPLIT_RIGHT_MIN;
+      } else if (leftFrame.size.width > POP_SPLIT_LEFT_MIN) {
+        leftFrame.size.width += floor(diffWidth * POP_SPLIT_LEFT_PROPORTIONAL_RESIZE);
+        rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
+      }
+      
+      leftFrame.size.height = newFrame.size.height;
+      leftFrame.origin = NSMakePoint(0, 0);
+      rightFrame.size.height = newFrame.size.height;
+      rightFrame.origin.x = leftFrame.size.width + dividerThickness;
     }
     
-    rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
-    rightFrame.size.height = newFrame.size.height;
-    rightFrame.origin.x = leftFrame.size.width + dividerThickness;
+    if (rightFrame.size.width) lastPopViewStatViewWidth = rightFrame.size.width;
     
+//    printf("outer = %d x %d @ (%d, %d)  right = %d x %d @ (%d, %d)  left = %d x %d @ (%d, %d)\n",
+//           (int)newFrame.size.width, (int)newFrame.size.height, (int)newFrame.origin.x, (int)newFrame.origin.y,
+//           (int)rightFrame.size.width, (int)rightFrame.size.height, (int)rightFrame.origin.x, (int)rightFrame.origin.y,
+//           (int)leftFrame.size.width, (int)leftFrame.size.height, (int)leftFrame.origin.x, (int)leftFrame.origin.y);
+
     [leftView setFrame:leftFrame];
     [rightView setFrame:rightFrame];
+    [splitView adjustSubviews];
   }
 }
 
@@ -834,12 +862,25 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (void) splitViewDidResizeSubviews:(NSNotification*)notification {
-  if (!popSplitViewIsAnimating) {
-    if ([popSplitView isSubviewCollapsed:popViewStatView]) {
-      [btnTogglePopViewStatView setState:NSOffState];
-    } else {
-      [btnTogglePopViewStatView setState:NSOnState];
+  if ([notification object] == popSplitView) {
+    if (!popSplitViewIsAnimating) {
+      if ([popSplitView isSubviewCollapsed:popViewStatView]) {
+        [btnTogglePopViewStatView setState:NSOffState];
+        [popSplitView setDividerStyle:NSSplitViewDividerStylePaneSplitter];
+      } else {
+        [btnTogglePopViewStatView setState:NSOnState];
+        [popSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+      }
+      [popSplitView adjustSubviews];
     }
+  }
+  if ([notification object] == mainSplitView) {
+    if ([mainSplitView isSubviewCollapsed:mainSplitViewLeft]) {
+      [mainSplitView setDividerStyle:NSSplitViewDividerStylePaneSplitter];
+    } else {
+      [mainSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    }
+    [mainSplitView adjustSubviews];
   }
 }
 

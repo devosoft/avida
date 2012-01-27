@@ -32,6 +32,9 @@
 
 @implementation SubtleSplitView
 
-- (NSColor*) dividerColor { return [NSColor clearColor]; }
+- (NSColor*) dividerColor {
+  if ([self dividerStyle] == NSSplitViewDividerStyleThin) return [NSColor clearColor];
+  return [super dividerColor];
+}
 
 @end

@@ -48,6 +48,7 @@
 {
   
   IBOutlet NSSplitView* mainSplitView;
+  IBOutlet NSView* mainSplitViewLeft;
 
   // Freezer
   // --------------------------------------------------------------------------------------------------------------  

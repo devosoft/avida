@@ -469,7 +469,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
     [btnGraphSelect setNeedsDisplay:YES];
     
     panel_bounds.size.width = floor(bounds.size.width - 2 * spacing);
-    panel_bounds.size.height = floor(bounds.size.height - 322.0 - (2 * spacing) - 32.0 - 100.0);
+    panel_bounds.size.height = floor(bounds.size.height - 322.0 - (2 * spacing) - 32.0);
     panel_bounds.origin.x = spacing;
     panel_bounds.origin.y = 322.0 + spacing + 32.0;
     [graphView setFrame:panel_bounds];
