@@ -88,7 +88,6 @@ using namespace AvidaTools;
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
 , schedule(NULL)
-//, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
 , birth_chamber(world)
 , print_mini_trace_genomes(true)
 , environment(world->GetEnvironment())
@@ -96,93 +95,71 @@ cPopulation::cPopulation(cWorld* world)
 , sync_events(false)
 , m_hgt_resid(-1)
 {
-  // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
-  world_z = world->GetConfig().WORLD_Z.Get();
 
-  int num_demes = m_world->GetConfig().NUM_DEMES.Get();
-  const int num_cells = world_x * world_y * world_z;
-  const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
 
-  if (m_world->GetConfig().ENERGY_CAP.Get() == -1) {
-    m_world->GetConfig().ENERGY_CAP.Set(std::numeric_limits<double>::max());
-  }
-
-  if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)  {
-    sleep_log = new tVector<pair<int,int> >[world_x*world_y];
-  }
-  // Print out world details
-  if (world->GetVerbosity() > VERBOSE_NORMAL) {
-    cout << "Building world " << world_x << "x" << world_y << "x" << world_z << " = " << num_cells << " organisms." << endl;
-    switch(geometry) {
-      case nGeometry::GRID: { cout << "Geometry: Bounded grid" << endl; break; }
-      case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break; }
-      case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
-      case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
-      case nGeometry::LATTICE: { cout << "Geometry: Lattice" << endl; break; }
-      case nGeometry::PARTIAL: { cout << "Geometry: Partial" << endl; break; }
-			case nGeometry::RANDOM_CONNECTED: { cout << "Geometry: Random connected" << endl; break; }
-      case nGeometry::SCALE_FREE: { cout << "Geometry: Scale-free" << endl; break; }
-
-      default:
-        cout << "Unknown geometry!" << endl;
-        assert(false);
-    }
-  }
-
-  // Invalid settings should be changed to one deme
-  if (num_demes <= 0) {
-    num_demes = 1; // One population == one deme.
-  }
-
-  // Not ready for prime time yet; need to look at how resources work in this now
-  // more complex world.
-  assert(world_z == 1);
+  // Validate settings
+  if (m_world->GetConfig().ENERGY_CAP.Get() == -1) m_world->GetConfig().ENERGY_CAP.Set(std::numeric_limits<double>::max());
+  
 
   // The following combination of options creates an infinite rotate-loop:
-  assert(!((m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()==0)
-           && (m_world->GetConfig().DEMES_ORGANISM_FACING.Get()==1)
+  assert(!((m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()==0) && (m_world->GetConfig().DEMES_ORGANISM_FACING.Get()==1)
            && (m_world->GetConfig().WORLD_GEOMETRY.Get()==1)));
-
+  
   // Incompatible deme replication strategies:
-  assert(!(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()
-           && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
-  assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
-           && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
-  assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
-           && (m_world->GetConfig().MIGRATION_RATE.Get()>0.0)));
+  assert(!(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
+  assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get() && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
+  assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get() && (m_world->GetConfig().MIGRATION_RATE.Get()>0.0)));
 
-#ifdef DEBUG
-  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+  
+  SetupCellGrid();
+  
+  Data::ArgumentedProviderActivateFunctor activate(m_world, &cWorld::GetPopulationProvider);
+  m_world->GetDataManager()->Register("core.population.group_id[]", activate);
+}
 
-  if (num_demes > 1) {
-    assert(birth_method != POSITION_OFFSPRING_FULL_SOUP_ELDEST);
-  }
-#endif
 
+void cPopulation::ClearCellGrid()
+{
+  delete sleep_log; sleep_log = NULL;
+  reaper_queue.Clear();
+  delete schedule; schedule = NULL;
+}
+
+
+void cPopulation::SetupCellGrid()
+{
+  int num_demes = m_world->GetConfig().NUM_DEMES.Get();
+  const int num_cells = world_x * world_y;
+  const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+
+  if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) sleep_log = new tVector<pair<int,int> >[world_x * world_y];
+  else sleep_log = NULL;
+    
+  if (num_demes <= 0) num_demes = 1; // One population == one deme.  
+  assert(num_demes == 1 || m_world->GetConfig().BIRTH_METHOD.Get() != POSITION_OFFSPRING_FULL_SOUP_ELDEST);
+  
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
   empty_cell_id_array.ResizeClear(cell_array.GetSize());
-
+  
   // Setup the cells.  Do things that are not dependent upon topology here.
-  for(int i=0; i<num_cells; ++i) {
-    cell_array[i].Setup(world, i, environment.GetMutRates(), i%world_x, i/world_x);
-    // Setup the reaper queue.
-    if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST) {
-      reaper_queue.Push(&(cell_array[i]));
-    }
+  bool fill_reaper_queue = (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST);
+  for (int i = 0; i < num_cells; i++) {
+    cell_array[i].Setup(m_world, i, environment.GetMutRates(), i % world_x, i / world_x);    
+    if (fill_reaper_queue) reaper_queue.Push(&(cell_array[i]));
   }
-
+  
   // What are the sizes of the demes that we're creating?
   const int deme_size_x = world_x;
   const int deme_size_y = world_y / num_demes;
   const int deme_size = deme_size_x * deme_size_y;
-  deme_array.Resize(num_demes);
-
+  deme_array.ResizeClear(num_demes);
+  
   // Broken setting:
   assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() <= deme_size);
-
+  
   // Setup the deme structures.
   tArray<int> deme_cells(deme_size);
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
@@ -193,50 +170,36 @@ cPopulation::cPopulation(cWorld* world)
     }
     deme_array[deme_id].Setup(deme_id, deme_cells, deme_size_x, m_world);
   }
-
+  
   // Setup the topology.
   // What we're doing here is chopping the cell_array up into num_demes pieces.
   // Note that having 0 demes (one population) is the same as having 1 deme.  Then
   // we send the cells that comprise each deme into the topology builder.
-  for(int i=0; i<num_cells; i+=deme_size) {
-    // We're cheating here; we're using the random access nature of an iterator
-    // to index beyond the end of the cell_array.
+  for (int i = 0; i < num_cells; i += deme_size) {
+    // We're cheating here; we're using the random access nature of an iterator to index beyond the end of the cell_array.
     switch(geometry) {
       case nGeometry::GRID:
-        build_grid(&cell_array.begin()[i],
-                   &cell_array.begin()[i+deme_size],
-                   deme_size_x, deme_size_y);
+        build_grid(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
         break;
       case nGeometry::TORUS:
-        build_torus(&cell_array.begin()[i],
-                    &cell_array.begin()[i+deme_size],
-                    deme_size_x, deme_size_y);
+        build_torus(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
         break;
       case nGeometry::CLIQUE:
-        build_clique(&cell_array.begin()[i],
-                     &cell_array.begin()[i+deme_size],
-                     deme_size_x, deme_size_y);
+        build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
         break;
       case nGeometry::HEX:
-        build_hex(&cell_array.begin()[i],
-                  &cell_array.begin()[i+deme_size],
-                  deme_size_x, deme_size_y);
+        build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
         break;
       case nGeometry::LATTICE:
-        build_lattice(&cell_array.begin()[i],
-                      &cell_array.begin()[i+deme_size],
-                      deme_size_x, deme_size_y, world_z);
+        build_lattice(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, 1);
         break;
       case nGeometry::RANDOM_CONNECTED:
-        build_random_connected_network(&cell_array.begin()[i],
-                                       &cell_array.begin()[i+deme_size],
+        build_random_connected_network(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
                                        deme_size_x, deme_size_y, m_world->GetRandom());
         break;
       case nGeometry::SCALE_FREE:
-        build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
-                         world->GetConfig().SCALE_FREE_M.Get(),
-                         world->GetConfig().SCALE_FREE_ALPHA.Get(),
-                         world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
+        build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], m_world->GetConfig().SCALE_FREE_M.Get(),
+                         m_world->GetConfig().SCALE_FREE_ALPHA.Get(), m_world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
                          m_world->GetRandom());
         break;
       default:
@@ -245,46 +208,43 @@ cPopulation::cPopulation(cWorld* world)
   }
 
   BuildTimeSlicer();
-
+  
+  
   // Setup the resources...
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceLib& resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
   int deme_res_index = -1;
   int num_deme_res = 0;
-
-  //setting size of global and deme-level resources
-  for(int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
-    if (res->GetDemeResource())
-      num_deme_res++;
-  }
-
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetDemeResource()) num_deme_res++;
+  
   cResourceCount tmp_res_count(resource_lib.GetSize() - num_deme_res);
   resource_count = tmp_res_count;
   resource_count.ResizeSpatialGrids(world_x, world_y);
-
+  
   for(int i = 0; i < GetNumDemes(); i++) {
     cResourceCount tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
     GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
   }
-
+  
+  
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
-
+    cResource* res = resource_lib.GetResource(i);
+    
     // check to see if this is the hgt resource:
     if (res->GetHGTMetabolize()) {
       if (m_hgt_resid != -1) {
-	m_world->GetDriver().Feedback().Error("Only one HGT resource is currently supported.");
+        m_world->GetDriver().Feedback().Error("Only one HGT resource is currently supported.");
         m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
       }
       m_hgt_resid = i;
     }
-
+    
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
-      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),
+      resource_count.Setup(m_world, global_res_index, res->GetName(), res->GetInitial(),
                            res->GetInflow(), decay,
                            res->GetGeometry(), res->GetXDiffuse(),
                            res->GetXGravity(), res->GetYDiffuse(),
@@ -293,8 +253,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetInflowY2(), res->GetOutflowX1(),
                            res->GetOutflowX2(), res->GetOutflowY1(),
                            res->GetOutflowY2(), res->GetCellListPtr(),
-                           res->GetCellIdListPtr(), world->GetVerbosity(),
-                           res->GetPeaks(), 
+                           res->GetCellIdListPtr(), m_world->GetVerbosity(),
+                           res->GetPeaks(),
                            res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
                            res->GetAh(), res->GetAr(),
                            res->GetAcx(), res->GetAcy(),
@@ -315,7 +275,7 @@ cPopulation::cPopulation(cWorld* world)
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
-        GetDeme(j).SetupDemeRes(deme_res_index, res, world->GetVerbosity(), world);                                  
+        GetDeme(j).SetupDemeRes(deme_res_index, res, m_world->GetVerbosity(), m_world);                                  
         // could add deme resources to global resource stats here
       }
     } else {
@@ -328,10 +288,16 @@ cPopulation::cPopulation(cWorld* world)
   if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
     m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
+}
 
-  Data::ArgumentedProviderActivateFunctor activate(m_world, &cWorld::GetPopulationProvider);
-  m_world->GetDataManager()->Register("core.population.group_id[]", activate);
 
+
+void cPopulation::ResizeCellGrid(int x, int y)
+{
+  ClearCellGrid();
+  world_x = x;
+  world_y = y;
+  SetupCellGrid();
 }
 
 
@@ -460,7 +426,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
 {
   assert(parent_organism != NULL);
   bool is_doomed = false;
-  int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1; //Also at the end of cPopulation::ActivateOrganism
+  int doomed_cell = (world_x * world_y) - 1; //Also at the end of cPopulation::ActivateOrganism
   tArray<cOrganism*> offspring_array;
   tArray<cMerit> merit_array;
 
@@ -935,7 +901,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
-  int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
+  int doomed_cell = (world_x * world_y) - 1;
   if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
     KillOrganism(target_cell, ctx);
   }
@@ -1047,7 +1013,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
     
     std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
-    if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
+    if (pos.first == 0 || pos.second == 0 || pos.first == world_x - 1 || pos.second == world_y - 1) {
 //      KillOrganism(src_cell, ctx);  //APW
       src_cell.GetOrganism()->Die(ctx); 
     return false; 
@@ -3135,7 +3101,7 @@ void cPopulation::PrintDemeEnergyDistributionStats(cAvidaContext& ctx) {
   cDoubleSum overall_stddev;
 
   cDataFile & df_dist = m_world->GetDataFile("deme_energy_distribution.dat");
-  comment.Set("Average distribution of energy among cells in each of %d %d x %d demes", num_demes, m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()/num_demes);
+  comment.Set("Average distribution of energy among cells in each of %d %d x %d demes", num_demes, world_x, world_y / num_demes);
   df_dist.WriteComment(comment);
   df_dist.WriteTimeStamp();
   df_dist.Write(stats.GetUpdate(), "Update");
@@ -3185,7 +3151,7 @@ void cPopulation::PrintDemeOrganismEnergyDistributionStats() {
   cDoubleSum overall_stddev;
 
   cDataFile & df_dist = m_world->GetDataFile("deme_org_energy_distribution.dat");
-  comment.Set("Average distribution of energy among organisms in each of %d %d x %d demes", num_demes, m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()/num_demes);
+  comment.Set("Average distribution of energy among organisms in each of %d %d x %d demes", num_demes, world_x, world_y / num_demes);
   df_dist.WriteComment(comment);
   df_dist.WriteTimeStamp();
   df_dist.Write(stats.GetUpdate(), "Update");
@@ -3519,15 +3485,14 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
     df.WriteRaw(UpdateStr);
 
     int gridsize = m_world->GetPopulation().GetDeme(i).GetSize();
-    int xsize = m_world->GetConfig().WORLD_X.Get();
 
     // write grid to file
     for (int j = 0; j < gridsize; j++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(cellID);
       if (cell.IsOccupied()) {
-        df.WriteBlockElement(cell.GetOrganism()->GetPhenotype().GetStoredEnergy(), j, xsize);
+        df.WriteBlockElement(cell.GetOrganism()->GetPhenotype().GetStoredEnergy(), j, world_x);
       } else {
-        df.WriteBlockElement(0.0, j, xsize);
+        df.WriteBlockElement(0.0, j, world_x);
       }
       cellID++;
     }
@@ -3547,10 +3512,9 @@ void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i
 
   const cSpatialResCount& sp_res = res.GetSpatialResource(i); 
   int gridsize = sp_res.GetSize();
-  int xsize = m_world->GetConfig().WORLD_X.Get();
 
   for (int j = 0; j < gridsize; j++) {
-    df.WriteBlockElement(sp_res.GetAmount(j), j, xsize);
+    df.WriteBlockElement(sp_res.GetAmount(j), j, world_x);
   }
   df.WriteRaw("];");
   df.Endl();
@@ -3568,15 +3532,14 @@ void cPopulation::PrintDemeSpatialSleepData() const {
     df.WriteRaw(UpdateStr);
 
     int gridsize = m_world->GetPopulation().GetDeme(i).GetSize();
-    int xsize = m_world->GetConfig().WORLD_X.Get();
 
     // write grid to file
     for (int j = 0; j < gridsize; j++) {
       cPopulationCell cell = m_world->GetPopulation().GetCell(cellID);
       if (cell.IsOccupied()) {
-        df.WriteBlockElement(cell.GetOrganism()->IsSleeping(), j, xsize);
+        df.WriteBlockElement(cell.GetOrganism()->IsSleeping(), j, world_x);
       } else {
-        df.WriteBlockElement(0.0, j, xsize);
+        df.WriteBlockElement(0.0, j, world_x);
       }
       cellID++;
     }
@@ -4961,7 +4924,7 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
 
   // We can't inject into the boundary of the world:
   if(m_world->IsWorldBoundary(GetCell(cell_id))) {
-    cell_id += m_world->GetConfig().WORLD_X.Get()+1;
+    cell_id += world_x + 1;
   }
 
   // if the injected org already has a group we will assign it to, do not assign group id in activate organism

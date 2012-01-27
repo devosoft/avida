@@ -187,69 +187,6 @@ cStats::cStats(cWorld* world)
 
   resource_names.Resize( m_world->GetNumResources() );
   
-  // This block calculates how many slots we need to
-  // make for paying attention to different label combinations
-  // Require sense instruction to be present then die if not at least 2 NOPs
-
-  // @DMB - This code makes assumptions about instruction sets that may not hold true under multiple inst sets.
-  //      - This sort of functionality should be reimplemented as instruction set stats or something similar
-//  bool sense_used = m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense") )
-//                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-unit") )
-//                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-m100") );
-//  if (sense_used)
-//  {
-//    if (m_world->GetHardwareManager().GetInstSet().GetNumNops() < 2)
-//    {
-//      cerr << "Error: If you have a sense instruction in your instruction set, then";
-//      cerr << "you MUST also include at least two NOPs in your instruction set. " << endl; exit(1);
-//    }
-//
-//    int on = 1;
-//    int max_sense_label_length = 0;
-//    while (on < m_world->GetNumResources())
-//    {
-//      max_sense_label_length++;
-//      sense_size += on;
-//      on *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
-//    }
-//    sense_size += on;
-//
-//    sense_last_count.Resize( sense_size );
-//    sense_last_count.SetAll(0);
-//
-//    sense_last_exe_count.Resize( sense_size );
-//    sense_last_exe_count.SetAll(0);
-//
-//    sense_names.Resize( sense_size );
-//    int assign_index = 0;
-//    int num_per = 1;
-//    for (int i=0; i<= max_sense_label_length; i++)
-//    {
-//      for (int j=0; j< num_per; j++)
-//      {
-//        sense_names[assign_index] = (on > 1) ?
-//          cStringUtil::Stringf("sense_res.%i-%i", j*on, (j+1)*on-1) :
-//          cStringUtil::Stringf("sense_res.%i", j);
-//
-//        assign_index++;
-//      }
-//      on /= m_world->GetHardwareManager().GetInstSet().GetNumNops();
-//      num_per *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
-//    }
-//  }
-  // End sense tracking initialization
-
-  if(m_world->GetConfig().NUM_DEMES.Get() == 0) {
-    relative_pos_event_count.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
-    relative_pos_pred_sat.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
-  } else {
-    relative_pos_event_count.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get());
-    relative_pos_pred_sat.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get());
-  }
-
-  relative_pos_event_count.SetAll(0);
-  relative_pos_pred_sat.SetAll(0);
-
   setupProvidedData();
 }
 
@@ -1213,7 +1150,7 @@ void cStats::PrintSpatialResData(const cString&, int i)
   df.WriteRaw(UpdateStr);
 
   int gridsize = spatial_res_count[i].GetSize();
-  int xsize = m_world->GetConfig().WORLD_X.Get();
+  int xsize = m_world->GetPopulation().GetWorldX();
 
   // write grid to file
 
@@ -1235,7 +1172,7 @@ void cStats::PrintCellVisitsData(const cString&)
 
   df.WriteRaw(UpdateStr);
 
-  int xsize = m_world->GetConfig().WORLD_X.Get();
+  int xsize = m_world->GetPopulation().GetWorldX();
 
   for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
     df.WriteBlockElement(m_world->GetPopulation().GetCell(i).GetVisits(), i, xsize);
@@ -1505,43 +1442,6 @@ void cStats::Move(cOrganism& org) {
   }
 }
 
-// deme predicate stats
-void cStats::IncEventCount(int x, int y) {
-  relative_pos_event_count.ElementAt(x,y)++;
-}
-
-void cStats::IncPredSat(int cell_id) {
-  cPopulation& pop = m_world->GetPopulation();
-  int deme_id = pop.GetCell(cell_id).GetDemeID();
-  std::pair<int, int> pos = pop.GetDeme(deme_id).GetCellPosition(cell_id);
-  relative_pos_pred_sat.ElementAt(pos.first, pos.second)++;
-}
-
-void cStats::AddDemeResourceThresholdPredicate(cString& name) {
-	demeResourceThresholdPredicateMap[name] = 0;
-}
-
-void cStats::IncDemeResourceThresholdPredicate(cString& name) {
-	++demeResourceThresholdPredicateMap[name];
-}
-
-void cStats::PrintDemeResourceThresholdPredicate(const cString& filename)
-{
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteComment("Avida deme resource threshold predicate data");
-	df.WriteComment("Number of deme reproduced by a specific threshold since last update that data was printed");
-  df.WriteTimeStamp();
-
-	if(demeResourceThresholdPredicateMap.size() > 0) {
-		df.Write(GetUpdate(), "Update [update]");
-		for(map<cString, int>::iterator iter = demeResourceThresholdPredicateMap.begin(); iter != demeResourceThresholdPredicateMap.end(); ++iter) {
-			df.Write(iter->second, iter->first);
-			iter->second = 0;
-			assert(iter->second == 0 && demeResourceThresholdPredicateMap[iter->first] == 0);
-		}
-		df.Endl();
-	}
-}
 
 /*! This method prints information contained within all active message predicates.
 
@@ -1563,33 +1463,6 @@ void cStats::PrintPredicatedMessages(const cString& filename)
     (*i)->Reset();
   }
 //  df.Endl();
-}
-
-void cStats::PrintPredSatFracDump(const cString& filename) {
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteComment( "Displays the fraction of events detected in cell since last print.\n" );
-  df.FlushComments();
-  cString UpdateStr = cStringUtil::Stringf( "%07i", GetUpdate() ) + " = [ ...";
-  df.WriteRaw(UpdateStr);
-
-  int rows = relative_pos_pred_sat.GetNumRows();
-  int cols = relative_pos_pred_sat.GetNumCols();
-  for (int x = 0; x < rows; x++) {
-    for (int y = 0; y < cols; y++) {
-      double data;
-      if(relative_pos_event_count.ElementAt(x,y) == 0) {
-        data = 0.0;
-      } else {
-        data = (double) relative_pos_pred_sat.ElementAt(x,y) / (double) relative_pos_event_count.ElementAt(x,y);
-      }
-      df.WriteBlockElement(data, x*cols+y, cols);
-    }
-  }
-  df.WriteRaw("];");
-  df.Endl();
-
-  relative_pos_pred_sat.SetAll(0);
-  relative_pos_event_count.SetAll(0);
 }
 
 void cStats::DemePreReplication(cDeme& source_deme, cDeme&)

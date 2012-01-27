@@ -24,12 +24,13 @@
 #include "cBirthChamber.h"
 #include "cBirthEntry.h"
 #include "cOrganism.h"
+#include "cPopulation.h"
 #include "cWorld.h"
 
 
 cBirthNeighborhoodHandler::cBirthNeighborhoodHandler(cWorld* world, cBirthChamber* bc) : m_bc(bc)
 {
-  m_entries.Resize(world->GetConfig().WORLD_X.Get() * world->GetConfig().WORLD_Y.Get());
+  m_entries.Resize(world->GetPopulation().GetWorldX() * world->GetPopulation().GetWorldY());
 }
 
 cBirthNeighborhoodHandler::~cBirthNeighborhoodHandler()

@@ -2998,8 +2998,8 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
   // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int worldx = m_world->GetPopulation().GetWorldX();
+  const int worldy = m_world->GetPopulation().GetWorldY();
   const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
@@ -3053,8 +3053,8 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
   // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int worldx = m_world->GetPopulation().GetWorldX();
+  const int worldy = m_world->GetPopulation().GetWorldY();
   const int max_dist = (int) (max(worldx, worldy) * 0.5 + 0.5);
   bool have_org2use = false;
   
@@ -3074,7 +3074,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
   }
   if (!have_org2use) return false;
   else {
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    const int worldx = m_world->GetPopulation().GetWorldX();
     const int target_org_cell = target_org->GetCellID();
     const int target_x = target_org_cell % worldx;
     const int target_y = target_org_cell / worldx;
@@ -4132,8 +4132,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int lib_size = resource_lib.GetSize();
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int worldx = m_world->GetPopulation().GetWorldX();
+  const int worldy = m_world->GetPopulation().GetWorldY();
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
     
   const cCodeLabel& search_label = GetLabel();
@@ -4231,7 +4231,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
 
 cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_org, const int distance_sought)
 {
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
+  const int worldx = m_world->GetPopulation().GetWorldX();
   const int target_org_cell = target_org->GetCellID();
   const int target_x = target_org_cell % worldx;
   const int target_y = target_org_cell / worldx;
@@ -4319,8 +4319,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   
   lookOut stuff_seen;
   
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
+  const int worldx = m_world->GetPopulation().GetWorldX();
+  const int worldy = m_world->GetPopulation().GetWorldY();
     
   int dist_used = distance_sought;
   int start_dist = 0;
@@ -4674,8 +4674,8 @@ tArray<int> cHardwareExperimental::GetTotBounds(cAvidaContext& ctx, tSmartArray<
   bounds.Resize(4);
   int min_x = 0;
   int min_y = 0;
-  int max_x = m_world->GetConfig().WORLD_X.Get();
-  int max_y = m_world->GetConfig().WORLD_Y.Get();
+  int max_x = m_world->GetPopulation().GetWorldX();
+  int max_y = m_world->GetPopulation().GetWorldY();
   
   for (int i = 0; i < val_res.GetSize(); i++) {
     const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, val_res[i]);
@@ -4695,8 +4695,8 @@ tArray<int> cHardwareExperimental::GetTotBounds(cAvidaContext& ctx, tSmartArray<
     
     int this_max_x = peakx + width + 1;
     int this_max_y = peaky + width + 1;
-    if (this_max_x > m_world->GetConfig().WORLD_X.Get()) this_max_x =  m_world->GetConfig().WORLD_X.Get();
-    if (this_max_y > m_world->GetConfig().WORLD_Y.Get()) this_max_y =  m_world->GetConfig().WORLD_Y.Get();
+    if (this_max_x > m_world->GetPopulation().GetWorldX()) this_max_x =  m_world->GetPopulation().GetWorldX();
+    if (this_max_y > m_world->GetPopulation().GetWorldY()) this_max_y =  m_world->GetPopulation().GetWorldY();
     if (this_max_x > max_x) max_x = this_max_x;
     if (this_max_y > max_y) max_y = this_max_y;
     bounds[2] = max_x;

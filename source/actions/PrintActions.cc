@@ -144,7 +144,6 @@ STATS_OUT_FILE(PrintOrganismLocation,       location.dat);
 
 STATS_OUT_FILE(PrintCurrentTaskCounts,      curr_task_counts.dat);
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
-STATS_OUT_FILE(PrintDemeResourceThresholdPredicate,     deme_resourceThresholdPredicate.dat );
 STATS_OUT_FILE(PrintPredicatedMessages,     messages.dat        );
 STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
 STATS_OUT_FILE(PrintConsensusData,          consensus.dat       );
@@ -3993,7 +3992,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
 	action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
 
-	action_lib->Register<cActionPrintDemeResourceThresholdPredicate>("PrintDemeResourceThresholdPredicate");
 	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
 	action_lib->Register<cActionPrintCellData>("PrintCellData");
 	action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");

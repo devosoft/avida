@@ -65,7 +65,7 @@ namespace Avida {
       cWorld* m_world;
       World* m_new_world;
       
-      Apto::Mutex m_mutex;
+      mutable Apto::Mutex m_mutex;
       Apto::ConditionVariable m_pause_cv;
       DriverPauseState m_pause_state;
       bool m_started;

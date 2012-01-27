@@ -81,7 +81,6 @@ private:
   // Other data...
   int world_x;                         // Structured population width.
   int world_y;                         // Structured population height.
-  int world_z;                         //!< Population depth.
   int num_organisms;                   // Cell count with living organisms
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
@@ -121,6 +120,9 @@ public:
   
   
   // cPopulation
+  
+  void ResizeCellGrid(int x, int y);
+  
   
   void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
 
@@ -357,6 +359,8 @@ public:
   void MixPopulation(cAvidaContext& ctx); 
 
 private:
+  void SetupCellGrid();
+  void ClearCellGrid();
   void BuildTimeSlicer(); // Build the schedule object
   
   // Methods to place offspring in the population.

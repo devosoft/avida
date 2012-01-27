@@ -484,6 +484,9 @@ void Avida::Viewer::Map::UpdateMaps(cPopulation& pop)
 {
   m_rw_lock.WriteLock();
   
+  m_width = pop.GetWorldX();
+  m_height = pop.GetWorldY();
+  
   for (int i = 0; i < m_view_modes.GetSize(); i++) m_view_modes[i]->Update(pop);
   
   m_rw_lock.WriteUnlock();

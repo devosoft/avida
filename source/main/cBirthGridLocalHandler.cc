@@ -23,6 +23,7 @@
 
 #include "cBirthChamber.h"
 #include "cOrganism.h"
+#include "cPopulation.h"
 #include "cWorld.h"
 
 #include "AvidaTools.h"
@@ -32,7 +33,7 @@ using namespace AvidaTools;
 
 
 cBirthGridLocalHandler::cBirthGridLocalHandler(cWorld* world, cBirthChamber* bc)
-: m_world(world), m_bc(bc), m_world_x(m_world->GetConfig().WORLD_X.Get()), m_world_y(m_world->GetConfig().WORLD_Y.Get())
+: m_world(world), m_bc(bc), m_world_x(m_world->GetPopulation().GetWorldX()), m_world_y(m_world->GetPopulation().GetWorldY())
 {
   m_entries.Resize(m_world_x * m_world_y);
 }

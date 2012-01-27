@@ -279,12 +279,6 @@ private:
   std::map<int, flow_rate_tuple > flow_rate_tuples;
 
 
-  // --------  Deme Predicate Stats  ---------
-  tMatrix<int> relative_pos_event_count;
-  tMatrix<int> relative_pos_pred_sat;
-	std::map<cString, int> demeResourceThresholdPredicateMap;
-
-
   // --------  Speculative Execution Stats  ---------
   int m_spec_total;
   int m_spec_num;
@@ -674,15 +668,6 @@ public:
   void PrintGroupTolerance(const cString& filename); // @JJB
   void PrintToleranceInstructionData(const cString& filename); // @JJB
   void PrintToleranceData(const cString& filename); // @JJB
-
-  // deme predicate stats
-  void IncEventCount(int x, int y);
-  void IncPredSat(int cell_id);
-  void PrintPredSatFracDump(const cString& filename);
-
-	void AddDemeResourceThresholdPredicate(cString& name);
-	void IncDemeResourceThresholdPredicate(cString& name);
-	void PrintDemeResourceThresholdPredicate(const cString& filename);
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);

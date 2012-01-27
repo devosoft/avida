@@ -816,10 +816,6 @@ public:
   CONFIG_ADD_ALIAS(START_CREATURE);
 
 
-  // -------- UNDER CONSTRUCTION ----------
-  CONFIG_ADD_GROUP(DEVEL_GROUP, "IN DEVELOPMENT (May not function correctly)");
-  CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
-	
 #endif
   
   bool Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback = NULL,

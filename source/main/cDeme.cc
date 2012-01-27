@@ -281,7 +281,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
         
         // record activation of each cell in stats
         std::pair<int, int> pos = GetCellPosition(eventCell);
-        m_world->GetStats().IncEventCount(pos.first, pos.second);
+//        m_world->GetStats().IncEventCount(pos.first, pos.second);
         
         
         //TODO // increase outflow of energy from these cells if not event currently present
@@ -906,10 +906,6 @@ void cDeme::AddDemeResourceThresholdPredicate(cString resourceName, cString comp
   cDemeResourceThresholdPredicate* pred =
     new cDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
   deme_pred_list.Add(pred);
-
-  cString name = resourceName + " " + comparisonOperator +
-    cStringUtil::Stringf(" %f", threasholdValue);
-  m_world->GetStats().AddDemeResourceThresholdPredicate(name);
 }
 
 void cDeme::AddEventReceivedCenterPred(int times)

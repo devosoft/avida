@@ -294,7 +294,7 @@ struct cOrgMessagePred_EventReceivedCenter : public cOrgMessagePredicate {
     if(m_event_received && !m_stats_updated) {
       int eventCell = m_event->GetNextEventCellID();
       while(eventCell != -1) {
-        stats.IncPredSat(eventCell);
+//        stats.IncPredSat(eventCell);
         eventCell = m_event->GetNextEventCellID();
       }
       m_stats_updated = true;
@@ -387,7 +387,7 @@ struct cOrgMessagePred_EventReceivedLeftSide : public cOrgMessagePredicate {
     if(m_event_received && !m_stats_updated) {
       int eventCell = m_event->GetNextEventCellID();
       while(eventCell != -1) {
-        stats.IncPredSat(eventCell);
+//        stats.IncPredSat(eventCell);
         eventCell = m_event->GetNextEventCellID();
       }
       m_stats_updated = true;

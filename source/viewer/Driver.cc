@@ -133,25 +133,28 @@ void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y)
 
 bool Avida::Viewer::Driver::HasPendingInjects() const
 {
-  // This is reading out a queue size that is drained asynchronously, should it use a memory barrier or something?
+  m_mutex.Lock();
   bool has_pending = m_inject_queue.GetSize();
+  m_mutex.Unlock();
   return has_pending;
 }
 
 int Avida::Viewer::Driver::WorldX()
 {
-  return m_world->GetConfig().WORLD_X.Get();
+  return m_world->GetPopulation().GetWorldX();
 }
 
 int Avida::Viewer::Driver::WorldY()
 {
-  return m_world->GetConfig().WORLD_Y.Get();
+  return m_world->GetPopulation().GetWorldY();
 }
 
 bool Avida::Viewer::Driver::SetWorldSize(int x, int y)
 {
+  if (m_started) return false;
   m_world->GetConfig().WORLD_X.Set(x);
-  m_world->GetConfig().WORLD_Y.Set(y);  
+  m_world->GetConfig().WORLD_Y.Set(y);
+  m_world->GetPopulation().ResizeCellGrid(x, y);
   return true;
 }
 
@@ -312,7 +315,7 @@ void Avida::Viewer::Driver::Run()
         // Handle inject queue requests
         while (m_inject_queue.GetSize()) {
           InjectGenomeInfo* info = m_inject_queue.Pop();
-          int cell_id = info->x * population.GetWorldX() + info->y;
+          int cell_id = info->x + info->y * population.GetWorldX();
           population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx);          
           delete info;
         }
