@@ -169,6 +169,17 @@ void handleDriverCallback(Avida::DriverEvent event)
 }
 
 
+
+- (double) reactionValueOf:(const Apto::String&)reaction_name {
+  return driver->ReactionValue(reaction_name);
+}
+
+- (void) setReactionValueOf:(const Apto::String&)reaction_name to:(double)value {
+  driver->SetReactionValue(reaction_name, value);
+}
+
+
+
 - (bool) hasStarted {
   return driver->HasStarted();
 }

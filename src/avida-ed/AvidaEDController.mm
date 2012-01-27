@@ -200,7 +200,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // create run object
   if (freezerID.type == Avida::Viewer::CONFIG) {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
-    [txtUpdate setStringValue:@"-1 updates"];
+    [txtUpdate setStringValue:@"(not started)"];
+    [txtUpdate setTextColor:[NSColor disabledControlTextColor]];
     [mapView setDimensions:[currentRun worldSize]];
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
@@ -223,6 +224,16 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [matCfgPlacement selectCellWithTag:([currentRun placementMode] == 0) ? 0 : 1];
   [matCfgRepeatability selectCellWithTag:([currentRun randomSeed] == 0) ? 0 : 1];
   [matCfgPauseAt selectCellWithTag:0];
+  [[matCfgEnv cellWithTag:0] setState:([currentRun reactionValueOf:"NOT"]  > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:1] setState:([currentRun reactionValueOf:"NAND"] > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:2] setState:([currentRun reactionValueOf:"AND"]  > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:3] setState:([currentRun reactionValueOf:"ORN"]  > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:4] setState:([currentRun reactionValueOf:"OR"]   > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:5] setState:([currentRun reactionValueOf:"ANDN"] > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:6] setState:([currentRun reactionValueOf:"NOR"]  > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:7] setState:([currentRun reactionValueOf:"XOR"]  > 0.0) ? NSOnState : NSOffState];
+  [[matCfgEnv cellWithTag:8] setState:([currentRun reactionValueOf:"EQU"]  > 0.0) ? NSOnState : NSOffState];
+
 
   listener = new MainThreadListener(self);
   [currentRun attachListener:self];
@@ -360,6 +371,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [matCfgRepeatability setEnabled:NO];
   [txtCfgWorldX setEnabled:NO];
   [txtCfgWorldY setEnabled:NO];
+  [txtUpdate setTextColor:[NSColor controlTextColor]];
+
 }
 
 @end
@@ -669,7 +682,15 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) changeEnvironment:(id)sender {
-  
+  [currentRun setReactionValueOf:"NOT"  to:([[matCfgEnv cellWithTag:0] state] == NSOnState) ? 1.0 : 0.0];
+  [currentRun setReactionValueOf:"NAND" to:([[matCfgEnv cellWithTag:1] state] == NSOnState) ? 1.0 : 0.0];
+  [currentRun setReactionValueOf:"AND"  to:([[matCfgEnv cellWithTag:2] state] == NSOnState) ? 2.0 : 0.0];
+  [currentRun setReactionValueOf:"ORN"  to:([[matCfgEnv cellWithTag:3] state] == NSOnState) ? 2.0 : 0.0];
+  [currentRun setReactionValueOf:"OR"   to:([[matCfgEnv cellWithTag:4] state] == NSOnState) ? 3.0 : 0.0];
+  [currentRun setReactionValueOf:"ANDN" to:([[matCfgEnv cellWithTag:5] state] == NSOnState) ? 3.0 : 0.0];
+  [currentRun setReactionValueOf:"NOR"  to:([[matCfgEnv cellWithTag:6] state] == NSOnState) ? 4.0 : 0.0];
+  [currentRun setReactionValueOf:"XOR"  to:([[matCfgEnv cellWithTag:7] state] == NSOnState) ? 4.0 : 0.0];
+  [currentRun setReactionValueOf:"EQU"  to:([[matCfgEnv cellWithTag:8] state] == NSOnState) ? 5.0 : 0.0];
 }
 
 

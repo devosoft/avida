@@ -257,6 +257,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     NSPoint selectedOrg;
     selectedOrg.x = floor(clickLocation.x / block_size);
     selectedOrg.y = floor(clickLocation.y / block_size);
+    
     if (selected_x != selectedOrg.x || selected_y != selectedOrg.y) {
       if (selectionDelegate == nil ||
           ![selectionDelegate respondsToSelector:@selector(mapView:shouldSelectObjectAtPoint:)] ||

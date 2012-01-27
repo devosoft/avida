@@ -59,6 +59,9 @@
 @property (nonatomic, readwrite) int placementMode;
 @property (nonatomic, readwrite) int randomSeed;
 
+- (double) reactionValueOf:(const Apto::String&)reaction_name;
+- (void) setReactionValueOf:(const Apto::String&)reaction_name to:(double)value;
+
 - (bool) hasStarted;
 - (bool) willPause;
 - (bool) isPaused;
