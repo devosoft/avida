@@ -327,7 +327,7 @@ Data::PackagePtr cPopulation::GetProvidedValueForArgument(const Apto::String& da
       int y = Apto::StrAs(coordstr);
       if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
         // Valid X and Y coordinates, return genotype ID @ cell if applicable
-        const cPopulationCell& cell = cell_array[world_x * x + y];
+        const cPopulationCell& cell = cell_array[x + (y * world_x)];
         if (cell.IsOccupied()) {
           rtn = Data::PackagePtr(new Data::Wrap<int>(cell.GetOrganism()->SystematicsGroup("genotype")->ID()));
           assert(rtn);
