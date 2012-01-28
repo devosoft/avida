@@ -71,7 +71,7 @@
 #include "internal_logging.h"
 #include "commandlineflags.h"
 #include "spinlock.h"
-
+#include <stddef.h>
 // On systems (like freebsd) that don't define MAP_ANONYMOUS, use the old
 // form of the name instead.
 #ifndef MAP_ANONYMOUS
@@ -186,7 +186,7 @@ void* SbrkSysAllocator::Alloc(size_t size, size_t *actual_size,
 
   // sbrk will release memory if passed a negative number, so we do
   // a strict check here
-  if (static_cast<ptrdiff_t>(size + alignment) < 0) return NULL;
+  if ( static_cast<ptrdiff_t>(size + alignment) < 0 ) return NULL;
 
   // could theoretically return the "extra" bytes here, but this
   // is simple and correct.
