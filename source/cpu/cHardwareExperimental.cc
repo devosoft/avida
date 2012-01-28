@@ -3266,7 +3266,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   int nest_val = 0;
   
   // if invalid nop value, return the id of the first nest in the cell with val >= 1
-  if (nest_id < 0 || nest_id >= resource_lib.GetSize()) {
+  if (nest_id < 0 || nest_id >= resource_lib.GetSize() || resource_lib.GetResource(nest_id)->GetHabitat() != 3) {
     for (int i = 0; i < cell_res.GetSize(); i++) {
       if (resource_lib.GetResource(i)->GetHabitat() == 3 && cell_res[i] >= 1) {
         nest_id = i;
