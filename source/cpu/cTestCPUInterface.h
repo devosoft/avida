@@ -156,6 +156,7 @@ public:
   void LeaveGroup(int group_id) { ; }
   int NumberOfOrganismsInGroup(int group_id) {return 0; }
     
+  int IncTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
   int DecTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
   int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
   int CalcGroupToleranceOffspring(cOrganism* parent_organism) {return 0; }

@@ -1108,6 +1108,66 @@ int cPopulationInterface::NumberOfOrganismsInGroup(int group_id)
   return m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
 }
 
+/* Increases tolerance towards the addition of members to the group.
+ * toleranceType:
+ *    0: increases tolerance towards immigrants
+ *    1: increases tolerance towards own offspring
+ *    2: increases tolerance towards other offspring of the group
+ * Removes the most recent record of dec-tolerance
+ * Returns the modified tolerance total.
+ */
+int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &ctx)
+{
+  int group_id = GetOrganism()->GetOpinion().first;
+  
+  if (toleranceType == 0) {
+    // Modify tolerance towards immigrants
+    PushToleranceInstExe(0, ctx);
+    
+    // Update tolerance list by removing the most recent dec_tolerance record
+    delete GetOrganism()->GetPhenotype().GetToleranceImmigrants().Pop();
+    
+    // If not at individual's max tolerance, adjust both caches
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != 0) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[0].second--;
+      GetGroupIntolerances(group_id, 0)--;
+    }
+    // Retrieve modified tolerance total for immigrants
+    return GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
+  }
+  if (toleranceType == 1) {
+    // Modify tolerance towards own offspring
+    PushToleranceInstExe(1, ctx);
+    
+    // Update tolerance list by removing the most recent dec_tolerance record
+    delete  GetOrganism()->GetPhenotype().GetToleranceOffspringOwn().Pop();
+    
+    // If not at max tolerance, increase the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[1].second != 0) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[1].second--;
+    }
+    // Retrieve modified tolerance total for own offspring.
+    return GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
+  }
+  if (toleranceType == 2) {
+    // Modify tolerance towards other offspring of the group
+    PushToleranceInstExe(2, ctx);
+    
+    // Update tolerance list by removing the most recent dec_tolerance record
+    delete GetOrganism()->GetPhenotype().GetToleranceOffspringOthers().Pop();
+    
+    
+    // If not at max tolerance, increase the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != 0) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[2].second--;
+      GetGroupIntolerances(group_id, 1)--;
+    }
+    // Retrieve modified tolerance total for other offspring in group.
+    return GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
+  }
+  return -1;
+}
+
 /* Decreases tolerance towards the addition of members to the group.
  * toleranceType:
  *    0: decreases tolerance towards immigrants

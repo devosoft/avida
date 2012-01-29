@@ -220,6 +220,7 @@ public:
   int NumberOfOrganismsInGroup(int group_id);
   
   // ----- Tolerance/Group support ------
+  int IncTolerance(const int toleranceType, cAvidaContext &ctx);
   int DecTolerance(const int toleranceType, cAvidaContext &ctx);
   int CalcGroupToleranceImmigrants(int prop_group_id);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
