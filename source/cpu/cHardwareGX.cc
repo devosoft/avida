@@ -450,7 +450,7 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_current = *i;
         
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     if(m_current->GetExecute()) {
       // In case the IP is modified by this instruction, make sure that it wraps 
@@ -553,7 +553,7 @@ void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -605,8 +605,6 @@ void cHardwareGX::PrintStatus(ostream& fp)
       << endl;
   fp.flush();
 }
-
-
 
 /////////////////////////////////////////////////////////////////////////
 // Method: cHardwareGX::FindLabel(direction)

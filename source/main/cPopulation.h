@@ -78,7 +78,9 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-
+  tSmartArray<cBioGroup*> minitrace_queue;
+  bool print_mini_trace_genomes;
+  
   // Default organism setups...
   cEnvironment & environment;          // Physics & Chemistry description
 
@@ -87,6 +89,9 @@ private:
   int world_y;                         // Structured population height.
   int world_z;                         //!< Population depth.
   int num_organisms;                   // Cell count with living organisms
+  int num_prey_organisms;
+  int num_pred_organisms;
+  
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
   // Outside interactions...
@@ -109,7 +114,7 @@ public:
 
   bool InitiatePop(cUserFeedback* errors = NULL);
 
-  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0); 
+  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
@@ -119,7 +124,8 @@ public:
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
   
   // Inject an organism from the outside world.
-  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
+  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1); 
+  void InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, int group_id = -1, int forager_type = -1);   
   void InjectParasite(const cString& label, const Sequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
@@ -127,7 +133,7 @@ public:
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
-  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
+  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
@@ -217,10 +223,15 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic);
-  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0); 
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false);
+  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, 
+                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
   bool DumpMemorySummary(std::ofstream& fp);
-
+  bool SaveFlameData(const cString& filename);
+  
+  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
+  tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
+  
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }
@@ -230,9 +241,16 @@ public:
   cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
   const tArray<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); } 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); } 
+  const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   const tArray<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
+  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateGlobalResources(ctx); }
   const tArray< tArray<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
+
+  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakX(ctx, res_id); } 
+  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
+  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakX(ctx, res_id); } 
+  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakY(ctx, res_id); } 
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
@@ -259,6 +277,9 @@ public:
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
 
+  int GetNumPreyOrganisms() { return num_prey_organisms; }
+  int GetNumPredOrganisms() { return num_pred_organisms; }
+  
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);
@@ -281,7 +302,9 @@ public:
   void UpdateResourceCount(const int Verbosity, cWorld* world);        
   
   // Let users change Gradient Resource variables during the run JW
-  void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientInflow(const cString res_name, const double inflow);
+  void UpdateGradientOutflow(const cString res_name, const double outflow);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
@@ -351,6 +374,7 @@ private:
   // Update statistics collecting...
   void UpdateDemeStats(cAvidaContext& ctx); 
   void UpdateOrganismStats(cAvidaContext& ctx); 
+  void UpdateFTOrgStats(cAvidaContext& ctx); 
   
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
@@ -361,7 +385,12 @@ private:
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
-  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
+  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
+  void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
+  void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  
+  int PlaceAvatar(cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

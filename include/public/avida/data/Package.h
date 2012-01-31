@@ -59,7 +59,7 @@ namespace Avida {
       bool BoolValue() const { return m_value; }
       int IntValue() const { return m_value; }
       double DoubleValue() const { return m_value; }
-      Apto::String StringValue() const { return Apto::String(Apto::AsStr(m_value)); }
+      Apto::String StringValue() const { return Apto::AsStr(m_value); }
     };
     
     template <> class Wrap<Apto::String> : public Package

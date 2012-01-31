@@ -248,8 +248,10 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-
-
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) { }
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { }
+  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { }
+  
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
   inline int GetNumStacks() const { return 2; }
@@ -464,6 +466,7 @@ private:
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
+  bool Inst_Poison(cAvidaContext& ctx);
 	bool Inst_Suicide(cAvidaContext& ctx);
   bool Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx);
   bool Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx);
@@ -981,8 +984,30 @@ public:
 	// the additional cycle cost will be added.
 	void IncrementTaskSwitchingCost(int cost);
 	int GetTaskSwitchingCost() { return m_task_switching_cost; }
+  // Apply point mutations to a genome.
+  bool Inst_ApplyPointMutations(cAvidaContext& ctx);
+  bool Inst_JoinGermline(cAvidaContext& ctx);
+  bool Inst_ExitGermline(cAvidaContext& ctx);
+  
 
-	
+	// -------- Mating types support support --------
+public:
+  bool Inst_SetMatingTypeMale(cAvidaContext& ctx);
+  bool Inst_SetMatingTypeFemale(cAvidaContext& ctx);
+  bool Inst_SetMatingTypeJuvenile(cAvidaContext& ctx);
+  bool Inst_DivideSexMatingType(cAvidaContext& ctx);
+  bool Inst_IfMatingTypeMale(cAvidaContext& ctx);
+  bool Inst_IfMatingTypeFemale(cAvidaContext& ctx);
+  bool Inst_IfMatingTypeJuvenile(cAvidaContext& ctx);
+  bool Inst_IncrementMatingDisplayA(cAvidaContext& ctx);
+  bool Inst_IncrementMatingDisplayB(cAvidaContext& ctx);
+  bool Inst_SetMatingDisplayA(cAvidaContext& ctx);
+  bool Inst_SetMatingDisplayB(cAvidaContext& ctx);
+  bool Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref);
+  bool Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx);
+  bool Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx);
+  bool Inst_SetMatePreferenceRandom(cAvidaContext& ctx);
+  bool Inst_SetMatePreferenceHighestMerit(cAvidaContext& ctx);
 };
 
 

@@ -29,12 +29,19 @@
 #endif
 
 class cBioGroup;
+class cOrganism;
 
 using namespace Avida;
 
 
 class cBirthEntry
 {
+private:
+  int m_mating_type;
+  int m_mating_display_a;
+  int m_mating_display_b;
+  int m_mate_preference;
+  tArray<int> m_parent_task_count;
 public:
   Genome genome;
   double energy4Offspring;
@@ -42,7 +49,30 @@ public:
   int timestamp; // -1 if empty
   tArray<cBioGroup*> groups;
   
-  inline cBirthEntry() : timestamp(-1) { ; }
+  cBirthEntry();
+  cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _timestamp);
+  
+  //Accessor functions
+  int GetMatingType() { return m_mating_type; }
+  int GetParentTaskCount(int which_task) { return m_parent_task_count[which_task]; }
+  const tArray<int>& GetParentTaskCount() const { return m_parent_task_count; }
+  int GetMatingDisplayA() const { return m_mating_display_a; } 
+  int GetMatingDisplayB() const { return m_mating_display_b; } 
+  int GetMatePreference() const { return m_mate_preference; }
+  
+  void SetMatingType(int _mating_type) { m_mating_type = _mating_type; } //@CHC
+  void SetParentTaskCount(tArray<int> _parent_task_count) { m_parent_task_count = _parent_task_count; } //@CHC
+  void SetMatingDisplayA(int _mating_display_a) { m_mating_display_a = _mating_display_a; } //@CHC
+  void SetMatingDisplayB(int _mating_display_b) { m_mating_display_b = _mating_display_b; } //@CHC
+  void SetMatePreference(int _mate_preference) { m_mate_preference = _mate_preference; }
+  
+  //Other functions
+  cString GetPhenotypeString();
+  static cString GetPhenotypeStringFormat();
+  
+  //Operators
+  cBirthEntry& operator=(const cBirthEntry& _birth_entry);
+  
 };
 
 #endif

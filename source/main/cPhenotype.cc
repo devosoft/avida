@@ -59,6 +59,10 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , tolerance_offspring_own()     // @JJB
 , tolerance_offspring_others()  // @JJB
 , intolerances( (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) ? 1 : 3 ) // @JJB
+, mating_type(MATING_TYPE_JUVENILE)
+, mate_preference(MATE_PREFERENCE_RANDOM)
+, cur_mating_display_a(0)
+, cur_mating_display_b(0)
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_para_tasks(m_world->GetEnvironment().GetNumTasks())
@@ -73,12 +77,17 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
+, last_mating_display_a(0)
+, last_mating_display_b(0)
 , generation(0)
+, birth_cell_id(0)
+, birth_group_id(0)
+, birth_forager_type(-1)
 , last_task_id(-1)
 , num_new_unique_reactions(0)
 , res_consumed(0)
 
-{
+{ 
   if (parent_generation >= 0) {
     generation = parent_generation;
     if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
@@ -158,6 +167,12 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   intolerances                  = in_phen.intolerances;                // @JJB
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
   cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;  
+  mating_type = in_phen.mating_type; //@CHC
+  mate_preference = in_phen.mate_preference; //@CHC
+  cur_mating_display_a = in_phen.cur_mating_display_a;
+  cur_mating_display_b = in_phen.cur_mating_display_b;
+  last_mating_display_a = in_phen.last_mating_display_a;
+  last_mating_display_b = in_phen.last_mating_display_b;  
   
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
@@ -383,6 +398,13 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   tolerance_offspring_others.Clear();  // @JJB
   intolerances.SetAll(make_pair(-1,-1));  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+  mating_type = MATING_TYPE_JUVENILE; //@CHC
+  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
+  
+  cur_mating_display_a = 0;
+  cur_mating_display_b = 0;
+  last_mating_display_a = 0;
+  last_mating_display_b = 0;
   
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
@@ -582,6 +604,8 @@ void cPhenotype::SetupInject(const Sequence & _genome)
   tolerance_offspring_others.Clear();  // @JJB
   intolerances.SetAll(make_pair(-1,-1));  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+  mating_type = MATING_TYPE_JUVENILE; // @CHC
+  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // New organism has no parent and so cannot use its last values; initialize as needed
   last_merit_base = genome_length;
@@ -780,6 +804,9 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
   
+  last_mating_display_a = cur_mating_display_a; //@CHC
+  last_mating_display_b = cur_mating_display_b;
+  
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
@@ -788,6 +815,9 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
+  
+  cur_mating_display_a = 0; //@CHC
+  cur_mating_display_b = 0;
   
   // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
   //      resonable assumptions
@@ -1179,6 +1209,8 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   tolerance_offspring_others.Clear();  // @JJB
   intolerances.SetAll(make_pair(-1,-1));  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+  mating_type = MATING_TYPE_JUVENILE; // @CHC
+  mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
   
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;

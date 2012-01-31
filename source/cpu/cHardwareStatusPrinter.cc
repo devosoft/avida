@@ -22,6 +22,7 @@
 
 #include "cHardwareStatusPrinter.h"
 
+#include "cAvidaContext.h"
 #include "cHardwareBase.h"
 #include "cHeadCPU.h"
 #include "cInstSet.h"
@@ -29,13 +30,18 @@
 #include "cString.h"
 #include "cStringUtil.h"
 
-void cHardwareStatusPrinter::TraceHardware(cHardwareBase& hardware, bool bonus)
+void cHardwareStatusPrinter::TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool minitrace, const int exec_success)
 {
-  cString next_name(hardware.GetInstSet().GetName(hardware.IP().GetInst()));
-  if (bonus) next_name = cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
-
   cOrganism* organism = hardware.GetOrganism();
-  if (organism) organism->PrintStatus(m_trace_fp, next_name);
+  if(exec_success == -2) {cString next_name(hardware.GetInstSet().GetName(hardware.IP().GetInst()));
+    if (bonus) next_name = cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
+    
+    if (organism) {
+      if (!minitrace) organism->PrintStatus(m_trace_fp, next_name);
+      else if (minitrace && exec_success == -2) organism->PrintMiniTraceStatus(ctx, m_trace_fp, next_name);
+    }
+  }
+  else if (minitrace && exec_success != -2 && organism) organism->PrintMiniTraceSuccess(m_trace_fp, exec_success);
 }
 
 void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)

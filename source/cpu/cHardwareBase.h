@@ -62,20 +62,27 @@ protected:
   cOrganism* m_organism;     // Organism using this hardware.
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
+  cHardwareTracer* m_minitracer; // Set this if you want execution traced in a condensed and tractable format.
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
+  int m_female_cost;
   tArray<int> m_inst_ft_cost;
   tArray<double> m_inst_energy_cost;
   tArray<double> m_inst_res_cost; 
   tArray<int> m_thread_inst_cost;
+  tArray<int> m_thread_inst_post_cost;
   tArray<int> m_active_thread_costs;
+  tArray<int> m_active_thread_post_costs;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   bool m_has_res_costs; 
 	int m_task_switching_cost;
+  bool m_has_female_costs;
+  bool m_has_choosy_female_costs;
+  bool m_has_post_costs;
 
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;
@@ -121,7 +128,11 @@ public:
   virtual int GetType() const = 0;
   virtual bool SupportsSpeculative() const = 0;
   virtual void PrintStatus(std::ostream& fp) = 0;
+  virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) = 0;
+  virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
+  void SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id);
+  virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
   
   
@@ -212,7 +223,8 @@ public:
 protected:
   // --------  Core Execution Methods  --------
   bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
-  void SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const cInstruction& cur_inst, const int thread_id);
   virtual void internalReset() = 0;
 	virtual void internalResetOnFailedDivide() = 0;
   

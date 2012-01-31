@@ -313,7 +313,9 @@ public:
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
   
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
+  CONFIG_ADD_VAR(INST_POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per time instruction is executed)");
 
+  
   CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_INS_PROB, double, 0.0, "Insertion rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on divide)");
@@ -403,6 +405,14 @@ public:
   CONFIG_ADD_VAR(SAME_LENGTH_SEX, int, 0, "0 = Recombine with any genome\n1 = Recombine only w/ same length");
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
 
+  // -------- Mating Types and Mate Choice config options --------
+  CONFIG_ADD_GROUP(MATING_TYPES_GROUP, "Mating Types and Mate Choice");
+  CONFIG_ADD_VAR(MATING_TYPES, bool, 0, "Turn on separate mating types (i.e., males/females; off by default; requires instruction set support)");
+  CONFIG_ADD_VAR(LEKKING, bool, 0, "Offspring from males go directly into birth chamber to await female choice (off by default)");
+  CONFIG_ADD_VAR(MAX_GLOBAL_BIRTH_CHAMBER_SIZE, int, 3600, "Maximum number of waiting that can be stored in the birth chamber in a well-mixed population (3600 by default)");
+  CONFIG_ADD_VAR(DISABLE_GENOTYPE_CLASSIFICATION, bool, 0, "Disable tracking of historical genotypes to conserve memory (off by default)");
+  CONFIG_ADD_VAR(NOISY_MATE_ASSESSMENT, bool, 0, "Is mate assessment perfect (0) or noisy (1) (0 by default)");
+  CONFIG_ADD_VAR(MATE_ASSESSMENT_CV, double, 0.1, "Coefficient of variation for how noisy mate assessment is (0.1 by default)");
 	
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
@@ -428,6 +438,7 @@ public:
   // -------- CPU Archetecture
   CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");
   CONFIG_ADD_VAR(IO_EXPIRE, bool, 1, "Is the expiration functionality of '-expire' I/O instructions enabled?");
+  CONFIG_ADD_VAR(POISON_PENALTY, double, 0.01, "Metabolic rate penalty applied when the 'poison' instruction is executed.");
 
   
   // -------- Pprocessing of multiple, distributed populations config options --------
@@ -449,7 +460,7 @@ public:
   CONFIG_ADD_VAR(LOG_DEMES_REPLICATE, bool, 0, "Log deme replications?");
   CONFIG_ADD_VAR(DEMES_REPLICATE_LOG_START, int, 0, "Update at which to start logging deme replications");
   CONFIG_ADD_VAR(DEMES_PROB_ORG_TRANSFER, double, 0.0, "Probablity of an organism being transferred from the\nsource deme to the target deme");
-  CONFIG_ADD_VAR(DEMES_ORGANISM_SELECTION, int, 0, "How should organisms be selected for transfer from\nsource to target during deme replication?\n0 = random with replacement\n1 = sequential");
+  CONFIG_ADD_VAR(DEMES_ORGANISM_SELECTION, int, 0, "How should organisms be selected for transfer from\nsource to target during deme replication?\n0 = random with replacement\n1 = sequential\n2-6 = created, but not sure what they do\n7 = organism(s) flagged germline\n8=one of the organisms flagged as part of the germline");
   CONFIG_ADD_VAR(DEMES_ORGANISM_PLACEMENT, int, 0, "How should organisms be placed during deme replication.\n0 = cell-array middle\n1 = deme center\n2 = random placement\n3 = sequential");
   CONFIG_ADD_VAR(DEMES_ORGANISM_FACING, int, 0, "Which direction should organisms face after deme replication.\n0 = unchanged\n1 = northwest.\n2 = random.");
   CONFIG_ADD_VAR(DEMES_MAX_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication");
@@ -468,13 +479,15 @@ public:
   CONFIG_ADD_VAR(DEMES_MIGRATION_METHOD, int, 0, "Which demes can an org land in when it migrates?\n0 = Any other deme\n1 = Eight neighboring demes\n2 = Two adjacent demes in list\n3 = Proportional based on the number of points");
   CONFIG_ADD_VAR(DEMES_NUM_X, int, 0, "Simulated number of demes in X dimension. Used only for migration. ");
   CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0 = Maintain old consistency\n1 = New method using genotypes");
-  CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0 = Replace and target demes\n1 = Replace target deme, reset source deme to founders\n2 = Replace target deme, leave source deme unchanged");
+  CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0 = Replace and target demes\n1 = Replace target deme, reset source deme to founders\n2 = Replace target deme, leave source deme unchanged\n3 = Replace the target deme, and reset the number of resources consumed by the source deme.\n4 = Replace the target deme,  reset the number of resources consumed by the source deme, and kill the germ line organisms of the source deme");
   CONFIG_ADD_VAR(DEMES_DEFAULT_GERMLINE_PROPENSITY, double, 0.0, "Default germline propensity of organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.");
   CONFIG_ADD_VAR(DEMES_FOUNDER_GERMLINE_PROPENSITY, double, -1.0, "Default germline propensity of founder organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.\n <0 = OFF");
   CONFIG_ADD_VAR(DEMES_PREFER_EMPTY, int, 0, "Give empty demes preference as targets of deme replication?");
   CONFIG_ADD_VAR(DEMES_PROTECTION_POINTS, int, 0, "The number of points a deme receives for each suicide.");
   CONFIG_ADD_VAR(MIGRATION_RATE, double, 0.0, "Uniform probability of offspring migrating to a new deme.");  
   CONFIG_ADD_VAR(DEMES_TRACK_SHANNON_INFO, int, 0, "Enable shannon mutual information tracking for demes.");
+  CONFIG_ADD_VAR(DEMES_MUT_ORGS_ON_REPLICATION, int, 0, "Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): 0=OFF, 1=ON");
+  CONFIG_ADD_VAR(DEMES_ORGS_START_IN_GERM, int, 0, "Are orgs considered part of the germline at start?");
   
   
   // -------- Reversion config options --------
@@ -567,7 +580,7 @@ public:
   CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, int, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
   CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
   CONFIG_ADD_VAR(ACTIVE_MESSAGES_ENABLED, int, 0, "Enable active messages. \n0 = off\n2 = message creates parallel thread");
-  
+  CONFIG_ADD_VAR(CHECK_TASK_ON_SEND, bool, 1, "0: Don't check tasks on send, 1: Check tasks on send (default)");
 
   // -------- Buying and Selling config options --------
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
@@ -595,6 +608,7 @@ public:
   // -------- Analyze config options --------
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
   CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
+  CONFIG_ADD_VAR(INJECT_RESETS_TASKS, int, 0, "Executing INJECT (semi-succesfully) will trigger last_task_count to be writen from current_task_count");
   CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
   
@@ -682,15 +696,20 @@ public:
   CONFIG_ADD_VAR(COLOR_MUT_LETHAL, cString, "FF0000", "Color to flag stat that has changed since parent.");
   
   
-  // -------- Synchronization config options --------
+  // -------- Movement config options --------
   CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
-  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); 
+  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal (not applied to avatars)? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); 
   CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_SELECTION_TYPE, int, 0, "0 = 50% chance\n1 = binned vitality based");
   CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
   CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
   CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
   CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
-  
+  CONFIG_ADD_VAR(USE_AVATARS, int, 0, "Set orgs to move & navigate in solo avatar worlds(1=yes, 2=yes, with org interactions).");
+  CONFIG_ADD_VAR(AVATAR_BIRTH, int, 0, "0 Same as parent \n 1 Random \n 2 Cell faced by parent avatar \n 3 next grid cell");
+
+  // -------- Sensing config options --------
+  CONFIG_ADD_VAR(LOOK_DIST, int, -1, "-1: use limits set inside look instructions \n >-1: limit sight distance of look instructions to this number of cells");
+
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");
   CONFIG_ADD_VAR(PHEROMONE_ENABLED, bool, 0, "Enable pheromone usage. 0/1 (off/on)");
@@ -746,15 +765,16 @@ public:
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
   CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
   CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
-  CONFIG_ADD_VAR(INHERIT_OPINION, int, 0, "Should offspring inherit the parent's opinion?");
+  CONFIG_ADD_VAR(INHERIT_OPINION, int, 1, "Should offspring inherit the parent's opinion? 0: No... reset on divide, etc. 1: Yes");
   CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
   CONFIG_ADD_VAR(JOIN_GROUP_FAILURE, int, 0, "Percent chance for failing to switch groups"); // @JJB
   CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of previous updates used to evaluate org's tolerance levels\n(0 indicates tolarance disabled, values <0 indicate % chance random migration for offspring)"); // @JJB
   CONFIG_ADD_VAR(MAX_TOLERANCE, int, 1, "Maximum tolerance level"); // @JJB
   CONFIG_ADD_VAR(TOLERANCE_VARIATIONS, int, 0, "0=all tolerance active,\n1=only immigration tolerance active"); // @JJB
   CONFIG_ADD_VAR(TRACK_TOLERANCE, int, 0, "Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)"); // @JJB
-  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey");
+  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed)");
   CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
+  CONFIG_ADD_VAR(PRED_ODDS, double, 1.0, "Probability of success for predator 'attack' instructions.");
   CONFIG_ADD_VAR(MARKING_EXPIRE_DATE, int, -1, " Number of updates markings in cells will remain effective on territory move.");
 		
 

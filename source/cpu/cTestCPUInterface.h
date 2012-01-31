@@ -45,11 +45,22 @@ public:
     : m_testcpu(testcpu), m_test_info(test_info), m_cur_depth(cur_depth) { ; }
   virtual ~cTestCPUInterface() { ; }
 
+  
+  tSmartArray <cOrganism*> GetLiveOrgList();
+  cPopulationCell* GetCell() { return NULL; }
+	cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }
   void SetCellID(int in_id) { ; }
   void SetDemeID(int in_id) { ; }
+  
+  int GetAVCellID() { return -1; }
+  void SetAVCellID(int av_cell_id) { ; }
+  void SetAvatarFacing(int facing) { ; }
+  void SetAvatarFacedCell(int av_cell_id) { ; }
+  int GetAVFacedCellID() { return -1; }
+  int GetAVFacedDir() { return 0; }
   
   int GetCellData() { return -1; }
   int GetCellDataOrgID() { return -1; }
@@ -57,10 +68,15 @@ public:
   int GetCellDataTerritory() { return -1; }
   int GetCellDataForagerType() { return -99; }
   void SetCellData(const int newData) { ; }
+  void SetAVCellData(const int newData, const int org_id) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }
   int GetFacedCellDataUpdate() { return -1; }
   int GetFacedCellDataTerritory() { return -1; }
+  int GetFacedAVData() { return -1; }
+  int GetFacedAVDataOrgID() { return -1; }
+  int GetFacedAVDataUpdate() { return -1; }
+  int GetFacedAVDataTerritory() { return -1; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
@@ -71,8 +87,16 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
+  cOrganism* GetAVRandNeighbor();
+  cOrganism* GetAVRandNeighborPrey();
+  cOrganism* GetAVRandNeighborPred();
+  tArray<cOrganism*> GetAVNeighbors();
   bool IsNeighborCellOccupied();
+  bool HasAVNeighbor();
+  bool HasAVNeighborPrey();
+  bool HasAVNeighborPred();
   int GetNumNeighbors();
+  int GetAVNumNeighbors();
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetNeighborCellContents() { return 0; }
   void Rotate(int direction = 1);
@@ -81,11 +105,20 @@ public:
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
+  const tArray<double>& GetAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  const tArray<double>& GetFacedAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   const tArray< tArray<int> >& GetCellIdLists();  
+  int GetCurrPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
+  int GetCurrPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
+  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
+  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
+  void TriggerDoUpdates(cAvidaContext& ctx) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) {;}
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
@@ -143,7 +176,8 @@ public:
 	void ReceiveHGTDonation(const Sequence& fragment) { }
   
   bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
-  
+  bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell) { return false; }
+
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
   
@@ -169,6 +203,8 @@ public:
             double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) { ; }
   int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
+  void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
+  
   void BeginSleep() { ; }
   void EndSleep() { ; }
 };

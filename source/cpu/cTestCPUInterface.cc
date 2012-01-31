@@ -32,16 +32,61 @@ bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Geno
   return true;
 }
 
+tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() 
+{
+  tSmartArray <cOrganism*> empty;
+  return empty;
+}
+
 cOrganism* cTestCPUInterface::GetNeighbor()
 {
   return NULL;
+}
+
+cOrganism* cTestCPUInterface::GetAVRandNeighbor()
+{
+  return NULL;
+}
+
+cOrganism* cTestCPUInterface::GetAVRandNeighborPrey()
+{
+  return NULL;
+}
+
+cOrganism* cTestCPUInterface::GetAVRandNeighborPred()
+{
+  return NULL;
+}
+
+tArray<cOrganism*> cTestCPUInterface::GetAVNeighbors()
+{
+  tArray<cOrganism*> null_array;
+  null_array.SetAll(NULL);
+  return null_array;
 }
 
 bool cTestCPUInterface::IsNeighborCellOccupied() {
   return false;
 }
 
+bool cTestCPUInterface::HasAVNeighbor() {
+  return false;
+}
+
+bool cTestCPUInterface::HasAVNeighborPrey() {
+  return false;
+}
+
+bool cTestCPUInterface::HasAVNeighborPred() {
+  return false;
+}
+
 int cTestCPUInterface::GetNumNeighbors()
+{
+  return 0;
+}
+
+int cTestCPUInterface::GetAVNumNeighbors()
 {
   return 0;
 }
@@ -80,6 +125,11 @@ const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ct
   return m_testcpu->GetFacedCellResources(ctx); 
 }
 
+const tArray<double>& cTestCPUInterface::GetFacedAVResources(cAvidaContext& ctx) 
+{
+  return m_testcpu->GetFacedAVResources(ctx); 
+}
+
 const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 { 
   return m_testcpu->GetDemeResources(deme_id, ctx); 
@@ -90,6 +140,16 @@ const tArray<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaCon
   return m_testcpu->GetCellResources(cell_id, ctx); 
 }
 
+const tArray<double>& cTestCPUInterface::GetAVResources(cAvidaContext& ctx) 
+{
+  return m_testcpu->GetAVResources(ctx); 
+}
+
+const tArray<double>& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
+{
+  return m_testcpu->GetFrozenResources(ctx, cell_id); 
+}
+
 const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 {
 	return m_testcpu->GetCellIdLists();
@@ -98,6 +158,11 @@ const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
    m_testcpu->ModifyResources(ctx, res_change);
+}
+
+void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change)
+{
+  m_testcpu->ModifyResources(ctx, res_change);
 }
 
 void cTestCPUInterface::Die(cAvidaContext& ctx) 

@@ -257,6 +257,7 @@ private:
   void CommandLevenstein(cString cur_string);
   void CommandSpecies(cString cur_string);
   void CommandRecombine(cString cur_string);
+  void CommandRecombineSample(cString cur_string);
   
   // Lineage Analysis Commands...
   void CommandAlign(cString cur_string);

@@ -31,6 +31,7 @@
 #include "avida/data/Provider.h"
 
 #include "cBioGroupListener.h"
+#include "cBirthEntry.h"
 #include "cDoubleSum.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
@@ -155,6 +156,9 @@ private:
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
   tArray<pair<int,int> > m_is_tolerance_exe_counts;
   tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; // @JJB
+  tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
+//@JJB**  tArray<tSmartArray<s_inst_circumstances> > m_is_tolerance_exe_insts; // @JJB
 
   // --------  Calculated Stats  ---------
   double entropy;
@@ -191,8 +195,12 @@ private:
   int dom_abundance;
   int dom_gene_depth;
   cString dom_sequence;
-  int coal_depth;
+  
+  int dom_last_birth_cell;
+  int dom_last_forager_type;
+  int dom_last_group_id;
 
+  int coal_depth;
 
   // --------  Population Stats  ---------
   int num_births;
@@ -220,7 +228,6 @@ private:
   int tot_threshold;
   int tot_lineages;
   int tot_executed;
-
 
   // --------  Parasite Task Stats  ---------
   tArray<int> tasks_host_current;
@@ -262,8 +269,6 @@ private:
   tArray<cString> task_names;
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
-
-
 
   // --------  Resampling Stats  ---------
   int num_resamplings;
@@ -351,6 +356,32 @@ private:
   cStats(const cStats&); // @not_implemented
   cStats& operator=(const cStats&); // @not_implemented
 
+  // --------  Sexual Selection Stats  ---------
+  tArray<cBirthEntry> m_successful_mates;
+  tArray<cBirthEntry> m_choosers;
+  int m_num_successful_mates;
+  
+  // --------  Pred-prey Stats  ---------
+  cDoubleSum sum_prey_fitness;
+  cDoubleSum sum_prey_gestation;
+  cDoubleSum sum_prey_merit;
+  cDoubleSum sum_prey_creature_age;
+  cDoubleSum sum_prey_generation;  
+  cDoubleSum sum_prey_size;
+  
+  cDoubleSum sum_pred_fitness;
+  cDoubleSum sum_pred_gestation;
+  cDoubleSum sum_pred_merit;
+  cDoubleSum sum_pred_creature_age;
+  cDoubleSum sum_pred_generation;  
+  cDoubleSum sum_pred_size;
+
+  double prey_entropy;
+  int num_prey_creatures;
+  double pred_entropy;
+  int num_pred_creatures;
+
+
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -392,6 +423,10 @@ public:
   int GetDomAbundance() const { return dom_abundance; }
   int GetDomGeneDepth() const { return dom_gene_depth; }
   const cString& GetDomSequence() const { return dom_sequence; }
+  
+  int GetDomLastBirthCell() const { return dom_last_birth_cell; }
+  int GetDomLastGroup() const { return dom_last_group_id; }
+  int GetDomLastForagerType() const { return dom_last_forager_type; }
 
   int GetSenseSize() const { return sense_size; }
 
@@ -414,6 +449,10 @@ public:
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
 
+  void SetDomLastBirthCell(int in_lbc) { dom_last_birth_cell = in_lbc; }
+  void SetDomLastGroup(int in_lg) { dom_last_group_id = in_lg; }
+  void SetDomLastForagerType(int in_lfg) { dom_last_forager_type = in_lfg; }
+
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
 
   inline void SetNumGenotypes(int new_genotypes, int num_historic);
@@ -426,6 +465,9 @@ public:
   inline void SetNumThreads(int in_num_threads) { m_num_threads = in_num_threads; }
   inline void SetNumModified(int in_num_modified);
 
+  inline void SetNumPreyCreatures(int new_prey_creatures) { num_prey_creatures = new_prey_creatures; }
+  inline void SetNumPredCreatures(int new_pred_creatures) { num_pred_creatures = new_pred_creatures; }
+
   void SetMaxFitness(double in_max_fitness) { max_fitness = in_max_fitness; }
   void SetMaxMerit(double in_max_merit) { max_merit = in_max_merit; }
   void SetMaxGestationTime(int in_max_gestation_time) { max_gestation_time = in_max_gestation_time; }
@@ -437,6 +479,9 @@ public:
   void SetMinGenomeLength(int in_min_genome_length) { min_genome_length = in_min_genome_length; }
 
   void SetEntropy(double in_entropy) { entropy = in_entropy; }
+  void SetPreyEntropy(double in_prey_entropy) { prey_entropy = in_prey_entropy; }
+  void SetPredEntropy(double in_pred_entropy) { pred_entropy = in_pred_entropy; }
+  
   void SetSpeciesEntropy(double in_ent) { species_entropy = in_ent; }
 
   cDoubleSum& SumFitness()       { return sum_fitness; }
@@ -484,6 +529,24 @@ public:
   cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() { return EnergyTestamentAcceptedByOrganisms; }
   cDoubleSum& SumEnergyTestamentAcceptedByDeme() { return EnergyTestamentAcceptedByDeme; }
 
+  //pred-prey
+  cDoubleSum& SumPreyFitness()       { return sum_prey_fitness; }
+  cDoubleSum& SumPreyGestation()     { return sum_prey_gestation; }
+  cDoubleSum& SumPreyMerit()         { return sum_prey_merit; }
+  cDoubleSum& SumPreyCreatureAge()   { return sum_prey_creature_age; }
+  cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
+  cDoubleSum& SumPreySize()          { return sum_prey_size; }
+  tArray<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
+
+  cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
+  cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
+  cDoubleSum& SumPredMerit()         { return sum_pred_merit; }
+  cDoubleSum& SumPredCreatureAge()   { return sum_pred_creature_age; }
+  cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
+  cDoubleSum& SumPredSize()          { return sum_pred_size; }
+  tArray<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
+  void ZeroFTInst();
+  
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
   void ZeroInst();
@@ -534,6 +597,21 @@ public:
   const cDoubleSum& SumEnergyTestamentToDemeOrganisms() const { return EnergyTestamentToDemeOrganisms; }
   const cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() const { return EnergyTestamentAcceptedByOrganisms; }
   const cDoubleSum& SumEnergyTestamentAcceptedByDeme() const { return EnergyTestamentAcceptedByDeme; }
+
+  //pred-prey
+  const cDoubleSum& SumPreyFitness() const       { return sum_prey_fitness; }
+  const cDoubleSum& SumPreyGestation() const     { return sum_prey_gestation; }
+  const cDoubleSum& SumPreyMerit() const         { return sum_prey_merit; }
+  const cDoubleSum& SumPreyCreatureAge() const   { return sum_prey_creature_age; }
+  const cDoubleSum& SumPreyGeneration() const    { return sum_prey_generation; }  
+  const cDoubleSum& SumPreySize() const          { return sum_prey_size; }
+  
+  const cDoubleSum& SumPredFitness() const       { return sum_pred_fitness; }
+  const cDoubleSum& SumPredGestation() const     { return sum_pred_gestation; }
+  const cDoubleSum& SumPredMerit() const         { return sum_pred_merit; }
+  const cDoubleSum& SumPredCreatureAge() const   { return sum_pred_creature_age; }
+  const cDoubleSum& SumPredGeneration() const    { return sum_pred_generation; }  
+  const cDoubleSum& SumPredSize() const          { return sum_pred_size; }
 
   const std::map<int, flow_rate_tuple >&  FlowRateTuples() const { return flow_rate_tuples; }
 
@@ -634,6 +712,9 @@ public:
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
+  // Sexual selection recording
+  void RecordSuccessfulMate(cBirthEntry& successful_mate, cBirthEntry& chooser);
+
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
@@ -729,7 +810,6 @@ public:
   int GetMinGestationTime() const { return min_gestation_time; }
   int GetMinGenomeLength() const { return min_genome_length; }
 
-
   int GetResamplings() const { return num_resamplings;}  //AWC 06/29/06
   int GetFailedResamplings() const { return num_failedResamplings;}  //AWC 06/29/06
 
@@ -741,6 +821,10 @@ public:
   double GetAvgNumOrgsKilled() const { return sum_orgs_killed.Average(); }
   double GetAvgNumCellsScannedAtKill() const { return sum_cells_scanned_at_kill.Average(); }
   int GetNumMigrations() const { return num_migrations; }
+  
+  // Pred-Prey
+  int GetNumPreyCreatures() const { return num_prey_creatures; }
+  int GetNumPredCreatures() const { return num_pred_creatures; }
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -759,6 +843,14 @@ public:
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
   void PrintParasiteData(const cString& filename);
+  void PrintPreyAverageData(const cString& filename);
+  void PrintPredatorAverageData(const cString& filename);
+  void PrintPreyErrorData(const cString& filename);
+  void PrintPredatorErrorData(const cString& filename);
+  void PrintPreyVarianceData(const cString& filename);
+  void PrintPredatorVarianceData(const cString& filename);
+  void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);
@@ -814,6 +906,11 @@ public:
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
+
+  // ----------- Sexual selection output -----------
+public:
+  void PrintSuccessfulMates(cString& filename);
+  // ----------- End sexual selection output -----------
 
   // -------- Messaging support --------
 public:
@@ -881,6 +978,8 @@ public:
   void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
   //! Print statistics about deme replication.
   void PrintDemeReplicationData(const cString& filename);
+  //! Print statistics regarding germline sequestration
+  void PrintDemeGermlineSequestration(const cString& filename);
   
 
 
@@ -931,10 +1030,10 @@ protected:
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
-  cDoubleSum m_deme_fit_sd; //!< Mean standard deviation of fitness of organisms within a deme
-  cDoubleSum m_deme_gest_sd; //!< Mean standard deviation of gestation of organisms within a deme
-  cDoubleSum m_deme_merit_sd; //!< Mean standard deviation of merit of organisms within a deme
   cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
+  std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
+  std::deque<double> m_ave_non_germ_mut; 
+  std::deque<double> m_ave_germ_size;
   
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.

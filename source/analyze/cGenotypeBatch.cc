@@ -25,7 +25,7 @@
 #include "cRandom.h"
 #include "tSmartArray.h"
 
-cGenotypeBatch::cGenotypeBatch(const cGenotypeBatch& rhs) : m_name(rhs.m_name), m_list(rhs.m_list), m_is_lineage(rhs.m_is_lineage), m_is_aligned(rhs.m_is_aligned)
+cGenotypeBatch::cGenotypeBatch(const cGenotypeBatch& rhs) : m_list(rhs.m_list), m_name(rhs.m_name), m_is_lineage(rhs.m_is_lineage), m_is_aligned(rhs.m_is_aligned)
 {
   if (rhs.m_lineage_head) {
     m_lineage_head = new cAnalyzeGenotype(*(rhs.m_lineage_head));
@@ -67,6 +67,8 @@ cGenotypeBatch& cGenotypeBatch::operator=(const cGenotypeBatch& rhs)
   if (rhs.m_clade_head) {
     m_clade_head = new cAnalyzeGenotype(*(rhs.m_clade_head));
   }
+  
+  return *this;
 }
 
 

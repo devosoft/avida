@@ -110,7 +110,9 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 48
     tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 49
     tInstLibEntry<tMethod>("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 50
-    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 51
+    tInstLibEntry<tMethod>("Divide-Sex", &cHardwareTransSMT::Inst_Divide_Sex), // 51
+    tInstLibEntry<tMethod>("Divide-Asex-Wait", &cHardwareTransSMT::Inst_Divide_Asex_Wait), // 52
+    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 53
     
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -259,7 +261,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
 #endif
     
     // Print the status of this CPU at each step...
-    if (m_tracer) m_tracer->TraceHardware(*this);
+    if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
@@ -274,7 +276,10 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
+      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) { 
+        SingleProcess_PayPostResCosts(ctx, cur_inst); 
+        SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
+      }
 			
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
@@ -336,7 +341,7 @@ void cHardwareTransSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction&
   m_organism->SetRunning(true);
 	
   // Print the status of this CPU at each step...
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -381,7 +386,6 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-
 int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
 {
 	if (label.GetSize() == 0) return 0;
@@ -395,7 +399,6 @@ int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_spa
   
   return mem_space;
 }
-
 
 /////////////////////////////////////////////////////////////////////////
 // Method: cHardwareTransSMT::FindLabel(direction)
@@ -659,6 +662,10 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   
   //update the parasites tasks
 	m_organism->GetPhenotype().UpdateParasiteTasks();
+  
+  //If running in Analyze mode, reset the organisms last_task_count now so we know what the parasite did
+  if(m_world->GetConfig().INJECT_RESETS_TASKS.Get())
+    m_organism->GetPhenotype().SetLastTaskCount(m_organism->GetPhenotype().GetCurTaskCount());
   
   m_mem_array[mem_space_used].Resize(end_pos);
   cCPUMemory injected_code = m_mem_array[mem_space_used];
@@ -1751,6 +1758,25 @@ bool cHardwareTransSMT::Inst_Divide_Sex_Erase(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetCrossNum(1);
   
   return Inst_Divide_Erase(ctx);
+}
+
+bool cHardwareTransSMT::Inst_Divide_Sex(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().SetDivideSex(true);
+  m_organism->GetPhenotype().SetCrossNum(1);
+  
+  return Inst_Divide(ctx);
+}
+
+bool cHardwareTransSMT::Inst_Divide_Asex_Wait(cAvidaContext& ctx)
+{
+  //pretend like it is sexual...
+  m_organism->GetPhenotype().SetDivideSex(true);
+  
+  //but don't do any recombination
+  m_organism->GetPhenotype().SetCrossNum(0);
+  
+  return Inst_Divide(ctx);
 }
 
 bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)

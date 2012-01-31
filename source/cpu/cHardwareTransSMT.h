@@ -192,8 +192,10 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
   bool SupportsSpeculative() const { return false; }
   void PrintStatus(std::ostream& fp);
-	
-	
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) { }
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { }
+  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { }
+		
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
   inline int GetNumStacks() const { return NUM_STACKS; }
@@ -302,7 +304,9 @@ private:
   bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
   bool Inst_Divide_Erase(cAvidaContext& ctx); //49
   bool Inst_Divide_Sex_Erase(cAvidaContext& ctx); //50
-  bool Inst_Collect_Unit(cAvidaContext& ctx);        //51
+  bool Inst_Divide_Sex(cAvidaContext& ctx);     // 51
+  bool Inst_Divide_Asex_Wait(cAvidaContext& ctx);     // 51
+  bool Inst_Collect_Unit(cAvidaContext& ctx);        //52
   
 };
 

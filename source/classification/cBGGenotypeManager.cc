@@ -95,7 +95,14 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SumSize().Clear();
   stats.SumThresholdAge().Clear();
   
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    stats.SumPreySize().Clear();
+    stats.SumPredSize().Clear();
+  }
+  
   double entropy = 0.0;
+  double prey_entropy = 0.0;
+  double pred_entropy = 0.0;
   int active_count = 0;
   for (int i = 1; i < m_active_sz.GetSize(); i++) {
     active_count += m_active_sz[i].GetSize();
@@ -103,13 +110,18 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
     while (list_it->Next() != NULL) {
       cBGGenotype* bg = list_it->Get();
       const int abundance = bg->GetNumUnits();
-      
+
       // Update stats...
       const int age = stats.GetUpdate() - bg->GetUpdateBorn();
       stats.SumGenotypeAge().Add(age, abundance);
       stats.SumAbundance().Add(abundance);
       stats.SumGenotypeDepth().Add(bg->GetDepth(), abundance);
       stats.SumSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+      
+      if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+        if (bg->GetLastForagerType() !=-2) stats.SumPreySize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+        else stats.SumPredSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+      }      
       
       // Calculate this genotype's contribution to entropy
       // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
@@ -119,6 +131,19 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
       const double partial_ent = (abundance == stats.GetNumCreatures()) ? 0.0 : -(p * Log(p)); 
       entropy += partial_ent;
       
+      if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+        if (bg->GetLastForagerType() > -2) {
+          const double prey_p = ((double) abundance) / (double) stats.GetNumPreyCreatures();
+          const double prey_partial_ent = (abundance == stats.GetNumPreyCreatures()) ? 0.0 : -(prey_p * Log(prey_p)); 
+          prey_entropy += prey_partial_ent;
+        }
+        else {
+          const double pred_p = ((double) abundance) / (double) stats.GetNumPredCreatures();
+          const double pred_partial_ent = (abundance == stats.GetNumPredCreatures()) ? 0.0 : -(pred_p * Log(pred_p)); 
+          pred_entropy += pred_partial_ent;
+        }
+      }
+      
       // Do any special calculations for threshold genotypes.
       if (bg->IsThreshold()) stats.SumThresholdAge().Add(age, abundance);
     }
@@ -127,7 +152,11 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetEntropy(entropy);
   stats.SetNumGenotypes(active_count, m_historic.GetSize());
   
-  
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    stats.SetPreyEntropy(prey_entropy);
+    stats.SetPredEntropy(pred_entropy);
+  }
+    
   // Handle dominant genotype stats
   cBGGenotype* dom_genotype = getBest();
   if (dom_genotype == NULL) return;
@@ -159,6 +188,10 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomGeneDepth(dom_genotype->GetDepth());
   stats.SetDomSequence(dom_genotype->GetGenome().GetSequence().AsString());
   
+  stats.SetDomLastBirthCell(dom_genotype->GetLastBirthCell());
+  stats.SetDomLastGroup(dom_genotype->GetLastGroupID());
+  stats.SetDomLastForagerType(dom_genotype->GetLastForagerType());
+
 }
 
 
@@ -266,7 +299,13 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   
   // No matching genotype (hinted or otherwise), so create a new one
   if (!found) {
-    found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
+    //@CHC: If genotype classification is disabled, we don't want to keep track of the parents, or else
+    //      we won't end up saving any memory
+    if (!m_world->GetConfig().DISABLE_GENOTYPE_CLASSIFICATION.Get()) { //It's enabled, so keep the parents
+      found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
+    } else { //It's disabled, so toss the parents
+      found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), NULL);
+    }
     m_active_hash[list_num].Push(found);
     resizeActiveList(found->GetNumUnits());
     m_active_sz[found->GetNumUnits()].PushRear(found, &found->m_handle);
@@ -380,7 +419,13 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
     int list_num = hashGenome(genotype->GetGenome().GetSequence());
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_world->GetStats().GetUpdate());
-    m_historic.Push(genotype, &genotype->m_handle);
+    //@CHC: If classification of historical genotypes is turned off, then we'll
+    //      just skip the step of adding a removed genotype to the historic list.
+    //      Note: the list will stay empty and the reported total number of genotypes
+    //      will not be correct
+    if (!m_world->GetConfig().DISABLE_GENOTYPE_CLASSIFICATION.Get()) {
+      m_historic.Push(genotype, &genotype->m_handle);
+    }
   }
 
   if (genotype->IsThreshold()) {
@@ -454,6 +499,9 @@ void cBGGenotypeManager::buildDataCommandManager() const
   ADD_PROP("last_breed_true", int (), GetLastBreedTrue, "Breed True (during last update)");
   ADD_PROP("last_breed_in", int (), GetLastBreedIn, "Breed In (during last update)");
   ADD_PROP("last_breed_out", int (), GetLastBreedOut, "Breed Out (during last update)");
+  ADD_PROP("last_birth_cell", int (), GetLastBirthCell, "Last birth cell");
+  ADD_PROP("last_group_id", int (), GetLastGroupID, "Last birth group");
+  ADD_PROP("last_forager_type", int (), GetLastForagerType, "Last birth forager type");
 }
 
 cBioGroup* cBGGenotypeManager::cGenotypeIterator::Get() { return m_it->Get(); }

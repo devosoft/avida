@@ -412,6 +412,24 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-divide0.01", &cHardwareCPU::Inst_HeadDivide0_01, nInstFlag::STALL),
     tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001, nInstFlag::STALL),
     
+    //@CHC Mating type / mate choice instructions
+    tInstLibEntry<tMethod>("set-mating-type-male", &cHardwareCPU::Inst_SetMatingTypeMale),
+    tInstLibEntry<tMethod>("set-mating-type-female", &cHardwareCPU::Inst_SetMatingTypeFemale),
+    tInstLibEntry<tMethod>("set-mating-type-juvenile", &cHardwareCPU::Inst_SetMatingTypeJuvenile), 
+    tInstLibEntry<tMethod>("div-sex-mating-type", &cHardwareCPU::Inst_DivideSexMatingType, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-mating-type-male", &cHardwareCPU::Inst_IfMatingTypeMale),
+    tInstLibEntry<tMethod>("if-mating-type-female", &cHardwareCPU::Inst_IfMatingTypeFemale),
+    tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
+    tInstLibEntry<tMethod>("increment-mating-display-a", &cHardwareCPU::Inst_IncrementMatingDisplayA),
+    tInstLibEntry<tMethod>("increment-mating-display-b", &cHardwareCPU::Inst_IncrementMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mating-display-a", &cHardwareCPU::Inst_SetMatingDisplayA),
+    tInstLibEntry<tMethod>("set-mating-display-b", &cHardwareCPU::Inst_SetMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mate-preference-random", &cHardwareCPU::Inst_SetMatePreferenceRandom),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-display-a", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-display-b", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-merit", &cHardwareCPU::Inst_SetMatePreferenceHighestMerit),
+    
+    
     // High-level instructions
 		tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
@@ -455,6 +473,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
     tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, nInstFlag::STALL),		
     tInstLibEntry<tMethod>("relinquishEnergyToFutureDeme", &cHardwareCPU::Inst_RelinquishEnergyToFutureDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("relinquishEnergyToNeighborOrganisms", &cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms, nInstFlag::STALL),
@@ -682,6 +701,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Division of labor instructions
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -867,7 +889,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 #endif
     
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = ip.GetInst();
@@ -913,7 +935,10 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
       if (exec == true) {
-        if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
+        if (SingleProcess_ExecuteInst(ctx, cur_inst)) { 
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
+        }
       }
       
       // Check if the instruction just executed caused premature death, break out of execution if so
@@ -1016,7 +1041,7 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -1080,10 +1105,6 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   }    
   fp.flush();
 }
-
-
-
-
 
 /////////////////////////////////////////////////////////////////////////
 // Method: cHardwareCPU::FindLabel(direction)
@@ -3325,6 +3346,13 @@ bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_Poison(cAvidaContext& ctx)
+{
+  double poison_multiplier = 1.0 - m_world->GetConfig().POISON_PENALTY.Get();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() * poison_multiplier);
+  return true;
+}
+
 /* Similar to Kazi, this instructon probabilistically causes
  the organism to die. However, in this case it does so in 
  order to win points for its deme and it does not take out
@@ -3818,7 +3846,9 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int reg_to_set = FindModifiedRegister(REG_BX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
     // return % change
-    int res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
+    int res_diff = 0;
+    if (res_count[opinion] == 0) res_diff = (int) faced_res;
+    else res_diff = (int) (((faced_res - res_count[opinion])/res_count[opinion]) * 100 + 0.5);
     GetRegister(reg_to_set) = res_diff;
   }
   return true;
@@ -5623,7 +5653,9 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
     }
   }
   // return % change
-  int res_diff = (int) ((max_res - current_res[opinion])/current_res[opinion] * 100 + 0.5);
+  int res_diff = 0;
+  if (current_res[opinion] == 0) res_diff = (int) max_res;
+  else res_diff = (int) (((max_res - current_res[opinion])/current_res[opinion]) * 100 + 0.5);
   int reg_to_set = FindModifiedRegister(REG_BX);
   GetRegister(reg_to_set) = res_diff;
   return true;
@@ -8687,7 +8719,7 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   
   // return odds as %
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = (int) odds_I_dont_die * 100 + 0.5;
+  GetRegister(out_reg) = (int) (odds_I_dont_die * 100 + 0.5);
   return true;
 } 	
 
@@ -9424,9 +9456,9 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
     m_organism->GetOrgInterface().AttemptImmigrateGroup(new_opinion, m_organism);
   }
   else {
+    m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);
     m_organism->LeaveGroup(opinion);
     m_organism->JoinGroup(new_opinion);
-    m_organism->GetOrgInterface().SetOpinion(new_opinion, m_organism);
   }
   return true;
 }
@@ -9740,3 +9772,145 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 }
 
 
+bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
+{
+  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+  int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+  m_organism->IncPointMutations(num_mut);
+  return true;
+}
+
+bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
+  m_organism->JoinGermline();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
+  m_organism->ExitGermline();
+  return true;
+}
+
+
+/***
+    Mating type instructions
+***/
+
+bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to female
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to male
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_MALE);
+  }
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to male
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to female
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_FEMALE);
+  }
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Set the organism's sex to juvenile
+  //In this way, an organism that has already matured as male or female can change its sex
+  // if this instruction is included in the instruction set
+  m_organism->GetPhenotype().SetMatingType(MATING_TYPE_JUVENILE);
+  return true;
+}
+
+bool cHardwareCPU::Inst_DivideSexMatingType(cAvidaContext& ctx)
+{
+  //Check if the organism is sexually mature
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+    //If not, fail
+    return false;
+  } else {
+    //Otherwise, divide
+    return Inst_HeadDivideSex(ctx);
+  }
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeMale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is male
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_MALE)  getIP().Advance();
+  return true; 
+} 
+
+bool cHardwareCPU::Inst_IfMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is female
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_FEMALE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism has not matured sexually
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayA();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayA(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayB(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
+//Sets the display value a to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayA(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
+//Sets the display value b to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayB(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref)
+{
+  m_organism->GetPhenotype().SetMatePreference(mate_pref);
+  return true;
+}
+bool cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_DISPLAY_A); }
+bool cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_DISPLAY_B); }
+bool cHardwareCPU::Inst_SetMatePreferenceRandom(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_RANDOM); }
+bool cHardwareCPU::Inst_SetMatePreferenceHighestMerit(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_MERIT); }

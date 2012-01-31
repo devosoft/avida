@@ -148,6 +148,8 @@ public:
   void NotifyDeath(cAvidaContext& ctx);
 
   void PrintStatus(std::ostream& fp, const cString& next_name);
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
+  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
@@ -223,14 +225,27 @@ public:
   int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
   int GetCellDataForagerType() { return m_interface->GetCellDataForagerType(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
+  void SetAVCellData(const int data, const int org_id) { m_interface->SetAVCellData(data, org_id); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
   int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
   int GetFacedCellDataTerritory() { return m_interface->GetFacedCellDataTerritory(); }
-
+  int GetFacedAVData() { return m_interface->GetFacedAVData(); }
+  int GetFacedAVDataOrgID() { return m_interface->GetFacedAVDataOrgID(); }
+  int GetFacedAVDataUpdate() { return m_interface->GetFacedAVDataUpdate(); }
+  int GetFacedAVDataTerritory() { return m_interface->GetFacedAVDataTerritory(); }
+  
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
+  tArray<cOrganism*> GetAVNeighbors() { return m_interface->GetAVNeighbors(); }
+  cOrganism* GetAVRandNeighbor() { return m_interface->GetAVRandNeighbor(); }
+  cOrganism* GetAVRandNeighborPrey() { return m_interface->GetAVRandNeighborPrey(); }
+  cOrganism* GetAVRandNeighborPred() { return m_interface->GetAVRandNeighborPred(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
+  bool HasAVNeighbor() { return m_interface->HasAVNeighbor(); }
+  bool HasAVNeighborPrey() { return m_interface->HasAVNeighborPrey(); }
+  bool HasAVNeighborPred() { return m_interface->HasAVNeighborPred(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
+  int GetAVNeighborhoodSize() { return m_interface->GetAVNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
   int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the faced cell of this organism.
   int GetFacedDir() { assert(m_interface); return m_interface->GetFacedDir(); }  // Returns the human interpretable facing of this org.
@@ -267,6 +282,7 @@ public:
 
   void AddLiveOrg() { m_interface->AddLiveOrg(); } 
   void RemoveLiveOrg() { m_interface->RemoveLiveOrg(); } 
+  
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 
@@ -596,14 +612,23 @@ public:
   // get the organism's relative position (from birth place)
   int GetNortherly() { return m_northerly; }
   int GetEasterly() { return m_easterly; } 
-  void ClearEasterly() {m_easterly = 0; }
-  void ClearNortherly() {m_northerly = 0; }
-
+  void ClearEasterly() { m_easterly = 0; }
+  void ClearNortherly() { m_northerly = 0; }
+  
   int GetForageTarget() const { return m_forage_target; }
   void SetForageTarget(int m_forage_target);
+  bool HasSetFT() const { return m_has_set_ft; }
+  void RecordFTSet() { m_has_set_ft = true; }
   bool IsTeacher() const { return m_teach; }
   void Teach(bool m_teach);
-
+  bool HadParentTeacher() const { return m_parent_teacher; }
+  void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
+  void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
+  int GetParentFT() const { return m_parent_ft; } 
+  void CopyParentFT() { SetForageTarget(m_parent_ft); }
+  void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
+  int GetParentGroup() const { return m_parent_group; } 
+  
 protected:
   // The organism's own raw materials
   int m_self_raw_materials; 
@@ -633,8 +658,12 @@ protected:
   int m_easterly;
 
   int m_forage_target;
+  bool m_has_set_ft;
   bool m_teach;
-
+  bool m_parent_teacher;
+  int m_parent_ft;
+  int m_parent_group;
+  
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
   of strings. It is inspired by the cMessagingSupport*/
@@ -661,19 +690,35 @@ public:
 
 
   // -------- Division of Labor support --------
-public: 
+public:
   void DonateResConsumedToDeme(); //! donate consumed resources to the deme.
-
-
-
-
-
-  // -------- Internal Support Methods --------
+  int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
+  void IncPointMutations(int n) {m_num_point_mut+=n;} 
+  void JoinGermline() {m_germline = true;}
+  void ExitGermline() {m_germline = false;}
+  bool IsGermline() { return m_germline; }
+private: 
+  int m_num_point_mut;
+  bool m_germline;
+	
+	// -------- Avatar support --------
+public:
+  bool MoveAV(cAvidaContext& ctx);
+  int GetAVCellID() { return m_interface->GetAVCellID(); }
+  void SetAVCellID(int av_cell_id) { m_interface->SetAVCellID(av_cell_id); }
+  void SetAvatarFacing(int facing) { m_interface->SetAvatarFacing(facing); }
+  void SetAvatarFacedCell(int av_cell_id) { m_interface->SetAvatarFacedCell(av_cell_id); }
+  int GetAVFacedCellID() { return m_interface->GetAVFacedCellID(); }
+  int GetAVFacedDir() { assert(m_interface); return m_interface->GetAVFacedDir(); }  
+    
+	// -------- Internal Support Methods --------
 private:
   void initialize(cAvidaContext& ctx);
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);
+  // Need seperate doOutput function for avatars to avoid triggering reactions by true orgs
+  void doAVOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);
 };
 
 

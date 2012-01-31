@@ -151,6 +151,8 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
   m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstPreyExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  m_world->GetStats().InstPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   
   
   return true;
@@ -208,9 +210,10 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
     double prob_fail = cur_line.PopWord().AsDouble();
     int addl_time_cost = cur_line.PopWord().AsInt();
     double res_cost = cur_line.PopWord().AsDouble();
+    int post_cost = cur_line.PopWord().AsDouble();
 
-    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d:res_cost=%f",
-                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost, res_cost)); 
+    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d:res_cost=%f:post_cost=%d",
+                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost, res_cost, post_cost)); 
   }  
   return true;
 }
@@ -254,7 +257,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
     cString filename =  cStringUtil::Stringf("trace-%d.trace", org->GetID());
     hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename)));
   }
-  
+    
   assert(hw != 0);
   return hw;
 }

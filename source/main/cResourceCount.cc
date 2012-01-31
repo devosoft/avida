@@ -223,8 +223,8 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
         const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
         const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
         const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
-        const int& in_config, const int& in_count, const double& in_resistance, const bool& isgradient
-				)
+        const int& in_config, const int& in_count, const double& in_resistance, const double& in_init_plat, 
+        const double& in_threshold, const int& in_refuge, const bool& isgradient)
 {
   assert(res_index >= 0 && res_index < resource_count.GetSize());
   assert(initial >= 0.0);
@@ -315,7 +315,8 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
                                                       in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed,
                                                       in_plateau_inflow, in_plateau_outflow, in_is_plateau_common, in_floor,
-                                                      in_habitat, in_min_size, in_max_size, in_config, in_count, in_resistance);
+                                                      in_habitat, in_min_size, in_max_size, in_config, in_count, in_resistance, 
+                                                      in_init_plat);
       spatial_resource_count[res_index]->RateAll(0);
     }
     
@@ -353,6 +354,71 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   spatial_resource_count[res_index]->SetOutflowX2(in_outflowX2);
   spatial_resource_count[res_index]->SetOutflowY1(in_outflowY1);
   spatial_resource_count[res_index]->SetOutflowY2(in_outflowY2);
+}
+
+void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
+                      const int& height, const int& spread, const double& plateau, const int& decay, 
+                      const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
+                      const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
+                      const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
+                      const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
+                      const double& floor, const int& habitat, const int& min_size, const int& max_size,
+                      const int& config, const int& count, const double& resistance, const double& plat_val, 
+                      const double& threshold, const int& refuge) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  int worldx = spatial_resource_count[res_id]->GetX();
+  int worldy = spatial_resource_count[res_id]->GetY();
+  
+  spatial_resource_count[res_id]->SetGradPeakX(peakx);
+  spatial_resource_count[res_id]->SetGradPeakY(peaky);
+  spatial_resource_count[res_id]->SetGradHeight(height);
+  spatial_resource_count[res_id]->SetGradSpread(spread);
+  spatial_resource_count[res_id]->SetGradPlateau(plateau);
+  spatial_resource_count[res_id]->SetGradInitialPlatVal(plat_val);
+  spatial_resource_count[res_id]->SetGradDecay(decay);
+  spatial_resource_count[res_id]->SetGradMaxX(max_x);
+  spatial_resource_count[res_id]->SetGradMaxY(max_y);
+  spatial_resource_count[res_id]->SetGradMinX(min_x);
+  spatial_resource_count[res_id]->SetGradMinY(min_y);
+  spatial_resource_count[res_id]->SetGradMoveScaler(move_a_scaler);
+  spatial_resource_count[res_id]->SetGradUpdateStep(updatestep);
+
+  spatial_resource_count[res_id]->SetGradIsHalo(halo);
+  spatial_resource_count[res_id]->SetGradHaloInnerRad(halo_inner_radius);
+  spatial_resource_count[res_id]->SetGradHaloWidth(halo_width);
+  spatial_resource_count[res_id]->SetGradHaloX(halo_anchor_x);
+  spatial_resource_count[res_id]->SetGradHaloY(halo_anchor_y);
+  spatial_resource_count[res_id]->SetGradMoveSpeed(move_speed);
+  spatial_resource_count[res_id]->SetGradPlatInflow(plateau_inflow);
+  spatial_resource_count[res_id]->SetGradPlatOutflow(plateau_outflow);
+  spatial_resource_count[res_id]->SetGradPlatIsCommon(is_plateau_common);
+  spatial_resource_count[res_id]->SetGradFloor(floor);
+  spatial_resource_count[res_id]->SetGradHabitat(habitat);
+  spatial_resource_count[res_id]->SetGradMinSize(min_size);
+  spatial_resource_count[res_id]->SetGradMaxSize(max_size);
+  spatial_resource_count[res_id]->SetGradConfig(config);
+  spatial_resource_count[res_id]->SetGradCount(count);
+  spatial_resource_count[res_id]->SetGradResistance(resistance);
+  spatial_resource_count[res_id]->SetGradThreshold(threshold);
+  spatial_resource_count[res_id]->SetGradRefuge(refuge);
+  
+  spatial_resource_count[res_id]->ResetGradRes(ctx, worldx, worldy);
+}
+
+void cResourceCount::SetGradientInflow(const int& res_id, const double& inflow) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetGradPlatInflow(inflow);
+}
+
+void cResourceCount::SetGradientOutflow(const int& res_id, const double& outflow) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetGradPlatOutflow(outflow);
 }
 
 /*
@@ -446,6 +512,26 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaConte
   }
   return curr_grid_res_cnt;
 
+}
+
+const tArray<double> & cResourceCount::GetFrozenResources(cAvidaContext& ctx, int cell_id) const 
+
+// Get amount of the resource for a given cell in the grid.  If it is a
+// global resource pass out the entire content of that resource.
+// This differs from GetCellResources by leaving out DoUpdates which is
+// useful inside methods that repeatedly call this before cells can change.
+
+{
+  int num_resources = resource_count.GetSize();
+  
+  for (int i = 0; i < num_resources; i++) {
+    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+      curr_grid_res_cnt[i] = resource_count[i];
+    } else {
+      curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
+    }
+  }
+  return curr_grid_res_cnt;
 }
 
 const tArray<int> & cResourceCount::GetResourcesGeometry() const
@@ -548,6 +634,29 @@ void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
     curr_spatial_res_cnt[i].Resize(in_x * in_y);
   }
 }
+
+int cResourceCount::GetCurrPeakX(cAvidaContext& ctx, int res_id) const
+{ 
+  DoUpdates(ctx);
+  return spatial_resource_count[res_id]->GetCurrPeakX();
+}
+
+int cResourceCount::GetCurrPeakY(cAvidaContext& ctx, int res_id) const
+{ 
+  DoUpdates(ctx);
+  return spatial_resource_count[res_id]->GetCurrPeakY();
+}
+
+int cResourceCount::GetFrozenPeakX(cAvidaContext& ctx, int res_id) const
+{ 
+  return spatial_resource_count[res_id]->GetCurrPeakX();
+}
+
+int cResourceCount::GetFrozenPeakY(cAvidaContext& ctx, int res_id) const
+{ 
+  return spatial_resource_count[res_id]->GetCurrPeakY();
+}
+
 ///// Private Methods /////////
 void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 { 
@@ -634,3 +743,5 @@ int cResourceCount::GetResourceByName(cString name) const
   return result;
   
 }
+
+

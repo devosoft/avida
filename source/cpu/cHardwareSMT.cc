@@ -220,13 +220,19 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
 #endif
     
     // Print the status of this CPU at each step...
-    if (m_tracer) m_tracer->TraceHardware(*this);
+    if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
 		
+    // Print the short form status of this CPU at each step... 
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
+
     // Test if costs have been paid and it is okay to execute this now...
+    int exec_success = 0;
     bool exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
+    // record any failure due to costs being paid
+    if (!exec) exec_success = -1;
 		
     // Now execute the instruction...
     if (exec == true) {
@@ -236,12 +242,21 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
-      			
+      if (exec == true) {
+        if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
+          // record execution success
+          exec_success = 1;
+        }
+      }    
+      
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
       if (AdvanceIP() == true) IP().Advance();
     }
+    // if using mini traces, report success or failure of execution
+    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
   }
   
   // Kill creatures who have reached their max num of instructions executed
@@ -298,7 +313,7 @@ void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
   m_organism->SetRunning(true);
 	
   // Print the status of this CPU at each step...
-  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
+  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -342,6 +357,110 @@ void cHardwareSMT::PrintStatus(ostream& fp)
   fp.flush();
 }
 
+void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  cString org_dat("");
+  df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
+  df.WriteComment(org_dat.Set("Org ID: %d", org_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
+  df.WriteComment(" ");
+  df.WriteComment("Exec Stats Columns:");
+  //  df.WriteComment("CPU Cycle");
+  df.WriteComment("CPU Cycle (since last reset)");
+  df.WriteComment("Current Update");
+  df.WriteComment("Register Contents"); //(CPU Cycle Origin of Contents)");
+  df.WriteComment("Current Thread");
+  df.WriteComment("IP Position");
+  df.WriteComment("RH Position");
+  df.WriteComment("WH Position");
+  df.WriteComment("FH Position");
+  //  df.WriteComment("CPU Cycle of Last Output");
+  df.WriteComment("Current Merit");
+  df.WriteComment("Current Bonus");
+  df.WriteComment("Forager Type");
+  df.WriteComment("Group ID (opinion)");
+  df.WriteComment("Current Cell");
+  df.WriteComment("Avatar Cell");
+  df.WriteComment("Faced Direction");
+  df.WriteComment("Faced Cell Occupied?");
+  df.WriteComment("Faced Cell Has Hill?");
+  df.WriteComment("Faced Cell Has Wall?");
+  df.WriteComment("Queued Instruction");
+//  df.WriteComment("Trailing NOPs");
+  df.WriteComment("Did Queued Instruction Execute (-1=no, paying cpu costs; 0=failed; 1=yes)");
+  df.Endl();
+}
+
+void cHardwareSMT::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+{
+  // basic status info
+  fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << m_world->GetStats().GetUpdate() << " ";
+  for (int i = 0; i < GetNumRegisters(); i++) {
+//    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    fp << GetRegister(i) << " ";
+//    fp << "(" << reg.originated << ") ";
+  }    
+  // genome loc info
+  fp << m_cur_thread << " ";
+  fp << GetHead(nHardware::HEAD_IP).GetPosition() << " ";  
+  fp << GetHead(nHardware::HEAD_READ).GetPosition() << " ";
+  fp << GetHead(nHardware::HEAD_WRITE).GetPosition()  << " ";
+  fp << GetHead(nHardware::HEAD_FLOW).GetPosition()   << " ";
+  // last output
+//  fp << m_last_output << " ";
+  // phenotype/org status info
+  fp << m_organism->GetPhenotype().GetMerit().GetDouble() << " ";
+  fp << m_organism->GetPhenotype().GetCurBonus() << " ";
+  fp << m_organism->GetForageTarget() << " ";
+  if (m_organism->HasOpinion()) fp << m_organism->GetOpinion().first << " ";
+  else fp << -99 << " ";
+  // environment info / things that affect movement
+  fp << m_organism->GetCellID() << " ";
+  fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
+  fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
+  fp << m_organism->IsNeighborCellOccupied() << " ";  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+  int wall = 0;
+  int hill = 0;
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_resource_levels[i] > 0) wall = 1;
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && cell_resource_levels[i] > 0) hill = 1;
+    if (hill == 1 && wall == 1) break;
+  }
+  fp << hill << " ";
+  fp << wall << " ";
+  // instruction about to be executed
+  fp << next_name << " ";
+  // any trailing nops (up to NUM_REGISTERS)
+  //  cCPUMemory& memory = m_memory;
+  //  int pos = GetHead(nHardware::HEAD_IP).GetPosition();
+  //  tSmartArray<int> seq;
+  //  seq.Resize(0);
+  //  for (int i = 0; i < NUM_REGISTERS; i++) {
+  //    pos += 1;
+  //    if (pos >= memory.GetSize()) pos = 0;
+  //    if (m_inst_set->IsNop(memory[pos])) seq.Push(m_inst_set->GetNopMod(memory[pos])); 
+  //    else break;
+  //  }
+  //  cString mod_string;
+  //  for (int j = 0; j < seq.GetSize(); j++) {
+  //    mod_string += (char) seq[j] + 'A';  
+  //  }  
+  //  if (mod_string.GetSize() != 0) fp << mod_string << " ";
+  //  else fp << "NoMods" << " ";
+}
+
+void cHardwareSMT::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
+{
+  fp << exec_sucess;
+  fp << endl;
+  fp.flush();
+}
 
 int cHardwareSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
 {

@@ -41,12 +41,23 @@
 		10479F2E0F1BC54B00AF9F6A /* cMutationSteps.cc in Sources */ = {isa = PBXBuildFile; fileRef = 10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */; };
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
+		3EC2D2671459C1D100E8DA8B /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2661459C1D100E8DA8B /* libapto.a */; };
+		3EC2D26A1459C1D500E8DA8B /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */; };
+		3EC2D26B1459C1DE00E8DA8B /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */; };
+		3EC2D26C1459C1E500E8DA8B /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */; };
+		3EC2D26D1459C1E800E8DA8B /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2661459C1D100E8DA8B /* libapto.a */; };
+		3EC2D26E1459C1F400E8DA8B /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2661459C1D100E8DA8B /* libapto.a */; };
+		3EC2D26F1459C1F700E8DA8B /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */; };
+		3EC2D2701459C20900E8DA8B /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2661459C1D100E8DA8B /* libapto.a */; };
+		3EC2D2711459C20F00E8DA8B /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		4A587EEC1332B6590037A393 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EE81332B6590037A393 /* cDynamicCount.cc */; };
 		4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EE91332B6590037A393 /* cDynamicCount.h */; };
 		4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EEA1332B6590037A393 /* cGradientCount.cc */; };
 		4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EEB1332B6590037A393 /* cGradientCount.h */; };
+		4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cSensing.cc */; };
+		4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cSensing.h */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -297,13 +308,11 @@
 		7070E46D12104A660056BE1E /* cDemePlaceholderUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7070E46B12104A660056BE1E /* cDemePlaceholderUnit.h */; };
 		7070E6BF12109C1D0056BE1E /* cBioGroupListener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7070E6BE12109C1D0056BE1E /* cBioGroupListener.cc */; };
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
+		7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073ADEC14609BF600FECC56 /* cBirthEntry.cc */; };
+		7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */; };
+		7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
-		7078B5381386F6D300CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
-		7078B5391386F6DD00CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
-		7078B53A1386F6E800CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
-		7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
-		7078B53C1386F6F700CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
 		7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */; };
@@ -329,13 +338,9 @@
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
-		70FA7AC4138C304C00DC70D4 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
-		70FA7AC6138C306700DC70D4 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
-		70FA7AC7138C307A00DC70D4 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 		70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */; };
-		70FEF6241381B04500A9D082 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		70FEF65E1382C48900A9D082 /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FEF65D1382C48900A9D082 /* Manager.cc */; };
 		B462B5C10FA0F47D00F379D1 /* cPhenPlastSummary.h in Headers */ = {isa = PBXBuildFile; fileRef = B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
@@ -606,6 +611,8 @@
 		1097463E0AE9606E00929ED6 /* cDeme.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDeme.h; sourceTree = "<group>"; };
 		2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cProbDemeProbSchedule.cc; sourceTree = "<group>"; };
 		2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cProbDemeProbSchedule.h; sourceTree = "<group>"; };
+		3EC2D2661459C1D100E8DA8B /* libapto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libapto.a; path = ../libs/apto/build/Debug/libapto.a; sourceTree = "<group>"; };
+		3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtcmalloc-1.4.a"; path = "../libs/tcmalloc-1.4/build/Debug/libtcmalloc-1.4.a"; sourceTree = "<group>"; };
 		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
 		4216165511DA45A800B49195 /* cMultiProcessWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMultiProcessWorld.cc; sourceTree = "<group>"; };
 		4216165611DA45A800B49195 /* cMultiProcessWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMultiProcessWorld.h; sourceTree = "<group>"; };
@@ -625,6 +632,8 @@
 		4A587EEA1332B6590037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
 		4A587EEB1332B6590037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
 		4ABC70211350AF3000EB56AA /* gradient.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = gradient.html; sourceTree = "<group>"; };
+		4AC3D9F2144E087000CAEA62 /* cSensing.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSensing.cc; sourceTree = "<group>"; };
+		4AC3D9F3144E087000CAEA62 /* cSensing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSensing.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -863,6 +872,9 @@
 		70731663097C6DF500815164 /* cASLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASLibrary.cc; sourceTree = "<group>"; };
 		7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSemanticASTVisitor.cc; sourceTree = "<group>"; };
 		7073972D0D725B9D003855D3 /* cSemanticASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSemanticASTVisitor.h; sourceTree = "<group>"; };
+		7073ADEC14609BF600FECC56 /* cBirthEntry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthEntry.cc; sourceTree = "<group>"; };
+		7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthMatingTypeGlobalHandler.cc; sourceTree = "<group>"; };
+		7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBirthMatingTypeGlobalHandler.h; sourceTree = "<group>"; };
 		707415C70AA7E4100064A546 /* main.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.css; sourceTree = "<group>"; };
 		7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_CumulativeStemminess.cc; sourceTree = "<group>"; };
 		7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_Gamma.cc; sourceTree = "<group>"; };
@@ -1190,8 +1202,8 @@
 				5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */,
 				706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */,
 				5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */,
-				70FA7AC6138C306700DC70D4 /* libapto.a in Frameworks */,
-				7078B53A1386F6E800CE9027 /* libtcmalloc-1.4.a in Frameworks */,
+				3EC2D26E1459C1F400E8DA8B /* libapto.a in Frameworks */,
+				3EC2D26F1459C1F700E8DA8B /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1201,8 +1213,8 @@
 			files = (
 				70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */,
 				7023ECD30C0A447700362B9C /* libavida-core.a in Frameworks */,
-				70FA7AC4138C304C00DC70D4 /* libapto.a in Frameworks */,
-				7078B5391386F6DD00CE9027 /* libtcmalloc-1.4.a in Frameworks */,
+				3EC2D26D1459C1E800E8DA8B /* libapto.a in Frameworks */,
+				3EC2D26C1459C1E500E8DA8B /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1226,8 +1238,8 @@
 			files = (
 				70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */,
 				70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */,
-				70FA7AC7138C307A00DC70D4 /* libapto.a in Frameworks */,
-				7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */,
+				3EC2D2701459C20900E8DA8B /* libapto.a in Frameworks */,
+				3EC2D2711459C20F00E8DA8B /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1236,7 +1248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */,
-				7078B53C1386F6F700CE9027 /* libtcmalloc-1.4.a in Frameworks */,
+				3EC2D26B1459C1DE00E8DA8B /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1245,8 +1257,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
-				70FEF6241381B04500A9D082 /* libapto.a in Frameworks */,
-				7078B5381386F6D300CE9027 /* libtcmalloc-1.4.a in Frameworks */,
+				3EC2D2671459C1D100E8DA8B /* libapto.a in Frameworks */,
+				3EC2D26A1459C1D500E8DA8B /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1846,6 +1858,8 @@
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
+				3EC2D2691459C1D500E8DA8B /* libtcmalloc-1.4.a */,
+				3EC2D2661459C1D100E8DA8B /* libapto.a */,
 				703549221333E30800D3865C /* include */,
 				DCC30C670762539A008F7A48 /* source */,
 				70F962BD135AA2E7008EDD1C /* unittests */,
@@ -1929,6 +1943,9 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				7073ADEC14609BF600FECC56 /* cBirthEntry.cc */,
+				7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */,
+				7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */,
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
 				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
 				701D51CB09C645F50009B4F8 /* cAvidaContext.h */,
@@ -2026,6 +2043,8 @@
 				70B0872508F5E82D00FC65FE /* cResourceLib.cc */,
 				70B0871508F5E81000FC65FE /* cResourceLib.h */,
 				706C6F480B83E69D003174C1 /* cSaleItem.h */,
+				4AC3D9F3144E087000CAEA62 /* cSensing.h */,
+				4AC3D9F2144E087000CAEA62 /* cSensing.cc */,
 				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
 				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
 				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
@@ -2195,6 +2214,8 @@
 				7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */,
 				4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */,
 				4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */,
+				4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */,
+				7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2554,6 +2575,9 @@
 				70A53BCC135B766600C3E661 /* Version.cc in Sources */,
 				70FEF65E1382C48900A9D082 /* Manager.cc in Sources */,
 				70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */,
+				4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */,
+				7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */,
+				7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2660,6 +2684,11 @@
 		56F555D50C3B36AD00E2E929 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = "avida-text";
 			};
 			name = Debug;
@@ -2667,6 +2696,11 @@
 		56F555D60C3B36AD00E2E929 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = "avida-text";
 			};
 			name = Release;
@@ -2676,6 +2710,11 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+				);
 				PRODUCT_NAME = "avida-viewer";
 			};
 			name = Debug;
@@ -2685,6 +2724,11 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+				);
 				PRODUCT_NAME = "avida-viewer";
 			};
 			name = Release;
@@ -2722,6 +2766,11 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = avida;
 			};
 			name = Debug;
@@ -2731,6 +2780,11 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = avida;
 			};
 			name = Release;
@@ -2824,6 +2878,11 @@
 		70B651580BEA700B002472ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = "unit-tests";
 			};
 			name = Debug;
@@ -2831,6 +2890,11 @@
 		70B651590BEA700B002472ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = "unit-tests";
 			};
 			name = Release;
@@ -2838,6 +2902,10 @@
 		70DCAD18097AF7CC002F8733 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Debug;
@@ -2845,6 +2913,10 @@
 		70DCAD19097AF7CC002F8733 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+				);
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Release;
