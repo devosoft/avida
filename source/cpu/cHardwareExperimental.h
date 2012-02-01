@@ -562,7 +562,6 @@ private:
   bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
   bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
   bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
-  void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);

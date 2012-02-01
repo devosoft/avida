@@ -367,7 +367,6 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
-
 bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism)
 {
   if (m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get() > 0 && GetNumOrganisms() >= m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get())
@@ -380,6 +379,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   tArray<cOrganism*> offspring_array;
   tArray<cMerit> merit_array;
 
+  // If divide method is split, parent will be reset to completely tolerant
+  // must remove their intolerance from the group's cached total.
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
       int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -498,8 +499,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       if (parent_organism->HasOpinion()) offspring_array[i]->SetParentGroup(parent_organism->GetOpinion().first);
       // If tolerances are on ... @JJB
-      if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-//@JJB**      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
+      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
           target_cells[i] = doomed_cell;
@@ -929,7 +929,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // For tolerance_window, we cheated by dumping doomed offspring into cell (X * Y) - 1 ...now that we updated the stats, we need to 
   // kill that org. @JJB
   int doomed_cell = (m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get()) - 1;
-  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() != 0)) {
+  if ((m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) && (target_cell.GetID() == doomed_cell) && (m_world->GetStats().GetUpdate() > 0)) {
     KillOrganism(target_cell, ctx);
     org_survived = false;
   }

@@ -4653,8 +4653,8 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    
    int toleranceType = -1;
    if (tolerance_to_modify == rAX) toleranceType = 0;
-   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
+   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
+   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
    
    // Not a recognized register
    if (toleranceType == -1) return false;
@@ -4692,8 +4692,8 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   
   int toleranceType = -1;
   if (tolerance_to_modify == rAX) toleranceType = 0;
-  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
+  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
+  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
   
   // Not a recognized register
   if (toleranceType == -1) return false;
@@ -4735,6 +4735,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {
+  // If not a predator in a group, return false
   if ((m_organism->GetForageTarget() != -2) || (m_organism->GetOpinion().first < 0)) return false;
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
@@ -4761,34 +4762,6 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
     }
   }
   return false;
-}
-
-// Pushes the circumstances of a tolerance instruction execution to stats. @JJB
-void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
-{
-  tArray<double> cell_res;
-  if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  
-  int group_id = m_organism->GetOpinion().first;
-  if (group_id == -1) return;
-  int group_size = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
-  double resource_level = cell_res[group_id];
-  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-  
-  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
-  double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-  double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-  
-  double odds_immi = immigrant_odds * 100 + 0.5;
-  double odds_own = offspring_own_odds * 100 + 0.5;
-  double odds_others = offspring_others_odds * 100 + 0.5;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
-  int tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-  int tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-  
-  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
-                                                     odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)

@@ -63,8 +63,8 @@ public:
 
   virtual tSmartArray <cOrganism*> GetLiveOrgList() = 0;
   virtual int GetCellID() = 0;
-	virtual cPopulationCell* GetCell() = 0;
-	virtual cPopulationCell* GetCell(int cell_id) = 0;
+  virtual cPopulationCell* GetCell() = 0;
+  virtual cPopulationCell* GetCell(int cell_id) = 0;
   virtual int GetDemeID() = 0;
   virtual cDeme* GetDeme() = 0;
   virtual void SetCellID(int in_id) = 0;
@@ -154,28 +154,28 @@ public:
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;
-	virtual bool BroadcastMessage(cOrgMessage& msg, int depth) = 0;
+  virtual bool BroadcastMessage(cOrgMessage& msg, int depth) = 0;
   virtual bool BcastAlarm(int jump_jabel, int bcast_range) = 0;
   virtual void DivideOrgTestamentAmongDeme(double value) = 0;
-	virtual void SendFlash() = 0;
-  
-  virtual int GetStateGridID(cAvidaContext& ctx) = 0;
-	virtual void RotateToGreatestReputation() =0;
-	virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
-	virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
+  virtual void SendFlash() = 0;
 
-	virtual void CreateLinkByFacing(double weight=1.0) = 0;
-	virtual void CreateLinkByXY(int x, int y, double weight=1.0) = 0;
-	virtual void CreateLinkByIndex(int idx, double weight=1.0) = 0;
-	virtual bool NetworkBroadcast(cOrgMessage& msg) = 0;
-	virtual bool NetworkUnicast(cOrgMessage& msg) = 0;
-	virtual bool NetworkRotate(int x) = 0;
-	virtual bool NetworkSelect(int x) = 0;
-	
-	virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
-	virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
-	virtual void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) = 0;
-	virtual void ReceiveHGTDonation(const Sequence& fragment) = 0;
+  virtual int GetStateGridID(cAvidaContext& ctx) = 0;
+  virtual void RotateToGreatestReputation() =0;
+  virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
+  virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
+
+  virtual void CreateLinkByFacing(double weight=1.0) = 0;
+  virtual void CreateLinkByXY(int x, int y, double weight=1.0) = 0;
+  virtual void CreateLinkByIndex(int idx, double weight=1.0) = 0;
+  virtual bool NetworkBroadcast(cOrgMessage& msg) = 0;
+  virtual bool NetworkUnicast(cOrgMessage& msg) = 0;
+  virtual bool NetworkRotate(int x) = 0;
+  virtual bool NetworkSelect(int x) = 0;
+
+  virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
+  virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
+  virtual void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) = 0;
+  virtual void ReceiveHGTDonation(const Sequence& fragment) = 0;
   
   virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
   virtual bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell) = 0;
@@ -201,8 +201,6 @@ public:
   virtual double CalcGroupOddsOffspring(int group_id) = 0;
   virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
   virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; // @JJB
-  virtual void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-                  double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) = 0;
   virtual int& GetGroupIntolerances(int group_id, int tol_num) = 0;
     
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
