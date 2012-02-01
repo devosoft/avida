@@ -1,0 +1,21 @@
+# Avida Variance Data
+# Wed Feb  1 14:43:35 2012
+#  1: Update
+#  2: Merit
+#  3: Gestation Time
+#  4: Fitness
+#  5: Repro Rate?
+#  6: Size
+#  7: Copied Size
+#  8: Executed Size
+#  9: Abundance
+# 10: (No Data)
+# 11: (No Data)
+# 12: Genotype Depth
+# 13: Generation
+# 14: Neutral Metric
+# 15: Lineage Label
+# 16: True Replication Rate (based on births/update, time-averaged)
+
+0 0 0 0 0 106929 0 0 0 -1 -1 0 0 0 0 0 
+750 708.623 1.32087e+07 0.260724 0 148246 0.803422 6.98656 33.1544 -1 -1 889.624 125.15 16.9585 0 0.00378016 

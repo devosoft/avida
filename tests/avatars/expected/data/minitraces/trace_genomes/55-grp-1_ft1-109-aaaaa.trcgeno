@@ -1,0 +1,138 @@
+# Wed Feb  1 14:43:35 2012
+# Filename........: minitraces/trace_genomes/55-grp-1_ft1-109-aaaaa.trcgeno
+# Update Output...: 502
+# Is Viable.......: 0
+# Repro Cycle Size: 0
+# Depth to Viable.: -1
+# 
+# Generation: 0
+# Merit...........: 109.000000
+# Gestation Time..: 0
+# Fitness.........: 0.000000
+# Errors..........: 0
+# Genome Size.....: 109
+# Copied Size.....: 109
+# Executed Size...: 109
+# Offspring.......: NONE
+# 
+# Tasks Performed:
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+# eat-target 0 (0.000000)
+
+
+zero
+nop-A
+inc
+nop-A
+set-ft-once
+nop-A
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+teach-offspring
+rotate-x
+repro

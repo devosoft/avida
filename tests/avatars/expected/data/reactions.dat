@@ -1,0 +1,23 @@
+# Avida reaction data
+# Wed Feb  1 14:43:35 2012
+# First column gives the current update, all further columns give the number
+# of currently living organisms each reaction has affected.
+#  1: Update
+#  2: food1
+#  3: food2
+#  4: food3
+#  5: food4
+#  6: food5
+#  7: food6
+#  8: food7
+#  9: food8
+# 10: food9
+
+0 0 0 0 0 0 0 0 0 0 
+100 55 0 0 0 0 0 0 0 0 
+200 55 0 0 0 0 0 0 0 0 
+300 55 0 0 0 0 0 0 0 0 
+400 55 0 0 0 0 0 0 0 0 
+500 55 0 0 0 0 0 0 0 0 
+600 181 0 0 0 0 0 0 0 0 
+700 619 0 0 0 0 0 0 0 0 
