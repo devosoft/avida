@@ -28,8 +28,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <CorePlot/CorePlot.h>
 
+#import "AvidaEDAnalyzePopulation.h"
 #import "DraggableImageView.h"
+#import "DroppableGraphHostingView.h"
 #import "MapGridView.h"
 #import "ViewerListener.h"
 
@@ -42,7 +45,7 @@
 @class AvidaEDPopViewStatView;
 
 
-@interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, MapDragDelegate, ViewerListener,
+@interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, DropDelegate, MapDragDelegate, ViewerListener,
                                                    NSDraggingSource, NSSplitViewDelegate, NSWindowDelegate,
                                                    NSOutlineViewDelegate, NSOutlineViewDataSource>
 {
@@ -105,6 +108,16 @@
   // Analyze View
   // --------------------------------------------------------------------------------------------------------------  
   IBOutlet NSView* analyzeView;
+  NSMutableArray* analyzePops;
+  IBOutlet NSArrayController* arrctlrAnalyze;
+  IBOutlet NSPopUpButton* btnAnalyzeGraphSelectLeft;
+  IBOutlet NSPopUpButton* btnAnalyzeGraphSelectRight;
+  IBOutlet CPTGraphHostingView* graphViewAnalyze;
+  CPTXYGraph* graphAnalyze;
+  CPTXYPlotSpace* analyzePrimaryPlotSpace;
+  CPTXYPlotSpace* analyzeSecondaryPlotSpace;
+  CPTXYAxis* analyzeSecondaryYAxis;
+  
   
   // Organism View
   // --------------------------------------------------------------------------------------------------------------  
@@ -157,8 +170,14 @@
 - (IBAction) changeRepeatability:(id)sender;
 - (IBAction) changePauseAt:(id)sender;
 
+- (IBAction) changeAnalyzeGraphMode:(id)sender;
+- (IBAction) changeAnalyzePopulationColor:(id)sender;
+- (void) removeAnalyzePopulation:(id)pop;
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
+
+
+@property (readonly) NSMutableArray* analyzePops;
 
 
 // NSMenuValidation Informal Protocol
@@ -209,6 +228,12 @@
 // DraggableImageViewDelegate
 - (void) draggableImageView:(DraggableImageView*)imageView writeToPasteboard:(NSPasteboard*)pboard;
 
+
+// DropDelegate
+- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
 
 
 // Listener Methods

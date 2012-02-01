@@ -11,6 +11,7 @@
 		7015B89F14C883C60031B60B /* genome65.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89D14C883C60031B60B /* genome65.png */; };
 		7015B8A014C883C60031B60B /* petri128empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89E14C883C60031B60B /* petri128empty.png */; };
 		7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7015B8A214C886820031B60B /* FreezerOutlineView.mm */; };
+		70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */; };
 		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7029A49C1361CDBD0031433A /* CenteringClipView.m */; };
@@ -32,6 +33,9 @@
 		7038059214ACF616002FA72A /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
 		7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
 		7046CF7714D0B5320030F1DF /* petri.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7046CF7614D0B5320030F1DF /* petri.icns */; };
+		7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */; };
+		7046CFBC14D9C55B0030F1DF /* graph-preview-dashed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */; };
+		7046CFBD14D9C55B0030F1DF /* graph-preview-solid.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */; };
 		7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7047394714B65F19009D285C /* QuartzCore.framework */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EA14B6A6E50051B354 /* ImageFlipperView.m */; };
@@ -66,6 +70,8 @@
 		7015B89E14C883C60031B60B /* petri128empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128empty.png; sourceTree = "<group>"; };
 		7015B8A114C886820031B60B /* FreezerOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FreezerOutlineView.h; sourceTree = "<group>"; };
 		7015B8A214C886820031B60B /* FreezerOutlineView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FreezerOutlineView.mm; sourceTree = "<group>"; };
+		70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAnalyzePopulation.h; sourceTree = "<group>"; };
+		70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDAnalyzePopulation.mm; sourceTree = "<group>"; };
 		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
 		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
 		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
@@ -101,6 +107,10 @@
 		7038059114ACF616002FA72A /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CorePlot.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/CorePlot.framework"; sourceTree = "<group>"; };
 		7046CF7414D0B4F80030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
 		7046CF7614D0B5320030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
+		7046CFB614D9B7BA0030F1DF /* DroppableGraphHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroppableGraphHostingView.h; sourceTree = "<group>"; };
+		7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DroppableGraphHostingView.m; sourceTree = "<group>"; };
+		7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graph-preview-dashed.png"; sourceTree = "<group>"; };
+		7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "graph-preview-solid.png"; sourceTree = "<group>"; };
 		7047394714B65F19009D285C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
@@ -209,8 +219,10 @@
 		703549981337A27400D3865C /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				7046CF7414D0B4F80030F1DF /* petri.icns */,
 				7015B89D14C883C60031B60B /* genome65.png */,
+				7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */,
+				7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */,
+				7046CF7414D0B4F80030F1DF /* petri.icns */,
 				7015B89E14C883C60031B60B /* petri128empty.png */,
 				701E3A1413576BD2000BFFBC /* petri128.png */,
 			);
@@ -247,6 +259,8 @@
 				703549B21337AD1600D3865C /* AvidaEDController.mm */,
 				7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */,
 				7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */,
+				70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */,
+				70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */,
 			);
 			name = "Avida-ED";
 			path = "src/avida-ed";
@@ -261,6 +275,8 @@
 				7029A49C1361CDBD0031433A /* CenteringClipView.m */,
 				7015B89914C87DB50031B60B /* DraggableImageView.h */,
 				7015B89A14C87DB50031B60B /* DraggableImageView.m */,
+				7046CFB614D9B7BA0030F1DF /* DroppableGraphHostingView.h */,
+				7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */,
 				708308F314B6AA9C0051B354 /* FlipView.h */,
 				708308F414B6AA9C0051B354 /* FlipView.m */,
 				7015B8A114C886820031B60B /* FreezerOutlineView.h */,
@@ -382,6 +398,8 @@
 				7015B89F14C883C60031B60B /* genome65.png in Resources */,
 				7015B8A014C883C60031B60B /* petri128empty.png in Resources */,
 				7046CF7714D0B5320030F1DF /* petri.icns in Resources */,
+				7046CFBC14D9C55B0030F1DF /* graph-preview-dashed.png in Resources */,
+				7046CFBD14D9C55B0030F1DF /* graph-preview-solid.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +431,8 @@
 				7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */,
 				7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */,
 				709D24C714CF500400AB0425 /* Genome.mm in Sources */,
+				70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */,
+				7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

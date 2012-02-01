@@ -321,11 +321,6 @@ static const float PANEL_MIN_WIDTH = 360.0;
   y.preferredNumberOfMajorTicks = 8;
   y.labelOffset = 5.0;
   y.labelTextStyle = textStyle;
-//  y.majorGridLineStyle = majorGridLineStyle;
-//  y.minorGridLineStyle = minorGridLineStyle;
-  
-//	y.title = @"Fitness";
-//	y.titleOffset = 35.0;
 
 	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
@@ -363,10 +358,6 @@ static const float PANEL_MIN_WIDTH = 360.0;
   
   // Auto scale the plot space to fit the plot data
   [plotSpace scaleToFitPlots:[NSArray arrayWithObjects:dataSourceLinePlot, nil]];
-
-//  CPTPlotRange* yRange = plotSpace.yRange;
-//  [yRange expandRangeByFactor:CPTDecimalFromDouble((65.0/[graphView bounds].size.width) + 1.05)];
-//  plotSpace.yRange = yRange;
   
   
   [btnGraphSelect removeAllItems];
@@ -374,8 +365,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [btnGraphSelect addItemWithTitle:@"Data Unavailable"];
 }
 
-- (void) envActionStateChange:(NSMutableDictionary*)newState;
-{
+- (void) envActionStateChange:(NSMutableDictionary*)newState {
   if ([envActionChangeDelegate respondsToSelector:@selector(envActionStateChange:)]) {
     [envActionChangeDelegate performSelector:@selector(envActionStateChange:) withObject:newState];
   }

@@ -56,7 +56,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
   IBOutlet NSTextField* txtAge;
   IBOutlet NSTableView* tblEnvActions;
   
-  IBOutlet NSView* orgStatsView;  
+  IBOutlet NSView* orgStatsView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet OrgColorBox* boxOrgColor;
   IBOutlet NSTextField* txtOrgFitness;

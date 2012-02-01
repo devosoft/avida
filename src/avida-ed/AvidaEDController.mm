@@ -105,6 +105,10 @@ NSString* const AvidaPasteboardTypePopulation = @"org.devosoft.avida.population"
 
 
 
+
+
+
+
 static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
   Avida::Viewer::FreezerPtr freezer = *(Avida::Viewer::FreezerPtr*)context;
@@ -120,6 +124,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 @interface AvidaEDController (hidden)
+- (void) setup;
+
 - (void) popSplitViewAnimationEnd:(NSNumber*)collapsed;
 - (void) setupFreezer;
 - (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID;
@@ -131,9 +137,26 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) freezeGenome:(Genome*)genome;
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID;
 - (void) activateRun;
+- (void) activateRunWithID:(Avida::Viewer::FreezerID)freezerID;
+
+
+- (void) addAnalyzePop:(Avida::Viewer::FreezerID)freezerID;
+- (void) rescaleAnalyzeGraph;
+
 @end
 
 @implementation AvidaEDController (hidden)
+
+- (void) setup {
+  currentRun = nil;
+  listener = NULL;
+  map = NULL;
+  popSplitViewIsAnimating = NO;
+  
+  analyzePops = [[NSMutableArray alloc] init];
+}
+
+
 
 - (void) popSplitViewAnimationEnd:(NSNumber*)collapsed {
   popSplitViewIsAnimating = NO;
@@ -205,7 +228,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [mapView setDimensions:[currentRun worldSize]];
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
-    [self activateRun];
+    [self activateRunWithID:freezerID];
     [txtUpdate setStringValue:[NSString stringWithFormat:@"%d updates", [currentRun currentUpdate]]];
     [currentRun pauseAt:[currentRun currentUpdate] + 1];
     [currentRun resume];
@@ -364,10 +387,13 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer reloadData];
 }
 
-
 - (void) activateRun {
+  [self activateRunWithID:Avida::Viewer::FreezerID()];
+}
+
+- (void) activateRunWithID:(Avida::Viewer::FreezerID)fid {
   runActive = YES;
-  [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:Avida::Viewer::FreezerID()];
+  [popViewStatView setAvidaRun:currentRun fromFreezer:freezer withID:fid];
   [matCfgRepeatability setEnabled:NO];
   [txtCfgWorldX setEnabled:NO];
   [txtCfgWorldY setEnabled:NO];
@@ -375,6 +401,85 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 }
 
+
+- (void) addAnalyzePop:(Avida::Viewer::FreezerID)freezerID {
+  
+  NSUInteger num_pops = [analyzePops count];
+  if (num_pops == 0) {
+    // Initialize menus
+    [btnAnalyzeGraphSelectLeft removeAllItems];
+    [btnAnalyzeGraphSelectLeft setEnabled:YES];
+    [btnAnalyzeGraphSelectLeft addItemWithTitle:@"None"];
+    [btnAnalyzeGraphSelectLeft addItemWithTitle:@"Average Fitness"];
+    [btnAnalyzeGraphSelectLeft addItemWithTitle:@"Average Gestation Time"];
+    [btnAnalyzeGraphSelectLeft addItemWithTitle:@"Average Metabolic Rate"];
+    [btnAnalyzeGraphSelectLeft addItemWithTitle:@"Number of Organisms"];
+    [btnAnalyzeGraphSelectLeft selectItemAtIndex:1];
+
+    [btnAnalyzeGraphSelectRight removeAllItems];
+    [btnAnalyzeGraphSelectRight setEnabled:YES];
+    [btnAnalyzeGraphSelectRight addItemWithTitle:@"None"];
+    [btnAnalyzeGraphSelectRight addItemWithTitle:@"Average Fitness"];
+    [btnAnalyzeGraphSelectRight addItemWithTitle:@"Average Gestation Time"];
+    [btnAnalyzeGraphSelectRight addItemWithTitle:@"Average Metabolic Rate"];
+    [btnAnalyzeGraphSelectRight addItemWithTitle:@"Number of Organisms"];
+  }
+  
+  // Create new analyze population object
+  AvidaEDAnalyzePopulation* pop = [[AvidaEDAnalyzePopulation alloc] initWithFreezerID:freezerID fromFreezer:freezer];
+  
+  // Initialize the color of the item to an unused color
+  int color = 0;
+  bool colorAvail[8] = { true, true, true, true, true, true, true, true };
+  for (int i = 0; i < num_pops; i++) {
+    colorAvail[[(AvidaEDAnalyzePopulation*)[analyzePops objectAtIndex:i] colorIndex]] = false;
+  }
+  for (int i = 0; i < 8; i++) {
+    if (colorAvail[i]) {
+      color = i; break;
+    }
+  }
+  [pop setColorIndex:color];
+
+  // Add population to the view via the array controller
+  [arrctlrAnalyze addObject:pop];
+  
+  
+  // Determine currently selected plots
+  NSInteger primarySelected = [btnAnalyzeGraphSelectLeft indexOfSelectedItem];
+  NSInteger secondarySelected = [btnAnalyzeGraphSelectRight indexOfSelectedItem];
+
+  // Add appropriate plots
+  if (primarySelected > 0) {
+    [pop setPrimaryPlotData:primarySelected - 1];
+    [graphAnalyze addPlot:[pop primaryPlot] toPlotSpace:analyzePrimaryPlotSpace];
+  }
+  if (secondarySelected > 0) {
+    [pop setSecondaryPlotData:secondarySelected - 1];
+    [graphAnalyze addPlot:[pop secondaryPlot] toPlotSpace:analyzeSecondaryPlotSpace];
+  }
+  
+  [self rescaleAnalyzeGraph];
+}
+
+
+- (void) rescaleAnalyzeGraph {
+  NSInteger primarySelected = [btnAnalyzeGraphSelectLeft indexOfSelectedItem];
+  NSInteger secondarySelected = [btnAnalyzeGraphSelectRight indexOfSelectedItem];
+
+  // Auto scale the plot space to fit the plot data
+  NSMutableArray* activePrimaryPlots = [[[NSMutableArray alloc] initWithCapacity:[analyzePops count]] autorelease];
+  NSMutableArray* activeSecondaryPlots = [[[NSMutableArray alloc] initWithCapacity:[analyzePops count]] autorelease];
+  for (int i = 0; i < [analyzePops count]; i++) {
+    if (primarySelected) [activePrimaryPlots addObject:[[analyzePops objectAtIndex:i] primaryPlot]];
+    if (secondarySelected) [activeSecondaryPlots addObject:[[analyzePops objectAtIndex:i] secondaryPlot]];
+  }
+  [analyzePrimaryPlotSpace scaleToFitPlots:activePrimaryPlots];
+  [analyzeSecondaryPlotSpace scaleToFitPlots:activeSecondaryPlots];
+  
+  NSDecimal end = [[analyzePrimaryPlotSpace xRange] end];
+  analyzeSecondaryYAxis.orthogonalCoordinateDecimal = end;
+}
 @end
 
 @implementation AvidaEDController
@@ -384,12 +489,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   if (self != nil) {
     app = delegate;
+    
+    [self setup];
 
-    currentRun = nil;
-    listener = NULL;
-    map = NULL;
-    popSplitViewIsAnimating = NO;
-        
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
     
@@ -419,10 +521,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   if (self != nil) {
     app = delegate;
     
-    currentRun = nil;
-    listener = NULL;
-    map = NULL;
-    popSplitViewIsAnimating = NO;
+    [self setup];
     
     freezerURL = dir;
 
@@ -494,6 +593,118 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   
   [btnRunState becomeFirstResponder];
+  
+  
+  // Setup Graph
+  graphAnalyze = [[CPTXYGraph alloc] initWithFrame:NSRectToCGRect(graphViewAnalyze.bounds)];
+	CPTTheme* theme = [CPTTheme themeNamed:kCPTPlainWhiteTheme];
+  [graphAnalyze applyTheme:theme];
+  
+  graphAnalyze.fill = nil;
+	graphAnalyze.plotAreaFrame.fill = nil; 
+	graphAnalyze.plotAreaFrame.borderLineStyle = nil;
+	
+  graphViewAnalyze.hostedGraph = graphAnalyze;
+  
+  graphAnalyze.paddingLeft = 0.0;
+  graphAnalyze.paddingTop = 0.0;
+  graphAnalyze.paddingRight = 0.0;
+  graphAnalyze.paddingBottom = 0.0;
+  graphAnalyze.plotAreaFrame.paddingLeft = 50.0;
+  graphAnalyze.plotAreaFrame.paddingTop = 10.0;
+  graphAnalyze.plotAreaFrame.paddingRight = 50.0;
+  graphAnalyze.plotAreaFrame.paddingBottom = 45.0;
+  
+  
+  // Setup scatter plot space
+  CPTXYPlotSpace* plotSpace = (CPTXYPlotSpace*)graphAnalyze.defaultPlotSpace;
+  plotSpace.allowsUserInteraction = NO;
+  
+  // Grid line styles
+  CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
+  majorGridLineStyle.lineWidth = 0.75;
+  majorGridLineStyle.lineColor = [[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75];
+  
+  CPTMutableLineStyle *minorGridLineStyle = [CPTMutableLineStyle lineStyle];
+  minorGridLineStyle.lineWidth = 0.25;
+  minorGridLineStyle.lineColor = [[CPTColor whiteColor] colorWithAlphaComponent:0.1];    
+  
+  
+  analyzePrimaryPlotSpace = (CPTXYPlotSpace*)graphAnalyze.defaultPlotSpace;
+
+  // Axes
+  
+  // Label x axis with a fixed interval policy
+	CPTXYAxisSet* axisSet = (CPTXYAxisSet*)graphAnalyze.axisSet;
+  CPTMutableTextStyle* textStyle = [CPTMutableTextStyle textStyle];
+  textStyle.fontName = @"Helvetica";
+  textStyle.fontSize = 10;
+  CPTMutableTextStyle* titleTextStyle = [CPTMutableTextStyle textStyle];
+  titleTextStyle.fontName = @"Helvetica";
+  titleTextStyle.fontSize = 11;
+  
+  CPTXYAxis* x = axisSet.xAxis;
+  x.titleTextStyle = titleTextStyle;
+  x.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  x.orthogonalCoordinateDecimal = CPTDecimalFromUnsignedInteger(0);
+  x.minorTicksPerInterval = 5;
+  x.preferredNumberOfMajorTicks = 5;
+  x.labelOffset = 5.0;
+  x.labelTextStyle = textStyle;
+  //  x.majorGridLineStyle = majorGridLineStyle;
+  //  x.minorGridLineStyle = minorGridLineStyle;
+  
+	x.title = @"Updates";
+	x.titleOffset = 25.0;
+  
+  x.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
+  
+  
+	// Label y with an automatic label policy. 
+  CPTXYAxis *y = axisSet.yAxis;
+  y.titleTextStyle = titleTextStyle;
+  y.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  y.orthogonalCoordinateDecimal = CPTDecimalFromUnsignedInteger(0);
+  y.minorTicksPerInterval = 2;
+  y.preferredNumberOfMajorTicks = 8;
+  y.labelOffset = 5.0;
+  y.labelTextStyle = textStyle;
+  
+	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
+  
+  
+  
+  analyzeSecondaryPlotSpace = [[CPTXYPlotSpace alloc] init];
+  
+  CPTXYAxis* y2 = [[CPTXYAxis alloc] init];
+  y2.titleTextStyle = titleTextStyle;
+  y2.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+  y2.coordinate = CPTCoordinateY;
+  y2.plotSpace = analyzeSecondaryPlotSpace;
+  y2.minorTicksPerInterval = 2;
+  y2.preferredNumberOfMajorTicks = 8;
+  y2.labelOffset = -50.0;
+  y2.labelTextStyle = textStyle;
+//	y2.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
+  analyzeSecondaryYAxis = y2;
+  
+  [graphAnalyze addPlotSpace:analyzeSecondaryPlotSpace];
+  
+  
+  // Set axes
+  graphAnalyze.axisSet.axes = [NSArray arrayWithObjects:x, y, y2, nil];
+  
+  
+  [btnAnalyzeGraphSelectLeft removeAllItems];
+  [btnAnalyzeGraphSelectLeft setEnabled:NO];
+  [btnAnalyzeGraphSelectLeft addItemWithTitle:@"Data Unavailable"];
+  [btnAnalyzeGraphSelectRight removeAllItems];
+  [btnAnalyzeGraphSelectRight setEnabled:NO];
+  [btnAnalyzeGraphSelectRight addItemWithTitle:@"Data Unavailable"];
+  
+  [graphViewAnalyze registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, nil]];
+  
+//  [self addAnalyzePop:Avida::Viewer::FreezerID(Avida::Viewer::WORLD, 2)];
 }
 
 
@@ -711,8 +922,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) changePauseAt:(id)sender {
-  
-  
   // Make sure pause value is a positive integer
   int pause_value = [txtCfgPauseAt intValue];
   if (sender == stpCfgPauseAt) pause_value = [stpCfgPauseAt intValue];
@@ -731,7 +940,51 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 
+- (IBAction) changeAnalyzeGraphMode:(id)sender {
+  NSInteger mode = [sender indexOfSelectedItem];
+  bool primary = (sender == btnAnalyzeGraphSelectLeft);
+  for (int i = 0; i < [analyzePops count]; i++) {
+    if (primary) {
+      if (mode) {
+        [graphAnalyze addPlot:[[analyzePops objectAtIndex:i] primaryPlot] toPlotSpace:analyzePrimaryPlotSpace];
+        [[analyzePops objectAtIndex:i] setPrimaryPlotData:mode - 1];
+      } else {
+        [graphAnalyze removePlot:[[analyzePops objectAtIndex:i] primaryPlot]];
+      }
+    } else {
+      if (mode) {
+        [graphAnalyze addPlot:[[analyzePops objectAtIndex:i] secondaryPlot] toPlotSpace:analyzeSecondaryPlotSpace];
+        [[analyzePops objectAtIndex:i] setSecondaryPlotData:mode - 1];
+      } else {
+        [graphAnalyze removePlot:[[analyzePops objectAtIndex:i] secondaryPlot]];
+      }
+    }
+  }
+  
+  [self rescaleAnalyzeGraph];
+}
 
+
+- (IBAction) changeAnalyzePopulationColor:(id)sender {
+}
+
+
+- (void) removeAnalyzePopulation:(id)pop {
+  if ([btnAnalyzeGraphSelectLeft indexOfSelectedItem]) [graphAnalyze removePlot:[pop primaryPlot]];
+  if ([btnAnalyzeGraphSelectRight indexOfSelectedItem]) [graphAnalyze removePlot:[pop secondaryPlot]];
+  [arrctlrAnalyze removeObject:pop];
+  
+  if ([analyzePops count] == 0) {
+    [btnAnalyzeGraphSelectLeft removeAllItems];
+    [btnAnalyzeGraphSelectLeft setEnabled:NO];
+    [btnAnalyzeGraphSelectLeft addItemWithTitle:@"Data Unavailable"];
+    [btnAnalyzeGraphSelectRight removeAllItems];
+    [btnAnalyzeGraphSelectRight setEnabled:NO];
+    [btnAnalyzeGraphSelectRight addItemWithTitle:@"Data Unavailable"];
+  }
+  
+  [self rescaleAnalyzeGraph];
+}
 
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState
@@ -1105,6 +1358,70 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 
+
+
+- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+    if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzePops count] < 4) {
+      for (int i = 0; i < [analyzePops count]; i++)
+        if ([[analyzePops objectAtIndex:i] freezerIdentifier] == fid.identifier) return NSDragOperationNone;
+      return NSDragOperationGeneric;
+    }
+  }
+  
+  return NSDragOperationNone;
+}
+
+- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+    if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzePops count] < 4) {
+      for (int i = 0; i < [analyzePops count]; i++)
+        if ([[analyzePops objectAtIndex:i] freezerIdentifier] == fid.identifier) return NSDragOperationNone;
+      return NSDragOperationGeneric;
+    }
+  }
+  
+  return NSDragOperationNone;  
+}
+
+- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+    if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzePops count] < 4) {
+      for (int i = 0; i < [analyzePops count]; i++)
+        if ([[analyzePops objectAtIndex:i] freezerIdentifier] == fid.identifier) return NO;
+      return YES;
+    }
+  }
+  
+  return NO;
+}
+
+- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
+  NSPasteboard* pboard = [sender draggingPasteboard];
+  
+  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID] && [analyzePops count] < 4) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+    [self addAnalyzePop:fid];
+  }
+  
+  return YES;
+}
+
+
+
+@synthesize analyzePops;
 @synthesize listener;
 @synthesize mapView;
 
