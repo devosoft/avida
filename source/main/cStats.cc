@@ -3341,7 +3341,7 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
   df.Endl();
 }
 
-// Prints the circumstances around each tolerance instruction executed within the last update. // @JJB**
+// Prints the circumstances around each tolerance instruction executed within the last update. @JJB
 void cStats::PrintToleranceData(const cString& filename)
 {
   const int num_tol_inst = 8;

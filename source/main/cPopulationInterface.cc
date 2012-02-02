@@ -207,6 +207,11 @@ tArray<cOrganism*> cPopulationInterface::GetAVNeighbors()
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAvatars();
 }
 
+tArray<cOrganism*> cPopulationInterface::GetAVNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAVPrey();
+}
+
 bool cPopulationInterface::IsNeighborCellOccupied() {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   return cell.ConnectionList().GetFirst()->IsOccupied();
@@ -1498,14 +1503,8 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
   double odds_own = offspring_own_odds * 100;
   double odds_others = offspring_others_odds * 100;
   
-  PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
-  return;
-}
-
-void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
-{
   m_world->GetStats().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
+  return;
 }
 
 int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num)

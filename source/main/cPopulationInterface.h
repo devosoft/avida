@@ -116,6 +116,7 @@ public:
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   cOrganism* GetAVRandNeighbor();
   cOrganism* GetAVRandNeighborPrey();
   cOrganism* GetAVRandNeighborPred();
@@ -261,10 +262,8 @@ public:
   double CalcGroupOddsOffspring(cOrganism* parent);
   double CalcGroupOddsOffspring(int group_id);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
-  virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
+  void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
   int& GetGroupIntolerances(int group_id, int tol_num);
-  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max);
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
   void BeginSleep();

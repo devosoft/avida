@@ -91,6 +91,7 @@ public:
   cOrganism* GetAVRandNeighborPrey();
   cOrganism* GetAVRandNeighborPred();
   tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   bool IsNeighborCellOccupied();
   bool HasAVNeighbor();
   bool HasAVNeighborPrey();
@@ -199,8 +200,6 @@ public:
   double CalcGroupOddsOffspring(int group_id) {return 0.0; }
   bool AttemptImmigrateGroup(int group_id, cOrganism* org) {return false; }
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
-  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max) { ; }
   int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }

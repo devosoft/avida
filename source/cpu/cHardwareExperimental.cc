@@ -4059,22 +4059,21 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     return false;
   }
   else {
-    cOrganism* target = NULL;
-    if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
-    if (target->IsDead()) return false;  
-    
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-      return false;
-    }
-    
     // prevent killing on refuges
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
       else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
     }
+    
+    cOrganism* target = NULL;
+    if (!m_avatar) { 
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+    }
+    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+    if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -4147,16 +4146,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     return false;    
   }
   else {
-    cOrganism* target = NULL; 
-    if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
-    if (target->IsDead()) return false;  
-    
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-      return false;
-    }
-    
     // prevent killing on refuges
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -4180,7 +4169,38 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       target_org_type = *itr;
     }
     
-    if (target_org_type != target->GetForageTarget()) return false;
+    cOrganism* target = NULL; 
+    if (!m_avatar) { 
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      if (target_org_type != target->GetForageTarget()) return false;
+      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+    }    
+    else if (m_avatar == 2) {
+      tArray<cOrganism*> av_neighbors = m_organism->GetOrgInterface().GetAVNeighborPrey();
+      bool target_match = false;
+      int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+      int j = 0;
+      for (int i = 0; i < av_neighbors.GetSize(); i++) {
+        if (rand_index + i < av_neighbors.GetSize()) {
+          if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
+            target = av_neighbors[rand_index + i];      
+            target_match = true;
+          }
+          break;
+        }
+        else {
+          if (av_neighbors[j]->GetForageTarget() == target_org_type) {
+            target = av_neighbors[j];      
+            target_match = true;
+          }
+          break;          
+          j++;
+        }
+      }
+      if (!target_match) return false;
+    }
+    if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -4677,8 +4697,8 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    
    int toleranceType = -1;
    if (tolerance_to_modify == rAX) toleranceType = 0;
-   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
+   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
+   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
    
    // Not a recognized register
    if (toleranceType == -1) return false;
@@ -4716,8 +4736,8 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   
   int toleranceType = -1;
   if (tolerance_to_modify == rAX) toleranceType = 0;
-  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
+  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
+  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
   
   // Not a recognized register
   if (toleranceType == -1) return false;
@@ -4759,6 +4779,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {
+  // If not a predator in a group, return false
   if ((m_organism->GetForageTarget() != -2) || (m_organism->GetOpinion().first < 0)) return false;
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
@@ -4785,34 +4806,6 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
     }
   }
   return false;
-}
-
-// Pushes the circumstances of a tolerance instruction execution to stats. @JJB
-void cHardwareExperimental::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
-{
-  tArray<double> cell_res;
-  if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  
-  int group_id = m_organism->GetOpinion().first;
-  if (group_id == -1) return;
-  int group_size = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
-  double resource_level = cell_res[group_id];
-  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-  
-  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
-  double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-  double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-  
-  double odds_immi = immigrant_odds * 100 + 0.5;
-  double odds_own = offspring_own_odds * 100 + 0.5;
-  double odds_others = offspring_others_odds * 100 + 0.5;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
-  int tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-  int tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-  
-  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
-                                                     odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
