@@ -285,6 +285,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
@@ -3355,6 +3356,18 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
 }
 
 bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
+{
+  // override any org inputs and just let this org see the food resource that matches it's forage target (not designed for predators)
+  int cell = m_organism->GetOrgInterface().GetCellID();
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (m_avatar) { 
+    facing = m_organism->GetOrgInterface().GetAVFacedDir();
+    cell = m_organism->GetAVCellID();
+  }
+  return GoLook(ctx, facing, cell, true);
+}
+
+bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
 {
   // dir register is 4th mod (will be count reg)
   int reg1 = FindModifiedRegister(rBX);

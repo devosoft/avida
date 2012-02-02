@@ -540,6 +540,7 @@ private:
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
+  bool Inst_LookAroundFT(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
