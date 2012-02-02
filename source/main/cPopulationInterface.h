@@ -116,6 +116,7 @@ public:
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   cOrganism* GetAVRandNeighbor();
   cOrganism* GetAVRandNeighborPrey();
   cOrganism* GetAVRandNeighborPred();

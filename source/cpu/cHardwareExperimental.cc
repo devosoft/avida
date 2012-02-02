@@ -4035,22 +4035,21 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     return false;
   }
   else {
-    cOrganism* target = NULL;
-    if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
-    if (target->IsDead()) return false;  
-    
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-      return false;
-    }
-    
     // prevent killing on refuges
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
       else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
     }
+    
+    cOrganism* target = NULL;
+    if (!m_avatar) { 
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+    }
+    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+    if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -4123,16 +4122,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     return false;    
   }
   else {
-    cOrganism* target = NULL; 
-    if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
-    if (target->IsDead()) return false;  
-    
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-      return false;
-    }
-    
     // prevent killing on refuges
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -4156,7 +4145,38 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       target_org_type = *itr;
     }
     
-    if (target_org_type != target->GetForageTarget()) return false;
+    cOrganism* target = NULL; 
+    if (!m_avatar) { 
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      if (target_org_type != target->GetForageTarget()) return false;
+      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+    }    
+    else if (m_avatar == 2) {
+      tArray<cOrganism*> av_neighbors = m_organism->GetOrgInterface().GetAVNeighborPrey();
+      bool target_match = false;
+      int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+      int j = 0;
+      for (int i = 0; i < av_neighbors.GetSize(); i++) {
+        if (rand_index + i < av_neighbors.GetSize()) {
+          if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
+            target = av_neighbors[rand_index + i];      
+            target_match = true;
+          }
+          break;
+        }
+        else {
+          if (av_neighbors[j]->GetForageTarget() == target_org_type) {
+            target = av_neighbors[j];      
+            target_match = true;
+          }
+          break;          
+          j++;
+        }
+      }
+      if (!target_match) return false;
+    }
+    if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {

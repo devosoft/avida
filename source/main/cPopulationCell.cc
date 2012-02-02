@@ -339,6 +339,17 @@ tArray<cOrganism*> cPopulationCell::GetCellAvatars()
   return avatar_orgs;
 }
 
+tArray<cOrganism*> cPopulationCell::GetCellAVPrey()
+{
+  assert (HasAVPrey());
+  tArray<cOrganism*> avatar_prey;
+  avatar_prey.Resize(m_av_prey.GetSize());
+  for (int i = 0; i < avatar_prey.GetSize(); i++) {
+    avatar_prey[i] = m_av_prey[i];
+  }
+  return avatar_prey;
+}
+
 cOrganism* cPopulationCell::GetRandAvatar() const
 {
   assert (HasAvatar());

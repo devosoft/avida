@@ -107,6 +107,7 @@ public:
   virtual cOrganism* GetAVRandNeighborPrey() = 0;
   virtual cOrganism* GetAVRandNeighborPred() = 0;
   virtual tArray<cOrganism*> GetAVNeighbors() = 0;
+  virtual tArray<cOrganism*> GetAVNeighborPrey() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
   virtual bool HasAVNeighbor() = 0;
   virtual bool HasAVNeighborPrey() = 0;

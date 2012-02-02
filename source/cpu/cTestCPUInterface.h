@@ -91,6 +91,7 @@ public:
   cOrganism* GetAVRandNeighborPrey();
   cOrganism* GetAVRandNeighborPred();
   tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   bool IsNeighborCellOccupied();
   bool HasAVNeighbor();
   bool HasAVNeighborPrey();

@@ -207,6 +207,11 @@ tArray<cOrganism*> cPopulationInterface::GetAVNeighbors()
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAvatars();
 }
 
+tArray<cOrganism*> cPopulationInterface::GetAVNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAVPrey();
+}
+
 bool cPopulationInterface::IsNeighborCellOccupied() {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   return cell.ConnectionList().GetFirst()->IsOccupied();

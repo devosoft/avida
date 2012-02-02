@@ -65,6 +65,13 @@ tArray<cOrganism*> cTestCPUInterface::GetAVNeighbors()
   return null_array;
 }
 
+tArray<cOrganism*> cTestCPUInterface::GetAVNeighborPrey()
+{
+  tArray<cOrganism*> null_array;
+  null_array.SetAll(NULL);
+  return null_array;
+}
+
 bool cTestCPUInterface::IsNeighborCellOccupied() {
   return false;
 }
