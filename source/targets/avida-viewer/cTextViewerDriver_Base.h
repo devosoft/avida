@@ -21,6 +21,7 @@
 #ifndef cTextViewerDriver_Base_h
 #define cTextViewerDriver_Base_h
 
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include <sstream>
@@ -42,6 +43,14 @@ protected:
 
   std::stringstream out_stream;
   std::stringstream err_stream;
+  
+  class StdIOFeedback : public Avida::Feedback
+  {
+    void Error(const char* fmt, ...);
+    void Warning(const char* fmt, ...);
+    void Notify(const char* fmt, ...);
+  } m_feedback;
+
 
   // Protected constructor.
   cTextViewerDriver_Base(cWorld * world);
@@ -51,7 +60,17 @@ public:
   void Flush();
 
   bool ProcessKeypress(cAvidaContext& ctx, int keypress);
-
+  
+  void Pause() { ; }
+  void Finish() { ; }
+  void Abort(AbortCondition condition);
+  
+  Avida::Feedback& Feedback() { return m_feedback; }
+  
+  void RegisterCallback(DriverCallback callback) { ; }
+  
+  
+  
   virtual void Run() = 0;
 };
 

@@ -277,7 +277,6 @@ LIST(APPEND AVIDA_CORE_SOURCES ${SYSTEMATICS_SOURCES})
 # The tools directory
 SET(TOOLS_DIR ${PROJECT_SOURCE_DIR}/source/tools)
 SET(TOOLS_SOURCES
-  ${TOOLS_DIR}/AvidaTools.cc
   ${TOOLS_DIR}/cArgContainer.cc
   ${TOOLS_DIR}/cArgSchema.cc
   ${TOOLS_DIR}/cBitArray.cc
@@ -288,9 +287,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cDataManager_Base.cc
   ${TOOLS_DIR}/cDemeProbSchedule.cc
   ${TOOLS_DIR}/cFile.cc
-  ${TOOLS_DIR}/cHelpAlias.cc
-  ${TOOLS_DIR}/cHelpManager.cc
-  ${TOOLS_DIR}/cHelpType.cc
   ${TOOLS_DIR}/cHistogram.cc
   ${TOOLS_DIR}/cInitFile.cc
   ${TOOLS_DIR}/cIntSum.cc

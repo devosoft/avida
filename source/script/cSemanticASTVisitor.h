@@ -25,7 +25,6 @@
 #include "cASTVisitor.h"
 
 #include "tArray.h"
-#include "tSmartArray.h"
 
 class cASLibrary;
 class cSymbolTable;
@@ -54,7 +53,7 @@ private:
   int m_fun_id;
   cSymbolTable* m_cur_symtbl;
   
-  tSmartArray<sFunctionEntry> m_fun_stack;
+  Apto::Array<sFunctionEntry, Apto::Smart> m_fun_stack;
   
   bool m_success;
   bool m_fun_def;

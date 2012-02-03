@@ -31,9 +31,6 @@
 #include "cAvidaContext.h"
 #include "tMatrix.h"
 #include "nGeometry.h"
-#ifndef tArrayMap_h
-#include "tArrayMap.h"
-#endif
 
 class cWorld;
 

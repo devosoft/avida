@@ -144,7 +144,7 @@ struct cOrgMovementPred_EventMovedIntoCenter : public cOrgMovementPredicate {
  *  Modified from cOrgMovementPred_EventMovedIntoCenter
 */
 struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate {
-  cOrgMovementPred_EventMovedBetweenTargets(tVector<cDemeCellEvent *> events, cPopulation& population, unsigned int times) :
+  cOrgMovementPred_EventMovedBetweenTargets(Apto::Array<cDemeCellEvent*, Apto::Smart> events, cPopulation& population, unsigned int times) :
   pop(population)
   , m_event_received(false)
   , m_stats_updated(false)
@@ -153,7 +153,7 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
   , m_total_orgs(1) {  // TODO: eventually, want to make this a parameter.  problem is cPopulation::AddDemePred takes only 1 arg
 
     m_event_success.clear();
-    for(int i = 0; i < m_events.Size(); i++) {
+    for(int i = 0; i < m_events.GetSize(); i++) {
       set<int> p;
       p.clear();
       m_event_success.push_back(p);
@@ -170,7 +170,7 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
 
     m_event_received = false;
 
-    for(int i = 0; i < m_events.Size(); i++) {
+    for(int i = 0; i < m_events.GetSize(); i++) {
       cDemeCellEvent *event = m_events[i];
       other_event = (i+1) % 2;
  
@@ -247,7 +247,7 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
     m_stats_updated = false;
 
     m_event_success.clear();
-    for(int i = 0; i < m_events.Size(); i++) {
+    for(int i = 0; i < m_events.GetSize(); i++) {
       set<int> p;
       p.clear();
       m_event_success.push_back(p);
@@ -280,13 +280,13 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
   }
 
   virtual int GetNumEvents() {
-    return m_events.Size();
+    return m_events.GetSize();
   }
   
   cPopulation& pop;
   bool m_event_received;
   bool m_stats_updated;
-  tVector<cDemeCellEvent *> m_events;
+  Apto::Array<cDemeCellEvent*, Apto::Smart> m_events;
   unsigned int m_total_times;
   unsigned int m_total_orgs;
 

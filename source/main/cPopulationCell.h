@@ -39,7 +39,6 @@
 #include "tList.h"
 #endif
 #include "cGenomeUtil.h"
-#include "tSmartArray.h"
 
 class cHardwareBase;
 class cPopulation;
@@ -152,8 +151,8 @@ public:
   double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
 
 	// -------- Avatar support --------
-  tSmartArray<cOrganism*> m_av_prey;
-  tSmartArray<cOrganism*> m_av_predators;
+  Apto::Array<cOrganism*, Apto::Smart> m_av_prey;
+  Apto::Array<cOrganism*, Apto::Smart> m_av_predators;
   cOrganism* GetRandAvatar() const;
   cOrganism* GetRandAVPrey() const;
   cOrganism* GetRandAVPred() const;

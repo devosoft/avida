@@ -45,7 +45,6 @@
 #include "cWorld.h"
 #include "tAnalyzeJob.h"
 #include "tAnalyzeJobBatch.h"
-#include "tSmartArray.h"
 
 using namespace Avida;
 

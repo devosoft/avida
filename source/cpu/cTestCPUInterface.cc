@@ -34,10 +34,9 @@ bool cTestCPUInterface::Divide(cAvidaContext&, cOrganism* parent, const Genome&)
   return true;
 }
 
-tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() 
+const Apto::Array<cOrganism*, Apto::Smart>& cTestCPUInterface::GetLiveOrgList() const
 {
-  tSmartArray <cOrganism*> empty;
-  return empty;
+  return m_empty_live_org_list;
 }
 
 cOrganism* cTestCPUInterface::GetNeighbor()

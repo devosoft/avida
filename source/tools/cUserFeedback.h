@@ -25,7 +25,6 @@
 #include "avida/core/Feedback.h"
 
 #include "cString.h"
-#include "tSmartArray.h"
 
 #include <cstdarg>
 
@@ -53,7 +52,7 @@ private:
   };
   
   
-  tSmartArray<sEntry> m_entries;
+  Apto::Array<sEntry, Apto::Smart> m_entries;
   int m_errors;
   int m_warnings;
   

@@ -49,7 +49,6 @@
 #include "cTaskEntry.h"
 #include "cWorld.h"
 #include "tArray.h"
-#include "tAutoRelease.h"
 
 using namespace Avida;
 
@@ -974,10 +973,10 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   schema.AddEntry("grid", 1, cArgSchema::SCHEMA_STRING);
 
   // Load the Arguments
-  tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, feedback));
+  Apto::SmartPtr<cArgContainer> args(cArgContainer::Load(desc, schema, feedback));
 
   // Check for errors loading the arguments
-  if (args.IsNull()) return false;
+  if (!args) return false;
 
   // Extract and validate the arguments
   int width = args->GetInt(0);

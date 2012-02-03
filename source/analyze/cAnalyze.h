@@ -27,6 +27,7 @@
 
 #include "cAnalyzeJobQueue.h"
 #include "cAvidaContext.h"
+#include "cBitArray.h"
 #include "cGenotypeBatch.h"
 #include "cFlexVar.h"
 #include "cRandom.h"
@@ -34,7 +35,6 @@
 #include "cStringList.h"
 #include "tList.h"
 #include "tMatrix.h"
-#include "tHashMap.h"
 
 
 const int MAX_BATCHES = 50000;

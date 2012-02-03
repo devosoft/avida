@@ -113,36 +113,33 @@ void cAnalyzeTreeStats_Gamma::LoadGenotypes(tList<cAnalyzeGenotype> &genotype_li
   }
 }
 
-void cAnalyzeTreeStats_Gamma::MapIDToGenotypePos(
-  tArray<cAnalyzeGenotype *> &lineage,
-  tHashMap<int, int> &out_mapping
-){
-  out_mapping.ClearAll();
-  for(int i = 0; i < lineage.GetSize(); i++){
+void cAnalyzeTreeStats_Gamma::MapIDToGenotypePos(tArray<cAnalyzeGenotype*>& lineage, Apto::Map<int, int>& out_mapping)
+{
+  out_mapping.Clear();
+  for (int i = 0; i < lineage.GetSize(); i++) {
     out_mapping.Set(lineage[i]->GetID(), i);
   }
 }
 
-void cAnalyzeTreeStats_Gamma::Unlink(tArray<cAnalyzeGenotype *> &lineage){
+void cAnalyzeTreeStats_Gamma::Unlink(tArray<cAnalyzeGenotype *>& lineage)
+{
   for(int i = 0; i < lineage.GetSize(); i++){
     lineage[i]->Unlink();
   }
 }
 
-void cAnalyzeTreeStats_Gamma::EstablishLinks(
-  tArray<cAnalyzeGenotype *> &lineage,
-  tHashMap<int, int> &out_mapping
-){
+void cAnalyzeTreeStats_Gamma::EstablishLinks(tArray<cAnalyzeGenotype*>& lineage, Apto::Map<int, int>& out_mapping)
+{
   this->Unlink(lineage);
   this->MapIDToGenotypePos(lineage, out_mapping);
 
   int parent_id(-1);
   int parent_index(-1);
 
-  for(int i = 0; i < lineage.GetSize(); i++){
+  for (int i = 0; i < lineage.GetSize(); i++) {
     parent_id = lineage[i]->GetParentID();
-    if(parent_id >= 0){
-      out_mapping.Find(parent_id, parent_index);
+    if (parent_id >= 0) {
+      out_mapping.Get(parent_id, parent_index);
       lineage[parent_index]->LinkChild(*lineage[i]);
     }
   }
@@ -301,12 +298,9 @@ double cAnalyzeTreeStats_Gamma::Gamma(void){
 
 
 // Commands.
-void cAnalyzeTreeStats_Gamma::AnalyzeBatch(
-  tList<cAnalyzeGenotype> &genotype_list,
-  int end_time,
-  int furcation_time_convention
-){
-  tHashMap<int, int> mapping;
+void cAnalyzeTreeStats_Gamma::AnalyzeBatch(tList<cAnalyzeGenotype> &genotype_list, int end_time, int furcation_time_convention)
+{
+  Apto::Map<int, int> mapping;
 
   int (*furcation_time_policy)(cAnalyzeLineageFurcation &furcation);
   furcation_time_policy = 0;

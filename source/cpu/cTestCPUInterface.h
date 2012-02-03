@@ -41,14 +41,15 @@ private:
   cTestCPU* m_testcpu;
   cCPUTestInfo& m_test_info;
   int m_cur_depth;
-
+  Apto::Array<cOrganism*, Apto::Smart> m_empty_live_org_list;
+  
 public:
   cTestCPUInterface(cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_depth)
     : m_testcpu(testcpu), m_test_info(test_info), m_cur_depth(cur_depth) { ; }
   virtual ~cTestCPUInterface() { ; }
 
   
-  tSmartArray <cOrganism*> GetLiveOrgList();
+  const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const;
   cPopulationCell* GetCell() { return NULL; }
 	cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }
@@ -126,8 +127,6 @@ public:
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
   void SpawnDeme(cAvidaContext& ctx); 
-  cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
-  bool NetRemoteValidate(cAvidaContext&, cOrgSinkMessage*) { return false; } // @DMB - todo: validate message
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);

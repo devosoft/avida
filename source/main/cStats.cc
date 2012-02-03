@@ -415,18 +415,18 @@ void cStats::ZeroReactions()
 
 void cStats::ZeroInst()
 {
-  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_exe_inst_map.begin(); it != m_is_exe_inst_map.end(); it++) {
-    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
 }
 
 void cStats::ZeroFTInst()
 {
-  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_prey_exe_inst_map.begin(); it != m_is_prey_exe_inst_map.end(); it++) {
-    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_prey_exe_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
-  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_exe_inst_map.begin(); it != m_is_pred_exe_inst_map.end(); it++) {
-    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
 }
 
@@ -437,8 +437,8 @@ void cStats::CalcFidelity()
   // This needs to be adjusted for!
 
   double ave_num_insts = 0.0;
-  for (tArrayMap<cString, tArray<cString> >::iterator it = m_is_inst_names_map.begin(); it != m_is_inst_names_map.end(); it++) {
-    ave_num_insts += (*it).Value().GetSize();
+  for (Apto::Map<cString, Apto::Array<cString> >::ValueIterator it = m_is_inst_names_map.Values(); it.Next();) {
+    ave_num_insts += (*it.Get()).GetSize();
   }
   ave_num_insts /= m_is_inst_names_map.GetSize();
 
@@ -3191,7 +3191,7 @@ void cStats::PrintTargets(const cString& filename)
   target_list.Resize(num_targets);
   target_list.SetAll(0);
   
-  tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     target_list[org->GetForageTarget() + 2]++;

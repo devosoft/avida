@@ -23,13 +23,11 @@
 #ifndef cContextPhenotype_h
 #define cContextPhenotype_h
 
+#include "tArray.h"
+
 #include <cassert>
 #include <climits>
 #include <iostream>
-
-#ifndef tSmartArray_h
-#include "tSmartArray.h"
-#endif
 
 
 class cContextPhenotype
@@ -41,7 +39,6 @@ public:
   tArray<int> m_cur_reaction_count;
   int m_number_tasks;
   int m_number_reactions;
-// cur_task_count(m_world->GetEnvironment().GetNumTasks())
 
   void AddTaskCounts(int count, tArray<int>& cur_task_count);
   tArray<int>& GetTaskCounts() { return m_cur_task_count; }

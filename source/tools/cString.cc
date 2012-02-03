@@ -44,7 +44,7 @@ cString::cStringData::cStringData(int in_size, const char* in) : m_size(in_size)
   m_data[m_size] = '\0';
 }
 
-cString::cStringData::cStringData(const cStringData& in) : cRCObject(*this), m_size(in.GetSize()), m_data(new char[m_size + 1])
+cString::cStringData::cStringData(const cStringData& in) : Apto::RefCountObject(*this), m_size(in.GetSize()), m_data(new char[m_size + 1])
 {
   assert(m_data != NULL); // Memory Allocation Error: Out of Memory
   for (int i = 0; i < m_size; i++)  m_data[i] = in[i];
@@ -602,7 +602,7 @@ cString & cString::AppendStr(const int in_size, const char * in)
   assert (in_size == 0 || in != NULL); // NULL input string
   
   // Allocate a new string
-  tRCPtr<cStringData> new_value(new cStringData(GetSize() + in_size));
+  Apto::SmartPtr<cStringData, Apto::InternalRCObject> new_value(new cStringData(GetSize() + in_size));
   assert (new_value);       // Memory Allocation Error: Out of Memory
   for(int i=0; i<GetSize(); ++i ) { // Copy self up to pos
     (*new_value)[i] = this->operator[](i);
@@ -634,7 +634,7 @@ cString & cString::InsertStr(const int in_size, const char * in,
   
   // Allocate a new string
   const int new_size = GetSize() + in_size - excise;
-  tRCPtr<cStringData> new_value(new cStringData(new_size));
+  Apto::SmartPtr<cStringData, Apto::InternalRCObject> new_value(new cStringData(new_size));
   assert (new_value);  // Memory Allocation Error: Out of Memory
   
   for(int i = 0; i < pos; ++i ){             // Copy self up to pos
@@ -668,7 +668,7 @@ cString cString::EjectStr(int pos, int excise )
   
   // Allocate a new string
   const int new_size = GetSize() - excise;
-  tRCPtr<cStringData> new_value(new cStringData(new_size));
+  Apto::SmartPtr<cStringData, Apto::InternalRCObject> new_value(new cStringData(new_size));
   assert (new_value);  // Memory Allocation Error: Out of Memory
   
   for(int i = 0; i < pos; i++){             // Copy self up to pos

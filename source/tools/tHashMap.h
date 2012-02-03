@@ -33,6 +33,8 @@
 #endif
 
 
+#pragma message("warning: use of tHashMap is deprecated, see Apto::Map")
+
 /*
  * This template is used to look up objects of the desired type by an integer
  * hash ID.  It is implemented through use of a linked list that contains all

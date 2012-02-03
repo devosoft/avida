@@ -25,10 +25,6 @@
 #include "cASNativeObject.h"
 #include "cASTVisitor.h"
 
-#include "tHashMap.h"
-#include "tManagedPointerArray.h"
-#include "tSmartArray.h"
-
 class cSymbolTable;
 
 
@@ -76,7 +72,7 @@ private:
   uAnyType m_rvalue;
   sASTypeInfo m_rtype;
   
-  tSmartArray<sAggregateValue> m_call_stack;
+  Apto::Array<sAggregateValue, Apto::Smart> m_call_stack;
   int m_sp;
   bool m_has_returned;
   bool m_obj_assign;
@@ -190,7 +186,7 @@ private:
   class cLocalDict
   {
   private:
-    tHashMap<sAggregateValue, sAggregateValue> m_storage;
+    Apto::Map<sAggregateValue, sAggregateValue> m_storage;
     int m_ref_count;
     
     
@@ -219,7 +215,7 @@ private:
   class cLocalMatrix
   {
   private:
-    tManagedPointerArray<cLocalArray> m_storage;
+    Apto::Array<cLocalArray, Apto::ManagedPointer> m_storage;
     int m_sz_y;
     int m_ref_count;
     

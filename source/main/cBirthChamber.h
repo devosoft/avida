@@ -26,7 +26,6 @@
 #include "avida/systematics/Group.h"
 
 #include "cBirthEntry.h"
-#include "tArrayMap.h"
 
 /**
  * All genome-based organisms must go through the birth chamber, which will
@@ -48,7 +47,7 @@ class cBirthChamber
 {
 private:
   cWorld* m_world;
-  tArrayMap<int, cBirthSelectionHandler*> m_handler_map;
+  Apto::Map<int, cBirthSelectionHandler*> m_handler_map;
 
 
   cBirthChamber(); // @not_implemented

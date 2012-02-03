@@ -34,7 +34,6 @@
 #include "cString.h"
 #include "tArray.h"
 #include "tInstLib.h"
-#include "tManagedPointerArray.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
 #include "cCoords.h"
@@ -217,7 +216,7 @@ private:
   // Promoter model
   int m_promoter_index;       // site to begin looking for the next active promoter from
   int m_promoter_offset;      // bit offset when testing whether a promoter is on
-  tManagedPointerArray<cPromoter> m_promoters;
+  Apto::Array<cPromoter, Apto::ManagedPointer> m_promoters;
   
   
   cHardwareExperimental(const cHardwareExperimental&); // @not_implemented
@@ -622,7 +621,7 @@ private:
   
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   searchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
-                      const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step);  
+                      const cCoords target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step);  
   lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
   lookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
@@ -634,7 +633,7 @@ private:
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& res_bounds);
   bounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
   bool TestBounds(const cCoords cell_id, bounds& bounds_set);
-  tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
+  Apto::Array<int, Apto::Smart> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
 };
 
 

@@ -25,25 +25,14 @@
 
 #include <iostream>
 
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef cInstLib_h
-#include "cInstLib.h"
-#endif
 #include "avida/core/InstructionSequence.h"
-#ifndef tArray_h
+
+#include "cString.h"
+#include "cInstLib.h"
 #include "tArray.h"
-#endif
-#ifndef tSmartArray_h
-#include "tSmartArray.h"
-#endif
-#ifndef tWeightedIndex_h
 #include "cOrderedWeightedIndex.h"
-#endif
 
 using namespace std;
-
 using namespace Avida;
 
 /**
@@ -83,7 +72,7 @@ public:
     int choosy_female_cost;   // additional cost paid by females to execute the instruction (on top of female_cost) @CHC
     int post_cost;             // cpu cost to be paid AFTER instruction executed the first time (e.g. post-kill handling time in predators)
   };
-  tSmartArray<sInstEntry> m_lib_name_map;
+  Apto::Array<sInstEntry, Apto::Smart> m_lib_name_map;
   
   tArray<int> m_lib_nopmod_map;
   

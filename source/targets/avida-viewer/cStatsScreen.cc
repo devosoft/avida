@@ -8,14 +8,12 @@
 #include "cStatsScreen.h"
 
 #include "avida/private/systematics/GenomeTestMetrics.h"
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Manager.h"
 
-#include "cBioGroupManager.h"
-#include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cPopulation.h"
 #include "cStats.h"
-#include "tAutoRelease.h"
-#include "tIterator.h"
 
 using namespace std;
 
@@ -89,8 +87,9 @@ void cStatsScreen::Draw(cAvidaContext& ctx)
 
 void cStatsScreen::Update(cAvidaContext& ctx)
 {
-  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-  cBioGroup* best_gen = it->Next();
+  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+  Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
+  Systematics::GroupPtr best_gen = it->Next();
 
   SetBoldColor(COLOR_CYAN);
 
@@ -100,45 +99,47 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   Print(2, 13, "%7d",   stats.GetBreedTrue());
   Print(3, 13, "%7d",   stats.GetNumThreads());
   Print(4, 13, "%7d",   stats.GetNumParasites());
-  PrintDouble(5, 13, stats.GetEnergy());
   PrintDouble(6, 13, stats.GetMaxFitness());
   PrintDouble(7, 13, stats.GetMaxMerit());
 
   Print(9,  13, "%5d", stats.GetNumCreatures());
-  Print(10, 13, "%5d", stats.GetNumGenotypes());
-  Print(11, 13, "%5d", stats.GetNumThreshold());
+//  Print(10, 13, "%5d", stats.GetNumGenotypes());
+//  Print(11, 13, "%5d", stats.GetNumThreshold());
 
-  Print(2, 37, "%s",  static_cast<const char*>(best_gen->GetProperty("name").AsString()));
-  Print(3, 37, "%9d", best_gen->GetID());
-  Print(4, 37, "%9d", stats.GetUpdate() - best_gen->GetProperty("update_born").AsInt());
+  Print(2, 37, "%s",  static_cast<const char*>(best_gen->Properties().Get("name").Value()));
+  Print(3, 37, "%9d", best_gen->ID());
+  Print(4, 37, "%9d", stats.GetUpdate() - (int)Apto::StrAs(best_gen->Properties().Get("update_born").Value()));
 
   PrintDouble(9,  20, (double) stats.GetTotCreatures());
-  PrintDouble(10, 20, (double) stats.GetTotGenotypes());
-  PrintDouble(11, 20, (double) stats.GetTotThreshold());
+//  PrintDouble(10, 20, (double) stats.GetTotGenotypes());
+//  PrintDouble(11, 20, (double) stats.GetTotThreshold());
 
   PrintDouble(9,  29, stats.GetAveCreatureAge());
-  PrintDouble(10, 29, stats.GetAveGenotypeAge());
-  PrintDouble(11, 29, stats.GetAveThresholdAge());
+//  PrintDouble(10, 29, stats.GetAveGenotypeAge());
+//  PrintDouble(11, 29, stats.GetAveThresholdAge());
 
   PrintDouble(9,  38, log((double) stats.GetNumCreatures()));
   PrintDouble(10, 38, stats.GetEntropy());
   PrintDouble(12, 38, stats.GetSpeciesEntropy());
 
-  Systematics::GenomeTestMetrics* metrics = Systematics::GenomeTestMetrics::GetMetrics(ctx, best_gen);
+  Systematics::GenomeTestMetricsPtr metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, best_gen);
   PrintDouble(2, 62, metrics->GetFitness());
   PrintDouble(3, 62, metrics->GetMerit());
   PrintDouble(4, 62, metrics->GetGestationTime());
-  Print(5, 62, "%7d", Genome(best_gen->GetProperty("genome").AsString()).GetSize());
+  Genome gen(best_gen->Properties().Get("genome").Value());
+  InstructionSequencePtr seq;
+  seq.DynamicCastFrom(gen.Representation());
+  Print(5, 62, "%7d", seq->GetSize());
   PrintDouble(6, 62, metrics->GetLinesCopied());
   PrintDouble(7, 62, metrics->GetLinesExecuted());
-  Print(8, 62, "%7d", best_gen->GetNumUnits());
-  Print(9, 62, "%7d", best_gen->GetProperty("recent_births").AsInt());
+  Print(8, 62, "%7d", best_gen->NumUnits());
+  Print(9, 62, "%7d", (int)Apto::StrAs(best_gen->Properties().Get("recent_births").Value()));
   if (stats.GetAveMerit() == 0) {
     PrintDouble(10, 62, 0.0);
   } else {
     PrintDouble(10, 62, ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * metrics->GetFitness() / stats.GetAveMerit());
   }
-  Print(11, 62, "%7d", best_gen->GetDepth());
+  Print(11, 62, "%7d", best_gen->Depth());
 
   PrintDouble(2, 71, stats.GetAveFitness());
   PrintDouble(3, 71, stats.GetAveMerit());
@@ -146,19 +147,19 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(5, 71, stats.GetAveSize());
   PrintDouble(6, 71, stats.GetAveCopySize());
   PrintDouble(7, 71, stats.GetAveExeSize());
-  PrintDouble(8, 71,
-	      ((double) stats.GetNumCreatures()) /
-	      ((double) stats.GetNumGenotypes()));
-  // @CAO this next line should be get num births, which doesn't exist!
-  PrintDouble(9, 71,
-	      ((double) stats.GetNumDeaths()) /
-	      ((double) stats.GetNumGenotypes()));
+//  PrintDouble(8, 71,
+//	      ((double) stats.GetNumCreatures()) /
+//	      ((double) stats.GetNumGenotypes()));
+//  // @CAO this next line should be get num births, which doesn't exist!
+//  PrintDouble(9, 71,
+//	      ((double) stats.GetNumDeaths()) /
+//	      ((double) stats.GetNumGenotypes()));
   if (stats.GetAveMerit() != 0) {
     PrintDouble(10, 71, ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * stats.GetAveFitness() / stats.GetAveMerit());
   } else {
     PrintDouble(10, 71, 0.0);
   }
-  PrintDouble(11, 71, stats.SumGenotypeDepth().Average());
+//  PrintDouble(11, 71, stats.SumGenotypeDepth().Average());
   PrintDouble(12, 71, stats.SumGeneration().Average());
   PrintDouble(13, 71, (double)stats.GetNumThreads() / (double)stats.GetNumCreatures());
 

@@ -40,23 +40,11 @@
 namespace nHashTable {
   
   // HASH_TYPE = basic object
-  // Casts the pointer to an int, shift right last two bit positions, mod by
-  // the size of the hash table and hope for the best.  The shift is to account
-  // for typical 4-byte alignment of pointer values.  Depending on architecture
-  // this may not be true and could result in suboptimal hashing at higher
-  // order alignments.
   template<typename HASH_TYPE> inline int HashKey(const HASH_TYPE& key, int table_size)
   {
-    // Cast/Dereference of key as an int* tells the compiler that we really want
-    // to truncate the value to an integer, even if a pointer is larger.
-    return abs((*((int*)&key) >> 2) % table_size);    
-  }
-  
-  // HASH_TYPE = int
-  // Simply mod the into by the size of the hash table and hope for the best
-  template<> inline int HashKey<int>(const int& key, int table_size)
-  {
-    return abs(key % table_size);
+    // tHashMap is deprecated and exists only to support tDictionary for now.
+    assert(false);
+    return 0;
   }
   
   // HASH_TYPE = cString
@@ -69,19 +57,6 @@ namespace nHashTable {
     unsigned int out_hash = 0;
     for (int i = 0; i < key.GetSize(); i++)
       out_hash += (unsigned int) key[i];
-    return out_hash % table_size;
-  }
-  
-  // HASH_TYPE = cBitArray
-  // We hash a bit array by calculating the sum of the squared values of the
-  // positions where bits are on, then modding this number by the size of 
-  // the hash table
-  template<> inline int HashKey<cBitArray>(const cBitArray& key, int table_size)
-  {
-    unsigned int out_hash = 0;
-    for (int i = 0; i < key.GetSize(); i++) {
-      if (key.Get(i)) { out_hash += i*i; }
-    }
     return out_hash % table_size;
   }
   

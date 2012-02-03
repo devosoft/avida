@@ -23,7 +23,6 @@
 
 #include "AvidaScript.h"
 #include "cFile.h"
-#include "tAutoRelease.h"
 
 using namespace AvidaScript;
 
@@ -276,7 +275,7 @@ cASTNode* cParser::parseArrayUnpack()
   
   if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
 
-  tAutoRelease<cASTUnpackTarget> ut(new cASTUnpackTarget(FILEPOS));
+  Apto::SmartPtr<cASTUnpackTarget> ut(new cASTUnpackTarget(FILEPOS));
   (*ut).AddVar(currentText());
   
   while (nextToken()) {
@@ -340,7 +339,7 @@ cASTNode* cParser::parseAssignment()
 cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
 {
   PARSE_TRACE("parseCallExpression");
-  tAutoRelease<cASTNode> ce(target);
+  Apto::SmartPtr<cASTNode> ce(target);
 
   if (currentToken() == TOKEN(DOT) && peekToken() == TOKEN(BUILTIN_METHOD)) {
     nextToken(); // consume '.'
@@ -593,7 +592,7 @@ cASTNode* cParser::parseExprP5()
 cASTNode* cParser::parseExprP6()
 {
   PARSE_TRACE("parseExprP6");
-  tAutoRelease<cASTNode> expr;
+  Apto::SmartPtr<cASTNode> expr;
   
   bool is_matrix = false;
   
@@ -653,7 +652,7 @@ cASTNode* cParser::parseExprP6()
       is_matrix = true;
     case TOKEN(ARR_OPEN):
       {
-        tAutoRelease<cASTArgumentList> al;
+        Apto::SmartPtr<cASTArgumentList> al;
         if (nextToken() != TOKEN(ARR_CLOSE)) al.Set(parseArgumentList());
         if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
         expr.Set(new cASTLiteralArray(FILEPOS, al.Release(), is_matrix));
@@ -722,7 +721,7 @@ cASTNode* cParser::parseForeachStatement()
     return NULL;
   }
   
-  tAutoRelease<cASTVariableDefinition> var(new cASTVariableDefinition(FILEPOS, type, currentText()));
+  Apto::SmartPtr<cASTVariableDefinition> var(new cASTVariableDefinition(FILEPOS, type, currentText()));
   
   if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
@@ -730,7 +729,7 @@ cASTNode* cParser::parseForeachStatement()
   }  
   nextToken(); // consume '('
   
-  tAutoRelease<cASTNode> expr(parseExpression());
+  Apto::SmartPtr<cASTNode> expr(parseExpression());
   
   if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
@@ -793,7 +792,7 @@ cASTFunctionDefinition* cParser::parseFunctionHeader()
   
   if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
   
-  tAutoRelease<cASTVariableDefinitionList> args;
+  Apto::SmartPtr<cASTVariableDefinitionList> args;
   if (nextToken() != TOKEN(PREC_CLOSE)) args.Set(parseVariableDefinitionList());
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
   nextToken(); // consume ')'
@@ -846,18 +845,18 @@ cASTNode* cParser::parseIfStatement()
   if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
   
   nextToken();
-  tAutoRelease<cASTNode> cond(parseExpression());
+  Apto::SmartPtr<cASTNode> cond(parseExpression());
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
   nextToken();
   
-  tAutoRelease<cASTIfBlock> is(new cASTIfBlock(FILEPOS, cond.Release(), parseCodeBlock()));
+  Apto::SmartPtr<cASTIfBlock> is(new cASTIfBlock(FILEPOS, cond.Release(), parseCodeBlock()));
 
   while (currentToken() == TOKEN(CMD_ELSEIF)) {
     
     if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
     nextToken(); // consume '('
     
-    tAutoRelease<cASTNode> elifcond(parseExpression());
+    Apto::SmartPtr<cASTNode> elifcond(parseExpression());
     
     if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
     nextToken(); // consume ')'
@@ -902,7 +901,7 @@ cASTNode* cParser::parseLooseBlock()
 {
   PARSE_TRACE("parseLooseBlock");
   //nextToken();
-  tAutoRelease<cASTNode> sl(parseStatementList());
+  Apto::SmartPtr<cASTNode> sl(parseStatementList());
   
   if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
   nextToken(); // consume '}'
@@ -938,9 +937,9 @@ cASTNode* cParser::parseReturnStatement()
 cASTNode* cParser::parseStatementList()
 {
   PARSE_TRACE("parseStatementList");
-  tAutoRelease<cASTStatementList> sl(new cASTStatementList(FILEPOS));
+  Apto::SmartPtr<cASTStatementList> sl(new cASTStatementList(FILEPOS));
   
-  tAutoRelease<cASTNode> node;
+  Apto::SmartPtr<cASTNode> node;
 
   while (nextToken()) {
     switch (currentToken()) {
@@ -1037,7 +1036,7 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
   
   if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
   
-  tAutoRelease<cASTVariableDefinition> vd(new cASTVariableDefinition(FILEPOS, vtype, currentText()));
+  Apto::SmartPtr<cASTVariableDefinition> vd(new cASTVariableDefinition(FILEPOS, vtype, currentText()));
   
   switch (nextToken()) {
     case TOKEN(ASSIGN):
@@ -1061,7 +1060,7 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
 cASTVariableDefinitionList* cParser::parseVariableDefinitionList()
 {
   PARSE_TRACE("parseVariableDefinitionList");
-  tAutoRelease<cASTVariableDefinitionList> vl(new cASTVariableDefinitionList(FILEPOS));
+  Apto::SmartPtr<cASTVariableDefinitionList> vl(new cASTVariableDefinitionList(FILEPOS));
  
   cASTVariableDefinition* vd = parseVariableDefinition();
   if (!vd) return NULL;
@@ -1084,7 +1083,7 @@ cASTNode* cParser::parseWhileStatement()
   if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
   
   nextToken();
-  tAutoRelease<cASTNode> cond(parseExpression());
+  Apto::SmartPtr<cASTNode> cond(parseExpression());
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
   nextToken();
   

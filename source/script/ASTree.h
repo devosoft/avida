@@ -28,7 +28,6 @@
 #include "cString.h"
 
 #include "tList.h"
-#include "tManagedPointerArray.h"
 
 
 class cASFunction;
@@ -674,7 +673,7 @@ private:
     
     inline void SetVar(int in_vi, bool in_g, const sASTypeInfo& in_t) { var_id = in_vi; global = in_g; type = in_t; }
   };
-  tManagedPointerArray<sUnpackNode> m_nodes;
+  Apto::Array<sUnpackNode, Apto::ManagedPointer> m_nodes;
   bool m_last_wild;
   bool m_last_named;
   cASTNode* m_expr;

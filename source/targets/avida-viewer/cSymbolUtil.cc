@@ -22,10 +22,10 @@ char cSymbolUtil::GetBasicSymbol(const cPopulationCell & cell)
   if (cell.IsOccupied() == false) return ' ';
   const cOrganism & organism = *(cell.GetOrganism());
   
-  cBioGroup* bg = organism.GetBioGroup("genotype");
-  sGenotypeViewInfo* view_info = bg->GetData<sGenotypeViewInfo>();
+  Systematics::GroupPtr bg = organism.SystematicsGroup("genotype");
+  Apto::SmartPtr<sGenotypeViewInfo> view_info = bg->GetData<sGenotypeViewInfo>();
   if (!view_info) {
-    view_info = new sGenotypeViewInfo;
+    view_info = Apto::SmartPtr<sGenotypeViewInfo>(new sGenotypeViewInfo);
     bg->AttachData(view_info);
   }
   return view_info->symbol;

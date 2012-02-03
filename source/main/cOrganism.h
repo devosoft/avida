@@ -32,13 +32,10 @@
 #include "cMutationRates.h"
 #include "cPhenotype.h"
 #include "cOrgInterface.h"
-#include "cOrgSeqMessage.h"
-#include "cOrgSourceMessage.h"
 #include "cOrgMessage.h"
 #include "tArray.h"
 #include "tBuffer.h"
 #include "tList.h"
-#include "tSmartArray.h"
 
 #include <deque>
 #include <iostream>
@@ -55,7 +52,6 @@ class cEnvironment;
 class cHardwareBase;
 class cInstSet;
 class cLineage;
-class cOrgSinkMessage;
 class cStateGrid;
 
 using namespace Avida;
@@ -105,23 +101,6 @@ private:
   bool m_is_dead;          // Is this organism dead?
 
   bool killed_event;
-
-  class cNetSupport
-  {
-  public:
-    tList<cOrgSinkMessage> pending;
-    tSmartArray<cOrgSinkMessage*> received;
-    tSmartArray<cOrgSourceMessage> sent;
-    tSmartArray<cOrgSeqMessage> seq; 
-    int last_seq;
-    bool valid;
-    int completed;
-
-    cNetSupport() : last_seq(0), valid(false), completed(0) { ; }
-    ~cNetSupport();
-  };
-  cNetSupport* m_net;
-
 
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
@@ -306,18 +285,6 @@ public:
   // --------  Divide Methods  --------
   bool Divide_CheckViable(cAvidaContext& ctx);
   bool ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype = 0);
-
-
-  // --------  Networking Support  --------
-  void NetGet(cAvidaContext& ctx, int& value, int& seq);
-  void NetSend(cAvidaContext& ctx, int value);
-  cOrgSinkMessage* NetPop() { return m_net->pending.PopRear(); }
-  bool NetReceive(int& value);
-  void NetValidate(cAvidaContext& ctx, int value);
-  bool NetRemoteValidate(cAvidaContext& ctx, int value);
-  int NetLast() { return m_net->last_seq; }
-  bool NetIsValid() { if (m_net) return m_net->valid; else return false; }
-  int NetCompleted() { if (m_net) return m_net->completed; else return 0; }
 
 
   // --------  Parasite Interactions  --------

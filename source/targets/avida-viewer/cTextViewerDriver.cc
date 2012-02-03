@@ -21,7 +21,6 @@
 
 #include "cTextViewerDriver.h"
 
-#include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -62,7 +61,7 @@ void cTextViewerDriver::Run()
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
-  cAvidaContext ctx(m_world, m_world->GetRandom());
+  cAvidaContext ctx(this, m_world->GetRandom());
   ctx.EnableOrgFaultReporting();
   
   while (!m_done) {

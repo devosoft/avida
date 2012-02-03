@@ -49,8 +49,6 @@
 #include "cPopulationCell.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "tAutoRelease.h"
-#include "tIterator.h"
 #include "cUserFeedback.h"
 #include "cParasite.h"
 #include "cBirthEntry.h"
@@ -668,31 +666,20 @@ public:
     const double generation = m_world->GetStats().SumGeneration().Average();
     
     //only loop through living organisms
-    tSmartArray<cOrganism*> living_orgs = m_world->GetPopulation().GetLiveOrgList();
+    const Apto::Array<cOrganism*, Apto::Smart>& living_orgs = m_world->GetPopulation().GetLiveOrgList();
     
-    tHashMap<int, int> lineage_label_counts;
+    Apto::Map<int, int> lineage_label_counts;
     
     //build hash of lineage_label -> count
-    for(int i = 0; i < living_orgs.GetSize(); i++)
-    {
+    for(int i = 0; i < living_orgs.GetSize(); i++) {
       const int cur_lineage_label = living_orgs[i]->GetLineageLabel();
-      if (lineage_label_counts.HasEntry(cur_lineage_label))
-      {
-        int cur_count;
-        lineage_label_counts.Find(cur_lineage_label, cur_count);
-        
-        lineage_label_counts.Set(cur_lineage_label, cur_count + 1);
-      }
-      else
-      {
-        lineage_label_counts.Set(cur_lineage_label, 1);
-      }
+      if (lineage_label_counts.Has(cur_lineage_label)) lineage_label_counts[cur_lineage_label]++;
+      else lineage_label_counts[cur_lineage_label] = 1;
     }
     
     //setup lineage labels in the first pass
-    if(first_run == false)
-    {
-      lineage_label_counts.GetKeys(lineage_labels);
+    if (first_run == false) {
+      for (Apto::Map<int, int>::KeyIterator it = lineage_label_counts.Keys(); it.Next();) lineage_labels.Push(*it.Get());
       first_run = true;
     }
     
@@ -702,13 +689,11 @@ public:
     
     //for each lineage label, output the counts
     //@LZ - handle dead lineages appropriately
-    for(int i=0;i<lineage_labels.GetSize();i++)
-    {
+    for (int i = 0; i < lineage_labels.GetSize(); i++) {
       //default to 0 in case this lineage is dead
       int count = 0;
       
-      if (lineage_label_counts.HasEntry(lineage_labels[i]))
-        lineage_label_counts.Find(lineage_labels[i], count);
+      lineage_label_counts.Get(lineage_labels[i], count);
     
       df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
     }
@@ -783,7 +768,7 @@ public:
       if (cur_size > 0) num_groups++; 
     }
     
-    tSmartArray<int> birth_groups_checked;
+    Apto::Array<int, Apto::Smart> birth_groups_checked;
     Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_groups; i++) {
@@ -848,7 +833,7 @@ public:
     set <int>::iterator itr;    
     for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
 
-    tSmartArray<int> birth_forage_types_checked;
+    Apto::Array<int, Apto::Smart> birth_forage_types_checked;
     Systematics::GroupPtr bg = it->Next();
     
     for (int i = 0; i < num_fts; i++) {
@@ -1107,7 +1092,7 @@ public:
     }
 
 
-    tHashMap<int, int> cclade_count;  //A count for each clade in the population
+    Apto::Map<int, int> cclade_count;  //A count for each clade in the population
     set<int>             clade_ids;
 
     cPopulation& pop = m_world->GetPopulation();
@@ -1120,7 +1105,7 @@ public:
         continue;
       int cclade_id = pop.GetCell(k).GetOrganism()->GetCCladeLabel();
       int count = 0;
-      if (!cclade_count.Find(cclade_id,count))
+      if (!cclade_count.Get(cclade_id, count))
         clade_ids.insert(cclade_id);
       cclade_count.Set(cclade_id, ++count);
     }
@@ -1144,7 +1129,7 @@ public:
     while(sit != clade_ids.end())
     {
       int count = 0;
-      cclade_count.Find(*sit, count);
+      cclade_count.Get(*sit, count);
       fp << *sit << " " << count << " ";
       sit++;
     }

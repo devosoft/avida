@@ -32,7 +32,6 @@
 
 #include "cInstSet.h"
 #include "tBuffer.h"
-#include "tSmartArray.h"
 
 class cAvidaContext;
 class cCodeLabel;
@@ -78,7 +77,7 @@ protected:
   bool m_has_post_costs;
 
   // --------  Base Hardware Feature Support  ---------
-  tSmartArray<int> m_ext_mem;
+  Apto::Array<int, Apto::Smart> m_ext_mem;
   bool m_implicit_repro_active;
   
 	// --------  Bit masks  ---------
@@ -126,7 +125,7 @@ public:
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
   void SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id);
   virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) = 0;
-  void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
+  void SetupExtendedMemory(const Apto::Array<int, Apto::Smart>& ext_mem) { m_ext_mem = ext_mem; }
   
   
   // --------  Stack Manipulation...  --------
@@ -158,7 +157,7 @@ public:
   virtual int GetMemSize(int value) const = 0;
   virtual int GetNumMemSpaces() const = 0;
   
-  const tSmartArray<int>& GetExtendedMemory() const { return m_ext_mem; }
+  const Apto::Array<int, Apto::Smart>& GetExtendedMemory() const { return m_ext_mem; }
   
   
   // --------  Register Manipulation  --------

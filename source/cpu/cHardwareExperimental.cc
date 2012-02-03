@@ -789,7 +789,7 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   // any trailing nops (up to NUM_REGISTERS)
   cCPUMemory& memory = m_memory;
   int pos = getIP().GetPosition();
-  tSmartArray<int> seq;
+  Apto::Array<int, Apto::Smart> seq;
   seq.Resize(0);
   for (int i = 0; i < NUM_REGISTERS; i++) {
     pos += 1;
@@ -3107,7 +3107,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org  = NULL;
-  tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
@@ -3176,7 +3176,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org = NULL;
-  tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
@@ -4938,7 +4938,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     }
     // if valid org id number, does the value represent a living organism
     else if (id_sought != -1) {
-      tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+      const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
       for (int i = 0; i < live_orgs.GetSize(); i++) {  
         cOrganism* living_org = live_orgs[i];
         if (id_sought == living_org->GetID()) {
@@ -5212,7 +5212,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
       right.Set(1, 0);
       break;
   }  
-  tSmartArray<int> val_res;                                                     // resource ids of this habitat type
+  Apto::Array<int, Apto::Smart> val_res;                                                     // resource ids of this habitat type
   val_res.Resize(0);
   // END definitions
   
@@ -5416,7 +5416,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
  *    
  */
 cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext& ctx,  const cResourceLib& resource_lib, const int habitat_used, const int search_type,
-                                                                  const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step)
+                                                                  const cCoords target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step)
 {
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   int target_cell_num = target_cell_coords.GetX() + (target_cell_coords.GetY() * worldx);
@@ -5672,9 +5672,9 @@ bool cHardwareExperimental::TestBounds(const cCoords cell_id, bounds& bounds)
   return true;  
 }
 
-tSmartArray<int> cHardwareExperimental::BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound)
+Apto::Array<int, Apto::Smart> cHardwareExperimental::BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound)
 {
-  tSmartArray<int> val_res;
+  Apto::Array<int, Apto::Smart> val_res;
   val_res.Resize(0);
   if (single_bound) val_res.Push(id_sought);
   else if (!single_bound) { 

@@ -139,7 +139,7 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
   m_inst_sets.Push(inst_set);
   m_is_name_map.Set(name, inst_set_id);
   
-  tArray<cString> names(inst_set->GetSize());
+  Apto::Array<cString> names(inst_set->GetSize());
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
   m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());

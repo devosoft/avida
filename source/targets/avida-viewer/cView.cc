@@ -51,7 +51,7 @@ cView::cView(cWorld* world, cTextViewerDriver_Base* driver) : info(world, this)
   stats_screen   = new cStatsScreen   (world, 0, 0, 3, 0, info);
   hist_screen    = new cHistScreen    (world, 0, 0, 3, 0, info);
   options_screen = new cOptionsScreen (0,0,3,0,info);
-  zoom_screen    = new cZoomScreen    (0,0,3,0,info, world->GetPopulation());
+  zoom_screen    = new cZoomScreen    (0,0,3,0,info, world->GetPopulation(), world);
   environment_screen = new cEnvironmentScreen (world, 0, 0, 3, 0, info);
   analyze_screen = new cAnalyzeScreen(world, 0, 0, 3, 0, info, driver);
 
@@ -333,11 +333,13 @@ void cView::CloneSoup()
 
 void cView::ExtractCreature(cAvidaContext& ctx)
 {
-  cBioGroup* cur_gen = info.GetActiveGenotype();
-  cString gen_name = cur_gen->GetProperty("name").AsString();
+  Systematics::GroupPtr cur_gen = info.GetActiveGenotype();
+  cString gen_name = (const char*)cur_gen->Properties().Get("name").Value();
 
-  Genome mg = Genome(cur_gen->GetProperty("genome").AsString());
-  if (gen_name == "(no name)") gen_name.Set("%03d-unnamed", mg.GetSize());
+  Genome mg = Genome(cur_gen->Properties().Get("genome").Value());
+  ConstInstructionSequencePtr seq;
+  seq.DynamicCastFrom(mg.Representation());
+  if (gen_name == "(no name)") gen_name.Set("%03d-unnamed", seq->GetSize());
 
   if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", static_cast<const char*>(gen_name));
 

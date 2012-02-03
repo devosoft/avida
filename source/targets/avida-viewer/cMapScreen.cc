@@ -210,7 +210,7 @@ void cMapScreen::PlaceCursor(cAvidaContext& ctx)
     Print(Height() - 1, 33, "(%2d, %2d) - %s",
 		       info.GetActiveID() % x_size,
 		       info.GetActiveID() / x_size,
-		       static_cast<const char*>(cpu_gen->GetProperty("name").AsString()));
+		       static_cast<const char*>(cpu_gen->Properties().Get("name").Value()));
   }
 
   if (x_offset == 0 || x_offset == Width()/2 - 1) {

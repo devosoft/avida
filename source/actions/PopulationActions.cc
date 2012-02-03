@@ -47,8 +47,6 @@
 #include "cEnvironment.h"
 #include "cUserFeedback.h"
 #include "cArgSchema.h"
-#include "tAutoRelease.h"
-#include "tIterator.h"
 
 #include <map>
 #include <set>
@@ -5247,9 +5245,9 @@ public:
     Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
     Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
     Systematics::GroupPtr bg = (it->Next());
-    tSmartArray<Systematics::GroupPtr> bg_list;
-    tSmartArray<int> fts_to_use;
-    tSmartArray<int> groups_to_use;
+    Apto::Array<Systematics::GroupPtr, Apto::Smart> bg_list;
+    Apto::Array<int, Apto::Smart> fts_to_use;
+    Apto::Array<int, Apto::Smart> groups_to_use;
     int num_doms = 0;
     int fts_left = 0;
     int groups_left = 0;
@@ -5257,7 +5255,7 @@ public:
     if (m_save_dominants) num_doms = m_orgs_per;
     
     // get forager types in pop
-    tSmartArray<int> ft_check_counts;
+    Apto::Array<int, Apto::Smart> ft_check_counts;
     ft_check_counts.Resize(0);
     if (m_save_foragers) {
       if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) fts_to_use.Push(-2);
@@ -5271,7 +5269,7 @@ public:
     }
     
     // get groups in pop
-    tSmartArray<int> group_check_counts;
+    Apto::Array<int, Apto::Smart> group_check_counts;
     group_check_counts.Resize(0);
     if (m_save_groups) {
       map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();

@@ -34,7 +34,6 @@
 #include "cWorld.h"
 #include "tArray.h"
 #include "tList.h"
-#include "tVector.h"
 
 #include <fstream>
 #include <map>
@@ -62,18 +61,17 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
-  tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  //std::map<int, std::vector<cOrganism*> > group_list;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances;
+  Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > group_list;
+  Apto::Map<int, tArray<pair<int,int> > > group_intolerances;
   
   // Keep list of live organisms
-  tSmartArray<cOrganism* > live_org_list;
+  Apto::Array<cOrganism*, Apto::Smart> live_org_list;
   
-  tVector<pair<int,int> > *sleep_log;
+  Apto::Array<pair<int,int>, Apto::Smart>* sleep_log;
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-  tSmartArray<Systematics::GroupPtr> minitrace_queue;
+  Apto::Array<Systematics::GroupPtr, Apto::Smart> minitrace_queue;
   bool print_mini_trace_genomes;
   
   // Default organism setups...
@@ -239,8 +237,8 @@ public:
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<Systematics::GroupPtr> new_queue, bool print_genomes);
-  tSmartArray<Systematics::GroupPtr> GetMiniTraceQueue() const { return minitrace_queue; }
+  void SetMiniTraceQueue(const Apto::Array<Systematics::GroupPtr, Apto::Smart>& new_queue, bool print_genomes);
+  const Apto::Array<Systematics::GroupPtr, Apto::Smart>& GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -302,7 +300,7 @@ public:
   void AddBeginSleep(int cellID, int start_time);
   void AddEndSleep(int cellID, int end_time);
  
-  tVector<pair<int,int> > getCellSleepLog(int i) { return sleep_log[i]; }
+  const Apto::Array<pair<int,int>, Apto::Smart>& getCellSleepLog(int i) const { return sleep_log[i]; }
 
   // Trials and genetic algorithm @JEB
   void NewTrial(cAvidaContext& ctx);
@@ -320,7 +318,7 @@ public:
   void AddLiveOrg(cOrganism* org);  
   // Remove an org from live org list
   void RemoveLiveOrg(cOrganism* org); 
-  tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
+  const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const { return live_org_list; }
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);

@@ -38,6 +38,11 @@ cTextViewerDriver_Base::~cTextViewerDriver_Base()
   delete m_world;
 }
 
+void cTextViewerDriver_Base::Abort(AbortCondition condition)
+{
+  exit(condition);
+}
+
 
 void cTextViewerDriver_Base::Flush()
 {
@@ -74,3 +79,35 @@ bool cTextViewerDriver_Base::ProcessKeypress(cAvidaContext& ctx, int keypress)
 {
   return m_view->ProcessKeypress(ctx, keypress);
 }
+
+
+void cTextViewerDriver_Base::StdIOFeedback::Error(const char* fmt, ...)
+{
+  printf("error: ");
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
+}
+
+void cTextViewerDriver_Base::StdIOFeedback::Warning(const char* fmt, ...)
+{
+  printf("warning: ");
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
+}
+
+void cTextViewerDriver_Base::StdIOFeedback::Notify(const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
+}
+
+

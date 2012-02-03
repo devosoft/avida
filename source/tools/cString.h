@@ -23,15 +23,14 @@
 #ifndef cString_h
 #define cString_h
 
+#include "apto/core.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <cstdarg>
 #include <string>
 #include <cstring>
 #include <cassert>
-
-#include "cRCObject.h"
-#include "tRCPtr.h"
 
 #define MAX_STRING_LENGTH 4096
 #define CONTINUE_LINE_CHAR '\\'
@@ -73,7 +72,7 @@ private:
   friend class cCharProxy;  // Telling rvalue vs lvalue ....
 
   // cStringData -- Holds the actual data and is reference count --
-  class cStringData : public cRCObject
+  class cStringData : public Apto::RefCountObject
   {
     // NOTE: Terminating NULL is always there (you can't assign!!)
   private:
@@ -126,9 +125,9 @@ public:
   cString(const char* in_str = "")
   {
     if (in_str) {
-      value = new cStringData(strlen(in_str), in_str);
+      value = Apto::SmartPtr<cStringData, Apto::InternalRCObject>(new cStringData((int)strlen(in_str), in_str));
     } else {
-      value = new cStringData(0, "");
+      value = Apto::SmartPtr<cStringData, Apto::InternalRCObject>(new cStringData(0, ""));
     }
     assert( value );  // Memory Allocation Error: Out of Memory
   }
@@ -155,7 +154,7 @@ public:
   cString& operator=(const char* in)
   {
     assert( in != NULL ); // NULL input string
-    value = new cStringData(strlen(in),in);
+    value = Apto::SmartPtr<cStringData, Apto::InternalRCObject>(new cStringData(strlen(in),in));
     assert(value);  // Memory Allocation Error: Out of Memory
     return *this;
   }
@@ -553,7 +552,7 @@ protected:
 
   // -- Internal Data --
 protected:
-  tRCPtr<cStringData> value;
+  Apto::SmartPtr<cStringData, Apto::InternalRCObject> value;
 
 // }}} End Internals
 };
@@ -571,8 +570,8 @@ std::ostream& operator << (std::ostream& out, const cString& string);
 
 void cString::CopyOnWrite()
 {
-  if (!value->SetExclusive()) {  // if it is shared
-    value = new cStringData(*value);  // make own copy of value
+  if (!value->IsExclusive()) {  // if it is shared
+    value = Apto::SmartPtr<cStringData, Apto::InternalRCObject>(new cStringData(*value));  // make own copy of value
   }
 }
 

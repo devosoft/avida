@@ -27,24 +27,11 @@
 
 #include <fstream>
 
-#ifndef cMerit_h
 #include "cMerit.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tArray_h
 #include "tArray.h"
-#endif
-#ifndef cCodeLabel_h
 #include "cCodeLabel.h"
-#endif
-#ifndef tHashMap_h
-#include "tHashMap.h"
-#endif
-#ifndef cWorld_h
 #include "cWorld.h"
-#endif
 
 
 /*************************************************************************
@@ -140,7 +127,7 @@ private:
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
   tArray<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
-  tHashMap<void*, cTaskState*> m_task_states;
+  Apto::Map<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB

@@ -29,8 +29,8 @@ using namespace std;
 //  The Zoom Screen
 /////////////////////
 
-cZoomScreen::cZoomScreen(int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info, cPopulation& in_pop)
-: cScreen(y_size, x_size, y_start, x_start, in_info), population(in_pop)
+cZoomScreen::cZoomScreen(int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info, cPopulation& in_pop, cWorld* world)
+: cScreen(y_size, x_size, y_start, x_start, in_info), m_world(world), population(in_pop)
 {
   memory_offset = 0;
   parasite_zoom = false;
@@ -404,7 +404,7 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   if (info.GetActiveCell() == NULL ||
       info.GetActiveCell()->IsOccupied() == false) return;
   
-  cBioGroup* genotype = info.GetActiveGenotype();
+  Systematics::GroupPtr genotype = info.GetActiveGenotype();
   cOrganism* organism = info.GetActiveCell()->GetOrganism();
   cPhenotype& phenotype = organism->GetPhenotype();
   
@@ -422,7 +422,10 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   PrintDouble(8, 14, phenotype.GetEnergyBonus());
   PrintDouble(9, 14, phenotype.GetMerit().GetDouble());
   PrintDouble(10, 14, cur_merit.GetDouble());
-  Print(11, 15, "%6d ", genotype ? Genome(genotype->GetProperty("genome").AsString()).GetSize() : 0);
+  Genome gen(genotype->Properties().Get("genome").Value());
+  InstructionSequencePtr seq;
+  seq.DynamicCastFrom(gen.Representation());
+  Print(11, 15, "%6d ", genotype ? seq->GetSize() : 0);
   Print(12, 15, "%6d ", hardware.GetMemory().GetSize());
   
   Print(13, 15, "%6d ", phenotype.GetCurNumErrors());
@@ -925,34 +928,37 @@ void cZoomScreen::UpdateGenotype(cAvidaContext& ctx)
   Print(2, 12, "%9s", static_cast<const char*>(info.GetActiveName()));
   
   if (info.GetActiveGenotype() != NULL) {
-    cBioGroup* genotype = info.GetActiveGenotype();
-    Systematics::GenomeTestMetrics* metrics = Systematics::GenomeTestMetrics::GetMetrics(ctx, genotype);
-    Print(5, 12, "%9d", genotype->GetNumUnits());
-    Print(6, 12, "%9d", Genome(genotype->GetProperty("genome").AsString()).GetSize());
+    Systematics::GroupPtr genotype = info.GetActiveGenotype();
+    Systematics::GenomeTestMetricsPtr metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, genotype);
+    Print(5, 12, "%9d", genotype->NumUnits());
+    Genome gen(genotype->Properties().Get("genome").Value());
+    InstructionSequencePtr seq;
+    seq.DynamicCastFrom(gen.Representation());
+    Print(6, 12, "%9d", seq->GetSize());
     PrintDouble(7, 14, metrics->GetLinesCopied());
     PrintDouble(8, 14, metrics->GetLinesExecuted());
     
     PrintDouble(10, 14, metrics->GetFitness());
     PrintDouble(11, 14, metrics->GetGestationTime());
     PrintDouble(12, 14, metrics->GetMerit());
-    PrintDouble(13, 14, genotype->GetProperty("repro_rate").AsDouble());
+    PrintDouble(13, 14, Apto::StrAs(genotype->Properties().Get("repro_rate").Value()));
     
     // Column 2
-    Print(1, 40, "%9d", genotype->GetProperty("update_born").AsInt());
-    Print(2, 40, "%9s", (const char*)(genotype->GetProperty("parents").AsString()));
-    Print(3, 40, "%9d", genotype->GetDepth());
+    Print(1, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("update_born").Value()));
+    Print(2, 40, "%9s", (const char*)(genotype->Properties().Get("parents").Value()));
+    Print(3, 40, "%9d", genotype->Depth());
     
-    Print(7, 40,  "%9d", genotype->GetProperty("recent_deaths").AsInt());
-    Print(8, 40,  "%9d", genotype->GetProperty("recent_births").AsInt());
-    Print(9, 40,  "%9d", genotype->GetProperty("recent_breed_true").AsInt());
-    Print(10, 40, "%9d", genotype->GetProperty("recent_breed_in").AsInt());
-    Print(11, 40, "%9d", genotype->GetProperty("recent_births").AsInt() - genotype->GetProperty("recent_breed_true").AsInt());
+    Print(7, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_deaths").Value()));
+    Print(8, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_births").Value()));
+    Print(9, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_breed_true").Value()));
+    Print(10, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_breed_in").Value()));
+    Print(11, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_births").Value()) - (int)Apto::StrAs(genotype->Properties().Get("recent_breed_true").Value()));
     
-    Print(14, 40, "%9d", genotype->GetProperty("total_organisms").AsInt());
-    Print(15, 40, "%9d", genotype->GetProperty("last_births").AsInt());
-    Print(16, 40, "%9d", genotype->GetProperty("last_breed_true").AsInt());
-    Print(17, 40, "%9d", genotype->GetProperty("last_breed_in").AsInt());
-    Print(18, 40, "%9d", genotype->GetProperty("last_births").AsInt() - genotype->GetProperty("last_breed_true").AsInt());
+    Print(14, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("total_organisms").Value()));
+    Print(15, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_births").Value()));
+    Print(16, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_breed_true").Value()));
+    Print(17, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_breed_in").Value()));
+    Print(18, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_births").Value()) - (int)Apto::StrAs(genotype->Properties().Get("last_breed_true").Value()));
   }
   else {
     Print(5, 12, "  -------");

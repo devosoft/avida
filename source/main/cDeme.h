@@ -31,7 +31,6 @@
 #include "cMerit.h"
 #include "cDemeNetwork.h"
 #include "tArray.h"
-#include "tVector.h"
 #include "cResourceCount.h"
 #include "cStringList.h"
 #include "cDoubleSum.h"
@@ -119,7 +118,7 @@ private:
   cResourceCount deme_resource_count; //!< Resources available to the deme
   tArray<int> energy_res_ids; //!< IDs of energy resources
   
-  tVector<cDemeCellEvent> cell_events;
+  Apto::Array<cDemeCellEvent, Apto::Smart> cell_events;
   std::vector<std::pair<int, int> > event_slot_end_points; // (slot end point, slot flow rate)
   
   int         m_germline_genotype_id; // Genotype id of germline (if in use)
@@ -130,9 +129,9 @@ private:
   cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
 
-  tVector<cDemePredicate*> deme_pred_list; // Deme Predicates
-  tVector<cOrgMessagePredicate*> message_pred_list; // Message Predicates
-  tVector<cOrgMovementPredicate*> movement_pred_list;  // Movement Predicates
+  Apto::Array<cDemePredicate*, Apto::Smart> deme_pred_list; // Deme Predicates
+  Apto::Array<cOrgMessagePredicate*, Apto::Smart> message_pred_list; // Message Predicates
+  Apto::Array<cOrgMovementPredicate*, Apto::Smart> movement_pred_list;  // Movement Predicates
 	
 	// For the points infrastructure
 	double points; 

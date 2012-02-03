@@ -36,7 +36,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedba
                      const Apto::Set<cString>* custom_directives)
 : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
-  tSmartArray<sLine*> lines;
+  Apto::Array<sLine*, Apto::Smart> lines;
   m_opened = loadFile(filename, lines, working_dir, custom_directives, feedback);
   postProcess(lines);
 }
@@ -44,7 +44,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedba
 cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<cString>* custom_directives)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
-  tSmartArray<sLine*> lines;
+  Apto::Array<sLine*, Apto::Smart> lines;
   m_opened = loadFile(filename, lines, working_dir, custom_directives, m_feedback);
   postProcess(lines);
 }
@@ -53,7 +53,7 @@ cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappin
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   initMappings(mappings);
-  tSmartArray<sLine*> lines;
+  Apto::Array<sLine*, Apto::Smart> lines;
   m_opened = loadFile(filename, lines, working_dir, NULL, m_feedback);
   postProcess(lines);
 }
@@ -68,7 +68,7 @@ cInitFile::cInitFile(istream& in_stream, const cString& working_dir)
     return;
   }
   
-  tSmartArray<sLine*> lines;
+  Apto::Array<sLine*, Apto::Smart> lines;
   
   int linenum = 1;
   std::string linebuf;
@@ -103,7 +103,7 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 }
 
 
-bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
+bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smart>& lines, const cString& working_dir,
                          const Apto::Set<cString>* custom_directives, Feedback& feedback)
 {
   cString path = cString(Apto::FileSystem::GetAbsolutePath(Apto::String(filename), Apto::String(working_dir))); 
@@ -134,7 +134,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
 }
 
 
-bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
+bool cInitFile::processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>& lines, const cString& filename, int linenum,
                                const cString& working_dir, const Apto::Set<cString>* custom_directives, Feedback& feedback)
 {
   cString cmd = cmdstr.PopWord();
@@ -209,7 +209,7 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
 }
 
 
-void cInitFile::postProcess(tSmartArray<sLine*>& lines)
+void cInitFile::postProcess(Apto::Array<sLine*, Apto::Smart>& lines)
 {
   m_mappings.Clear();
   m_imported_files.Clear();

@@ -47,7 +47,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
-#include "cHelpManager.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cLandscape.h"
@@ -70,7 +69,6 @@
 #include "tDataCommandManager.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
-#include "tHashMap.h"
 #include "tMatrix.h"
 
 #include <iomanip>
@@ -2544,7 +2542,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   // Setup the phenotype categories...
   const int num_tasks = batch[cur_batch].List().GetFirst()->GetNumTasks();
   
-  tHashMap<cBitArray, p_stats> phenotype_table(HASH_TABLE_SIZE_MEDIUM);
+  Apto::Map<cBitArray, p_stats> phenotype_table;
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -2559,7 +2557,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
     
     p_stats phenotype_stats;
     
-    if (phenotype_table.Find(phen_id, phenotype_stats)) {
+    if (phenotype_table.Get(phen_id, phenotype_stats)) {
       phenotype_stats.cpu_count      += genotype->GetNumCPUs();
       phenotype_stats.genotype_count += 1;
       phenotype_stats.total_length   += genotype->GetNumCPUs() * genotype->GetLength();
@@ -2622,7 +2620,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   // Print the phenotypes in order from greatest cpu count to least
   // Within cpu_count, print in order from greatest genotype count to least
   tArray<p_stats> phenotype_array;
-  phenotype_table.GetValues(phenotype_array);
+  for (Apto::Map<cBitArray, p_stats>::ValueIterator it = phenotype_table.Values(); it.Next();) phenotype_array.Push(*it.Get());
   phenotype_array.MergeSort(&cAnalyze::PStatsComparator);  // sort by cpu_count, greatest to least
   
   for (int i = 0; i < phenotype_array.GetSize(); i++) {
@@ -4041,7 +4039,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   
   // Start by counting the total number of organisms (and do other such
   // data collection...
-  tHashMap<int, int> mate_id_counts;
+  Apto::Map<int, int> mate_id_counts;
   
   int org_count = 0;
   int gen_count = 0;
@@ -4057,7 +4055,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     // Keep track of how many organisms have each mate id...
     int mate_id = genotype->GetMateID();
     int count = 0;
-    mate_id_counts.Find(mate_id, count);
+    mate_id_counts.Get(mate_id, count);
     count += genotype->GetNumCPUs();
     mate_id_counts.Set(mate_id, count);
   }
@@ -4164,15 +4162,10 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   const int num_mate_groups = mate_id_counts.GetSize();
   
   // Collect lists on all of the mate groups for the calculations...
-  tList<int> key_list;
-  tList<int> count_list;
-  mate_id_counts.AsLists(key_list, count_list);
-  tListIterator<int> count_it(count_list);
-  
   int max_group_size = 0;
   double mate_id_entropy = 0.0;
-  while (count_it.Next() != NULL) {
-    int cur_count = *(count_it.Get());
+  for (Apto::Map<int, int>::ValueIterator it = mate_id_counts.Values(); it.Next();) {
+    int cur_count = *(it.Get());
     double cur_frac = ((double) cur_count) / ((double) org_count);
     if (cur_count > max_group_size) max_group_size = cur_count;
     mate_id_entropy -= cur_frac * log(cur_frac);
@@ -8434,22 +8427,6 @@ void cAnalyze::EnvironmentSetup(cString cur_string)
 }
 
 
-void cAnalyze::CommandHelpfile(cString cur_string)
-{
-  cout << "Printing helpfiles in: " << cur_string << endl;
-  
-  cHelpManager help_control;
-  if (m_world->GetVerbosity() >= VERBOSE_ON) help_control.SetVerbose();
-  while (cur_string.GetSize() > 0) {
-    help_control.LoadFile(cur_string.PopWord());
-  }
-  
-  help_control.PrintHTML();
-}
-
-
-
-
 //////////////// Control...
 
 void cAnalyze::VarSet(cString cur_string)
@@ -9642,9 +9619,6 @@ void cAnalyze::SetupCommandDefLibrary()
   
   // Environment manipulation
   AddLibraryDef("ENVIRONMENT", &cAnalyze::EnvironmentSetup);
-  
-  // Documantation...
-  AddLibraryDef("HELPFILE", &cAnalyze::CommandHelpfile);
   
   // Control commands...
   AddLibraryDef("SET", &cAnalyze::VarSet);

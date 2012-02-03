@@ -416,6 +416,12 @@ void cRawBitArray::INCREMENT(const cRawBitArray & array1, const int num_bits)
 }
 
 
+bool cBitArray::operator<(const cBitArray& ar2) const
+{
+  return CountBits2() < ar2.CountBits2();
+}
+
+
 
 
 std::ostream & operator << (std::ostream & out, const cBitArray & bit_array)
@@ -423,6 +429,7 @@ std::ostream & operator << (std::ostream & out, const cBitArray & bit_array)
   bit_array.Print(out);
   return out;
 }
+
 
 
 

@@ -218,7 +218,7 @@ int cDeme::GetNumOrgsWithOpinion() const
 void cDeme::ProcessUpdate(cAvidaContext& ctx)
 {
   // test deme predicate
-  for (int i = 0; i < deme_pred_list.Size(); i++) {
+  for (int i = 0; i < deme_pred_list.GetSize(); i++) {
     if (deme_pred_list[i]->GetName() == "cDemeResourceThreshold") {
       (*deme_pred_list[i])(ctx, &deme_resource_count);
     }
@@ -240,7 +240,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
     }
   }
   
-  for(int i = 0; i < cell_events.Size(); i++) {
+  for(int i = 0; i < cell_events.GetSize(); i++) {
     cDemeCellEvent& event = cell_events[i];
     
     if(event.IsActive() && event.GetDelay() < _age && _age <= event.GetDelay()+event.GetDuration()) {
@@ -409,15 +409,15 @@ void cDeme::Reset(cAvidaContext& ctx, bool resetResources, double deme_energy)
   cur_reaction_count.SetAll(0);
   
   //reset remaining deme predicates
-  for (int i = 0; i < deme_pred_list.Size(); i++) {
+  for (int i = 0; i < deme_pred_list.GetSize(); i++) {
     deme_pred_list[i]->Reset();
   }	
   //reset remaining message predicates
-  for (int i = 0; i < message_pred_list.Size(); i++) {
+  for (int i = 0; i < message_pred_list.GetSize(); i++) {
     message_pred_list[i]->Reset();
   }
   //reset remaining message predicates
-  for (int i = 0; i < movement_pred_list.Size(); i++) {
+  for (int i = 0; i < movement_pred_list.GetSize(); i++) {
     movement_pred_list[i]->Reset();
   }
   
@@ -676,7 +676,7 @@ void cDeme::SetCellEvent(int x1, int y1, int x2, int y2,
 {
   for (int i = 0; i < total_events; i++) {
     cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_position, this, m_world);
-    cell_events.Add(demeEvent);
+    cell_events.Push(demeEvent);
   }
 }
 
@@ -688,13 +688,13 @@ void cDeme::SetCellEvent(int x1, int y1, int x2, int y2,
 
 int cDeme::GetNumEvents()
 {
-  return cell_events.Size();
+  return cell_events.GetSize();
 }
 
 void cDeme::SetCellEventSlots(int x1, int y1, int x2, int y2, int delay, int duration, 
                               bool static_position, int m_total_slots, int m_total_events_per_slot_max, 
                               int m_total_events_per_slot_min, int m_tolal_event_flow_levels) {
-  assert(cell_events.Size() == 0); // not designed to be used with other cell events
+  assert(cell_events.GetSize() == 0); // not designed to be used with other cell events
   assert(m_world->GetConfig().DEMES_MAX_AGE.Get() >= m_total_slots);
   
   int flow_level_increment = (m_total_events_per_slot_max - m_total_events_per_slot_min) / (m_tolal_event_flow_levels-1);
@@ -710,7 +710,7 @@ void cDeme::SetCellEventSlots(int x1, int y1, int x2, int y2, int delay, int dur
     for (int k = 0; k < slot_flow_level; k++) {
       cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_position, this, m_world);
       demeEvent.ConfineToTimeSlot(slot_delay, slot_delay+slot_length);
-      cell_events.Add(demeEvent);
+      cell_events.Push(demeEvent);
     }
   }
   
@@ -732,7 +732,7 @@ bool cDeme::KillCellEvent(const int eventID)
   eventKillAttemptsThisSlot++;
   
   if (eventID <= 0) return false;
-  for( int i = 0; i < cell_events.Size(); i++) {
+  for( int i = 0; i < cell_events.GetSize(); i++) {
     cDemeCellEvent& event = cell_events[i];
     if(event.IsActive() && event.GetEventID() == eventID) {
       // remove event ID from all cells
@@ -838,7 +838,7 @@ void cDeme::ReplaceGermline(Systematics::GroupPtr bg)
 
 bool cDeme::DemePredSatisfiedPreviously()
 {
-	for(int i = 0; i < deme_pred_list.Size(); i++) {
+	for(int i = 0; i < deme_pred_list.GetSize(); i++) {
     if(deme_pred_list[i]->PreviouslySatisfied()) {
       deme_pred_list[i]->UpdateStats(m_world->GetStats());
       return true;
@@ -849,7 +849,7 @@ bool cDeme::DemePredSatisfiedPreviously()
 
 bool cDeme::MsgPredSatisfiedPreviously()
 {
-  for(int i = 0; i < message_pred_list.Size(); i++) {
+  for(int i = 0; i < message_pred_list.GetSize(); i++) {
     if(message_pred_list[i]->PreviouslySatisfied()) {
       message_pred_list[i]->UpdateStats(m_world->GetStats());
       return true;
@@ -860,7 +860,7 @@ bool cDeme::MsgPredSatisfiedPreviously()
 
 bool cDeme::MovPredSatisfiedPreviously()
 {
-  for(int i = 0; i < movement_pred_list.Size(); i++) {
+  for(int i = 0; i < movement_pred_list.GetSize(); i++) {
     if(movement_pred_list[i]->PreviouslySatisfied()) {
       movement_pred_list[i]->UpdateStats(m_world->GetStats());
       return true;
@@ -871,34 +871,34 @@ bool cDeme::MovPredSatisfiedPreviously()
 
 int cDeme::GetNumDemePredicates()
 {
-  return deme_pred_list.Size();
+  return deme_pred_list.GetSize();
 }
 
 int cDeme::GetNumMessagePredicates()
 {
-  return message_pred_list.Size();
+  return message_pred_list.GetSize();
 }
 
 int cDeme::GetNumMovementPredicates()
 {
-  return movement_pred_list.Size();
+  return movement_pred_list.GetSize();
 }
 
 cDemePredicate* cDeme::GetDemePredicate(int i)
 {
-  assert(i < deme_pred_list.Size());
+  assert(i < deme_pred_list.GetSize());
   return deme_pred_list[i];
 }
 
 cOrgMessagePredicate* cDeme::GetMsgPredicate(int i)
 {
-  assert(i < message_pred_list.Size());
+  assert(i < message_pred_list.GetSize());
   return message_pred_list[i];
 }
 
 cOrgMovementPredicate* cDeme::GetMovPredicate(int i)
 {
-  assert(i < movement_pred_list.Size());
+  assert(i < movement_pred_list.GetSize());
   return movement_pred_list[i];
 }
 
@@ -906,55 +906,55 @@ void cDeme::AddDemeResourceThresholdPredicate(cString resourceName, cString comp
 {
   cDemeResourceThresholdPredicate* pred =
     new cDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
-  deme_pred_list.Add(pred);
+  deme_pred_list.Push(pred);
 }
 
 void cDeme::AddEventReceivedCenterPred(int times)
 {
-  if (cell_events.Size() == 0) {
+  if (cell_events.GetSize() == 0) {
     cerr<<"Error: An EventReceivedCenterPred cannot be created until a CellEvent is added.\n";
     exit(1);
   }
 
-  for (int i = 0; i < cell_events.Size(); i++) {
+  for (int i = 0; i < cell_events.GetSize(); i++) {
     if (!cell_events[i].IsDead()) {
       int sink_cell = GetCellID(GetSize()/2);
       cOrgMessagePred_EventReceivedCenter* pred =
 	new cOrgMessagePred_EventReceivedCenter(&cell_events[i], sink_cell, times);
       m_world->GetStats().AddMessagePredicate(pred);
-      message_pred_list.Add(pred);
+      message_pred_list.Push(pred);
     }
   }
 }
 
 void cDeme::AddEventReceivedLeftSidePred(int times)
 {
-  if (cell_events.Size() == 0) {
+  if (cell_events.GetSize() == 0) {
     cerr<<"Error: An EventReceivedLeftSidePred cannot be created until a CellEvent is added.\n";
     exit(1);
   }
 
-  for (int i = 0; i < cell_events.Size(); i++) {
+  for (int i = 0; i < cell_events.GetSize(); i++) {
     if (!cell_events[i].IsDead()) {
       cOrgMessagePred_EventReceivedLeftSide* pred =
 	new cOrgMessagePred_EventReceivedLeftSide(&cell_events[i], m_world->GetPopulation(), times);
       m_world->GetStats().AddMessagePredicate(pred);
-      message_pred_list.Add(pred);
+      message_pred_list.Push(pred);
     }
   }
 }
 
 void cDeme::AddEventMoveCenterPred(int times)
 {
-  if (cell_events.Size() == 0) {
+  if (cell_events.GetSize() == 0) {
     cerr<<"Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
     exit(1);
   }
-  for (int i = 0; i < cell_events.Size(); i++) {
+  for (int i = 0; i < cell_events.GetSize(); i++) {
     if (!cell_events[i].IsDead()) {
       cOrgMovementPred_EventMovedIntoCenter* pred = new cOrgMovementPred_EventMovedIntoCenter(&cell_events[i], m_world->GetPopulation(), times);
       m_world->GetStats().AddMovementPredicate(pred);
-      movement_pred_list.Add(pred);
+      movement_pred_list.Push(pred);
     }
   }
 }
@@ -962,37 +962,37 @@ void cDeme::AddEventMoveCenterPred(int times)
 
 void cDeme::AddEventMoveBetweenTargetsPred(int times)
 {
-  if (cell_events.Size() == 0) {
+  if (cell_events.GetSize() == 0) {
     cerr << "Error: An EventMoveBetweenTargets cannot be created until at least one CellEvent is added.\n";
     exit(1);
   }
   
-  tVector<cDemeCellEvent *> alive_events;
+  Apto::Array<cDemeCellEvent*, Apto::Smart> alive_events;
   
-  for (int i = 0; i < cell_events.Size(); i++) {
+  for (int i = 0; i < cell_events.GetSize(); i++) {
     if (!cell_events[i].IsDead()) {
-      alive_events.Add(&cell_events[i]);
+      alive_events.Push(&cell_events[i]);
     }
   }
   
   cOrgMovementPred_EventMovedBetweenTargets* pred = new cOrgMovementPred_EventMovedBetweenTargets(alive_events, m_world->GetPopulation(), times);
   m_world->GetStats().AddMovementPredicate(pred);
-  movement_pred_list.Add(pred);
+  movement_pred_list.Push(pred);
 }
 
 
 void cDeme::AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times)
 {
-  if (cell_events.Size() == 0) {
+  if (cell_events.GetSize() == 0) {
     cerr << "Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
     exit(1);
   }
-  for (int i = 0; i < cell_events.Size(); i++) {
+  for (int i = 0; i < cell_events.GetSize(); i++) {
     if (!cell_events[i].IsDead()) {
       cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget* pred =
 	new cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget(&cell_events[i], m_world->GetPopulation(), times);
       m_world->GetStats().AddMovementPredicate(pred);
-      movement_pred_list.Add(pred);
+      movement_pred_list.Push(pred);
     }
   }
 }

@@ -31,9 +31,7 @@
 #include "cHeadCPU.h"
 #include "cHardwareBase.h"
 #include "cString.h"
-#include "tHashMap.h"
 #include "tInstLib.h"
-#include "tManagedPointerArray.h"
 
 
 class cHardwareTransSMT : public cHardwareBase
@@ -93,12 +91,12 @@ protected:
   cCPUStack m_global_stacks[NUM_GLOBAL_STACKS];
 	
   // Memory
-  tManagedPointerArray<cCPUMemory> m_mem_array;
-  tHashMap<int, int> m_mem_lbls;
+  Apto::Array<cCPUMemory, Apto::ManagedPointer> m_mem_array;
+  Apto::Map<int, int> m_mem_lbls;
 
   // Threads
-  tManagedPointerArray<cLocalThread> m_threads;
-  tHashMap<int, int> m_thread_lbls;
+  Apto::Array<cLocalThread, Apto::ManagedPointer> m_threads;
+  Apto::Map<int, int> m_thread_lbls;
   int m_cur_thread;
   int m_cur_child;
 
@@ -292,10 +290,6 @@ private:
   bool Inst_ThreadKill(cAvidaContext& ctx);     // 36
   bool Inst_Inject(cAvidaContext& ctx);         // 37
   bool Inst_Apoptosis(cAvidaContext& ctx);      // 38
-  bool Inst_NetGet(cAvidaContext& ctx);         // 39
-  bool Inst_NetSend(cAvidaContext& ctx);        // 40
-  bool Inst_NetReceive(cAvidaContext& ctx);     // 41
-  bool Inst_NetLast(cAvidaContext& ctx);        // 42
   bool Inst_RotateLeft(cAvidaContext& ctx);     // 43
   bool Inst_RotateRight(cAvidaContext& ctx);    // 44
   bool Inst_CallFlow(cAvidaContext& ctx);       // 45
@@ -404,7 +398,7 @@ inline int cHardwareTransSMT::NormalizeMemSpace(int mem_space) const
 inline bool cHardwareTransSMT::MemorySpaceExists(const cCodeLabel& label)
 {
   int null;
-  if (label.GetSize() == 0 || m_mem_lbls.Find(label.AsInt(NUM_NOPS), null)) return true;
+  if (label.GetSize() == 0 || m_mem_lbls.Get(label.AsInt(NUM_NOPS), null)) return true;
   return false;
 }
 
@@ -412,7 +406,7 @@ inline int cHardwareTransSMT::FindThreadLabel(const cCodeLabel& label)
 {
   int thread_id = -1;
   if (label.GetSize() == 0) return 0;
-  m_thread_lbls.Find(label.AsInt(NUM_NOPS), thread_id);
+  m_thread_lbls.Get(label.AsInt(NUM_NOPS), thread_id);
   return thread_id;
 }
 

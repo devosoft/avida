@@ -22,21 +22,9 @@
 #ifndef cTaskContext_h
 #define cTaskContext_h
 
-#ifndef cOrgInterface_h
 #include "cOrgInterface.h"
-#endif
-#ifndef tBuffer_h
 #include "tBuffer.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
-#ifndef tHashMap_h
-#include "tHashMap.h"
-#endif
-#ifndef tSmartArray_h
-#include "tSmartArray.h"
-#endif
 
 class cTaskEntry;
 class cTaskState;
@@ -50,7 +38,7 @@ private:
   const tBuffer<int>& m_output_buffer;
   const tList<tBuffer<int> >& m_other_input_buffers;
   const tList<tBuffer<int> >& m_other_output_buffers;
-  const tSmartArray<int>& m_ext_mem;
+  const Apto::Array<int, Apto::Smart>& m_ext_mem;
   tBuffer<int>* m_received_messages;
   int m_logic_id;
   bool m_on_divide;
@@ -60,13 +48,13 @@ private:
   double m_task_value;	
 
   cTaskEntry* m_task_entry;
-  tHashMap<void*, cTaskState*>* m_task_states;
+  Apto::Map<void*, cTaskState*>* m_task_states;
   
   
 public:
   cTaskContext(cOrganism* organism, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
-               const tSmartArray<int>& ext_mem, bool in_on_divide = false,
+               const Apto::Array<int, Apto::Smart>& ext_mem, bool in_on_divide = false,
                tBuffer<int>* in_received_messages = NULL)
     : m_organism(organism)
     , m_input_buffer(inputs)
@@ -88,7 +76,7 @@ public:
   inline const tBuffer<int>& GetOutputBuffer() { return m_output_buffer; }
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
   inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return m_other_output_buffers; }
-  inline const tSmartArray<int>& GetExtendedMemory() const { return m_ext_mem; }
+  inline const Apto::Array<int, Apto::Smart>& GetExtendedMemory() const { return m_ext_mem; }
   inline tBuffer<int>* GetReceivedMessages() { return m_received_messages; }
   inline int GetLogicId() const { return m_logic_id; }
   inline void SetLogicId(int v) { m_logic_id = v; }
@@ -99,12 +87,12 @@ public:
   inline void SetTaskEntry(cTaskEntry* in_entry) { m_task_entry = in_entry; }
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }
     
-  inline void SetTaskStates(tHashMap<void*, cTaskState*>* states) { m_task_states = states; }
+  inline void SetTaskStates(Apto::Map<void*, cTaskState*>* states) { m_task_states = states; }
   
   inline cTaskState* GetTaskState()
   {
     cTaskState* ret = NULL;
-    m_task_states->Find(m_task_entry, ret);
+    m_task_states->Get(m_task_entry, ret);
     return ret;
   }
   inline void AddTaskState(cTaskState* value) { m_task_states->Set(m_task_entry, value); }

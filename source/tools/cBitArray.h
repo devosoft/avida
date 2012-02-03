@@ -438,6 +438,11 @@ public:
   cBitArray & operator++() { return INCREMENTSELF(); }  // prefix ++
   cBitArray operator++(int) { cBitArray ans = *this; operator++(); return ans;}  // postfix ++
 
+  bool operator<(const cBitArray& ar2) const;
+  inline bool operator<=(const cBitArray& ar2) const { return operator<(ar2) || operator==(ar2); }
+  inline bool operator>(const cBitArray& ar2) const { return !operator<=(ar2); }
+  inline bool operator>=(const cBitArray& ar2) const { return !operator<(ar2); }
+  
 };
 
 std::ostream & operator << (std::ostream & out, const cBitArray & bit_array);
@@ -453,5 +458,31 @@ cBitArray::cBitProxy::operator bool() const
 {
   return array.Get(index);
 }
+
+
+
+// Basic cBitArray Hashing Support
+// --------------------------------------------------------------------------------------------------------------
+
+// HASH_TYPE = cBitArray
+// We hash a bit array by calculating the sum of the squared values of the
+// positions where bits are on, then modding this number by the size of 
+// the hash table
+namespace Apto {
+  template <class T, int HashFactor> class HashKey;
+  template <int HashFactor> class HashKey<cBitArray, HashFactor>
+  {
+  public:
+    static int Hash(const cBitArray& key)
+    {
+      unsigned int out_hash = 0;
+      for (int i = 0; i < key.GetSize(); i++) {
+        if (key.Get(i)) { out_hash += i*i; }
+      }
+      return out_hash % HashFactor;
+    }
+  };
+};
+
 
 #endif

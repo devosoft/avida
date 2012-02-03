@@ -30,7 +30,6 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
-#include "cOrgSinkMessage.h"
 #include "cOrgMessage.h"
 #include "cPopulation.h"
 #include "cStats.h"
@@ -78,7 +77,7 @@ cOrganism* cPopulationInterface::GetOrganism() {
 	return GetCell()->GetOrganism();
 }
 
-tSmartArray <cOrganism*> cPopulationInterface::GetLiveOrgList() {
+const Apto::Array<cOrganism*, Apto::Smart>& cPopulationInterface::GetLiveOrgList() const {
   return m_world->GetPopulation().GetLiveOrgList();
 }
 
@@ -448,45 +447,6 @@ void cPopulationInterface::SpawnDeme(cAvidaContext& ctx)
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
 	
   m_world->GetPopulation().SpawnDeme(deme_id, ctx); 
-}
-
-cOrgSinkMessage* cPopulationInterface::NetReceive()
-{
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-  
-  switch(m_world->GetConfig().NET_STYLE.Get())
-  {
-		case 1: // Receiver Facing
-    {
-      cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
-      cOrgSinkMessage* msg = NULL;
-      if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL) return msg;
-    }
-			break;
-			
-		case 0: // Random Next - First Available
-		default:
-    {
-      const int num_neighbors = cell.ConnectionList().GetSize();
-      for (int i = 0; i < num_neighbors; i++) {
-        cell.ConnectionList().CircNext();
-        
-        cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
-        cOrgSinkMessage* msg = NULL;
-        if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
-      }
-    }
-			break;
-  }
-  
-  return NULL;
-}
-
-bool cPopulationInterface::NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg)
-{
-  cOrganism* org = m_world->GetPopulation().GetCell(msg->GetSourceID()).GetOrganism();
-  return (org != NULL && org->NetRemoteValidate(ctx, msg->GetOriginalValue()));
 }
 
 int cPopulationInterface::ReceiveValue()

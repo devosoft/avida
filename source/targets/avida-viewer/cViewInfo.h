@@ -9,8 +9,8 @@
 #define cViewInfo_h
 
 #include "avida/Avida.h"
+#include "avida/systematics/Group.h"
 
-#include "cBioGroup.h"
 #include "cInstSet.h"
 #include "cMerit.h"
 #include "cTextWindow.h"
@@ -21,6 +21,10 @@ class cEnvironment;
 class cPopulation;
 class cPopulationCell;
 class cOrganism;
+
+
+using namespace Avida;
+
 
 #define NUM_SYMBOLS 12
 #define SYMBOL_THRESHOLD 10
@@ -50,9 +54,12 @@ class cOrganism;
 #define MAP_AGE       13
 #define NUM_MAP_MODES 14
 
-struct sGenotypeViewInfo
+class sGenotypeViewInfo : public Systematics::GroupData
 {
+public:
   char symbol;
+  
+  bool Serialize(ArchivePtr ar) const;
   
   sGenotypeViewInfo() : symbol(0) { ; }
 };
@@ -72,14 +79,14 @@ private:
   cInstSet const * saved_inst_set;
 
   // Symbol information
-  cBioGroup * genotype_chart[NUM_SYMBOLS];
+  Systematics::GroupPtr genotype_chart[NUM_SYMBOLS];
   char symbol_chart[NUM_SYMBOLS];
 
   tArray<char> map;
   tArray<char> color_map;
 
-  inline bool InGenChart(cBioGroup * in_gen);
-  void AddGenChart(cBioGroup * in_gen);
+  inline bool InGenChart(Systematics::GroupPtr in_gen);
+  void AddGenChart(Systematics::GroupPtr in_gen);
 
 public:
   cViewInfo(cWorld* world, cView_Base * view);
@@ -105,11 +112,11 @@ public:
   cView_Base& GetView() { return *m_view; }
 
   int GetNumSymbols() { return NUM_SYMBOLS; }
-  cBioGroup * GetGenotype(int index) { return genotype_chart[index]; }
+  Systematics::GroupPtr GetGenotype(int index) { return genotype_chart[index]; }
 
   cPopulationCell * GetActiveCell() { return active_cell; }
 
-  cBioGroup * GetActiveGenotype();
+  Systematics::GroupPtr GetActiveGenotype();
   cString GetActiveName();
 
   int GetActiveID();
@@ -126,7 +133,7 @@ public:
   void SetStepOrganism(int in_id) { step_organism_id = in_id; }
   
 private:
-  sGenotypeViewInfo* getViewInfo(cBioGroup* bg);
+  Apto::SmartPtr<sGenotypeViewInfo> getViewInfo(Systematics::GroupPtr bg);
 };
 
 
@@ -136,7 +143,7 @@ inline void cViewInfo::DecMapMode()
   --map_mode %= NUM_MAPS; 
 }
 
-inline bool cViewInfo::InGenChart(cBioGroup * in_gen)
+inline bool cViewInfo::InGenChart(Systematics::GroupPtr in_gen)
 {
   for (int i = 0; i < NUM_SYMBOLS; i++) {
     if (genotype_chart[i] == in_gen) return true;

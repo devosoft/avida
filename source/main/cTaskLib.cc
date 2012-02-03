@@ -36,7 +36,6 @@
 #include "cStateGrid.h"
 #include "cUserFeedback.h"
 #include "tArrayUtils.h"
-#include "tHashMap.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -273,10 +272,6 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   } else if (name == "comm_not") {
     NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
   }
-  
-  // Network Tasks
-  if (name == "net_send") NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
-  else if (name == "net_receive") NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
   
   // Movement Tasks
   if (name == "move_up_gradient") NewTask(name, "Move up gradient", &cTaskLib::Task_MoveUpGradient);
@@ -2156,7 +2151,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   // if less than half, can't possibly reach threshold
   if (stored <= (size / 2)) return 0.0;
   
-  tHashMap<int, int> valmap;
+  Apto::Map<int, int> valmap;
   int score = 0;
   int maxscore = 0;
   
@@ -2170,9 +2165,9 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     // scan for the largest contiguous span
     // - in the event of a tie, keep the first discovered
     for (int i = 0; i < stored; i++) {
-      if (valmap.HasEntry(output[i])) {
+      if (valmap.Has(output[i])) {
         int t_start = i;
-        while (++i < stored && valmap.HasEntry(output[i])) ;
+        while (++i < stored && valmap.Has(output[i])) ;
         if (span_start == -1 || (i - t_start) > (span_end - span_start)) {
           span_start = t_start;
           span_end = i;
@@ -2184,7 +2179,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     if (span_start == -1) return 0.0;    
   } else { // Scattered
     // search for first valid entry
-    while (++span_start < stored && valmap.HasEntry(output[span_start])) ;
+    while (++span_start < stored && valmap.Has(output[span_start])) ;
     
     // scanned past the end of the output, nothing to validate
     if (span_start >= stored) return 0.0;
@@ -2211,7 +2206,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     
     // check for a dup or invalid output, skip it if so
     int idx;
-    if (!valmap.Find(value, idx) || idx != -1) continue;
+    if (!valmap.Get(value, idx) || idx != -1) continue;
     
     maxscore += count; // count the maximum moves possible
     count++; // iterate the observed count
@@ -2233,7 +2228,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     for (int i = 0; i < size; i++) {
       int idx;
       // if input was not observed
-      if (valmap.Find(ctx.GetOrganism()->GetInputAt(i), idx) && idx == -1) {
+      if (valmap.Get(ctx.GetOrganism()->GetInputAt(i), idx) && idx == -1) {
         maxscore += count; // add to the maximum move count
         score += count; // missing values, scored as maximally out of order
         count++; // increment observed count
@@ -3017,19 +3012,6 @@ double cTaskLib::Task_CommNot(cTaskContext& ctx) const
 }
 
 
-double cTaskLib::Task_NetSend(cTaskContext& ctx) const
-{
-  return 1.0 * ctx.GetOrganism()->NetCompleted();
-}
-
-
-double cTaskLib::Task_NetReceive(cTaskContext& ctx) const
-{
-  if (ctx.GetOrganism()->NetIsValid()) return 1.0;
-  return 0.0;
-}
-
-
 //TODO: add movement tasks here
 
 double cTaskLib::Task_MoveUpGradient(cTaskContext& ctx) const
@@ -3254,7 +3236,7 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
   int state = sg.GetStateID(args.GetString(1));
   if (state < 0) return 0.0;
   
-  const tSmartArray<int>& ext_mem = ctx.GetExtendedMemory();
+  const Apto::Array<int, Apto::Smart>& ext_mem = ctx.GetExtendedMemory();
   
   // Build and sort history
   const int history_offset = 3 + sg.GetNumStates();

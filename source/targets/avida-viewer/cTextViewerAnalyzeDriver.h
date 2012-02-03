@@ -21,9 +21,9 @@
 #ifndef cTextViewerAnalyzeDriver_h
 #define cTextViewerAnalyzeDriver_h
 
-#ifndef cTextViewerDriver_Base_h
 #include "cTextViewerDriver_Base.h"
-#endif
+
+#include "cString.h"
 
 class cAnalyzeView;
 

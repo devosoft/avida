@@ -61,6 +61,7 @@ class cHardwareBase;
 
 class cZoomScreen : public cScreen {
 private:
+  cWorld* m_world;
   cPopulation & population;
   int mini_center_id;
   int map_x_size;
@@ -111,7 +112,7 @@ private:
 
 public:
   cZoomScreen(int y_size, int x_size, int y_start, int x_start,
-	      cViewInfo & in_info, cPopulation & in_pop);
+	      cViewInfo & in_info, cPopulation & in_pop, cWorld* world);
   virtual ~cZoomScreen() { ; }
 
   // Virtual in base screen...

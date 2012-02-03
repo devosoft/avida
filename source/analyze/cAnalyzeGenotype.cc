@@ -39,7 +39,6 @@
 #include "cWorld.h"
 
 #include "tArray.h"
-#include "tAutoRelease.h"
 #include "tDataCommandManager.h"
 #include "tDMSingleton.h"
 
@@ -338,7 +337,7 @@ cString cAnalyzeGenotype::DescTaskProb(int task_id) const
 
 cAnalyzeGenotype::sGenotypeDatastore::~sGenotypeDatastore()
 {
-  for (tArrayMap<int, cGenotypeData*>::iterator it = dmap.begin(); it != dmap.end(); it++) delete it->Value();
+  for (Apto::Map<int, cGenotypeData*>::ValueIterator it = dmap.Values(); it.Next();) delete *it.Get();
 }
 
 void cAnalyzeGenotype::SetGenotypeData(int data_id, cGenotypeData* data)
@@ -558,11 +557,10 @@ void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, cAnalyzeGenotype* parent_genotype, int num_trials)
 {  
   // Allocate our own test info if it wasn't provided
-  tAutoRelease<cCPUTestInfo> local_test_info;
-  if (!test_info)
-  {
-    test_info = new cCPUTestInfo();
-    local_test_info.Set(test_info);
+  cCPUTestInfo* local_test_info = NULL;
+  if (!test_info) {
+    local_test_info = new cCPUTestInfo();
+    test_info = local_test_info;
   }
   
   // Handling recalculation here
@@ -624,6 +622,8 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
       delete m_phenplast_stats;
     m_phenplast_stats = new cPhenPlastSummary(recalc_data);
   }
+  
+  delete local_test_info;
 }
 
 

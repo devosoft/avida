@@ -21,7 +21,6 @@
 #include "cAnalyzeTreeStats_CumulativeStemminess.h"
 
 #include "cAnalyzeGenotype.h"
-#include "tHashMap.h"
 #include "cWorld.h"
 
 
@@ -94,7 +93,7 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
     cout << "Scanning genotypes..." << endl;
   }
   tArray<cAnalyzeGenotype *> gen_array(num_gens);
-  tHashMap<int, int> id_hash;  // Store array pos for each id.
+  Apto::Map<int, int> id_hash;  // Store array pos for each id.
   tArray<int> id_array(num_gens), pid_array(num_gens);
   tArray<int> depth_array(num_gens), birth_array(num_gens);
 
@@ -141,7 +140,7 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
     cAnalyzeGenotype * genotype = m_agl[pos].genotype;
     int parent_id = genotype->GetParentID();
     if (-1 != parent_id){
-      bool found_parent = id_hash.Find(parent_id, m_agl[pos].ppos);
+      bool found_parent = id_hash.Get(parent_id, m_agl[pos].ppos);
       if (found_parent){
         int parent_position = m_agl[pos].ppos;
         m_agl[parent_position].offspring_positions.Push(pos);
@@ -241,7 +240,7 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
   }
 
   m_agl2.Resize(branch_tree_size);  // Store agl data for each id.
-  tHashMap<int, int> id_hash_2;
+  Apto::Map<int, int> id_hash_2;
   int array_pos_2 = 0;
   if (true) for (int pos = 0; pos < num_gens; pos++) {
     int offs_count = m_agl[pos].offspring_count;
@@ -266,7 +265,7 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
   // find branch ancestor positions. {{{4
   for (int pos = 0; pos < branch_tree_size; pos++){
     int anc_branch_id = m_agl2[pos].anc_branch_id;
-    id_hash_2.Find(anc_branch_id, m_agl2[pos].anc_branch_pos);
+    id_hash_2.Get(anc_branch_id, m_agl2[pos].anc_branch_pos);
     int anc_branch_pos = m_agl2[pos].anc_branch_pos;
     if(0 <= anc_branch_pos){
       m_agl2[anc_branch_pos].offspring_positions.Push(pos);

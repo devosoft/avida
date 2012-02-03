@@ -65,9 +65,6 @@
 #include "cTopology.h"
 #include "cWorld.h"
 #include "tArrayUtils.h"
-#include "tKVPair.h"
-#include "tHashMap.h"
-#include "tManagedPointerArray.h"
 
 #include "cHardwareCPU.h"
 
@@ -136,7 +133,7 @@ void cPopulation::SetupCellGrid()
   const int num_cells = world_x * world_y;
   const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
 
-  if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) sleep_log = new tVector<pair<int,int> >[world_x * world_y];
+  if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) sleep_log = new Apto::Array<pair<int,int>, Apto::Smart>(world_x * world_y);
   else sleep_log = NULL;
     
   if (num_demes <= 0) num_demes = 1; // One population == one deme.  
@@ -1029,7 +1026,7 @@ void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organis
   delete testcpu;
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<Systematics::GroupPtr> new_queue, const bool print_genomes)
+void cPopulation::SetMiniTraceQueue(const Apto::Array<Systematics::GroupPtr, Apto::Smart>& new_queue, const bool print_genomes)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
@@ -1231,8 +1228,8 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // @TODO @DMB - this should really move to cOrganism::NotifyDeath
   if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-    if (sleep_log[cellID].Size() > 0) {
-      pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
+    if (sleep_log[cellID].GetSize() > 0) {
+      pair<int,int> p = sleep_log[cellID][sleep_log[cellID].GetSize() - 1];
       if (p.second == -1) {
         AddEndSleep(cellID,m_world->GetStats().GetUpdate());
       }
@@ -4497,7 +4494,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
 
-    tArray<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
+    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
@@ -4647,7 +4644,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       stats.SumPreyCreatureAge().Add(phenotype.GetAge());
       stats.SumPreyGeneration().Add(phenotype.GetGeneration());
       
-      tArray<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
+      Apto::Array<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -4659,7 +4656,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       stats.SumPredCreatureAge().Add(phenotype.GetAge());
       stats.SumPredGeneration().Add(phenotype.GetGeneration());
       
-      tArray<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
+      Apto::Array<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -4750,7 +4747,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
   df.WriteTimeStamp();
   
   // Build up hash table of all current genotypes and the cells in which the organisms reside
-  tHashMap<int, sGroupInfo*> genotype_map;
+  Apto::Map<int, sGroupInfo*> genotype_map;
   
   for (int cell = 0; cell < cell_array.GetSize(); cell++) {
     if (cell_array[cell].IsOccupied()) {
@@ -4763,7 +4760,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         if (pg == NULL) continue;
         
         sGroupInfo* map_entry = NULL;
-        if (genotype_map.Find(pg->ID(), map_entry)) {
+        if (genotype_map.Get(pg->ID(), map_entry)) {
           map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1));
         } else {
           map_entry = new sGroupInfo(pg, true);
@@ -4779,7 +4776,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
       
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
       sGroupInfo* map_entry = NULL;
-      if (genotype_map.Find(genotype->ID(), map_entry)) {
+      if (genotype_map.Get(genotype->ID(), map_entry)) {
         int curr_group = -1;
         if (org->HasOpinion()) curr_group = org->GetOpinion().first;
         const int curr_forage = org->GetForageTarget();
@@ -4822,14 +4819,13 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
   }
   
   // Output all current genotypes
-  tArray<sGroupInfo*> genotype_entries;
-  genotype_map.GetValues(genotype_entries);
-  for (int i = 0; i < genotype_entries.GetSize(); i++) {
-    Systematics::GroupPtr genotype = genotype_entries[i]->bg;
+  for (Apto::Map<int, sGroupInfo*>::ValueIterator it = genotype_map.Values(); it.Next();) {
+    sGroupInfo* group_info = *it.Get();
+    Systematics::GroupPtr genotype = group_info->bg;
 
     genotype->LegacySave(&df);
 
-    tArray<sOrgInfo>& cells = genotype_entries[i]->orgs;
+    tArray<sOrgInfo>& cells = group_info->orgs;
     cString cellstr;
     cString offsetstr;
     cString lineagestr;
@@ -4858,7 +4854,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
       }
     }
     df.Write(cellstr, "Occupied Cell IDs", "cells");
-    if (genotype_entries[i]->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
+    if (group_info->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
     else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
     df.Write(lineagestr, "Lineage Label", "lineage");
     if (save_groupings) {
@@ -4871,7 +4867,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     }
     df.Endl();
     
-    delete genotype_entries[i];
+    delete group_info;
   }
   
   // Output historic genotypes
@@ -4890,7 +4886,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
   df.WriteTimeStamp();
   
   // Build up hash table of all current genotypes
-  tHashMap<int, sGroupInfo*> genotype_map;
+  Apto::Map<int, sGroupInfo*> genotype_map;
   
   for (int cell = 0; cell < cell_array.GetSize(); cell++) {
     if (cell_array[cell].IsOccupied()) {
@@ -4903,7 +4899,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
         if (pg == NULL) continue;
         
         sGroupInfo* map_entry = NULL;
-        if (genotype_map.Find(pg->ID(), map_entry)) {
+        if (genotype_map.Get(pg->ID(), map_entry)) {
           map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1));
         } else {
           map_entry = new sGroupInfo(pg, true);
@@ -4919,7 +4915,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
       
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
       sGroupInfo* map_entry = NULL;
-      if (genotype_map.Find(genotype->ID(), map_entry)) {
+      if (genotype_map.Get(genotype->ID(), map_entry)) {
         map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1));
       } else {
         map_entry = new sGroupInfo(genotype);
@@ -4930,10 +4926,9 @@ bool cPopulation::SaveFlameData(const cString& filename)
   }
   
   // Output all current genotypes
-  tArray<sGroupInfo*> genotype_entries;
-  genotype_map.GetValues(genotype_entries);
-  for (int i = 0; i < genotype_entries.GetSize(); i++) {
-    Systematics::GroupPtr genotype = genotype_entries[i]->bg;
+  for (Apto::Map<int, sGroupInfo*>::ValueIterator it = genotype_map.Values(); it.Next();) {
+    sGroupInfo* group_info = *it.Get();
+    Systematics::GroupPtr genotype = group_info->bg;
     
     df.Write(genotype->ID(), "ID", "genotype_id");
     df.Write(genotype->NumUnits(), "Number of currently living organisms", "num_units");
@@ -4941,7 +4936,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
     
     df.Endl();
     
-    delete genotype_entries[i];
+    delete group_info;
   }
   
   m_world->GetDataFileManager().Remove(filename);
@@ -4987,7 +4982,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   }
   
   // First, we read in all the genotypes and store them in an array
-  tManagedPointerArray<sTmpGenotype> genotypes(input_file.GetNumLines());
+  Apto::Array<sTmpGenotype, Apto::ManagedPointer> genotypes(input_file.GetNumLines());
   
   bool structured = false;
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
@@ -5045,7 +5040,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   }
   
   // Sort genotypes in ascending order according to their id_num
-  tArrayUtils::QSort(genotypes);
+  Apto::QSort(genotypes);
 
   Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
   Systematics::ArbiterPtr bgm = classmgr->ArbiterForRole("genotype");
@@ -6015,13 +6010,13 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
 
 
 void cPopulation::AddBeginSleep(int cellID, int start_time) {
-  sleep_log[cellID].Add(make_pair(start_time,-1));
+  sleep_log[cellID].Push(make_pair(start_time,-1));
 }
 
 void cPopulation::AddEndSleep(int cellID, int end_time) {
-  pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
-  sleep_log[cellID].RemoveAt(sleep_log[cellID].Size()-1);
-  sleep_log[cellID].Add(make_pair(p.first, end_time));
+  pair<int,int> p = sleep_log[cellID][sleep_log[cellID].GetSize() - 1];
+  sleep_log[cellID].RemoveAt(sleep_log[cellID].GetSize() - 1);
+  sleep_log[cellID].Push(make_pair(p.first, end_time));
 }
 
 // Starts a new trial for each organism in the population
@@ -6525,7 +6520,7 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   it=m_groups.find(group_id);
   if (it == m_groups.end()) {
     m_groups[group_id] = 0;
-    tSmartArray<cOrganism*> temp;
+    Apto::Array<cOrganism*, Apto::Smart> temp;
     group_list.Set(group_id, temp);
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
       tArray<pair<int,int> > temp_array(2);

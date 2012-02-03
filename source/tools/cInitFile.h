@@ -23,13 +23,12 @@
 #ifndef cInitFile_h
 #define cInitFile_h
 
-#include "apto/core/Set.h"
+#include "apto/core.h"
 
 #include "cString.h"
 #include "cStringList.h"
 #include "cUserFeedback.h"
 #include "tDictionary.h"
-#include "tSmartArray.h"
 
 #include <iostream>
 
@@ -146,11 +145,11 @@ public:
 
 private:
   void initMappings(const tDictionary<cString>& mappings);
-  bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
+  bool loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smart>& lines, const cString& working_dir,
                 const Apto::Set<cString>* custom_directives, Feedback& feedback);
-  bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
+  bool processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>& lines, const cString& filename, int linenum,
                       const cString& working_dir, const Apto::Set<cString>* custom_directives, Feedback& feedback);
-  void postProcess(tSmartArray<sLine*>& lines);
+  void postProcess(Apto::Array<sLine*, Apto::Smart>& lines);
 };
 
 #endif

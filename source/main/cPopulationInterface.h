@@ -63,7 +63,7 @@ public:
   cPopulationInterface(cWorld* world);
   virtual ~cPopulationInterface();
 
-  tSmartArray <cOrganism*> GetLiveOrgList();
+  const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const;
 	//! Retrieve this organism.
 	cOrganism* GetOrganism();
 	//! Retrieve the ID of this cell.
@@ -152,8 +152,6 @@ public:
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
   void SpawnDeme(cAvidaContext& ctx); 
-  cOrgSinkMessage* NetReceive();
-  bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg);
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);

@@ -9,11 +9,13 @@
 
 #include <fstream>
 
-#include "cClassificationManager.h"
+#include "avida/core/Properties.h"
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Manager.h"
+
+
 #include "cViewInfo.h"
 #include "cWorld.h"
-#include "tAutoRelease.h"
-#include "tIterator.h"
 
 using namespace std;
 
@@ -21,19 +23,19 @@ using namespace std;
 void cHistScreen::PrintGenotype(Systematics::GroupPtr in_gen, int in_pos, int max_stars, int star_size)
 {
   SetBoldColor(COLOR_CYAN);
-  PrintDouble(in_pos, 0, in_gen->GetProperty("fitness").AsDouble());
+  PrintDouble(in_pos, 0, Apto::StrAs(in_gen->Properties().Get("fitness").Value()));
   
   SetBoldColor(COLOR_WHITE);
-  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetProperty("name").AsString()));
+  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->Properties().Get("name").Value()));
   
-  int cur_num = in_gen->GetNumUnits();
+  int cur_num = in_gen->NumUnits();
   int cur_stars = cur_num / star_size;
   if (cur_num % star_size) cur_stars++;
   
   // Set the color for this bar.
-  sGenotypeViewInfo* view_info = in_gen->GetData<sGenotypeViewInfo>();
+  Apto::SmartPtr<sGenotypeViewInfo> view_info = in_gen->GetData<sGenotypeViewInfo>();
   if (!view_info) {
-    view_info = new sGenotypeViewInfo;
+    view_info = Apto::SmartPtr<sGenotypeViewInfo>(new sGenotypeViewInfo);
     in_gen->AttachData(view_info);
   }
   SetSymbolColor(view_info->symbol);
@@ -107,9 +109,10 @@ void cHistScreen::Update(cAvidaContext& ctx)
   
   switch(mode) {
     case HIST_GENOTYPE:
-      tAutoRelease<tIterator<Systematics::Group> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+      Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
       Systematics::GroupPtr bg = it->Next();
-      if (bg) max_num = bg->GetNumUnits();
+      if (bg) max_num = bg->NumUnits();
       star_size = (max_num / max_stars);
       if (max_num % max_stars) star_size++;
       

@@ -21,15 +21,10 @@
 #ifndef cAnalyzeTreeStats_Gamma_h
 #define cAnalyzeTreeStats_Gamma_h
 
-#ifndef tArray_h
+#include "apto/core.h"
+
 #include "tArray.h"
-#endif
-#ifndef tHashMap
-#include "tHashMap.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
 
 class cAnalyzeGenotype;
 class cWorld;
@@ -71,15 +66,9 @@ public:
   cAnalyzeTreeStats_Gamma(cWorld* world);
   
   void LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list);
-  void MapIDToGenotypePos(
-    tArray<cAnalyzeGenotype *> &lineage,
-    tHashMap<int, int> &out_mapping
-  );
-  void Unlink(tArray<cAnalyzeGenotype *> &lineage);
-  void EstablishLinks(
-    tArray<cAnalyzeGenotype *> &lineage,
-    tHashMap<int, int> &out_mapping
-  );
+  void MapIDToGenotypePos(tArray<cAnalyzeGenotype *>&lineage, Apto::Map<int, int>& out_mapping);
+  void Unlink(tArray<cAnalyzeGenotype *>& lineage);
+  void EstablishLinks(tArray<cAnalyzeGenotype *>& lineage, Apto::Map<int, int>& out_mapping);
   void FindFurcations(
     tArray<cAnalyzeGenotype *> &lineage,
     tArray<cAnalyzeLineageFurcation> &out_furcations

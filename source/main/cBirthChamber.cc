@@ -40,10 +40,7 @@ using namespace AvidaTools;
 
 cBirthChamber::~cBirthChamber()
 {
-  for (tArrayMap<int, cBirthSelectionHandler*>::iterator it = m_handler_map.begin(); it != m_handler_map.end(); it++) {
-    delete it->Value();
-  }
-  
+  for (Apto::Map<int, cBirthSelectionHandler*>::ValueIterator it = m_handler_map.Values(); it.Next();) delete *it.Get();
 }
 
 cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)

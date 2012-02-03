@@ -250,7 +250,7 @@ void cAnalyzeScreen::DoInput_CommandLine(cAvidaContext& ctx)
     if ((cur_char >= 'a' && cur_char <= 'z') ||
         (cur_char >= 'A' && cur_char <= 'Z') ||
         (cur_char >= '0' && cur_char <= '9') ||
-        cur_input.GetSize() > 0 && symbol == true) {
+        (cur_input.GetSize() > 0 && symbol == true)) {
       // A legal character has been added to the command at the prompt.
       // cur_input += (char) cur_char;
       cur_input.Insert((char) cur_char, cursor_pos);

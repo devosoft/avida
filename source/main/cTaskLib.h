@@ -296,10 +296,6 @@ private:
   double Task_CommEcho(cTaskContext& ctx) const;
   double Task_CommNot(cTaskContext& ctx) const;
   
-  // Network Tasks
-  double Task_NetSend(cTaskContext& ctx) const;
-  double Task_NetReceive(cTaskContext& ctx) const;
-
   // Movement tasks (temp, rely on hack)
   double Task_MoveUpGradient(cTaskContext& ctx) const;
   double Task_MoveNeutralGradient(cTaskContext& ctx) const;

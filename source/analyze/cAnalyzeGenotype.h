@@ -38,8 +38,6 @@
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "tArray.h"
-#include "tArrayMap.h"
-#include "tRCPtr.h"
 #include "cPhenPlastSummary.h"
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
@@ -82,17 +80,17 @@ private:
   cString name;              // Name, if one was provided in loading
   cCPUTestInfo m_cpu_test_info; // Use this test info
   
-  struct sGenotypeDatastore : public cRCObject
+  struct sGenotypeDatastore : public Apto::RefCountObject
   {
     Apto::RWLock rwlock;
-    mutable tArrayMap<int, cGenotypeData*> dmap;
+    mutable Apto::Map<int, cGenotypeData*> dmap;
     
     sGenotypeDatastore() { ; }
-    sGenotypeDatastore(const sGenotypeDatastore& ds) : cRCObject(ds) { ; } // Note that data objects are not copied right now
+    sGenotypeDatastore(const sGenotypeDatastore& ds) : Apto::RefCountObject(ds) { ; } // Note that data objects are not copied right now
     
     ~sGenotypeDatastore();
   };
-  tRCPtr<sGenotypeDatastore> m_data;
+  Apto::SmartPtr<sGenotypeDatastore, Apto::InternalRCObject> m_data;
   
   cString aligned_sequence;  // Sequence (in ASCII) after alignment
   cString tag;               // All genotypes in a batch can be tagged

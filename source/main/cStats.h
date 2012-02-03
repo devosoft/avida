@@ -39,7 +39,6 @@
 #include "cRunningStats.h"
 #include "nGeometry.h"
 #include "tArray.h"
-#include "tArrayMap.h"
 #include "tDataManager.h"
 #include "tMatrix.h"
 
@@ -145,13 +144,12 @@ private:
 
 
   // --------  Instruction Counts  ---------
-  tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
-  tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
-  tArray<pair<int,int> > m_is_tolerance_exe_counts;
-  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; // @JJB
-  tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
-  tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
-//@JJB**  tArray<tSmartArray<s_inst_circumstances> > m_is_tolerance_exe_insts; // @JJB
+  Apto::Map<cString, Apto::Array<cString> > m_is_inst_names_map;
+  Apto::Map<cString, Apto::Array<cIntSum> > m_is_exe_inst_map;
+  Apto::Array<pair<int,int> > m_is_tolerance_exe_counts;
+  Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts; // @JJB
+  Apto::Map<cString, Apto::Array<cIntSum> > m_is_prey_exe_inst_map;
+  Apto::Map<cString, Apto::Array<cIntSum> > m_is_pred_exe_inst_map;
 
   // --------  Calculated Stats  ---------
   double entropy;
@@ -436,7 +434,7 @@ public:
   cDoubleSum& SumPreyCreatureAge()   { return sum_prey_creature_age; }
   cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
   cDoubleSum& SumPreySize()          { return sum_prey_size; }
-  tArray<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
+  Apto::Array<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
 
   cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
   cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
@@ -444,13 +442,13 @@ public:
   cDoubleSum& SumPredCreatureAge()   { return sum_pred_creature_age; }
   cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
-  tArray<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
+  Apto::Array<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   void ZeroFTInst();
   
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
   void ZeroInst();
-  tArray<cIntSum>& InstExeCountsForInstSet(const cString& inst_set) { return m_is_exe_inst_map[inst_set]; }
+  Apto::Array<cIntSum>& InstExeCountsForInstSet(const cString& inst_set) { return m_is_exe_inst_map[inst_set]; }
 
   // And constant versions of the above...
   const cDoubleSum& SumFitness() const       { return sum_fitness; }
@@ -581,7 +579,7 @@ public:
   void SetResourcesGeometry(const tArray<int> &_in) { resource_geometry = _in;}
   void SetSpatialRes(const tArray< tArray<double> > &_in) { spatial_res_count = _in; }
 
-  void SetInstNames(const cString& inst_set, const tArray<cString>& names) { m_is_inst_names_map[inst_set] = names; }
+  void SetInstNames(const cString& inst_set, const Apto::Array<cString>& names) { m_is_inst_names_map[inst_set] = names; }
   void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 

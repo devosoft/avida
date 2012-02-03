@@ -9,17 +9,15 @@
 
 #include <fstream>
 
-#include "cBioGroupManager.h"
-#include "cClassificationManager.h"
+#include "avida/systematics/Arbiter.h"
+#include "avida/systematics/Manager.h"
+
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
 #include "cSymbolUtil.h"
 #include "cScreen.h"
-
-#include "tAutoRelease.h"
-#include "tIterator.h"
 
 
 using namespace std;
@@ -39,15 +37,15 @@ cViewInfo::cViewInfo(cWorld* world, cView_Base* view)
   // Handle genotype managing...
 
   for (int i = 0; i < NUM_SYMBOLS; i++) {
-    genotype_chart[i] = NULL;
+    genotype_chart[i] = Systematics::GroupPtr(NULL);
     symbol_chart[i] = (char) (i + 'A');
   }
 }
 
-void cViewInfo::AddGenChart(cBioGroup* in_gen)
+void cViewInfo::AddGenChart(Systematics::GroupPtr in_gen)
 {
   for (int i = 0; i < NUM_SYMBOLS; i++) {
-    if (genotype_chart[i] == NULL) {
+    if (genotype_chart[i] == Systematics::GroupPtr(NULL)) {
       genotype_chart[i] = in_gen;
       getViewInfo(in_gen)->symbol = symbol_chart[i];
       break;
@@ -137,11 +135,12 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
 void cViewInfo::UpdateSymbols()
 {
   // First, clean up the genotype_chart.
+  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
 
   int i, pos;
   for (i = 0; i < NUM_SYMBOLS; i++) {
     if (genotype_chart[i]) {
-      tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
       pos = -1;
       int rank = 0;
       while ((it->Next()) && i < NUM_SYMBOLS) {
@@ -152,20 +151,20 @@ void cViewInfo::UpdateSymbols()
         rank++;
       }
 
-      if (pos < 0) genotype_chart[i] = NULL;
+      if (pos < 0) genotype_chart[i] = Systematics::GroupPtr(NULL);
       if (pos >= NUM_SYMBOLS) {
-        if (genotype_chart[i]->GetProperty("threshold").AsBool())
+        if (Apto::StrAs(genotype_chart[i]->Properties().Get("threshold").Value()))
           getViewInfo(genotype_chart[i])->symbol = '+';
         else getViewInfo(genotype_chart[i])->symbol = '.';
-        genotype_chart[i] = NULL;
+        genotype_chart[i] = Systematics::GroupPtr(NULL);
       }
     }
   }
 
   // Now, fill in any missing spaces...
 
-  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-  cBioGroup* bg = it->Next();
+  Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
+  Systematics::GroupPtr bg = it->Next();
   for (int i = 0; bg && i < SYMBOL_THRESHOLD; bg = it->Next(), i++) {
     if (!InGenChart(bg)) AddGenChart(bg);
   }
@@ -187,20 +186,20 @@ void cViewInfo::DisEngageStepMode()
   SetStepOrganism(-1);
 }
 
-cBioGroup* cViewInfo::GetActiveGenotype()
+Systematics::GroupPtr cViewInfo::GetActiveGenotype()
 {
   if (active_cell != NULL && active_cell->IsOccupied()) {
-    return active_cell->GetOrganism()->GetBioGroup("genotype");
+    return active_cell->GetOrganism()->SystematicsGroup("genotype");
   }
 
-  return NULL;
+  return Systematics::GroupPtr(NULL);
 }
 
 
 cString cViewInfo::GetActiveName()
 {
   if (GetActiveGenotype() == NULL) return cString("");
-  return GetActiveGenotype()->GetProperty("name").AsString();
+  return (const char*)GetActiveGenotype()->Properties().Get("name").Value();
 }
 
 int cViewInfo::GetActiveID()
@@ -211,15 +210,23 @@ int cViewInfo::GetActiveID()
 
 int cViewInfo::GetActiveGenotypeID()
 {
-  return GetActiveGenotype() ? GetActiveGenotype()->GetID() : -1;
+  return GetActiveGenotype() ? GetActiveGenotype()->ID() : -1;
 }
 
-sGenotypeViewInfo* cViewInfo::getViewInfo(cBioGroup* bg)
+Apto::SmartPtr<sGenotypeViewInfo> cViewInfo::getViewInfo(Systematics::GroupPtr bg)
 {
-  sGenotypeViewInfo* view_info = bg->GetData<sGenotypeViewInfo>();
+  Apto::SmartPtr<sGenotypeViewInfo> view_info = bg->GetData<sGenotypeViewInfo>();
   if (!view_info) {
-    view_info = new sGenotypeViewInfo;
+    view_info = Apto::SmartPtr<sGenotypeViewInfo>(new sGenotypeViewInfo);
     bg->AttachData(view_info);
   }
   return view_info;
+}
+
+
+bool sGenotypeViewInfo::Serialize(ArchivePtr) const
+{
+  // @TODO - map color serialize
+  assert(false);
+  return false;
 }

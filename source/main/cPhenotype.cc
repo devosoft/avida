@@ -103,9 +103,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 cPhenotype::~cPhenotype()
 {
   // Remove Task States
-  tArray<cTaskState*> task_states(0);
-  m_task_states.GetValues(task_states);
-  for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+  for (Apto::Map<void*, cTaskState*>::ValueIterator it = m_task_states.Values(); it.Next();) delete (*it.Get());
   delete m_reaction_result;
 }
 
@@ -176,15 +174,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_mating_display_b = in_phen.last_mating_display_b;  
   
   // Dynamically allocated m_task_states requires special handling
-  tList<cTaskState*> hash_values;
-  tList<void*>       hash_keys;
-  in_phen.m_task_states.AsLists(hash_keys, hash_values);
-  tListIterator<cTaskState*> vit(hash_values);
-  tListIterator<void*>       kit(hash_keys);
-  while(vit.Next() && kit.Next())
-  {
-    cTaskState* new_ts = new cTaskState(**(vit.Get()));
-    m_task_states.Set(*(kit.Get()), new_ts);
+  for (Apto::Map<void*, cTaskState*>::ConstIterator it = in_phen.m_task_states.Begin(); it.Next();) {
+    cTaskState* new_ts = new cTaskState(**((*it.Get()).Value2()));
+    m_task_states.Set((*it.Get()).Value1(), new_ts);
   }
   
   // 3. These mark the status of "in progess" variables at the last divide.
@@ -953,10 +945,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
   
   // Reset Task States
-  tArray<cTaskState*> task_states(0);
-  m_task_states.GetValues(task_states);
-  for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
-  m_task_states.ClearAll();
+  for (Apto::Map<void*, cTaskState*>::ValueIterator it = m_task_states.Values(); it.Next();) delete *it.Get();
+  m_task_states.Clear();
 }
 
 /**

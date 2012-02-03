@@ -99,10 +99,6 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Thread-Kill", &cHardwareTransSMT::Inst_ThreadKill), // 36
     tInstLibEntry<tMethod>("Inject", &cHardwareTransSMT::Inst_Inject), // 37
     tInstLibEntry<tMethod>("Apoptosis", &cHardwareTransSMT::Inst_Apoptosis), // 38
-    tInstLibEntry<tMethod>("Net-Get", &cHardwareTransSMT::Inst_NetGet), // 39
-    tInstLibEntry<tMethod>("Net-Send", &cHardwareTransSMT::Inst_NetSend), // 40
-    tInstLibEntry<tMethod>("Net-Receive", &cHardwareTransSMT::Inst_NetReceive), // 41
-    tInstLibEntry<tMethod>("Net-Last", &cHardwareTransSMT::Inst_NetLast), // 42
     tInstLibEntry<tMethod>("Rotate-Left", &cHardwareTransSMT::Inst_RotateLeft), // 43
     tInstLibEntry<tMethod>("Rotate-Right", &cHardwareTransSMT::Inst_RotateRight), // 44
     tInstLibEntry<tMethod>("Call-Flow", &cHardwareTransSMT::Inst_CallFlow), // 45
@@ -139,8 +135,6 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
 
 cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(world, in_organism, in_inst_set), m_mem_array(1)
-, m_mem_lbls(Pow(NUM_NOPS, MAX_MEMSPACE_LABEL) / MEM_LBLS_HASH_FACTOR)
-, m_thread_lbls(Pow(NUM_NOPS, MAX_THREAD_LABEL) / THREAD_LBLS_HASH_FACTOR)
 {
   m_functions = s_inst_slib->GetFunctions();
 	
@@ -159,11 +153,11 @@ void cHardwareTransSMT::internalReset()
 {
   // Setup the memory...
   m_mem_array.Resize(1);
-  m_mem_lbls.ClearAll();
+  m_mem_lbls.Clear();
   
   // We want to reset to have a single thread.
   m_threads.Resize(1);
-  m_thread_lbls.ClearAll();
+  m_thread_lbls.Clear();
 	
   // Reset that single thread.
   m_threads[0].Reset(this, 0);
@@ -396,7 +390,7 @@ int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_spa
 	if (label.GetSize() == 0) return 0;
   
   int hash_key = label.AsInt(NUM_NOPS);
-  if (!m_mem_lbls.Find(hash_key, mem_space)) {
+  if (!m_mem_lbls.Get(hash_key, mem_space)) {
     mem_space = m_mem_array.GetSize();
     m_mem_array.Resize(mem_space + 1);
     m_mem_lbls.Set(hash_key, mem_space);
@@ -711,7 +705,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(Systematics::UnitPtr bu)
   
   // Check for existing thread
   int hash_key = label.AsInt(NUM_NOPS);
-  if (m_thread_lbls.Find(hash_key, thread_id)) {
+  if (m_thread_lbls.Get(hash_key, thread_id)) {
     if (m_threads[thread_id].running) return false;  // Thread exists, and is running... call fails
   } else {
     // Check for thread cap
@@ -914,7 +908,7 @@ int cHardwareTransSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   
   // Check for existing thread
   int hash_key = label.AsInt(NUM_NOPS);
-  if (m_thread_lbls.Find(hash_key, thread_id)) {
+  if (m_thread_lbls.Get(hash_key, thread_id)) {
     if (m_threads[thread_id].running) {
       return -1;  // Thread exists, and is running... call fails
     } else {
@@ -1634,44 +1628,6 @@ bool cHardwareTransSMT::Inst_Apoptosis(cAvidaContext& ctx)
   return true;
 }
 
-//39
-bool cHardwareTransSMT::Inst_NetGet(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_BX);
-  const int seq_dst = FindModifiedNextStack(dst);
-  int val, seq;
-  m_organism->NetGet(ctx, val, seq);
-  Stack(dst).Push(val);
-  Stack(seq_dst).Push(seq);
-  
-  return true;
-}
-
-//40
-bool cHardwareTransSMT::Inst_NetSend(cAvidaContext& ctx)
-{
-  const int src = FindModifiedStack(STACK_BX);
-  m_organism->NetSend(ctx, Stack(src).Pop());
-  return true;
-}
-
-//41
-bool cHardwareTransSMT::Inst_NetReceive(cAvidaContext&)
-{
-  const int dst = FindModifiedStack(STACK_BX);
-  int val;
-  bool success = m_organism->NetReceive(val);
-  Stack(dst).Push(val);
-  return success;
-}
-
-//42
-bool cHardwareTransSMT::Inst_NetLast(cAvidaContext&)
-{
-  const int dst = FindModifiedStack(STACK_CX);
-  Stack(dst).Push(m_organism->NetLast());
-  return true;
-}
 
 //43
 bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext&)

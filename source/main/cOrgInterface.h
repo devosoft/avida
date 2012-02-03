@@ -46,7 +46,6 @@ class cOrgSinkMessage;
 class cPopulationCell;
 class cString;
 template <class T> class tArray;
-template <class T> class tSmartArray;
 
 using namespace Avida;
 
@@ -61,7 +60,7 @@ public:
   cOrgInterface() { ; }
   virtual ~cOrgInterface() { ; }
 
-  virtual tSmartArray <cOrganism*> GetLiveOrgList() = 0;
+  virtual const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const = 0;
   virtual int GetCellID() = 0;
   virtual cPopulationCell* GetCell() = 0;
   virtual cPopulationCell* GetCell(int cell_id) = 0;
@@ -144,8 +143,6 @@ public:
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
   virtual void Kaboom(int distance, cAvidaContext& ctx) = 0; 
   virtual void SpawnDeme(cAvidaContext& ctx) = 0; 
-  virtual cOrgSinkMessage* NetReceive() = 0;
-  virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* host, Systematics::UnitPtr parent, const cString& label, const InstructionSequence& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;

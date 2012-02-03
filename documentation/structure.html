@@ -529,29 +529,10 @@ function to provide fast lookup.
 A reasonably powerful linked list and iterators.  The list will keep track
 of the iterators and never allow them to have an illegal value.
 </dd>
-<dt><kbd style="color: #000088">tManagedPointerArray.h</kbd></dt>
-<dd>
-A derivative of tArray, a managed pointer array is ideal for storing
-arrays of large objects that may need to be resized.  The backing
-storage mechanism simple resizes an array of pointers, preventing
-the unnecessary copying of large objects.
-</dd>
 <dt><kbd style="color: #000088">tMatrix.h</kbd></dt>
 <dd>
 A fixed size matrix template with arbitrary indexing.
 </dd>
-<dt><kbd style="color: #000088">tSmartArray.h</kbd></dt>
-<dd>
-A derivative of tArray that provides hidden capacity management.  This
-type of array is ideal for arrays of small objects that may be resized
-often.
-</dd>
-<dt><kbd style="color: #000088">tVector.h</kbd></dt>
-<dd>
-A variable-length array object; array sizes will be automatically
-adjusted to accommodate any positions accessed in it.
-</dd>
-</dl>
 
 
 <h3>Directory: <kbd style="color: #008844">support/config/</kbd></h3>
