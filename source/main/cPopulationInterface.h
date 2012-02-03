@@ -66,7 +66,7 @@ public:
   cPopulationInterface(cWorld* world);
   virtual ~cPopulationInterface();
 
-  tSmartArray <cOrganism*> GetLiveOrgList();
+  const tSmartArray <cOrganism*>& GetLiveOrgList();
 	//! Retrieve this organism.
 	cOrganism* GetOrganism();
 	//! Retrieve the ID of this cell.

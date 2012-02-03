@@ -46,7 +46,7 @@ public:
   virtual ~cTestCPUInterface() { ; }
 
   
-  tSmartArray <cOrganism*> GetLiveOrgList();
+  const tSmartArray <cOrganism*>& GetLiveOrgList();
   cPopulationCell* GetCell() { return NULL; }
 	cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }

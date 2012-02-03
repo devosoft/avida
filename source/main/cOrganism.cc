@@ -432,7 +432,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      tArray<cOrganism*> cur_neighbors = m_interface->GetAVNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAVNeighbors();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_input_list.Push( &(cur_neighbors[i]->m_input_buf) );
@@ -445,7 +445,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      tArray<cOrganism*> cur_neighbors = m_interface->GetAVNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAVNeighbors();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_output_list.Push( &(cur_neighbors[i]->m_output_buf) );
