@@ -111,7 +111,9 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 48
     tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 49
     tInstLibEntry<tMethod>("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 50
-    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 51
+    tInstLibEntry<tMethod>("Divide-Sex", &cHardwareTransSMT::Inst_Divide_Sex), // 51
+    tInstLibEntry<tMethod>("Divide-Asex-Wait", &cHardwareTransSMT::Inst_Divide_Asex_Wait), // 52
+    tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 53
     
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -279,7 +281,10 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
+      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) { 
+        SingleProcess_PayPostResCosts(ctx, cur_inst); 
+        SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
+      }
 			
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
@@ -1767,6 +1772,25 @@ bool cHardwareTransSMT::Inst_Divide_Sex_Erase(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetCrossNum(1);
   
   return Inst_Divide_Erase(ctx);
+}
+
+bool cHardwareTransSMT::Inst_Divide_Sex(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().SetDivideSex(true);
+  m_organism->GetPhenotype().SetCrossNum(1);
+  
+  return Inst_Divide(ctx);
+}
+
+bool cHardwareTransSMT::Inst_Divide_Asex_Wait(cAvidaContext& ctx)
+{
+  //pretend like it is sexual...
+  m_organism->GetPhenotype().SetDivideSex(true);
+  
+  //but don't do any recombination
+  m_organism->GetPhenotype().SetCrossNum(0);
+  
+  return Inst_Divide(ctx);
 }
 
 bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)

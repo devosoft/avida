@@ -410,6 +410,24 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-divide0.01", &cHardwareCPU::Inst_HeadDivide0_01, nInstFlag::STALL),
     tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001, nInstFlag::STALL),
     
+    //@CHC Mating type / mate choice instructions
+    tInstLibEntry<tMethod>("set-mating-type-male", &cHardwareCPU::Inst_SetMatingTypeMale),
+    tInstLibEntry<tMethod>("set-mating-type-female", &cHardwareCPU::Inst_SetMatingTypeFemale),
+    tInstLibEntry<tMethod>("set-mating-type-juvenile", &cHardwareCPU::Inst_SetMatingTypeJuvenile), 
+    tInstLibEntry<tMethod>("div-sex-mating-type", &cHardwareCPU::Inst_DivideSexMatingType, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-mating-type-male", &cHardwareCPU::Inst_IfMatingTypeMale),
+    tInstLibEntry<tMethod>("if-mating-type-female", &cHardwareCPU::Inst_IfMatingTypeFemale),
+    tInstLibEntry<tMethod>("if-mating-type-juvenile", &cHardwareCPU::Inst_IfMatingTypeJuvenile),
+    tInstLibEntry<tMethod>("increment-mating-display-a", &cHardwareCPU::Inst_IncrementMatingDisplayA),
+    tInstLibEntry<tMethod>("increment-mating-display-b", &cHardwareCPU::Inst_IncrementMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mating-display-a", &cHardwareCPU::Inst_SetMatingDisplayA),
+    tInstLibEntry<tMethod>("set-mating-display-b", &cHardwareCPU::Inst_SetMatingDisplayB),
+    tInstLibEntry<tMethod>("set-mate-preference-random", &cHardwareCPU::Inst_SetMatePreferenceRandom),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-display-a", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-display-b", &cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB),
+    tInstLibEntry<tMethod>("set-mate-preference-highest-merit", &cHardwareCPU::Inst_SetMatePreferenceHighestMerit),
+    
+    
     // High-level instructions
 		tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
@@ -453,6 +471,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("poison", &cHardwareCPU::Inst_Poison),
     tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, nInstFlag::STALL),		
     tInstLibEntry<tMethod>("relinquishEnergyToFutureDeme", &cHardwareCPU::Inst_RelinquishEnergyToFutureDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("relinquishEnergyToNeighborOrganisms", &cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms, nInstFlag::STALL),
@@ -680,6 +699,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Division of labor instructions
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -910,7 +932,10 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
       
       if (exec == true) {
-        if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
+        if (SingleProcess_ExecuteInst(ctx, cur_inst)) { 
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
+        }
       }
       
       // Check if the instruction just executed caused premature death, break out of execution if so
@@ -3327,6 +3352,13 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die(ctx);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Poison(cAvidaContext& ctx)
+{
+  double poison_multiplier = 1.0 - m_world->GetConfig().POISON_PENALTY.Get();
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() * poison_multiplier);
   return true;
 }
 
@@ -9560,68 +9592,32 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext&)
  */
 bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 {
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      // If this instruction is not nop modified it fails to execute and does nothing @JJB
-      if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
-      
-      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();    
-      const int tolerance_to_modify = FindModifiedRegister(REG_BX);
-      int tolerance_count = 0;
-      
-      // If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
-      if (tolerance_to_modify == REG_AX) {
-        PushToleranceInstExe(0, ctx);
-        
-        for (int n = 0; n < tolerance_max - 1; n++) {
-          m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n + 1];
-        }
-        m_organism->GetPhenotype().GetToleranceImmigrants()[tolerance_max - 1] = 0;
-        // Retrieve modified tolerance total for immigrants.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
-        
-        // Output tolerance total to BX register.
-        GetRegister(REG_BX) = tolerance_count;
-        return true;
-      }
-      
-      // If ?BX? move updates of own offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
-      if ((tolerance_to_modify == REG_BX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(1, ctx);
-        
-        for (int n = 0; n < tolerance_max - 1; n++) {
-          m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n + 1];
-        }
-        m_organism->GetPhenotype().GetToleranceOffspringOwn()[tolerance_max - 1] = 0;
-        
-        // Retrieve modified tolerance total for own offspring.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-        
-        // Output tolerance total to BX register.
-        GetRegister(REG_BX) = tolerance_count;
-        return true;
-      }
-      
-      // If ?CX? move updates of others offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
-      if ((tolerance_to_modify == REG_CX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(2, ctx);
-        
-        for (int n = 0; n < tolerance_max - 1; n++) {
-          m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n + 1];
-        }
-        m_organism->GetPhenotype().GetToleranceOffspringOthers()[tolerance_max - 1] = 0;
-        
-        // Retrieve modified tolerance total for other offspring in group.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        
-        // Output tolerance total to BX register.
-        GetRegister(REG_BX) = tolerance_count;
-        return true;
-      } 
-      return false;
-    }
+  // Exit if tolerance is not enabled
+  if (! m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
+  if (! m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  // Exit if organism is not in a group
+  if (! m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+  // Exit if the instruction is not nop-modified
+  if (! m_inst_set->IsNop(getIP().GetNextInst())) return false;
+  
+  const int tolerance_to_modify = FindModifiedNextRegister(REG_BX);
+ 
+  int toleranceType = -1;
+  if (tolerance_to_modify == REG_AX) toleranceType = 0;
+  if (tolerance_to_modify == REG_BX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
+  if (tolerance_to_modify == REG_CX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
+  
+  // Not a recognized register
+  if (toleranceType == -1) return false;
+   
+  // Update the tolerance and store the result in register B
+  int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);
+  
+  if (result == -1) return false;
+  else {
+    GetRegister(REG_BX) = result;
+    return true;
   }
-  return false;
 }
 
 /* Decreases tolerance towards the addition of members to the group,
@@ -9633,70 +9629,27 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 {
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      // If this instruction is not nop modified it fails to execute and does nothing @JJB
-      if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
-      
-      const int cur_update = m_world->GetStats().GetUpdate();
-      const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-      
-      const int tolerance_to_modify = FindModifiedRegister(REG_BX);
-      int tolerance_count = 0;
-      
-      // If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
-      if (tolerance_to_modify == REG_AX) {
-        PushToleranceInstExe(3, ctx);
-        
-        for (int n = tolerance_max - 1; n > 0; n--) {
-          m_organism->GetPhenotype().GetToleranceImmigrants()[n] = m_organism->GetPhenotype().GetToleranceImmigrants()[n - 1];
-        }
-        m_organism->GetPhenotype().GetToleranceImmigrants()[0] = cur_update;
-        // Retrieve modified tolerance total for immigrants.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
-        
-        // Output tolerance total to BX register.
-        GetRegister(REG_BX) = tolerance_count;
-        return true;
-      }
-      
-      // If ?BX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
-      if ((tolerance_to_modify == REG_BX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(4, ctx);
-        
-        for (int n = tolerance_max - 1; n > 0; n--) {
-          m_organism->GetPhenotype().GetToleranceOffspringOwn()[n] = m_organism->GetPhenotype().GetToleranceOffspringOwn()[n - 1];
-        }
-        m_organism->GetPhenotype().GetToleranceOffspringOwn()[0] = cur_update;
-        
-        // Retrieve modified tolerance total for own offspring.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-        
-        // Output tolerance total to BX register.
-        GetRegister(REG_BX) = tolerance_count;
-        return true;
-      }
-      
-      // If ?CX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
-      if ((tolerance_to_modify == REG_CX) && (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0)) {
-        PushToleranceInstExe(5, ctx);
-        
-        for (int n = tolerance_max - 1; n > 0; n--) {
-          m_organism->GetPhenotype().GetToleranceOffspringOthers()[n] = m_organism->GetPhenotype().GetToleranceOffspringOthers()[n - 1];
-        }
-        m_organism->GetPhenotype().GetToleranceOffspringOthers()[0] = cur_update;
-        
-        // Retrieve modified tolerance total for other offspring in the group.
-        tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-        
-        // Output tolerance total to BX register.
-        GetRegister(REG_BX) = tolerance_count;
-        return true;
-      } 
-      return false;
-    }
-  }
-  return false;
+  // Exit if tolerance is not enabled
+  if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
+  if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  // Exit if organism is not in a group
+  if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+  // Exit if the instruction is not nop-modified
+  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  
+  const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+  
+  int toleranceType = -1;
+  if (tolerance_to_modify == REG_AX) toleranceType = 0;
+  if (tolerance_to_modify == REG_BX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
+  if (tolerance_to_modify == REG_CX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
+  
+  // Not a recognized register
+  if (toleranceType == -1) return false;
+  
+  // Update the tolerance and store the result in register B
+  GetRegister(REG_BX) = m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx);
+  return true;
 }
 
 /* Retrieve current tolerance levels, placing each tolerance in a different register.
@@ -9708,14 +9661,14 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
 {
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      PushToleranceInstExe(6, ctx);
-      
+      m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
+
       int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
       int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
       int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
       GetRegister(REG_AX) = tolerance_immigrants;
       GetRegister(REG_BX) = tolerance_own;
-      GetRegister(REG_CX) = tolerance_others;  
+      GetRegister(REG_CX) = tolerance_others;
       return true;
     }
   }
@@ -9732,8 +9685,8 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      PushToleranceInstExe(7, ctx);
-      
+      m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
+
       const int group_id = m_organism->GetOpinion().first;
       
       double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
@@ -9753,31 +9706,6 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
     }
   }
   return false;
-}
-
-// Pushes the circumstances of a tolerance instruction execution to stats. @JJB
-void cHardwareCPU::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
-{
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  
-  int group_id = m_organism->GetOpinion().first;
-  int group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
-  double resource_level = res_count[group_id];
-  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
-  
-  double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
-  double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-  double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-  
-  double odds_immi = immigrant_odds * 100 + 0.5;
-  double odds_own = offspring_own_odds * 100 + 0.5;
-  double odds_others = offspring_others_odds * 100 + 0.5;
-  int tol_immi = m_organism->GetPhenotype().CalcToleranceImmigrants();
-  int tol_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-  int tol_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-  
-  m_organism->GetOrgInterface().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own,
-                                                     odds_others, tol_immi, tol_own, tol_others, tol_max);
 }
 
 /*! Create a link to the currently-faced cell.
@@ -9877,3 +9805,145 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 }
 
 
+bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
+{
+  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+  int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+  m_organism->IncPointMutations(num_mut);
+  return true;
+}
+
+bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
+  m_organism->JoinGermline();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
+  m_organism->ExitGermline();
+  return true;
+}
+
+
+/***
+    Mating type instructions
+***/
+
+bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to female
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to male
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_MALE);
+  }
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Check if the organism has already set its sex to male
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+    //If so, fail
+    return false;
+  } else {
+    //Otherwise, set the current sex to female
+    m_organism->GetPhenotype().SetMatingType(MATING_TYPE_FEMALE);
+  }
+  return true;
+}
+
+bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Set the organism's sex to juvenile
+  //In this way, an organism that has already matured as male or female can change its sex
+  // if this instruction is included in the instruction set
+  m_organism->GetPhenotype().SetMatingType(MATING_TYPE_JUVENILE);
+  return true;
+}
+
+bool cHardwareCPU::Inst_DivideSexMatingType(cAvidaContext& ctx)
+{
+  //Check if the organism is sexually mature
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+    //If not, fail
+    return false;
+  } else {
+    //Otherwise, divide
+    return Inst_HeadDivideSex(ctx);
+  }
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeMale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is male
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_MALE)  getIP().Advance();
+  return true; 
+} 
+
+bool cHardwareCPU::Inst_IfMatingTypeFemale(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism's mating type is female
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_FEMALE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext& ctx)
+{
+  //Execute the next instruction if the organism has not matured sexually
+  if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  getIP().Advance();
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayA();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayA(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
+{
+  //Increment the organism's mating display A trait
+  int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
+  counter++;
+  m_organism->GetPhenotype().SetCurMatingDisplayB(counter);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
+//Sets the display value a to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayA(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
+//Sets the display value b to be equal to the value of ?BX?
+{
+  //Get the register and its contents as the new display value
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int new_display = GetRegister(reg_used);
+  
+  //Set the organism's mating display A trait
+  m_organism->GetPhenotype().SetCurMatingDisplayB(new_display);
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref)
+{
+  m_organism->GetPhenotype().SetMatePreference(mate_pref);
+  return true;
+}
+bool cHardwareCPU::Inst_SetMatePreferenceHighestDisplayA(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_DISPLAY_A); }
+bool cHardwareCPU::Inst_SetMatePreferenceHighestDisplayB(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_DISPLAY_B); }
+bool cHardwareCPU::Inst_SetMatePreferenceRandom(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_RANDOM); }
+bool cHardwareCPU::Inst_SetMatePreferenceHighestMerit(cAvidaContext& ctx) { return Inst_SetMatePreference(ctx, MATE_PREFERENCE_HIGHEST_MERIT); }

@@ -53,6 +53,7 @@
 #include "tIterator.h"
 #include "cUserFeedback.h"
 #include "cParasite.h"
+#include "cBirthEntry.h"
 
 #include <cmath>
 #include <cerrno>
@@ -107,6 +108,12 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
+STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
+STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
+STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
+STATS_OUT_FILE(PrintPredatorErrorData,      predator_error.dat   );
+STATS_OUT_FILE(PrintPreyVarianceData,       prey_variance.dat   );
+STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
@@ -114,6 +121,7 @@ STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
+STATS_OUT_FILE(PrintDemeGermlineSequestration, deme_germ.dat);
 STATS_OUT_FILE(PrintDemeReactionDiversityReplicationData, deme_rx_repl.dat );
 STATS_OUT_FILE(PrintWinningDeme, deme_winners.dat);
 STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
@@ -219,7 +227,7 @@ public:
   }
 };
 
-class cActionPrintGroupTolerance : public cAction
+class cActionPrintGroupTolerance : public cAction // @JJB
 {
 private:
   cString m_filename;
@@ -288,6 +296,63 @@ public:
   }
 };
 
+class cActionPrintPreyInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPreyInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "prey_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("prey_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"prey_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPreyInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintPredatorInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPredatorInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "predator_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("predator_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"predator_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPredatorInstructionData(m_filename, m_inst_set);
+  }
+};
 
 class cActionPrintInstructionAbundanceHistogram : public cAction
 {
@@ -574,6 +639,80 @@ public:
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     for (int i = 0; i < hist.GetSize(); i++) df.Write(hist[i],"");
+    df.Endl();
+  }
+};
+
+
+//LHZ - slower version that doesn't need "lineage support"
+class cActionPrintLineageCounts : public cAction
+{
+private:
+  cString m_filename;
+  int m_verbose;
+  bool first_run;
+  tArray<int> lineage_labels;
+public:
+  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
+    first_run = false;
+  }
+
+  static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat']\n  WARNING: This will only have the appropriate header if all lineages are present before this action is run for the first time."; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    const int update = m_world->GetStats().GetUpdate();
+    const double generation = m_world->GetStats().SumGeneration().Average();
+    
+    //only loop through living organisms
+    tSmartArray<cOrganism*> living_orgs = m_world->GetPopulation().GetLiveOrgList();
+    
+    tHashMap<int, int> lineage_label_counts;
+    
+    //build hash of lineage_label -> count
+    for(int i = 0; i < living_orgs.GetSize(); i++)
+    {
+      const int cur_lineage_label = living_orgs[i]->GetLineageLabel();
+      if (lineage_label_counts.HasEntry(cur_lineage_label))
+      {
+        int cur_count;
+        lineage_label_counts.Find(cur_lineage_label, cur_count);
+        
+        lineage_label_counts.Set(cur_lineage_label, cur_count + 1);
+      }
+      else
+      {
+        lineage_label_counts.Set(cur_lineage_label, 1);
+      }
+    }
+    
+    //setup lineage labels in the first pass
+    if(first_run == false)
+    {
+      lineage_label_counts.GetKeys(lineage_labels);
+      first_run = true;
+    }
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(update, "Update");
+    df.Write(generation, "Generation");
+    
+    //for each lineage label, output the counts
+    //@LZ - handle dead lineages appropriately
+    for(int i=0;i<lineage_labels.GetSize();i++)
+    {
+      //default to 0 in case this lineage is dead
+      int count = 0;
+      
+      if (lineage_label_counts.HasEntry(lineage_labels[i]))
+        lineage_label_counts.Find(lineage_labels[i], count);
+    
+      df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
+    }
+    
     df.Endl();
   }
 };
@@ -3094,7 +3233,7 @@ public:
   void Process(cAvidaContext&)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_dumps/vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
   
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
@@ -3123,17 +3262,35 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
   void Process(cAvidaContext&)
   {
+    const int worldx = m_world->GetPopulation().GetWorldX();
     cString filename(m_filename);
-    if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-
-    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int target = (cell.IsOccupied()) ? cell.GetOrganism()->GetForageTarget() : -99;
-        fp << target << " ";
+    
+    if (m_world->GetConfig().USE_AVATARS.Get()) {
+      if (filename == "") filename.Set("grid_dumps/avatar_grid.%d.dat", m_world->GetStats().GetUpdate());
+      ofstream& fp = m_world->GetDataFileOFStream(filename);
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        for (int i = 0; i < worldx; i++) {
+          cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
+          int target = -99;
+          if (cell.HasAvatar()) target = cell.GetRandAvatar()->GetForageTarget();
+          fp << target << " ";
+        }
+        fp << endl;
       }
-      fp << endl;
+    }    
+    
+    else {
+      if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
+      ofstream& fp = m_world->GetDataFileOFStream(filename);
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        for (int i = 0; i < worldx; i++) {
+          cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
+          int target = -99;
+          if (cell.IsOccupied()) target = cell.GetOrganism()->GetForageTarget();
+          fp << target << " ";
+        }
+        fp << endl;
+      }
     }
     m_world->GetDataFileManager().Remove(filename);
   }
@@ -3155,7 +3312,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("max_res_grid.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_dumps/max_res_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
@@ -3932,7 +4089,237 @@ public:
 };
 
 
+//@CHC Mating type-related actions
+//Prints counts of the number of organisms of each mating type alive in the population
+class cActionPrintMatingTypeHistogram : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "mating_type_histogram.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mating_type_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int type_counts[3] = {0,0,0};
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population mating type histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    cPopulation& pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      //Count totals of each mating type
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        type_counts[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
+      }
+    }
+    df.Write(type_counts[0], "Mating type -1 (juvenile)");
+    df.Write(type_counts[1], "Mating type 0 (female)");
+    df.Write(type_counts[2], "Mating type 1 (male)");
+    df.Endl(); 
+  }
+};
 
+//Prints counts of the number of organisms of each mating type in the birth chamber
+class cActionPrintBirthChamberMatingTypeHistogram : public cAction
+{
+private:
+  cString m_filename;
+  int m_hw_type;
+  
+public:
+  cActionPrintBirthChamberMatingTypeHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "birth_chamber_mating_type_histogram.dat";
+    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
+    else m_hw_type = 0;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber_mating_type_histogram.dat\"] [int hwtype=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int type_counts[3] = {0,0,0};
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida birth chamber mating type histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    
+    type_counts[0] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(-1, m_hw_type);
+    type_counts[1] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(0, m_hw_type);
+    type_counts[2] = m_world->GetPopulation().GetBirthChamber(m_hw_type).GetWaitingOffspringNumber(1, m_hw_type);
+    
+    df.Write(type_counts[0], "Mating type -1 (juvenile)");
+    df.Write(type_counts[1], "Mating type 0 (female)");
+    df.Write(type_counts[2], "Mating type 1 (male)");
+    df.Endl(); 
+  }
+};
+
+//Prints data about the current mating display phenotypes of the population
+class cActionPrintMatingDisplayData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintMatingDisplayData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "mating_display_data.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mating_display_data.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int display_sums[6] = {0, 0, 0, 0, 0, 0}; //[0-2] = display A values for juvenile/undefined mating type, females, and males
+                                           //[3-5] = display B values for each sex
+    int mating_type_sums[3] = {0, 0, 0}; //How many organisms of each mating type are present in the population
+    double display_avgs[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    
+    //Loop through the population and tally up the count values
+    cPopulation& pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        mating_type_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1]++;
+        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+1 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayA();
+        display_sums[ pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType()+4 ] += pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetCurMatingDisplayB();
+      }
+    }
+    
+    if (mating_type_sums[0] > 0) display_avgs[0] = ((double) display_sums[0]) / ((double) mating_type_sums[0]);
+    if (mating_type_sums[1] > 0) display_avgs[1] = ((double) display_sums[1]) / ((double) mating_type_sums[1]);
+    if (mating_type_sums[2] > 0) display_avgs[2] = ((double) display_sums[2]) / ((double) mating_type_sums[2]); 
+    if (mating_type_sums[0] > 0) display_avgs[3] = ((double) display_sums[3]) / ((double) mating_type_sums[0]); 
+    if (mating_type_sums[1] > 0) display_avgs[4] = ((double) display_sums[4]) / ((double) mating_type_sums[1]); 
+    if (mating_type_sums[2] > 0) display_avgs[5] = ((double) display_sums[5]) / ((double) mating_type_sums[2]); 
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population mating display data");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(display_avgs[0], "Avg mating display A for mating type -1 (undefined)");
+    df.Write(display_avgs[1], "Avg mating display A for mating type 0 (female)");
+    df.Write(display_avgs[2], "Avg mating display A for mating type 1 (male)");
+    df.Write(display_avgs[3], "Avg mating display B for mating type -1 (undefined)");
+    df.Write(display_avgs[4], "Avg mating display B for mating type 0 (female)");
+    df.Write(display_avgs[5], "Avg mating display B for mating type 1 (male)");
+    df.Endl();
+  }
+};
+
+//Prints data about the current mate preferences of females in the population
+class cActionPrintFemaleMatePreferenceData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintFemaleMatePreferenceData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else m_filename = "female_mate_preference_data.dat";
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"female_mate_preference_data.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    //Mating preferences:
+    // 0 = random 
+    // 1 = highest display A
+    // 2 = highest display B
+    // 3 = highest merit
+    //IMPORTANT!: Modify next line according to how many types of mate preferences there are in the population
+    int mate_pref_sums[4] = {0, 0, 0, 0};
+    cPopulation &pop = m_world->GetPopulation();
+    for (int cell_num = 0; cell_num < pop.GetSize(); cell_num++) {
+      if (pop.GetCell(cell_num).IsOccupied()) {
+        if (pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+          mate_pref_sums[pop.GetCell(cell_num).GetOrganism()->GetPhenotype().GetMatePreference()]++;
+        }
+      }
+    }
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("Avida population female mate preference histogram");
+    df.WriteTimeStamp();
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(mate_pref_sums[0], "Random");
+    df.Write(mate_pref_sums[1], "Highest display A");
+    df.Write(mate_pref_sums[2], "Highest display B");
+    df.Write(mate_pref_sums[3], "Highest merit");
+    df.Endl();
+  }
+};
+
+
+//Prints data about the 'offspring' from the birth chamber that were chosen as mates during the current update
+class cActionPrintSuccessfulMates : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintSuccessfulMates(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"mates/mates-XXXX.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set( "mates/mates-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
+    m_world->GetStats().PrintSuccessfulMates(filename);
+  }
+};
+
+//Prints data about all the 'offspring' waiting in the birth chamber
+class cActionPrintBirthChamber : public cAction
+{
+private:
+  cString m_filename;
+  int m_hw_type;
+  
+public:
+  cActionPrintBirthChamber(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_hw_type(0)
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_hw_type = largs.PopWord().AsInt();
+    else m_hw_type = 0;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber/bc-XXXX.dat\"] [int hwtype=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set( "birth_chamber/bc-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
+    m_world->GetPopulation().GetBirthChamber(m_hw_type).PrintBirthChamber(filename, m_hw_type);
+  }
+};
 
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
@@ -3948,7 +4335,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
-	action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
+  action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
   action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintThreadsData>("PrintThreadsData");
@@ -3967,10 +4354,18 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintReactionRewardData>("PrintReactionRewardData");
   action_lib->Register<cActionPrintCurrentReactionRewardData>("PrintCurrentReactionRewardData");
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
-	action_lib->Register<cActionPrintExtendedTimeData>("PrintExtendedTimeData");
+  action_lib->Register<cActionPrintExtendedTimeData>("PrintExtendedTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
+  action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
+  action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");
+  action_lib->Register<cActionPrintPredatorErrorData>("PrintPredatorErrorData");
+  action_lib->Register<cActionPrintPreyVarianceData>("PrintPreyVarianceData");
+  action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
+  action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
+  action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
@@ -3999,6 +4394,15 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
 	action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
 	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
+  action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
+
+  action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
+  action_lib->Register<cActionPrintCellData>("PrintCellData");
+  action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
+  action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
+  action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
+  action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
+  action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
 
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
@@ -4015,7 +4419,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
-	action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
+  action_lib->Register<cActionPrintDemeGermlineSequestration>("PrintDemeGermlineSequestration");
+  action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
   action_lib->Register<cActionPrintWinningDeme>("PrintWinningDeme");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
@@ -4023,8 +4428,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 
   action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
-	action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
-	action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
+  action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
+  action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
   action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
@@ -4044,10 +4449,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
-	action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
-	action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
-	action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
-	action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
+  action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
+  action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
+  action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
+  action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
 
 
   //Coalescence Clade Actions
@@ -4065,7 +4470,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
   //  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
   //  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
-  //  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
+  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantGroupGenotypes>("PrintDominantGroupGenotypes");
   action_lib->Register<cActionPrintDominantForagerGenotypes>("PrintDominantForagerGenotypes");
@@ -4097,7 +4502,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
-	action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
+  action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
   action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
@@ -4117,22 +4522,30 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
 
   action_lib->Register<cActionPrintReputationData>("PrintReputationData");
-	action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
+  action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
   action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
-	action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
+  action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
 
-	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
-	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-    action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-    action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
-    action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
-    action_lib->Register<cActionPrintTargets>("PrintTargets");
-	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
+  action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
+  action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
+  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
+  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
+  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
+  action_lib->Register<cActionPrintTargets>("PrintTargets");
+  action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");
 
   action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
-	action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
+  action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
+
+  //@CHC: Mating type-related actions	
+  action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
+  action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");
+  action_lib->Register<cActionPrintFemaleMatePreferenceData>("PrintFemaleMatePreferenceData");
+  action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
+  action_lib->Register<cActionPrintSuccessfulMates>("PrintSuccessfulMates");
+  action_lib->Register<cActionPrintBirthChamber>("PrintBirthChamber");
 }

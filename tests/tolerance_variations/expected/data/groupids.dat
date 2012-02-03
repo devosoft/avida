@@ -1,5 +1,5 @@
 # The ids of groups used.
-# Wed Oct 12 17:36:38 2011
+# Tue Jan 31 11:59:08 2012
 #  1: Update [update]
 #  2: group id [groupid]
 #  3: size of groups [grsize]
@@ -15,8 +15,8 @@
 2 0 0 
 2 1 0 
 2 2 7 
-2 3 1 
-2 4 1 
+2 3 0 
+2 4 2 
 
 3 0 0 
 3 1 0 

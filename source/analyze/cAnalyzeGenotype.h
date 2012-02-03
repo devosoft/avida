@@ -136,6 +136,11 @@ private:
   tArray<double> rbins_avail;
   tArray<int> collect_spec_counts;
   tArray<int> m_env_inputs;
+  int m_mating_type; //@CHC
+  int m_mate_preference; //@CHC
+  int m_mating_display_a; //@CHC
+  int m_mating_display_b; //@CHC
+
 
   // Group 3 : Stats requiring parental genotype (Also from test CPUs)
   double fitness_ratio;
@@ -270,6 +275,12 @@ public:
   void SetAncestorDist(int _dist) { ancestor_dist = _dist; }
   void SetLineageLabel(int _label) { lineage_label = _label; }
 
+  void SetMatingType(int _mating_type) { m_mating_type = _mating_type; } //@CHC
+  void SetMatePreference(int _mate_preference) { m_mate_preference = _mate_preference; } //@CHC
+  void SetMatingDisplayA(int _mating_display_a) { m_mating_display_a = _mating_display_a; } //@CHC
+  void SetMatingDisplayB(int _mating_display_b) { m_mating_display_b = _mating_display_b; } //@CHC
+
+
   void SetParentMuts(const cString & in_muts) { parent_muts = in_muts; }
 
   void SetTaskOrder(const cString & in_order) { task_order = in_order; }
@@ -327,6 +338,11 @@ public:
   const cString& GetGestOffsets() const { return m_gest_offsets; }
 
   const cString& GetParentMuts() const { return parent_muts; }
+
+  int GetMatingType() const { return m_mating_type; }
+  int GetMatePreference() const { return m_mate_preference; }
+  int GetMatingDisplayA() const { return m_mating_display_a; }
+  int GetMatingDisplayB() const { return m_mating_display_b; }
 
   // Knockout accessors
   int GetKO_DeadCount() const;

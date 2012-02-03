@@ -146,10 +146,17 @@ private:
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
-  tArray<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants @JJB
-  tArray<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
-  tArray<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
+  tList<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants @JJB
+  tList<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
+  tList<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
+  tArray<pair<int,int> > intolerances;        // caches temporary values of the intolerance and the update @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
+
+  int mating_type;                            // Organism's phenotypic sex @CHC
+  int mate_preference;                        // Organism's mating preference @CHC
+  
+  int cur_mating_display_a;                   // value of organism's current mating display A trait
+  int cur_mating_display_b;                   // value of organism's current mating display B trait
 
   cReactionResult* m_reaction_result;
   
@@ -179,6 +186,8 @@ private:
   int last_cpu_cycles_used;
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
   
+  int last_mating_display_a;                   // value of organism's last mating display A trait
+  int last_mating_display_b;                   // value of organism's last mating display B trait
   
 
   // 4. Records from this organism's life...
@@ -376,6 +385,14 @@ public:
   inline void SetBirthGroupID(int group_id);
   inline void SetBirthForagerType(int forager_type);
 
+  int GetMatingType() const { return mating_type; } //@CHC
+  int GetMatePreference() const { return mate_preference; } //@CHC
+
+  int GetCurMatingDisplayA() const { return cur_mating_display_a; } //@CHC
+  int GetCurMatingDisplayB() const { return cur_mating_display_b; } //@CHC
+  int GetLastMatingDisplayA() const { return last_mating_display_a; } //@CHC
+  int GetLastMatingDisplayB() const { return last_mating_display_b; } //@CHC
+
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
@@ -401,19 +418,20 @@ public:
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
-	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
+  const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
   void  TrialDivideReset(const InstructionSequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
-  tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
-  tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
-  tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
-  int CalcToleranceImmigrants() const;       // @JJB
-  int CalcToleranceOffspringOwn() const;     // @JJB
-  int CalcToleranceOffspringOthers() const;  // @JJB
+  tList<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
+  tList<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
+  tList<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
+  tArray<pair<int,int> >& GetIntolerances() { assert(initialized == true); return intolerances; }                // @JJB
+  int CalcToleranceImmigrants();       // @JJB
+  int CalcToleranceOffspringOwn();     // @JJB
+  int CalcToleranceOffspringOthers();  // @JJB
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
@@ -523,6 +541,7 @@ public:
   int CrossNum() const  { assert(initialized == true); return cross_num; }
   bool ChildFertile() const { assert(initialized == true); return child_fertile;}
   int GetChildCopiedSize() const { assert(initialized == true); return child_copied_size; }
+  
 
 
   ////////////////////  Accessors -- Modifying  ///////////////////
@@ -546,7 +565,7 @@ public:
   void SetCrossNum(int _cross_num) { cross_num = _cross_num; }
   void SetToDie() { to_die = true; }
   void SetToDelete() { to_delete = true; }
-	void SetTestCPUInstCount(const tArray<int>& in_counts) { testCPU_inst_count = in_counts; }
+  void SetTestCPUInstCount(const tArray<int>& in_counts) { testCPU_inst_count = in_counts; }
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
@@ -570,6 +589,9 @@ public:
   void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
   void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
+
+  void SetMatingType(int _mating_type) { mating_type = _mating_type; } //@CHC
+  void SetMatePreference(int _mate_preference) { mate_preference = _mate_preference; } //@CHC
 
   void SetIsMultiThread() { is_multi_thread = true; }
   void SetIsDonorCur() { is_donor_cur = true; } 
@@ -619,6 +641,11 @@ public:
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
+  
+  void SetCurMatingDisplayA(int _cur_mating_display_a) { cur_mating_display_a = _cur_mating_display_a; } //@CHC
+  void SetCurMatingDisplayB(int _cur_mating_display_b) { cur_mating_display_b = _cur_mating_display_b; } //@CHC
+  void SetLastMatingDisplayA(int _last_mating_display_a) { last_mating_display_a = _last_mating_display_a; } //@CHC
+  void SetLastMatingDisplayB(int _last_mating_display_b) { last_mating_display_b = _last_mating_display_b; } //@CHC
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }

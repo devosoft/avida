@@ -54,6 +54,7 @@
 #include <set>
 #include <numeric>
 #include <algorithm>
+#include "stdlib.h"
 
 using namespace Avida;
 using namespace AvidaTools;
@@ -2123,11 +2124,15 @@ public:
 		const cString cpy = "GERMLINE_COPY_MUT";
 		const cString ins = "GERMLINE_INS_MUT";
 		const cString del = "GERMLINE_DEL_MUT";
+    const cString inst = "INST_POINT_MUT_PROB";
+
 		const cString val = "0.0";
 		
 		m_world->GetConfig().Set(cpy, val);
 		m_world->GetConfig().Set(ins, val);
 		m_world->GetConfig().Set(del, val);
+    m_world->GetConfig().Set(inst, val);
+
   }
 };
 
@@ -3192,6 +3197,85 @@ public:
 protected:
 	bool _uniq_only; //!< Whether to reward for uniqueness of reaction only.
 };
+
+
+/*! 
+ */
+class cActionPhenotypeMatch : public cAbstractCompeteDemes
+{
+public:
+	
+	
+	//! Constructor.
+	cActionPhenotypeMatch(cWorld* world, const cString& args, Feedback& feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
+  {
+		if(args.GetSize()) {
+			cString largs(args);
+      std::ifstream ifs(largs.PopWord());
+
+      string p;
+      while (!ifs.eof()){
+        ifs >> p;
+        desired_phenotypes.push_back(p);
+      }
+      ifs.close();
+		}	
+	}
+	
+	//! Destructor.
+	virtual ~cActionPhenotypeMatch() { }
+	
+	static const cString GetDescription() { return "Arguments: string file-name"; }
+	
+  /*! Fitness function.
+	 For each organism, compare the actual phenotype to the desired
+   phenotype by computing the euclidean distance between the vectors. Fitness is 1/(sum of Euclidean distances)
+
+   */
+  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+    double fit = 1.0;
+    
+    // Fail if we don't have the right number of phenotypes.
+    if (desired_phenotypes.size() != (unsigned long) deme.GetSize()) 
+      return fit;
+    
+    // Put in check that the phenotype is the right length...?
+    
+    // Cycle through the organisms... 
+    double total_dist = 0.0;
+    for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+      string p = desired_phenotypes[i];
+			if(org != 0) {
+        tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				for(int j=0; j<reactions.GetSize(); ++j) {
+          char curp= p[j];
+          int des =  atoi(&curp);
+          int react = (int) reactions[j];
+          total_dist += abs(des - react);
+          if (des > react) total_dist += 1;
+        }
+      }
+      else {
+        for(unsigned long j=0; j<p.size(); ++j) {
+          char curp= p[j];
+          int des =  atoi(&curp);
+          total_dist += des + 1;
+        }
+      }
+    }
+    fit = 1.0 + (1.0/total_dist);
+    return fit;
+	}
+	
+private:
+  //!< The desired phenotypes of the organisms.
+	vector<string> desired_phenotypes; 
+      
+};
+
+
 
 
 /*! Unit-fitness compete demes method (use for control runs).
@@ -5091,7 +5175,7 @@ public:
           
           if( (src_cellid != -1) && (dest_cellid != -1) ) {
             
-            m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid);
+            m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid, -1);
             
             deme.DecOrgCount();
             target_deme.IncOrgCount();
@@ -5437,6 +5521,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDemeBalanceTwoTasks>("DemeBalanceTwoTasks");
   action_lib->Register<cActionSynchronization>("Synchronization");
   action_lib->Register<cActionDesynchronization>("Desynchronization");
+  action_lib->Register<cActionPhenotypeMatch>("PhenotypeMatch");
   action_lib->Register<cActionUnitFitness>("UnitFitness");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");

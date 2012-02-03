@@ -304,7 +304,9 @@ private:
   bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
   bool Inst_Divide_Erase(cAvidaContext& ctx); //49
   bool Inst_Divide_Sex_Erase(cAvidaContext& ctx); //50
-  bool Inst_Collect_Unit(cAvidaContext& ctx);        //51
+  bool Inst_Divide_Sex(cAvidaContext& ctx);     // 51
+  bool Inst_Divide_Asex_Wait(cAvidaContext& ctx);     // 51
+  bool Inst_Collect_Unit(cAvidaContext& ctx);        //52
   
 };
 

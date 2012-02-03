@@ -125,6 +125,12 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
   </td>
   <td>0</td>
 </tr>
+  <td><b>refuge</b></td>
+  <td>
+    Is the resource a refuge (predation prevented)? 
+  </td>
+  <td>0</td>
+  </tr>
 <tr>
   <td class="resall">peakx</td>
   <td>
@@ -228,6 +234,14 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
   <td>0</td>
 </tr>
 <tr>
+  <td><b>threshold</b></td>
+  <td>
+    This set how other parts of avida interact with the resource, specifically look instructions (for now).
+    In the look instructions, anything at or above this value will be treated and counted as an 'edible' cell.
+  </td>
+  <td>1.0</td>
+</tr>
+<tr>
   <td class="resall">move_a_scaler</td>
   <td>
     Measure of resource movement smoothness taken from the variable "A" in equation 1 from
@@ -323,7 +337,11 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
     built on spatial resources and spatial resources are only checked once 
     per update, move_speed actually determines how far, in number of cells,
     the cone is moved between updates, not in an update. Thus move_speed > 1 
-    will cause peaks to 'jump' ahead.
+    will cause peaks to 'jump' ahead. Move speeds less than 1 will 'pause'
+    resources for the abs(move_speed) number of updates between moves. This
+    can be valuable if organisms, due to combinations of genome length and
+    time slicing, are slow to react to resource moves and cannot otherwise
+    keep up with the resource.
   </td>
   <td>1</td>
 </tr>
@@ -344,6 +362,14 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
   </td>
   <td>0</td>
 </tr>
+  <tr>
+    <td class="resall">initial</td>
+    <td>
+      Initial value for all plateau cells. If set to -1 (default), initial cell values
+      will be set == plateau.   
+    </td>
+    <td>-1.0</td>
+  </tr>
 <tr>
   <td class="resall">plateau_inflow</td>
   <td>
@@ -406,8 +432,11 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
 <tr>  
   <td class="resbarrier"><font color="#9c1c01">config</font></td>
   <td>
-  The orientation of the wall. 0 = random (all blocks placed randomly, but neighboring, relative to previous block), 
-  1 = vertical (N or S from seed block), 2 = horizontal (E or W from seed block).
+    The orientation of the wall. 0 = random (all blocks placed randomly, but neighboring, relative to previous block), 
+    1 = vertical (rand N or S from seed block), 2 = horizontal (rand E or W from seed block), 3 = vertical from seed 
+    (peakx, peaky) to S, 4 = horizontal from seed (peakx, peaky) to W.
+    </br>
+    For hills, if config == 1, generate 1 hill at the peakx X peaky coordinates.
   </td>
   <td>0</td> 
 </tr>

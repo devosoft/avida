@@ -3463,7 +3463,6 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
   if (target_res == des_target) {
     reward = 1;
   }
-
   return reward;
 }
 

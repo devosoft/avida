@@ -141,7 +141,8 @@ void Avida2Driver::Run()
     if (point_mut_prob > 0 ) {
       for (int i = 0; i < population.GetSize(); i++) {
         if (population.GetCell(i).IsOccupied()) {
-          population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx, point_mut_prob);
+          int num_mut = population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx, point_mut_prob);
+          population.GetCell(i).GetOrganism()->IncPointMutations(num_mut);
         }
       }
     }

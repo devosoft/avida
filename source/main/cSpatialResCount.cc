@@ -79,6 +79,8 @@ cSpatialResCount::cSpatialResCount() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1
   geometry = nGeometry::GLOBAL;
 }
 
+cSpatialResCount::~cSpatialResCount() { ; }
+
 
 void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
 {

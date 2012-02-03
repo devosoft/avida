@@ -20,6 +20,8 @@ public:
   static char GetParasiteSymbol( const cPopulationCell & cell );
   static char GetForagerColor(  const cPopulationCell & cell );
   static char GetForagerSymbol(  const cPopulationCell & cell );
+  static char GetAVForagerColor(  const cPopulationCell & cell );
+  static char GetAVForagerSymbol(  const cPopulationCell & cell );
   static char GetTerritoryColor(  const cPopulationCell & cell );
   static char GetTerritorySymbol(  const cPopulationCell & cell );
   static char GetMarkedCellSymbol(  const cPopulationCell & cell );

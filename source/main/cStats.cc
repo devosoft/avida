@@ -103,6 +103,11 @@ cStats::cStats(cWorld* world)
   , m_spec_num(0)
   , m_spec_waste(0)
   , num_migrations(0)
+  , m_num_successful_mates(0)
+  , prey_entropy(0.0)
+  , num_prey_creatures(0)
+  , pred_entropy(0.0)
+  , num_pred_creatures(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -159,6 +164,7 @@ cStats::cStats(cWorld* world)
 
 
   ZeroInst();
+  ZeroFTInst();
 
   const int num_reactions = env.GetNumReactions();
   m_reaction_cur_count.Resize(num_reactions);
@@ -414,6 +420,16 @@ void cStats::ZeroInst()
   }
 }
 
+void cStats::ZeroFTInst()
+{
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_prey_exe_inst_map.begin(); it != m_is_prey_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_exe_inst_map.begin(); it != m_is_pred_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+}
+
 void cStats::CalcFidelity()
 {
   // There is a (small) probability that when a random instruction is picked
@@ -505,6 +521,8 @@ void cStats::ProcessUpdate()
   m_spec_waste = 0;
 
   num_migrations = 0;
+  
+  m_num_successful_mates = 0;
 }
 
 
@@ -680,6 +698,148 @@ void cStats::PrintParasiteData(const cString& filename)
 
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
+  df.Endl();
+}
+
+void cStats::PrintPreyAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_prey_fitness.Average(),        "Fitness");
+  df.Write(sum_prey_gestation.Average(),      "Gestation Time");
+  df.Write(sum_prey_merit.Average(),          "Merit");
+  df.Write(sum_prey_creature_age.Average(),   "Creature Age");
+  df.Write(sum_prey_generation.Average(),     "Generation");
+  df.Write(sum_prey_size.Average(),           "Genome Length");
+  df.Write(prey_entropy,                      "Total Prey Genotypic Entropy");
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_pred_fitness.Average(),        "Fitness");
+  df.Write(sum_pred_gestation.Average(),      "Gestation Time");
+  df.Write(sum_pred_merit.Average(),          "Merit");
+  df.Write(sum_pred_creature_age.Average(),   "Creature Age");
+  df.Write(sum_pred_generation.Average(),     "Generation");
+  df.Write(sum_pred_size.Average(),           "Genome Length");
+  df.Write(pred_entropy,                      "Total Predator Genotypic Entropy");
+  
+  df.Endl();
+}
+
+void cStats::PrintPreyErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_prey_fitness.StdError(),         "Fitness");
+  df.Write(sum_prey_gestation.StdError(),       "Gestation Time");
+  df.Write(sum_prey_merit.StdError(),           "Merit");
+  df.Write(sum_prey_creature_age.StdError(),    "Creature Age");
+  df.Write(sum_prey_generation.StdError(),      "Generation");
+  df.Write(sum_prey_size.StdError(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_pred_fitness.StdError(),         "Fitness");
+  df.Write(sum_pred_gestation.StdError(),       "Gestation Time");
+  df.Write(sum_pred_merit.StdError(),           "Merit");
+  df.Write(sum_pred_creature_age.StdError(),    "Creature Age");
+  df.Write(sum_pred_generation.StdError(),      "Generation");
+  df.Write(sum_pred_size.StdError(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPreyVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_prey_fitness.Variance(),         "Fitness");
+  df.Write(sum_prey_gestation.Variance(),       "Gestation Time");
+  df.Write(sum_prey_merit.Variance(),           "Merit");
+  df.Write(sum_prey_creature_age.Variance(),    "Creature Age");
+  df.Write(sum_prey_generation.Variance(),      "Generation");
+  df.Write(sum_prey_size.Variance(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_pred_fitness.Variance(),         "Fitness");
+  df.Write(sum_pred_gestation.Variance(),       "Gestation Time");
+  df.Write(sum_pred_merit.Variance(),           "Merit");
+  df.Write(sum_pred_creature_age.Variance(),    "Creature Age");
+  df.Write(sum_pred_generation.Variance(),      "Generation");
+  df.Write(sum_pred_size.Variance(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey org instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_prey_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_prey_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
+  df.Endl();
+}
+
+void cStats::PrintPredatorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator org instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_pred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
   df.Endl();
 }
 
@@ -1474,9 +1634,6 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme&)
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
 	m_deme_density.Add(source_deme.GetDensity());
-  m_deme_fit_sd.Add(source_deme.GetMeanSDofFitness());
-  m_deme_gest_sd.Add(source_deme.GetMeanSDofGestation());
-  m_deme_merit_sd.Add(source_deme.GetMeanSDofMerit());
 
 	if(source_deme.isTreatable()) {
 		++m_deme_num_repls_treatable;
@@ -1493,6 +1650,14 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme&)
 		m_deme_generation_untreatable.Add(source_deme.GetGeneration());
 		m_deme_density_untreatable.Add(source_deme.GetDensity());
 	}
+  
+  /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
+  int n_mut = source_deme.GetAveGermMut(); 
+  if (n_mut >= 0) {
+    m_ave_germ_mut.push_back(n_mut); 
+    m_ave_non_germ_mut.push_back(source_deme.GetAveNonGermMut());
+    m_ave_germ_size.push_back(source_deme.GetGermlinePercent());
+  }
 }
 
 
@@ -1536,9 +1701,6 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_deme_merit.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation.Average(), "Mean generation of replicated demes [generation]");
   df.Write(m_deme_density.Average(), "Mean density of replicated demes [density]");
-  df.Write(m_deme_fit_sd.Average(), "Mean standard deviation of fitness of organisms within a deme [sddemefit]");  
-  df.Write(m_deme_gest_sd.Average(), "Mean standard deviation of gestation of organisms within a deme [sddemegest]");  
-  df.Write(m_deme_merit_sd.Average(), "Mean standard deviation of merit of organisms within a deme [sddememerit]");  
   df.Endl();
 
   m_deme_num_repls = 0;
@@ -1547,11 +1709,47 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   m_deme_merit.Clear();
   m_deme_generation.Clear();
 	m_deme_density.Clear();
-  m_deme_fit_sd.Clear();
-  m_deme_fit_sd.Clear();
-  m_deme_fit_sd.Clear();
+  
+}
+
+/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently prints information from the last 100 deme replications events.
+ */
+void cStats::PrintDemeGermlineSequestration(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme germline sequestration data");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+  
+  while(m_ave_germ_mut.size()>100) {
+		m_ave_germ_mut.pop_front();
+	}
+  while(m_ave_non_germ_mut.size()>100) {
+		m_ave_non_germ_mut.pop_front();
+	}
+  while(m_ave_germ_size.size()>100) {
+		m_ave_germ_size.pop_front();
+	}
+  
+  if(m_ave_germ_mut.empty()) {
+		df.Write(0.0, "Mean number of mutations to germline [meangermmut]"); 
+    df.Write(0.0, "Mean number of mutations to non-germline orgs [meannongermmut]");
+    df.Write(0.0, "Mean size of germ line [meangermsize]");
+
+	} 
+  else {
+    df.Write(std::accumulate(m_ave_germ_mut.begin(), m_ave_germ_mut.end(), 0.0)/m_ave_germ_mut.size(), "Mean number of mutations to germline [meangermmut]");
+    df.Write(std::accumulate(m_ave_non_germ_mut.begin(), m_ave_non_germ_mut.end(), 0.0)/m_ave_non_germ_mut.size(), "Mean number of mutations to non-germline orgs [meannongermmut]");	
+    df.Write(std::accumulate(m_ave_germ_size.begin(), m_ave_germ_size.end(), 0.0)/m_ave_germ_size.size(), "Mean size of germ line [meangermsize]");
+  }
+   
+  df.Endl();
 
 }
+
+
+
 
 /*! Print statistics related to deme replication.  Currently only prints the
  number of deme replications since the last time PrintDemeReplicationData was
@@ -2858,15 +3056,7 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
   m_is_tolerance_inst_names[6] = "get-tolerance";
   m_is_tolerance_inst_names[7] = "get-group-tolerance";
 
-  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
-
-  for (int i = 0; i < num_tol_inst; i++) {
-    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
-      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
-        ZeroToleranceInst();
-      }
-    }
-  }
+  if (m_is_tolerance_exe_counts.GetSize() != num_tol_inst) m_is_tolerance_exe_counts.Resize(num_tol_inst);
 
   cDataFile& df = m_world->GetDataFile(filename);
 
@@ -2876,13 +3066,13 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
   df.Write(m_update, "Update");
 
   for (int i = 0; i < num_tol_inst; i++) {
-    df. Write(m_is_tolerance_exe_insts[i].GetSize(), m_is_tolerance_inst_names[i]);
+    df. Write((m_is_tolerance_exe_counts[i].first == m_update) ? m_is_tolerance_exe_counts[i].second : 0 , m_is_tolerance_inst_names[i]);
   }
 
   df.Endl();
 }
 
-// Prints the circumstances around each tolerance instruction executed within the last update. // @JJB**
+// Prints the circumstances around each tolerance instruction executed within the last update. @JJB
 void cStats::PrintToleranceData(const cString& filename)
 {
   const int num_tol_inst = 8;
@@ -2896,37 +3086,40 @@ void cStats::PrintToleranceData(const cString& filename)
   m_is_tolerance_inst_names[6] = "get-tolerance";
   m_is_tolerance_inst_names[7] = "get-group-tolerance";
 
-  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
-
-  for (int i = 0; i < num_tol_inst; i++) {
-    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
-      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
-        ZeroToleranceInst();
-      }
-    }
-  }
-
   cDataFile& df = m_world->GetDataFile(filename);
 
   df.WriteComment("Avida circumstance data for each tolerance instruction pre-execution");
   df.WriteTimeStamp();
 
-  for (int i = 0; i < num_tol_inst; i++) {
-    for (int n = 0; n < m_is_tolerance_exe_insts[i].GetSize(); n++) {
-      df.Write(m_is_tolerance_exe_insts[i][n].update, "Update [update]");
-      df.Write(m_is_tolerance_inst_names[i], "Tolerance instruction [inst]");
-      df.Write(m_is_tolerance_exe_insts[i][n].gr_id, "group id [groupid]");
-      df.Write(m_is_tolerance_exe_insts[i][n].gr_size, "size of group [grsize]");
-      df.Write(m_is_tolerance_exe_insts[i][n].res_level, "group resource available [grfood]");
-      df.Write(m_is_tolerance_exe_insts[i][n].odds_immigrants, "odds for immigrants coming into the group [oddsimmigrants]");
-      df.Write(m_is_tolerance_exe_insts[i][n].odds_offspring_own, "odds for org's own offspring to stay in group [oddsown]");
-      df.Write(m_is_tolerance_exe_insts[i][n].odds_offspring_others, "odds for offspring in group [oddsothers]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_immigrants, "org's tolerance for immigrants [tol-immi]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_own, "org's tolerance for own offspring [tol-own]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_others, "org's tolerance for other offspring in the group [tol-others]");
-      df.Write(m_is_tolerance_exe_insts[i][n].tol_max, "tolerance max [tol-max]");
+  for (int n = 0; n < m_is_tolerance_exe_insts.GetSize(); n++) {
+    if (m_is_tolerance_exe_insts[n].update == m_update) {
+      df.Write(m_is_tolerance_exe_insts[n].update, "Update [update]");
+      df.Write(m_is_tolerance_inst_names[m_is_tolerance_exe_insts[n].inst], "Tolerance instruction [inst]");
+      df.Write(m_is_tolerance_exe_insts[n].gr_id, "group id [groupid]");
+      df.Write(m_is_tolerance_exe_insts[n].gr_size, "size of group [grsize]");
+      df.Write(m_is_tolerance_exe_insts[n].res_level, "group resource available [grfood]");
+      df.Write(m_is_tolerance_exe_insts[n].odds_immigrants, "odds for immigrants coming into the group [oddsimmigrants]");
+      df.Write(m_is_tolerance_exe_insts[n].odds_offspring_own, "odds for org's own offspring to stay in group [oddsown]");
+      df.Write(m_is_tolerance_exe_insts[n].odds_offspring_others, "odds for offspring in group [oddsothers]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_immigrants, "org's tolerance for immigrants [tol-immi]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_own, "org's tolerance for own offspring [tol-own]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_others, "org's tolerance for other offspring in the group [tol-others]");
+      df.Write(m_is_tolerance_exe_insts[n].tol_max, "tolerance max [tol-max]");
       df.Endl();
     }
+  }
+}
+
+void cStats::PushToleranceInstExe(int tol_inst)
+{
+  const int num_tol_inst = 8;
+  if (m_is_tolerance_exe_counts.GetSize() != num_tol_inst) m_is_tolerance_exe_counts.Resize(num_tol_inst);
+
+  if (m_is_tolerance_exe_counts[tol_inst].first == m_update) {
+    m_is_tolerance_exe_counts[tol_inst].second++;
+  } else {
+    m_is_tolerance_exe_counts[tol_inst].first = m_update;
+    m_is_tolerance_exe_counts[tol_inst].second = 1;
   }
 }
 
@@ -2935,18 +3128,24 @@ void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, do
           double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
 {
   const int num_tol_inst = 8;
-  if (m_is_tolerance_exe_insts.GetSize() != num_tol_inst) m_is_tolerance_exe_insts.Resize(num_tol_inst);
+  if (m_is_tolerance_exe_counts.GetSize() != num_tol_inst) m_is_tolerance_exe_counts.Resize(num_tol_inst);
 
-  for (int i = 0; i < num_tol_inst; i++) {
-    if (m_is_tolerance_exe_insts[i].GetSize() != 0) {
-      if (m_update != m_is_tolerance_exe_insts[i][0].update) {
-        ZeroToleranceInst();
-      }
+  if (m_is_tolerance_exe_insts.GetSize() > 0) {
+    if (m_is_tolerance_exe_insts[0].update != m_update) {
+      m_is_tolerance_exe_insts.ResizeClear(0);
     }
+  }
+
+  if (m_is_tolerance_exe_counts[tol_inst].first == m_update) {
+    m_is_tolerance_exe_counts[tol_inst].second++;
+  } else {
+    m_is_tolerance_exe_counts[tol_inst].first = m_update;
+    m_is_tolerance_exe_counts[tol_inst].second = 1;
   }
 
   s_inst_circumstances tol_circ;
   tol_circ.update = m_update;
+  tol_circ.inst = tol_inst;
   tol_circ.gr_id = group_id;
   tol_circ.gr_size = group_size;
   tol_circ.res_level = resource_level;
@@ -2958,7 +3157,7 @@ void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, do
   tol_circ.tol_others = tol_others;
   tol_circ.tol_max = tol_max;
 
-  m_is_tolerance_exe_insts[tol_inst].Push(tol_circ);
+  m_is_tolerance_exe_insts.Push(tol_circ);
 }
 
 // Clears all tolerance execution circumstances. @JJB
@@ -2966,8 +3165,9 @@ void cStats::ZeroToleranceInst()
 {
   const int num_tol_inst = 8;
   for (int i = 0; i < num_tol_inst; i++) {
-    m_is_tolerance_exe_insts[i].ResizeClear(0);
+    m_is_tolerance_exe_counts[i] = make_pair(-1,-1);
   }
+  m_is_tolerance_exe_insts.ResizeClear(0);
 }
 
 /*
@@ -3352,4 +3552,34 @@ void cStats::PrintOrganismLocation(const cString& filename) {
 			df.Endl();
 		}
 	}	
+}
+
+// Records information about mates that are chosen from the birth chamber
+void cStats::RecordSuccessfulMate(cBirthEntry& successful_mate, cBirthEntry& chooser) {
+  //Check if we need to resize the array of successful mates, and re-size it if needed
+  int array_size = m_successful_mates.GetSize();
+  if (array_size <= m_num_successful_mates) {
+    m_successful_mates.Resize(m_num_successful_mates + 1);
+    m_choosers.Resize(m_num_successful_mates + 1);
+  }
+  
+  m_successful_mates[m_num_successful_mates] = successful_mate;
+  m_choosers[m_num_successful_mates] = chooser;
+  
+  m_num_successful_mates++;
+}
+
+// Records information about mates that are chosen from the birth chamber
+void cStats::PrintSuccessfulMates(cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  df.WriteComment("First half of each line gives information about the 'chosen' mate");
+  df.WriteComment("Second half of each line gives information about the 'chooser'");
+  df.WriteComment(cBirthEntry::GetPhenotypeStringFormat());
+  df.Endl();  
+  std::ofstream& df_stream = df.GetOFStream();
+  for (int i = 0; i < m_num_successful_mates; i++) {
+    df_stream << m_successful_mates[i].GetPhenotypeString() << " " << m_choosers[i].GetPhenotypeString() << endl;
+  }
+  m_world->GetDataFileManager().Remove(filename);
 }

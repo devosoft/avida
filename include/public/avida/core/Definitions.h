@@ -181,9 +181,18 @@ enum eVerbosity {
 };
 
 
-namespace Avida
-{
-  extern const char* const BioUnitSourceMap[];
+
+enum eMatingTypes {
+  MATING_TYPE_JUVENILE = -1,
+  MATING_TYPE_FEMALE = 0,
+  MATING_TYPE_MALE = 1
+};
+
+enum eMatePreferences {
+  MATE_PREFERENCE_RANDOM,
+  MATE_PREFERENCE_HIGHEST_DISPLAY_A,
+  MATE_PREFERENCE_HIGHEST_DISPLAY_B,
+  MATE_PREFERENCE_HIGHEST_MERIT
 };
 
 

@@ -58,6 +58,9 @@ cPopulationInterface::cPopulationInterface(cWorld* world)
 : m_world(world)
 , m_cell_id(-1)
 , m_deme_id(-1)
+, m_av_cell_id(-1)
+, m_av_facing(0)
+, m_av_cell_faced(-1)
 , m_prevseen_cell_id(-1)
 , m_prev_task_cell(-1)
 , m_num_task_cells(0)
@@ -75,8 +78,25 @@ cOrganism* cPopulationInterface::GetOrganism() {
 	return GetCell()->GetOrganism();
 }
 
+tSmartArray <cOrganism*> cPopulationInterface::GetLiveOrgList() {
+  return m_world->GetPopulation().GetLiveOrgList();
+}
+
 cPopulationCell* cPopulationInterface::GetCell() { 
 	return &m_world->GetPopulation().GetCell(m_cell_id);
+}
+
+cPopulationCell* cPopulationInterface::GetCell(int cell_id) { 
+	return &m_world->GetPopulation().GetCell(cell_id);
+}
+
+cPopulationCell* cPopulationInterface::GetAVCell() { 
+	return &m_world->GetPopulation().GetCell(m_av_cell_id);
+}
+
+int cPopulationInterface::GetAVCellID()
+{
+	return m_av_cell_id;
 }
 
 cPopulationCell* cPopulationInterface::GetCellFaced() {
@@ -128,9 +148,30 @@ int cPopulationInterface::GetFacedCellDataTerritory() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataTerritory();
 }
 
+int cPopulationInterface::GetFacedAVData() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellData();
+}
+
+int cPopulationInterface::GetFacedAVDataOrgID() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataOrgID();
+}
+
+int cPopulationInterface::GetFacedAVDataUpdate() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataUpdate();
+}
+
+int cPopulationInterface::GetFacedAVDataTerritory() {
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataTerritory();
+}
+
 void cPopulationInterface::SetCellData(const int newData) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   cell.SetCellData(newData, cell.GetOrganism()->GetID());
+}
+
+void cPopulationInterface::SetAVCellData(const int newData, const int org_id) {
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+  cell.SetCellData(newData, org_id);
 }
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
@@ -148,15 +189,63 @@ cOrganism* cPopulationInterface::GetNeighbor()
   return cell.ConnectionList().GetFirst()->GetOrganism();
 }
 
+cOrganism* cPopulationInterface::GetAVRandNeighbor()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAvatar();
+}
+
+cOrganism* cPopulationInterface::GetAVRandNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAVPrey();
+}
+
+cOrganism* cPopulationInterface::GetAVRandNeighborPred()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAVPred();
+}
+
+tArray<cOrganism*> cPopulationInterface::GetAVNeighbors()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAvatars();
+}
+
+tArray<cOrganism*> cPopulationInterface::GetAVNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAVPrey();
+}
+
 bool cPopulationInterface::IsNeighborCellOccupied() {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   return cell.ConnectionList().GetFirst()->IsOccupied();
+}
+
+bool cPopulationInterface::HasAVNeighbor()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAvatar();
+}
+
+bool cPopulationInterface::HasAVNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAVPrey();
+}
+
+bool cPopulationInterface::HasAVNeighborPred()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAVPred();
 }
 
 int cPopulationInterface::GetNumNeighbors()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
+  
+  return cell.ConnectionList().GetSize();
+}
+
+int cPopulationInterface::GetAVNumNeighbors()
+{
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+  assert(cell.HasAvatar());
   
   return cell.ConnectionList().GetSize();
 }
@@ -185,11 +274,21 @@ int cPopulationInterface::GetFacedCellID()
 	return cell.GetID();
 }
 
+int cPopulationInterface::GetAVFacedCellID()
+{
+	return m_av_cell_faced;
+}
+
 int cPopulationInterface::GetFacedDir()
 {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	assert(cell.IsOccupied());
 	return cell.GetFacedDir();
+}
+
+int cPopulationInterface::GetAVFacedDir()
+{
+	return m_av_facing;
 }
 
 int cPopulationInterface::GetNeighborCellContents() {
@@ -204,6 +303,26 @@ void cPopulationInterface::Rotate(int direction)
 	
   if (direction >= 0) cell.ConnectionList().CircNext();
   else cell.ConnectionList().CircPrev();
+
+  if (m_world->GetConfig().USE_AVATARS.Get()) {
+    cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+    assert(av_cell.HasAvatar());
+    int org_facing = av_cell.GetFacedDir();
+    // rotate the avatar cell to match the direction of the true org cell
+    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
+      av_cell.ConnectionList().CircNext();
+      if (av_cell.GetFacedDir() == cell.GetFacedDir()) break;
+    }
+    // save the avatar facing and faced cell data for this org...we cannot rely on av_cell facing after this b/c other avatars could rotate same cell
+    SetAvatarFacing(cell.GetFacedDir());
+    SetAvatarFacedCell(av_cell.ConnectionList().GetFirst()->GetID());
+    
+    // now put the avatar cell back where it belongs in case there is a real org in the avatar cell
+    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
+      av_cell.ConnectionList().CircNext();
+      if (av_cell.GetFacedDir() == org_facing) break;
+    }    
+  }
 }
 
 int cPopulationInterface::GetInputAt(int& input_pointer)
@@ -228,9 +347,19 @@ const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx)
   return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
+const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx) 
+{
+  return m_world->GetPopulation().GetCellResources(m_av_cell_id, ctx); 
+}
+
 const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
+}
+
+const tArray<double>& cPopulationInterface::GetFacedAVResources(cAvidaContext& ctx) 
+{
+  return m_world->GetPopulation().GetCellResources(m_world->GetPopulation().GetCell(m_av_cell_faced).GetID(), ctx); 
 }
 
 const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
@@ -281,6 +410,11 @@ void cPopulationInterface::TriggerDoUpdates(cAvidaContext& ctx)
 void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
   return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_cell_id);
+}
+
+void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change)
+{
+  return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_av_cell_id);
 }
 
 void cPopulationInterface::UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change)
@@ -1097,7 +1231,43 @@ void cPopulationInterface::ReceiveHGTDonation(const InstructionSequence& fragmen
 
 bool cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
-  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
+  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, -1);
+}
+
+bool cPopulationInterface::MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell)
+{
+  bool success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
+  if (success) { 
+    assert (m_world->GetPopulation().GetCell(src_id).HasAvatar());
+    m_world->GetPopulation().GetCell(src_id).RemoveAvatar(GetOrganism());
+    m_world->GetPopulation().GetCell(dest_id).AddAvatar(GetOrganism());
+  }
+  return success;
+}
+
+// ALWAYS set cell first, facing second, faced cell third.
+// record avatar cell location any time avatar is moved, injected, or born into cell (not on rotate)
+void cPopulationInterface::SetAVCellID(int av_cell_id) 
+{ 
+  m_av_cell_id = av_cell_id; 
+}
+
+// needs to be called on inject, birth, and rotate (not on move)
+void cPopulationInterface::SetAvatarFacing(int facing)
+{
+  m_av_facing = facing;
+}
+
+// record avatar faced cell any time avatar is moved, injected, born into cell, or rotates
+void cPopulationInterface::SetAvatarFacedCell(int av_cell_id) 
+{ 
+  // rotate avatar cell to correct direction for this avatar, then get faced cell
+  cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
+  for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
+    av_cell.ConnectionList().CircNext();
+    if (av_cell.GetFacedDir() == m_av_facing) break;
+  }
+  m_av_cell_faced = m_world->GetPopulation().GetCell(m_av_cell_id).GetCellFaced().GetID();    
 }
 
 void cPopulationInterface::AddLiveOrg()  
@@ -1145,6 +1315,134 @@ int cPopulationInterface::NumberOfOrganismsInGroup(int group_id)
   return m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
 }
 
+/* Increases tolerance towards the addition of members to the group.
+ * toleranceType:
+ *    0: increases tolerance towards immigrants
+ *    1: increases tolerance towards own offspring
+ *    2: increases tolerance towards other offspring of the group
+ * Removes the most recent record of dec-tolerance
+ * Returns the modified tolerance total.
+ */
+int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &ctx)
+{
+  int group_id = GetOrganism()->GetOpinion().first;
+  
+  if (toleranceType == 0) {
+    // Modify tolerance towards immigrants
+    PushToleranceInstExe(0, ctx);
+    
+    // Update tolerance list by removing the most recent dec_tolerance record
+    delete GetOrganism()->GetPhenotype().GetToleranceImmigrants().Pop();
+    
+    // If not at individual's max tolerance, adjust both caches
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != 0) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[0].second--;
+      GetGroupIntolerances(group_id, 0)--;
+    }
+    // Retrieve modified tolerance total for immigrants
+    return GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
+  }
+  if (toleranceType == 1) {
+    // Modify tolerance towards own offspring
+    PushToleranceInstExe(1, ctx);
+    
+    // Update tolerance list by removing the most recent dec_tolerance record
+    delete  GetOrganism()->GetPhenotype().GetToleranceOffspringOwn().Pop();
+    
+    // If not at max tolerance, increase the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[1].second != 0) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[1].second--;
+    }
+    // Retrieve modified tolerance total for own offspring.
+    return GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
+  }
+  if (toleranceType == 2) {
+    // Modify tolerance towards other offspring of the group
+    PushToleranceInstExe(2, ctx);
+    
+    // Update tolerance list by removing the most recent dec_tolerance record
+    delete GetOrganism()->GetPhenotype().GetToleranceOffspringOthers().Pop();
+    
+    
+    // If not at max tolerance, increase the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != 0) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[2].second--;
+      GetGroupIntolerances(group_id, 1)--;
+    }
+    // Retrieve modified tolerance total for other offspring in group.
+    return GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
+  }
+  return -1;
+}
+
+/* Decreases tolerance towards the addition of members to the group.
+ * toleranceType:
+ *    0: decreases tolerance towards immigrants
+ *    1: decreases tolerance towards own offspring
+ *    2: decreases tolerance towards other offspring of the group
+ * Records the update during which dec-tolerance was executed
+ * Returns the modified tolerance total.
+ */
+int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &ctx)
+{
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  int group_id = GetOrganism()->GetOpinion().first;
+  
+  if (toleranceType == 0) {
+    // Modify tolerance towards immigrants
+    PushToleranceInstExe(3, ctx);
+    
+    // Update tolerance list by inserting new record (at the front)
+    tList<int>& toleranceList = GetOrganism()->GetPhenotype().GetToleranceImmigrants();
+    toleranceList.Push(new int(cur_update));
+    if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
+    
+    // If not at min tolerance, decrease the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[0].second++;
+      GetGroupIntolerances(group_id, 0)++;
+    }
+    
+    // Return modified tolerance total for immigrants.
+    return GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
+  }
+  if (toleranceType == 1) {
+    PushToleranceInstExe(4, ctx);
+    
+    // Update tolerance list by inserting new record (at the front)
+    tList<int> &toleranceList = GetOrganism()->GetPhenotype().GetToleranceOffspringOwn();
+    toleranceList.Push(new int(cur_update));
+    if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
+    
+    // If not at min tolerance, decrease the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[1].second != tolerance_max) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[1].second++;
+    }
+    // Return modified tolerance total for own offspring.
+    return GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
+
+  }
+  if (toleranceType == 2) {
+    PushToleranceInstExe(5, ctx);
+    
+    // Update tolerance list by inserting new record (at the front)
+    tList<int>& toleranceList = GetOrganism()->GetPhenotype().GetToleranceOffspringOthers();
+    toleranceList.Push(new int(cur_update));
+    if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
+    
+    // If not at min tolerance, decrease the cache
+    if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
+      GetOrganism()->GetPhenotype().GetIntolerances()[2].second++;
+      GetOrganism()->GetOrgInterface().GetGroupIntolerances(group_id, 1)++;
+    }
+    // Retrieve modified tolerance total for other offspring in the group.
+    return GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
+  }
+  
+  return -1;
+}
+
 int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id)
 {
   return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
@@ -1175,10 +1473,50 @@ bool cPopulationInterface::AttemptImmigrateGroup(int group_id, cOrganism* org)
   return m_world->GetPopulation().AttemptImmigrateGroup(group_id, org);
 }
 
-void cPopulationInterface::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
+void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx)
 {
+  if(!m_world->GetConfig().TRACK_TOLERANCE.Get()) {
+    m_world->GetStats().PushToleranceInstExe(tol_inst);
+    return;
+  }
+  
+  const tArray<double> res_count = GetResources(ctx);
+  
+  int group_id = GetOrganism()->GetOpinion().first;
+  int group_size = NumberOfOrganismsInGroup(group_id);
+  double resource_level = res_count[group_id];
+  int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
+  
+  double immigrant_odds = CalcGroupOddsImmigrants(group_id);
+  double offspring_own_odds;
+  double offspring_others_odds;
+  int tol_immi = GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
+  int tol_own;
+  int tol_others;
+  
+  if(m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
+    offspring_own_odds = 1.0;
+    offspring_others_odds = 1.0;
+    tol_own = tol_max;
+    tol_others = tol_max;
+  } else {
+    offspring_own_odds = CalcGroupOddsOffspring(GetOrganism());
+    offspring_others_odds = CalcGroupOddsOffspring(group_id);
+    tol_own = GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
+    tol_others = GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
+  }
+  
+  double odds_immi = immigrant_odds * 100;
+  double odds_own = offspring_own_odds * 100;
+  double odds_others = offspring_others_odds * 100;
+  
   m_world->GetStats().PushToleranceInstExe(tol_inst, group_id, group_size, resource_level, odds_immi, odds_own, odds_others, tol_immi, tol_own, tol_others, tol_max);
+  return;
+}
+
+int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num)
+{
+  return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num);
 }
 
 void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)

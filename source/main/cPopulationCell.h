@@ -39,6 +39,7 @@
 #include "tList.h"
 #endif
 #include "cGenomeUtil.h"
+#include "tSmartArray.h"
 
 class cHardwareBase;
 class cPopulation;
@@ -150,6 +151,22 @@ public:
 
   double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
 
+	// -------- Avatar support --------
+  tSmartArray<cOrganism*> m_av_prey;
+  tSmartArray<cOrganism*> m_av_predators;
+  cOrganism* GetRandAvatar() const;
+  cOrganism* GetRandAVPrey() const;
+  cOrganism* GetRandAVPred() const;
+  inline int GetNumAvatars() const { return m_av_prey.GetSize() + m_av_predators.GetSize(); }
+  inline int GetNumPreyAvatars() const { return m_av_prey.GetSize(); }
+  inline int GetNumPredAvatars() const { return m_av_predators.GetSize(); }
+  void AddAvatar(cOrganism* org);
+  void RemoveAvatar(cOrganism* org);
+  inline bool HasAvatar() const { return (m_av_prey.GetSize() > 0 || m_av_predators.GetSize() > 0); }
+  inline bool HasAVPrey() const { return m_av_prey.GetSize() > 0; }
+  inline bool HasAVPred() const { return m_av_predators.GetSize() > 0; }
+  tArray<cOrganism*> GetCellAvatars();
+  tArray<cOrganism*> GetCellAVPrey();
 
 	// -------- HGT support --------
 public:

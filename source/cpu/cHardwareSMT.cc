@@ -240,7 +240,8 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
-          SingleProcess_PayPostCosts(ctx, cur_inst); 
+          SingleProcess_PayPostResCosts(ctx, cur_inst); 
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
           // record execution success
           exec_success = 1;
         }
@@ -378,6 +379,7 @@ void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* 
   df.WriteComment("Forager Type");
   df.WriteComment("Group ID (opinion)");
   df.WriteComment("Current Cell");
+  df.WriteComment("Avatar Cell");
   df.WriteComment("Faced Direction");
   df.WriteComment("Faced Cell Occupied?");
   df.WriteComment("Faced Cell Has Hill?");
@@ -414,7 +416,8 @@ void cHardwareSMT::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   else fp << -99 << " ";
   // environment info / things that affect movement
   fp << m_organism->GetCellID() << " ";
-  fp << m_organism->GetFacedDir() << " ";
+  fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
+  fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
   fp << m_organism->IsNeighborCellOccupied() << " ";  
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);

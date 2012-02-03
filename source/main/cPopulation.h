@@ -64,6 +64,7 @@ private:
   //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
   //std::map<int, std::vector<cOrganism*> > group_list;
+  tArrayMap<int, tArray<pair<int,int> > > group_intolerances;
   
   // Keep list of live organisms
   tSmartArray<cOrganism* > live_org_list;
@@ -82,6 +83,9 @@ private:
   int world_x;                         // Structured population width.
   int world_y;                         // Structured population height.
   int num_organisms;                   // Cell count with living organisms
+  int num_prey_organisms;
+  int num_pred_organisms;
+  
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
   // Outside interactions...
@@ -143,7 +147,7 @@ public:
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
-  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
+  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int avatar_cell);
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance=0); 
@@ -191,7 +195,7 @@ public:
   // Deme-related stats methods
   void PrintDemeAllStats(cAvidaContext& ctx); 
   void PrintDemeTestamentStats(const cString& filename);
-	void PrintCurrentMeanDemeDensity(const cString& filename);
+  void PrintCurrentMeanDemeDensity(const cString& filename);
   void PrintDemeEnergySharingStats();
   void PrintDemeEnergyDistributionStats(cAvidaContext& ctx); 
   void PrintDemeOrganismEnergyDistributionStats();
@@ -209,7 +213,7 @@ public:
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
-	void PrintDemeTotalAvgEnergy(cAvidaContext& ctx); 
+  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx); 
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);
@@ -231,8 +235,8 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false);
-  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false); 
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false);
+  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
   bool SaveFlameData(const cString& filename);
   
   void SetMiniTraceQueue(tSmartArray<Systematics::GroupPtr> new_queue, bool print_genomes);
@@ -283,6 +287,9 @@ public:
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
 
+  int GetNumPreyOrganisms() { return num_prey_organisms; }
+  int GetNumPredOrganisms() { return num_pred_organisms; }
+  
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);
@@ -305,7 +312,9 @@ public:
   void UpdateResourceCount(const int Verbosity, cWorld* world);        
   
   // Let users change Gradient Resource variables during the run JW
-  void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientInflow(const cString res_name, const double inflow);
+  void UpdateGradientOutflow(const cString res_name, const double outflow);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
@@ -315,7 +324,7 @@ public:
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);
-  void MakeGroup(cOrganism* org);
+  void MakeGroup(cOrganism* org); // @JJB
   // Removes an organism from a group 
   void LeaveGroup(cOrganism* org, int group_id);
 
@@ -349,6 +358,7 @@ public:
   // Calculates the standard deviation for group tolerance to other group offspring
   double CalcGroupAveOthers(int group_id);
   double CalcGroupSDevOthers(int group_id);
+  int& GetGroupIntolerances(int group_id, int tol_num);
 
   // -------- HGT support --------
   //! Modify current level of the HGT resource.
@@ -376,6 +386,7 @@ private:
   // Update statistics collecting...
   void UpdateDemeStats(cAvidaContext& ctx); 
   void UpdateOrganismStats(cAvidaContext& ctx); 
+  void UpdateFTOrgStats(cAvidaContext& ctx); 
   
   void InjectClone(int cell_id, cOrganism& orig_org, Systematics::Source src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
@@ -386,10 +397,12 @@ private:
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
-  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
   void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
   void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
   void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  
+  int PlaceAvatar(cOrganism* parent);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };

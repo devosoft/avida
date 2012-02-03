@@ -47,7 +47,10 @@ private:
   cWorld* m_world;
   int m_cell_id;
   int m_deme_id;
-
+  int m_av_cell_id;
+  int m_av_facing;
+  int m_av_cell_faced;
+  
   int m_prevseen_cell_id;	// Previously-seen cell's ID
   int m_prev_task_cell;		// Cell ID of previous task
   int m_num_task_cells;		// Number of task cells seen
@@ -60,12 +63,15 @@ public:
   cPopulationInterface(cWorld* world);
   virtual ~cPopulationInterface();
 
+  tSmartArray <cOrganism*> GetLiveOrgList();
 	//! Retrieve this organism.
 	cOrganism* GetOrganism();
 	//! Retrieve the ID of this cell.
   int GetCellID() { return m_cell_id; }
 	//! Retrieve the cell in which this organism lives.
 	cPopulationCell* GetCell();
+	cPopulationCell* GetCell(int cell_id);
+	cPopulationCell* GetAVCell();
 	//! Retrieve the cell currently faced by this organism.
 	cPopulationCell* GetCellFaced();
   int GetDemeID() { return m_deme_id; }
@@ -74,16 +80,28 @@ public:
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
   
+  int GetAVCellID();
+  void SetAVCellID(int av_cell_id); 
+  void SetAvatarFacing(int facing);
+  void SetAvatarFacedCell(int av_cell_id);
+  int GetAVFacedCellID();
+  int GetAVFacedDir();
+  
   int GetCellData();
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
   int GetCellDataForagerType();
   void SetCellData(const int newData);
+  void SetAVCellData(const int newData, const int org_id);
   int GetFacedCellData();
   int GetFacedCellDataOrgID();
   int GetFacedCellDataUpdate();
   int GetFacedCellDataTerritory();
+  int GetFacedAVData();
+  int GetFacedAVDataOrgID();
+  int GetFacedAVDataUpdate();
+  int GetFacedAVDataTerritory();
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }
@@ -94,8 +112,17 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
+  tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
+  cOrganism* GetAVRandNeighbor();
+  cOrganism* GetAVRandNeighborPrey();
+  cOrganism* GetAVRandNeighborPred();
   bool IsNeighborCellOccupied();
+  bool HasAVNeighbor();
+  bool HasAVNeighborPrey();
+  bool HasAVNeighborPred();
   int GetNumNeighbors();
+  int GetAVNumNeighbors();
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
@@ -106,7 +133,9 @@ public:
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
+  const tArray<double>& GetAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  const tArray<double>& GetFacedAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
@@ -117,6 +146,7 @@ public:
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id);
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
@@ -146,6 +176,7 @@ public:
   int GetStateGridID(cAvidaContext& ctx);
 	
   bool Move(cAvidaContext& ctx, int src_id, int dest_id);
+  bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell);
 
 	// Reputation
 	void RotateToGreatestReputation();
@@ -205,7 +236,6 @@ protected:
 	//! Called when this organism is the receiver of an HGT donation.
 	void ReceiveHGTDonation(const InstructionSequence& fragment);
   
-  
 public:
   void AddLiveOrg(); 
   void RemoveLiveOrg();
@@ -219,14 +249,17 @@ public:
   void LeaveGroup(int group_id);
   int NumberOfOrganismsInGroup(int group_id);
   
+  // ----- Tolerance/Group support ------
+  int IncTolerance(const int toleranceType, cAvidaContext &ctx);
+  int DecTolerance(const int toleranceType, cAvidaContext &ctx);
   int CalcGroupToleranceImmigrants(int prop_group_id);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
   double CalcGroupOddsImmigrants(int group_id);
   double CalcGroupOddsOffspring(cOrganism* parent);
   double CalcGroupOddsOffspring(int group_id);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
-  void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-            double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max);
+  void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
+  int& GetGroupIntolerances(int group_id, int tol_num);
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
   void BeginSleep();

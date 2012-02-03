@@ -602,7 +602,8 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                             res->GetPlateauInflow(), res->GetPlateauOutflow(),                            
                             res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
+                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
+                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                             ); 
   
   if(res->GetEnergyResource()) {
@@ -1222,88 +1223,6 @@ void cDeme::UpdateShannonAll()
   }
 }
 
-
-double cDeme::GetMeanSDofFitness() 
-{
-  cDoubleSum fit; 
-  bool same_fit = true; 
-  double cur_fit = -1;
-  for (int i=0; i<GetSize(); ++i) {
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
-    if (cell.IsOccupied()) {
-      cOrganism* organism = cell.GetOrganism();
-      fit.Add(organism->GetPhenotype().GetFitness());
-      if (cur_fit == -1) { 
-        cur_fit = organism->GetPhenotype().GetFitness();
-      }
-      if (cur_fit != organism->GetPhenotype().GetFitness()) {
-        same_fit = false;
-      }
-    }
-  }
-  double sd = fit.StdDeviation();
-  // if the standard deviation is nan, it resulted from *no* variation in fitness among the organisms.
-  if (same_fit) {
-    sd = 0;
-  }
-  return sd;
-}
-
-
-double cDeme::GetMeanSDofMerit()
-{
-  cDoubleSum mer; 
-  bool same_merit = true; 
-  double cur_merit = -1;
-  for (int i=0; i<GetSize(); ++i) {
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
-    if (cell.IsOccupied()) {
-      cOrganism* organism = cell.GetOrganism();
-      mer.Add(organism->GetPhenotype().GetMerit().GetDouble());
-      if (cur_merit == -1) { 
-        cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
-      }
-      if (cur_merit != organism->GetPhenotype().GetMerit().GetDouble()) {
-        same_merit = false;
-      }
-    }
-  }
-  double sd = mer.StdDeviation();
-  // if the standard deviation is nan, it resulted from *no* variation in merit among the organisms.
-  if (same_merit) {
-    sd = 0;
-  }
-  return sd;
-}
-
-
-double cDeme::GetMeanSDofGestation()
-{
-  cDoubleSum gest; 
-  bool same_gest = true; 
-  double cur_gest = -1;
-  for (int i=0; i<GetSize(); ++i) {
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
-    if (cell.IsOccupied()) {
-      cOrganism* organism = cell.GetOrganism();
-      gest.Add(organism->GetPhenotype().GetGestationTime());
-      if (cur_gest == -1) { 
-        cur_gest = organism->GetPhenotype().GetGestationTime();
-      }
-      if (cur_gest != organism->GetPhenotype().GetGestationTime()) {
-        same_gest = false;
-      }
-    }
-  }
-  double sd = gest.StdDeviation();
-  // if the standard deviation is nan, it resulted from *no* variation in gestation time among the organisms.
-  if (same_gest) {
-    sd = 0;
-  }
-  return sd;
-}
-
-
 double cDeme::GetPercentReproductives()
 {
   double per = (m_num_reproductives/((double)injected_count + (double)cur_birth_count));
@@ -1319,3 +1238,74 @@ void cDeme::ClearShannonInformationStats()
   m_num_reproductives = 0;
 }
 
+
+/* Returns the average number of mutations that have occured to the deme's germline as a the result damage accrued by performing tasks. */
+double cDeme::GetAveGermMut() 
+{
+
+  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) {
+    cPopulationCell& c = GetCell(0);
+    if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
+  }
+  double mut_count = 0;
+  double count = 0;
+  
+  for (int i=0; i<GetSize(); ++i) {
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      if (o->IsGermline()) {
+        mut_count += o->GetNumOfPointMutationsApplied();
+        ++count; 
+      }
+    }
+  }
+  
+  if (count > 0) mut_count = mut_count/count;
+  return (mut_count);
+
+}
+
+double cDeme::GetAveNonGermMut() 
+{
+  double mut_count = 0;
+  double count = 0;
+  
+  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) {
+    cPopulationCell& c = GetCell(0);
+    if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
+  }
+  
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      if (!o->IsGermline()) {
+        mut_count += o->GetNumOfPointMutationsApplied();
+        ++count; 
+      }
+    }
+  }
+  
+  if (count > 0) mut_count = mut_count/count;
+  return (mut_count);
+}
+
+double cDeme::GetGermlinePercent() {
+  double count = 0;
+  double total_count = 0;
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      if (o->IsGermline()) {
+        ++count; 
+      }
+      ++total_count;
+    }
+  }
+  total_count = (count/total_count) * 100;
+  return total_count;
+}

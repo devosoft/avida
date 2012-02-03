@@ -47,11 +47,22 @@ public:
     : m_testcpu(testcpu), m_test_info(test_info), m_cur_depth(cur_depth) { ; }
   virtual ~cTestCPUInterface() { ; }
 
+  
+  tSmartArray <cOrganism*> GetLiveOrgList();
+  cPopulationCell* GetCell() { return NULL; }
+	cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }
   void SetCellID(int) { ; }
   void SetDemeID(int) { ; }
+  
+  int GetAVCellID() { return -1; }
+  void SetAVCellID(int av_cell_id) { ; }
+  void SetAvatarFacing(int facing) { ; }
+  void SetAvatarFacedCell(int av_cell_id) { ; }
+  int GetAVFacedCellID() { return -1; }
+  int GetAVFacedDir() { return 0; }
   
   int GetCellData() { return -1; }
   int GetCellDataOrgID() { return -1; }
@@ -59,10 +70,15 @@ public:
   int GetCellDataTerritory() { return -1; }
   int GetCellDataForagerType() { return -99; }
   void SetCellData(const int) { ; }
+  void SetAVCellData(const int, const int) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }
   int GetFacedCellDataUpdate() { return -1; }
   int GetFacedCellDataTerritory() { return -1; }
+  int GetFacedAVData() { return -1; }
+  int GetFacedAVDataOrgID() { return -1; }
+  int GetFacedAVDataUpdate() { return -1; }
+  int GetFacedAVDataTerritory() { return -1; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
@@ -73,8 +89,17 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
+  cOrganism* GetAVRandNeighbor();
+  cOrganism* GetAVRandNeighborPrey();
+  cOrganism* GetAVRandNeighborPred();
+  tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   bool IsNeighborCellOccupied();
+  bool HasAVNeighbor();
+  bool HasAVNeighborPrey();
+  bool HasAVNeighborPred();
   int GetNumNeighbors();
+  int GetAVNumNeighbors();
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetNeighborCellContents() { return 0; }
   void Rotate(int direction = 1);
@@ -82,7 +107,9 @@ public:
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
+  const tArray<double>& GetAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  const tArray<double>& GetFacedAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
@@ -93,7 +120,8 @@ public:
   int GetFrozenPeakY(cAvidaContext&, int) { return 0; } 
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
-  void UpdateDemeResources(cAvidaContext&, const tArray<double>&) {;}
+  void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateDemeResources(cAvidaContext&, const tArray<double>&) { ; }
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
   void Kaboom(int distance, cAvidaContext& ctx); 
@@ -150,7 +178,8 @@ public:
 	void ReceiveHGTDonation(const InstructionSequence&) { ; }
   
   bool Move(cAvidaContext&, int, int) { return false; }
-  
+  bool MoveAvatar(cAvidaContext&, int, int, int) { return false; }
+
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
   
@@ -163,13 +192,16 @@ public:
   void LeaveGroup(int) { ; }
   int NumberOfOrganismsInGroup(int) {return 0; }
     
-  int CalcGroupToleranceImmigrants(int) {return 0; }
-  int CalcGroupToleranceOffspring(cOrganism*) {return 0; }
-  double CalcGroupOddsImmigrants(int) {return 0.0; }
-  double CalcGroupOddsOffspring(cOrganism*) {return 0.0; }
-  double CalcGroupOddsOffspring(int) {return 0.0; }
-  bool AttemptImmigrateGroup(int, cOrganism*) {return false; }
-  void PushToleranceInstExe(int, int, int, double, double, double, double, int, int, int, int) { ; }
+  int IncTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
+  int DecTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
+  int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism) {return 0; }
+  double CalcGroupOddsImmigrants(int group_id) {return 0.0; }
+  double CalcGroupOddsOffspring(cOrganism* parent) {return 0.0; }
+  double CalcGroupOddsOffspring(int group_id) {return 0.0; }
+  bool AttemptImmigrateGroup(int group_id, cOrganism* org) {return false; }
+  void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
+  int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
   void AttackFacedOrg(cAvidaContext&, int) { ; }
   
