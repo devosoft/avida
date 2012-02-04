@@ -3344,6 +3344,11 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
 // Prints the circumstances around each tolerance instruction executed within the last update. @JJB
 void cStats::PrintToleranceData(const cString& filename)
 {
+  // TRACK_TOLERANCE must be on in config for output file to function
+  if(!m_world->GetConfig().TRACK_TOLERANCE.Get()) {
+    m_world->GetDriver().RaiseFatalException(-1, "TRACK_TOLERANCE option must be turned on in avida.cfg for PrintToleranceData to function.");
+  }
+
   const int num_tol_inst = 8;
   tArray<cString> m_is_tolerance_inst_names(num_tol_inst);
   m_is_tolerance_inst_names[0] = "inc-tolerance_Immigrants";
