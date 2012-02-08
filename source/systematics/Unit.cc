@@ -60,7 +60,7 @@ Apto::String Avida::Systematics::Source::AsString() const
 Avida::Systematics::Unit::~Unit()
 {
   for (int i = 0; i < m_groups->GetSize(); i++) {
-    m_groups->Get(i)->RemoveUnit(thisPtr());
+    m_groups->Get(i)->RemoveUnit();
   }
 }
 

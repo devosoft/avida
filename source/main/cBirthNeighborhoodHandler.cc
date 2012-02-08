@@ -35,9 +35,6 @@ cBirthNeighborhoodHandler::cBirthNeighborhoodHandler(cWorld* world, cBirthChambe
 
 cBirthNeighborhoodHandler::~cBirthNeighborhoodHandler()
 {
-  for (int i = 0; i < m_entries.GetSize(); i++) {
-    m_bc->ClearEntry(m_entries[i]);
-  }
 }
 
 

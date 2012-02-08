@@ -54,6 +54,7 @@ public:
   
   cBirthEntry();
   cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _timestamp);
+  ~cBirthEntry();
   
   //Accessor functions
   int GetMatingType() { return m_mating_type; }

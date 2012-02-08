@@ -151,6 +151,7 @@ SET(CORE_SOURCES
   ${CORE_DIR}/GlobalObject.cc
   ${CORE_DIR}/InstructionSequence.cc
   ${CORE_DIR}/Properties.cc
+  ${CORE_DIR}/Types.cc
   ${CORE_DIR}/Version.cc
   ${CORE_DIR}/World.cc
 )

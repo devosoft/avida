@@ -405,7 +405,7 @@ bool cPopulation::IsValidArgument(const Data::DataID& data_id, Data::Argument ar
 
 cPopulation::~cPopulation()
 {
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i], m_world->GetDefaultContext()); 
+  for (int i = 0; i < cell_array.GetSize(); i++) delete cell_array[i].GetOrganism(); 
   delete schedule;
 }
 
@@ -768,7 +768,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
     target_organism = GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize())).GetOrganism();
   } else {
     target_organism =
-    host_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(host->GetNeighborhoodSize()))->GetOrganism();
+    host_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(host_cell.ConnectionList().GetSize()))->GetOrganism();
   }
   if (target_organism == NULL) return false;
   
@@ -1136,10 +1136,10 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     
     // Find neighborhood size for facing
     if (NULL != dest_cell.GetOrganism()) {
-      actualNeighborhoodSize = dest_cell.GetOrganism()->GetNeighborhoodSize();
+      actualNeighborhoodSize = dest_cell.ConnectionList().GetSize();
     } else {
       if (NULL != src_cell.GetOrganism()) {
-        actualNeighborhoodSize = src_cell.GetOrganism()->GetNeighborhoodSize();
+        actualNeighborhoodSize = src_cell.ConnectionList().GetSize();
       } else {
         // Punt
         actualNeighborhoodSize = 8;
@@ -2112,7 +2112,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     target_deme.ReplaceGermline(new_germline_genotype);
     SeedDeme(source_deme, new_germline_genotype, Systematics::Source(Systematics::DUPLICATION, "germline"), ctx); 
     SeedDeme(target_deme, new_germline_genotype, Systematics::Source(Systematics::DUPLICATION, "germline"), ctx); 
-    new_germline_genotype->RemoveUnit(unit);
+    new_germline_genotype->RemoveUnit();
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
     target_successfully_seeded = SeedDeme(source_deme, target_deme, ctx); 
@@ -4494,7 +4494,8 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
 
-    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
+    Apto::String inst_set = organism->GetGenome().Properties().Get("instset").Value();
+    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)inst_set);
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
@@ -5277,7 +5278,7 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
     Systematics::UnitPtr unit(new cDemePlaceholderUnit(src, genome));
     Systematics::GroupPtr genotype = Systematics::Manager::Of(m_world->GetNewWorld())->ArbiterForRole("genotype")->ClassifyNewUnit(unit);
     deme.ReplaceGermline(genotype);
-    genotype->RemoveUnit(unit);
+    genotype->RemoveUnit();
   }
   
   if(inject_group) {

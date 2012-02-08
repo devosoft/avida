@@ -4306,6 +4306,65 @@ public:
   }
 };
 
+
+//Prints data about all the 'offspring' waiting in the birth chamber
+class cActionPrintDominantData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintDominantData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("dominant.dat")
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"dominant.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    
+    df.WriteComment("Avida Dominant Data");
+    df.WriteTimeStamp();
+    
+    df.Write(m_world->GetStats().GetUpdate(),     "Update");
+
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
+    Systematics::GroupPtr bg = it->Next();
+    if (!bg) return;
+    
+    df.Write(bg->Properties().Get("ave_metabolic_rate").Value(),       "Average Merit of the Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_gestation_time").Value(),   "Average Gestation Time of the Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_fitness").Value(),     "Average Fitness of the Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_repro_rate").Value(),  "Repro Rate?");
+    
+    Genome gen(bg->Properties().Get("genome"));
+    InstructionSequencePtr seq;
+    seq.DynamicCastFrom(gen.Representation());
+    df.Write(seq->GetSize(),        "Size of Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_copy_size").Value(), "Copied Size of Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_exe_size").Value(), "Executed Size of Dominant Genotype");
+    df.Write(bg->NumUnits(),   "Abundance of Dominant Genotype");
+    df.Write(bg->Properties().Get("last_births").Value(),      "Number of Births");
+    df.Write(bg->Properties().Get("last_breed_true").Value(),  "Number of Dominant Breed True?");
+    df.Write(bg->Depth(),  "Dominant Gene Depth");
+    df.Write(bg->Properties().Get("last_breed_in").Value(),    "Dominant Breed In");
+    df.Write(bg->Properties().Get("max_fitness").Value(),     "Max Fitness?");
+    df.Write(bg->ID(), "Genotype ID of Dominant Genotype");
+    df.Write(bg->Properties().Get("name").Value(),        "Name of the Dominant Genotype");
+    df.Endl();    
+  }
+};
+
+
+
+
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -4533,4 +4592,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintBirthChamberMatingTypeHistogram>("PrintBirthChamberMatingTypeHistogram");
   action_lib->Register<cActionPrintSuccessfulMates>("PrintSuccessfulMates");
   action_lib->Register<cActionPrintBirthChamber>("PrintBirthChamber");
+
+
+  action_lib->Register<cActionPrintDominantGenotype>("PrintDominantData");
+
 }

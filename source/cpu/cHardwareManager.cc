@@ -44,6 +44,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
 {
   cString filename = world->GetConfig().INST_SET.Get();
   m_is_name_map.SetDefault(-1);
+  m_is_name_map.Set("(default)", 0);
 
 }
 

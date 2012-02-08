@@ -2268,6 +2268,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = "";
 				WARNING_CFLAGS = (
+					"-fstack-protect-all",
 					"-ferror-limit=0",
 					"-Wall",
 					"-Wextra",

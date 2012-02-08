@@ -36,9 +36,6 @@
 
 cBirthMatingTypeGlobalHandler::~cBirthMatingTypeGlobalHandler()
 {
-  for (int i = 0; i < m_entries.GetSize(); i++) {
-    m_bc->ClearEntry(m_entries[i]);
-  }
 }
 
 cBirthEntry* cBirthMatingTypeGlobalHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)

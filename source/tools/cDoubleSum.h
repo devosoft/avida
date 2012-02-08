@@ -31,15 +31,17 @@ private:
   double s1;  // Sum (x)
   double s2;  // Sum of squared x (x^2)
   double n;
+  double max;
 
 public:
   cDoubleSum() { Clear(); }
 
-  void Clear() { s1 = s2 = n = 0; }
+  void Clear() { s1 = s2 = n = 0; max = std::numeric_limits<double>::min();}
 
   double Count()        const { return n; }
   double N()            const { return n; }
   double Sum()          const { return s1; }
+  double Max()          const { return max; }
 
   double Average() const { return (n > 0.0) ? (s1 / n) : 0.0; }
   double Variance() const { return (n > 1.0) ? (s2 - s1 * s1 / n) / (n - 1.0) : 0.0; }
@@ -56,6 +58,7 @@ public:
     n += weight;
     s1 += w_val;
     s2 += w_val * w_val;
+    if (value > max) max = value;
   }
 
   void Subtract(double value, double weight = 1.0)

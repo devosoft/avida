@@ -162,10 +162,12 @@ void cBirthChamber::ClearEntry(cBirthEntry& entry)
 {
   entry.timestamp = -1;
 
-  for (int i = 0; i < entry.groups->GetSize(); i++) {
-    (*entry.groups)[i]->RemoveActiveReference();
+  if (entry.groups) {
+    for (int i = 0; i < entry.groups->GetSize(); i++) {
+      (*entry.groups)[i]->RemoveActiveReference();
+    }
+    entry.groups = Systematics::GroupMembershipPtr(NULL);
   }
-  entry.groups = Systematics::GroupMembershipPtr(NULL);
 }
 
 

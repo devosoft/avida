@@ -95,7 +95,8 @@ bool cEventList::LoadEventFile(const cString& filename, const cString& working_d
 
   // Loop through the line_list and change the lines to events.
   for (int line_id = 0; line_id < event_file.GetNumLines(); line_id++) {
-    if (!AddEventFileFormat(event_file.GetLine(line_id), feedback)) return false;
+    if (!AddEventFileFormat(event_file.GetLine(line_id), feedback))
+      return false;
   }
   
   return true;

@@ -105,6 +105,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 void cOrganism::initialize(cAvidaContext& ctx)
 {
   m_phenotype.SetInstSetSize(m_hardware->GetInstSet().GetSize());
+  const_cast<Genome&>(m_initial_genome).Properties().Get("instset").SetValue((const char*)m_hardware->GetInstSet().GetInstSetName());
   
   if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     m_max_executed = m_world->GetConfig().AGE_LIMIT.Get();

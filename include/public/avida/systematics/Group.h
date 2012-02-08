@@ -67,7 +67,7 @@ namespace Avida {
       
       LIB_EXPORT virtual GroupPtr ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parent_groups) = 0;
       LIB_EXPORT virtual void HandleUnitGestation(UnitPtr u) = 0;
-      LIB_EXPORT virtual void RemoveUnit(UnitPtr u) = 0;
+      LIB_EXPORT virtual void RemoveUnit() = 0;
       
       LIB_EXPORT virtual int Depth() const = 0;
       LIB_EXPORT virtual int NumUnits() const = 0;

@@ -112,7 +112,7 @@ namespace Avida {
       
       GroupPtr ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parent_groups);
       void HandleUnitGestation(UnitPtr u);
-      void RemoveUnit(UnitPtr u);
+      void RemoveUnit();
       
       int Depth() const;
       int NumUnits() const;

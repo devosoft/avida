@@ -416,7 +416,8 @@ void cStats::ZeroReactions()
 void cStats::ZeroInst()
 {
   for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+    Apto::Array<cIntSum>& inst_counts = (*it.Get());
+    for (int i = 0; i < inst_counts.GetSize(); i++) inst_counts[i].Clear();
   }
 }
 

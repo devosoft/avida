@@ -26,7 +26,6 @@
 
 cBirthGlobalHandler::~cBirthGlobalHandler()
 {
-  m_bc->ClearEntry(m_entry);
 }
 
 cBirthEntry* cBirthGlobalHandler::SelectOffspring(cAvidaContext&, const Genome& offspring, cOrganism* parent)

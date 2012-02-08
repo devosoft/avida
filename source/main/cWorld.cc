@@ -97,6 +97,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   
   // Setup Random Number Generator
   m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
+  m_ctx = new cAvidaContext(NULL, m_rng);
   
   m_datafile_mgr = new cDataFileManager(cString(Apto::FileSystem::GetAbsolutePath(Apto::String(m_conf->DATA_DIR.Get()), Apto::String(m_working_dir))), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   

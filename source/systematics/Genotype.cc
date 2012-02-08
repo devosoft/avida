@@ -127,7 +127,10 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
   if (m_src.arguments == "(none)") m_src.arguments = "";
   
   PropertyMap prop_map;
-  prop_map.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)props.Get("inst_set"))));
+  cString inst_set = props.Get("inst_set");
+  if (inst_set == "") inst_set = "(default)";
+  
+  prop_map.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)inst_set)));
   m_genome = Avida::Genome(props.Get("hw_type").AsInt(), prop_map, GeneticRepresentationPtr(new InstructionSequence((const char*)props.Get("sequence"))));
   
   if (props.HasEntry("gen_born")) {
@@ -233,7 +236,7 @@ void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
 }
 
 
-void Avida::Systematics::Genotype::RemoveUnit(UnitPtr)
+void Avida::Systematics::Genotype::RemoveUnit()
 {
   m_deaths.Inc();
   
@@ -425,6 +428,8 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_FUN_PROP("ave_repro_rate", "Average Repro Rate", double, GetFunctor(&m_repro_rate, &cDoubleSum::Average));
   ADD_FUN_PROP("ave_metabolic_rate", "Average Metabolic Rate", double, GetFunctor(&m_merit, &cDoubleSum::Average));
   ADD_FUN_PROP("ave_fitness", "Average Fitness", double, GetFunctor(&m_fitness, &cDoubleSum::Average));
+
+  ADD_FUN_PROP("max_fitness", "Maximum Fitness", double, GetFunctor(&m_fitness, &cDoubleSum::Max));
   
   ADD_REF_PROP("recent_births", "Recent Births (during update)", int, m_births.GetCur());
   ADD_REF_PROP("recent_deaths", "Recent Deaths (during update)", int, m_deaths.GetCur());

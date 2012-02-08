@@ -54,6 +54,16 @@ cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _time
   // since this birth entry is going to be destroyed anyway
 }
 
+
+cBirthEntry::~cBirthEntry()
+{
+  if (groups) {
+    for (int i = 0; i < groups->GetSize(); i++) {
+      (*groups)[i]->RemoveActiveReference();
+    }
+  }
+}
+
 //Returns a string representation of a birth entry's information (primarily used for print actions
 // that output information about the offspring in the birth chamber)
 cString cBirthEntry::GetPhenotypeString()
@@ -97,6 +107,13 @@ cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)
   merit = _birth_entry.merit;
   timestamp = _birth_entry.timestamp;
   groups = _birth_entry.groups;
+  
+  // Creating a copy of this birth entry, make sure to add active references to group membership
+  if (groups) {
+    for (int i = 0; i < groups->GetSize(); i++) {
+      (*groups)[i]->AddActiveReference();
+    }
+  }
   
   return *this;
 }
