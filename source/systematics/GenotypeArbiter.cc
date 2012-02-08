@@ -79,7 +79,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::GenotypeArbiter::ClassifyNewUni
 
 void Avida::Systematics::GenotypeArbiter::PerformUpdate(Context&, Update current_update)
 {
-  m_cur_update = current_update;
+  m_cur_update = current_update + 1; // +1 since PerformUpdate happens at end of updates, but m_cur_update is used during
   
   if (m_active_sz.GetSize() < HASH_SIZE) {
     for (int i = 0; i < m_active_sz.GetSize(); i++) {

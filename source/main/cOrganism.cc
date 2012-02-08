@@ -139,11 +139,12 @@ void cOrganism::initialize(cAvidaContext& ctx)
   ADD_STR_PROP("src_transmission_type", "Source Transmission Type", (int)m_src.transmission_type); 
   
   ADD_FUN_PROP("age", "Age", int, GetFunctor(&m_phenotype, &cPhenotype::GetAge));
+  ADD_FUN_PROP("generation", "Generation", int, GetFunctor(&m_phenotype, &cPhenotype::GetGeneration));
   ADD_FUN_PROP("last_copied_size", "Average Copied Size", double, GetFunctor(&m_phenotype, &cPhenotype::GetCopiedSize));
   ADD_FUN_PROP("last_executed_size", "Average Executed Size", double, GetFunctor(&m_phenotype, &cPhenotype::GetExecutedSize));
   ADD_FUN_PROP("last_gestation_time", "Average Gestation Time", double, GetFunctor(&m_phenotype, &cPhenotype::GetGestationTime));
   ADD_FUN_PROP("last_metabolic_rate", "Metabolic Rate", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastMerit));
-  ADD_FUN_PROP("last_fitness", "Fitness", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastFitness));
+  ADD_FUN_PROP("last_fitness", "Fitness", double, GetFunctor(&m_phenotype, &cPhenotype::GetFitness));
   
   const cEnvironment& env = m_world->GetEnvironment();
   Apto::Functor<int, Apto::TL::Create<int> > getLastTaskFun(&m_phenotype, &cPhenotype::GetLastCountForTask);

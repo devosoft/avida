@@ -24,6 +24,8 @@
 
 #include "Avida2Driver.h"
 
+#include "avida/core/Context.h"
+#include "avida/core/World.h"
 #include "avida/systematics/Group.h"
 
 #include "cAnalyze.h"
@@ -82,6 +84,7 @@ void Avida2Driver::Run()
   }
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
+  Avida::Context new_ctx(this, &m_world->GetRandom());
   
   while (!m_done) {
     m_world->GetEvents(ctx);
@@ -149,6 +152,8 @@ void Avida2Driver::Run()
         }
       }
     }
+    
+    m_new_world->PerformUpdate(new_ctx, stats.GetUpdate());
     
     // Exit conditons...
     if((population.GetNumOrganisms()==0) && m_world->AllowsEarlyExit()) {
