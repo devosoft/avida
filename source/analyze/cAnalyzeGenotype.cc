@@ -205,6 +205,8 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(const cString& (), "name",         "Genotype Name",                 GetName,           SetName,       0, 0, 0);
   ADD_GDATA(bool (),           "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
   ADD_GDATA(int (),            "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
+  ADD_GDATA(int (),            "hw_type",      "HW Type",                       GetHWType,                 SetNULL,         0, 0, 0);
+  ADD_GDATA(cString (),        "inst_set",      "Instset",                      GetInstSet,                 SetNULL,         0, 0, 0);  
   ADD_GDATA(int (),            "src",          "Genotype Transmission Type",    GetSource,         SetSource,     0, 0, 0);
   ADD_GDATA(const cString& (), "src_args",     "Genotype Source Arguments",     GetSourceArgs,     SetSourceArgs, 0, "(none)", 0);
   ADD_GDATA(const cString& (), "tag",          "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
@@ -836,6 +838,7 @@ cString cAnalyzeGenotype::GetTaskList() const
   
   return out_string;
 }
+
 
 cString cAnalyzeGenotype::GetSequence() const 
 { 

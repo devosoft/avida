@@ -308,6 +308,7 @@ public:
   bool GetViable() const { return viable; }
 
   int GetID() const { return id_num; }
+  int GetHWType() const { return m_genome.HardwareType(); }
   int GetSource() const { return m_src.transmission_type; }
   const cString& GetSourceArgs() const { return m_src_args; }
   const cString& GetParents() const { return m_parent_str; }
