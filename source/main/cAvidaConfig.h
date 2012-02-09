@@ -832,8 +832,6 @@ public:
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
   CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 0, "Load legacy format instruction set file format");
-  CONFIG_ADD_VAR(START_ORGANISM, cString, "-", "Organism to seed the population");
-  CONFIG_ADD_ALIAS(START_CREATURE);
 
 
 #endif

@@ -63,9 +63,7 @@ using namespace AvidaTools;
  
  Parameters:
  filename (string)
- The filename of the genotype to load. If this is left empty, or the keyword
- "START_ORGANISM" is given, than the genotype specified in the avida.cfg
- file under "START_ORGANISM" is used.
+ The filename of the genotype to load.
  cell ID (integer) default: 0
  The grid-point into which the organism should be placed.
  merit (double) default: -1
@@ -87,22 +85,21 @@ public:
   cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_ORGANISM";
-    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    
-    if (m_filename == "START_ORGANISM") {
-      m_filename = m_world->GetConfig().START_ORGANISM.Get();
-    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -236,9 +233,7 @@ public:
  
  Parameters:
  filename (string)
- The filename of the genotype to load.  If empty (or the keyword
- "START_ORGANISM" is given) than the genotype specified in the avida.cfg
- file under "START_ORGANISM" is used.
+ The filename of the genotype to load. 
  merit (double) default: -1
  The initial merit of the organism. If set to -1, this is ignored.
  lineage label (integer) default: 0
@@ -257,21 +252,20 @@ public:
   cActionInjectAll(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_ORGANISM"; 
-    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    
-    if (m_filename == "START_ORGANISM") {
-      m_filename = m_world->GetConfig().START_ORGANISM.Get();
-    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -294,9 +288,7 @@ public:
  
  Parameters:
  filename (string)
- The filename of the genotype to load. If this is left empty, or the keyword
- "START_ORGANISM" is given, than the genotype specified in the avida.cfg
- file under "START_ORGANISM" is used.
+ The filename of the genotype to load.
  cell_start (int)
  First cell to inject into.
  cell_end (int)
@@ -322,24 +314,25 @@ public:
   : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_ORGANISM";
-    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
-    if (m_filename == "START_ORGANISM") {
-      m_filename = m_world->GetConfig().START_ORGANISM.Get();
-    }
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
+
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectRange has invalid range!");
     } else {
@@ -505,24 +498,24 @@ public:
   cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_ORGANISM";
-    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_group_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_forager_type = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    
-    if (m_filename == "START_ORGANISM") {
-      m_filename = m_world->GetConfig().START_ORGANISM.Get();
-    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [int group_id=-1] [int forager_type=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
+
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -685,9 +678,7 @@ public:
  
  Parameters:
  filename (string):
- The filename of the genotype to load. If this is left empty, or the keyword
- "START_ORGANISM" is given, than the genotype specified in the avida.cfg
- file under "START_ORGANISM" is used.
+ The filename of the genotype to load.
  cell ID (integer) default: 0
  The grid-point into which the organism should be placed.
  merit (double) default: -1
@@ -708,20 +699,21 @@ public:
   cActionInjectDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_ORGANISM";
-    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (m_filename == "START_ORGANISM") {
-      m_filename = m_world->GetConfig().START_ORGANISM.Get();
-    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
+
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -759,9 +751,7 @@ public:
  
  Parameters:
  filename (string):
- The filename of the genotype to load. If this is left empty, or the keyword
- "START_ORGANISM" is given, than the genotype specified in the avida.cfg
- file under "START_ORGANISM" is used.
+ The filename of the genotype to load.
  modulo default: 1 -- when the deme number modulo this number is 0, inject org
  cell ID (integer) default: 0
  The grid-point into which the organism should be placed.
@@ -784,21 +774,22 @@ public:
   cActionInjectModuloDemes(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_ORGANISM";
-    else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_mod_num = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (m_filename == "START_ORGANISM") {
-      m_filename = m_world->GetConfig().START_ORGANISM.Get();
-    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
+    if (m_filename.GetSize() == 0) {
+      cerr << "error: no organism file specified" << endl;
+      return;
+    }
+
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);

@@ -4223,7 +4223,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
     }    
     else if (m_avatar == 2) {
-      tArray<cOrganism*> av_neighbors = m_organism->GetOrgInterface().GetAVNeighborPrey();
+      const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetAVNeighborPrey();
       bool target_match = false;
       int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
       int j = 0;

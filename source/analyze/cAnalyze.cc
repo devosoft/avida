@@ -6382,6 +6382,32 @@ void cAnalyze::CommandRecombineSample(cString cur_string)
   
 }
 
+// This command will mutate a single locus in every single organism in the current batch
+void cAnalyze::CommandMutagenize(cString cur_string)
+{
+
+  // Loop through all the genomes in the current batch
+  
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype* genotype = NULL;
+  
+  while ((genotype = batch_it.Next()) != NULL) {
+    
+    //Add a mutation to it
+    Genome& cur_genome = genotype->GetGenome();
+    InstructionSequencePtr seq_p;
+    seq_p.DynamicCastFrom(cur_genome.Representation());
+    InstructionSequence& cur_seq = *seq_p;
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet((const char*)cur_genome.Properties().Get("instset").Value());
+
+    int line_num = m_ctx.GetRandom().GetInt(cur_seq.GetSize());
+
+    cur_seq[line_num] = inst_set.GetRandomInst(m_ctx); // Replace it with a random instruction
+    
+  }
+  
+}
+
 void cAnalyze::CommandAlign(cString cur_string)
 {
   // Align does not need any args yet.
@@ -9596,6 +9622,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("SPECIES", &cAnalyze::CommandSpecies);
   AddLibraryDef("RECOMBINE", &cAnalyze::CommandRecombine);
   AddLibraryDef("RECOMBINE_SAMPLE", &cAnalyze::CommandRecombineSample);
+  AddLibraryDef("MUTAGENIZE", &cAnalyze::CommandMutagenize);
   
   // Lineage analysis commands...
   AddLibraryDef("ALIGN", &cAnalyze::CommandAlign);

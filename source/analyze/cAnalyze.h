@@ -258,6 +258,7 @@ private:
   void CommandSpecies(cString cur_string);
   void CommandRecombine(cString cur_string);
   void CommandRecombineSample(cString cur_string);
+  void CommandMutagenize(cString cur_string);
   
   // Lineage Analysis Commands...
   void CommandAlign(cString cur_string);

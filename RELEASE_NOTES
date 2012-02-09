@@ -44,7 +44,19 @@ Changes:
 
 - "collect" instruction family nop-specification change
 
-		Previously, the collect family of instructions required the number of resources to be a power of the number of nops; Avida would crash otherwise.  The new nop-specification method fixes this issue, reading the specification as a range in which to choose a resource to manipulate.  The resource is chosen randomly within this range, weighted by how much of the range the resource occupies.  In the standard 9-resource 3-nop system this behaves in the same way as the previous specification method.
+		Previously, the collect family of instructions required the number of
+    resources to be a power of the number of nops; Avida would crash otherwise.
+    The new nop-specification method fixes this issue, reading the specification
+    as a range in which to choose a resource to manipulate.  The resource is
+    chosen randomly within this range, weighted by how much of the range the
+    resource occupies.  In the standard 9-resource 3-nop system this behaves in
+    the same way as the previous specification method.
+
+- START_CREATURE/START_ORGANISM Removed
+
+    Use Inject actions at the beginning of your experiment to specify exactly
+    how you would like the experiment to be seeded.
+
 
 
 Deprecated features will be removed in the next version of Avida.
@@ -52,11 +64,6 @@ Deprecated features will be removed in the next version of Avida.
 
 
 Deprecated Features that will be removed in 2.14:
-
-- START_CREATURE/START_ORGANISM Now Deprecated
-
-    Use Inject actions at the beginning of your experiment to specify exactly
-    how you would like the experiment to be seeded.
 
 - HARDWARE_TYPE Setting and INST_SET File Deprecated
 

@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 100 -a -set ANALYZE_FILE analyze_max_batches.cfg                
+args = -a                
 
 app = %(default_app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)

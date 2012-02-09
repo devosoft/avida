@@ -2232,7 +2232,7 @@ public:
 
  Parameters
  ref_creature_file (cString)
- Filename for the reference genome, defaults to START_ORGANISM
+ Filename for the reference genome
  fname (cString)
  Name of file to create, defaults to 'genetic_distance.dat'
  */
@@ -2251,8 +2251,7 @@ public:
     cString largs(args);
 
     // Load the genome of the reference creature
-    creature_file.PopWord();
-    if (creature_file == "" || creature_file == "START_ORGANISM") creature_file = m_world->GetConfig().START_ORGANISM.Get();
+    creature_file = largs.PopWord();
     GenomePtr genome(Util::LoadGenomeDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager(), feedback));
     m_reference = *genome;
     m_r_seq.DynamicCastFrom(m_reference.Representation());
@@ -2260,7 +2259,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
 
-  static const cString GetDescription() { return "Arguments: [string ref_creature_file='START_ORGANISM'] [string fname='genetic_distance.dat']"; }
+  static const cString GetDescription() { return "Arguments: <string ref_creature_file> [string fname='genetic_distance.dat']"; }
 
   void Process(cAvidaContext&)
   {
@@ -2321,17 +2320,15 @@ private:
 
 public:
   cActionPrintPopulationDistanceData(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_creature("START_ORGANISM"), m_filename(""), m_save_genotypes(0)
+  : cAction(world, args), m_filename(""), m_save_genotypes(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_creature = largs.PopWord();
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_save_genotypes = largs.PopWord().AsInt();
-
-    if (m_creature == "" || m_creature == "START_ORGANISM") m_creature = m_world->GetConfig().START_ORGANISM.Get();
   }
 
-  static const cString GetDescription() { return "Arguments: [string creature=\"START_ORGANISM\"] [string fname=\"\"] [int save_genotypes=0]"; }
+  static const cString GetDescription() { return "Arguments: <string creature> [string fname=\"\"] [int save_genotypes=0]"; }
 
   void Process(cAvidaContext& ctx)
   {
