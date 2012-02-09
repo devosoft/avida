@@ -266,7 +266,7 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent",   GetParentMuts,   SetParentMuts, 0, "(none)", "");
   ADD_GDATA(const cString& (), "task_order",  "Task Performance Order",  GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(cString (),        "sequence",    "Genome Sequence",         GetSequence,     SetNULL,       0, "(N/A)", "");
+  ADD_GDATA(cString (),        "sequence",    "Genome Sequence",         GetSequence,     SetSequence,       0, "(N/A)", "");
   ADD_GDATA(const cString& (), "alignment",   "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
   ADD_GDATA(cString (), "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
@@ -839,12 +839,21 @@ cString cAnalyzeGenotype::GetTaskList() const
 
 cString cAnalyzeGenotype::GetSequence() const 
 { 
-  ConstInstructionSequencePtr seq_p;
-  ConstGeneticRepresentationPtr rep_p = m_genome.Representation();
-  seq_p.DynamicCastFrom(rep_p);
-  const InstructionSequence& seq = *seq_p;
-  return (const char *)seq.AsString(); 
+  ConstInstructionSequencePtr seq;
+  seq.DynamicCastFrom(m_genome.Representation());
+  cString ret((const char*)seq->AsString());
+//  printf("analyze_getseq: %s, %s\n", (const char*)seq->AsString(), (const char*)ret);
+  return ret;
 }
+
+void cAnalyzeGenotype::SetSequence(cString _seq)
+{
+  InstructionSequencePtr seq;
+  seq.DynamicCastFrom(m_genome.Representation());  
+  InstructionSequence new_seq((const char*)_seq);
+  *seq = new_seq;
+}
+
 
 cString cAnalyzeGenotype::GetHTMLSequence() const
 {

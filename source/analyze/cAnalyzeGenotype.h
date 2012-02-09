@@ -394,6 +394,7 @@ public:
 
   cString GetInstSet() const { return cString((const char*)m_genome.Properties().Get("instset").Value()); }
   cString GetSequence() const;
+  void SetSequence(cString _seq);
   cString GetHTMLSequence() const;
 
   cString GetMapLink() const {
