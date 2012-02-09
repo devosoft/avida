@@ -1,5 +1,5 @@
-# Wed Feb  1 14:59:34 2012
-# Filename........: archive/027-aaaac.org
+# Thu Feb  9 12:29:05 2012
+# Filename........: archive/027-aaaai.org
 # Update Output...: 20
 # Is Viable.......: 0
 # Repro Cycle Size: 0
@@ -30,7 +30,7 @@ nop-C
 nop-C
 nop-C
 nop-C
-zero
+nop-C
 nop-C
 push
 nop-C
@@ -42,7 +42,7 @@ nop-C
 nop-C
 IO
 nop-C
-nop-C
+get-easterly
 nop-C
 rotate-to-unoccupied-cell
 repro
