@@ -1,28 +1,28 @@
 # Fri Feb 10 12:43:41 2012
-# Filename........: archive/050-aaaaa.org
-# Update Output...: 70
+# Filename........: archive/051-aaaab.org
+# Update Output...: 100
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
-# Merit...........: 376.000000
-# Gestation Time..: 178
-# Fitness.........: 2.112360
+# Merit...........: 752.000000
+# Gestation Time..: 182
+# Fitness.........: 4.131868
 # Errors..........: 0
-# Genome Size.....: 50
-# Copied Size.....: 50
+# Genome Size.....: 51
+# Copied Size.....: 51
 # Executed Size...: 47
 # Offspring.......: SELF
 # 
 # Tasks Performed:
-# not 1 (1.000000)
+# not 0 (0.000000)
 # nand 1 (1.000000)
 # and 0 (0.000000)
-# orn 1 (1.000000)
+# orn 0 (0.000000)
 # or 0 (0.000000)
 # andn 0 (0.000000)
-# nor 0 (0.000000)
+# nor 1 (1.000000)
 # xor 0 (0.000000)
 # equ 0 (0.000000)
 
@@ -38,7 +38,7 @@ push
 pop
 nop-C
 IO
-nop-A
+h-divide
 nand
 IO
 if-less
@@ -56,6 +56,7 @@ nop-C
 nand
 IO
 nop-C
+sub
 get-head
 nop-A
 IO
