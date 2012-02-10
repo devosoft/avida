@@ -9774,9 +9774,14 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 
 bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
 {
-  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
-  int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
-  m_organism->IncPointMutations(num_mut);
+  // If repairs are off...
+  if(m_world->GetConfig().POINT_MUT_REPAIR_START.Get() == 0) {
+    double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+    int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+    m_organism->IncPointMutations(num_mut);
+  } else {
+    // incur cost of repairs.
+  }
   return true;
 }
 
@@ -9790,6 +9795,15 @@ bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareCPU::Inst_RepairPointMutOn(cAvidaContext& ctx){
+  m_organism->RepairPointMutOn();
+  return true;
+}
+
+bool cHardwareCPU::Inst_RepairPointMutOff(cAvidaContext& ctx){
+  m_organism->RepairPointMutOff();
+  return true;
+}
 
 /***
     Mating type instructions

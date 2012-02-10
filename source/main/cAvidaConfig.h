@@ -313,7 +313,9 @@ public:
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
   
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
-  CONFIG_ADD_VAR(INST_POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per time instruction is executed)");
+  CONFIG_ADD_VAR(INST_POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per time instruction (point-mut) is executed)");
+  CONFIG_ADD_VAR(INST_POINT_REPAIR_COST, int, 0, "The cost, in cycles, of avoiding mutations when the point-mut instruction is executed");
+  CONFIG_ADD_VAR(POINT_MUT_REPAIR_START, int, 0, "The starting condition for repairs (on=1; off=0)");
 
   
   CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
