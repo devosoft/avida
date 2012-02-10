@@ -283,6 +283,10 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
   
   int selected_index = -1;
   
+  if (ctx.GetWorld()->GetConfig().FORCED_MATE_PREFERENCE.Get() != -1) {
+    mate_choice_method = ctx.GetWorld()->GetConfig().FORCED_MATE_PREFERENCE.Get();
+  }
+  
   if (mate_choice_method == MATE_PREFERENCE_RANDOM) {
     //This is a non-choosy individual, so pick a mate randomly!
     //First, get a list of every element of m_entries that contains a waiting offspring (of the compatible sex)
