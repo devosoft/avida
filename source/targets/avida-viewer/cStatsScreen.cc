@@ -120,7 +120,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
 
   PrintDouble(9,  38, log((double) stats.GetNumCreatures()));
   PrintDouble(10, 38, stats.GetEntropy());
-  PrintDouble(12, 38, stats.GetSpeciesEntropy());
+//  PrintDouble(12, 38, stats.GetSpeciesEntropy());
 
   Systematics::GenomeTestMetricsPtr metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, best_gen);
   PrintDouble(2, 62, metrics->GetFitness());

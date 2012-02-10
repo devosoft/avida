@@ -151,8 +151,6 @@ private:
   Apto::Map<cString, Apto::Array<cIntSum> > m_is_pred_exe_inst_map;
 
   // --------  Calculated Stats  ---------
-  double entropy;
-  double species_entropy;
 
   // For tracking of advantageous mutations
   double max_viable_fitness;
@@ -377,12 +375,9 @@ public:
   void SetMinGestationTime(int in_min_gestation_time) { min_gestation_time = in_min_gestation_time; }
   void SetMinGenomeLength(int in_min_genome_length) { min_genome_length = in_min_genome_length; }
 
-  void SetEntropy(double in_entropy) { entropy = in_entropy; }
   void SetPreyEntropy(double in_prey_entropy) { prey_entropy = in_prey_entropy; }
   void SetPredEntropy(double in_pred_entropy) { pred_entropy = in_pred_entropy; }
   
-  void SetSpeciesEntropy(double in_ent) { species_entropy = in_ent; }
-
   cDoubleSum& SumFitness()       { return sum_fitness; }
   cDoubleSum& SumGestation()     { return sum_gestation; }
   cDoubleSum& SumMerit()         { return sum_merit; }
@@ -649,9 +644,6 @@ public:
   double GetAveCopySize() const   { return sum_copy_size.Average(); }
   double GetAveExeSize() const    { return sum_exe_size.Average(); }
 
-  double GetEntropy() const        { return entropy; }
-  double GetSpeciesEntropy() const { return species_entropy; }
-
   double GetMaxFitness() const { return max_fitness; }
   double GetMaxMerit() const { return max_merit; }
   int GetMaxGestationTime() const { return max_gestation_time; }
@@ -702,7 +694,6 @@ public:
   void PrintPredatorVarianceData(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
-  void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);
 	void PrintMessageData(const cString& filename);

@@ -132,7 +132,6 @@ void Avida2Driver::Run()
         cout << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  ";
         cout << "Thrd: " << setw(6) << stats.GetNumThreads() << "  ";
         cout << "Para: " << stats.GetNumParasites() << "  ";
-        cout << "GenEntr: " << stats.GetEntropy() << "  ";
       }
       if (m_world->GetVerbosity() >= VERBOSE_DEBUG) {
         cout << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  ";

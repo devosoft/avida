@@ -81,7 +81,6 @@ STATS_OUT_FILE(PrintAverageData,            average.dat         );
 STATS_OUT_FILE(PrintDemeAverageData,        deme_average.dat    );
 STATS_OUT_FILE(PrintErrorData,              error.dat           );
 STATS_OUT_FILE(PrintVarianceData,           variance.dat        );
-STATS_OUT_FILE(PrintStatsData,              stats.dat           );
 STATS_OUT_FILE(PrintCountData,              count.dat           );
 STATS_OUT_FILE(PrintMessageData,            message.dat         );
 STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
@@ -4373,7 +4372,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintFlowRateTuples>("PrintFlowRateTuples");
   action_lib->Register<cActionPrintErrorData>("PrintErrorData");
   action_lib->Register<cActionPrintVarianceData>("PrintVarianceData");
-  action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
   action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
@@ -4591,6 +4589,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintBirthChamber>("PrintBirthChamber");
 
 
-  action_lib->Register<cActionPrintDominantGenotype>("PrintDominantData");
+  action_lib->Register<cActionPrintDominantData>("PrintDominantData");
 
 }

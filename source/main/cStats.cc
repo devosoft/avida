@@ -60,8 +60,6 @@ cStats::cStats(cWorld* world)
   , m_update(-1)
   , avida_time(0)
   , rave_true_replication_rate( 500 )
-  , entropy(0.0)
-  , species_entropy(0.0)
   , max_viable_fitness(0)
   , max_fitness(0)
   , max_merit(0)
@@ -305,8 +303,6 @@ void cStats::setupProvidedData()
   
 
   // Population Level Stats
-  m_data_manager.Add("entropy",         "Genotype Entropy (Diversity)", &cStats::GetEntropy);
-  m_data_manager.Add("species_entropy", "Species Entropy (Diversity)",  &cStats::GetEntropy);
   m_data_manager.Add("num_resamplings",  "Total Number of resamplings this time step", &cStats::GetResamplings);
   m_data_manager.Add("num_failedResamplings",  "Total Number of divide commands that reached the resampling hard-cap this time step", &cStats::GetFailedResamplings);
 
@@ -819,30 +815,6 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
   
   df.Endl();
 }
-
-void cStats::PrintStatsData(const cString& filename)
-{
-  cDataFile& df = m_world->GetDataFile(filename);
-
-  df.WriteComment("Generic Statistics Data");
-  df.WriteTimeStamp();
-
-  df.Write(m_update,            "update");
-  df.Write(0,                   "(deprecated) average inferiority (energy)");
-  df.Write(0,                   "(deprecated) ave probability of any mutations in genome");
-  df.Write(0,                   "(deprecated) probability of any mutations in dom genome");
-  df.Write(0,                   "(deprecated) log(average fidelity)");
-  df.Write(0,                   "(deprecated) log(dominant fidelity)");
-  df.Write(0,                   "(deprecated) change in number of genotypes");
-  df.Write(entropy,             "genotypic entropy");
-  df.Write(species_entropy,     "species entropy");
-  df.Write(0,                   "(deprecated) depth of most reacent coalescence");
-  df.Write(num_resamplings,     "Total number of resamplings this generation");
-  df.Write(num_failedResamplings, "Total number of organisms that failed to resample this generation");
-
-  df.Endl();
-}
-
 
 void cStats::PrintCountData(const cString& filename)
 {
