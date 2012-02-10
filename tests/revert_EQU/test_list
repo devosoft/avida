@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 200 -c avida-revertEQUtest.cfg -a -set REVERT_EQUALS 1.0 -set EVENT_FILE events-revertEQUtest.cfg -set ANALYZE_OPTION_1 %(default_app)s                  
+args = -a -set ANALYZE_OPTION_1 %(default_app)s                  
 
 app = %(default_app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)

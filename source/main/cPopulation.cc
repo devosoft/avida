@@ -4709,9 +4709,6 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
     UpdateFTOrgStats(ctx);
   }
   
-  // Have stats calculate anything it now can...
-  stats.CalcFidelity();
-  
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx);   
 }
 

@@ -137,7 +137,6 @@ private:
   // given by the number of births per update
   cRunningAverage rave_true_replication_rate;
 
-  cDoubleSum sum_size;
   cDoubleSum sum_copy_size;
   cDoubleSum sum_exe_size;
 
@@ -154,8 +153,6 @@ private:
   // --------  Calculated Stats  ---------
   double entropy;
   double species_entropy;
-  double dom_fidelity;
-  double ave_fidelity;
 
   // For tracking of advantageous mutations
   double max_viable_fitness;
@@ -401,7 +398,6 @@ public:
   cRunningStats& SumDivMutRate()   { return sum_div_mut_rate; }
   cRunningStats& SumLogDivMutRate()   { return sum_log_div_mut_rate; }
 
-  cDoubleSum& SumSize()          { return sum_size; }
   cDoubleSum& SumCopySize()      { return sum_copy_size; }
   cDoubleSum& SumExeSize()       { return sum_exe_size; }
   cDoubleSum& SumMemSize()       { return sum_mem_size; }
@@ -466,7 +462,6 @@ public:
   const cRunningStats& SumDivMutRate() const   { return sum_div_mut_rate; }
   const cRunningStats& SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
 
-  const cDoubleSum& SumSize() const          { return sum_size; }
   const cDoubleSum& SumCopySize() const      { return sum_copy_size; }
   const cDoubleSum& SumExeSize() const       { return sum_exe_size; }
   const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
@@ -511,8 +506,6 @@ public:
 
   void IncResamplings() { ++num_resamplings; }
   void IncFailedResamplings() { ++num_failedResamplings; }
-
-  void CalcFidelity();
 
   void RecordBirth(bool breed_true);
   void RecordDeath() { num_deaths++; }
@@ -653,7 +646,6 @@ public:
   double GetAveGestation() const { return sum_gestation.Average(); }
   double GetAveFitness() const   { return sum_fitness.Average(); }
 
-  double GetAveSize() const       { return sum_size.Average(); }
   double GetAveCopySize() const   { return sum_copy_size.Average(); }
   double GetAveExeSize() const    { return sum_exe_size.Average(); }
 

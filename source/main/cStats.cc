@@ -62,8 +62,6 @@ cStats::cStats(cWorld* world)
   , rave_true_replication_rate( 500 )
   , entropy(0.0)
   , species_entropy(0.0)
-  , dom_fidelity(0.0)
-  , ave_fidelity(0.0)
   , max_viable_fitness(0)
   , max_fitness(0)
   , max_merit(0)
@@ -339,7 +337,6 @@ void cStats::setupProvidedData()
   m_data_manager.Add("ave_lineage",    "Average Lineage Label",            &cStats::GetAveLineageLabel);
   m_data_manager.Add("ave_gest",       "Average Gestation Time",           &cStats::GetAveGestation);
   m_data_manager.Add("ave_fitness",    "Average Fitness",                  &cStats::GetAveFitness);
-  m_data_manager.Add("ave_length",     "Average Genome Length",            &cStats::GetAveSize);
   m_data_manager.Add("ave_copy_length","Average Copied Length",            &cStats::GetAveCopySize);
   m_data_manager.Add("ave_exe_length", "Average Executed Length",          &cStats::GetAveExeSize);
 
@@ -429,27 +426,6 @@ void cStats::ZeroFTInst()
   for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
-}
-
-void cStats::CalcFidelity()
-{
-  // There is a (small) probability that when a random instruction is picked
-  // after a mutation occurs, that it will be the original instruction again;
-  // This needs to be adjusted for!
-
-  double ave_num_insts = 0.0;
-  for (Apto::Map<cString, Apto::Array<cString> >::ValueIterator it = m_is_inst_names_map.Values(); it.Next();) {
-    ave_num_insts += (*it.Get()).GetSize();
-  }
-  ave_num_insts /= m_is_inst_names_map.GetSize();
-
-  double adj = (ave_num_insts - 1.0) / ave_num_insts;
-
-  double base_fidelity = (1.0 - adj * m_world->GetConfig().DIVIDE_MUT_PROB.Get()) *
-    (1.0 - m_world->GetConfig().DIVIDE_INS_PROB.Get()) * (1.0 - m_world->GetConfig().DIVIDE_DEL_PROB.Get());
-
-  double true_cm_rate = adj * m_world->GetConfig().COPY_MUT_PROB.Get();
-  ave_fidelity = base_fidelity * pow(1.0 - true_cm_rate, sum_size.Average());
 }
 
 void cStats::RecordBirth(bool breed_true)
@@ -546,7 +522,7 @@ void cStats::PrintAverageData(const cString& filename)
   df.Write(sum_gestation.Average(),       "Gestation Time");
   df.Write(sum_fitness.Average(),         "Fitness");
   df.Write(sum_repro_rate.Average(),      "Repro Rate?");
-  df.Write(sum_size.Average(),            "Size");
+  df.Write(0,                             "(deprecated) Size");
   df.Write(sum_copy_size.Average(),       "Copied Size");
   df.Write(sum_exe_size.Average(),        "Executed Size");
   df.Write(0,                             "(deprecated) Abundance");
@@ -648,7 +624,7 @@ void cStats::PrintErrorData(const cString& filename)
   df.Write(sum_gestation.StdError(),       "Gestation Time");
   df.Write(sum_fitness.StdError(),         "Fitness");
   df.Write(sum_repro_rate.StdError(),      "Repro Rate?");
-  df.Write(sum_size.StdError(),            "Size");
+  df.Write(0,                              "Size");
   df.Write(sum_copy_size.StdError(),       "Copied Size");
   df.Write(sum_exe_size.StdError(),        "Executed Size");
   df.Write(0,                              "(deprecated) Abundance");
@@ -675,7 +651,7 @@ void cStats::PrintVarianceData(const cString& filename)
   df.Write(sum_gestation.Variance(),       "Gestation Time");
   df.Write(sum_fitness.Variance(),         "Fitness");
   df.Write(sum_repro_rate.Variance(),      "Repro Rate?");
-  df.Write(sum_size.Variance(),            "Size");
+  df.Write(0,                              "(deprecated) Size");
   df.Write(sum_copy_size.Variance(),       "Copied Size");
   df.Write(sum_exe_size.Variance(),        "Executed Size");
   df.Write(0,                              "(deprecated) Abundance");
@@ -846,9 +822,6 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
 
 void cStats::PrintStatsData(const cString& filename)
 {
-  const double log_ave_fid = (ave_fidelity > 0.0 && ave_fidelity != 1.0) ? -Log(ave_fidelity) : 0.0;
-  const double log_dom_fid = (dom_fidelity > 0.0 && ave_fidelity != 1.0) ? -Log(dom_fidelity) : 0.0;
-
   cDataFile& df = m_world->GetDataFile(filename);
 
   df.WriteComment("Generic Statistics Data");
@@ -856,10 +829,10 @@ void cStats::PrintStatsData(const cString& filename)
 
   df.Write(m_update,            "update");
   df.Write(0,                   "(deprecated) average inferiority (energy)");
-  df.Write(1.0 - ave_fidelity,  "ave probability of any mutations in genome");
-  df.Write(1.0 - dom_fidelity,  "probability of any mutations in dom genome");
-  df.Write(log_ave_fid,         "log(average fidelity)");
-  df.Write(log_dom_fid,         "log(dominant fidelity)");
+  df.Write(0,                   "(deprecated) ave probability of any mutations in genome");
+  df.Write(0,                   "(deprecated) probability of any mutations in dom genome");
+  df.Write(0,                   "(deprecated) log(average fidelity)");
+  df.Write(0,                   "(deprecated) log(dominant fidelity)");
   df.Write(0,                   "(deprecated) change in number of genotypes");
   df.Write(entropy,             "genotypic entropy");
   df.Write(species_entropy,     "species entropy");
