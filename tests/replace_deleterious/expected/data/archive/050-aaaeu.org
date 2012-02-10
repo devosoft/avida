@@ -1,6 +1,6 @@
-# Mon Nov  8 16:03:55 2010
-# Filename........: archive/050-aaadb.org
-# Update Output...: 370
+# Fri Feb 10 16:50:32 2012
+# Filename........: archive/050-aaaeu.org
+# Update Output...: 450
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
@@ -33,13 +33,6 @@ nop-C
 nop-A
 mov-head
 nop-C
-nop-C
-dec
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
 nand
 nop-C
 nop-C
@@ -50,23 +43,30 @@ nop-C
 nop-C
 nop-C
 nop-C
+nop-C
+nop-C
+shift-r
+if-less
+nop-C
+nop-C
+nop-C
+inc
+nop-C
+nop-C
+mov-head
+nop-C
+nop-C
 inc
 nop-C
 nop-C
 nop-C
+IO
 nop-C
 nop-C
 nop-C
 nop-C
 nop-C
 nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-h-copy
 nop-C
 h-search
 h-copy

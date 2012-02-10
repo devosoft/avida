@@ -1,14 +1,14 @@
-# Fri Feb 10 16:50:30 2012
-# Filename........: archive/050-aaaaa.org
-# Update Output...: 290
+# Fri Feb 10 16:50:31 2012
+# Filename........: archive/050-aaadr.org
+# Update Output...: 400
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
 # Merit...........: 47.000000
-# Gestation Time..: 189
-# Fitness.........: 0.248677
+# Gestation Time..: 182
+# Fitness.........: 0.258242
 # Errors..........: 0
 # Genome Size.....: 50
 # Copied Size.....: 50
@@ -34,6 +34,19 @@ nop-A
 mov-head
 nop-C
 nop-C
+h-copy
+nop-C
+nop-C
+nop-C
+shift-r
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+get-head
 nop-C
 nop-C
 nop-C
@@ -46,24 +59,11 @@ nop-C
 nop-C
 nop-C
 nop-C
+if-n-equ
 nop-C
 nop-C
 nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
+set-flow
 nop-C
 nop-C
 nop-C

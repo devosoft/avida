@@ -1,14 +1,14 @@
-# Mon Nov  8 16:03:55 2010
-# Filename........: archive/050-aaadw.org
-# Update Output...: 400
+# Fri Feb 10 16:50:32 2012
+# Filename........: archive/050-aaafn.org
+# Update Output...: 490
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
 # Merit...........: 47.000000
-# Gestation Time..: 181
-# Fitness.........: 0.259669
+# Gestation Time..: 186
+# Fitness.........: 0.252688
 # Errors..........: 0
 # Genome Size.....: 50
 # Copied Size.....: 50
@@ -40,12 +40,11 @@ nop-C
 nop-C
 nop-C
 nop-C
+nop-C
 nand
 nop-C
 nop-C
 nop-C
-nop-C
-push
 nop-C
 nop-C
 nop-C
@@ -55,18 +54,19 @@ nop-C
 nop-C
 nop-C
 nop-C
-swap
-nop-B
+nop-C
+nop-C
+nop-C
+pop
 nop-C
 nop-C
 nop-C
 nop-C
-if-n-equ
 nop-C
 nop-C
 nop-C
 nop-C
-h-copy
+nop-C
 nop-C
 h-search
 h-copy

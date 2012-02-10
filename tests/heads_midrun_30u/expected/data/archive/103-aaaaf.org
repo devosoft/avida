@@ -1,6 +1,6 @@
-# Mon Nov  8 16:16:01 2010
-# Filename........: archive/103-aaabl.org
-# Update Output...: 25
+# Fri Feb 10 16:50:02 2012
+# Filename........: archive/103-aaaaf.org
+# Update Output...: 10
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
