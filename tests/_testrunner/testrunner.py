@@ -559,7 +559,7 @@ class cTest:
           match = True
           
           
-          if os.path.getsize(expectstruct[key][0]) < 1536:
+          if os.path.getsize(expectstruct[key][0]) < 6144:
             # Generate the diff between the two files, ignoring comments and blank lines
             differ = difflib.Differ()
             elines = getStrippedLines(path)

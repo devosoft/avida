@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Wed Feb  8 17:45:12 2012
+# Fri Feb 10 14:45:25 2012
 #  1: ID
 #  2: Source
 #  3: Source Args
@@ -104,7 +104,7 @@
 6241 div:int (none) 5776 6 11 56 53 3.375 49.7724 157 29 -1 10 0 heads_default emahagcfcoaocpapcnaenacjckclcmcccccccccoacpjcccpccjcecnc 11,12,31,32,33,393 0,0,1,7,0,4 0,0,0,0,0,0 
 6540 div:int (none) 6075 1 1 56 0 0 0 167 30 -1 11 0 heads_default egahagcfcoaocpapcnaenakjcklcmcccccccccoccnpcccapcjjcecnc 23 15 0 
 6034 div:int (none) 4351 2 15 55 30 2.05263 28.4962 172 29 -1 5 0 heads_default egahagjicoaopapcnaenacjckclcmeccclccbiccccccccccccccegc 56,57 10,16 0,0 
-4907 div:int (none) 4343 9 38 55 29 2.96078 26.2923 140 26 -1 10 0 heads_default elahagiicdaocpapgnalnacjckclemccccdccccccccccccaccmcenc 93,111,112,113,114,133,134,154,155 15,0,0,6,1,6,0,1,8 0,0,0,0,0,0,0,0,0 
+4907 div:int (none) 4343 9 38 55 29 2.96078 26.2922 140 26 -1 10 0 heads_default elahagiicdaocpapgnalnacjckclemccccdccccccccccccaccmcenc 93,111,112,113,114,133,134,154,155 15,0,0,6,1,6,0,1,8 0,0,0,0,0,0,0,0,0 
 6586 div:int (none) 5638 1 1 59 0 0 0 156 30 -1 11 0 heads_default egahiedcmcoaocpapcnaenajgckclcmcccclccbccccgocccccnccclcenc 99 31 0 
 6333 div:int (none) 4205 2 6 55 34 4.125 29.9135 119 29 -1 11 0 heads_default egahagiicfacpapgnalnacjckcllmccccecccccccccccccaccmcenc 115,117 6,6 0,0 
 6425 div:int (none) 5339 1 2 57 0 0 0 157 30 -1 11 0 heads_default egahagckcdaocpaacnalnacjckclemocdccccccfcccccccccaocjcebk 120 12 0 
@@ -343,7 +343,7 @@
 4227 div:int (none) 1095 0 2 56 56 11.25 42.3333 122 24 26 5 0 heads_default egahagcicoaocpapcnienacjckclcmcccccclcpcccdcccccccbccbnc 
 4187 div:int (none) 3891 0 6 56 29 6.6 21.6182 109 24 26 10 0 heads_default egahapiicfaoceapgnalnacjckclemccccdcccccccccccccaccmcenc 
 4358 div:int (none) 3837 0 2 55 53 14.3333 35.7642 85 24 26 8 0 heads_default egahagcicoeocpapcnienacckcbcmccccbclcmcccdcccccccbccenc 
-4671 div:int (none) 3676 0 1 55 53 42 1.26191 100 25 26 7 0 heads_default egahegcfcoaocpapcnaeahjckclcmccciccccccccccccccccfjcece 
+4671 div:int (none) 3676 0 1 55 53 42 1.2619 100 25 26 7 0 heads_default egahegcfcoaocpapcnaeahjckclcmccciccccccccccccccccfjcece 
 2108 div:int (none) 1643 0 77 57 55 3.9771 50.9065 61 18 26 4 0 heads_default egahagcicoaocpapcnaenacjckilcmcccclccmcccccccccccccmccenc 
 2670 div:int (none) 2081 0 42 56 29 2.79104 26.5267 88 19 26 8 0 heads_default egahagiicdaocpapgnalnacjckclemccccdcccccccccccccaccmcenc 
 3477 div:int (none) 1576 0 11 58 56 8.5 45.7561 91 22 26 5 0 heads_default egahagcicoaocpapcnaenaccjgkclcmcccccccccgcccdcoccccccccenc 
@@ -367,7 +367,7 @@
 2146 div:int (none) 255 0 52 57 54 3.92308 49.9527 92 18 24 7 0 heads_default egahagcfcoaocpapcnaenacjckclcmcccccccccocacpccccpccjcecnc 
 2930 div:int (none) 2464 0 25 57 55 2.91111 52.6111 134 20 24 7 0 heads_default egahagcncoaodjapjnaenacjckclcmcccccccjccoccdccccccccccenc 
 3306 div:int (none) 692 0 8 55 53 9.2 42.6524 76 21 24 6 0 heads_default egahagcicoeocpapcnienacckcbcmcccccclcccccdcccccccbccenc 
-3837 div:int (none) 3306 0 1 55 53 21.5 27.131 83 23 24 7 0 heads_default egahagcicoeocpapcnienacckcbcmccccbclcccccdcccccccbccenc 
+3837 div:int (none) 3306 0 1 55 53 21.5 27.1309 83 23 24 7 0 heads_default egahagcicoeocpapcnienacckcbcmccccbclcccccdcccccccbccenc 
 708 div:int (none) 255 0 74 57 54 4.952 48.528 59 13 24 7 0 heads_default egahagcfcoaocpapcnaenacjckolcmcccccccccocccpccccpccjcecnc 
 3182 div:int (none) 1576 0 12 58 58 4.66667 53.2741 86 21 24 5 0 heads_default egahagoicoaocpapcnaenaccjgkclcmcccccccccgccndccccccccccgnc 
 3929 div:int (none) 2983 0 2 55 36 9.33333 24.4615 90 23 24 8 0 heads_default elehagcmcoaocepapcnaenpnjckclcmccccecclccccccccccccnenc 
