@@ -3077,7 +3077,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org  = NULL;
-  const tSmartArray <cOrganism*>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
@@ -3146,7 +3146,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org = NULL;
-  const tSmartArray <cOrganism*>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
@@ -4905,7 +4905,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     }
     // if valid org id number, does the value represent a living organism
     else if (id_sought != -1) {
-      const tSmartArray <cOrganism*>& live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+      const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
       for (int i = 0; i < live_orgs.GetSize(); i++) {  
         cOrganism* living_org = live_orgs[i];
         if (id_sought == living_org->GetID()) {

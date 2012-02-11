@@ -32,7 +32,7 @@ bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Geno
   return true;
 }
 
-const tSmartArray <cOrganism*>& cTestCPUInterface::GetLiveOrgList() 
+const tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() const 
 {
   tSmartArray <cOrganism*> empty;
   return empty;
