@@ -704,6 +704,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
     tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repair-on", &cHardwareCPU::Inst_RepairPointMutOn, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repair-off", &cHardwareCPU::Inst_RepairPointMutOff, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
