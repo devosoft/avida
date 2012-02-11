@@ -9781,6 +9781,8 @@ bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
     m_organism->IncPointMutations(num_mut);
   } else {
     // incur cost of repairs.
+    int cost = m_world->GetConfig().INST_POINT_REPAIR_COST.Get(); 
+    m_task_switching_cost += cost;
   }
   return true;
 }
