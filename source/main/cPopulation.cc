@@ -5042,13 +5042,13 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     }
   }
   
-  // Sort genotypes in ascending order according to their id_num
+  // Sort genotypes in descending order according to their id_num
   Apto::QSort(genotypes);
 
   Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
   Systematics::ArbiterPtr bgm = classmgr->ArbiterForRole("genotype");
 
-  for (int i = 0; i < genotypes.GetSize(); i++) {
+  for (int i = genotypes.GetSize() - 1; i >= 0; i--) {
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
@@ -5058,7 +5058,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     while (opidlist.GetSize()) {
       int opid = opidlist.Pop().AsInt();
       int npid = -1;
-      for (int j = i; j >= 0; j--) {
+      for (int j = i; j < genotypes.GetSize(); j++) {
         if (genotypes[j].id_num == opid) {
           npid = genotypes[j].bg->ID();
           break;
@@ -5077,7 +5077,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
   
   // Process genotypes, inject into organisms as necessary
   int u_cell_id = 0;
-  for (int gen_i = genotypes.GetSize() - 1; gen_i >= 0; gen_i--) {
+  for (int gen_i = 0; gen_i < genotypes.GetSize(); gen_i++) {
     sTmpGenotype& tmp = genotypes[gen_i];
     // otherwise, we insert as many organisms as we need
     for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {

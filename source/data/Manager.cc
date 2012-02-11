@@ -274,19 +274,19 @@ bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder, bool concurrent_
   }
   
   // Store the recorder
-  m_rwlock.WriteLock();
+  m_recorder_mutex.Lock();
   m_recorders.Insert(recorder);
-  m_rwlock.WriteUnlock();
+  m_recorder_mutex.Unlock();
   return true;
 }
 
 bool Avida::Data::Manager::DetachRecorder(RecorderPtr recorder)
 {
   bool success = false;
-  m_rwlock.WriteLock();
+  m_recorder_mutex.Lock();
   success = m_recorders.Remove(recorder);
   // @TODO - this should probably deactivate data providers that are no longer needed, or at least adjust schedule
-  m_rwlock.WriteUnlock();
+  m_recorder_mutex.Unlock();
   return success;
 }
 
@@ -389,11 +389,17 @@ void Avida::Data::Manager::PerformUpdate(Context&, Update current_update)
   
   // Notify recorders that new data is available
   DataRetrievalFunctor drf(this, &Manager::GetCurrentValue);
+
+  // Lock recorder mutex before releasing RWLock, so that only recorders that have values will be notified
+  m_recorder_mutex.Lock();
+  
+  // Release RWLock before notification to prevent double RWLocking deadlock during recorder attachment
+  m_rwlock.ReadUnlock();
+  
   for (Apto::Set<RecorderPtr>::Iterator it = m_recorders.Begin(); it.Next();) {
     (*it.Get())->NotifyData(current_update, drf);
   }
-  
-  m_rwlock.ReadUnlock();
+  m_recorder_mutex.Unlock();
 }
 
 Avida::Data::PackagePtr Avida::Data::Manager::GetCurrentValue(const DataID& data_id) const

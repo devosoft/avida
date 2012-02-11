@@ -283,8 +283,8 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
   
   int selected_index = -1;
   
-  if (ctx.GetWorld()->GetConfig().FORCED_MATE_PREFERENCE.Get() != -1) {
-    mate_choice_method = ctx.GetWorld()->GetConfig().FORCED_MATE_PREFERENCE.Get();
+  if (m_world->GetConfig().FORCED_MATE_PREFERENCE.Get() != -1) {
+    mate_choice_method = m_world->GetConfig().FORCED_MATE_PREFERENCE.Get();
   }
   
   if (mate_choice_method == MATE_PREFERENCE_RANDOM) {

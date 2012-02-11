@@ -52,6 +52,7 @@ namespace Avida {
       Apto::Map<DataID, ArgumentedProviderActivateFunctor> m_arg_provider_map;
       DataSetPtr m_available;
       
+      mutable Apto::Mutex m_recorder_mutex;
       Apto::Set<RecorderPtr> m_recorders;
       
       Apto::Array<ProviderPtr> m_active_providers;
