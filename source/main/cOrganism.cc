@@ -471,7 +471,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
-  int cell_id=GetAVCellID();
+  int cell_id=GetAvatarCellID();
   if (cell_id_lists.GetSize())
   {
 	  for (int i=0; i<cell_id_lists.GetSize(); i++)
@@ -1003,20 +1003,20 @@ void cOrganism::NewTrial()
 /*! Called as the bottom-half of a successfully sent message.
  */
 void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
-	// check to see if we should store it:
-	const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
-  
-	if((bsize > 0) || (bsize == -1)) {
-		// yep; store it:
-		m_msg->sent.push_back(msg);
-		// and set the receiver-pointer of this message to NULL.  We don't want to
-		// walk this list later thinking that the receivers are still around.
-		m_msg->sent.back().SetReceiver(0);
-		// if our buffer is too large, chop off old messages:
-		while((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
-			m_msg->sent.pop_front();
-		}
-	}	
+  // check to see if we should store it:
+  const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
+
+  if((bsize > 0) || (bsize == -1)) {
+    // yep; store it:
+    m_msg->sent.push_back(msg);
+    // and set the receiver-pointer of this message to NULL.  We don't want to
+    // walk this list later thinking that the receivers are still around.
+    m_msg->sent.back().SetReceiver(0);
+    // if our buffer is too large, chop off old messages:
+    while((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
+      m_msg->sent.pop_front();
+    }
+  }
 }
 
 
@@ -1025,21 +1025,22 @@ void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
  test CPU!  (Also, BroadcastMessage funnels down to code in the population interface
  too, so this way all the message sending code is in the same place.)
  */
-bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
+bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
+{
   assert(m_interface);
   InitMessaging();
-  
+
   // check to see if we've performed any tasks:
   if (m_world->GetConfig().CHECK_TASK_ON_SEND.Get()) {
     DoOutput(ctx, static_cast<int>(msg.GetData()));
   }
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {
-		MessageSent(ctx, msg);
+    MessageSent(ctx, msg);
     return true;
   }
-	// importantly, m_interface->SendMessage() fails if we're running in the test CPU.
-	return false;
+  // importantly, m_interface->SendMessage() fails if we're running in the test CPU.
+  return false;
 }
 
 
@@ -1062,27 +1063,28 @@ bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth
 
 /*! Called when this organism receives a message from another.
  */
-void cOrganism::ReceiveMessage(cOrgMessage& msg) {
+void cOrganism::ReceiveMessage(cOrgMessage& msg)
+{
   InitMessaging();
-	
-	// don't store more messages than we're configured to.
-	const int bsize = m_world->GetConfig().MESSAGE_RECV_BUFFER_SIZE.Get();
-	if((bsize != -1) && (bsize <= static_cast<int>(m_msg->received.size()))) {
-		switch(m_world->GetConfig().MESSAGE_RECV_BUFFER_BEHAVIOR.Get()) {
-			case 0: // drop oldest message
-				m_msg->received.pop_front();
-				break;
-			case 1: // drop this message
-				return;
-			default: // error
-				m_world->GetDriver().RaiseFatalException(-1, "MESSAGE_RECV_BUFFER_BEHAVIOR is set to an invalid value.");
-				assert(false);
-		}
-	}
-  
-	msg.SetReceiver(this);
-	m_msg->received.push_back(msg);
-  
+
+  // don't store more messages than we're configured to.
+  const int bsize = m_world->GetConfig().MESSAGE_RECV_BUFFER_SIZE.Get();
+  if((bsize != -1) && (bsize <= static_cast<int>(m_msg->received.size()))) {
+    switch(m_world->GetConfig().MESSAGE_RECV_BUFFER_BEHAVIOR.Get()) {
+    case 0: // drop oldest message
+      m_msg->received.pop_front();
+      break;
+    case 1: // drop this message
+      return;
+    default: // error
+      m_world->GetDriver().RaiseFatalException(-1, "MESSAGE_RECV_BUFFER_BEHAVIOR is set to an invalid value.");
+      assert(false);
+    }
+  }
+
+  msg.SetReceiver(this);
+  m_msg->received.push_back(msg);
+
   if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
     // then create new thread and load its registers
     m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
@@ -1569,7 +1571,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   assert(m_interface);
   if (m_is_dead) return false;  
   
-  int fromcellID = GetAVCellID();         // facing unique to this avatar
+  int fromcellID = GetAvatarCellID();         // facing unique to this avatar
   int destcellID = GetAVFacedCellID();    // facing unique to this avatar
   int true_cell = GetCellID();            // where the real org is...in case we need to kill it
   
@@ -1600,7 +1602,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
         m_northerly = m_northerly - 1; 
         m_easterly = m_easterly - 1;
       }      
-      SetAVCellID(destcellID);
+      SetAvatarCellID(destcellID);
       SetAvatarFacedCell(destcellID);
     }
     else return false;                  

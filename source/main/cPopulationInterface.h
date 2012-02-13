@@ -67,30 +67,30 @@ public:
   virtual ~cPopulationInterface();
 
   tSmartArray <cOrganism*> GetLiveOrgList();
-	//! Retrieve this organism.
-	cOrganism* GetOrganism();
-	//! Retrieve the ID of this cell.
+  //! Retrieve this organism.
+  cOrganism* GetOrganism();
+  //! Retrieve the ID of this cell.
   int GetCellID() { return m_cell_id; }
-	//! Retrieve the cell in which this organism lives.
-	cPopulationCell* GetCell();
-	cPopulationCell* GetCell(int cell_id);
-	cPopulationCell* GetAVCell();
-	//! Retrieve the cell currently faced by this organism.
-	cPopulationCell* GetCellFaced();
+  //! Retrieve the cell in which this organism lives.
+  cPopulationCell* GetCell();
+  cPopulationCell* GetCell(int cell_id);
+  cPopulationCell* GetAvatarCell();
+  //! Retrieve the cell currently faced by this organism.
+  cPopulationCell* GetCellFaced();
   int GetDemeID() { return m_deme_id; }
-	//! Retrieve the deme in which this organism lives.
+  //! Retrieve the deme in which this organism lives.
   cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
   
-  int GetAVCellID();
-  void SetAVCellID(int av_cell_id); 
+  int GetAvatarCellID();
+  void SetAvatarCellID(int av_cell_id); 
   void SetAvatarFacing(int facing);
   void SetAvatarFacedCell(int av_cell_id);
   int GetAVFacedCellID();
   int GetAVFacedDir();
   
-  int GetCellData();
+  int GetCellData();//**
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
@@ -101,7 +101,7 @@ public:
   int GetFacedCellDataOrgID();
   int GetFacedCellDataUpdate();
   int GetFacedCellDataTerritory();
-  int GetFacedAVData();
+  int GetFacedAVData();//**
   int GetFacedAVDataOrgID();
   int GetFacedAVDataUpdate();
   int GetFacedAVDataTerritory();
@@ -165,15 +165,15 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
-	//! Send a message to the organism in the given cell.
-	bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
-	//! Send a message to the cell with the given cell id.
-	bool SendMessage(cOrgMessage& msg, int cellid);	
-	//! Broadcast a message.
+  //! Send a message to the organism in the given cell.
+  bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
+  //! Send a message to the cell with the given cell id.
+  bool SendMessage(cOrgMessage& msg, int cellid);	
+  //! Broadcast a message.
   bool BroadcastMessage(cOrgMessage& msg, int depth);
   bool BcastAlarm(int jump_label, int bcast_range);  
   void DivideOrgTestamentAmongDeme(double value);
-	//! Send a flash to all neighboring organisms.
+  //! Send a flash to all neighboring organisms.
   void SendFlash();
 
   int GetStateGridID(cAvidaContext& ctx);
@@ -181,63 +181,63 @@ public:
   bool Move(cAvidaContext& ctx, int src_id, int dest_id);
   bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell);
 
-	// Reputation
-	void RotateToGreatestReputation();
-	void RotateToGreatestReputationWithDifferentTag(int tag);
-	void RotateToGreatestReputationWithDifferentLineage(int line);
-	
-	// -------- Network creation support --------
+  // Reputation
+  void RotateToGreatestReputation();
+  void RotateToGreatestReputationWithDifferentTag(int tag);
+  void RotateToGreatestReputationWithDifferentLineage(int line);
+
+  // -------- Network creation support --------
 public:
-	//! Link this organism's cell to the cell it is currently facing.
-	void CreateLinkByFacing(double weight=1.0);
-	//! Link this organism's cell to the cell with coordinates (x,y).
-	void CreateLinkByXY(int x, int y, double weight=1.0);
-	//! Link this organism's cell to the cell with index idx.
-	void CreateLinkByIndex(int idx, double weight=1.0);
-	//! Broadcast a message to all organisms that are connected by this network.
-	bool NetworkBroadcast(cOrgMessage& msg);
-	//! Unicast a message to the current selected organism.
-	bool NetworkUnicast(cOrgMessage& msg);
-	//! Rotate to select a new network link.
-	bool NetworkRotate(int x);
-	//! Select a new network link.
-	bool NetworkSelect(int x);
-	
-	// -------- HGT support --------
+  //! Link this organism's cell to the cell it is currently facing.
+  void CreateLinkByFacing(double weight=1.0);
+  //! Link this organism's cell to the cell with coordinates (x,y).
+  void CreateLinkByXY(int x, int y, double weight=1.0);
+  //! Link this organism's cell to the cell with index idx.
+  void CreateLinkByIndex(int idx, double weight=1.0);
+  //! Broadcast a message to all organisms that are connected by this network.
+  bool NetworkBroadcast(cOrgMessage& msg);
+  //! Unicast a message to the current selected organism.
+  bool NetworkUnicast(cOrgMessage& msg);
+  //! Rotate to select a new network link.
+  bool NetworkRotate(int x);
+  //! Select a new network link.
+  bool NetworkSelect(int x);
+
+  // -------- HGT support --------
 public:
-	//! Container type for fragments used during HGT.
-	typedef cPopulationCell::fragment_list_type fragment_list_type;
-	//! Match record, used to indicate the region within a genome that should be mutated.
-	typedef cGenomeUtil::substring_match substring_match;
-	//! Called when this organism is the donor during conjugation.
-	void DoHGTDonation(cAvidaContext& ctx);
-	//! Called when this organism "requests" an HGT conjugation.
-	void DoHGTConjugation(cAvidaContext& ctx);
-	//! Perform an HGT mutation on this offspring.
-	void DoHGTMutation(cAvidaContext& ctx, Genome& offspring);
+  //! Container type for fragments used during HGT.
+  typedef cPopulationCell::fragment_list_type fragment_list_type;
+  //! Match record, used to indicate the region within a genome that should be mutated.
+  typedef cGenomeUtil::substring_match substring_match;
+  //! Called when this organism is the donor during conjugation.
+  void DoHGTDonation(cAvidaContext& ctx);
+  //! Called when this organism "requests" an HGT conjugation.
+  void DoHGTConjugation(cAvidaContext& ctx);
+  //! Perform an HGT mutation on this offspring.
+  void DoHGTMutation(cAvidaContext& ctx, Genome& offspring);
 
 protected:
-	//! Place the fragment at the location of best match.
-	void HGTMatchPlacement(cAvidaContext& ctx, const Sequence& offspring,
+  //! Place the fragment at the location of best match.
+  void HGTMatchPlacement(cAvidaContext& ctx, const Sequence& offspring,
 												 fragment_list_type::iterator& selected,
 												 substring_match& location);
-	//! Place the fragment at the location of best match, with redundant instructions trimmed.
-	void HGTTrimmedPlacement(cAvidaContext& ctx, const Sequence& offspring,
+  //! Place the fragment at the location of best match, with redundant instructions trimmed.
+  void HGTTrimmedPlacement(cAvidaContext& ctx, const Sequence& offspring,
 													 fragment_list_type::iterator& selected,
 													 substring_match& location);	
-	//! Place the fragment at a random location.
-	void HGTRandomPlacement(cAvidaContext& ctx, const Sequence& offspring,
+  //! Place the fragment at a random location.
+  void HGTRandomPlacement(cAvidaContext& ctx, const Sequence& offspring,
 													fragment_list_type::iterator& selected,
 													substring_match& location);
-	//! Support for stateful HGT mutations.
-	struct HGTSupport {
+  //! Support for stateful HGT mutations.
+  struct HGTSupport {
 		fragment_list_type _pending; //!< HGT fragments that are awaiting an offspring.
-	};
-	HGTSupport* m_hgt_support; //!< Lazily-initialized pointer to HGT data.
-	//! Initialize HGT support.
-	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
-	//! Called when this organism is the receiver of an HGT donation.
-	void ReceiveHGTDonation(const Sequence& fragment);
+  };
+  HGTSupport* m_hgt_support; //!< Lazily-initialized pointer to HGT data.
+  //! Initialize HGT support.
+  inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
+  //! Called when this organism is the receiver of an HGT donation.
+  void ReceiveHGTDonation(const Sequence& fragment);
   
 public:
   void AddLiveOrg(); 
@@ -264,10 +264,33 @@ public:
   void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
   int& GetGroupIntolerances(int group_id, int tol_num);
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+
+  // -------- Neural support -------- @JJB**
+private:
+  struct io_avatar
+  {
+    int av_cell_id;
+    int av_facing;
+    bool input;
+    bool output;
+  };
+
+  tSmartArray<io_avatar> m_avatars;
+  inline int GetNumAV() { return m_avatars.GetSize(); }
+public:
+  //cPopulationCell* GetAvatarCell();
+  //void SetAvatarFacedCell(int av_cell_id);
+  void AddAV(int av_cell_id, int av_facing, bool input, bool output);
+  void RemoveAllAV();
+  void SetAVCellID(int av_cell_id);
+  void SetAVFacing(int av_facing);
+  //void SetAVInput(bool input);
+  //void SetAVOutput(bool output);
+  //int GetAVCellID();
+  //int GetAVFacing();
   
   void BeginSleep();
   void EndSleep();
-  
 };
 
 #endif

@@ -1422,7 +1422,7 @@ bool cHardwareCPU::ForkThread()
 bool cHardwareCPU::InterruptThread(int interruptType) {
   //Will interrupt be successful? i.e. is head instuction present?
   cString handlerHeadInstructionString;
-	int interruptMsgType(-1);
+  int interruptMsgType(-1);
   
   switch (interruptType) {
     case MSG_INTERRUPT:

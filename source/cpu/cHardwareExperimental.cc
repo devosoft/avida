@@ -33,6 +33,7 @@
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
+#include "cOrgMessage.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"  
 #include "cSexualAncestry.h"
@@ -761,7 +762,7 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   else fp << -99 << " ";
   // environment info / things that affect movement
   fp << m_organism->GetOrgInterface().GetCellID() << " ";
-  fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
+  fp << m_organism->GetOrgInterface().GetAvatarCellID() << " ";
   if (!m_avatar) fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
   else fp << m_organism->GetOrgInterface().GetAVFacedDir() << " ";
   if (!m_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
@@ -3090,8 +3091,8 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     int target_org_cell = target_org->GetOrgInterface().GetCellID();
     int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
     if (m_avatar == 2) {
-      target_org_cell = target_org->GetOrgInterface().GetAVCellID();
-      searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
+      target_org_cell = target_org->GetOrgInterface().GetAvatarCellID();
+      searching_org_cell = m_organism->GetOrgInterface().GetAvatarCellID();
       if (target_org_cell == searching_org_cell) return true; // avatars in same cell
     }
     const int target_x = target_org_cell % worldx;
@@ -3159,8 +3160,8 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     int target_org_cell = target_org->GetOrgInterface().GetCellID();
     int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
     if (m_avatar == 2) {
-      target_org_cell = target_org->GetOrgInterface().GetAVCellID();
-      searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
+      target_org_cell = target_org->GetOrgInterface().GetAvatarCellID();
+      searching_org_cell = m_organism->GetOrgInterface().GetAvatarCellID();
       if (target_org_cell == searching_org_cell) return true; // avatars in same cell
     }
     const int target_x = target_org_cell % worldx;
@@ -3324,7 +3325,7 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   int cell = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_avatar) {
-    cell = m_organism->GetAVCellID();
+    cell = m_organism->GetAvatarCellID();
     facing = m_organism->GetOrgInterface().GetAVFacedDir();
   }
   return GoLook(ctx, facing, cell);
@@ -3349,7 +3350,7 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   else if (facing == 8) facing = 0;
 
   int cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_avatar) cell = m_organism->GetAVCellID();
+  if (m_avatar) cell = m_organism->GetAvatarCellID();
   return GoLook(ctx, facing, cell);
 }
 
@@ -3477,10 +3478,10 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
-      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->RemoveAvatar(m_organism);
+      (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
+    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
     m_organism->SetForageTarget(prop_target);
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->AddAvatar(m_organism);
+    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
   }
   else m_organism->SetForageTarget(prop_target);
   
@@ -3544,10 +3545,10 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
-      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->RemoveAvatar(m_organism);
+      (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
+    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
     m_organism->SetForageTarget(prop_target);
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->AddAvatar(m_organism);
+    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
   }
   else m_organism->SetForageTarget(prop_target);
   
@@ -3614,8 +3615,8 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
   }
   else if (m_avatar == 2) {
     num_neighbors = m_organism->GetAVNeighborhoodSize();
-    org_x = m_organism->GetOrgInterface().GetAVCellID() % worldx;
-    org_y = m_organism->GetOrgInterface().GetAVCellID() / worldx;
+    org_x = m_organism->GetOrgInterface().GetAvatarCellID() % worldx;
+    org_y = m_organism->GetOrgInterface().GetAvatarCellID() / worldx;
   }
   if (num_neighbors == 0) return false;
 
@@ -3645,7 +3646,7 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
       else if(m_avatar == 2) { 
         prey_count += cell->GetNumPreyAvatars();
         pred_count += cell->GetNumPredAvatars();
-        if (cellid == m_organism->GetOrgInterface().GetAVCellID()) {
+        if (cellid == m_organism->GetOrgInterface().GetAvatarCellID()) {
           if (m_organism->GetForageTarget() > -2) prey_count--;
           else pred_count--;
         }
@@ -3674,8 +3675,8 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext& ctx)
   }
   else if (m_avatar == 2) {
     num_neighbors = m_organism->GetAVNeighborhoodSize();
-    org_x = m_organism->GetOrgInterface().GetAVCellID() % worldx;
-    org_y = m_organism->GetOrgInterface().GetAVCellID() / worldx;
+    org_x = m_organism->GetOrgInterface().GetAvatarCellID() % worldx;
+    org_y = m_organism->GetOrgInterface().GetAvatarCellID() / worldx;
   }
   if (num_neighbors == 0) return false;
   
@@ -3733,7 +3734,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext& ctx)
       else if(m_avatar == 2) { 
         prey_count += cell->GetNumPreyAvatars();
         pred_count += cell->GetNumPredAvatars();
-        if (cellid == m_organism->GetOrgInterface().GetAVCellID()) {
+        if (cellid == m_organism->GetOrgInterface().GetAvatarCellID()) {
           if (m_organism->GetForageTarget() > -2) prey_count--;
           else pred_count--;
         }
@@ -4085,10 +4086,10 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-      if (m_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->RemoveAvatar(m_organism);
+      if (m_avatar && m_organism->GetOrgInterface().GetAvatarCellID() != -1) {
+        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
         m_organism->SetForageTarget(-2);
-       m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->AddAvatar(m_organism);
+       m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4191,10 +4192,10 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-      if (m_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->RemoveAvatar(m_organism);
+      if (m_avatar && m_organism->GetOrgInterface().GetAvatarCellID() != -1) {
+        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
         m_organism->SetForageTarget(-2);
-        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->AddAvatar(m_organism);
+        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4584,10 +4585,10 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
     int prop_target = -1;
     prop_target = m_organism->GetParentFT();
     if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
-        (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
-      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->RemoveAvatar(m_organism);
+        (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
+      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
       m_organism->CopyParentFT();
-      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVCellID())->AddAvatar(m_organism);
+      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
     }
     else m_organism->CopyParentFT();
   }
@@ -4764,6 +4765,46 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   return false;
 }
 
+// Active messaging //**
+bool cHardwareExperimental::Inst_SendMessageInterruptType0(cAvidaContext& ctx) { return SendMessage(ctx, 0); }
+bool cHardwareExperimental::Inst_SendMessageInterruptType1(cAvidaContext& ctx) { return SendMessage(ctx, 1); }
+bool cHardwareExperimental::Inst_SendMessageInterruptType2(cAvidaContext& ctx) { return SendMessage(ctx, 2); }
+bool cHardwareExperimental::Inst_SendMessageInterruptType3(cAvidaContext& ctx) { return SendMessage(ctx, 3); }
+bool cHardwareExperimental::Inst_SendMessageInterruptType4(cAvidaContext& ctx) { return SendMessage(ctx, 4); }
+bool cHardwareExperimental::Inst_SendMessageInterruptType5(cAvidaContext& ctx) { return SendMessage(ctx, 5); }
+
+bool cHardwareExperimental::Inst_SendMessage(cAvidaContext& ctx)
+{
+  return SendMessage(ctx);
+}
+
+bool cHardwareExperimental::SendMessage(cAvidaContext& ctx, int messageType)
+{
+  const int label_reg = FindModifiedRegister(rBX);
+  const int data_reg = FindNextRegister(label_reg);
+
+  cOrgMessage msg = cOrgMessage(m_organism, messageType);
+  msg.SetLabel(GetRegister(label_reg));
+  msg.SetData(GetRegister(data_reg));
+
+  return m_organism->SendMessageA(ctx, msg);
+}
+
+bool cHardwareExperimental::Inst_RetrieveMessage(cAvidaContext& ctx)
+{
+  std::pair<bool, cOrgMessage> retrieved = m_organism->RetrieveMessage();
+  if (!retrieved.first) {
+    return false;
+  }
+
+  const int label_reg = FindModifiedRegister(rBX);
+  const int data_reg = FindNextRegister(label_reg);
+
+  setInternalValue(label_reg, retrieved.second.GetLabel(), true);
+  setInternalValue(data_reg, retrieved.second.GetData(), true);
+  return true;
+}
+
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -4912,8 +4953,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::FindOrg(cOrganism* target_
   int target_org_cell = target_org->GetOrgInterface().GetCellID();
   int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
   if (m_avatar) {
-    target_org_cell = target_org->GetOrgInterface().GetAVCellID();
-    searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
+    target_org_cell = target_org->GetOrgInterface().GetAvatarCellID();
+    searching_org_cell = m_organism->GetOrgInterface().GetAvatarCellID();
   }
   const int target_x = target_org_cell % worldx;
   const int target_y = target_org_cell / worldx;

@@ -86,8 +86,8 @@ public:
   virtual int GetFacedAVDataUpdate() = 0;
   virtual int GetFacedAVDataTerritory() = 0;
   
-  virtual int GetAVCellID() = 0;
-  virtual void SetAVCellID(int av_cell_id) = 0;
+  virtual int GetAvatarCellID() = 0;
+  virtual void SetAvatarCellID(int av_cell_id) = 0;
   virtual void SetAvatarFacing(int facing) = 0;
   virtual void SetAvatarFacedCell(int av_cell_id) = 0;
   virtual int GetAVFacedCellID() = 0;
@@ -205,9 +205,13 @@ public:
     
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
 
+  virtual void AddAV(int av_cell_id, int av_facing, bool input, bool output) = 0;
+  virtual void RemoveAllAV() = 0;
+  virtual void SetAVCellID(int av_cell_id) = 0;
+  virtual void SetAVFacing(int av_facing) = 0;
+
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;
-  
 };
 
 #endif

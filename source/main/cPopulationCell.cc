@@ -298,8 +298,8 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
 
 void cPopulationCell::AddAvatar(cOrganism* org) 
 {
-  if (org->GetForageTarget() == -2) m_av_predators.Push(org); 
-  else m_av_prey.Push(org); 
+  if (org->GetForageTarget() == -2) m_av_predators.Push(org);
+  else m_av_prey.Push(org);
 }
 
 void cPopulationCell::RemoveAvatar(cOrganism* org) 
@@ -312,7 +312,7 @@ void cPopulationCell::RemoveAvatar(cOrganism* org)
         m_av_predators.Swap(i, last);
         m_av_predators.Pop();
         break;
-      }    
+      }
     }
   }
   else {
@@ -322,7 +322,7 @@ void cPopulationCell::RemoveAvatar(cOrganism* org)
         m_av_prey.Swap(i, last);
         m_av_prey.Pop();
         break;
-      }        
+      }
     }
   }
 }
@@ -358,6 +358,65 @@ cOrganism* cPopulationCell::GetRandAVPrey() const
 {
   assert (HasAvatar());
   return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
+}
+
+// -------- Neural support -------- @JJB**
+void cPopulationCell::AddInputAV(cOrganism* org)
+{
+  m_av_inputs.Push(org);
+}
+
+void cPopulationCell::AddOutputAV(cOrganism* org)
+{
+  m_av_outputs.Push(org);
+}
+
+void cPopulationCell::RemoveInputAV(cOrganism* org)
+{
+  assert(HasInputAV());
+  for (int i = 0; i < m_av_inputs.GetSize(); i++) {
+    if (m_av_inputs[i] == org) {
+      unsigned int last = m_av_inputs.GetSize() - 1;
+      m_av_inputs.Swap(i, last);
+      m_av_inputs.Pop();
+      break;
+    }
+  }
+}
+
+void cPopulationCell::RemoveOutputAV(cOrganism* org)
+{
+  assert(HasOutputAV());
+  for (int i = 0; i < m_av_outputs.GetSize(); i++) {
+    if (m_av_outputs[i] == org) {
+      unsigned int last = m_av_outputs.GetSize() - 1;
+      m_av_outputs.Swap(i, last);
+      m_av_outputs.Pop();
+      break;
+    }
+  }
+}
+
+tArray<cOrganism*> cPopulationCell::GetCellInputAV()
+{
+  assert(HasInputAV());
+  tArray<cOrganism*> avatar_inputs;
+  avatar_inputs.Resize(m_av_inputs.GetSize());
+  for (int i = 0; i < avatar_inputs.GetSize(); i++) {
+    avatar_inputs[i] = m_av_inputs[i];
+  }
+  return avatar_inputs;
+}
+
+tArray<cOrganism*> cPopulationCell::GetCellOutputAV()
+{
+  assert(HasOutputAV());
+  tArray<cOrganism*> avatar_outputs;
+  avatar_outputs.Resize(m_av_outputs.GetSize());
+  for (int i = 0; i < avatar_outputs.GetSize(); i++) {
+    avatar_outputs[i] = m_av_outputs[i];
+  }
+  return avatar_outputs;
 }
 
 /*! Diffuse genome fragments from this cell to its neighbors.

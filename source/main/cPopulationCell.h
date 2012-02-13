@@ -65,7 +65,7 @@ private:
 
   int m_cell_id;           // Unique id for position of cell in population.
   int m_deme_id;           // ID of the deme that this cell is part of.  
-  
+
   struct {
     int contents;
     int org_id;
@@ -74,7 +74,7 @@ private:
     int current;
     int forager;
   } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
-  
+
   int m_spec_state;
 
   bool m_migrant; //@AWC -- does the cell contain a migrant genome?
@@ -91,7 +91,7 @@ private:
 
 
 public:
-	typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
+  typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
 
   cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_hgt(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
@@ -111,15 +111,15 @@ public:
   inline cOrganism* GetOrganism() const { return m_organism; }
   inline cHardwareBase* GetHardware() const { return m_hardware; }
   inline tList<cPopulationCell>& ConnectionList() { return m_connections; }
-	//! Recursively build a set of cells that neighbor this one, out to the given depth.
+  //! Recursively build a set of cells that neighbor this one, out to the given depth.
   void GetNeighboringCells(std::set<cPopulationCell*>& cell_set, int depth) const;
-	//! Recursively build a set of occupied cells that neighbor this one, out to the given depth.
+  //! Recursively build a set of occupied cells that neighbor this one, out to the given depth.
   void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
   int GetFacedDir(); // Returns the human interpretable facing of this org.
   inline void GetPosition(int& x, int& y) const { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
-	inline std::pair<int,int> GetPosition() const { return std::make_pair(m_x,m_y); }
+  inline std::pair<int,int> GetPosition() const { return std::make_pair(m_x,m_y); }
   inline int GetVisits() { return m_visits; } // @WRE: Retrieves the number of visits for this cell.
   inline void IncVisits() { m_visits++; } // @WRE: Increments the visit count for a cell
   inline const cMutationRates& MutationRates() const { assert(m_mut_rates); return *m_mut_rates; }
@@ -141,7 +141,7 @@ public:
   void UpdateCellDataExpired();
   void SetCellData(int data, int org_id = -1);
   void ClearCellData();
-  
+
   inline int GetSpeculativeState() const { return m_spec_state; }
   inline void SetSpeculativeState(int count) { m_spec_state = count; }
   inline void DecSpeculative() { m_spec_state--; }
@@ -150,7 +150,7 @@ public:
 
   double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
 
-	// -------- Avatar support --------
+  // -------- Avatar support --------
   tSmartArray<cOrganism*> m_av_prey;
   tSmartArray<cOrganism*> m_av_predators;
   cOrganism* GetRandAvatar() const;
@@ -166,33 +166,49 @@ public:
   inline bool HasAVPred() const { return m_av_predators.GetSize() > 0; }
   tArray<cOrganism*> GetCellAvatars();
 
-	// -------- HGT support --------
+  // -------- Neural support -------- @JJB**
+private:
+  tSmartArray<cOrganism*> m_av_inputs;
+  tSmartArray<cOrganism*> m_av_outputs;
 public:
-	typedef cGenomeUtil::fragment_list_type fragment_list_type; //!< Type for the list of genome fragments.
-	//! Diffuse genome fragments from this cell to its neighbors.
-	void DiffuseGenomeFragments();
-	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
-	void AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome);
-	//! Retrieve the number of genome fragments currently found in this cell.
-	unsigned int CountGenomeFragments() const;
-	//! Remove and return the front genome fragment.
-	Sequence PopGenomeFragment();
-	//! Retrieve the list of fragments from this cell.
-	fragment_list_type& GetFragments();
-	//! Clear all fragments from this cell, adjust resources as required.
-	void ClearFragments(cAvidaContext& ctx);
+  inline int GetNumAVInputs() const { return m_av_inputs.GetSize(); }
+  inline int GetNumAVOutputs() const { return m_av_outputs.GetSize(); }
+  void AddInputAV(cOrganism* org);
+  void AddOutputAV(cOrganism* org);
+  void RemoveInputAV(cOrganism* org);
+  void RemoveOutputAV(cOrganism* org);
+  inline bool HasInputAV() const { return m_av_inputs.GetSize() > 0; }
+  inline bool HasOutputAV() const { return m_av_outputs.GetSize() > 0; }
+  tArray<cOrganism*> GetCellInputAV();
+  tArray<cOrganism*> GetCellOutputAV();
+
+  // -------- HGT support --------
+public:
+  typedef cGenomeUtil::fragment_list_type fragment_list_type; //!< Type for the list of genome fragments.
+  //! Diffuse genome fragments from this cell to its neighbors.
+  void DiffuseGenomeFragments();
+  //! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
+  void AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome);
+  //! Retrieve the number of genome fragments currently found in this cell.
+  unsigned int CountGenomeFragments() const;
+  //! Remove and return the front genome fragment.
+  Sequence PopGenomeFragment();
+  //! Retrieve the list of fragments from this cell.
+  fragment_list_type& GetFragments();
+  //! Clear all fragments from this cell, adjust resources as required.
+  void ClearFragments(cAvidaContext& ctx);
 
 private:
-	//! Contains HGT-related information for this cell.
-	struct HGTSupport {
-		// WARNING: the default operator= is used in cPopulationCell's copy ctor and operator=.
-		fragment_list_type fragments; //!< Fragments located in this cell.
-	};
-	HGTSupport* m_hgt; //!< Lazily-initialized pointer to the HGT support struct.
-	//! Initialize HGT support in this cell.
-	inline void InitHGTSupport() { if(!m_hgt) { m_hgt = new HGTSupport(); } }
-	//! Is HGT initialized?
-	inline bool IsHGTInitialized() const { return m_hgt != 0; }
+  //! Contains HGT-related information for this cell.
+  struct HGTSupport {
+    // WARNING: the default operator= is used in cPopulationCell's copy ctor and operator=.
+    fragment_list_type fragments; //!< Fragments located in this cell.
+  };
+  HGTSupport* m_hgt; //!< Lazily-initialized pointer to the HGT support struct.
+  //! Initialize HGT support in this cell.
+  inline void InitHGTSupport() { if(!m_hgt) { m_hgt = new HGTSupport(); } }
+  //! Is HGT initialized?
+  inline bool IsHGTInitialized() const { return m_hgt != 0; }
 };
 
 inline int cPopulationCell::GetInputAt(int& input_pointer)

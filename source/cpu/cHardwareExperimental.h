@@ -563,6 +563,18 @@ private:
   bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
   bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
 
+  // Active messaging //**
+  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
+
+  bool Inst_SendMessage(cAvidaContext& ctx);
+  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
+  bool Inst_RetrieveMessage(cAvidaContext& ctx);
+
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackPrey(cAvidaContext& ctx); 

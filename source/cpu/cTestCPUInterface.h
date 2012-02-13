@@ -55,8 +55,8 @@ public:
   void SetCellID(int in_id) { ; }
   void SetDemeID(int in_id) { ; }
   
-  int GetAVCellID() { return -1; }
-  void SetAVCellID(int av_cell_id) { ; }
+  int GetAvatarCellID() { return -1; }
+  void SetAvatarCellID(int av_cell_id) { ; }
   void SetAvatarFacing(int facing) { ; }
   void SetAvatarFacedCell(int av_cell_id) { ; }
   int GetAVFacedCellID() { return -1; }
@@ -202,6 +202,11 @@ public:
   int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
+
+  void AddAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
+  void RemoveAllAV() { ; }
+  void SetAVCellID(int av_cell_id) { ; }
+  void SetAVFacing(int av_facing) { ; }
   
   void BeginSleep() { ; }
   void EndSleep() { ; }
