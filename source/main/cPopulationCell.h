@@ -165,6 +165,7 @@ public:
   inline bool HasAVPrey() const { return m_av_prey.GetSize() > 0; }
   inline bool HasAVPred() const { return m_av_predators.GetSize() > 0; }
   tArray<cOrganism*> GetCellAvatars();
+  tArray<cOrganism*> GetCellAVPrey();
 
   // -------- Neural support -------- @JJB**
 private:

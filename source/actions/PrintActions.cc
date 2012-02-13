@@ -773,7 +773,7 @@ public:
     const double generation = m_world->GetStats().SumGeneration().Average();
     
     //only loop through living organisms
-    tSmartArray<cOrganism*> living_orgs = m_world->GetPopulation().GetLiveOrgList();
+    const tSmartArray<cOrganism*> living_orgs = m_world->GetPopulation().GetLiveOrgList();
     
     tHashMap<int, int> lineage_label_counts;
     
@@ -3299,7 +3299,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_dumps/vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
   
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
@@ -3332,7 +3332,7 @@ public:
     cString filename(m_filename);
     
     if (m_world->GetConfig().USE_AVATARS.Get()) {
-      if (filename == "") filename.Set("avatar_grid.%d.dat", m_world->GetStats().GetUpdate());
+      if (filename == "") filename.Set("grid_dumps/avatar_grid.%d.dat", m_world->GetStats().GetUpdate());
       ofstream& fp = m_world->GetDataFileOFStream(filename);
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         for (int i = 0; i < worldx; i++) {
@@ -3378,7 +3378,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("max_res_grid.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_dumps/max_res_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {

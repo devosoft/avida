@@ -61,7 +61,7 @@ public:
   cOrgInterface() { ; }
   virtual ~cOrgInterface() { ; }
 
-  virtual tSmartArray <cOrganism*> GetLiveOrgList() = 0;
+  virtual const tSmartArray <cOrganism*> GetLiveOrgList() const = 0;
   virtual int GetCellID() = 0;
   virtual cPopulationCell* GetCell() = 0;
   virtual cPopulationCell* GetCell(int cell_id) = 0;
@@ -107,6 +107,7 @@ public:
   virtual cOrganism* GetAVRandNeighborPrey() = 0;
   virtual cOrganism* GetAVRandNeighborPred() = 0;
   virtual tArray<cOrganism*> GetAVNeighbors() = 0;
+  virtual tArray<cOrganism*> GetAVNeighborPrey() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
   virtual bool HasAVNeighbor() = 0;
   virtual bool HasAVNeighborPrey() = 0;

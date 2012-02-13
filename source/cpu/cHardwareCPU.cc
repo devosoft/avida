@@ -704,6 +704,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
     tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repair-on", &cHardwareCPU::Inst_RepairPointMutOn, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repair-off", &cHardwareCPU::Inst_RepairPointMutOff, nInstFlag::STALL),
     
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -9774,9 +9776,16 @@ void cHardwareCPU::IncrementTaskSwitchingCost(int cost)
 
 bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
 {
-  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
-  int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
-  m_organism->IncPointMutations(num_mut);
+  // If repairs are off...
+  if(m_world->GetConfig().POINT_MUT_REPAIR_START.Get() == 0) {
+    double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+    int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+    m_organism->IncPointMutations(num_mut);
+  } else {
+    // incur cost of repairs.
+    int cost = m_world->GetConfig().INST_POINT_REPAIR_COST.Get(); 
+    m_task_switching_cost += cost;
+  }
   return true;
 }
 
@@ -9790,6 +9799,15 @@ bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareCPU::Inst_RepairPointMutOn(cAvidaContext& ctx){
+  m_organism->RepairPointMutOn();
+  return true;
+}
+
+bool cHardwareCPU::Inst_RepairPointMutOff(cAvidaContext& ctx){
+  m_organism->RepairPointMutOff();
+  return true;
+}
 
 /***
     Mating type instructions

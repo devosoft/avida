@@ -103,44 +103,44 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
-  virtual void UpdateCount(cAvidaContext& ctx) {}
+  virtual void UpdateCount(cAvidaContext&) { ; }
   void ResetResourceCounts();
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
   
-  virtual void SetGradInitialPlatVal(double plat_val) {}
-  virtual void SetGradPeakX(int peakx) {}
-  virtual void SetGradPeakY(int peaky) {}
-  virtual void SetGradHeight(int height) {}
-  virtual void SetGradSpread(int spread) {}
-  virtual void SetGradPlateau(double plateau) {}
-  virtual void SetGradDecay(int decay) {}
-  virtual void SetGradMaxX(int max_x) {}
-  virtual void SetGradMaxY(int max_y) {}
-  virtual void SetGradMinX(int min_x) {}
-  virtual void SetGradMinY(int min_y) {}
-  virtual void SetGradMoveScaler(double move_a_scaler) {}
-  virtual void SetGradUpdateStep(int updatestep) {}
-  virtual void SetGradIsHalo(bool halo) {}
-  virtual void SetGradHaloInnerRad(int halo_inner_radius) {}
-  virtual void SetGradHaloWidth(int halo_width) {}
-  virtual void SetGradHaloX(int halo_anchor_x) {}
-  virtual void SetGradHaloY(int halo_anchor_y) {}
-  virtual void SetGradMoveSpeed(int move_speed) {}
-  virtual void SetGradPlatInflow(double plateau_inflow) {}
-  virtual void SetGradPlatOutflow(double plateau_outflow) {}
-  virtual void SetGradPlatIsCommon(bool is_plateau_common) {}
-  virtual void SetGradFloor(double floor) {}
-  virtual void SetGradHabitat(int habitat) {}
-  virtual void SetGradMinSize(int min_size) {}
-  virtual void SetGradMaxSize(int max_size) {}
-  virtual void SetGradConfig(int config) {}
-  virtual void SetGradCount(int count) {}
-  virtual void SetGradResistance(double resistance) {}
-  virtual void SetGradThreshold(double threshold) {}
-  virtual void SetGradRefuge(int refuge) {}
+  virtual void SetGradInitialPlatVal(double) { ; }
+  virtual void SetGradPeakX(int) { ; }
+  virtual void SetGradPeakY(int) { ; }
+  virtual void SetGradHeight(int) { ; }
+  virtual void SetGradSpread(int) { ; }
+  virtual void SetGradPlateau(double) { ; }
+  virtual void SetGradDecay(int) { ; }
+  virtual void SetGradMaxX(int) { ; }
+  virtual void SetGradMaxY(int) { ; }
+  virtual void SetGradMinX(int) { ; }
+  virtual void SetGradMinY(int) { ; }
+  virtual void SetGradMoveScaler(double) { ; }
+  virtual void SetGradUpdateStep(int) { ; }
+  virtual void SetGradIsHalo(bool) { ; }
+  virtual void SetGradHaloInnerRad(int) { ; }
+  virtual void SetGradHaloWidth(int) { ; }
+  virtual void SetGradHaloX(int) { ; }
+  virtual void SetGradHaloY(int) { ; }
+  virtual void SetGradMoveSpeed(int) { ; }
+  virtual void SetGradPlatInflow(double) { ; }
+  virtual void SetGradPlatOutflow(double) { ; }
+  virtual void SetGradPlatIsCommon(bool) { ; }
+  virtual void SetGradFloor(double) { ; }
+  virtual void SetGradHabitat(int) { ; }
+  virtual void SetGradMinSize(int) { ; }
+  virtual void SetGradMaxSize(int) { ; }
+  virtual void SetGradConfig(int) { ; }
+  virtual void SetGradCount(int) { ; }
+  virtual void SetGradResistance(double) { ; }
+  virtual void SetGradThreshold(double) { ; }
+  virtual void SetGradRefuge(int) { ; }
 
-  virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) {}
+  virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) { (void)ctx, (void)worldx, (void)worldy; }
   
   void SetCurrPeakX(int in_curr_x) { curr_peakx = in_curr_x; }
   void SetCurrPeakY(int in_curr_y) { curr_peaky = in_curr_y; }

@@ -539,6 +539,8 @@ private:
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
+  bool Inst_LookFT(cAvidaContext& ctx);
+  bool Inst_LookAroundFT(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
@@ -630,10 +632,10 @@ private:
     int max_y;
   };
   
-  bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id);
+  bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   searchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
                       const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step);  
-  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int facing, int cell_id);
+  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
   lookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
   lookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
