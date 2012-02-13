@@ -46,7 +46,7 @@ public:
   virtual ~cTestCPUInterface() { ; }
 
   
-  tSmartArray <cOrganism*> GetLiveOrgList();
+  const tSmartArray <cOrganism*> GetLiveOrgList() const;
   cPopulationCell* GetCell() { return NULL; }
 	cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }
@@ -91,6 +91,7 @@ public:
   cOrganism* GetAVRandNeighborPrey();
   cOrganism* GetAVRandNeighborPred();
   tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   bool IsNeighborCellOccupied();
   bool HasAVNeighbor();
   bool HasAVNeighborPrey();

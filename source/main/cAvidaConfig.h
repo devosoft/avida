@@ -313,7 +313,9 @@ public:
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
   
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
-  CONFIG_ADD_VAR(INST_POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per time instruction is executed)");
+  CONFIG_ADD_VAR(INST_POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per time instruction (point-mut) is executed)");
+  CONFIG_ADD_VAR(INST_POINT_REPAIR_COST, int, 0, "The cost, in cycles, of avoiding mutations when the point-mut instruction is executed");
+  CONFIG_ADD_VAR(POINT_MUT_REPAIR_START, int, 0, "The starting condition for repairs (on=1; off=0)");
 
   
   CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
@@ -413,6 +415,7 @@ public:
   CONFIG_ADD_VAR(DISABLE_GENOTYPE_CLASSIFICATION, bool, 0, "Disable tracking of historical genotypes to conserve memory (off by default)");
   CONFIG_ADD_VAR(NOISY_MATE_ASSESSMENT, bool, 0, "Is mate assessment perfect (0) or noisy (1) (0 by default)");
   CONFIG_ADD_VAR(MATE_ASSESSMENT_CV, double, 0.1, "Coefficient of variation for how noisy mate assessment is (0.1 by default)");
+  CONFIG_ADD_VAR(FORCED_MATE_PREFERENCE, int, -1, "Force all females to use a specific mate preference; -1 = off (mate preferences can evolve); 0 = all females mate randomly; 1 = all prefer highest display A; 2 = highest display B; 3 = highest merit");
 	
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");

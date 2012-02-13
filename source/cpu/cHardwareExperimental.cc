@@ -284,6 +284,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
@@ -3075,7 +3077,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org  = NULL;
-  tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
@@ -3144,7 +3146,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   
   // if valid number, does the value represent a living organism?
   cOrganism* target_org = NULL;
-  tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
@@ -3353,7 +3355,42 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell);
 }
 
-bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id) 
+bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
+{
+  // override any org inputs and just let this org see the food resource that matches it's forage target (not designed for predators)
+  int cell = m_organism->GetOrgInterface().GetCellID();
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (m_avatar) { 
+    facing = m_organism->GetOrgInterface().GetAVFacedDir();
+    cell = m_organism->GetAVCellID();
+  }
+  return GoLook(ctx, facing, cell, true);
+}
+
+bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
+{
+  // dir register is 4th mod (will be count reg)
+  int reg1 = FindModifiedRegister(rBX);
+  int reg2 = FindModifiedNextRegister(reg1);
+  int reg3 = FindModifiedNextRegister(reg2);
+  int dir_reg = FindModifiedNextRegister(reg3);
+  
+  int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  if (search_dir == 1) search_dir = -1;
+  else if (search_dir == 2) search_dir = 1;
+  
+  int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
+  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
+  if (facing == -1) facing = 7;
+  else if (facing == 9) facing = 1;
+  else if (facing == 8) facing = 0;
+  
+  int cell = m_organism->GetOrgInterface().GetCellID();
+  if (m_avatar) cell = m_organism->GetAVCellID();
+  return GoLook(ctx, facing, cell, true);
+}
+
+bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft) 
 {
   // temp check on world geometry until code can handle other geometries
   if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead only written to work in bounded grids");
@@ -3387,7 +3424,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   look_results.group = -9;
   look_results.forage = -9;
   
-  look_results = SetLooking(ctx, reg_defs, look_dir, cell_id);
+  look_results = SetLooking(ctx, reg_defs, look_dir, cell_id, use_ft);
   LookResults (reg_defs, look_results);
   return true;
 }
@@ -4035,22 +4072,21 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     return false;
   }
   else {
-    cOrganism* target = NULL;
-    if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
-    if (target->IsDead()) return false;  
-    
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-      return false;
-    }
-    
     // prevent killing on refuges
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
       else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
     }
+    
+    cOrganism* target = NULL;
+    if (!m_avatar) { 
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+    }
+    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+    if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -4123,16 +4159,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     return false;    
   }
   else {
-    cOrganism* target = NULL; 
-    if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
-    if (target->IsDead()) return false;  
-    
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) {
-      return false;
-    }
-    
     // prevent killing on refuges
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -4156,7 +4182,38 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       target_org_type = *itr;
     }
     
-    if (target_org_type != target->GetForageTarget()) return false;
+    cOrganism* target = NULL; 
+    if (!m_avatar) { 
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      if (target_org_type != target->GetForageTarget()) return false;
+      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+    }    
+    else if (m_avatar == 2) {
+      const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetAVNeighborPrey();
+      bool target_match = false;
+      int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+      int j = 0;
+      for (int i = 0; i < av_neighbors.GetSize(); i++) {
+        if (rand_index + i < av_neighbors.GetSize()) {
+          if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
+            target = av_neighbors[rand_index + i];      
+            target_match = true;
+          }
+          break;
+        }
+        else {
+          if (av_neighbors[j]->GetForageTarget() == target_org_type) {
+            target = av_neighbors[j];      
+            target_match = true;
+          }
+          break;          
+          j++;
+        }
+      }
+      if (!target_match) return false;
+    }
+    if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -4772,7 +4829,7 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
   return true;
 }
 
-cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs, int facing, int cell_id)
+cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& ctx, lookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
@@ -4826,6 +4883,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
 
   // fourth register gives specific instance of resources sought or specific organisms to look for
   int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  // override if using lookFT
+  if (use_ft) id_sought = forage;
   // if resource search...
   if (habitat_used != -2) { 
     // if invalid res id...
@@ -4846,7 +4905,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     }
     // if valid org id number, does the value represent a living organism
     else if (id_sought != -1) {
-      tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+      const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
       for (int i = 0; i < live_orgs.GetSize(); i++) {  
         cOrganism* living_org = live_orgs[i];
         if (id_sought == living_org->GetID()) {

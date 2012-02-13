@@ -66,7 +66,7 @@ public:
   cPopulationInterface(cWorld* world);
   virtual ~cPopulationInterface();
 
-  tSmartArray <cOrganism*> GetLiveOrgList();
+  const tSmartArray <cOrganism*> GetLiveOrgList() const;
 	//! Retrieve this organism.
 	cOrganism* GetOrganism();
 	//! Retrieve the ID of this cell.
@@ -116,6 +116,7 @@ public:
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   tArray<cOrganism*> GetAVNeighbors();
+  tArray<cOrganism*> GetAVNeighborPrey();
   cOrganism* GetAVRandNeighbor();
   cOrganism* GetAVRandNeighborPrey();
   cOrganism* GetAVRandNeighborPred();

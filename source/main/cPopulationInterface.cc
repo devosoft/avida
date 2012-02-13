@@ -76,7 +76,7 @@ cOrganism* cPopulationInterface::GetOrganism() {
 	return GetCell()->GetOrganism();
 }
 
-tSmartArray <cOrganism*> cPopulationInterface::GetLiveOrgList() {
+const tSmartArray <cOrganism*> cPopulationInterface::GetLiveOrgList() const {
   return m_world->GetPopulation().GetLiveOrgList();
 }
 
@@ -205,6 +205,11 @@ cOrganism* cPopulationInterface::GetAVRandNeighborPred()
 tArray<cOrganism*> cPopulationInterface::GetAVNeighbors()
 {
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAvatars();
+}
+
+tArray<cOrganism*> cPopulationInterface::GetAVNeighborPrey()
+{
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAVPrey();
 }
 
 bool cPopulationInterface::IsNeighborCellOccupied() {

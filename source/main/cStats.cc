@@ -3465,7 +3465,7 @@ void cStats::PrintTargets(const cString& filename)
   target_list.Resize(num_targets);
   target_list.SetAll(0);
   
-  tSmartArray < cOrganism* > live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     target_list[org->GetForageTarget() + 2]++;

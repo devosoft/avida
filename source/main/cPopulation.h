@@ -310,7 +310,7 @@ public:
   void AddLiveOrg(cOrganism* org);  
   // Remove an org from live org list
   void RemoveLiveOrg(cOrganism* org); 
-  tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
+  const tSmartArray<cOrganism*> GetLiveOrgList() const { return live_org_list; }
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);

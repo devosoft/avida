@@ -32,7 +32,7 @@ bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Geno
   return true;
 }
 
-tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() 
+const tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() const 
 {
   tSmartArray <cOrganism*> empty;
   return empty;
@@ -59,6 +59,13 @@ cOrganism* cTestCPUInterface::GetAVRandNeighborPred()
 }
 
 tArray<cOrganism*> cTestCPUInterface::GetAVNeighbors()
+{
+  tArray<cOrganism*> null_array;
+  null_array.SetAll(NULL);
+  return null_array;
+}
+
+tArray<cOrganism*> cTestCPUInterface::GetAVNeighborPrey()
 {
   tArray<cOrganism*> null_array;
   null_array.SetAll(NULL);

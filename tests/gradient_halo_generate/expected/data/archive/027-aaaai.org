@@ -1,45 +1,48 @@
-# Wed Jul 27 16:38:14 2011
-# Filename........: archive/024-aaaae.org
-# Update Output...: 30
+# Thu Feb  9 12:29:05 2012
+# Filename........: archive/027-aaaai.org
+# Update Output...: 20
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 24.000000
+# Merit...........: 27.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 24
-# Copied Size.....: 24
-# Executed Size...: 24
+# Genome Size.....: 27
+# Copied Size.....: 27
+# Executed Size...: 27
 # Offspring.......: NONE
 # 
 # Tasks Performed:
 # live-on-patch-id 0 (0.000000)
 
 
+zero
 nop-A
 zero
 nop-B
 zero
 nop-C
-nop-C
-nop-C
-move
-nop-C
+join-group
 nop-C
 nop-C
 nop-C
 nop-C
 nop-C
 nop-C
-IO
+push
 nop-C
 nop-C
 nop-C
 IO
 nop-C
+nop-C
+nop-C
+IO
+nop-C
+get-easterly
 nop-C
 rotate-to-unoccupied-cell
 repro
