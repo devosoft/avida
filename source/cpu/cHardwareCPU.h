@@ -989,6 +989,8 @@ public:
   bool Inst_ApplyPointMutations(cAvidaContext& ctx);
   bool Inst_JoinGermline(cAvidaContext& ctx);
   bool Inst_ExitGermline(cAvidaContext& ctx);
+  bool Inst_RepairPointMutOn(cAvidaContext& ctx);
+  bool Inst_RepairPointMutOff(cAvidaContext& ctx);
 
 
   // -------- Mating types support support --------

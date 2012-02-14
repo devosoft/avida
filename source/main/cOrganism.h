@@ -658,10 +658,13 @@ public:
   void IncPointMutations(int n) {m_num_point_mut+=n;} 
   void JoinGermline() {m_germline = true;}
   void ExitGermline() {m_germline = false;}
+  void RepairPointMutOn() {m_repair = true;}
+  void RepairPointMutOff() {m_repair = false;}
   bool IsGermline() { return m_germline; }
 private: 
   int m_num_point_mut;
   bool m_germline;
+  bool m_repair;
 	
 	// -------- Avatar support --------
 public:

@@ -106,12 +106,14 @@ public:
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
-    if (args) {
+    if (argc) {
       m_filename = argc->GetString(0);
       m_save_historic = argc->GetInt(0);
       m_save_group_info = argc->GetInt(1);
       m_save_avatars = argc->GetInt(2);
     }
+    
+    delete argc;
   }
   
   static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1] [boolean save_groups=0] [boolean save_avatars=0]"; }

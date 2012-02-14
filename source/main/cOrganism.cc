@@ -123,6 +123,7 @@ void cOrganism::initialize(cAvidaContext& ctx)
   }
   
   m_germline = (m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get());
+  m_repair = (m_world->GetConfig().POINT_MUT_REPAIR_START.Get());
   
 	// randomize the amout of raw materials an organism has at its 
 	// disposal.
