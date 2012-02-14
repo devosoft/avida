@@ -3355,7 +3355,7 @@ bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_Poison(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_Poison(cAvidaContext&)
 {
   double poison_multiplier = 1.0 - m_world->GetConfig().POISON_PENALTY.Get();
   m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() * poison_multiplier);
@@ -9813,12 +9813,12 @@ bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_JoinGermline(cAvidaContext&) {
   m_organism->JoinGermline();
   return true;
 }
 
-bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_ExitGermline(cAvidaContext&) {
   m_organism->ExitGermline();
   return true;
 }
@@ -9828,7 +9828,7 @@ bool cHardwareCPU::Inst_ExitGermline(cAvidaContext& ctx) {
     Mating type instructions
 ***/
 
-bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
+bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext&)
 {
   //Check if the organism has already set its sex to female
   if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
@@ -9841,7 +9841,7 @@ bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext& ctx)
   return true;
 }
 
-bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
+bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext&)
 {
   //Check if the organism has already set its sex to male
   if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
@@ -9854,7 +9854,7 @@ bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext& ctx)
   return true;
 }
 
-bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext& ctx)
+bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext&)
 {
   //Set the organism's sex to juvenile
   //In this way, an organism that has already matured as male or female can change its sex
@@ -9875,28 +9875,28 @@ bool cHardwareCPU::Inst_DivideSexMatingType(cAvidaContext& ctx)
   }
 }
 
-bool cHardwareCPU::Inst_IfMatingTypeMale(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_IfMatingTypeMale(cAvidaContext&)
 {
   //Execute the next instruction if the organism's mating type is male
   if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_MALE)  getIP().Advance();
   return true; 
 } 
 
-bool cHardwareCPU::Inst_IfMatingTypeFemale(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_IfMatingTypeFemale(cAvidaContext&)
 {
   //Execute the next instruction if the organism's mating type is female
   if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_FEMALE)  getIP().Advance();
   return true; 
 }
 
-bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_IfMatingTypeJuvenile(cAvidaContext&)
 {
   //Execute the next instruction if the organism has not matured sexually
   if (m_organism->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  getIP().Advance();
   return true; 
 }
 
-bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext&)
 {
   //Increment the organism's mating display A trait
   int counter = m_organism->GetPhenotype().GetCurMatingDisplayA();
@@ -9905,7 +9905,7 @@ bool cHardwareCPU::Inst_IncrementMatingDisplayA(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext&)
 {
   //Increment the organism's mating display A trait
   int counter = m_organism->GetPhenotype().GetCurMatingDisplayB();
@@ -9914,7 +9914,7 @@ bool cHardwareCPU::Inst_IncrementMatingDisplayB(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext&)
 //Sets the display value a to be equal to the value of ?BX?
 {
   //Get the register and its contents as the new display value
@@ -9926,7 +9926,7 @@ bool cHardwareCPU::Inst_SetMatingDisplayA(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext&)
 //Sets the display value b to be equal to the value of ?BX?
 {
   //Get the register and its contents as the new display value
@@ -9938,7 +9938,7 @@ bool cHardwareCPU::Inst_SetMatingDisplayB(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_SetMatePreference(cAvidaContext& ctx, int mate_pref)
+bool cHardwareCPU::Inst_SetMatePreference(cAvidaContext&, int mate_pref)
 {
   m_organism->GetPhenotype().SetMatePreference(mate_pref);
   return true;

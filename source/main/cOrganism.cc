@@ -165,7 +165,7 @@ void cOrganism::initialize(cAvidaContext& ctx)
 
 
 cOrganism::~cOrganism()
-{
+{  
   assert(m_is_running == false);
   delete m_hardware;
   delete m_interface;

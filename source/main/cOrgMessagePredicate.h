@@ -276,25 +276,28 @@ struct cOrgMessagePred_EventReceivedCenter : public cOrgMessagePredicate {
     m_cell_ids.clear();
   }
   
-  virtual void Reset() { 
+  virtual void Reset()
+  {
     m_event_received = false;
     m_stats_updated = false;
     m_current_times = 0;
   }
 
-  virtual bool PreviouslySatisfied() {
+  virtual bool PreviouslySatisfied()
+  {
     return m_event_received;
   }
 
-  virtual cString GetName() {
+  virtual cString GetName()
+  {
     return "EventReceivedCenter";
   }
 
-  virtual void UpdateStats(cStats& stats) {
-    if(m_event_received && !m_stats_updated) {
+  virtual void UpdateStats(cStats&)
+  {
+    if (m_event_received && !m_stats_updated) {
       int eventCell = m_event->GetNextEventCellID();
-      while(eventCell != -1) {
-//        stats.IncPredSat(eventCell);
+      while (eventCell != -1) {
         eventCell = m_event->GetNextEventCellID();
       }
       m_stats_updated = true;
@@ -383,10 +386,11 @@ struct cOrgMessagePred_EventReceivedLeftSide : public cOrgMessagePredicate {
     return "EventReceivedLeftSide";
   }
 
-  virtual void UpdateStats(cStats& stats) {
-    if(m_event_received && !m_stats_updated) {
+  virtual void UpdateStats(cStats&)
+  {
+    if (m_event_received && !m_stats_updated) {
       int eventCell = m_event->GetNextEventCellID();
-      while(eventCell != -1) {
+      while (eventCell != -1) {
 //        stats.IncPredSat(eventCell);
         eventCell = m_event->GetNextEventCellID();
       }

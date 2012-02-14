@@ -178,7 +178,7 @@ int cBirthMatingTypeGlobalHandler::getTaskID(cString task_name, cWorld* world)
 }
 
 //Stores the specified offspring in the specified birth chamber
-void cBirthMatingTypeGlobalHandler::storeOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
+void cBirthMatingTypeGlobalHandler::storeOffspring(cAvidaContext&, const Genome& offspring, cOrganism* parent)
 {
   //First, don't bother doing ANYTHING if LEKKING is turned on and the parent is a female --
   // -- in this case, there's no point in putting her offspring in the birth chamber because 

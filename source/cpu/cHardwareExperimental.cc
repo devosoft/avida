@@ -1626,7 +1626,7 @@ bool cHardwareExperimental::Inst_Push(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_PopAll(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -1638,7 +1638,7 @@ bool cHardwareExperimental::Inst_PopAll(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_PushAll(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -3025,7 +3025,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_RotateHome(cAvidaContext&)
 {
   // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
@@ -3089,7 +3089,7 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext&)
 }
 
 // Will rotate organism to face a specified other org
-bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
 {
   if (m_avatar && m_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -3158,7 +3158,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face away from a specificied other org
-bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
 {
   if (m_avatar && m_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
@@ -3560,7 +3560,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
@@ -3669,7 +3669,7 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx) 
+bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext&) 
 {
   if (m_avatar && m_avatar != 2) return false;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -3729,7 +3729,7 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
   return true;  
 }
 
-bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext& ctx) 
+bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&) 
 {
   if (m_avatar && m_avatar != 2) return false;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -4666,7 +4666,7 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_LearnParent(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_organism->HadParentTeacher()) {
@@ -5538,7 +5538,7 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
   return;
 }
 
-int cHardwareExperimental::GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, 
+int cHardwareExperimental::GetMinDist(cAvidaContext&, const int worldx, bounds& bounds, const int cell_id, 
                                       const int distance_sought, const int facing)
 {
   const int org_x = cell_id % worldx;

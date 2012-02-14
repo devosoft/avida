@@ -27,7 +27,10 @@
 
 #include "apto/platform.h"
 #include "avida/core/World.h"
-#include "avida/environment/types.h"
+#include "avida/environment/ActionTrigger.h"
+#include "avida/environment/Product.h"
+#include "avida/environment/Reaction.h"
+#include "avida/environment/Resource.h"
 
 
 namespace Avida {

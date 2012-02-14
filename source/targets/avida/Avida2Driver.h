@@ -61,7 +61,7 @@ public:
   Avida::Feedback& Feedback() { return m_feedback; }
 
   // Callback
-  void RegisterCallback(Avida::DriverCallback callback) { ; }
+  void RegisterCallback(Avida::DriverCallback callback) { (void)callback; }
 };
 
 #endif

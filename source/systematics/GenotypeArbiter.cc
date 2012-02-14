@@ -519,6 +519,9 @@ void Avida::Systematics::GenotypeArbiter::removeGenotype(GenotypePtr genotype)
   
   assert(genotype->m_handle);
   genotype->m_handle->Remove(); // Remove from historic list
+  
+  delete genotype->m_handle;
+  genotype->m_handle = NULL;
 }
 
 void Avida::Systematics::GenotypeArbiter::updateCoalescent()

@@ -4615,7 +4615,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   resource_count.UpdateGlobalResources(ctx);   
 }
 
-void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx) 
+void cPopulation::UpdateFTOrgStats(cAvidaContext&) 
 {
   // Get per-org stats seperately for pred and prey
   cStats& stats = m_world->GetStats();
@@ -6375,8 +6375,10 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
  middle of a run.  This is designed to work with cActionSetGradient Count */
 //JW
 
-void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name)
+void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, cWorld* world, const cString res_name)
 {
+  (void)verbosity;
+  
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
   

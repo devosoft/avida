@@ -1098,7 +1098,7 @@ void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const Inst
   return;
 }
 
-void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id)
+void cHardwareBase::SingleProcess_SetPostCPUCosts(cAvidaContext&, const Instruction& cur_inst, const int thread_id)
 {
   if (m_has_post_costs) {
     int per_use_post_cost = m_thread_inst_post_cost[cur_inst.GetOp()];

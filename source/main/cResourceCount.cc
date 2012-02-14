@@ -225,6 +225,10 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
         const int& in_config, const int& in_count, const double& in_resistance, const double& in_init_plat, 
         const double& in_threshold, const int& in_refuge, const bool& isgradient)
 {
+  (void)in_threshold;
+  (void)in_refuge;
+  (void)isgradient;
+  
   assert(res_index >= 0 && res_index < resource_count.GetSize());
   assert(initial >= 0.0);
   assert(decay >= 0.0);
@@ -357,6 +361,8 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
                       const int& config, const int& count, const double& resistance, const double& plat_val, 
                       const double& threshold, const int& refuge) 
 {
+  (void)world;
+  
   assert(res_id >= 0 && res_id < resource_count.GetSize());
   assert(spatial_resource_count[res_id]->GetSize() > 0);
   int worldx = spatial_resource_count[res_id]->GetX();

@@ -6383,7 +6383,7 @@ void cAnalyze::CommandRecombineSample(cString cur_string)
 }
 
 // This command will mutate a single locus in every single organism in the current batch
-void cAnalyze::CommandMutagenize(cString cur_string)
+void cAnalyze::CommandMutagenize(cString)
 {
 
   // Loop through all the genomes in the current batch

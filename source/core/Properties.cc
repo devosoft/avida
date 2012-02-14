@@ -42,6 +42,8 @@ const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
 const Avida::PropertyTypeID Avida::PropertyTraits<const char*>::Type = "string";
 const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
 
+int Avida::PropertyMap::s_prop_map_count = 0;
+
 bool Avida::PropertyMap::operator==(const PropertyMap& p) const
 {
   // Build distinct key sets

@@ -1221,6 +1221,8 @@ void cPopulationInterface::SetAvatarFacing(int facing)
 // record avatar faced cell any time avatar is moved, injected, born into cell, or rotates
 void cPopulationInterface::SetAvatarFacedCell(int av_cell_id) 
 { 
+  (void)av_cell_id;
+  
   // rotate avatar cell to correct direction for this avatar, then get faced cell
   cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
   for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {

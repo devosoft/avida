@@ -22,3 +22,29 @@
 #include "cBirthSelectionHandler.h"
 
 cBirthSelectionHandler::~cBirthSelectionHandler() { ; }
+
+
+int cBirthSelectionHandler::GetWaitingOffspringNumber(int which_mating_type)
+{
+  (void)which_mating_type;
+  return -1;
+}
+
+
+void cBirthSelectionHandler::GetWaitingOffspringTaskData(int task_id, float results_array[])
+{
+  (void)task_id;
+  results_array[0] = results_array[1] = results_array[2] = -1;
+}
+
+
+void cBirthSelectionHandler::PrintWaitingMatingTypeData(cWorld*, const cString&)
+{
+  return;
+}
+
+
+void cBirthSelectionHandler::PrintBirthChamber(const cString&, cWorld*)
+{
+  return;
+}

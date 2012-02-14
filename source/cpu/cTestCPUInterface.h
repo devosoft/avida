@@ -51,7 +51,7 @@ public:
   
   const Apto::Array<cOrganism*, Apto::Smart>& GetLiveOrgList() const;
   cPopulationCell* GetCell() { return NULL; }
-	cPopulationCell* GetCell(int cell_id) { return NULL; }
+	cPopulationCell* GetCell(int) { return NULL; }
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }
@@ -59,9 +59,9 @@ public:
   void SetDemeID(int) { ; }
   
   int GetAVCellID() { return -1; }
-  void SetAVCellID(int av_cell_id) { ; }
-  void SetAvatarFacing(int facing) { ; }
-  void SetAvatarFacedCell(int av_cell_id) { ; }
+  void SetAVCellID(int) { ; }
+  void SetAvatarFacing(int) { ; }
+  void SetAvatarFacedCell(int) { ; }
   int GetAVFacedCellID() { return -1; }
   int GetAVFacedDir() { return 0; }
   
@@ -189,18 +189,18 @@ public:
   void JoinGroup(int) { ; }
   void MakeGroup() { ; }
   void LeaveGroup(int) { ; }
-  int NumberOfOrganismsInGroup(int) {return 0; }
+  int NumberOfOrganismsInGroup(int) { return 0; }
     
-  int IncTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
-  int DecTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
-  int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism) {return 0; }
-  double CalcGroupOddsImmigrants(int group_id) {return 0.0; }
-  double CalcGroupOddsOffspring(cOrganism* parent) {return 0.0; }
-  double CalcGroupOddsOffspring(int group_id) {return 0.0; }
-  bool AttemptImmigrateGroup(int group_id, cOrganism* org) {return false; }
-  void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
-  int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
+  int IncTolerance(int, cAvidaContext&) { return 0; }
+  int DecTolerance(int, cAvidaContext&) { return 0; }
+  int CalcGroupToleranceImmigrants(int) { return 0; }
+  int CalcGroupToleranceOffspring(cOrganism*) { return 0; }
+  double CalcGroupOddsImmigrants(int) { return 0.0; }
+  double CalcGroupOddsOffspring(cOrganism*) { return 0.0; }
+  double CalcGroupOddsOffspring(int) { return 0.0; }
+  bool AttemptImmigrateGroup(int, cOrganism*) { return false; }
+  void PushToleranceInstExe(int, cAvidaContext&) { ; }
+  int& GetGroupIntolerances(int, int) { return *(new int(0)); }
 
   void AttackFacedOrg(cAvidaContext&, int) { ; }
   

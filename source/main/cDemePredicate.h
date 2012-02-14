@@ -67,7 +67,7 @@ public:
 		compareOperator(comparisonOperator),
 		resourceThresholdValue(threasholdValue),
 		previouslySatisfied(false)
-		{;}
+		{ ; }
 	
 	bool operator()(cAvidaContext& ctx, void* arg) {
 		assert(arg != NULL);
@@ -93,8 +93,7 @@ public:
 	void Reset() { previouslySatisfied = false; }
 	bool PreviouslySatisfied() { return previouslySatisfied; }
 	cString GetName() { return cString("cDemeResourceThreshold"); }
-	void UpdateStats(cStats& stats) {
-	}
+	void UpdateStats(cStats&) { ; }
 };
 
 #endif

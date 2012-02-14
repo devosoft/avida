@@ -50,6 +50,7 @@ using namespace AvidaTools;
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
   : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL), m_datafile_mgr(NULL)
   , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL)
+  , m_own_driver(false)
 {
 }
 
@@ -86,6 +87,9 @@ cWorld::~cWorld()
 
   // cleanup driver object, if needed
   if (m_own_driver) { delete m_driver; m_driver = NULL; }
+  
+  delete m_ctx;
+  delete m_new_world;
 }
 
 

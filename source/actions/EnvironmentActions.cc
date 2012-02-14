@@ -302,7 +302,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().UpdateGradientInflow(m_res_name, m_inflow);        
   } 
@@ -327,7 +327,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetPopulation().UpdateGradientOutflow(m_res_name, m_outflow);        
   } 

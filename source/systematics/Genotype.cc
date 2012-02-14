@@ -168,8 +168,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
 
 
 Avida::Systematics::Genotype::~Genotype()
-{
-  delete m_handle;
+{  
   delete m_prop_map;
 }
 

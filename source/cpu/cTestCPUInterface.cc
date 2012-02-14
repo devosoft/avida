@@ -99,7 +99,7 @@ int cTestCPUInterface::GetAVNumNeighbors()
   return 0;
 }
 
-void cTestCPUInterface::GetNeighborhoodCellIDs(tArray<int>& list)
+void cTestCPUInterface::GetNeighborhoodCellIDs(tArray<int>&)
 {
   
 }
@@ -173,7 +173,7 @@ void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<doubl
   m_testcpu->ModifyResources(ctx, res_change);
 }
 
-void cTestCPUInterface::Die(cAvidaContext& ctx) 
+void cTestCPUInterface::Die(cAvidaContext&) 
 {
 }
 

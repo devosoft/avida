@@ -160,7 +160,7 @@ inline const tArray<double>& cTestCPU::GetFacedAVResources(cAvidaContext& ctx)
   return m_faced_cell_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)    
+inline const tArray<double>& cTestCPU::GetDemeResources(int, cAvidaContext& ctx)    
 {
     return m_deme_resource_count.GetResources(ctx); 
 }
@@ -175,7 +175,7 @@ inline const tArray<double>& cTestCPU::GetAVResources(cAvidaContext& ctx)
   return m_cell_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int cell_id)   
+inline const tArray<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int)   
 {
   return m_cell_resource_count.GetResources(ctx); 
 }

@@ -157,15 +157,20 @@ namespace Avida {
   
   class PropertyMap
   {
+    template <class K, class V> class PropertyMapStorage : public Apto::HashBTree<K, V, 5> { ; };
+    
   public:
-    typedef Apto::Map<PropertyID, PropertyPtr, Apto::DefaultHashBTree, Apto::ExplicitDefault>::KeyIterator PropertyIDIterator;
+    typedef Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault>::KeyIterator PropertyIDIterator;
     
   private:
-    Apto::Map<PropertyID, PropertyPtr, Apto::DefaultHashBTree, Apto::ExplicitDefault> m_prop_map;
+    Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault> m_prop_map;
     PropertyPtr m_default;
+    
+    static int s_prop_map_count;
 
   public:
-    LIB_EXPORT inline PropertyMap() : m_default(new Property("", Property::Null, "")) { ; }
+    LIB_EXPORT inline PropertyMap() : m_default(new Property("", Property::Null, "")) { s_prop_map_count++; }
+    LIB_EXPORT inline ~PropertyMap() { s_prop_map_count--; }
     
     LIB_EXPORT inline int GetSize() const { return m_prop_map.GetSize(); }
     

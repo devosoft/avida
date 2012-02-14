@@ -3222,7 +3222,7 @@ public:
    phenotype by computing the euclidean distance between the vectors. Fitness is 1/(sum of Euclidean distances)
 
    */
-  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+  virtual double Fitness(cDeme& deme, cAvidaContext&) { 
     double fit = 1.0;
     
     // Fail if we don't have the right number of phenotypes.

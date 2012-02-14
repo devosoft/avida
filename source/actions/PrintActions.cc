@@ -316,7 +316,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"prey_instruction-${inst_set}.dat\"] [string inst_set]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetStats().PrintPreyInstructionData(m_filename, m_inst_set);
   }
@@ -345,7 +345,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"predator_instruction-${inst_set}.dat\"] [string inst_set]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     m_world->GetStats().PrintPredatorInstructionData(m_filename, m_inst_set);
   }
@@ -659,7 +659,7 @@ public:
 
   static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat']\n  WARNING: This will only have the appropriate header if all lineages are present before this action is run for the first time."; }
 
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     const int update = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
@@ -4088,7 +4088,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"mating_type_histogram.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     int type_counts[3] = {0,0,0};
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -4129,7 +4129,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber_mating_type_histogram.dat\"] [int hwtype=0]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     int type_counts[3] = {0,0,0};
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -4165,7 +4165,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"mating_display_data.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     int display_sums[6] = {0, 0, 0, 0, 0, 0}; //[0-2] = display A values for juvenile/undefined mating type, females, and males
                                            //[3-5] = display B values for each sex
@@ -4220,7 +4220,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"female_mate_preference_data.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     //Mating preferences:
     // 0 = random 
@@ -4267,7 +4267,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"mates/mates-XXXX.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set( "mates/mates-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
@@ -4294,7 +4294,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"birth_chamber/bc-XXXX.dat\"] [int hwtype=0]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set( "birth_chamber/bc-%s.dat", (const char*)cStringUtil::Convert(m_world->GetStats().GetUpdate()));
@@ -4319,7 +4319,7 @@ public:
   
   static const cString GetDescription() { return "Arguments: [string fname=\"dominant.dat\"]"; }
   
-  void Process(cAvidaContext& ctx)
+  void Process(cAvidaContext&)
   {
     cDataFile& df = m_world->GetDataFile(m_filename);
     

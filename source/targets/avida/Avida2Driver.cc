@@ -93,7 +93,7 @@ void Avida2Driver::Run()
     // Increment the Update.
     stats.IncCurrentUpdate();
     
-    int update = stats.GetUpdate();
+//    int update = stats.GetUpdate();
     
     
     // Handle all data collection for previous update.
