@@ -92,8 +92,9 @@ namespace Avida {
       // Group Data
       template <typename T> LIB_EXPORT bool AttachData(Apto::SmartPtr<T> obj)
       {
+        assert(obj);
         Apto::String type_id_str(typeid(T).name());
-        if (m_data.Has(type_id_str)) return false;
+        if (m_data.Get(type_id_str)) return false;
         m_data.Set(type_id_str, obj);
         return true;
       }
