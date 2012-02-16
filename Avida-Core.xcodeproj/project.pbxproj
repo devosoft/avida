@@ -95,6 +95,7 @@
 		7023ECA10C0A431B00362B9C /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
 		7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		7029D7BD1491AF7800C3B8AA /* GeneticRepresentation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7029D7BC1491AF7800C3B8AA /* GeneticRepresentation.cc */; };
+		702E1A4B14EC1971009E751C /* OrganismTrace.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702E1A4A14EC1971009E751C /* OrganismTrace.cc */; };
 		7030DB211326C44D00B6DADA /* cOrderedWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */; };
 		7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 7030DB201326C44C00B6DADA /* cOrderedWeightedIndex.h */; };
 		70310E6B0EDD09260044971B /* cStateGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 70310E690EDD09260044971B /* cStateGrid.h */; };
@@ -366,6 +367,8 @@
 		702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cPopulationInterface.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		702D4F3908DA61E2007BA469 /* cBirthChamber.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cBirthChamber.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cBirthChamber.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		702E1A4814EC18DE009E751C /* OrganismTrace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrganismTrace.h; sourceTree = "<group>"; };
+		702E1A4A14EC1971009E751C /* OrganismTrace.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OrganismTrace.cc; sourceTree = "<group>"; };
 		702F52A70992F8F600B2B507 /* cSymbolTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSymbolTable.h; sourceTree = "<group>"; };
 		702F52A80992F8F600B2B507 /* cSymbolTable.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSymbolTable.cc; sourceTree = "<group>"; };
 		702F52DE0992FD8000B2B507 /* cScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cScriptObject.h; sourceTree = "<group>"; };
@@ -1038,6 +1041,7 @@
 				7081844614B37EDB009A9AFE /* Freezer.h */,
 				703549281333E36800D3865C /* Listener.h */,
 				703549291333E36800D3865C /* Map.h */,
+				702E1A4814EC18DE009E751C /* OrganismTrace.h */,
 				7081844814B38147009A9AFE /* Types.h */,
 			);
 			path = viewer;
@@ -1316,6 +1320,7 @@
 				70DAE8E314B4B01900FE5A6A /* Freezer.cc */,
 				7042DF13128C90240062501F /* Listener.cc */,
 				70A1E327125CDF2B00D56AC4 /* Map.cc */,
+				702E1A4A14EC1971009E751C /* OrganismTrace.cc */,
 			);
 			path = viewer;
 			sourceTree = "<group>";
@@ -2173,6 +2178,7 @@
 				70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */,
 				7042DF15128C90240062501F /* Listener.cc in Sources */,
 				70DAE8E414B4B01900FE5A6A /* Freezer.cc in Sources */,
+				702E1A4B14EC1971009E751C /* OrganismTrace.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2245,7 +2251,10 @@
 				DEPLOYMENT_LOCATION = NO;
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG_CRANDOM,
+					DEBUG,
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
