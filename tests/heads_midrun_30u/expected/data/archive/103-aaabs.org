@@ -1,6 +1,6 @@
-# Tue Feb 14 14:44:23 2012
-# Filename........: archive/103-aaabr.org
-# Update Output...: 15
+# Thu Feb 16 17:29:23 2012
+# Filename........: archive/103-aaabs.org
+# Update Output...: 30
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0

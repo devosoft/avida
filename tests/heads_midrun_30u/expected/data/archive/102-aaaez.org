@@ -1,15 +1,15 @@
-# Tue Feb 14 14:44:29 2012
-# Filename........: archive/102-aaaex.org
-# Update Output...: 30
+# Thu Feb 16 17:29:17 2012
+# Filename........: archive/102-aaaez.org
+# Update Output...: 15
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
 # Merit...........: 3355443200.000000
-# Gestation Time..: 266
-# Fitness.........: 12614448.120301
-# Errors..........: 1
+# Gestation Time..: 267
+# Fitness.........: 12567202.996255
+# Errors..........: 2
 # Genome Size.....: 102
 # Copied Size.....: 102
 # Executed Size...: 100
@@ -28,12 +28,12 @@
 
 
 h-alloc
-add
+sub
 dec
-add
+jmp-head
 push
 nop-B
-h-search
+inc
 IO
 nop-C
 IO
@@ -49,26 +49,26 @@ push
 push
 swap
 nop-C
-nop-A
+if-n-equ
 set-flow
 push
-nand
+nop-B
 nop-C
-nand
+nop-B
 nop-C
-nop-C
-if-label
-h-divide
+h-alloc
+nop-A
+get-head
 nop-C
 pop
 nop-C
 nop-B
 h-alloc
 IO
-nop-C
+swap
 nand
 nop-A
-if-label
+if-less
 sub
 nand
 nop-C
@@ -79,11 +79,11 @@ nop-C
 nop-A
 nand
 nop-C
-h-divide
+nop-C
 IO
 nop-C
+nop-B
 set-flow
-nop-C
 add
 nop-C
 IO
@@ -92,13 +92,13 @@ IO
 nop-A
 pop
 nand
-set-flow
+h-divide
 h-copy
 nand
 inc
 h-copy
 add
-sub
+nop-A
 set-flow
 add
 swap

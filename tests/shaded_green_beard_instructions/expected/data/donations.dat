@@ -1,5 +1,5 @@
 # Info about organisms giving donations in the population
-# Tue Feb 14 14:20:49 2012
+# Thu Feb 16 17:21:29 2012
 #  1: update
 #  2: parent made at least one donation
 #  3: parent received at least one donation
@@ -17,4 +17,4 @@
 # 15: parent received at least one quanta_threshgb_donation
 # 16: parent received at least one quanta_threshgb_donation but did not make one
 
-100 99 99 0 95 76 4 99 75 0 99 0 0 0 0 0 
+100 100 100 0 96 79 4 95 76 4 96 0 0 0 0 0 

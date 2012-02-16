@@ -1,5 +1,5 @@
 # Avida population mating display data
-# Fri Feb 10 16:52:50 2012
+# Thu Feb 16 17:20:34 2012
 #  1: Update
 #  2: Avg mating display A for mating type -1 (undefined)
 #  3: Avg mating display A for mating type 0 (female)
@@ -8,5 +8,5 @@
 #  6: Avg mating display B for mating type 0 (female)
 #  7: Avg mating display B for mating type 1 (male)
 
-100 2.29762 2.17285 8.16619 0 0 0 
-200 2.91589 3.10922 6.29914 0 0 0 
+100 1.86667 2.18682 7.71011 0 0 0 
+200 2.92308 2.87973 4.26686 0 0 0 

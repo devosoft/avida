@@ -1,15 +1,15 @@
-# Fri Feb 10 16:50:30 2012
-# Filename........: archive/050-aaabn.org
-# Update Output...: 310
+# Thu Feb 16 17:21:19 2012
+# Filename........: archive/050-aaaei.org
+# Update Output...: 460
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
 # Merit...........: 47.000000
-# Gestation Time..: 186
-# Fitness.........: 0.252688
-# Errors..........: 0
+# Gestation Time..: 185
+# Fitness.........: 0.254054
+# Errors..........: 1
 # Genome Size.....: 50
 # Copied Size.....: 50
 # Executed Size...: 47
@@ -35,38 +35,38 @@ mov-head
 nop-C
 nop-C
 nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-push
-nop-C
-nop-C
-nop-C
-nop-C
+pop
 add
 nop-C
-set-flow
+nop-C
+nop-C
+nand
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+swap
+IO
+nop-C
+nop-C
+nop-C
+h-alloc
+nand
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
 nop-C
 h-search
 h-copy

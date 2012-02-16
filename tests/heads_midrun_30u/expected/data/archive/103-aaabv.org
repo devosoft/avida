@@ -1,14 +1,14 @@
-# Thu Feb 16 17:29:15 2012
-# Filename........: archive/103-aaabl.org
-# Update Output...: 10
+# Thu Feb 16 17:29:19 2012
+# Filename........: archive/103-aaabv.org
+# Update Output...: 20
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
 # 
 # Generation: 0
 # Merit...........: 3388997632.000000
-# Gestation Time..: 269
-# Fitness.........: 12598504.208178
+# Gestation Time..: 267
+# Fitness.........: 12692875.026217
 # Errors..........: 1
 # Genome Size.....: 103
 # Copied Size.....: 103
@@ -28,19 +28,19 @@
 
 
 h-alloc
-shift-r
+h-search
 dec
-if-label
+sub
 push
 nop-B
-inc
+dec
 IO
 swap
 IO
 swap
 nand
 nand
-h-divide
+nop-B
 nand
 nop-C
 IO
@@ -52,13 +52,13 @@ nop-C
 if-n-equ
 set-flow
 push
-jmp-head
+sub
 nop-C
+if-label
+get-head
+sub
 nop-A
-if-n-equ
-swap
-nop-C
-nop-A
+mov-head
 nop-C
 pop
 nop-C
@@ -68,13 +68,13 @@ IO
 nop-C
 nand
 nop-A
-if-less
+nop-A
 sub
 nand
 nop-C
 if-label
-if-less
-nop-B
+h-divide
+mov-head
 nop-C
 nop-A
 nand
@@ -83,7 +83,7 @@ nop-C
 IO
 nop-C
 nop-B
-set-flow
+nop-B
 add
 nop-C
 IO
@@ -97,15 +97,15 @@ h-copy
 nand
 inc
 h-copy
-h-copy
 add
 sub
-h-divide
+if-n-equ
 add
 swap
 nand
 IO
 nop-C
+h-copy
 IO
 h-search
 h-copy
