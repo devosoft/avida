@@ -76,7 +76,7 @@ cOrganism* cPopulationInterface::GetOrganism() {
 	return GetCell()->GetOrganism();
 }
 
-const tSmartArray <cOrganism*>& cPopulationInterface::GetLiveOrgList() {
+const tSmartArray <cOrganism*> cPopulationInterface::GetLiveOrgList() const {
   return m_world->GetPopulation().GetLiveOrgList();
 }
 

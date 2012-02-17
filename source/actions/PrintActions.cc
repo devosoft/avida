@@ -773,7 +773,7 @@ public:
     const double generation = m_world->GetStats().SumGeneration().Average();
     
     //only loop through living organisms
-    const tSmartArray<cOrganism*>& living_orgs = m_world->GetPopulation().GetLiveOrgList();
+    const tSmartArray<cOrganism*> living_orgs = m_world->GetPopulation().GetLiveOrgList();
     
     tHashMap<int, int> lineage_label_counts;
     
