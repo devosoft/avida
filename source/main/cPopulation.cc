@@ -2403,7 +2403,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // part of the germline. Ignores replicate size...
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
           for (int i = 0; i<source_deme.GetSize(); ++i) {
-            cPopulationCell& cell = GetCell(i);
+            cPopulationCell& cell = source_deme.GetCell(i);
             if (cell.IsOccupied()) {
               cOrganism* o = cell.GetOrganism();
               if (o->IsGermline()) {
@@ -2420,12 +2420,12 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // flagged themselves as part of the germline.
           tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
-          
+
           // Get list of potential founders
           for (int i = 0; i<source_deme.GetSize(); ++i) {
-            cPopulationCell& cell = GetCell(i);
-            if (cell.IsOccupied()) {
-              cOrganism* o = cell.GetOrganism();
+            int cellid = source_deme.GetCellID(i);
+            if (cell_array[cellid].IsOccupied()) {
+              cOrganism* o = cell_array[cellid].GetOrganism();
               if (o->IsGermline()) {
                 potential_founders.Push(o);
               }
