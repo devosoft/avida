@@ -456,7 +456,7 @@ public:
   CONFIG_ADD_VAR(DEMES_COMPETITION_STYLE, int, 0, "How should demes compete?\n0=Fitness proportional selection\n1=Tournament selection");
   CONFIG_ADD_VAR(DEMES_TOURNAMENT_SIZE, int, 0, "Number of demes that participate in a tournament");
   CONFIG_ADD_VAR(DEMES_OVERRIDE_FITNESS, int, 0, "Should the calculated fitness is used?\n0=yes (default)\n1=no (all fitnesses=1)");
-  CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Should demes use a distinct germline?");
+  CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Should demes use a distinct germline? 0: No, 1: Traditional germ lines, 2: Genotype tracking, 3: Organism flagging germline");
   CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Prevent sterile demes from replicating?");
   CONFIG_ADD_VAR(DEMES_RESET_RESOURCES, int, 0, "Reset resources in demes on replication?\n0 = reset both demes \n1 = reset target deme \n2 = deme resources remain unchanged\n");
   CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of identical organisms to create or copy from the\nsource deme to the target deme");
