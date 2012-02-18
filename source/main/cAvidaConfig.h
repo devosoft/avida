@@ -456,7 +456,7 @@ public:
   CONFIG_ADD_VAR(DEMES_COMPETITION_STYLE, int, 0, "How should demes compete?\n0=Fitness proportional selection\n1=Tournament selection");
   CONFIG_ADD_VAR(DEMES_TOURNAMENT_SIZE, int, 0, "Number of demes that participate in a tournament");
   CONFIG_ADD_VAR(DEMES_OVERRIDE_FITNESS, int, 0, "Should the calculated fitness is used?\n0=yes (default)\n1=no (all fitnesses=1)");
-  CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Should demes use a distinct germline?");
+  CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Should demes use a distinct germline? 0: No, 1: Traditional germ lines, 2: Genotype tracking, 3: Organism flagging germline");
   CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Prevent sterile demes from replicating?");
   CONFIG_ADD_VAR(DEMES_RESET_RESOURCES, int, 0, "Reset resources in demes on replication?\n0 = reset both demes \n1 = reset target deme \n2 = deme resources remain unchanged\n");
   CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of identical organisms to create or copy from the\nsource deme to the target deme");
@@ -712,6 +712,8 @@ public:
 
   // -------- Sensing config options --------
   CONFIG_ADD_VAR(LOOK_DIST, int, -1, "-1: use limits set inside look instructions \n >-1: limit sight distance of look instructions to this number of cells");
+  CONFIG_ADD_VAR(LOOK_DISABLE, int, 0, "0: none \n 1: input habitat register \n 2: input sight dist sought \n 3: input type of search (e.g. closest vs count vs total) \n 4: input resource/org id sought \n 5: output habitat used \n 6: output distance used\n 7: output search type used\n 8: output resource/org id used \n 9: output count (edible)\n 10: outptu amount/value seen\n 11: output id seen \n 12: output org forage target seen");
+  CONFIG_ADD_VAR(LOOK_DISABLE_TYPE, int, 0, "0: random scramble \n else add + / - int to input/output");
 
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");

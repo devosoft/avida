@@ -457,6 +457,7 @@ private:
   bool Inst_ReproDeme(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_ReproSex(cAvidaContext& ctx);
+  bool Inst_ReproGermFlag(cAvidaContext& ctx);
   bool Inst_TaskPutRepro(cAvidaContext& ctx);
   bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
   bool Inst_ConditionalRepro(cAvidaContext& ctx);

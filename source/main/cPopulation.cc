@@ -2408,7 +2408,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // part of the germline. Ignores replicate size...
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
           for (int i = 0; i<source_deme.GetSize(); ++i) {
-            cPopulationCell& cell = GetCell(i);
+            cPopulationCell& cell = source_deme.GetCell(i);
             if (cell.IsOccupied()) {
               cOrganism* o = cell.GetOrganism();
               if (o->IsGermline()) {
@@ -2425,12 +2425,12 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // flagged themselves as part of the germline.
           tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
-          
+
           // Get list of potential founders
           for (int i = 0; i<source_deme.GetSize(); ++i) {
-            cPopulationCell& cell = GetCell(i);
-            if (cell.IsOccupied()) {
-              cOrganism* o = cell.GetOrganism();
+            int cellid = source_deme.GetCellID(i);
+            if (cell_array[cellid].IsOccupied()) {
+              cOrganism* o = cell_array[cellid].GetOrganism();
               if (o->IsGermline()) {
                 potential_founders.Push(o);
               }
@@ -2633,7 +2633,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
         int cellid = DemeSelectInjectionCell(target_deme, i);
-        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype()); 
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false); 
         target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
       }
@@ -2651,7 +2651,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         
         for(int i=0; i<source_founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i);
-          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), ctx, &source_founders[i]->GetPhenotype()); 
+          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), ctx, &source_founders[i]->GetPhenotype(), false); 
           source_deme.AddFounder(source_founders[i]->GetBioGroup("genotype"), &source_founders[i]->GetPhenotype());
           DemePostInjection(source_deme, cell_array[cellid]);
         }
@@ -2672,7 +2672,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           int cellid = DemeSelectInjectionCell(source_deme, i);
           //cout << "founder: " << source_founders[i] << endl;
           cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
-          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i]); 
+          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i], true); 
           DemePostInjection(source_deme, cell_array[cellid]);
         }
         
@@ -2756,10 +2756,10 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype, bool reset) 
 {
   // Mutate the genome?
-  if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1) {
+  if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1 && !reset) {
     // MUTATE!
     
     // create a new genome by mutation

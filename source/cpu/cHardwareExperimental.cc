@@ -4845,6 +4845,37 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
   int forage = m_organism->GetForageTarget();
   
+  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  int search_type = m_threads[m_cur_thread].reg[search_reg].value;  
+  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() < 6 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {
+    int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+    if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
+      int rand = (int) m_world->GetRandom().GetDouble();
+      if (target_reg == 0) habitat_used = rand;
+      else if (target_reg == 1) distance_sought = rand;
+      else if (target_reg == 2) distance_sought = rand;
+      else if (target_reg == 3) distance_sought = rand;
+    }
+    else {
+      int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+      if (target_reg == 0) habitat_used += offset;
+      else if (target_reg == 1) distance_sought += offset;
+      else if (target_reg == 2) distance_sought += offset;
+      else if (target_reg == 3) distance_sought += offset;
+    }
+  }
+  //    LOOK_DISABLE 0            # 0: none
+  //# 1: input habitat register
+  //# 2: input sight dist sought
+  //# 3: input type of search (e.g. closest vs count vs total)
+  //# 4: input resource/org id sought
+  //# 5: input direction faced
+  //    LOOK_DISABLE_TYPE 0       # 0: random scramble
+  //# else add + / - int to input/output
+
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource, habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
@@ -4853,7 +4884,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // habitat -2 = organisms
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
 
-  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
   // default to look for orgs if invalid habitat & predator
   if (pred_experiment && forage == -2 && 
       (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
@@ -4864,7 +4894,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   int max_dist = 0;
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
-  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
   else if (distance_sought > max_dist) distance_sought = max_dist;
 
@@ -4873,7 +4902,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
   // org hunting search types (habitat -2): -2 -1 0 1 2
   // 0 = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
-  int search_type = m_threads[m_cur_thread].reg[search_reg].value;
+
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
   // if looking for orgs in predator environment and is prey, default to closest org of any type
@@ -4884,7 +4913,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
 
   // fourth register gives specific instance of resources sought or specific organisms to look for
-  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
   // override if using lookFT
   if (use_ft) id_sought = forage;
   // if resource search...
@@ -5503,6 +5531,32 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
     setInternalValue(regs.value, results.value, true);
     setInternalValue(regs.group, results.group, true);
     setInternalValue(regs.ft, results.forage, true);  
+  }
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
+    int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+    if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
+      int rand = (int) m_world->GetRandom().GetDouble();
+      if (target_reg == 0) setInternalValue(regs.habitat, rand, true);
+      else if (target_reg == 1) setInternalValue(regs.distance, rand, true);
+      else if (target_reg == 2) setInternalValue(regs.search_type, rand, true);
+      else if (target_reg == 3) setInternalValue(regs.id_sought, rand, true);
+      else if (target_reg == 4) setInternalValue(regs.count, rand, true);
+      else if (target_reg == 5) setInternalValue(regs.value, rand, true);
+      else if (target_reg == 6) setInternalValue(regs.group, rand, true);
+      else if (target_reg == 7) setInternalValue(regs.ft, rand, true);  
+    }
+    else {
+      int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+      if (target_reg == 0) setInternalValue(regs.habitat, results.habitat + offset, true);
+      else if (target_reg == 1) setInternalValue(regs.distance, results.distance + offset, true);
+      else if (target_reg == 2) setInternalValue(regs.search_type, results.search_type + offset, true);
+      else if (target_reg == 3) setInternalValue(regs.id_sought, results.id_sought + offset, true);
+      else if (target_reg == 4) setInternalValue(regs.count, results.count + offset, true);
+      else if (target_reg == 5) setInternalValue(regs.value, results.value + offset, true);
+      else if (target_reg == 6) setInternalValue(regs.group, results.group + offset, true);
+      else if (target_reg == 7) setInternalValue(regs.ft, results.forage + offset, true);  
+    }
   }
   return;
 }
