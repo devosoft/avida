@@ -1193,12 +1193,13 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="InjectGroup">InjectGroup</a></strong>
-  <i>[string fname=\"START_ORGANISM\"] [int cell_id=0] [int group_id=-1] [int forager_type=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
+  <i>[string fname=\"START_ORGANISM\"] [int cell_id=0] [int group_id=-1] [int forager_type=-1] [bool trace=0] 
+    [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
   </p>
   <p>
   Inject a single organisms into the population with the specified
   group_id (opinion) and foraging target along with other options
-  as in Inject.
+  as in Inject. Trace will setup minitrace for injected org.
   </p>
   </li>
 <li><p>
@@ -2496,7 +2497,7 @@ a single, complete file for each trigger.
 </li>
   <li><p>
     <strong><a name="PrintMiniTraces">PrintMiniTraces</a></strong>
-    <i>[boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]</i>
+    <i>[boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1] [boolean initial]</i>
     </p>
     <p>Prints a condensed trace of execution during a lifetime. Who is traced is determined by arguements.
     E.g. with the args <it>save_dominants=1:orgs_per=2</t>, at the specified update(s) a list is

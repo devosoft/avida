@@ -228,6 +228,24 @@ public:
   }
 };
 
+class cActionPrintResourceLocData : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintResourceLocData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "resourceloc.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"resourceloc.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintResourceLocData(m_filename, ctx);
+  }
+};
+
 class cActionPrintGroupTolerance : public cAction // @JJB
 {
 private:
@@ -3346,7 +3364,7 @@ public:
     }    
     
     else {
-      if (filename == "") filename.Set("target_grid.%d.dat", m_world->GetStats().GetUpdate());
+      if (filename == "") filename.Set("grid_dumps/target_grid.%d.dat", m_world->GetStats().GetUpdate());
       ofstream& fp = m_world->GetDataFileOFStream(filename);
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         for (int i = 0; i < worldx; i++) {
@@ -4407,6 +4425,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintNewTasksDataPlus>("PrintNewTasksDataPlus");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
+  action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
   action_lib->Register<cActionPrintReactionExeData>("PrintReactionExeData");
   action_lib->Register<cActionPrintCurrentReactionData>("PrintCurrentReactionData");

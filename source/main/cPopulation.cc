@@ -942,6 +942,11 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       org_survived = false;
     }
   } 
+  // don't kill our test org, just it's offspring
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == 12 && in_organism->GetID() > 0) {
+      KillOrganism(target_cell, ctx); 
+      org_survived = false; 
+  }
   // are there mini traces we need to test for?
   if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(ctx, in_organism);  
   return org_survived;
@@ -5290,7 +5295,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
  * this organism.
  **/
 
-void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_group, int group_id, int forager_type) 
+void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_group, int group_id, int forager_type, int trace) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -5390,11 +5395,12 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->SetAvatarFacedCell(cell_id);
     GetCell(cell_id).AddAvatar(cell_array[cell_id].GetOrganism());
   }
+  if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
 }
 
-void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
+void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type, int trace) 
 {
-  Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type);
+  Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type, trace);
 }
 
 void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
@@ -5743,7 +5749,7 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
   // Activate the organism in the population...
   if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
   else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
-  
+
   // Log the injection of this organism if LOG_INJECT is set to 1 and
   // the current update number is >= INJECT_LOG_START
   if ( (m_world->GetConfig().LOG_INJECT.Get() == 1) &&

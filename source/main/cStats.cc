@@ -1488,6 +1488,26 @@ void cStats::PrintResourceData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida resource location data");
+  df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the cell id");
+  df.WriteComment("for center of gradient resources at that update.");
+  
+  df.Write(m_update,   "Update");
+
+  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  for (int i = 0; i < resLib.GetSize(); i++) {
+    if (resLib.GetResource(i)->GetGradient()) {
+      df.Write(m_world->GetPopulation().GetCurrPeakX(ctx, i) + (m_world->GetPopulation().GetCurrPeakY(ctx, i) * m_world->GetConfig().WORLD_X.Get()), "CellID");
+    }
+  }
+  df.Endl();
+}
+
 void cStats::PrintSpatialResData(const cString& filename, int i)
 {
 
