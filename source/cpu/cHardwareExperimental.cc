@@ -4853,7 +4853,8 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   if (m_world->GetConfig().LOOK_DISABLE.Get() < 6 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {
     int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
     if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
-      int rand = (int) m_world->GetRandom().GetDouble();
+      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
       if (target_reg == 0) habitat_used = rand;
       else if (target_reg == 1) distance_sought = rand;
       else if (target_reg == 2) distance_sought = rand;
@@ -4867,22 +4868,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
       else if (target_reg == 3) distance_sought += offset;
     }
   }
-  //    LOOK_DISABLE 0            # 0: none
-  //# 1: input habitat register
-  //# 2: input sight dist sought
-  //# 3: input type of search (e.g. closest vs count vs total)
-  //# 4: input resource/org id sought
-  //# 5: input direction faced
-  //    LOOK_DISABLE_TYPE 0       # 0: random scramble
-  //# else add + / - int to input/output
-
-  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
-  // if sensing food resource, habitat = 0 (gradients)
-  // if sensing topography, habitat = 1 (hills)
-  // if sensing objects, habitat = 2 (walls)  
-  // habitat 4 = unhidden den resource
-  // habitat -2 = organisms
-  // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
 
   // default to look for orgs if invalid habitat & predator
   if (pred_experiment && forage == -2 && 
@@ -5536,7 +5521,8 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
     int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
     if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
-      int rand = (int) m_world->GetRandom().GetDouble();
+      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
       if (target_reg == 0) setInternalValue(regs.habitat, rand, true);
       else if (target_reg == 1) setInternalValue(regs.distance, rand, true);
       else if (target_reg == 2) setInternalValue(regs.search_type, rand, true);
