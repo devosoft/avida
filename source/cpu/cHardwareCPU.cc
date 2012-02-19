@@ -3230,7 +3230,8 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-    for (int i = 0; i < m_memory.GetSize(); i++) {
+//    for (int i = 0; i < m_memory.GetSize(); i++) {
+    for (int i = 0; i < child_genome.GetSize(); i++) {    
       if (m_organism->TestCopyMut(ctx)) {
         child_genome[i] = m_inst_set->GetRandomInst(ctx);
       }
