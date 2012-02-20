@@ -3281,8 +3281,10 @@ bool cHardwareCPU::Inst_ReproSex(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_ReproGermFlag(cAvidaContext& ctx)
 {
-  Inst_JoinGermline(ctx);
-  return Inst_Repro(ctx);
+  // looks messy, but must occur in this order to ensure that failing repros don't trigger a germline addition
+  bool res = Inst_Repro(ctx);
+  if (res) Inst_JoinGermline(ctx);
+  return res;
 }
 
 bool cHardwareCPU::Inst_TaskPutRepro(cAvidaContext& ctx)
