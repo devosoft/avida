@@ -978,6 +978,11 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       org_survived = false;
     }
   } 
+  // don't kill our test org, just it's offspring
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == 12 && in_organism->GetID() > 0) {
+      KillOrganism(target_cell, ctx); 
+      org_survived = false; 
+  }
   // are there mini traces we need to test for?
   if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(ctx, in_organism);  
   return org_survived;
@@ -2358,7 +2363,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // part of the germline. Ignores replicate size...
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
           for (int i = 0; i<source_deme.GetSize(); ++i) {
-            cPopulationCell& cell = GetCell(i);
+            cPopulationCell& cell = source_deme.GetCell(i);
             if (cell.IsOccupied()) {
               cOrganism* o = cell.GetOrganism();
               if (o->IsGermline()) {
@@ -2375,12 +2380,12 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // flagged themselves as part of the germline.
           tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
-          
+
           // Get list of potential founders
           for (int i = 0; i<source_deme.GetSize(); ++i) {
-            cPopulationCell& cell = GetCell(i);
-            if (cell.IsOccupied()) {
-              cOrganism* o = cell.GetOrganism();
+            int cellid = source_deme.GetCellID(i);
+            if (cell_array[cellid].IsOccupied()) {
+              cOrganism* o = cell_array[cellid].GetOrganism();
               if (o->IsGermline()) {
                 potential_founders.Push(o);
               }
@@ -2584,7 +2589,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
         int cellid = DemeSelectInjectionCell(target_deme, i);
-        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->SystematicsGroup("genotype"), ctx, &target_founders[i]->GetPhenotype()); 
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->SystematicsGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false); 
         target_deme.AddFounder(target_founders[i]->SystematicsGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
       }
@@ -2602,7 +2607,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         
         for(int i=0; i<source_founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i);
-          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->SystematicsGroup("genotype"), ctx, &source_founders[i]->GetPhenotype()); 
+          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->SystematicsGroup("genotype"), ctx, &source_founders[i]->GetPhenotype(), false); 
           source_deme.AddFounder(source_founders[i]->SystematicsGroup("genotype"), &source_founders[i]->GetPhenotype());
           DemePostInjection(source_deme, cell_array[cellid]);
         }
@@ -2624,7 +2629,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           //cout << "founder: " << source_founders[i] << endl;
           Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
           Systematics::GroupPtr bg = classmgr->ArbiterForRole("genotype")->Group(source_founders[i]);
-          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i]); 
+          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i], true); 
           DemePostInjection(source_deme, cell_array[cellid]);
         }
       } else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 2) {
@@ -2702,10 +2707,10 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype, bool reset)
 {
   // Mutate the genome?
-  if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1) {
+  if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1 && !reset) {
     // MUTATE!
     
     // create a new genome by mutation
@@ -5198,7 +5203,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
  * this organism.
  **/
 
-void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_group, int group_id, int forager_type) 
+void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, bool inject_group, int group_id, int forager_type, int trace) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -5298,11 +5303,12 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
     cell_array[cell_id].GetOrganism()->SetAvatarFacedCell(cell_id);
     GetCell(cell_id).AddAvatar(cell_array[cell_id].GetOrganism());
   }
+  if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
 }
 
-void cPopulation::InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type) 
+void cPopulation::InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type, int trace) 
 {
-  Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type);
+  Inject(genome, src, ctx, cell_id, merit, lineage_label, neutral, true, group_id, forager_type, trace);
 }
 
 void cPopulation::InjectParasite(const cString& label, const InstructionSequence& injected_code, int cell_id)
@@ -5660,7 +5666,7 @@ void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genom
   // Activate the organism in the population...
   if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
   else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
-  
+
   // Log the injection of this organism if LOG_INJECT is set to 1 and
   // the current update number is >= INJECT_LOG_START
   if ( (m_world->GetConfig().LOG_INJECT.Get() == 1) &&

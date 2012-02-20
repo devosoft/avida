@@ -491,23 +491,25 @@ private:
   int m_cell_id;
   int m_group_id;
   int m_forager_type;
+  bool m_trace;
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_trace(false),m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_group_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_forager_type = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_trace = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
   }
   
-  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [bool trace=false] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -528,7 +530,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
     if (!genome) return;
-    m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type); 
+    m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type, m_trace); 
   }
 };
 
@@ -5195,7 +5197,8 @@ private:
   
 public:
   cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), m_print_genomes(true)
+  : cAction(world, args), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
+  m_print_genomes(true)
   {
     cArgSchema schema(':','=');
     

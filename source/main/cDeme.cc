@@ -1225,7 +1225,7 @@ void cDeme::UpdateShannonAll()
 
 double cDeme::GetPercentReproductives()
 {
-  double per = (m_num_reproductives/((double)injected_count + (double)cur_birth_count));
+  double per = (m_num_reproductives/((double)injected_count + (double)cur_birth_count))*100;
   return per; 
 }
 
@@ -1243,7 +1243,8 @@ void cDeme::ClearShannonInformationStats()
 double cDeme::GetAveGermMut() 
 {
 
-  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) {
+  if ((m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) && 
+      (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 8)) {
     cPopulationCell& c = GetCell(0);
     if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
   }
@@ -1271,7 +1272,8 @@ double cDeme::GetAveNonGermMut()
   double mut_count = 0;
   double count = 0;
   
-  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) {
+  if ((m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) && 
+      (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 8)) {
     cPopulationCell& c = GetCell(0);
     if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
   }
