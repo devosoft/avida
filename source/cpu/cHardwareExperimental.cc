@@ -3334,12 +3334,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
 {
-  // dir register is 4th mod (will be count reg)
-  int reg1 = FindModifiedRegister(rBX);
-  int reg2 = FindModifiedNextRegister(reg1);
-  int reg3 = FindModifiedNextRegister(reg2);
-  int dir_reg = FindModifiedNextRegister(reg3);
-    
+  // dir register is 5th mod (will be count reg)
+  int hab_reg = FindModifiedRegister(rBX);
+  int dist_reg = FindModifiedNextRegister(hab_reg);
+  int st_reg = FindModifiedNextRegister(dist_reg);
+  int id_reg = FindModifiedNextRegister(st_reg);
+  int dir_reg = FindModifiedNextRegister(id_reg);
+  
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   if (search_dir == 1) search_dir = -1;
   else if (search_dir == 2) search_dir = 1;
@@ -3369,11 +3370,12 @@ bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
 {
-  // dir register is 4th mod (will be count reg)
-  int reg1 = FindModifiedRegister(rBX);
-  int reg2 = FindModifiedNextRegister(reg1);
-  int reg3 = FindModifiedNextRegister(reg2);
-  int dir_reg = FindModifiedNextRegister(reg3);
+  // dir register is 5th mod (will be count reg)
+  int hab_reg = FindModifiedRegister(rBX);
+  int dist_reg = FindModifiedNextRegister(hab_reg);
+  int st_reg = FindModifiedNextRegister(dist_reg);
+  int id_reg = FindModifiedNextRegister(st_reg);
+  int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   if (search_dir == 1) search_dir = -1;
