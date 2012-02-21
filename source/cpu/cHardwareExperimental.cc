@@ -251,13 +251,13 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareExperimental::Inst_SGRotateR),
     tInstLibEntry<tMethod>("sg-sense", &cHardwareExperimental::Inst_SGSense),
     
-    // Avatar instructions 
-    tInstLibEntry<tMethod>("move-avatar", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
-    
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
     tInstLibEntry<tMethod>("range-move", &cHardwareExperimental::Inst_RangeMove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("range-pred-move", &cHardwareExperimental::Inst_RangePredMove, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-cell-xy", &cHardwareExperimental::Inst_GetCellPosition),
+    tInstLibEntry<tMethod>("get-cell-x", &cHardwareExperimental::Inst_GetCellPositionX),
+    tInstLibEntry<tMethod>("get-cell-y", &cHardwareExperimental::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset),    
     tInstLibEntry<tMethod>("get-position-offset", &cHardwareExperimental::Inst_GetPositionOffset),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly),    
@@ -276,6 +276,16 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, nInstFlag::STALL),
+    
+    // Avatar instructions 
+    tInstLibEntry<tMethod>("move-avatar", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-AV-left-one", &cHardwareExperimental::Inst_RotateAVLeft, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-AV-right-one", &cHardwareExperimental::Inst_RotateAVRight, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("move-AV", &cHardwareExperimental::Inst_MoveAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-cell-has-output-AV", &cHardwareExperimental::Inst_IfCellHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-not-cell-has-output-AV", &cHardwareExperimental::Inst_IfNotCellHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-faced-has-output-AV", &cHardwareExperimental::Inst_IfFacedHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-not-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotFacedHasOutputAV, nInstFlag::STALL),
     
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
@@ -296,6 +306,15 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, nInstFlag::STALL),    
     
     tInstLibEntry<tMethod>("collect-specific", &cHardwareExperimental::Inst_CollectSpecific, nInstFlag::STALL),    
+
+    // Data collection
+    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareExperimental::Inst_CollectCellData, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-cell-data-changed", &cHardwareExperimental::Inst_IfCellDataChanged, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-cell-data", &cHardwareExperimental::Inst_ReadCellData, nInstFlag::STALL),
+
+    // Opinion instructions.
+    tInstLibEntry<tMethod>("set-opinion", &cHardwareExperimental::Inst_SetOpinion, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-opinion", &cHardwareExperimental::Inst_GetOpinion, nInstFlag::STALL),
 
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
@@ -328,6 +347,24 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
     
+    // Messaging
+    tInstLibEntry<tMethod>("send-msg", &cHardwareExperimental::Inst_SendMessage, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareExperimental::Inst_RetrieveMessage, nInstFlag::STALL),
+
+    tInstLibEntry<tMethod>("send-msg-interrupt-type0", &cHardwareExperimental::Inst_SendMessageInterruptType0, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type1", &cHardwareExperimental::Inst_SendMessageInterruptType1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareExperimental::Inst_SendMessageInterruptType2, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type3", &cHardwareExperimental::Inst_SendMessageInterruptType3, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type4", &cHardwareExperimental::Inst_SendMessageInterruptType4, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type5", &cHardwareExperimental::Inst_SendMessageInterruptType5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("msg-handler-type0", &cHardwareExperimental::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareExperimental::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareExperimental::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type3", &cHardwareExperimental::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type4", &cHardwareExperimental::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type5", &cHardwareExperimental::Inst_START_Handler),
+    tInstLibEntry<tMethod>("end-handler", &cHardwareExperimental::Inst_End_Handler),
+
     // Control-type Instructions
     tInstLibEntry<tMethod>("scramble-registers", &cHardwareExperimental::Inst_ScrambleReg, nInstFlag::STALL),
 
@@ -422,6 +459,15 @@ void cHardwareExperimental::internalResetOnFailedDivide()
 	internalReset();
 }
 
+void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
+{
+  m_id = in_thread.m_id;
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
+  for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
+  stack = in_thread.stack;
+  m_messageTriggerType = in_thread.m_messageTriggerType;
+}
+
 void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
 {
   m_id = in_id;
@@ -442,6 +488,8 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   // Promoter model
   m_execurate = 0;
   m_promoter_inst_executed = 0;
+
+  m_messageTriggerType = -1;
 }
 
 
@@ -1453,6 +1501,69 @@ bool cHardwareExperimental::Inst_ForkThread(cAvidaContext& ctx)
   getIP().Advance();
   if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   return true;
+}
+
+bool cHardwareExperimental::InterruptThread(int interruptType)
+{
+  // Will interrupt be successful? i.e. is head instruction present
+  cString handlerHeadInstructionString;
+  int interruptMsgType = -1;
+
+  switch (interruptType) {
+  case MSG_INTERRUPT:
+    interruptMsgType = GetOrganism()->PeekAtNextMessageType();
+    handlerHeadInstructionString.Set("msg-handler-type%d", interruptMsgType);
+    break;
+  case MOVE_INTERRUPT:
+    handlerHeadInstructionString.Set("moved-handler");
+    break;
+  default:
+    cerr << "Unknown interrupt type " << interruptType << "  Exitting.\n\n";
+    exit(-1);
+    break;
+  }
+
+  const cInstruction label_inst = GetInstSet().GetInst(handlerHeadInstructionString);
+
+  cHeadCPU search_head(IP());
+  int start_pos = search_head.GetPosition();
+  search_head++;
+
+  while (start_pos != search_head.GetPosition()) {
+    if (search_head.GetInst() == label_inst) { // found handlerHeadInstructionString
+      search_head++; // one instruction past instruction
+      break;
+    }
+    search_head++;
+  }
+
+  if (start_pos == search_head.GetPosition()) return false;
+
+  if (ForkThread()) {
+    const int num_threads = m_threads.GetSize() - 1;
+    m_threads[num_threads].setMessageTriggerType(interruptMsgType);
+
+    int old_thread = m_cur_thread;
+    m_cur_thread = num_threads;
+
+    // move all heads to one past beginning of interrupt
+    for (int i = 0; i < NUM_HEADS; i++) {
+      GetHead(i).Set(search_head.GetPosition());
+    }
+
+    switch (interruptType) {
+    case MSG_INTERRUPT:
+      IP().Retreat();
+      Inst_RetrieveMessage(m_world->GetDefaultContext());
+      IP().Advance();
+      break;
+    case MOVE_INTERRUPT:
+      break;
+    }
+    m_cur_thread = old_thread;
+    return true;
+  }
+  return false;
 }
 
 bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
@@ -2863,6 +2974,45 @@ bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_GetCellPosition(cAvidaContext& ctx)
+{
+  int x = m_organism->GetOrgInterface().GetCellXPosition();
+  int y = m_organism->GetOrgInterface().GetCellYPosition();
+  // Fail if we're running in the test CPU
+  if (x == -1 || y == -1) return false;
+
+  const int xreg = FindModifiedRegister(rBX);
+  const int yreg = FindNextRegister(xreg);
+  setInternalValue(xreg, x, true);
+  setInternalValue(yreg, y, true);
+
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetCellPositionX(cAvidaContext& ctx)
+{
+  int x = m_organism->GetOrgInterface().GetCellXPosition();
+  // Fail if we're running in the test CPU
+  if (x == -1) return false;
+
+  const int xreg = FindModifiedRegister(rBX);
+  setInternalValue(xreg, x, true);
+
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GetCellPositionY(cAvidaContext& ctx)
+{
+  int y = m_organism->GetOrgInterface().GetCellYPosition();
+  // Fail if we're running in the test CPU
+  if (y == -1) return false;
+
+  const int yreg = FindModifiedRegister(rBX);
+  setInternalValue(yreg, y, true);
+
+  return true;
+}
+
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   int compass_dir = m_organism->GetOrgInterface().GetFacedDir();
@@ -3197,6 +3347,63 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   }
 }
 
+bool cHardwareExperimental::Inst_RotateAVLeft(cAvidaContext& ctx)
+{
+  return m_organism->GetOrgInterface().RotateAV(1);
+}
+
+bool cHardwareExperimental::Inst_RotateAVRight(cAvidaContext& ctx)
+{
+  return m_organism->GetOrgInterface().RotateAV(-1);
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+bool cHardwareExperimental::Inst_MoveAV(cAvidaContext& ctx)
+{
+  m_organism->GetOrgInterface().MoveAV();
+  return true;
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// If the org's input avatar occupies a cell that also has an output avatar, execute next
+bool cHardwareExperimental::Inst_IfCellHasOutputAV(cAvidaContext& ctx)
+{
+  if (!m_organism->GetOrgInterface().HasOutputAV()) {
+    getIP().Advance();
+  }
+  return true;
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// If the org's input avatar does not occupy a cell that has an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNotCellHasOutputAV(cAvidaContext& ctx)
+{
+  if (m_organism->GetOrgInterface().HasOutputAV()) {
+    getIP().Advance();
+  }
+  return true;
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// If the org is facing a cell with an output avatar, execute next
+bool cHardwareExperimental::Inst_IfFacedHasOutputAV(cAvidaContext& ctx)
+{
+  if (!m_organism->GetOrgInterface().FacedHasOutputAV()) {
+    getIP().Advance();
+  }
+  return true;
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// If the org is facing a cell without an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx)
+{
+  if (m_organism->GetOrgInterface().FacedHasOutputAV()) {
+    getIP().Advance();
+  }
+  return true;
+}
+
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
@@ -3363,7 +3570,7 @@ bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
   int facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_avatar) { 
     facing = m_organism->GetOrgInterface().GetAVFacedDir();
-    cell = m_organism->GetAVCellID();
+    cell = m_organism->GetAvatarCellID();
   }
   return GoLook(ctx, facing, cell, true);
 }
@@ -3387,7 +3594,7 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   else if (facing == 8) facing = 0;
   
   int cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_avatar) cell = m_organism->GetAVCellID();
+  if (m_avatar) cell = m_organism->GetAvatarCellID();
   return GoLook(ctx, facing, cell, true);
 }
 
@@ -3838,6 +4045,62 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   // Update resource counts to reflect res_change
   if (!m_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
   else if (m_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_CollectCellData(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(rBX);
+  int value = m_organism->GetCellData();
+  setInternalValue(out_reg, value, true);
+  // Update last collected cell data
+  m_last_cell_data = std::make_pair(true, value);
+
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IfCellDataChanged(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  // If cell data hasn't been collected, or it's the same as the current cell data, advance IP
+  if (!m_last_cell_data.first || (m_last_cell_data.second == m_organism->GetCellData())) {
+    getIP().Advance();
+  }
+
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadCellData(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(rBX);
+  setInternalValue(out_reg, m_organism->GetCellData(), true);
+
+  return true;
+}
+
+// Sets organism's opinion to the value in ?BX?
+bool cHardwareExperimental::Inst_SetOpinion(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(rBX)), m_organism);
+  return true;
+}
+
+/* Gets the organism's current opinion, placing the opinion in register ?BX?
+   and the age of the opinion in register !?BX?
+ */
+bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    const int opinion_reg = FindModifiedRegister(rBX);
+    const int age_reg = FindNextRegister(opinion_reg);
+
+    setInternalValue(opinion_reg, m_organism->GetOpinion().first, true);
+    setInternalValue(age_reg, m_world->GetStats().GetUpdate() - m_organism->GetOpinion().second, true);
+  }
   return true;
 }
 
@@ -4822,13 +5085,49 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   return false;
 }
 
-// Active messaging //**
+// Active messaging
 bool cHardwareExperimental::Inst_SendMessageInterruptType0(cAvidaContext& ctx) { return SendMessage(ctx, 0); }
 bool cHardwareExperimental::Inst_SendMessageInterruptType1(cAvidaContext& ctx) { return SendMessage(ctx, 1); }
 bool cHardwareExperimental::Inst_SendMessageInterruptType2(cAvidaContext& ctx) { return SendMessage(ctx, 2); }
 bool cHardwareExperimental::Inst_SendMessageInterruptType3(cAvidaContext& ctx) { return SendMessage(ctx, 3); }
 bool cHardwareExperimental::Inst_SendMessageInterruptType4(cAvidaContext& ctx) { return SendMessage(ctx, 4); }
 bool cHardwareExperimental::Inst_SendMessageInterruptType5(cAvidaContext& ctx) { return SendMessage(ctx, 5); }
+
+// Jumps one instruction passed end-handler
+bool cHardwareExperimental::Inst_START_Handler(cAvidaContext& ctx)
+{
+  m_advance_ip = false;
+  // Jump 1 instruction passed msg-handler
+  cInstruction label_inst = GetInstSet().GetInst("end-handler");
+
+  cHeadCPU search_head(IP());
+  int start_pos = search_head.GetPosition();
+  search_head++;
+
+  while (start_pos != search_head.GetPosition()) {
+    if (search_head.GetInst() == label_inst) {
+      // move IP to here
+      search_head++;
+      IP().Set(search_head.GetPosition());
+      return true;
+    }
+    search_head++;
+  }
+  return false;
+}
+
+bool cHardwareExperimental::Inst_End_Handler(cAvidaContext& ctx)
+{
+  // should a thread be killed?
+  if (m_threads[m_cur_thread].getMessageTriggerType() == -1) {
+    return true; // thread not triggered by active message
+  }
+
+  if (!ExitThread()) { // return false if one thread exists
+    m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+    // might need to set inst. advance to false
+  } // previous thread is now restored
+}
 
 bool cHardwareExperimental::Inst_SendMessage(cAvidaContext& ctx)
 {
@@ -4844,7 +5143,7 @@ bool cHardwareExperimental::SendMessage(cAvidaContext& ctx, int messageType)
   msg.SetLabel(GetRegister(label_reg));
   msg.SetData(GetRegister(data_reg));
 
-  return m_organism->SendMessageA(ctx, msg);
+  return m_organism->SendMessage(ctx, msg);
 }
 
 bool cHardwareExperimental::Inst_RetrieveMessage(cAvidaContext& ctx)
@@ -5148,7 +5447,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
   if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
   int faced_cell_int = m_organism->GetOrgInterface().GetFacedCellID();
-  if (m_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAVFacedCellID();
+  if (m_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAvatarFacedCellID();
   
   cCoords faced_cell(faced_cell_int % worldx, faced_cell_int / worldx);
   const cCoords ahead_dir(faced_cell.GetX() - this_cell.GetX(), faced_cell.GetY() - this_cell.GetY());

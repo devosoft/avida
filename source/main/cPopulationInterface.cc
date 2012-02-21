@@ -88,6 +88,22 @@ cPopulationCell* cPopulationInterface::GetCell(int cell_id) {
 	return &m_world->GetPopulation().GetCell(cell_id);
 }
 
+int cPopulationInterface::GetCellXPosition()
+{
+  const int absolute_cell_ID = GetCellID();
+  const int deme_id = GetDemeID();
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);
+  return pos.first;
+}
+
+int cPopulationInterface::GetCellYPosition()
+{
+  const int absolute_cell_ID = GetCellID();
+  const int deme_id = GetDemeID();
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);
+  return pos.second;
+}
+
 cPopulationCell* cPopulationInterface::GetAvatarCell() { 
 	return &m_world->GetPopulation().GetCell(m_av_cell_id);
 }
@@ -272,7 +288,7 @@ int cPopulationInterface::GetFacedCellID()
 	return cell.GetID();
 }
 
-int cPopulationInterface::GetAVFacedCellID()
+int cPopulationInterface::GetAvatarFacedCellID()
 {
 	return m_av_cell_faced;
 }
@@ -552,17 +568,25 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     dropped = true;
   }
 
-  // Fail if the cell we're facing is not occupied.
+
   if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
+    // Fail if the cell we're facing is not occupied.
     if(!rcell.IsOccupied()) {
       GetDeme()->messageSendFailed();
       lost = true;
     }
   } else {
     // If neural networking with avatars check for input avatars in this cell
-    if(!rcell.GetNumAVInputs()) {
+    if (!rcell.GetNumAVInputs()) {
       GetDeme()->messageSendFailed();
       lost = true;
+    // If self communication is not allowed, must check for an input avatar for another organism
+    } else if (!m_world->GetConfig().SELF_COMMUNICATION.Get()) {
+      lost = true;
+      cOrganism* sender = GetOrganism();
+      for (int i = 0; i < rcell.GetNumAVInputs(); i++) {
+        if (sender != rcell.GetCellInputAV()[i]) lost = false;
+      }
     }
   }
 
@@ -584,13 +608,16 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     GetDeme()->MessageSuccessfullySent(); // No idea what the difference is here...
   } else {
     // If doing neural networking with avatars message must be sent to all orgs with input avatars in the cell. @JJB**
+    cOrganism* sender = GetOrganism();
     for (int i = 0; i < rcell.GetNumAVInputs(); i++) { //**
       cOrganism* recvr = rcell.GetCellInputAV()[i];
       assert(recvr != 0);
-      recvr->ReceiveMessage(msg);
-      m_world->GetStats().SentMessage(msg);
-      GetDeme()->IncMessageSent();
-      GetDeme()->MessageSuccessfullySent();
+      if (m_world->GetConfig().SELF_COMMUNICATION.Get() || (sender != recvr)) {
+        recvr->ReceiveMessage(msg);
+        m_world->GetStats().SentMessage(msg);
+        GetDeme()->IncMessageSent();
+        GetDeme()->MessageSuccessfullySent();
+      }
     }
   }
   return true;
@@ -1602,7 +1629,7 @@ void cPopulationInterface::SetAVCellID(int av_cell_id)
         // Not necessary to move the avatar
         if (m_avatars[i].av_cell_id == av_cell_id) return;
 
-        // If the input avatar was previous in another cell remove it
+        // If the input avatar was previously in another cell remove it
         if (m_avatars[i].av_cell_id > -1) {
           m_world->GetPopulation().GetCell(m_avatars[i].av_cell_id).RemoveInputAV(GetOrganism());
           // If this is also an output avatar, remove it as well
@@ -1627,6 +1654,21 @@ void cPopulationInterface::SetAVCellID(int av_cell_id)
 }
 
 // ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// Move input avatar into faced cell
+void cPopulationInterface::MoveAV()
+{
+  // Be sure there are avatars..
+  if (GetNumAV()) {
+    // Find the input avatar
+    for (int i = 0; i < GetNumAV(); i++) {
+      if (m_avatars[i].input) {
+        SetAVCellID(GetAVFacedCellID(i));
+      }
+    }
+  }
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
 void cPopulationInterface::SetAVFacing(int av_facing)
 {
   // Be sure there are avatars..
@@ -1638,6 +1680,111 @@ void cPopulationInterface::SetAVFacing(int av_facing)
         break;
       }
     }
+  }
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+bool cPopulationInterface::RotateAV(int increment)
+{
+  // Be sure there are avatars..
+  if (GetNumAV()) {
+    // Find the input avatar
+    for (int i = 0; i < GetNumAV(); i++) {
+      if (m_avatars[i].input) {
+        m_avatars[i].av_facing = (m_avatars[i].av_facing + increment + 8) % 8;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// Check if the input avatar has any output avatars in the same cell
+bool cPopulationInterface::HasOutputAV()
+{
+  // Be sure there are avatars..
+  if (GetNumAV()) {
+    // Find the input avatar
+    for (int i = 0; i < GetNumAV(); i++) {
+      if (m_avatars[i].input) {
+        // Check the input avatar's cell for an output avatar
+        return m_world->GetPopulation().GetCell(m_avatars[i].av_cell_id).HasOutputAV(GetOrganism());
+      }
+    }
+  }
+  return false;
+}
+
+// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
+// Check if the input avatar has any output avatars in the faced cell
+bool cPopulationInterface::FacedHasOutputAV()
+{
+  // Be sure there are avatars..
+  if (GetNumAV()) {
+    // Find the input avatar
+    for (int i = 0; i < GetNumAV(); i++) {
+      if (m_avatars[i].input) {
+        // Check the input avatar's faced cell for an output avatar
+        return m_world->GetPopulation().GetCell(GetAVFacedCellID(i)).HasOutputAV(GetOrganism());
+      }
+    }
+  }
+  return false;
+}
+
+// Returns cell id faced by avatar, only for torus and bounded worlds @JJB**
+int cPopulationInterface::GetAVFacedCellID(int index)//** GetCellXPosition()
+{
+  assert(m_world->GetConfig().USE_AVATARS.Get());
+  assert(HasAvatars());
+  if ((m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) && (m_world->GetConfig().WORLD_GEOMETRY.Get() != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
+  if (index < GetNumAV()) {
+    const int x_size = m_world->GetConfig().WORLD_X.Get();
+    const int y_size = m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get();
+    const int deme_size = x_size * y_size;
+
+    const int old_cell_id = m_avatars[index].av_cell_id;
+    const int av_facing = m_avatars[index].av_facing;
+
+    int deme_id = old_cell_id / deme_size;
+    int deme_cell_id = old_cell_id % deme_size;
+
+    int x = deme_cell_id % x_size;
+    int y = deme_cell_id / x_size;
+
+    // North facing
+    if ((av_facing == 0) || (av_facing == 1) || (av_facing == 7)) {
+      if ((y != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        y = (y + y_size - 1) % y_size;
+      }
+    }
+
+    // South facing
+    if ((av_facing == 3) || (av_facing == 4) || (av_facing == 5)) {
+      if ((y != (y_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        y = (y + 1) % y_size;
+      }
+    }
+
+    // East facing
+    if ((av_facing == 1) || (av_facing == 2) || (av_facing == 3)) {
+      if ((x != (x_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        x = (x + 1) % x_size;
+      }
+    }
+
+    // West facing
+    if ((av_facing == 5) || (av_facing == 6) || (av_facing == 7)) {
+      if ((x != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        x = (x + x_size - 1) % x_size;
+      }
+    }
+
+    deme_cell_id = y * x_size + x;
+    int new_cell_id = deme_id * deme_size + deme_cell_id;
+
+    return new_cell_id;
   }
 }
 

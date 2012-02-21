@@ -180,6 +180,7 @@ public:
   void RemoveOutputAV(cOrganism* org);
   inline bool HasInputAV() const { return m_av_inputs.GetSize() > 0; }
   inline bool HasOutputAV() const { return m_av_outputs.GetSize() > 0; }
+  bool HasOutputAV(cOrganism* org);
   tArray<cOrganism*> GetCellInputAV();
   tArray<cOrganism*> GetCellOutputAV();
 

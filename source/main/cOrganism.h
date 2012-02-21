@@ -711,7 +711,7 @@ public:
   void SetAvatarCellID(int av_cell_id) { m_interface->SetAvatarCellID(av_cell_id); }
   void SetAvatarFacing(int facing) { m_interface->SetAvatarFacing(facing); }
   void SetAvatarFacedCell(int av_cell_id) { m_interface->SetAvatarFacedCell(av_cell_id); }
-  int GetAVFacedCellID() { return m_interface->GetAVFacedCellID(); }
+  int GetAvatarFacedCellID() { return m_interface->GetAvatarFacedCellID(); }
   int GetAVFacedDir() { assert(m_interface); return m_interface->GetAVFacedDir(); }  
     
 	// -------- Internal Support Methods --------

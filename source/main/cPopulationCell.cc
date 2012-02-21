@@ -408,6 +408,22 @@ void cPopulationCell::RemoveOutputAV(cOrganism* org)
   }
 }
 
+// Whether a cell has an output AV that the org will be able to receive messages from @JJB**
+bool cPopulationCell::HasOutputAV(cOrganism* org)
+{
+  // No output avatars
+  if (!HasOutputAV()) return false;
+  // If org can talk to itself, any avatar in the cell works
+  if (m_world->GetConfig().SELF_COMMUNICATION.Get()) return true;
+  // If no self-messaging, is there an output avatar for another organism in the cell
+  for (int i = 0; i < m_av_outputs.GetSize(); i++) {
+    if (m_av_outputs[i] != org) {
+      return true;
+    }
+  }
+  return false;
+}
+
 tArray<cOrganism*> cPopulationCell::GetCellInputAV()
 {
   assert(HasInputAV());

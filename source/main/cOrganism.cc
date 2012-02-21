@@ -1236,7 +1236,7 @@ bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_rang
     // check to see if we've performed any tasks...
     DoOutput(ctx);
     return true;
-  }  
+  }
   return false;
 }
 
@@ -1573,7 +1573,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   if (m_is_dead) return false;  
   
   int fromcellID = GetAvatarCellID();         // facing unique to this avatar
-  int destcellID = GetAVFacedCellID();    // facing unique to this avatar
+  int destcellID = GetAvatarFacedCellID();    // facing unique to this avatar
   int true_cell = GetCellID();            // where the real org is...in case we need to kill it
   
   int facing = GetAVFacedDir();

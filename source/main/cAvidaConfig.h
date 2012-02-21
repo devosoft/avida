@@ -586,6 +586,7 @@ public:
   CONFIG_ADD_VAR(CHECK_TASK_ON_SEND, bool, 1, "0: Don't check tasks on send, 1: Check tasks on send (default)");
 
   CONFIG_ADD_VAR(NEURAL_NETWORKING, bool, 0, "Turns neural networking system on/off. \nRequires USE_AVATARS be turned on.");
+  CONFIG_ADD_VAR(SELF_COMMUNICATION, bool, 0, "Allows organisms to create self communication loops. \nAn organism's input avatars can receive messages from it's own output avatars.");
 
   // -------- Buying and Selling config options --------
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");

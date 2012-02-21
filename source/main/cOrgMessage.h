@@ -79,7 +79,7 @@ private:
   //! ID of the cell that the receiving organism occupied when this message was sent
   int m_receiverCellID;
 
-  // ID of the intermediate transmission cell @JJB**
+  // ID of the intermediate transmission cell for avatars @JJB**
   int m_transCellID;
 };
 

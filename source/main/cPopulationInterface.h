@@ -83,12 +83,14 @@ public:
   cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
+  int GetCellXPosition();
+  int GetCellYPosition();
   
   int GetAvatarCellID();
   void SetAvatarCellID(int av_cell_id); 
   void SetAvatarFacing(int facing);
   void SetAvatarFacedCell(int av_cell_id);
-  int GetAVFacedCellID();
+  int GetAvatarFacedCellID();
   int GetAVFacedDir();
   
   int GetCellData();//**
@@ -285,7 +287,12 @@ public:
   void AddAV(int av_cell_id, int av_facing, bool input, bool output);
   void RemoveAllAV();
   void SetAVCellID(int av_cell_id);
+  void MoveAV();
   void SetAVFacing(int av_facing);
+  bool RotateAV(int increment);
+  bool HasOutputAV();
+  bool FacedHasOutputAV();
+  int GetAVFacedCellID(int index);
   //void SetAVInput(bool input);
   //void SetAVOutput(bool output);
   //int GetAVCellID();

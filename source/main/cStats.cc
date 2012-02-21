@@ -3553,13 +3553,13 @@ void cStats::PrintHGTData(const cString& filename) {
  */
 void cStats::LogMessage(const cOrgMessage& msg, bool dropped, bool lost) {
 	m_message_log.push_back(message_log_entry_t(GetUpdate(),
-																							msg.GetSender()->GetDeme()->GetID(),
-																							msg.GetSenderCellID(),
-																							msg.GetReceiverCellID(),
-																							msg.GetData(),
-																							msg.GetLabel(),
-																							dropped,
-																							lost));
+      msg.GetSender()->GetDeme()->GetID(),
+      msg.GetSenderCellID(),
+      msg.GetReceiverCellID(),
+      msg.GetData(),
+      msg.GetLabel(),
+      dropped,
+      lost));
 }
 
 /*! Prints logged messages.
