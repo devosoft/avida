@@ -434,6 +434,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-sex", &cHardwareCPU::Inst_ReproSex, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-germ-flag", &cHardwareCPU::Inst_ReproGermFlag, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-A", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-B", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-C", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
@@ -3226,7 +3227,8 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-    for (int i = 0; i < m_memory.GetSize(); i++) {
+//    for (int i = 0; i < m_memory.GetSize(); i++) {
+    for (int i = 0; i < child_genome.GetSize(); i++) {    
       if (m_organism->TestCopyMut(ctx)) {
         child_genome[i] = m_inst_set->GetRandomInst(ctx);
       }
@@ -3271,6 +3273,15 @@ bool cHardwareCPU::Inst_ReproSex(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetDivideSex(true);
   m_organism->GetPhenotype().SetCrossNum(1);
   return Inst_Repro(ctx);
+}
+
+
+bool cHardwareCPU::Inst_ReproGermFlag(cAvidaContext& ctx)
+{
+  // looks messy, but must occur in this order to ensure that failing repros don't trigger a germline addition
+  bool res = Inst_Repro(ctx);
+  if (res) Inst_JoinGermline(ctx);
+  return res;
 }
 
 bool cHardwareCPU::Inst_TaskPutRepro(cAvidaContext& ctx)
