@@ -4857,15 +4857,15 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
       if (target_reg == 0) habitat_used = rand;
       else if (target_reg == 1) distance_sought = rand;
-      else if (target_reg == 2) distance_sought = rand;
-      else if (target_reg == 3) distance_sought = rand;
+      else if (target_reg == 2) search_type = rand;
+      else if (target_reg == 3) id_sought = rand;
     }
     else {
       int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
       if (target_reg == 0) habitat_used += offset;
       else if (target_reg == 1) distance_sought += offset;
-      else if (target_reg == 2) distance_sought += offset;
-      else if (target_reg == 3) distance_sought += offset;
+      else if (target_reg == 2) search_type += offset;
+      else if (target_reg == 3) id_sought += offset;
     }
   }
 
