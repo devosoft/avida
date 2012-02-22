@@ -4855,17 +4855,17 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
       int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
-      if (target_reg == 0) habitat_used = rand;
-      else if (target_reg == 1) distance_sought = rand;
-      else if (target_reg == 2) search_type = rand;
-      else if (target_reg == 3) id_sought = rand;
+      if (target_reg == 1) habitat_used = rand;
+      else if (target_reg == 2) distance_sought = rand;
+      else if (target_reg == 3) search_type = rand;
+      else if (target_reg == 4) id_sought = rand;
     }
     else {
       int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
-      if (target_reg == 0) habitat_used += offset;
-      else if (target_reg == 1) distance_sought += offset;
-      else if (target_reg == 2) search_type += offset;
-      else if (target_reg == 3) id_sought += offset;
+      if (target_reg == 1) habitat_used += offset;
+      else if (target_reg == 2) distance_sought += offset;
+      else if (target_reg == 3) search_type += offset;
+      else if (target_reg == 4) id_sought += offset;
     }
   }
 
@@ -5523,25 +5523,25 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
     if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
       int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
-      if (target_reg == 0) setInternalValue(regs.habitat, rand, true);
-      else if (target_reg == 1) setInternalValue(regs.distance, rand, true);
-      else if (target_reg == 2) setInternalValue(regs.search_type, rand, true);
-      else if (target_reg == 3) setInternalValue(regs.id_sought, rand, true);
-      else if (target_reg == 4) setInternalValue(regs.count, rand, true);
-      else if (target_reg == 5) setInternalValue(regs.value, rand, true);
-      else if (target_reg == 6) setInternalValue(regs.group, rand, true);
-      else if (target_reg == 7) setInternalValue(regs.ft, rand, true);  
+      if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
+      else if (target_reg == 7) setInternalValue(regs.distance, rand, true);
+      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true);
+      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true);
+      else if (target_reg == 10) setInternalValue(regs.count, rand, true);
+      else if (target_reg == 11) setInternalValue(regs.value, rand, true);
+      else if (target_reg == 12) setInternalValue(regs.group, rand, true);
+      else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
     }
     else {
       int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
-      if (target_reg == 0) setInternalValue(regs.habitat, results.habitat + offset, true);
-      else if (target_reg == 1) setInternalValue(regs.distance, results.distance + offset, true);
-      else if (target_reg == 2) setInternalValue(regs.search_type, results.search_type + offset, true);
-      else if (target_reg == 3) setInternalValue(regs.id_sought, results.id_sought + offset, true);
-      else if (target_reg == 4) setInternalValue(regs.count, results.count + offset, true);
-      else if (target_reg == 5) setInternalValue(regs.value, results.value + offset, true);
-      else if (target_reg == 6) setInternalValue(regs.group, results.group + offset, true);
-      else if (target_reg == 7) setInternalValue(regs.ft, results.forage + offset, true);  
+      if (target_reg == 6) setInternalValue(regs.habitat, results.habitat + offset, true);
+      else if (target_reg == 7) setInternalValue(regs.distance, results.distance + offset, true);
+      else if (target_reg == 8) setInternalValue(regs.search_type, results.search_type + offset, true);
+      else if (target_reg == 9) setInternalValue(regs.id_sought, results.id_sought + offset, true);
+      else if (target_reg == 10) setInternalValue(regs.count, results.count + offset, true);
+      else if (target_reg == 11) setInternalValue(regs.value, results.value + offset, true);
+      else if (target_reg == 12) setInternalValue(regs.group, results.group + offset, true);
+      else if (target_reg == 13) setInternalValue(regs.ft, results.forage + offset, true);  
     }
   }
   return;
