@@ -57,6 +57,7 @@ public:
   int GetReceiverOrgID() const { return m_receiverOrgID; }
 	
   void SetTransCellID(int transCellID) { m_transCellID = transCellID; } // @JJB**
+  int GetTransCellID() const { return m_transCellID; }
 
   int GetMessageType() const { return m_messageType; }
 

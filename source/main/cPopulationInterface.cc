@@ -555,7 +555,7 @@ bool cPopulationInterface::TestOnDivide()
 
 /*! Internal-use method to consolidate message-sending code.
  */
-bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
+bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) //**
 {
   bool dropped=false;
   bool lost=false;
@@ -568,20 +568,20 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     dropped = true;
   }
 
-
   if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
+    // Not using neural networking avatars..
     // Fail if the cell we're facing is not occupied.
     if(!rcell.IsOccupied()) {
-      GetDeme()->messageSendFailed();
       lost = true;
     }
-  } else {
+  }
+  else {
     // If neural networking with avatars check for input avatars in this cell
     if (!rcell.GetNumAVInputs()) {
-      GetDeme()->messageSendFailed();
       lost = true;
     // If self communication is not allowed, must check for an input avatar for another organism
-    } else if (!m_world->GetConfig().SELF_COMMUNICATION.Get()) {
+    }
+    else if (!m_world->GetConfig().SELF_COMMUNICATION.Get()) {
       lost = true;
       cOrganism* sender = GetOrganism();
       for (int i = 0; i < rcell.GetNumAVInputs(); i++) {
@@ -589,6 +589,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
       }
     }
   }
+  if (lost) GetDeme()->messageSendFailed();
 
   // record this message, regardless of whether it's actually received.
   if(m_world->GetConfig().NET_LOG_MESSAGES.Get()) {
@@ -600,6 +601,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
   }
 
   if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
+    // Not using neural networking avatars..
     cOrganism* recvr = rcell.GetOrganism();
     assert(recvr != 0);
     recvr->ReceiveMessage(msg);
@@ -607,12 +609,12 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     GetDeme()->IncMessageSent();
     GetDeme()->MessageSuccessfullySent(); // No idea what the difference is here...
   } else {
-    // If doing neural networking with avatars message must be sent to all orgs with input avatars in the cell. @JJB**
+    // If using neural networking avatars, message must be sent to all orgs with input avatars in the cell. @JJB**
     cOrganism* sender = GetOrganism();
     for (int i = 0; i < rcell.GetNumAVInputs(); i++) { //**
       cOrganism* recvr = rcell.GetCellInputAV()[i];
       assert(recvr != 0);
-      if (m_world->GetConfig().SELF_COMMUNICATION.Get() || (sender != recvr)) {
+      if ((sender != recvr) || m_world->GetConfig().SELF_COMMUNICATION.Get()) {
         recvr->ReceiveMessage(msg);
         m_world->GetStats().SentMessage(msg);
         GetDeme()->IncMessageSent();

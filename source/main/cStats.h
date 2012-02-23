@@ -926,27 +926,27 @@ public:
   void RemoveMessagePredicate(cOrgMessagePredicate* predicate);
   //! Prints information regarding messages that "passed" their predicate.
   void PrintPredicatedMessages(const cString& filename);
-	//! Log a message.
-	void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
-	//! Prints logged messages.
-	void PrintMessageLog(const cString& filename);
+  //! Log a message.
+  void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
+  //! Prints logged messages.
+  void PrintMessageLog(const cString& filename);
 
 protected:
   /*! List of all active message predicates.  The idea here is that the predicates,
   rather than cStats / cOrgMessage / etc., do the tracking of particular messages
   of interest. */
   message_pred_ptr_list m_message_predicates;
-	//! Type to store logged messages.
-	struct message_log_entry_t {
-		message_log_entry_t(int u, int de, int s, int d, unsigned int md, unsigned int ml, bool dr, bool l)
-		:	update(u), deme(de), src_cell(s), dst_cell(d), msg_data(md), msg_label(ml), dropped(dr), lost(l) {
-		}
-		int update, deme, src_cell, dst_cell;
-		unsigned int msg_data, msg_label;
-		bool dropped, lost;
-	};
-	typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
-	message_log_t m_message_log; //!< Log for messages.
+  //! Type to store logged messages.
+  struct message_log_entry_t {
+    message_log_entry_t(int u, int de, int s, int d, int t, unsigned int md, unsigned int ml, bool dr, bool l)
+      :	update(u), deme(de), src_cell(s), dst_cell(d), transmit_cell(t), msg_data(md), msg_label(ml), dropped(dr), lost(l) {
+    }
+    int update, deme, src_cell, dst_cell, transmit_cell;
+    unsigned int msg_data, msg_label;
+    bool dropped, lost;
+  };
+  typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
+  message_log_t m_message_log; //!< Log for messages.
 
   // -------- End messaging support --------
 

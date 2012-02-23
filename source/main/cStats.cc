@@ -1877,15 +1877,15 @@ void cStats::PrintPredicatedMessages(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteColumnDesc("update [update]");
-	df.WriteColumnDesc("predicate name: [pname]");
+  df.WriteColumnDesc("predicate name: [pname]");
   df.WriteColumnDesc("predicate data: [pdata]");
   df.FlushComments();
 
   std::ofstream& out = df.GetOFStream();
   for(message_pred_ptr_list::iterator i=m_message_predicates.begin();
-      i!=m_message_predicates.end(); ++i) {
-    (*i)->Print(GetUpdate(), out);
-    (*i)->Reset();
+    i!=m_message_predicates.end(); ++i) {
+      (*i)->Print(GetUpdate(), out);
+      (*i)->Reset();
   }
 //  df.Endl();
 }
@@ -3576,6 +3576,7 @@ void cStats::LogMessage(const cOrgMessage& msg, bool dropped, bool lost) {
       msg.GetSender()->GetDeme()->GetID(),
       msg.GetSenderCellID(),
       msg.GetReceiverCellID(),
+      msg.GetTransCellID(),
       msg.GetData(),
       msg.GetLabel(),
       dropped,
@@ -3595,6 +3596,7 @@ void cStats::PrintMessageLog(const cString& filename) {
 		df.Write(i->deme, "Deme ID [deme]");
 		df.Write(i->src_cell, "Source [src]");
 		df.Write(i->dst_cell, "Destination [dst]");
+        df.Write(i->transmit_cell, "Transmission_cell [trs]");
 		df.Write(i->msg_data, "Message data [data]");
 		df.Write(i->msg_label, "Message label [label]");
 		df.Write(i->dropped, "Dropped [dropped]");
