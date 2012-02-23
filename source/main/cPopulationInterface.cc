@@ -606,8 +606,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     assert(recvr != 0);
     recvr->ReceiveMessage(msg);
     m_world->GetStats().SentMessage(msg);
-    GetDeme()->IncMessageSent();
-    GetDeme()->MessageSuccessfullySent(); // No idea what the difference is here...
+    GetDeme()->MessageSuccessfullySent();
   } else {
     // If using neural networking avatars, message must be sent to all orgs with input avatars in the cell. @JJB**
     cOrganism* sender = GetOrganism();
@@ -617,7 +616,6 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
       if ((sender != recvr) || m_world->GetConfig().SELF_COMMUNICATION.Get()) {
         recvr->ReceiveMessage(msg);
         m_world->GetStats().SentMessage(msg);
-        GetDeme()->IncMessageSent();
         GetDeme()->MessageSuccessfullySent();
       }
     }

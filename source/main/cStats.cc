@@ -1098,19 +1098,16 @@ void cStats::PrintMessageData(const cString& filename) {
   cPopulation& pop = m_world->GetPopulation();
   int numDemes = pop.GetNumDemes();
 
-	unsigned int totalMessagesSent(0);
 	unsigned int totalMessagesSuccessfullySent(0);
 	unsigned int totalMessagesDropped(0);
 	unsigned int totalMessagesFailed(0);
 
 	for( int i=0; i < numDemes; i++ ){
-		totalMessagesSent += pop.GetDeme(i).GetMessagesSent();
 		totalMessagesSuccessfullySent += pop.GetDeme(i).GetMessageSuccessfullySent();
 		totalMessagesDropped += pop.GetDeme(i).GetMessageDropped();
 		totalMessagesFailed  += pop.GetDeme(i).GetMessageSendFailed();
 	}
 
-	df.Write(totalMessagesSent, "Total messages sent");
 	df.Write(totalMessagesSuccessfullySent, "Sent successfully");
 	df.Write(totalMessagesDropped, "Dropped");
 	df.Write(totalMessagesFailed, "Failed");

@@ -61,7 +61,6 @@ cDeme::cDeme()
   , MSG_sendFailed(0)
   , MSG_dropped(0)
   , MSG_SuccessfullySent(0)
-  , MSG_sent(0)
   , numOrgsInterruted(0)
   , energyInjectedIntoOrganisms(0.0)
   , energyRemainingInDemeAtReplication(0.0)
@@ -387,7 +386,6 @@ void cDeme::Reset(cAvidaContext& ctx, bool resetResources, double deme_energy)
   MSG_sendFailed = 0;
   MSG_dropped = 0;
   MSG_SuccessfullySent = 0;
-  MSG_sent = 0;
   m_total_res_consumed = 0;
   m_switch_penalties = 0;
   m_num_active = 0;
