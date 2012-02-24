@@ -1098,19 +1098,16 @@ void cStats::PrintMessageData(const cString& filename) {
   cPopulation& pop = m_world->GetPopulation();
   int numDemes = pop.GetNumDemes();
 
-	unsigned int totalMessagesSent(0);
 	unsigned int totalMessagesSuccessfullySent(0);
 	unsigned int totalMessagesDropped(0);
 	unsigned int totalMessagesFailed(0);
 
 	for( int i=0; i < numDemes; i++ ){
-		totalMessagesSent += pop.GetDeme(i).GetMessagesSent();
 		totalMessagesSuccessfullySent += pop.GetDeme(i).GetMessageSuccessfullySent();
 		totalMessagesDropped += pop.GetDeme(i).GetMessageDropped();
 		totalMessagesFailed  += pop.GetDeme(i).GetMessageSendFailed();
 	}
 
-	df.Write(totalMessagesSent, "Total messages sent");
 	df.Write(totalMessagesSuccessfullySent, "Sent successfully");
 	df.Write(totalMessagesDropped, "Dropped");
 	df.Write(totalMessagesFailed, "Failed");
@@ -1877,15 +1874,15 @@ void cStats::PrintPredicatedMessages(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteColumnDesc("update [update]");
-	df.WriteColumnDesc("predicate name: [pname]");
+  df.WriteColumnDesc("predicate name: [pname]");
   df.WriteColumnDesc("predicate data: [pdata]");
   df.FlushComments();
 
   std::ofstream& out = df.GetOFStream();
   for(message_pred_ptr_list::iterator i=m_message_predicates.begin();
-      i!=m_message_predicates.end(); ++i) {
-    (*i)->Print(GetUpdate(), out);
-    (*i)->Reset();
+    i!=m_message_predicates.end(); ++i) {
+      (*i)->Print(GetUpdate(), out);
+      (*i)->Reset();
   }
 //  df.Endl();
 }
@@ -3364,6 +3361,11 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
 // Prints the circumstances around each tolerance instruction executed within the last update. @JJB
 void cStats::PrintToleranceData(const cString& filename)
 {
+  // TRACK_TOLERANCE must be on in config for output file to function
+  if(!m_world->GetConfig().TRACK_TOLERANCE.Get()) {
+    m_world->GetDriver().RaiseFatalException(-1, "TRACK_TOLERANCE option must be turned on in avida.cfg for PrintToleranceData to function.");
+  }
+
   const int num_tol_inst = 8;
   tArray<cString> m_is_tolerance_inst_names(num_tol_inst);
   m_is_tolerance_inst_names[0] = "inc-tolerance_Immigrants";
@@ -3568,13 +3570,14 @@ void cStats::PrintHGTData(const cString& filename) {
  */
 void cStats::LogMessage(const cOrgMessage& msg, bool dropped, bool lost) {
 	m_message_log.push_back(message_log_entry_t(GetUpdate(),
-																							msg.GetSender()->GetDeme()->GetID(),
-																							msg.GetSenderCellID(),
-																							msg.GetReceiverCellID(),
-																							msg.GetData(),
-																							msg.GetLabel(),
-																							dropped,
-																							lost));
+      msg.GetSender()->GetDeme()->GetID(),
+      msg.GetSenderCellID(),
+      msg.GetReceiverCellID(),
+      msg.GetTransCellID(),
+      msg.GetData(),
+      msg.GetLabel(),
+      dropped,
+      lost));
 }
 
 /*! Prints logged messages.
@@ -3590,6 +3593,7 @@ void cStats::PrintMessageLog(const cString& filename) {
 		df.Write(i->deme, "Deme ID [deme]");
 		df.Write(i->src_cell, "Source [src]");
 		df.Write(i->dst_cell, "Destination [dst]");
+        df.Write(i->transmit_cell, "Transmission_cell [trs]");
 		df.Write(i->msg_data, "Message data [data]");
 		df.Write(i->msg_label, "Message label [label]");
 		df.Write(i->dropped, "Dropped [dropped]");

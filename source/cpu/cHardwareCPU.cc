@@ -431,7 +431,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     
     // High-level instructions
-		tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-sex", &cHardwareCPU::Inst_ReproSex, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-germ-flag", &cHardwareCPU::Inst_ReproGermFlag, nInstFlag::STALL),
@@ -512,8 +512,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate, nInstFlag::STALL),
     
     // Promoter Model
-    tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
-    tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("regulate", &cHardwareCPU::Inst_Regulate),
@@ -1425,7 +1423,7 @@ bool cHardwareCPU::ForkThread()
 bool cHardwareCPU::InterruptThread(int interruptType) {
   //Will interrupt be successful? i.e. is head instuction present?
   cString handlerHeadInstructionString;
-	int interruptMsgType(-1);
+  int interruptMsgType(-1);
   
   switch (interruptType) {
     case MSG_INTERRUPT:
@@ -1487,7 +1485,6 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
   }
   return false;
 }
-
 
 bool cHardwareCPU::KillThread()
 {
@@ -6822,17 +6819,17 @@ bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx)
  Note that this method *will not work* from within the test CPU, so we have to guard
  against that.
  */
-bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx) {
-  int absolute_cell_ID = m_organism->GetCellID();
-  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx)
+{
+  int x = m_organism->GetOrgInterface().GetCellXPosition();
+  int y = m_organism->GetOrgInterface().GetCellYPosition();
   // Fail if we're running in the test CPU.
-  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  if (x == -1 || y == -1) return false;
   
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int xreg = FindModifiedRegister(REG_BX);
   const int yreg = FindNextRegister(xreg);
-  GetRegister(xreg) = pos.first;
-  GetRegister(yreg) = pos.second;
+  GetRegister(xreg) = x;
+  GetRegister(yreg) = y;
 
   return true;
 }
@@ -6844,14 +6841,12 @@ bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx) {
  */
 bool cHardwareCPU::Inst_GetCellPositionX(cAvidaContext& ctx)
 {
-  int absolute_cell_ID = m_organism->GetCellID();
-  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  int x = m_organism->GetOrgInterface().GetCellXPosition();
   // Fail if we're running in the test CPU.
-  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  if (x == -1) return false;
   
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int xreg = FindModifiedRegister(REG_BX);
-  GetRegister(xreg) = pos.first;
+  GetRegister(xreg) = x;
 
   return true;
 }
@@ -6863,14 +6858,12 @@ bool cHardwareCPU::Inst_GetCellPositionX(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_GetCellPositionY(cAvidaContext& ctx)
 {
-  int absolute_cell_ID = m_organism->GetCellID();
-  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  int y = m_organism->GetOrgInterface().GetCellYPosition();
   // Fail if we're running in the test CPU.
-  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  if (y == -1) return false;
   
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int yreg = FindModifiedRegister(REG_BX);
-  GetRegister(yreg) = pos.second;
+  GetRegister(yreg) = y;
 
   return true;
 }

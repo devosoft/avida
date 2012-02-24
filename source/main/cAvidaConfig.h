@@ -350,7 +350,7 @@ public:
   
   // -------- Birth and Death config options --------
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death config options");
-	CONFIG_ADD_VAR(DIVIDE_FAILURE_RESETS, int, 0, "When Divide fails, organisms are interally reset");
+  CONFIG_ADD_VAR(DIVIDE_FAILURE_RESETS, int, 0, "When Divide fails, organisms are interally reset");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced when a birth occurs?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood\n11 = Local neighborhood dispersal\n12 = Kill offpsring (for behavioral trials)");
   CONFIG_ADD_VAR(PREFER_EMPTY, int, 1, "Overide BIRTH_METHOD to preferentially choose empty cells for offsping?");
   CONFIG_ADD_VAR(ALLOW_PARENT, int, 1, "Should parents be considered when deciding where to place offspring?");
@@ -585,6 +585,9 @@ public:
   CONFIG_ADD_VAR(ACTIVE_MESSAGES_ENABLED, int, 0, "Enable active messages. \n0 = off\n2 = message creates parallel thread");
   CONFIG_ADD_VAR(CHECK_TASK_ON_SEND, bool, 1, "0: Don't check tasks on send, 1: Check tasks on send (default)");
 
+  CONFIG_ADD_VAR(NEURAL_NETWORKING, bool, 0, "Turns neural networking system on/off. \nRequires USE_AVATARS be turned on.");
+  CONFIG_ADD_VAR(SELF_COMMUNICATION, bool, 0, "Allows organisms to create self communication loops. \nAn organism's input avatars can receive messages from it's own output avatars.");
+
   // -------- Buying and Selling config options --------
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");
@@ -787,7 +790,7 @@ public:
   CONFIG_ADD_VAR(DEME_NETWORK_REQUIRES_CONNECTEDNESS, int, 1, "Whether the deme's network must be connected before an actual fitness is calculated.");
   CONFIG_ADD_VAR(DEME_NETWORK_TOPOLOGY_FITNESS, int, 0, "Network measure used to determine fitness; see cDemeTopologyNetwork.h.");
   CONFIG_ADD_VAR(DEME_NETWORK_LINK_DECAY, int, 0, "Number of updates after which a link decays; 0=no decay (default).");
-	CONFIG_ADD_VAR(DEME_NETWORK_REMOVE_NODE_ON_DEATH, int, 0, "Whether death of an organism in\nthe deme removes its links;\n0=no (default);\n1=yes.");
+  CONFIG_ADD_VAR(DEME_NETWORK_REMOVE_NODE_ON_DEATH, int, 0, "Whether death of an organism in\nthe deme removes its links;\n0=no (default);\n1=yes.");
 
 	
   // -------- Horizontal Gene Transfer (HGT) config options --------

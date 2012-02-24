@@ -121,7 +121,7 @@ private:
     int m_id;
     int m_promoter_inst_executed;
     unsigned int m_execurate;
-    
+    int m_messageTriggerType;
   public:
     sInternalValue reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -149,6 +149,7 @@ private:
     cLocalThread(cHardwareExperimental* in_hardware, int in_id = -1) { Reset(in_hardware, in_id); }
     ~cLocalThread() { ; }
     
+    void operator=(const cLocalThread& in_thread);
     void Reset(cHardwareExperimental* in_hardware, int in_id);
     inline int GetID() const { return m_id; }
     inline void SetID(int in_id) { m_id = in_id; }
@@ -159,6 +160,8 @@ private:
     inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
     inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
+    inline void setMessageTriggerType(int value) { m_messageTriggerType = value; }
+    inline int getMessageTriggerType() { return m_messageTriggerType; }
   };
   
   
@@ -290,7 +293,7 @@ public:
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
   // interrupt current thread
-  bool InterruptThread(int interruptType) { return false; }
+  bool InterruptThread(int interruptType);
   int GetThreadMessageTriggerType(int _index) { return -1; }
   
   // --------  Parasite Stuff  --------
@@ -512,6 +515,9 @@ private:
   bool Inst_Move(cAvidaContext& ctx);
   bool Inst_RangeMove(cAvidaContext& ctx);
   bool Inst_RangePredMove(cAvidaContext& ctx);
+  bool Inst_GetCellPosition(cAvidaContext& ctx);
+  bool Inst_GetCellPositionX(cAvidaContext& ctx);
+  bool Inst_GetCellPositionY(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);  
   bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
@@ -530,6 +536,15 @@ private:
   bool Inst_RotateX(cAvidaContext& ctx);
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
+
+  // Avatars
+  bool Inst_RotateAVLeft(cAvidaContext& ctx);
+  bool Inst_RotateAVRight(cAvidaContext& ctx);
+  bool Inst_MoveAV(cAvidaContext& ctx);
+  bool Inst_IfCellHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotCellHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfFacedHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
@@ -552,6 +567,9 @@ private:
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
 
+  bool Inst_SetOpinion(cAvidaContext& ctx);
+  bool Inst_GetOpinion(cAvidaContext& ctx);
+
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB
@@ -564,6 +582,21 @@ private:
   bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
   bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
   bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
+
+  // Active messaging //**
+  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
+
+  bool Inst_START_Handler(cAvidaContext& ctx);
+  bool Inst_End_Handler(cAvidaContext& ctx);
+
+  bool Inst_SendMessage(cAvidaContext& ctx);
+  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
+  bool Inst_RetrieveMessage(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
@@ -586,6 +619,14 @@ private:
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   
+
+private:
+  std::pair<bool, int> m_last_cell_data; // If cell data has been previously collected, and it's value
+public:
+  bool Inst_CollectCellData(cAvidaContext& ctx);
+  bool Inst_IfCellDataChanged(cAvidaContext& ctx);
+  bool Inst_ReadCellData(cAvidaContext& ctx);
+
   // ---------- Some Instruction Helpers -----------
   struct searchInfo {
     double amountFound;

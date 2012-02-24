@@ -77,7 +77,6 @@ private:
 	unsigned int MSG_sendFailed;
 	unsigned int MSG_dropped;
 	unsigned int MSG_SuccessfullySent;
-	unsigned int MSG_sent;
   unsigned int numOrgsInterruted;
 	double energyInjectedIntoOrganisms; //! total amount of energy injected into seed organisms
 	double energyRemainingInDemeAtReplication; //! total amount of energy remaining in deme when deme was last replicated.
@@ -336,11 +335,9 @@ public:
   void AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times);
 	
 	// --- Messaging stats --- //
-	void IncMessageSent() { ++MSG_sent; }
 	void MessageSuccessfullySent() { ++MSG_SuccessfullySent; }
 	void messageDropped() { ++MSG_dropped; }
 	void messageSendFailed() { ++MSG_sendFailed; }
-	unsigned int GetMessagesSent() { return MSG_sent; }
 	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
 	unsigned int GetMessageDropped() { return MSG_dropped; }
 	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
