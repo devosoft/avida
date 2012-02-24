@@ -124,7 +124,7 @@ private:
 public:
   AvidaEDPopViewStatViewRecorder(AvidaEDPopViewStatView* view) : m_view(view) { ; }
   
-  Avida::Data::ConstDataSetPtr GetRequested() const;
+  Avida::Data::ConstDataSetPtr RequestedData() const;
   void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data);
 };
 
@@ -141,7 +141,7 @@ private:
 public:
   AvidaEDPopViewStatViewOrgRecorder(AvidaEDPopViewStatView* view);
   
-  Avida::Data::ConstDataSetPtr GetRequested() const;
+  Avida::Data::ConstDataSetPtr RequestedData() const;
   LIB_EXPORT void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retreive_data);
   
   void SetCoords(int x, int y);

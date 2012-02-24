@@ -711,7 +711,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
 @end
 
 
-Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::GetRequested() const
+Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::RequestedData() const
 {
   if (!m_requested) {
     Avida::Data::DataSetPtr ds(new Avida::Data::DataSet);
@@ -763,7 +763,7 @@ AvidaEDPopViewStatViewOrgRecorder::AvidaEDPopViewStatViewOrgRecorder(AvidaEDPopV
 }
 
 
-Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewOrgRecorder::GetRequested() const
+Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewOrgRecorder::RequestedData() const
 {
   return m_requested;
 }
