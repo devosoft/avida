@@ -4884,13 +4884,15 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
 
   // fourth register gives specific instance of resources sought or specific organisms to look for
+  // negative numbers == any
   int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  if (id_sought < -1) id_sought = -1;
   // override if using lookFT
   if (use_ft) id_sought = forage;
   // if resource search...
   if (habitat_used != -2) { 
     // if invalid res id...
-    if (id_sought < 0 || id_sought >= lib_size) {
+    if (id_sought < -1 || id_sought >= lib_size) {
       if (forage < 0 || forage >= lib_size) id_sought = -1;                             // e.g. predators looking for res or wacky forage target
       else id_sought = forage;
     }
