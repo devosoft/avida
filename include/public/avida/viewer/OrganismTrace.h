@@ -45,6 +45,7 @@ namespace Avida {
     private:
       Apto::Array<int> m_registers;
       Apto::Map<Apto::String, Apto::Array<int> > m_buffers;
+      Apto::Array<int> m_default_buffer;
       Apto::Map<Apto::String, int> m_function_counts;
       
       struct MemSpace
@@ -95,9 +96,9 @@ namespace Avida {
       LIB_EXPORT inline int Register(int idx) const { return m_registers[idx]; }
       
       LIB_EXPORT inline int NumBuffers() const { return m_buffers.GetSize(); };
-      LIB_EXPORT inline const Apto::Array<int>& Buffer(const Apto::String& desc) const { return m_buffers.Get(desc); }
+      LIB_EXPORT inline const Apto::Array<int>& Buffer(const Apto::String& desc) const { return m_buffers.GetWithDefault(desc, m_default_buffer); }
       
-      LIB_EXPORT inline int FunctionCount(const Apto::String& function) const { return m_function_counts.Get(function); };
+      LIB_EXPORT inline int FunctionCount(const Apto::String& function) const { return m_function_counts.GetWithDefault(function, 0); };
       
       
       LIB_EXPORT inline Instruction LastInstruction() const { return m_last_inst; }

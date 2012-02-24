@@ -169,13 +169,13 @@ HardwareSnapshot::~HardwareSnapshot()
 
 void HardwareSnapshot::AddBuffer(const Apto::String& description, const Apto::Array<int>& values)
 {
-  m_buffers[description] = values;
+  m_buffers.Set(description, values);
 }
 
 
 void HardwareSnapshot::SetFunctionCount(const Apto::String& function, int count)
 {
-  m_function_counts[function] = count;
+  m_function_counts.Set(function, count);
 }
 
 

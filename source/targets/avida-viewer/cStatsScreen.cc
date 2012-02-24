@@ -119,7 +119,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
 //  PrintDouble(11, 29, stats.GetAveThresholdAge());
 
   PrintDouble(9,  38, log((double) stats.GetNumCreatures()));
-  PrintDouble(10, 38, stats.GetEntropy());
+//  PrintDouble(10, 38, stats.GetEntropy());
 //  PrintDouble(12, 38, stats.GetSpeciesEntropy());
 
   Systematics::GenomeTestMetricsPtr metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, best_gen);
@@ -144,7 +144,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(2, 71, stats.GetAveFitness());
   PrintDouble(3, 71, stats.GetAveMerit());
   PrintDouble(4, 71, stats.GetAveGestation());
-  PrintDouble(5, 71, stats.GetAveSize());
+//  PrintDouble(5, 71, stats.GetAveSize());
   PrintDouble(6, 71, stats.GetAveCopySize());
   PrintDouble(7, 71, stats.GetAveExeSize());
 //  PrintDouble(8, 71,
