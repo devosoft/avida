@@ -416,7 +416,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
 
 - (void)finalize
 {
-  [super dealloc];
+  [super finalize];
   if (recorder) {
     assert(run);
     [run detachRecorder:recorder];
