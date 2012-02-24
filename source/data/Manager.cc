@@ -83,7 +83,7 @@ bool Avida::Data::Manager::IsActive(const DataID& data_id) const
 
 bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder, bool concurrent_update)
 {
-  ConstDataSetPtr requested = recorder->GetRequested();
+  ConstDataSetPtr requested = recorder->RequestedData();
   
   m_rwlock.WriteLock();
   

@@ -41,7 +41,7 @@ namespace Avida {
     public:
       LIB_EXPORT virtual ~Recorder() { ; }
       
-      LIB_EXPORT virtual ConstDataSetPtr GetRequested() const = 0;
+      LIB_EXPORT virtual ConstDataSetPtr RequestedData() const = 0;
       
       LIB_EXPORT virtual void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data) = 0; 
     };
