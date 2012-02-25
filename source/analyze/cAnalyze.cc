@@ -7516,14 +7516,14 @@ void cAnalyze::AnalyzeLineageComplexitySitesN(cString cur_string)
 
     //cout << "Genome Length: " << gen_length << endl;
     //cout << "Postive & Neutral Mutations: " << posneutmut << endl;
-
+    
     // calculate complexity
     double denominator = 0.0;
     if (n == 1) {
       denominator = (num_insts*gen_length);
     }
     else if (n == 2) {
-        denominator = (pow(num_insts,2)*(gen_length)*(gen_length-1)*(0.5));
+        denominator = (pow((double)num_insts,(double)2)*(gen_length)*(gen_length-1)*(0.5));
     }
 
     double wn = ( posneutmut / denominator);
@@ -7531,7 +7531,7 @@ void cAnalyze::AnalyzeLineageComplexitySitesN(cString cur_string)
     //cout << "Denom: " << denominator << " wn: " << wn << endl;
 
     double entropy = 0.0;
-    double totalcombo = pow(num_insts, gen_length);
+    double totalcombo = pow((double)num_insts, gen_length);
     //cout << "Total Combinations: " << totalcombo << endl;
     //cout << "Log of wn and totalcombos: " << log(wn * totalcombo ) << endl;
     if (posneutmut > 0) {
