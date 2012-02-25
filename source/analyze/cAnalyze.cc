@@ -7341,6 +7341,225 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
   }  
 }
 
+void cAnalyze::AnalyzeLineageComplexitySitesN(cString cur_string)
+{
+  /*
+  Implemented up to n=2, feel free to expand for greater n's
+  */
+  cout << "Analyzing genome complexity of a lineage for n sites..." << endl;
+
+  /*
+   * Arguments:
+   * 1) N-mutant (default: 2)
+   * 2) directory
+   */
+
+  // number of arguments provided
+  int words = cur_string.CountNumWords();
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Number of arguments passed: " << words << endl;
+  }
+
+  //
+  // argument 1 -- N-mutant number
+  //
+  int n = 2;
+  if(words < 1) {
+    // no mutation n-mutant number provided
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  - No specific n-mutant selected, using default n-mutant with n = " << n << endl;
+    }
+  } else {
+    // n-mutant number provided
+    n = cur_string.PopWord().AsInt();
+    if (n < 1.0) {
+      // find an n-mutant below 1 is trivial
+      n = 1.0;
+    }
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  - n-mutant passed, using n = " << n << endl;
+    }
+  }
+
+  //
+  // argument 2 -- directory
+  //
+  cString dir = cur_string.PopWord();
+  cString defaultDirectory = "complexity_nmutant_lineage/";
+  cString directory = PopDirectory(dir, defaultDirectory);
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  - Analysis results to directory: " << directory << endl;
+  }
+
+  // test cpu
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(m_ctx);
+
+// get current batch
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+
+    // Construct filename
+    cString filename_2s;
+    filename_2s.Set("complexity.dat");
+    cDataFile & fp_2s = m_world->GetDataFile(filename_2s);
+    fp_2s.WriteComment( "Lineage Complexity Analysis" );
+    fp_2s.WriteTimeStamp();
+//    m_world->GetDataFileManager().Remove(filename_2s);
+
+
+  // analyze each genotype in the batch
+  while ((genotype = batch_it.Next()) != NULL) {
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  Analyzing complexity for " << genotype->GetName() << endl;
+    }
+
+
+
+    // Calculate the stats for the genotype we're working with ...
+    const int gen_length = genotype->GetLength();
+    const Genome& base_genome = genotype->GetGenome();
+    const double gen_fitness = genotype->GetFitness();
+    const Sequence& base_seq = base_genome.GetSequence();
+    Genome mod_genome(base_genome);
+    Sequence& seq = mod_genome.GetSequence();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
+
+    //Initialize variables needed for complexity calculations
+    int posneutmut = 0; //number of positive and nuetral mutations
+    int posmut = 0;
+
+    cout << "The base genome fitness is: " << gen_fitness << endl;
+
+    /*
+     *
+     *  ONE SITE CALCULATIONS
+     *
+     */
+
+    // run through each gene in genome
+    if( n ==  1 ) {
+      for (int gene_num = 0; gene_num < gen_length; gene_num++) {
+        // get the current instruction at this line/site
+        int cur_inst = base_seq[gene_num].GetOp();
+
+        // recalculate fitness of each mutant and count the number of positive and neutral mutations
+        for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+          //Check to make sure not re-evaluating the the original genome
+          if (mod_inst != cur_inst) {
+            //cout << "Mod Inst, Cur Inst: " << mod_inst << " " << cur_inst << endl;
+            seq[gene_num].SetOp(mod_inst);
+            cAnalyzeGenotype test_genotype(m_world, mod_genome);
+            test_genotype.Recalculate(m_ctx);
+            double mod_fitness = test_genotype.GetFitness();
+            cout << "Mod Fitness: " << mod_fitness << endl;
+            if (mod_fitness >= gen_fitness) {
+              //cout << "Mutant has better fitness" << endl;
+              posneutmut += 1;
+            }
+            if (mod_fitness > gen_fitness) {
+              posmut +=1;
+            }
+          }
+        }
+        seq[gene_num].SetOp(cur_inst);
+      }
+    }
+    /*
+     *
+     *  TWO SITE CALCULATIONS
+     *
+     */
+
+    // run through genes in genome
+    // - only consider lin_num2 > lin_num1 so that we don't consider
+    // Mut Info [1][45] and Mut Info [45][1]
+    if( n == 2) {
+      for (int gene_num1 = 0; gene_num1 < (gen_length-1); gene_num1++) {
+        for (int gene_num2 = gene_num1+1; gene_num2 < gen_length; gene_num2++) {
+          //cout << "line #1, #2: " << gene_num1 << ", " << gene_num2 << endl;
+
+          // get current instructions at site 1 and site 2
+          int cur_inst1 = base_seq[gene_num1].GetOp();
+          int cur_inst2 = base_seq[gene_num2].GetOp();
+
+          // initialize running fitness total
+          double fitness_total_2s = 0.0;
+
+          // run through all possible instructions
+          for (int mod_inst1 = 0; mod_inst1 < num_insts; mod_inst1++) {
+            for (int mod_inst2 = 0; mod_inst2 < num_insts; mod_inst2++) {
+              // modify mod_genome at two sites
+              seq[gene_num1].SetOp(mod_inst1);
+              seq[gene_num2].SetOp(mod_inst2);
+              // analyze mod_genome
+              cAnalyzeGenotype test_genotype(m_world, mod_genome);
+              test_genotype.Recalculate(m_ctx);
+              double mod_fitness = test_genotype.GetFitness();
+              //cout << "Mutant Fitness: " << mod_fitness << endl;
+              if (mod_fitness >= gen_fitness) {
+                posneutmut += 1;
+              }
+              if (mod_fitness > gen_fitness) {
+                posmut += 1;
+              }
+            }
+          }
+          seq[gene_num1].SetOp(cur_inst1);
+          seq[gene_num2].SetOp(cur_inst2);
+        }
+      }
+    }
+
+    if ( n >= 3) {
+        //TODO
+    }
+
+    //cout << "Genome Length: " << gen_length << endl;
+    //cout << "Postive & Neutral Mutations: " << posneutmut << endl;
+
+    // calculate complexity
+    double denominator = 0.0;
+    if (n == 1) {
+      denominator = (num_insts*gen_length);
+    }
+    else if (n == 2) {
+        denominator = (pow(num_insts,2)*(gen_length)*(gen_length-1)*(0.5));
+    }
+
+    double wn = ( posneutmut / denominator);
+
+    //cout << "Denom: " << denominator << " wn: " << wn << endl;
+
+    double entropy = 0.0;
+    double totalcombo = pow(num_insts, gen_length);
+    //cout << "Total Combinations: " << totalcombo << endl;
+    //cout << "Log of wn and totalcombos: " << log(wn * totalcombo ) << endl;
+    if (posneutmut > 0) {
+        entropy = (log(wn * totalcombo ) / log(num_insts));
+    }
+
+    //cout << "Entropy: " << entropy << endl;
+
+    double complexity = (gen_length - entropy);
+    cout << "Complexity: " << complexity << endl;
+
+    //write to file
+
+    fp_2s.Write(genotype->GetID(),           "Genotype ID");
+    fp_2s.Write(genotype->GetFitness(),      "Genotype Fitness");
+    fp_2s.Write(gen_length,                  "Genotype Length");
+    fp_2s.Write(posmut,                      "Positive Mutations");
+    fp_2s.Write(posneutmut,                  "Positive and Neutral Mutations");
+    fp_2s.Write(entropy,                     "Entropy");
+    fp_2s.Write(complexity,                  "Complexity");
+    fp_2s.Endl();
+
+  }
+  m_world->GetDataFileManager().Remove(filename_2s);
+
+  delete testcpu;
+}
+
 void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
 {
   cout << "Analyzing genome complexity (one and two sites)..." << endl;
@@ -9265,6 +9484,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_REDUNDANCY_BY_INST_FAILURE", &cAnalyze::CommandAnalyzeRedundancyByInstFailure);
   AddLibraryDef("MAP_MUTATIONS", &cAnalyze::CommandMapMutations);
   AddLibraryDef("ANALYZE_COMPLEXITY", &cAnalyze::AnalyzeComplexity);
+  AddLibraryDef("ANALYZE_LINEAGE_COMPLEXITY", &cAnalyze::AnalyzeLineageComplexitySitesN);
   AddLibraryDef("ANALYZE_FITNESS_TWO_SITES", &cAnalyze::AnalyzeFitnessLandscapeTwoSites);
   AddLibraryDef("ANALYZE_COMPLEXITY_TWO_SITES", &cAnalyze::AnalyzeComplexityTwoSites);
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);

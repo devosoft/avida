@@ -462,10 +462,28 @@ void cHardwareExperimental::internalResetOnFailedDivide()
 void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
+  m_promoter_inst_executed = in_thread.m_promoter_inst_executed;
+  m_execurate = in_thread.m_execurate;
+  m_messageTriggerType = in_thread.m_messageTriggerType;
+  
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
   for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
   stack = in_thread.stack;
-  m_messageTriggerType = in_thread.m_messageTriggerType;
+  cur_stack = in_thread.cur_stack;
+  cur_head = in_thread.cur_head;
+  reading_label = in_thread.reading_label;
+  reading_seq = in_thread.reading_seq;
+  active = in_thread.active;
+  wait_greater = in_thread.wait_greater;
+  wait_equal = in_thread.wait_equal;
+  wait_less = in_thread.wait_less;
+  wait_reg = in_thread.wait_reg;
+  wait_dst = in_thread.wait_dst;
+  wait_value = in_thread.wait_value;
+  
+  read_label = in_thread.read_label;
+  read_seq = in_thread.read_seq;
+  next_label = in_thread.next_label;  
 }
 
 void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
@@ -522,6 +540,12 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
   const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
+  
+  int num_active = 0;
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (m_threads[i].active) num_active++;
+  }
+  assert(num_active == (m_threads.GetSize() - m_waiting_threads));
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
@@ -1215,6 +1239,7 @@ bool cHardwareExperimental::ForkThread()
   m_threads.Resize(num_threads + 1);
   
   // Initialize the new thread to the same values as the current one.
+  assert(m_threads[m_cur_thread].active);
   m_threads[num_threads] = m_threads[m_cur_thread];
   
   // Find the first free bit in m_thread_id_chart to determine the new
@@ -1475,6 +1500,7 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
         // Wake up the thread with matched condition
         m_threads[i].active = true;
         m_waiting_threads--;
+        assert(m_waiting_threads >= 0);
         
         // Set destination register to be the check value
         sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];

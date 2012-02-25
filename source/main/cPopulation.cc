@@ -2654,10 +2654,17 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // deme keeping complete copies of the founder organisms when
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
-        int cellid = DemeSelectInjectionCell(target_deme, i);
-        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false); 
-        target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
+        int cellid = DemeSelectInjectionCell(target_deme, i);        
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false);
+       // target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
+      }
+
+      for(int i=0; i<target_deme.GetSize(); ++i) {
+        cPopulationCell& cell = target_deme.GetCell(i);
+        if(cell.IsOccupied()) {
+          target_deme.AddFounder(cell.GetOrganism()->GetBioGroup("genotype"), &cell.GetOrganism()->GetPhenotype());
+        }
       }
       
       // We either repeat this procedure in the source deme,
