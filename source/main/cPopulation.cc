@@ -856,6 +856,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Keep track of statistics for organism counts...
   num_organisms++;
   if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
     else num_pred_organisms++;
   }
@@ -1201,6 +1202,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
     organism->GetOrgInterface().RemoveAllAV();
   }
 
+  bool is_prey = true;
+  if (organism->GetForageTarget() <= -2) is_prey = false;
+  
   RemoveLiveOrg(organism); 
   
   int cellID = in_cell.GetID();
@@ -1235,7 +1239,11 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Update count statistics...
   num_organisms--;
-  
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    if (is_prey) num_prey_organisms--;
+    else num_pred_organisms--;
+  }
+
   // Handle deme updates.
   if (deme_array.GetSize() > 0) {
     deme_array[in_cell.GetDemeID()].DecOrgCount();

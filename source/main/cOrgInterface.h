@@ -206,6 +206,11 @@ public:
   virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; // @JJB
   virtual int& GetGroupIntolerances(int group_id, int tol_num) = 0;
     
+  virtual void DecNumPreyOrganisms() = 0;
+  virtual void DecNumPredOrganisms() = 0;
+  virtual void IncNumPreyOrganisms() = 0;
+  virtual void IncNumPredOrganisms() = 0;
+  
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
 
   virtual void AddAV(int av_cell_id, int av_facing, bool input, bool output) = 0;

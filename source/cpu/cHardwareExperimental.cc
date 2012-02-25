@@ -5178,6 +5178,11 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   const int search_reg = in_defs.search_type;
   const int id_reg = in_defs.id_sought;
 
+  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  int search_type = m_threads[m_cur_thread].reg[search_reg].value;
+  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -5193,7 +5198,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // habitat -2 = organisms
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
 
-  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
   // default to look for orgs if invalid habitat & predator
   if (pred_experiment && forage == -2 && 
       (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
@@ -5204,7 +5208,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   int max_dist = 0;
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
-  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
   else if (distance_sought > max_dist) distance_sought = max_dist;
 
@@ -5213,7 +5216,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
   // org hunting search types (habitat -2): -2 -1 0 1 2
   // 0 = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
-  int search_type = m_threads[m_cur_thread].reg[search_reg].value;
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
   // if looking for orgs in predator environment and is prey, default to closest org of any type
@@ -5224,8 +5226,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
 
   // fourth register gives specific instance of resources sought or specific organisms to look for
-  // negative numbers == any
-  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  // negative numbers == any of current habitat type
   if (id_sought < -1) id_sought = -1;
   // override if using lookFT
   if (use_ft) id_sought = forage;
@@ -5243,7 +5244,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     bool done_setting_org = false;
     cOrganism* target_org = NULL;
     // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
-    if (id_sought < 0 || id_sought == m_organism->GetID()) {
+    if (id_sought < -1 || id_sought == m_organism->GetID()) {
       id_sought = -1;
       done_setting_org = true;
     }

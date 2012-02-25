@@ -640,7 +640,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
   assert(cell.IsOccupied()); // This organism; sanity.
 
   if (m_world->GetConfig().USE_AVATARS.Get() == 2 && m_world->GetConfig().NEURAL_NETWORKING.Get()) {
-    assert(m_avatars);
+    //assert(m_avatars);
     bool message_sent = false;
     for (int i = 0; i < m_avatars.GetSize(); i++) {
       if (m_avatars[i].output) {
@@ -1573,6 +1573,26 @@ int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num)
   return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num);
 }
 
+void cPopulationInterface::DecNumPreyOrganisms()
+{
+  m_world->GetPopulation().DecNumPreyOrganisms();
+}
+
+void cPopulationInterface::DecNumPredOrganisms()
+{
+  m_world->GetPopulation().DecNumPredOrganisms();
+}
+
+void cPopulationInterface::IncNumPreyOrganisms()
+{
+  m_world->GetPopulation().IncNumPreyOrganisms();
+}
+
+void cPopulationInterface::IncNumPredOrganisms()
+{
+  m_world->GetPopulation().IncNumPredOrganisms();
+}
+
 void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   m_world->GetPopulation().AttackFacedOrg(ctx, loser);
@@ -1737,7 +1757,7 @@ bool cPopulationInterface::FacedHasOutputAV()
 int cPopulationInterface::GetAVFacedCellID(int index)//** GetCellXPosition()
 {
   assert(m_world->GetConfig().USE_AVATARS.Get());
-  assert(HasAvatars());
+  //assert(HasAvatars());
   if ((m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) && (m_world->GetConfig().WORLD_GEOMETRY.Get() != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
   if (index < GetNumAV()) {
     const int x_size = m_world->GetConfig().WORLD_X.Get();

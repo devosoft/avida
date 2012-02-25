@@ -204,6 +204,11 @@ public:
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
   int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
+  void DecNumPreyOrganisms() { ; }
+  void DecNumPredOrganisms() { ; }
+  void IncNumPreyOrganisms() { ; }
+  void IncNumPredOrganisms() { ; }
+
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
 
   void AddAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
