@@ -3576,6 +3576,20 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int rand = m_world->GetRandom().GetInt(INT_MAX);
+      search_dir = rand % 3;
+    }
+  }
+  
   if (search_dir == 1) search_dir = -1;
   else if (search_dir == 2) search_dir = 1;
   
@@ -3612,6 +3626,20 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int rand = m_world->GetRandom().GetInt(INT_MAX);
+      search_dir = rand % 3;
+    }
+  }
+  
   if (search_dir == 1) search_dir = -1;
   else if (search_dir == 2) search_dir = 1;
   
@@ -5216,24 +5244,24 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
   int forage = m_organism->GetForageTarget();
   
-  if (m_world->GetConfig().LOOK_DISABLE.Get() < 6 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {
-    int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
-    if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
+  if (m_world->GetConfig().LOOK_DISABLE.Get() < 5 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {    
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
       int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
       if (target_reg == 1) habitat_used = rand;
       else if (target_reg == 2) distance_sought = rand;
       else if (target_reg == 3) search_type = rand;
       else if (target_reg == 4) id_sought = rand;
     }
-    else {
-      int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
-      if (target_reg == 1) habitat_used += offset;
-      else if (target_reg == 2) distance_sought += offset;
-      else if (target_reg == 3) search_type += offset;
-      else if (target_reg == 4) id_sought += offset;
-    }
   }
+  
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource, habitat = 0 (gradients)
   // if sensing topography, habitat = 1 (hills)
@@ -5893,10 +5921,17 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
   }
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
-    int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
-    if (m_world->GetConfig().LOOK_DISABLE_TYPE.Get() == 0) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
       int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+      
       if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
       else if (target_reg == 7) setInternalValue(regs.distance, rand, true);
       else if (target_reg == 8) setInternalValue(regs.search_type, rand, true);
@@ -5905,17 +5940,6 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
       else if (target_reg == 11) setInternalValue(regs.value, rand, true);
       else if (target_reg == 12) setInternalValue(regs.group, rand, true);
       else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
-    }
-    else {
-      int offset = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
-      if (target_reg == 6) setInternalValue(regs.habitat, results.habitat + offset, true);
-      else if (target_reg == 7) setInternalValue(regs.distance, results.distance + offset, true);
-      else if (target_reg == 8) setInternalValue(regs.search_type, results.search_type + offset, true);
-      else if (target_reg == 9) setInternalValue(regs.id_sought, results.id_sought + offset, true);
-      else if (target_reg == 10) setInternalValue(regs.count, results.count + offset, true);
-      else if (target_reg == 11) setInternalValue(regs.value, results.value + offset, true);
-      else if (target_reg == 12) setInternalValue(regs.group, results.group + offset, true);
-      else if (target_reg == 13) setInternalValue(regs.ft, results.forage + offset, true);  
     }
   }
   return;
