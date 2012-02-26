@@ -54,12 +54,14 @@ public:
   cDeme* GetDeme() { return 0; }
   void SetCellID(int in_id) { ; }
   void SetDemeID(int in_id) { ; }
+  int GetCellXPosition() { return -1; }
+  int GetCellYPosition() { return -1; }
   
-  int GetAVCellID() { return -1; }
-  void SetAVCellID(int av_cell_id) { ; }
+  int GetAvatarCellID() { return -1; }
+  void SetAvatarCellID(int av_cell_id) { ; }
   void SetAvatarFacing(int facing) { ; }
   void SetAvatarFacedCell(int av_cell_id) { ; }
-  int GetAVFacedCellID() { return -1; }
+  int GetAvatarFacedCellID() { return -1; }
   int GetAVFacedDir() { return 0; }
   
   int GetCellData() { return -1; }
@@ -202,7 +204,21 @@ public:
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
   int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
 
+  void DecNumPreyOrganisms() { ; }
+  void DecNumPredOrganisms() { ; }
+  void IncNumPreyOrganisms() { ; }
+  void IncNumPredOrganisms() { ; }
+
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
+
+  void AddAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
+  void RemoveAllAV() { ; }
+  void SetAVCellID(int av_cell_id) { ; }
+  void MoveAV() { ; }
+  void SetAVFacing(int av_facing) { ; }
+  bool RotateAV(int increment) { return false; }
+  bool HasOutputAV() { return false; }
+  bool FacedHasOutputAV() { return false; }
   
   void BeginSleep() { ; }
   void EndSleep() { ; }

@@ -279,6 +279,10 @@ public:
 
   int GetNumPreyOrganisms() { return num_prey_organisms; }
   int GetNumPredOrganisms() { return num_pred_organisms; }
+  void DecNumPreyOrganisms() { num_prey_organisms--; }
+  void DecNumPredOrganisms() { num_pred_organisms--; }
+  void IncNumPreyOrganisms() { num_prey_organisms++; }
+  void IncNumPredOrganisms() { num_pred_organisms++; }
   
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }

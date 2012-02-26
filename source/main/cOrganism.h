@@ -707,11 +707,11 @@ private:
 	// -------- Avatar support --------
 public:
   bool MoveAV(cAvidaContext& ctx);
-  int GetAVCellID() { return m_interface->GetAVCellID(); }
-  void SetAVCellID(int av_cell_id) { m_interface->SetAVCellID(av_cell_id); }
+  int GetAvatarCellID() { return m_interface->GetAvatarCellID(); }
+  void SetAvatarCellID(int av_cell_id) { m_interface->SetAvatarCellID(av_cell_id); }
   void SetAvatarFacing(int facing) { m_interface->SetAvatarFacing(facing); }
   void SetAvatarFacedCell(int av_cell_id) { m_interface->SetAvatarFacedCell(av_cell_id); }
-  int GetAVFacedCellID() { return m_interface->GetAVFacedCellID(); }
+  int GetAvatarFacedCellID() { return m_interface->GetAvatarFacedCellID(); }
   int GetAVFacedDir() { assert(m_interface); return m_interface->GetAVFacedDir(); }  
     
 	// -------- Internal Support Methods --------

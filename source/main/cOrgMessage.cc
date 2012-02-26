@@ -26,13 +26,13 @@
 cOrgMessage::cOrgMessage()
 : m_pSender(0), m_pReceiver(0), m_messageType(0), m_data(0)
 , m_label(0), m_senderOrgID(0), m_senderCellID(0)
-, m_receiverOrgID(0), m_receiverCellID(0) {
+, m_receiverOrgID(0), m_receiverCellID(0), m_transCellID(-1) {
 }
 
 
 cOrgMessage::cOrgMessage(cOrganism* sender, int messageType)
 : m_pSender(sender), m_pReceiver(0), m_messageType(messageType), m_data(0)
-, m_label(0), m_receiverOrgID(0), m_receiverCellID(0) {
+, m_label(0), m_receiverOrgID(0), m_receiverCellID(0), m_transCellID(-1) {
 	assert(m_pSender);
 	m_senderCellID = sender->GetCellID();
 	m_senderOrgID = sender->GetID();
