@@ -82,6 +82,11 @@ namespace Avida {
   
   // WorldFacet
   // --------------------------------------------------------------------------------------------------------------
+  //
+  // Protocol definition for world facet classes that register with world. These methods define the update order
+  // dependencies of the facet as well as the PerformUpdate method signature. Facets (once serialization has been
+  // implemented) must register their facet type and deserialization functor with the global factory via 
+  // RegisterFacetType().
   
   class WorldFacet : public Apto::MTRefCountObject
   {
