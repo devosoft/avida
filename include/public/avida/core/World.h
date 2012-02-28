@@ -31,8 +31,16 @@
 
 namespace Avida {
   
-  // World - container for the various facets of an Avida experiment
+  // World
   // --------------------------------------------------------------------------------------------------------------
+  //
+  // A World object contains a collection of facets (WorldFacet) that implement top-level functionality.  These facets
+  // can be retrieved and used from essentially any level of a given experimental run.  Facets also participate in the
+  // update cycle of the experiment. World schedules the order of execution based on facet dependencies and takes care
+  // of issuing PerformUpdate on all facets in the appropriate order.
+  //
+  // Several core facets have convenience/performance accessors, listed below. All others may be retrieve through the
+  // main Facet() method.
   
   class World
   {
