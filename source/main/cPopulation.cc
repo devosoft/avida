@@ -45,6 +45,7 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cIntegratedSchedule.h"
+#include "cMigrationMatrix.h"   // MIGRATION_MATRIX
 #include "cOrganism.h"
 #include "cParasite.h"
 #include "cPhenotype.h"
@@ -4291,6 +4292,11 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
         lower_point = upper_point;
       }
     }
+  }
+    
+  else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 4){
+      // MIGRATION_MATRIX
+      deme_id = m_world->GetMigrationMatrix().GetProbabilisticDemeID(parent_id,m_world->GetRandom());      
   }
   
   GetDeme(deme_id).AddMigrationIn();

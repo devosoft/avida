@@ -302,6 +302,7 @@ public:
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
+  CONFIG_ADD_VAR(MIGRATION_FILE, cString, "-", "NxN file that describes connectivity weights between demes");   // MIGRATION_MATRIX
   
   
   // -------- Mutation config options --------

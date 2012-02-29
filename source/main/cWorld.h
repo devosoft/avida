@@ -42,6 +42,7 @@ class cClassificationManager;
 class cEnvironment;
 class cEventList;
 class cHardwareManager;
+class cMigrationMatrix; // MIGRATION_MATRIX
 class cOrganism;
 class cPopulation;
 class cMerit;
@@ -68,6 +69,7 @@ protected:
   cEnvironment* m_env;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
+  cMigrationMatrix* m_mig_mat;  // MIGRATION_MATRIX
   cPopulation* m_pop;
   Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
   WorldDriver* m_driver;
@@ -105,6 +107,7 @@ public:
   cDataFileManager& GetDataFileManager() { return *m_datafile_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
+  cMigrationMatrix& GetMigrationMatrix(){ return *m_mig_mat; }; // MIGRATION_MATRIX
   cPopulation& GetPopulation() { return *m_pop; }
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }

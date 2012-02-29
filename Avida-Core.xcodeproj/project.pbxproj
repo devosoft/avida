@@ -318,6 +318,13 @@
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
 		B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */ = {isa = PBXBuildFile; fileRef = B516AF790C91E24600023D53 /* cDemeCellEvent.cc */; };
 		D7FB16D60ED62684002E939E /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = D7FB16D50ED62684002E939E /* cOrgMessage.cc */; };
+		D86E627114F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */; };
+		D86E627214F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */; };
+		D86E627314F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */; };
+		D86E627414F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */; };
+		D86E627514F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */; };
+		D86E627614F6BA6600AE1489 /* cMigrationMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = D86E627014F6BA6600AE1489 /* cMigrationMatrix.h */; };
+		D86E627714F6BA6600AE1489 /* cMigrationMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = D86E627014F6BA6600AE1489 /* cMigrationMatrix.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1106,6 +1113,8 @@
 		B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cDemeCellEvent.h; path = source/main/cDemeCellEvent.h; sourceTree = SOURCE_ROOT; };
 		BBDE4FF80FC1B06600CC6170 /* cDemePredicate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemePredicate.h; sourceTree = "<group>"; };
 		D7FB16D50ED62684002E939E /* cOrgMessage.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgMessage.cc; sourceTree = "<group>"; };
+		D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMigrationMatrix.cc; sourceTree = "<group>"; };
+		D86E627014F6BA6600AE1489 /* cMigrationMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMigrationMatrix.h; sourceTree = "<group>"; };
 		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1889,6 +1898,8 @@
 				70B0864808F4972600FC65FE /* cLandscape.h */,
 				70B0865108F4974300FC65FE /* cLandscape.cc */,
 				4216165611DA45A800B49195 /* cMultiProcessWorld.h */,
+				D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */,
+				D86E627014F6BA6600AE1489 /* cMigrationMatrix.h */,
 				4216165511DA45A800B49195 /* cMultiProcessWorld.cc */,
 				70B0864E08F4972600FC65FE /* cMutationRates.h */,
 				70B0865708F4974300FC65FE /* cMutationRates.cc */,
@@ -2106,6 +2117,7 @@
 				4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */,
 				4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */,
 				7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */,
+				D86E627614F6BA6600AE1489 /* cMigrationMatrix.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2113,6 +2125,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D86E627714F6BA6600AE1489 /* cMigrationMatrix.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2260,6 +2273,7 @@
 				7023ECCC0C0A444200362B9C /* cViewInfo.cc in Sources */,
 				7023ECCD0C0A444600362B9C /* cZoomScreen.cc in Sources */,
 				7023ECCE0C0A444800362B9C /* viewer.cc in Sources */,
+				D86E627214F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2400,6 +2414,7 @@
 				4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */,
 				7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */,
 				7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */,
+				D86E627414F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2411,6 +2426,7 @@
 				706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */,
 				70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */,
 				7042DF15128C90240062501F /* AvidaViewer.cc in Sources */,
+				D86E627514F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2420,6 +2436,7 @@
 			files = (
 				70B6514F0BEA6FCC002472ED /* main.cc in Sources */,
 				7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */,
+				D86E627314F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2428,6 +2445,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
+				D86E627114F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
