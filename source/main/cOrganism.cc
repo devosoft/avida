@@ -1275,6 +1275,16 @@ bool cOrganism::HasOpinion() {
 }
 
 void cOrganism::SetForageTarget(int forage_target) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    if (forage_target <= -2 && m_forage_target > -2) {
+      m_interface->DecNumPreyOrganisms();
+      m_interface->IncNumPredOrganisms();
+    }
+    else if (forage_target > -2 && m_forage_target <= -2) {
+      m_interface->IncNumPreyOrganisms();
+      m_interface->DecNumPredOrganisms();
+    }
+  }
   m_forage_target = forage_target;
   // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }

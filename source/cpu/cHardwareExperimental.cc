@@ -462,10 +462,28 @@ void cHardwareExperimental::internalResetOnFailedDivide()
 void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
+  m_promoter_inst_executed = in_thread.m_promoter_inst_executed;
+  m_execurate = in_thread.m_execurate;
+  m_messageTriggerType = in_thread.m_messageTriggerType;
+  
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
   for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
   stack = in_thread.stack;
-  m_messageTriggerType = in_thread.m_messageTriggerType;
+  cur_stack = in_thread.cur_stack;
+  cur_head = in_thread.cur_head;
+  reading_label = in_thread.reading_label;
+  reading_seq = in_thread.reading_seq;
+  active = in_thread.active;
+  wait_greater = in_thread.wait_greater;
+  wait_equal = in_thread.wait_equal;
+  wait_less = in_thread.wait_less;
+  wait_reg = in_thread.wait_reg;
+  wait_dst = in_thread.wait_dst;
+  wait_value = in_thread.wait_value;
+  
+  read_label = in_thread.read_label;
+  read_seq = in_thread.read_seq;
+  next_label = in_thread.next_label;  
 }
 
 void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
@@ -522,6 +540,12 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
   const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
+  
+  int num_active = 0;
+  for (int i = 0; i < m_threads.GetSize(); i++) {
+    if (m_threads[i].active) num_active++;
+  }
+  assert(num_active == (m_threads.GetSize() - m_waiting_threads));
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
@@ -1215,6 +1239,7 @@ bool cHardwareExperimental::ForkThread()
   m_threads.Resize(num_threads + 1);
   
   // Initialize the new thread to the same values as the current one.
+  assert(m_threads[m_cur_thread].active);
   m_threads[num_threads] = m_threads[m_cur_thread];
   
   // Find the first free bit in m_thread_id_chart to determine the new
@@ -1475,6 +1500,7 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
         // Wake up the thread with matched condition
         m_threads[i].active = true;
         m_waiting_threads--;
+        assert(m_waiting_threads >= 0);
         
         // Set destination register to be the check value
         sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
@@ -3550,6 +3576,20 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int rand = m_world->GetRandom().GetInt(INT_MAX);
+      search_dir = rand % 3;
+    }
+  }
+  
   if (search_dir == 1) search_dir = -1;
   else if (search_dir == 2) search_dir = 1;
   
@@ -3586,6 +3626,20 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   int dir_reg = FindModifiedNextRegister(id_reg);
   
   int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int rand = m_world->GetRandom().GetInt(INT_MAX);
+      search_dir = rand % 3;
+    }
+  }
+  
   if (search_dir == 1) search_dir = -1;
   else if (search_dir == 2) search_dir = 1;
   
@@ -5178,12 +5232,35 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   const int search_reg = in_defs.search_type;
   const int id_reg = in_defs.id_sought;
 
+  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
+  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
+  int search_type = m_threads[m_cur_thread].reg[search_reg].value;
+  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
   bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
   int forage = m_organism->GetForageTarget();
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() < 5 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {    
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+      if (target_reg == 1) habitat_used = rand;
+      else if (target_reg == 2) distance_sought = rand;
+      else if (target_reg == 3) search_type = rand;
+      else if (target_reg == 4) id_sought = rand;
+    }
+  }
   
   // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
   // if sensing food resource, habitat = 0 (gradients)
@@ -5193,7 +5270,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // habitat -2 = organisms
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
 
-  int habitat_used = m_threads[m_cur_thread].reg[habitat_reg].value;
   // default to look for orgs if invalid habitat & predator
   if (pred_experiment && forage == -2 && 
       (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
@@ -5204,7 +5280,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   int max_dist = 0;
   const int long_axis = (int) (max(worldx, worldy) * 0.5 + 0.5);  
   m_world->GetConfig().LOOK_DIST.Get() != -1 ? max_dist = m_world->GetConfig().LOOK_DIST.Get() : max_dist = long_axis;
-  int distance_sought = m_threads[m_cur_thread].reg[distance_reg].value;
   if (distance_sought < 0) distance_sought = 1;
   else if (distance_sought > max_dist) distance_sought = max_dist;
 
@@ -5213,7 +5288,6 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
   // org hunting search types (habitat -2): -2 -1 0 1 2
   // 0 = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
-  int search_type = m_threads[m_cur_thread].reg[search_reg].value;
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
   // if looking for orgs in predator environment and is prey, default to closest org of any type
@@ -5224,13 +5298,14 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
   else if (!pred_experiment && habitat_used == -2 && (search_type < -2 || search_type > 0)) search_type = 0;
 
   // fourth register gives specific instance of resources sought or specific organisms to look for
-  int id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  // negative numbers == any of current habitat type
+  if (id_sought < -1) id_sought = -1;
   // override if using lookFT
   if (use_ft) id_sought = forage;
   // if resource search...
   if (habitat_used != -2) { 
     // if invalid res id...
-    if (id_sought < 0 || id_sought >= lib_size) {
+    if (id_sought < -1 || id_sought >= lib_size) {
       if (forage < 0 || forage >= lib_size) id_sought = -1;                             // e.g. predators looking for res or wacky forage target
       else id_sought = forage;
     }
@@ -5241,7 +5316,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::SetLooking(cAvidaContext& 
     bool done_setting_org = false;
     cOrganism* target_org = NULL;
     // if invalid number or self, we will just search for any org matching search type, skipping rest of look for specific org
-    if (id_sought < 0 || id_sought == m_organism->GetID()) {
+    if (id_sought < -1 || id_sought == m_organism->GetID()) {
       id_sought = -1;
       done_setting_org = true;
     }
@@ -5843,6 +5918,29 @@ void cHardwareExperimental::LookResults(lookRegAssign& regs, lookOut& results)
     setInternalValue(regs.value, results.value, true);
     setInternalValue(regs.group, results.group, true);
     setInternalValue(regs.ft, results.forage, true);  
+  }
+  
+  if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
+    int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
+    bool is_target_type = false;
+    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    else if (org_type == 2) is_target_type = true;
+    
+    if (is_target_type) {
+      int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+      int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
+      int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
+      
+      if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
+      else if (target_reg == 7) setInternalValue(regs.distance, rand, true);
+      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true);
+      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true);
+      else if (target_reg == 10) setInternalValue(regs.count, rand, true);
+      else if (target_reg == 11) setInternalValue(regs.value, rand, true);
+      else if (target_reg == 12) setInternalValue(regs.group, rand, true);
+      else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
+    }
   }
   return;
 }

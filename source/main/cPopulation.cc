@@ -857,6 +857,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Keep track of statistics for organism counts...
   num_organisms++;
   if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
     else num_pred_organisms++;
   }
@@ -1202,6 +1203,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
     organism->GetOrgInterface().RemoveAllAV();
   }
 
+  bool is_prey = true;
+  if (organism->GetForageTarget() <= -2) is_prey = false;
+  
   RemoveLiveOrg(organism); 
   
   int cellID = in_cell.GetID();
@@ -1236,7 +1240,11 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Update count statistics...
   num_organisms--;
-  
+  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    if (is_prey) num_prey_organisms--;
+    else num_pred_organisms--;
+  }
+
   // Handle deme updates.
   if (deme_array.GetSize() > 0) {
     deme_array[in_cell.GetDemeID()].DecOrgCount();
@@ -2647,10 +2655,17 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // deme keeping complete copies of the founder organisms when
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
-        int cellid = DemeSelectInjectionCell(target_deme, i);
-        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false); 
-        target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
+        int cellid = DemeSelectInjectionCell(target_deme, i);        
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false);
+       // target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
+      }
+
+      for(int i=0; i<target_deme.GetSize(); ++i) {
+        cPopulationCell& cell = target_deme.GetCell(i);
+        if(cell.IsOccupied()) {
+          target_deme.AddFounder(cell.GetOrganism()->GetBioGroup("genotype"), &cell.GetOrganism()->GetPhenotype());
+        }
       }
       
       // We either repeat this procedure in the source deme,
