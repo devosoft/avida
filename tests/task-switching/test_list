@@ -11,7 +11,7 @@ createdby = hjg          ; Who created the test
 email = hjg@.msu.edu  ; Email address for the test's creator
 
 [consistency]
-enabled = yes           ; Is this test a consistency test?
+enabled = no             ; Is this test a consistency test?
 long = no                ; Is this test a long test?
 
 [performance]
