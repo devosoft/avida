@@ -3356,7 +3356,7 @@ public:
         for (int i = 0; i < worldx; i++) {
           cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
           int target = -99;
-          if (cell.HasAvatar()) target = cell.GetRandAvatar()->GetForageTarget();
+          if (cell.HasAV()) target = cell.GetRandAV()->GetForageTarget();//***
           fp << target << " ";
         }
         fp << endl;

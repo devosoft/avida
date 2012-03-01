@@ -814,13 +814,13 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   fp << m_organism->GetOrgInterface().GetCellID() << " ";
   fp << m_organism->GetOrgInterface().GetAvatarCellID() << " ";
   if (!m_avatar) fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
-  else fp << m_organism->GetOrgInterface().GetAVFacedDir() << " ";
+  else fp << m_organism->GetOrgInterface().GetAvatarFacedDir() << " ";
   if (!m_avatar) fp << m_organism->IsNeighborCellOccupied() << " ";  
-  else fp << m_organism->HasAVNeighbor() << " ";
+  else fp << m_organism->GetOrgInterface().HasAvatarNeighbor() << " ";
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   tArray<double> cell_resource_levels;
   if (!m_avatar) cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
-  else cell_resource_levels = m_organism->GetOrgInterface().GetFacedAVResources(ctx);
+  else cell_resource_levels = m_organism->GetOrgInterface().GetFacedAvatarResources(ctx);
   int wall = 0;
   int hill = 0;
   for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
@@ -2926,9 +2926,9 @@ bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
   bool safe_passage = true;
   bool move_success = false;
   int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_avatar == 2) faced_range = m_organism->GetOrgInterface().GetFacedAVDataTerritory();
+  if (m_avatar == 2) faced_range = m_organism->GetOrgInterface().GetFacedAvatarDataTerritory();
   int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_avatar == 2) marked_update = m_organism->GetOrgInterface().GetFacedAVDataUpdate();
+  if (m_avatar == 2) marked_update = m_organism->GetOrgInterface().GetFacedAvatarDataUpdate();
   if (faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
       ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
         safe_passage = false;
@@ -2955,9 +2955,9 @@ bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
   bool safe_passage = true;
   bool move_success = false;
   int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_avatar == 2) faced_range = m_organism->GetOrgInterface().GetFacedAVDataTerritory();
+  if (m_avatar == 2) faced_range = m_organism->GetOrgInterface().GetFacedAvatarDataTerritory();
   int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_avatar == 2) marked_update = m_organism->GetOrgInterface().GetFacedAVDataUpdate();
+  if (m_avatar == 2) marked_update = m_organism->GetOrgInterface().GetFacedAvatarDataUpdate();
   if (m_organism->GetForageTarget() == -2 && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
       ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
@@ -3016,7 +3016,7 @@ bool cHardwareExperimental::Inst_GetCellPositionY(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   int compass_dir = m_organism->GetOrgInterface().GetFacedDir();
-  if (m_avatar) compass_dir = m_organism->GetOrgInterface().GetAVFacedDir();
+  if (m_avatar) compass_dir = m_organism->GetOrgInterface().GetAvatarFacedDir();
   setInternalValue(out_reg, compass_dir, true);
   return true;
 }
@@ -3077,10 +3077,10 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
 {
   tArray<double> current_res;
   if (!m_avatar) current_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) current_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) current_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   
   int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-  if (m_avatar) actualNeighborhoodSize = m_organism->GetAVNeighborhoodSize();
+  if (m_avatar) actualNeighborhoodSize = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
   
   int group = 0;  
   if(m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
@@ -3090,7 +3090,7 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
     m_organism->Rotate(1);
     tArray<double> faced_res;
     if (!m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-    else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAVResources(ctx);
+    else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAvatarResources(ctx);
     if (faced_res[group] > max_res) max_res = faced_res[group];
   } 
   
@@ -3098,7 +3098,7 @@ bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
     for(int i = 0; i < actualNeighborhoodSize; i++) {
       tArray<double> faced_res;
       if (!m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-      else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAVResources(ctx);
+      else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAvatarResources(ctx);
       if (faced_res[group] != max_res) m_organism->Rotate(1);
     }
   }
@@ -3114,10 +3114,10 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
 {
   tArray<double> current_res;
   if (!m_avatar) current_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) current_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) current_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   
   int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-  if (m_avatar) actualNeighborhoodSize = m_organism->GetAVNeighborhoodSize();
+  if (m_avatar) actualNeighborhoodSize = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
   
   int ft = m_organism->GetForageTarget(); 
   
@@ -3126,7 +3126,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
     m_organism->Rotate(1);
     tArray<double> faced_res;
     if (!m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-    else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAVResources(ctx);
+    else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAvatarResources(ctx);
     if (faced_res[ft] > max_res) max_res = faced_res[ft];
   } 
   
@@ -3134,7 +3134,7 @@ bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
     for(int i = 0; i < actualNeighborhoodSize; i++) {
       tArray<double> faced_res;
       if (!m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-      else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAVResources(ctx);
+      else if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAvatarResources(ctx);
       if (faced_res[ft] != max_res) m_organism->Rotate(1);
     }
   }
@@ -3163,11 +3163,11 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
   else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
   
   int rotates = m_organism->GetNeighborhoodSize();
-  if (m_avatar == 2) rotates = m_organism->GetAVNeighborhoodSize();
+  if (m_avatar == 2) rotates = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
   for (int i = 0; i < rotates; i++) {
     m_organism->Rotate(1);
     if (!m_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
-    else if (m_avatar && m_organism->GetOrgInterface().GetAVFacedDir() == correct_facing) break;
+    else if (m_avatar && m_organism->GetOrgInterface().GetAvatarFacedDir() == correct_facing) break;
   }
   return true;
 }
@@ -3178,9 +3178,9 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(rBX);
   
   int num_neighbors = m_organism->GetNeighborhoodSize();
-  if (m_avatar) num_neighbors = m_organism->GetAVNeighborhoodSize();
+  if (m_avatar) num_neighbors = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
   for (int i = 0; i < num_neighbors; i++) {
-    if ((!m_avatar && !m_organism->IsNeighborCellOccupied()) || (m_avatar == 2 && !m_organism->HasAVNeighbor())) { 
+    if ((!m_avatar && !m_organism->IsNeighborCellOccupied()) || (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighbor())) { 
       setInternalValue(reg_used, 1, true);      
       return true;
     }
@@ -3193,7 +3193,7 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_RotateX(cAvidaContext& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
-  if (m_avatar) num_neighbors = m_organism->GetAVNeighborhoodSize();
+  if (m_avatar) num_neighbors = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
   int rot_dir = 1;
   // If this organism has no neighbors, ignore rotate.
   if (num_neighbors == 0) return false;
@@ -3268,11 +3268,11 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
     
     int rotates = m_organism->GetNeighborhoodSize();
-    if (m_avatar == 2) rotates = m_organism->GetAVNeighborhoodSize();
+    if (m_avatar == 2) rotates = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
     for (int i = 0; i < rotates; i++) {
       m_organism->Rotate(-1);
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
-      else if (m_avatar && m_organism->GetOrgInterface().GetAVFacedDir() == correct_facing) break;
+      else if (m_avatar && m_organism->GetOrgInterface().GetAvatarFacedDir() == correct_facing) break;
     }
     return true;
   }
@@ -3337,11 +3337,11 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
     
     int rotates = m_organism->GetNeighborhoodSize();
-    if (m_avatar == 2) rotates = m_organism->GetAVNeighborhoodSize();
+    if (m_avatar == 2) rotates = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
     for (int i = 0; i < rotates; i++) {
       m_organism->Rotate(-1);
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
-      else if (m_avatar && m_organism->GetOrgInterface().GetAVFacedDir() == correct_facing) break;
+      else if (m_avatar && m_organism->GetOrgInterface().GetAvatarFacedDir() == correct_facing) break;
     }
     return true;
   }
@@ -3408,7 +3408,7 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   int reg_to_set = FindModifiedRegister(rBX);  
   double max_resource = 0.0;    
   // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
@@ -3425,7 +3425,7 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   const int req_reg = FindModifiedRegister(rBX);
@@ -3441,14 +3441,14 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   // if you requested a valid resource, we return values for that res
   if (res_sought != -1) {
     if (!m_avatar) faced_res = (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[res_sought]);
-    else if (m_avatar)  faced_res = (int) (m_organism->GetOrgInterface().GetFacedAVResources(ctx)[res_sought]); 
+    else if (m_avatar)  faced_res = (int) (m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[res_sought]); 
   }
   // otherwise, we sum across all the food resources in the cell
   else {
     for (int i = 0; i < cell_res.GetSize(); i++) {
       if (resource_lib.GetResource(i)->GetHabitat() == 0) {
         if (!m_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
-        else if (m_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i]); 
+        else if (m_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[i]); 
       }
     }
   }
@@ -3469,7 +3469,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
@@ -3499,7 +3499,7 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   const int req_reg = FindModifiedRegister(rBX);
   int res_sought = -1;
   // are you trying to sense a valid resource?
@@ -3513,13 +3513,13 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
   if (res_sought != -1) {
     res_amount = (int) (cell_res[res_sought]);
     if (!m_avatar) faced_res = (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[res_sought]);
-    else if (m_avatar)  faced_res = (int) (m_organism->GetOrgInterface().GetFacedAVResources(ctx)[res_sought]); 
+    else if (m_avatar)  faced_res = (int) (m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[res_sought]); 
   }
   else {
     for (int i = 0; i < cell_res.GetSize(); i++ ) {
       res_amount += (int) (cell_res[i]);
       if (!m_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
-      else if (m_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i]); 
+      else if (m_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[i]); 
     }
   }
   
@@ -3534,8 +3534,8 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   int cell = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_avatar) {
-    cell = m_organism->GetAvatarCellID();
-    facing = m_organism->GetOrgInterface().GetAVFacedDir();
+    cell = m_organism->GetOrgInterface().GetAvatarCellID();
+    facing = m_organism->GetOrgInterface().GetAvatarFacedDir();
   }
   return GoLook(ctx, facing, cell);
 }
@@ -3554,13 +3554,13 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   else if (search_dir == 2) search_dir = 1;
   
   int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
-  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
+  if (m_avatar) facing = m_organism->GetOrgInterface().GetAvatarFacedDir() + search_dir;
   if (facing == -1) facing = 7;
   else if (facing == 9) facing = 1;
   else if (facing == 8) facing = 0;
 
   int cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_avatar) cell = m_organism->GetAvatarCellID();
+  if (m_avatar) cell = m_organism->GetOrgInterface().GetAvatarCellID();
   return GoLook(ctx, facing, cell);
 }
 
@@ -3570,8 +3570,8 @@ bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
   int cell = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_avatar) { 
-    facing = m_organism->GetOrgInterface().GetAVFacedDir();
-    cell = m_organism->GetAvatarCellID();
+    facing = m_organism->GetOrgInterface().GetAvatarFacedDir();
+    cell = m_organism->GetOrgInterface().GetAvatarCellID();
   }
   return GoLook(ctx, facing, cell, true);
 }
@@ -3590,13 +3590,13 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   else if (search_dir == 2) search_dir = 1;
   
   int facing = m_organism->GetOrgInterface().GetFacedDir() + search_dir;
-  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir() + search_dir;
+  if (m_avatar) facing = m_organism->GetOrgInterface().GetAvatarFacedDir() + search_dir;
   if (facing == -1) facing = 7;
   else if (facing == 9) facing = 1;
   else if (facing == 8) facing = 0;
   
   int cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_avatar) cell = m_organism->GetAvatarCellID();
+  if (m_avatar) cell = m_organism->GetOrgInterface().GetAvatarCellID();
   return GoLook(ctx, facing, cell, true);
 }
 
@@ -3607,7 +3607,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   
   if (NUM_REGISTERS < 8) m_world->GetDriver().RaiseFatalException(-1, "Instruction look-ahead requires at least 8 registers");
   if (!m_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
-  else if (m_avatar && m_organism->GetAVNeighborhoodSize() == 0) return false;
+  else if (m_avatar && m_organism->GetOrgInterface().GetAvatarNumNeighbors() == 0) return false;
   
   // define our input (4) and output registers (8)
   lookRegAssign reg_defs;
@@ -3649,7 +3649,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   // get the destination cell resource levels
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // are there any barrier resources in the faced cell    
@@ -3725,9 +3725,8 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
       (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
     m_organism->SetForageTarget(prop_target);
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->ChangePredPreyAV(m_organism);
   }
   else m_organism->SetForageTarget(prop_target);
   
@@ -3792,9 +3791,8 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
       (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
     m_organism->SetForageTarget(prop_target);
-    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+    m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->ChangePredPreyAV(m_organism);
   }
   else m_organism->SetForageTarget(prop_target);
   
@@ -3816,7 +3814,7 @@ bool cHardwareExperimental::Inst_SenseOpinionResQuant(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   // check if this is a valid group
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
@@ -3831,12 +3829,12 @@ bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx)
 {
   tArray<double> cell_res;
   if (!m_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) cell_res = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(rBX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
-    if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAVResources(ctx)[opinion];
+    if (m_avatar) faced_res = m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[opinion];
     // return % change
     int res_diff = 0;
     if (cell_res[opinion] == 0) res_diff = (int) faced_res;
@@ -3860,7 +3858,7 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
     org_y = m_organism->GetOrgInterface().GetCellID() / worldx;
   }
   else if (m_avatar == 2) {
-    num_neighbors = m_organism->GetAVNeighborhoodSize();
+    num_neighbors = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
     org_x = m_organism->GetOrgInterface().GetAvatarCellID() % worldx;
     org_y = m_organism->GetOrgInterface().GetAvatarCellID() / worldx;
   }
@@ -3890,8 +3888,8 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
         if (cell->GetOrganism()->GetForageTarget() == -2) pred_count++;
       }
       else if(m_avatar == 2) { 
-        prey_count += cell->GetNumPreyAvatars();
-        pred_count += cell->GetNumPredAvatars();
+        prey_count += cell->GetNumPreyAV();
+        pred_count += cell->GetNumPredAV();
         if (cellid == m_organism->GetOrgInterface().GetAvatarCellID()) {
           if (m_organism->GetForageTarget() > -2) prey_count--;
           else pred_count--;
@@ -3920,14 +3918,14 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext& ctx)
     org_y = m_organism->GetOrgInterface().GetCellID() / worldx;
   }
   else if (m_avatar == 2) {
-    num_neighbors = m_organism->GetAVNeighborhoodSize();
+    num_neighbors = m_organism->GetOrgInterface().GetAvatarNumNeighbors();
     org_x = m_organism->GetOrgInterface().GetAvatarCellID() % worldx;
     org_y = m_organism->GetOrgInterface().GetAvatarCellID() / worldx;
   }
   if (num_neighbors == 0) return false;
   
   int facing = m_organism->GetOrgInterface().GetFacedDir();
-  if (m_avatar) facing = m_organism->GetOrgInterface().GetAVFacedDir();
+  if (m_avatar) facing = m_organism->GetOrgInterface().GetAvatarFacedDir();
   
   int max_x = org_x + 5;
   int min_x = org_x - 5;
@@ -3978,8 +3976,8 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext& ctx)
         if (cell->GetOrganism()->GetForageTarget() == -2) pred_count++;
       }
       else if(m_avatar == 2) { 
-        prey_count += cell->GetNumPreyAvatars();
-        pred_count += cell->GetNumPredAvatars();
+        prey_count += cell->GetNumPreyAV();
+        pred_count += cell->GetNumPredAV();
         if (cellid == m_organism->GetOrgInterface().GetAvatarCellID()) {
           if (m_organism->GetForageTarget() > -2) prey_count--;
           else pred_count--;
@@ -4011,7 +4009,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   // Set up res_change and max total
   tArray<double> res_count;
   if (!m_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
+  else if (m_avatar) res_count = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
   tArray<double> res_change(res_count.GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
@@ -4046,7 +4044,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   
   // Update resource counts to reflect res_change
   if (!m_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
-  else if (m_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
+  else if (m_avatar) m_organism->GetOrgInterface().UpdateAvatarResources(ctx, res_change);
   return true;
 }
 
@@ -4251,13 +4249,13 @@ bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
   
   // Read target group from the faced marked cell.
   int prop_group_id = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_avatar == 2) prop_group_id = m_organism->GetOrgInterface().GetFacedAVDataTerritory();
+  if (m_avatar == 2) prop_group_id = m_organism->GetOrgInterface().GetFacedAvatarDataTerritory();
   if (prop_group_id == -1) return false;
   
   // Check if the cell marking has expired.
   int current_update = m_world->GetStats().GetUpdate();
   int update_marked = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_avatar == 2) prop_group_id = m_organism->GetOrgInterface().GetFacedAVDataUpdate();
+  if (m_avatar == 2) prop_group_id = m_organism->GetOrgInterface().GetFacedAvatarDataUpdate();
   int expire_window = m_world->GetConfig().MARKING_EXPIRE_DATE.Get();
   if (current_update > (update_marked + expire_window)) return false;
   
@@ -4305,10 +4303,10 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
   if (m_avatar && m_avatar != 2) return false;
   cOrganism* neighbor = NULL;
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighbor()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighbor()) return false;
   
   if (!m_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_avatar == 2) neighbor = m_organism->GetOrgInterface().GetAVRandNeighbor();
+  else if (m_avatar == 2) neighbor = m_organism->GetOrgInterface().GetAvatarRandNeighbor();
   if (neighbor->IsDead())  return false;  
   
   const int out_reg = FindModifiedRegister(rBX);
@@ -4325,7 +4323,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighborPrey()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighborPrey()) return false;
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
@@ -4342,7 +4340,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
-      else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
+      else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
     }
     
     cOrganism* target = NULL;
@@ -4351,7 +4349,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
       // attacking other carnivores is handled differently (e.g. using fights or tolerance)
       if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
     }
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAvatarRandNeighborPrey();
     if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
@@ -4388,9 +4386,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_avatar && m_organism->GetOrgInterface().GetAvatarCellID() != -1) {
-        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
         m_organism->SetForageTarget(-2);
-       m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->ChangePredPreyAV(m_organism);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4412,7 +4409,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighborPrey()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighborPrey()) return false;
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
@@ -4429,7 +4426,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       if (!m_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
-      else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAVResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
+      else if (m_avatar == 2 && m_organism->GetOrgInterface().GetFacedAvatarResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
     }
     
     const int target_reg = FindModifiedRegister(rBX);
@@ -4456,7 +4453,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
     }    
     else if (m_avatar == 2) {
-      const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetAVNeighborPrey();
+      const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetAvatarNeighborPrey();
       bool target_match = false;
       int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
       int j = 0;
@@ -4515,9 +4512,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_avatar && m_organism->GetOrgInterface().GetAvatarCellID() != -1) {
-        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
         m_organism->SetForageTarget(-2);
-        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+        m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->ChangePredPreyAV(m_organism);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4547,14 +4543,14 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
     }
   }
   else if (m_avatar == 2) {
-    if (!m_organism->HasAVNeighbor()) return false;
+    if (!m_organism->GetOrgInterface().HasAvatarNeighbor()) return false;
     if (m_organism->GetForageTarget() != -2) { 
-      if (!m_organism->HasAVNeighborPrey()) return false;
-      else target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+      if (!m_organism->GetOrgInterface().HasAvatarNeighborPrey()) return false;
+      else target = m_organism->GetOrgInterface().GetAvatarRandNeighborPrey();
     }
     else if (m_organism->GetForageTarget() == -2) { 
-      if (!m_organism->HasAVNeighborPred()) return false;
-      else target = m_organism->GetOrgInterface().GetAVRandNeighborPred();
+      if (!m_organism->GetOrgInterface().HasAvatarNeighborPred()) return false;
+      else target = m_organism->GetOrgInterface().GetAvatarRandNeighborPred();
     }
   }
   if (target->IsDead()) return false;  
@@ -4607,14 +4603,14 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
     }
   }
   else if (m_avatar == 2) {
-    if (!m_organism->HasAVNeighbor()) return false;
+    if (!m_organism->GetOrgInterface().HasAvatarNeighbor()) return false;
     if (m_organism->GetForageTarget() != -2) { 
-      if (!m_organism->HasAVNeighborPrey()) return false;
-      else target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+      if (!m_organism->GetOrgInterface().HasAvatarNeighborPrey()) return false;
+      else target = m_organism->GetOrgInterface().GetAvatarRandNeighborPrey();
     }
     else if (m_organism->GetForageTarget() == -2) { 
-      if (!m_organism->HasAVNeighborPred()) return false;
-      else target = m_organism->GetOrgInterface().GetAVRandNeighborPred();
+      if (!m_organism->GetOrgInterface().HasAvatarNeighborPred()) return false;
+      else target = m_organism->GetOrgInterface().GetAvatarRandNeighborPred();
     }
   }
   if (target->IsDead()) return false;  
@@ -4652,14 +4648,14 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
     }
   }
   else if (m_avatar == 2) {
-    if (!m_organism->HasAVNeighbor()) return false;
+    if (!m_organism->GetOrgInterface().HasAvatarNeighbor()) return false;
     if (m_organism->GetForageTarget() != -2) { 
-      if (!m_organism->HasAVNeighborPrey()) return false;
-      else target = m_organism->GetOrgInterface().GetAVRandNeighborPrey();
+      if (!m_organism->GetOrgInterface().HasAvatarNeighborPrey()) return false;
+      else target = m_organism->GetOrgInterface().GetAvatarRandNeighborPrey();
     }
     else if (m_organism->GetForageTarget() == -2) { 
-      if (!m_organism->HasAVNeighborPred()) return false;
-      else target = m_organism->GetOrgInterface().GetAVRandNeighborPred();
+      if (!m_organism->GetOrgInterface().HasAvatarNeighborPred()) return false;
+      else target = m_organism->GetOrgInterface().GetAvatarRandNeighborPred();
     }
   }
   if (target->IsDead()) return false;  
@@ -4680,7 +4676,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   if (m_avatar && m_avatar != 2) return false;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;  
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighborPred()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighborPred()) return false;
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
@@ -4695,7 +4691,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   else {
     cOrganism* target = NULL;
     if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPred();
+    else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAvatarRandNeighborPred();
     if (target->IsDead()) return false;  
     if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
     
@@ -4748,11 +4744,11 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   if (m_avatar && m_avatar != 2) return false;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighborPred()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighborPred()) return false;
   
   cOrganism* target = NULL; 
   if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPred();
+  else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAvatarRandNeighborPred();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
@@ -4774,11 +4770,11 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   if (m_avatar && m_avatar != 2) return false;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;  
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighborPred()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighborPred()) return false;
   
   cOrganism* target = NULL; 
   if (!m_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAVRandNeighborPred();
+  else if (m_avatar == 2) target = m_organism->GetOrgInterface().GetAvatarRandNeighborPred();
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
@@ -4819,7 +4815,7 @@ bool cHardwareExperimental::Inst_MarkCell(cAvidaContext& ctx)
   if (m_avatar && m_avatar != 2) return false;  
   const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
   if (!m_avatar) m_organism->SetCellData(marking);
-  else if (m_avatar == 2) m_organism->SetAVCellData(marking, m_organism->GetID());  
+  else if (m_avatar == 2) m_organism->GetOrgInterface().SetAvatarCellData(marking, m_organism->GetID());  
   return true;
 }
 
@@ -4830,7 +4826,7 @@ bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext& ctx)
   if (m_organism->GetForageTarget() != -2) return false;
   const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
   if (!m_avatar) m_organism->SetCellData(marking);
-  else if (m_avatar == 2) m_organism->SetAVCellData(marking, m_organism->GetID());
+  else if (m_avatar == 2) m_organism->GetOrgInterface().SetAvatarCellData(marking, m_organism->GetID());
   return true;
 }
 
@@ -4851,12 +4847,12 @@ bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
     }
   }
   else if (m_avatar == 2) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedAVData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedAVDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedAVDataOrgID(), true);
+    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedAvatarData(), true);
+    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedAvatarDataUpdate(), true);
+    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedAvatarDataOrgID(), true);
     if (NUM_REGISTERS > 3) {
       const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedAVDataTerritory(), true);    
+      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedAvatarDataTerritory(), true);    
     }
   }
   return true;
@@ -4880,12 +4876,12 @@ bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext& ctx)
     }
   }
   else if (m_avatar == 2) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedAVData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedAVDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedAVDataOrgID(), true);
+    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedAvatarData(), true);
+    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedAvatarDataUpdate(), true);
+    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedAvatarDataOrgID(), true);
     if (NUM_REGISTERS > 3) {
       const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedAVDataTerritory(), true);    
+      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedAvatarDataTerritory(), true);    
     }
   }
   return true;
@@ -4908,9 +4904,8 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
     prop_target = m_organism->GetParentFT();
     if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
         (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
-      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
       m_organism->CopyParentFT();
-      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->ChangePredPreyAV(m_organism);
     }
     else m_organism->CopyParentFT();
   }
@@ -4922,11 +4917,11 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (m_avatar && m_avatar != 2) return false;  
   if (!m_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_avatar == 2 && !m_organism->HasAVNeighbor()) return false;
+  else if (m_avatar == 2 && !m_organism->GetOrgInterface().HasAvatarNeighbor()) return false;
   
   cOrganism* neighbor = NULL;
   if (!m_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_avatar == 2) neighbor = m_organism->GetOrgInterface().GetAVRandNeighbor();
+  else if (m_avatar == 2) neighbor = m_organism->GetOrgInterface().GetAvatarRandNeighbor();
   if (neighbor->IsDead())  return false;  
   
   // If there is no valid max genetic distance, go out to cousins.
@@ -5388,7 +5383,7 @@ cHardwareExperimental::lookOut cHardwareExperimental::GlobalVal(cAvidaContext& c
   if (id_sought != -1) {
     tArray<double> res_count;
     if (!m_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-    else if (m_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
+    else if (m_avatar) res_count = m_organism->GetOrgInterface().GetAvatarResources(ctx); 
     val = res_count[id_sought];
   }
   
@@ -5696,9 +5691,9 @@ cHardwareExperimental::lookOut cHardwareExperimental::WalkCells(cAvidaContext& c
       const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.GetY() * worldx + first_success_cell.GetX());
       cOrganism* first_org = first_good_cell->GetOrganism();
       if (m_avatar) {
-        if (search_type == 0) first_org = first_good_cell->GetRandAvatar();
-        else if (search_type > 0) first_org = first_good_cell->GetRandAVPred();
-        else if (search_type < 0) first_org = first_good_cell->GetRandAVPrey();
+        if (search_type == 0) first_org = first_good_cell->GetRandAV();
+        else if (search_type > 0) first_org = first_good_cell->GetRandPredAV();
+        else if (search_type < 0) first_org = first_good_cell->GetRandPreyAV();
       }
       stuff_seen.id_sought = first_org->GetID();
       stuff_seen.value = (int) first_org->GetPhenotype().GetCurBonus();
@@ -5797,20 +5792,20 @@ cHardwareExperimental::searchInfo cHardwareExperimental::TestCell(cAvidaContext&
     }
     if (m_avatar == 2) {
       if(search_type == 0) {
-        if (target_cell->HasAvatar()) {
-          returnInfo.amountFound += target_cell->GetNumAvatars();
+        if (target_cell->HasAV()) {
+          returnInfo.amountFound += target_cell->GetNumAV();
           returnInfo.has_edible = true;
         }
       }
       else if (search_type > 0){
-        if (target_cell->HasAVPred()) {
-          returnInfo.amountFound += target_cell->GetNumPredAvatars();
+        if (target_cell->HasPredAV()) {
+          returnInfo.amountFound += target_cell->GetNumPredAV();
           returnInfo.has_edible = true;
         }
       }
       else if (search_type < 0){
-        if (target_cell->HasAVPrey()) {
-          returnInfo.amountFound += target_cell->GetNumPreyAvatars();
+        if (target_cell->HasPreyAV()) {
+          returnInfo.amountFound += target_cell->GetNumPreyAV();
           returnInfo.has_edible = true;
         }
       }

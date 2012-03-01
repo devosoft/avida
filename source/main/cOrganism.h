@@ -225,27 +225,14 @@ public:
   int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
   int GetCellDataForagerType() { return m_interface->GetCellDataForagerType(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
-  void SetAVCellData(const int data, const int org_id) { m_interface->SetAVCellData(data, org_id); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
   int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
   int GetFacedCellDataTerritory() { return m_interface->GetFacedCellDataTerritory(); }
-  int GetFacedAVData() { return m_interface->GetFacedAVData(); }
-  int GetFacedAVDataOrgID() { return m_interface->GetFacedAVDataOrgID(); }
-  int GetFacedAVDataUpdate() { return m_interface->GetFacedAVDataUpdate(); }
-  int GetFacedAVDataTerritory() { return m_interface->GetFacedAVDataTerritory(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
-  tArray<cOrganism*> GetAVNeighbors() { return m_interface->GetAVNeighbors(); }
-  cOrganism* GetAVRandNeighbor() { return m_interface->GetAVRandNeighbor(); }
-  cOrganism* GetAVRandNeighborPrey() { return m_interface->GetAVRandNeighborPrey(); }
-  cOrganism* GetAVRandNeighborPred() { return m_interface->GetAVRandNeighborPred(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
-  bool HasAVNeighbor() { return m_interface->HasAVNeighbor(); }
-  bool HasAVNeighborPrey() { return m_interface->HasAVNeighborPrey(); }
-  bool HasAVNeighborPred() { return m_interface->HasAVNeighborPred(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
-  int GetAVNeighborhoodSize() { return m_interface->GetAVNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
   int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the faced cell of this organism.
   int GetFacedDir() { assert(m_interface); return m_interface->GetFacedDir(); }  // Returns the human interpretable facing of this org.
@@ -707,12 +694,6 @@ private:
 	// -------- Avatar support --------
 public:
   bool MoveAV(cAvidaContext& ctx);
-  int GetAvatarCellID() { return m_interface->GetAvatarCellID(); }
-  void SetAvatarCellID(int av_cell_id) { m_interface->SetAvatarCellID(av_cell_id); }
-  void SetAvatarFacing(int facing) { m_interface->SetAvatarFacing(facing); }
-  void SetAvatarFacedCell(int av_cell_id) { m_interface->SetAvatarFacedCell(av_cell_id); }
-  int GetAvatarFacedCellID() { return m_interface->GetAvatarFacedCellID(); }
-  int GetAVFacedDir() { assert(m_interface); return m_interface->GetAVFacedDir(); }  
     
 	// -------- Internal Support Methods --------
 private:

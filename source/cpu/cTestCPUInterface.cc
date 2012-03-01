@@ -38,73 +38,18 @@ const tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() const
   return empty;
 }
 
-cOrganism* cTestCPUInterface::GetNeighbor()
-{
-  return NULL;
-}
-
-cOrganism* cTestCPUInterface::GetAVRandNeighbor()
-{
-  return NULL;
-}
-
-cOrganism* cTestCPUInterface::GetAVRandNeighborPrey()
-{
-  return NULL;
-}
-
-cOrganism* cTestCPUInterface::GetAVRandNeighborPred()
-{
-  return NULL;
-}
-
-tArray<cOrganism*> cTestCPUInterface::GetAVNeighbors()
+tArray<cOrganism*> cTestCPUInterface::GetAvatarNeighbors()
 {
   tArray<cOrganism*> null_array;
   null_array.SetAll(NULL);
   return null_array;
 }
 
-tArray<cOrganism*> cTestCPUInterface::GetAVNeighborPrey()
+tArray<cOrganism*> cTestCPUInterface::GetAvatarNeighborPrey()
 {
   tArray<cOrganism*> null_array;
   null_array.SetAll(NULL);
   return null_array;
-}
-
-bool cTestCPUInterface::IsNeighborCellOccupied() {
-  return false;
-}
-
-bool cTestCPUInterface::HasAVNeighbor() {
-  return false;
-}
-
-bool cTestCPUInterface::HasAVNeighborPrey() {
-  return false;
-}
-
-bool cTestCPUInterface::HasAVNeighborPred() {
-  return false;
-}
-
-int cTestCPUInterface::GetNumNeighbors()
-{
-  return 0;
-}
-
-int cTestCPUInterface::GetAVNumNeighbors()
-{
-  return 0;
-}
-
-void cTestCPUInterface::GetNeighborhoodCellIDs(tArray<int>& list)
-{
-  
-}
-
-void cTestCPUInterface::Rotate(int direction)
-{
 }
 
 int cTestCPUInterface::GetInputAt(int& input_pointer)
@@ -132,9 +77,9 @@ const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ct
   return m_testcpu->GetFacedCellResources(ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetFacedAVResources(cAvidaContext& ctx) 
+const tArray<double>& cTestCPUInterface::GetFacedAvatarResources(cAvidaContext& ctx) 
 {
-  return m_testcpu->GetFacedAVResources(ctx); 
+  return m_testcpu->GetFacedAvatarResources(ctx); 
 }
 
 const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
@@ -147,9 +92,9 @@ const tArray<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaCon
   return m_testcpu->GetCellResources(cell_id, ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetAVResources(cAvidaContext& ctx) 
+const tArray<double>& cTestCPUInterface::GetAvatarResources(cAvidaContext& ctx) 
 {
-  return m_testcpu->GetAVResources(ctx); 
+  return m_testcpu->GetAvatarResources(ctx); 
 }
 
 const tArray<double>& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
@@ -167,17 +112,9 @@ void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>
    m_testcpu->ModifyResources(ctx, res_change);
 }
 
-void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change)
+void cTestCPUInterface::UpdateAvatarResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
   m_testcpu->ModifyResources(ctx, res_change);
-}
-
-void cTestCPUInterface::Die(cAvidaContext& ctx) 
-{
-}
-
-void cTestCPUInterface::KillCellID(int target, cAvidaContext& ctx) 
-{
 }
 
 void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
@@ -187,28 +124,14 @@ void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
   // record the probability it used.
 }
 
-void cTestCPUInterface::SpawnDeme(cAvidaContext& ctx)
-{
-}
-
 int cTestCPUInterface::ReceiveValue()
 {
   return m_testcpu->GetReceiveValue();
 }
 
-void cTestCPUInterface::SellValue(const int data, const int label, const int sell_price, const int org_id)
-{
-
-}
-
 int cTestCPUInterface::BuyValue(const int label, const int buy_price)
 {
 	return m_testcpu->GetReceiveValue();
-}
-
-bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
-{
-  return false;
 }
 
 bool cTestCPUInterface::UpdateMerit(double new_merit)

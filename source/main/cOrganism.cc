@@ -421,7 +421,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
 //  const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & avatar_resource_count = m_interface->GetAVResources(ctx); 
+  const tArray<double> & avatar_resource_count = m_interface->GetAvatarResources(ctx); 
 //  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
   const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
@@ -430,10 +430,10 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   
   // If tasks require us to consider neighbor inputs, collect them...
   if (m_world->GetEnvironment().UseNeighborInput()) {
-    const int num_neighbors = m_interface->GetAVNumNeighbors();
+    const int num_neighbors = m_interface->GetAvatarNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAVNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAvatarNeighbors();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_input_list.Push( &(cur_neighbors[i]->m_input_buf) );
@@ -443,10 +443,10 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   
   // If tasks require us to consider neighbor outputs, collect them...
   if (m_world->GetEnvironment().UseNeighborOutput()) {
-    const int num_neighbors = m_interface->GetAVNumNeighbors();
+    const int num_neighbors = m_interface->GetAvatarNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAVNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAvatarNeighbors();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_output_list.Push( &(cur_neighbors[i]->m_output_buf) );
@@ -472,7 +472,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
-  int cell_id=GetAvatarCellID();
+  int cell_id = m_interface->GetAvatarCellID();
   if (cell_id_lists.GetSize())
   {
 	  for (int i=0; i<cell_id_lists.GetSize(); i++)
@@ -514,7 +514,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
 			GetPhenotype().SetToDie();
 		}
   }
-  m_interface->UpdateAVResources(ctx, avatar_res_change);
+  m_interface->UpdateAvatarResources(ctx, avatar_res_change);
   //update deme resources
 //  m_interface->UpdateDemeResources(ctx, deme_res_change);
   
@@ -856,7 +856,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     if (habitat_required != -1) {
       tArray<double> resource_count;
       if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
-      else resource_count = m_interface->GetAVResources(ctx);
+      else resource_count = m_interface->GetAvatarResources(ctx);
       const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
       const double required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
       bool has_req_res = false;
@@ -1572,11 +1572,10 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   assert(m_interface);
   if (m_is_dead) return false;  
   
-  int fromcellID = GetAvatarCellID();         // facing unique to this avatar
-  int destcellID = GetAvatarFacedCellID();    // facing unique to this avatar
+  int fromcellID = m_interface->GetAvatarCellID();         // facing unique to this avatar
+  int destcellID = m_interface->GetAvatarFacedCellID();    // facing unique to this avatar
   int true_cell = GetCellID();            // where the real org is...in case we need to kill it
-  
-  int facing = GetAVFacedDir();
+  int facing = m_interface->GetAvatarFacedDir();
   
   // Actually perform the move
   if (m_interface->MoveAvatar(ctx, fromcellID, destcellID, true_cell)) {
@@ -1603,8 +1602,8 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
         m_northerly = m_northerly - 1; 
         m_easterly = m_easterly - 1;
       }      
-      SetAvatarCellID(destcellID);
-      SetAvatarFacedCell(destcellID);
+      m_interface->SetAvatarCellID(destcellID);
+      m_interface->SetAvatarFacedCell(destcellID);
     }
     else return false;                  
   }

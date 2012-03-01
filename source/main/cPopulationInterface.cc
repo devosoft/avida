@@ -64,6 +64,9 @@ cPopulationInterface::cPopulationInterface(cWorld* world)
 , m_num_task_cells(0)
 , m_hgt_support(NULL)
 {
+  if (world->GetConfig().USE_AVATARS.Get() && !world->GetConfig().NEURAL_NETWORKING.Get()) {
+    InitPredPreyAV(-1, 0, -1);
+  }
 }
 
 cPopulationInterface::~cPopulationInterface() {
@@ -162,19 +165,19 @@ int cPopulationInterface::GetFacedCellDataTerritory() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataTerritory();
 }
 
-int cPopulationInterface::GetFacedAVData() {
+int cPopulationInterface::GetFacedAvatarData() {
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellData();
 }
 
-int cPopulationInterface::GetFacedAVDataOrgID() {
+int cPopulationInterface::GetFacedAvatarDataOrgID() {
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataOrgID();
 }
 
-int cPopulationInterface::GetFacedAVDataUpdate() {
+int cPopulationInterface::GetFacedAvatarDataUpdate() {
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataUpdate();
 }
 
-int cPopulationInterface::GetFacedAVDataTerritory() {
+int cPopulationInterface::GetFacedAvatarDataTerritory() {
   return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellDataTerritory();
 }
 
@@ -183,7 +186,7 @@ void cPopulationInterface::SetCellData(const int newData) {
   cell.SetCellData(newData, cell.GetOrganism()->GetID());
 }
 
-void cPopulationInterface::SetAVCellData(const int newData, const int org_id) {
+void cPopulationInterface::SetAvatarCellData(const int newData, const int org_id) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_av_cell_id);
   cell.SetCellData(newData, org_id);
 }
@@ -203,29 +206,29 @@ cOrganism* cPopulationInterface::GetNeighbor()
   return cell.ConnectionList().GetFirst()->GetOrganism();
 }
 
-cOrganism* cPopulationInterface::GetAVRandNeighbor()
+cOrganism* cPopulationInterface::GetAvatarRandNeighbor()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAvatar();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAV();
 }
 
-cOrganism* cPopulationInterface::GetAVRandNeighborPrey()
+cOrganism* cPopulationInterface::GetAvatarRandNeighborPrey()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAVPrey();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandPreyAV();
 }
 
-cOrganism* cPopulationInterface::GetAVRandNeighborPred()
+cOrganism* cPopulationInterface::GetAvatarRandNeighborPred()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandAVPred();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetRandPredAV();
 }
 
-tArray<cOrganism*> cPopulationInterface::GetAVNeighbors()
+tArray<cOrganism*> cPopulationInterface::GetAvatarNeighbors()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAvatars();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAVs();
 }
 
-tArray<cOrganism*> cPopulationInterface::GetAVNeighborPrey()
+tArray<cOrganism*> cPopulationInterface::GetAvatarNeighborPrey()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellAVPrey();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).GetCellPreyAVs();
 }
 
 bool cPopulationInterface::IsNeighborCellOccupied() {
@@ -233,19 +236,19 @@ bool cPopulationInterface::IsNeighborCellOccupied() {
   return cell.ConnectionList().GetFirst()->IsOccupied();
 }
 
-bool cPopulationInterface::HasAVNeighbor()
+bool cPopulationInterface::HasAvatarNeighbor()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAvatar();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAV();
 }
 
-bool cPopulationInterface::HasAVNeighborPrey()
+bool cPopulationInterface::HasAvatarNeighborPrey()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAVPrey();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasPreyAV();
 }
 
-bool cPopulationInterface::HasAVNeighborPred()
+bool cPopulationInterface::HasAvatarNeighborPred()
 {
-  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasAVPred();
+  return m_world->GetPopulation().GetCell(m_av_cell_faced).HasPredAV();
 }
 
 int cPopulationInterface::GetNumNeighbors()
@@ -256,10 +259,10 @@ int cPopulationInterface::GetNumNeighbors()
   return cell.ConnectionList().GetSize();
 }
 
-int cPopulationInterface::GetAVNumNeighbors()
+int cPopulationInterface::GetAvatarNumNeighbors()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_av_cell_id);
-  assert(cell.HasAvatar());
+  assert(cell.HasAV());
   
   return cell.ConnectionList().GetSize();
 }
@@ -300,7 +303,7 @@ int cPopulationInterface::GetFacedDir()
 	return cell.GetFacedDir();
 }
 
-int cPopulationInterface::GetAVFacedDir()
+int cPopulationInterface::GetAvatarFacedDir()
 {
 	return m_av_facing;
 }
@@ -320,7 +323,7 @@ void cPopulationInterface::Rotate(int direction)
 
   if (m_world->GetConfig().USE_AVATARS.Get()) {
     cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_av_cell_id);
-    assert(av_cell.HasAvatar());
+    assert(av_cell.HasAV());
     int org_facing = av_cell.GetFacedDir();
     // rotate the avatar cell to match the direction of the true org cell
     for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
@@ -361,7 +364,7 @@ const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx)
   return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx) 
+const tArray<double>& cPopulationInterface::GetAvatarResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(m_av_cell_id, ctx); 
 }
@@ -371,7 +374,7 @@ const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext&
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetFacedAVResources(cAvidaContext& ctx) 
+const tArray<double>& cPopulationInterface::GetFacedAvatarResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(m_world->GetPopulation().GetCell(m_av_cell_faced).GetID(), ctx); 
 }
@@ -426,7 +429,7 @@ void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<doub
   return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_cell_id);
 }
 
-void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change)
+void cPopulationInterface::UpdateAvatarResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
   return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_av_cell_id);
 }
@@ -585,7 +588,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
       lost = true;
       cOrganism* sender = GetOrganism();
       for (int i = 0; i < rcell.GetNumAVInputs(); i++) {
-        if (sender != rcell.GetCellInputAV()[i]) lost = false;
+        if (sender != rcell.GetCellInputAVs()[i]) lost = false;
       }
     }
   }
@@ -611,7 +614,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     // If using neural networking avatars, message must be sent to all orgs with input avatars in the cell. @JJB**
     cOrganism* sender = GetOrganism();
     for (int i = 0; i < rcell.GetNumAVInputs(); i++) { //**
-      cOrganism* recvr = rcell.GetCellInputAV()[i];
+      cOrganism* recvr = rcell.GetCellInputAVs()[i];
       assert(recvr != 0);
       if ((sender != recvr) || m_world->GetConfig().SELF_COMMUNICATION.Get()) {
         recvr->ReceiveMessage(msg);
@@ -1292,9 +1295,9 @@ bool cPopulationInterface::MoveAvatar(cAvidaContext& ctx, int src_id, int dest_i
 {
   bool success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
   if (success) { 
-    assert (m_world->GetPopulation().GetCell(src_id).HasAvatar());
-    m_world->GetPopulation().GetCell(src_id).RemoveAvatar(GetOrganism());
-    m_world->GetPopulation().GetCell(dest_id).AddAvatar(GetOrganism());
+    assert (m_world->GetPopulation().GetCell(src_id).HasAV());
+    m_world->GetPopulation().GetCell(src_id).RemovePredPreyAV(GetOrganism());
+    m_world->GetPopulation().GetCell(dest_id).AddPredPreyAV(GetOrganism());
   }
   return success;
 }
@@ -1581,11 +1584,7 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
 void cPopulationInterface::AddAV(int av_cell_id, int av_facing, bool input, bool output)
 {
   // Add new avatar to m_avatars
-  io_avatar tmpAV;
-  tmpAV.av_cell_id = av_cell_id;
-  tmpAV.av_facing = av_facing;
-  tmpAV.input = input;
-  tmpAV.output = output;
+  io_avatar tmpAV(av_cell_id, av_facing, input, output);
   m_avatars.Push(tmpAV);
 
   // If this is an input avatar add to the target cell
@@ -1597,6 +1596,12 @@ void cPopulationInterface::AddAV(int av_cell_id, int av_facing, bool input, bool
   if (output) {
     m_world->GetPopulation().GetCell(av_cell_id).AddOutputAV(GetOrganism());
   }
+}
+
+void cPopulationInterface::InitPredPreyAV(int av_cell_id, int av_facing, int av_faced_cell)
+{
+  io_avatar tmpAV(av_cell_id, av_facing, av_faced_cell);
+  m_avatars.Push(tmpAV);
 }
 
 void cPopulationInterface::RemoveAllAV()

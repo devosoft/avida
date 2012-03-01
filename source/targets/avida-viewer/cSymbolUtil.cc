@@ -113,8 +113,8 @@ char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
 
 char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
 {
-  if (cell.HasAvatar() == false) return ' ';
-  const int org_target = cell.GetRandAvatar()->GetForageTarget();
+  if (cell.HasAV() == false) return ' ';
+  const int org_target = cell.GetRandAV()->GetForageTarget();//***
   
   if (org_target == -2) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
   else if (org_target == -1) return '1';              //no target = bold-white
@@ -123,8 +123,8 @@ char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
 
 char cSymbolUtil::GetAVForagerSymbol(const cPopulationCell & cell)
 {
-  if (cell.HasAvatar() == false) return ' ';
-  const int org_target = cell.GetRandAvatar()->GetForageTarget();
+  if (cell.HasAV() == false) return ' ';
+  const int org_target = cell.GetRandAV()->GetForageTarget();//***
   
   if (org_target == -2) return 'P';
   else if (org_target == -1) return '-';

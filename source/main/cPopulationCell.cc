@@ -296,82 +296,7 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
   return uptakeAmount;
 }
 
-void cPopulationCell::AddAvatar(cOrganism* org) 
-{
-  if (org->GetForageTarget() == -2) m_av_predators.Push(org);
-  else m_av_prey.Push(org);
-}
-
-void cPopulationCell::RemoveAvatar(cOrganism* org) 
-{
-  assert (HasAvatar());
-  if (org->GetForageTarget() == -2) {
-    for (int i = 0; i < m_av_predators.GetSize(); i++) {
-      if (m_av_predators[i] == org) {
-        unsigned int last = m_av_predators.GetSize() - 1;
-        m_av_predators.Swap(i, last);
-        m_av_predators.Pop();
-        break;
-      }
-    }
-  }
-  else {
-    for (int i = 0; i < m_av_prey.GetSize(); i++) {
-      if (m_av_prey[i] == org) {
-        unsigned int last = m_av_prey.GetSize() - 1;
-        m_av_prey.Swap(i, last);
-        m_av_prey.Pop();
-        break;
-      }
-    }
-  }
-}
-
-tArray<cOrganism*> cPopulationCell::GetCellAvatars()
-{
-  assert (HasAvatar());
-  tArray<cOrganism*> avatar_orgs;
-  avatar_orgs.Resize(m_av_prey.GetSize() + m_av_predators.GetSize());
-  for (int i = 0; i < avatar_orgs.GetSize(); i++) {
-    avatar_orgs[i] = m_av_prey[i];
-    avatar_orgs[i + m_av_prey.GetSize()] = m_av_predators[i];
-  }
-  return avatar_orgs;
-}
-
-tArray<cOrganism*> cPopulationCell::GetCellAVPrey()
-{
-  assert (HasAVPrey());
-  tArray<cOrganism*> avatar_prey;
-  avatar_prey.Resize(m_av_prey.GetSize());
-  for (int i = 0; i < avatar_prey.GetSize(); i++) {
-    avatar_prey[i] = m_av_prey[i];
-  }
-  return avatar_prey;
-}
-
-cOrganism* cPopulationCell::GetRandAvatar() const
-{
-  assert (HasAvatar());
-  if (m_av_prey.GetSize() != 0 && (m_world->GetRandom().GetUInt(0,2) == 0 || m_av_predators.GetSize() == 0)) { 
-    return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
-  }
-  else return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
-}
-
-cOrganism* cPopulationCell::GetRandAVPred() const
-{
-  assert (HasAvatar());
-  return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
-}
-
-cOrganism* cPopulationCell::GetRandAVPrey() const
-{
-  assert (HasAvatar());
-  return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
-}
-
-// -------- Neural support -------- @JJB**
+// -------- Avatar support -------- @JJB**
 void cPopulationCell::AddInputAV(cOrganism* org)
 {
   m_av_inputs.Push(org);
@@ -382,12 +307,22 @@ void cPopulationCell::AddOutputAV(cOrganism* org)
   m_av_outputs.Push(org);
 }
 
+void cPopulationCell::AddPredPreyAV(cOrganism* org)
+{
+  // Add predator..
+  if (org->GetForageTarget() == -2) {
+    m_av_inputs.Push(org);
+  }
+  // Add prey..
+  else m_av_outputs.Push(org);
+}
+
 void cPopulationCell::RemoveInputAV(cOrganism* org)
 {
   assert(HasInputAV());
-  for (int i = 0; i < m_av_inputs.GetSize(); i++) {
+  for (int i = 0; i < GetNumAVInputs(); i++) {
     if (m_av_inputs[i] == org) {
-      unsigned int last = m_av_inputs.GetSize() - 1;
+      unsigned int last = GetNumAVInputs() - 1;
       m_av_inputs.Swap(i, last);
       m_av_inputs.Pop();
       break;
@@ -398,12 +333,38 @@ void cPopulationCell::RemoveInputAV(cOrganism* org)
 void cPopulationCell::RemoveOutputAV(cOrganism* org)
 {
   assert(HasOutputAV());
-  for (int i = 0; i < m_av_outputs.GetSize(); i++) {
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
     if (m_av_outputs[i] == org) {
-      unsigned int last = m_av_outputs.GetSize() - 1;
+      unsigned int last = GetNumAVOutputs() - 1;
       m_av_outputs.Swap(i, last);
       m_av_outputs.Pop();
       break;
+    }
+  }
+}
+
+void cPopulationCell::RemovePredPreyAV(cOrganism* org)
+{
+  // Remove predator..
+  if (org->GetForageTarget() == -2) {
+    for (int i = 0; i < GetNumPredAV(); i++) {
+      if (m_av_inputs[i] == org) {
+        unsigned int last = GetNumPredAV() - 1;
+        m_av_inputs.Swap(i, last);
+        m_av_inputs.Pop();
+        break;
+      }
+    }
+  }
+  // Remove prey..
+  else {
+    for (int i = 0; i < GetNumPreyAV(); i++) {
+      if (m_av_outputs[i] == org) {
+        unsigned int last = GetNumPreyAV() - 1;
+        m_av_outputs.Swap(i, last);
+        m_av_outputs.Pop();
+        break;
+      }
     }
   }
 }
@@ -416,7 +377,7 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
   // If org can talk to itself, any avatar in the cell works
   if (m_world->GetConfig().SELF_COMMUNICATION.Get()) return true;
   // If no self-messaging, is there an output avatar for another organism in the cell
-  for (int i = 0; i < m_av_outputs.GetSize(); i++) {
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
     if (m_av_outputs[i] != org) {
       return true;
     }
@@ -424,26 +385,82 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
   return false;
 }
 
-tArray<cOrganism*> cPopulationCell::GetCellInputAV()
+cOrganism* cPopulationCell::GetRandAV() const
+{
+  assert(HasAV());
+  if (HasPreyAV() && (m_world->GetRandom().GetUInt(0,2) == 0 || !HasPredAV())) {
+    return m_av_outputs[m_world->GetRandom().GetUInt(0, GetNumPreyAV())];
+  }
+  else return m_av_inputs[m_world->GetRandom().GetUInt(0, GetNumPredAV())];
+}
+
+cOrganism* cPopulationCell::GetRandPredAV() const
+{
+  assert(HasAV());
+  return m_av_inputs[m_world->GetRandom().GetUInt(0, GetNumPredAV())];
+}
+
+cOrganism* cPopulationCell::GetRandPreyAV() const
+{
+  assert(HasAV());
+  return m_av_outputs[m_world->GetRandom().GetUInt(0, GetNumPreyAV())];
+}
+
+// Call after the forage target has already been changed
+void cPopulationCell::ChangePredPreyAV(cOrganism* org)
+{
+  // Switch prey to predator..
+  if (org->GetForageTarget() == -2) {
+    RemoveOutputAV(org);
+    AddInputAV(org);
+  }
+  // Switch predator to prey..
+  else {
+    RemoveInputAV(org);
+    AddOutputAV(org);
+  }
+}
+
+tArray<cOrganism*> cPopulationCell::GetCellInputAVs()
 {
   assert(HasInputAV());
   tArray<cOrganism*> avatar_inputs;
-  avatar_inputs.Resize(m_av_inputs.GetSize());
-  for (int i = 0; i < avatar_inputs.GetSize(); i++) {
+  avatar_inputs.Resize(GetNumAVInputs());
+  for (int i = 0; i < GetNumAVInputs(); i++) {
     avatar_inputs[i] = m_av_inputs[i];
   }
   return avatar_inputs;
 }
 
-tArray<cOrganism*> cPopulationCell::GetCellOutputAV()
+tArray<cOrganism*> cPopulationCell::GetCellOutputAVs()
 {
   assert(HasOutputAV());
   tArray<cOrganism*> avatar_outputs;
-  avatar_outputs.Resize(m_av_outputs.GetSize());
-  for (int i = 0; i < avatar_outputs.GetSize(); i++) {
+  avatar_outputs.Resize(GetNumAVOutputs());
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
     avatar_outputs[i] = m_av_outputs[i];
   }
   return avatar_outputs;
+}
+
+tArray<cOrganism*> cPopulationCell::GetCellAVs()
+{
+  assert(HasAV());
+  tArray<cOrganism*> avatars;
+  const int num_outputs = GetNumAVOutputs();
+  avatars.Resize(GetNumAV());
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
+    avatars[i] = m_av_outputs[i];
+  }
+  for (int i = 0; i < GetNumAVInputs(); i++) {
+    avatars[i + num_outputs] = m_av_inputs[i];
+  }
+  return avatars;
+}
+
+tArray<cOrganism*> cPopulationCell::GetCellPreyAVs()
+{
+  return GetCellOutputAVs();
 }
 
 /*! Diffuse genome fragments from this cell to its neighbors.

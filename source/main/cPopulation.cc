@@ -454,7 +454,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) {
       parent_alive = false;
-      if (m_world->GetConfig().USE_AVATARS.Get()) GetCell(parent_organism->GetAvatarCellID()).RemoveAvatar(parent_organism);
+      if (m_world->GetConfig().USE_AVATARS.Get()) GetCell(parent_organism->GetOrgInterface().GetAvatarCellID()).RemovePredPreyAV(parent_organism);
     }
     const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
     if (mut_source == 1) {
@@ -588,7 +588,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         offspring_array[i]->GetOrgInterface().SetAvatarCellID(avatar_target_cell);
         offspring_array[i]->GetOrgInterface().SetAvatarFacing(offspring_array[i]->GetOrgInterface().GetFacedDir());
         offspring_array[i]->GetOrgInterface().SetAvatarFacedCell(avatar_target_cell);
-        GetCell(avatar_target_cell).AddAvatar(offspring_array[i]);
+        GetCell(avatar_target_cell).AddPredPreyAV(offspring_array[i]);
       }
     }
   }
@@ -1192,8 +1192,8 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   m_world->GetStats().RecordDeath();
 
   // orgs killed during birth wont have avatars
-  if (m_world->GetConfig().USE_AVATARS.Get() && organism->GetAvatarCellID() != -1) {
-    GetCell(organism->GetAvatarCellID()).RemoveAvatar(organism);
+  if (m_world->GetConfig().USE_AVATARS.Get() && organism->GetOrgInterface().GetAvatarCellID() != -1) {
+    GetCell(organism->GetOrgInterface().GetAvatarCellID()).RemovePredPreyAV(organism);
   }
 
   // If neural networking remove all input/output avatars @JJB**
@@ -5267,7 +5267,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         new_organism->GetOrgInterface().SetAvatarCellID(avatar_cell);
         new_organism->GetOrgInterface().SetAvatarFacing(new_organism->GetOrgInterface().GetFacedDir());
         new_organism->GetOrgInterface().SetAvatarFacedCell(avatar_cell);
-        GetCell(avatar_cell).AddAvatar(new_organism);
+        GetCell(avatar_cell).AddPredPreyAV(new_organism);
       }
     }
   }
@@ -5404,10 +5404,10 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
   if(m_world->GetConfig().USE_AVATARS.Get()) {
-    cell_array[cell_id].GetOrganism()->SetAvatarCellID(cell_id);
-    cell_array[cell_id].GetOrganism()->SetAvatarFacing(cell_array[cell_id].GetOrganism()->GetFacedDir());
-    cell_array[cell_id].GetOrganism()->SetAvatarFacedCell(cell_id);
-    GetCell(cell_id).AddAvatar(cell_array[cell_id].GetOrganism());
+    cell_array[cell_id].GetOrganism()->GetOrgInterface().SetAvatarCellID(cell_id);
+    cell_array[cell_id].GetOrganism()->GetOrgInterface().SetAvatarFacing(cell_array[cell_id].GetOrganism()->GetFacedDir());
+    cell_array[cell_id].GetOrganism()->GetOrgInterface().SetAvatarFacedCell(cell_id);
+    GetCell(cell_id).AddPredPreyAV(cell_array[cell_id].GetOrganism());
   }
   if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
 }
@@ -7127,8 +7127,8 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
 
 int cPopulation::PlaceAvatar(cOrganism* parent)
 {
-  int avatar_target_cell = parent->GetAvatarCellID();
-  const int parent_facing = parent->GetAVFacedDir();
+  int avatar_target_cell = parent->GetOrgInterface().GetAvatarCellID();
+  const int parent_facing = parent->GetOrgInterface().GetAvatarFacedDir();
   const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
   if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(0, world_x * world_y);
   else if (avatar_birth == 2) {
