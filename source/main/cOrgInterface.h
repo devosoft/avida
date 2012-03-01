@@ -194,7 +194,11 @@ public:
   virtual void MakeGroup() = 0;
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
-    
+  virtual int NumberGroupFemales(int group_id) = 0;
+  virtual int NumberGroupMales(int group_id) = 0;
+  virtual int NumberGroupJuvs(int group_id) = 0;
+  virtual void ChangeGroupMatingTypes(int group_id, int old_type, int new_type) = 0;  
+  
   virtual int IncTolerance(int toleranceType, cAvidaContext &ctx) = 0;
   virtual int DecTolerance(int toleranceType, cAvidaContext &ctx) = 0;
   virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;

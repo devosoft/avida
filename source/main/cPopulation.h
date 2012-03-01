@@ -99,6 +99,8 @@ private:
 	
   // Group formation information
   std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
+  std::map<int, int> m_group_females; //<! Maps the group id to the number of females in the group
+  std::map<int, int> m_group_males; //<! Maps the group id to the number of males in the group
 
   int m_hgt_resid; //!< HGT resource ID.
   
@@ -328,6 +330,10 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   // Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
+  int NumberGroupFemales(int group_id);
+  int NumberGroupMales(int group_id);
+  int NumberGroupJuvs(int group_id);
+  void ChangeGroupMatingTypes(int group_id, int old_type, int new_type);
   // Get the group information
   map<int, int> GetFormedGroups() { return m_groups; }
 

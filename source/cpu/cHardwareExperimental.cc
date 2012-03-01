@@ -5030,8 +5030,8 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    
    int toleranceType = -1;
    if (tolerance_to_modify == rAX) toleranceType = 0;
-   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
-   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
+   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
+   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
    
    // Not a recognized register
    if (toleranceType == -1) return false;
@@ -5069,8 +5069,8 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   
   int toleranceType = -1;
   if (tolerance_to_modify == rAX) toleranceType = 0;
-  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
-  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
+  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
+  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
   
   // Not a recognized register
   if (toleranceType == -1) return false;

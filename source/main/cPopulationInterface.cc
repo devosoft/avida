@@ -1369,6 +1369,26 @@ int cPopulationInterface::NumberOfOrganismsInGroup(int group_id)
   return m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
 }
 
+int cPopulationInterface::NumberGroupFemales(int group_id)
+{
+  return m_world->GetPopulation().NumberGroupFemales(group_id);
+}
+
+int cPopulationInterface::NumberGroupMales(int group_id)
+{
+  return m_world->GetPopulation().NumberGroupMales(group_id);
+}
+
+int cPopulationInterface::NumberGroupJuvs(int group_id)
+{
+  return m_world->GetPopulation().NumberGroupJuvs(group_id);
+}
+
+void cPopulationInterface::ChangeGroupMatingTypes(int group_id, int old_type, int new_type)  
+{
+  m_world->GetPopulation().ChangeGroupMatingTypes(group_id, old_type, new_type);  
+}
+
 /* Increases tolerance towards the addition of members to the group.
  * toleranceType:
  *    0: increases tolerance towards immigrants
@@ -1548,7 +1568,7 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
   int tol_own;
   int tol_others;
   
-  if(m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) {
+  if(m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) {
     offspring_own_odds = 1.0;
     offspring_others_odds = 1.0;
     tol_own = tol_max;

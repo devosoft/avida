@@ -951,6 +951,9 @@ public:
   // Places in BX register, the number of organisms in the group +1 or -1, wrapping from the top back to group 1
   // skipping 0, based on whether the nop register is positive or negative. @JJB
   bool Inst_NumberNextGroup(cAvidaContext& ctx);
+  bool Inst_NumFemalesNextGroup (cAvidaContext& ctx);
+  bool Inst_NumMalesNextGroup (cAvidaContext& ctx);
+  bool Inst_NumJuvsNextGroup (cAvidaContext& ctx);
   // Increases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
   bool Inst_IncTolerance(cAvidaContext& ctx);
   // Decreases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB

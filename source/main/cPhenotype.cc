@@ -58,7 +58,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , tolerance_immigrants()        // @JJB
 , tolerance_offspring_own()     // @JJB
 , tolerance_offspring_others()  // @JJB
-, intolerances( (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) ? 1 : 3 ) // @JJB
+, intolerances( (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) ? 1 : 3 ) // @JJB
 , mating_type(MATING_TYPE_JUVENILE)
 , mate_preference(MATE_PREFERENCE_RANDOM)
 , cur_mating_display_a(0)
@@ -1730,7 +1730,7 @@ int cPhenotype::CalcToleranceOffspringOwn()
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   
   // If offspring tolerances off, skip calculations returning max
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) return tolerance_max;
 
   // Check if cached value is up-to-date, return
   if (intolerances[1].first == cur_update) return tolerance_max - intolerances[1].second;
@@ -1761,7 +1761,7 @@ int cPhenotype::CalcToleranceOffspringOthers()
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
   // If offspring tolerances off, skip calculations returning max
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1) return tolerance_max;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) return tolerance_max;
 
   // Check if cached value is up-to-date, return
   if (intolerances[2].first == cur_update) return tolerance_max - intolerances[2].second;

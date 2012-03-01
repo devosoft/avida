@@ -500,7 +500,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       if (parent_organism->HasOpinion()) offspring_array[i]->SetParentGroup(parent_organism->GetOpinion().first);
       // If tolerances are on ... @JJB
-      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) {
+      if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
           target_cells[i] = doomed_cell;
@@ -6654,6 +6654,9 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
     }
   }
   m_groups[group_id]++;
+  if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) m_group_females[group_id]++;
+  else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) m_group_males[group_id]++;
+
   group_list[group_id].Push(org);
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
     int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -6684,6 +6687,9 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
   map<int,int>::iterator it = m_groups.find(group_id);
   if (it != m_groups.end()) {
     m_groups[group_id]--;
+    if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) m_group_females[group_id]--;
+    else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) m_group_males[group_id]--;
+
     // If no restrictions on group ids,
     // removes empty groups so the number of total groups being tracked doesn't become excessive
     // (Removes the highest group even if empty, causes misstep in marching groups). @JJB
@@ -6728,6 +6734,54 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
   return num_orgs;
 }
 
+int  cPopulation::NumberGroupFemales(int group_id)
+{
+  map<int,int>::iterator it;
+  it=m_groups.find(group_id);
+  int num_orgs = 0;
+  if (it != m_groups.end()) {
+    num_orgs = m_group_females[group_id];
+  }
+  return num_orgs;
+}
+
+int  cPopulation::NumberGroupMales(int group_id)
+{
+  map<int,int>::iterator it;
+  it=m_groups.find(group_id);
+  int num_orgs = 0;
+  if (it != m_groups.end()) {
+    num_orgs = m_group_males[group_id];
+  }
+  return num_orgs;
+}
+
+int  cPopulation::NumberGroupJuvs(int group_id)
+{
+  map<int,int>::iterator it;
+  it=m_groups.find(group_id);
+  int num_males = 0;
+  int num_females = 0;
+  int tot_orgs = 0;
+  if (it != m_groups.end()) {
+    num_males = m_group_males[group_id];
+    num_females = m_group_females[group_id];
+    tot_orgs = m_groups[group_id];
+  }
+  return tot_orgs - (num_males + num_females);
+}
+
+void  cPopulation::ChangeGroupMatingTypes(int group_id, int old_type, int new_type)
+{
+  if (old_type == new_type) return;
+
+  if (old_type == 0) m_group_females[group_id]++;
+  else if (old_type == 1) m_group_males[group_id]++;
+  
+  if (new_type == 0) m_group_females[group_id]++;
+  else if (new_type == 1) m_group_males[group_id]++;  
+}
+
 // Calculates group tolerance towards immigrants @JJB
 int cPopulation::CalcGroupToleranceImmigrants(int group_id)
 {
@@ -6763,7 +6817,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   int group_id = parent_organism->GetOpinion().first;
 
-  if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return tolerance_max;
+  if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0)) return tolerance_max;
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
   int cur_update = m_world->GetStats().GetUpdate();
@@ -6858,7 +6912,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
   assert(parent->HasOpinion());
   
   // If non-standard group, automatic success
-  if ((parent->GetOpinion().first < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return 1.0;
+  if ((parent->GetOpinion().first < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0)) return 1.0;
 
   const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
   
@@ -6877,7 +6931,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
   // If non-standard group, automatic success
-  if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) return 1.0;
+  if ((group_id < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0)) return 1.0;
 
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   
@@ -6900,7 +6954,7 @@ double cPopulation::CalcGroupOddsOffspring(int group_id)
 bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring)
 {
   // If joining a non-standard group, atomatic success
-  if ((parent->GetOpinion().first < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 1)) {
+  if ((parent->GetOpinion().first < 0) || (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0)) {
     int parent_group = parent->GetOpinion().first;
     offspring->SetOpinion(parent_group);
     JoinGroup(offspring, parent_group);
