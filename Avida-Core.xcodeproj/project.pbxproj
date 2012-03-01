@@ -378,6 +378,10 @@
 		7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrderedWeightedIndex.cc; sourceTree = "<group>"; };
 		7030DB201326C44C00B6DADA /* cOrderedWeightedIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrderedWeightedIndex.h; sourceTree = "<group>"; };
 		70310E690EDD09260044971B /* cStateGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cStateGrid.h; sourceTree = "<group>"; };
+		7032D08214FFD4AD0090C93C /* configurations.html */ = {isa = PBXFileReference; lastKnownFileType = text.html.documentation; path = configurations.html; sourceTree = "<group>"; };
+		7032D08314FFD4AD0090C93C /* energy_model.html */ = {isa = PBXFileReference; lastKnownFileType = text.html.documentation; path = energy_model.html; sourceTree = "<group>"; };
+		7032D08514FFD4AD0090C93C /* internal_resources.html */ = {isa = PBXFileReference; lastKnownFileType = text.html.documentation; path = internal_resources.html; sourceTree = "<group>"; };
+		7032D08614FFD4AD0090C93C /* text_viewer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html.documentation; path = text_viewer.html; sourceTree = "<group>"; };
 		7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastUtil.h; sourceTree = "<group>"; };
 		7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastUtil.cc; sourceTree = "<group>"; };
 		703549251333E36800D3865C /* viewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = viewer.h; sourceTree = "<group>"; };
@@ -552,7 +556,6 @@
 		708D3E3514A42AA500204169 /* GenomeLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenomeLoader.h; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
 		7090F57410D956A400ECFBA1 /* cParasite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParasite.cc; sourceTree = "<group>"; };
-		70920C1C0A9CCE2C00757CDB /* analyze_samples.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = analyze_samples.html; sourceTree = "<group>"; };
 		70920C1D0A9CCE2C00757CDB /* code_c++_intro.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = "code_c++_intro.html"; sourceTree = "<group>"; };
 		70920C1E0A9CCE2C00757CDB /* code_death_birth.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_death_birth.html; sourceTree = "<group>"; };
 		70920C1F0A9CCE2C00757CDB /* code_environment.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_environment.html; sourceTree = "<group>"; };
@@ -562,7 +565,6 @@
 		70920C260A9CCE2C00757CDB /* code_task.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_task.html; sourceTree = "<group>"; };
 		70920C280A9CCE2C00757CDB /* cpu_tour.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = cpu_tour.html; sourceTree = "<group>"; };
 		70920C290A9CCE2C00757CDB /* environment.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = environment.html; sourceTree = "<group>"; };
-		70920C2A0A9CCE2C00757CDB /* events.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = events.html; sourceTree = "<group>"; };
 		70920C5D0A9CCE2C00757CDB /* AvidaLogo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = AvidaLogo.gif; sourceTree = "<group>"; };
 		70920C5E0A9CCE2C00757CDB /* cpu2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = cpu2.gif; sourceTree = "<group>"; };
 		70920C5F0A9CCE2C00757CDB /* index.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = index.html; sourceTree = "<group>"; };
@@ -575,7 +577,6 @@
 		70920C670A9CCE2C00757CDB /* third-party-win32.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "third-party-win32.xml"; sourceTree = "<group>"; };
 		70920C680A9CCE2C00757CDB /* print_data.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = print_data.html; sourceTree = "<group>"; };
 		70920C690A9CCE2C00757CDB /* structure.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = structure.html; sourceTree = "<group>"; };
-		70920C6A0A9CCE2C00757CDB /* svn.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = svn.html; sourceTree = "<group>"; };
 		7095867814439E5E00243303 /* Provider.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Provider.cc; sourceTree = "<group>"; };
 		7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEnvReqs.h; sourceTree = "<group>"; };
 		7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeScreen.cc; sourceTree = "<group>"; };
@@ -1233,6 +1234,10 @@
 		70920C1A0A9CCE2C00757CDB /* documentation */ = {
 			isa = PBXGroup;
 			children = (
+				7032D08214FFD4AD0090C93C /* configurations.html */,
+				7032D08314FFD4AD0090C93C /* energy_model.html */,
+				7032D08514FFD4AD0090C93C /* internal_resources.html */,
+				7032D08614FFD4AD0090C93C /* text_viewer.html */,
 				702A66DF121C73EE0014F776 /* glossary */,
 				707415C70AA7E4100064A546 /* main.css */,
 				70A33CC00D878407008EF976 /* as_overview.html */,
@@ -1241,7 +1246,6 @@
 				707CE7500AA334120022D19C /* analyze.html */,
 				707CE7490AA333060022D19C /* actions.html */,
 				707CE51D0A9E49A50022D19C /* config.html */,
-				70920C1C0A9CCE2C00757CDB /* analyze_samples.html */,
 				4ABC70211350AF3000EB56AA /* gradient.html */,
 				70920C1D0A9CCE2C00757CDB /* code_c++_intro.html */,
 				70920C1E0A9CCE2C00757CDB /* code_death_birth.html */,
@@ -1252,14 +1256,12 @@
 				70920C260A9CCE2C00757CDB /* code_task.html */,
 				70920C280A9CCE2C00757CDB /* cpu_tour.html */,
 				70920C290A9CCE2C00757CDB /* environment.html */,
-				70920C2A0A9CCE2C00757CDB /* events.html */,
 				70920C5C0A9CCE2C00757CDB /* images */,
 				70920C5F0A9CCE2C00757CDB /* index.html */,
 				70920C600A9CCE2C00757CDB /* inst_set.html */,
 				70920C610A9CCE2C00757CDB /* notes */,
 				70920C680A9CCE2C00757CDB /* print_data.html */,
 				70920C690A9CCE2C00757CDB /* structure.html */,
-				70920C6A0A9CCE2C00757CDB /* svn.html */,
 			);
 			path = documentation;
 			sourceTree = "<group>";
