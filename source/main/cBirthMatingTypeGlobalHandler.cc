@@ -299,6 +299,8 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
     for (int i = 0; i < num_waiting; i++) {
       if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        //Here, add a check to see if the current entry belongs to the parent's group! @CHC@TODO
+        //if (ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get() & (m_entries[i].GetGroupID() == parent->GetOpinion().first)) {
         if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
           last_compatible++;
           compatible_entries[last_compatible] = i;
@@ -312,6 +314,8 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     //This is a choosy female, so go through all the mates and pick the "best" one!
     for (int i = 0; i < num_waiting; i++) {
       if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
+        //Here, add a check to see if the current entry belongs to the parent's group! @CHC@TODO
+        //if (ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get() & (m_entries[i].GetGroupID() == parent->GetOpinion().first)) {
         if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
           if (selected_index == -1) selected_index = i;
           else selected_index = compareBirthEntries(ctx, mate_choice_method, m_entries[i], m_entries[selected_index]) ? i : selected_index;
@@ -320,61 +324,6 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     }
   }
   
-  /*
-  switch (mate_choice_method) {
-    case MATE_PREFERENCE_HIGHEST_DISPLAY_A: //Prefers to mate with the organism with the highest value of mating display A
-      for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
-          if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
-            if (selected_index == -1) selected_index = i;
-            else selected_index = ((m_entries[i].GetMatingDisplayA() > m_entries[selected_index].GetMatingDisplayA()) ? i : selected_index);
-          }
-        }
-      }
-      break;    
-    
-    case MATE_PREFERENCE_HIGHEST_DISPLAY_B: //Highest value of mating display B
-      for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
-          if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
-            if (selected_index == -1) selected_index = i;
-            else selected_index = ((m_entries[i].GetMatingDisplayB() > m_entries[selected_index].GetMatingDisplayB()) ? i : selected_index);
-          }
-        }
-      }
-      break;
-      
-    case MATE_PREFERENCE_HIGHEST_MERIT: //Highest value of parent's merit
-      for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
-          if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
-            if (selected_index == -1) selected_index = i;
-            else selected_index = ((m_entries[i].merit.GetDouble() > m_entries[selected_index].merit.GetDouble()) ? i : selected_index);
-          }
-        }
-      }
-      break;  
-    
-    default: //Pick any random potential mate
-      //First, get a list of every element of m_entries that contains a waiting offspring (of the compatible sex)
-      //Then pick one at random
-      tArray<int> compatible_entries; //This will hold a list of all the compatible birth entries waiting in the birth chamber
-      compatible_entries.Resize(num_waiting, -1);
-      int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
-      for (int i = 0; i < num_waiting; i++) {
-        if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
-          if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
-            last_compatible++;
-            compatible_entries[last_compatible] = i;
-          }
-        }
-      }
-      if (last_compatible > -1) { //Don't bother picking one if we haven't found any compatible entries
-        selected_index = compatible_entries[ctx.GetRandom().GetUInt(last_compatible+1)];
-      }
-      break;
-  }
-  */
   
   if (selected_index == -1) {
     //None found: Store the current one and return NULL
