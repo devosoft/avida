@@ -5412,6 +5412,45 @@ public:
   }
 };
 
+/*
+ Modifies an instruction's redundancy during a run 
+ Parameters:
+ instruction [required] = which instruction to modify
+ redundancy [required] = new redundancy value
+ (@CHC, March 2, 2012)
+ */
+class cActionSetRedundancy : public cAction
+{
+private:
+	cString m_inst_name;
+	double m_redundancy;
+public:
+	cActionSetRedundancy(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+	{
+		//Get the instruction set
+		const cInstSet& is = world->GetHardwareManager().GetDefaultInstSet();
+		
+		cString largs(args);
+		m_inst_name = largs.PopWord();
+		
+		//Make sure that the instruction the user has specified is in the instruction set
+		assert(is.InstInSet(m_inst_name));
+				
+		//Get the new redundancy
+		m_redundancy = largs.PopWord().AsDouble();
+	}
+	
+	static const cString GetDescription() { return "Arguments: <char instruction> <double redundancy>"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		//cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName());
+		cInstSet& is = m_world->GetHardwareManager().GetInstSet("(default)");
+		cInstruction inst = is.GetInst(m_inst_name);
+		is.SetRedundancy(inst, m_redundancy);
+	}
+};
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -5466,6 +5505,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDecayPoints>("DecayPoints");
   
   action_lib->Register<cActionFlash>("Flash");
+
+  action_lib->Register<cActionSetRedundancy>("SetRedundancy");
 	
   /****AbstractCompeteDemes sub-classes****/
 	
