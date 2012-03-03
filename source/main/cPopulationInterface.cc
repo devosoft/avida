@@ -1411,7 +1411,12 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
     // If not at individual's max tolerance, adjust both caches
     if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != 0) {
       GetOrganism()->GetPhenotype().GetIntolerances()[0].second--;
-      GetGroupIntolerances(group_id, 0)--;
+      GetGroupIntolerances(group_id, 0, -1)--;
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+        if (GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) GetGroupIntolerances(group_id, 0, 0)--;
+        else if (GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) GetGroupIntolerances(group_id, 0, 1)--;
+        else if (GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) GetGroupIntolerances(group_id, 0, 2)--;
+      }
     }
     // Retrieve modified tolerance total for immigrants
     return GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
@@ -1441,7 +1446,7 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
     // If not at max tolerance, increase the cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != 0) {
       GetOrganism()->GetPhenotype().GetIntolerances()[2].second--;
-      GetGroupIntolerances(group_id, 1)--;
+      GetGroupIntolerances(group_id, 1, -1)--;
     }
     // Retrieve modified tolerance total for other offspring in group.
     return GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
@@ -1475,7 +1480,12 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     // If not at min tolerance, decrease the cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
       GetOrganism()->GetPhenotype().GetIntolerances()[0].second++;
-      GetGroupIntolerances(group_id, 0)++;
+      GetGroupIntolerances(group_id, 0, -1)++;
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+        if (GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) GetGroupIntolerances(group_id, 0, 0)++;
+        else if (GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) GetGroupIntolerances(group_id, 0, 1)++;
+        else if (GetOrganism()->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) GetGroupIntolerances(group_id, 0, 2)++;
+      }
     }
     
     // Return modified tolerance total for immigrants.
@@ -1508,7 +1518,7 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     // If not at min tolerance, decrease the cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
       GetOrganism()->GetPhenotype().GetIntolerances()[2].second++;
-      GetOrganism()->GetOrgInterface().GetGroupIntolerances(group_id, 1)++;
+      GetOrganism()->GetOrgInterface().GetGroupIntolerances(group_id, 1, -1)++;
     }
     // Retrieve modified tolerance total for other offspring in the group.
     return GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
@@ -1588,9 +1598,9 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
   return;
 }
 
-int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num)
+int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num, int mating_type)
 {
-  return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num);
+  return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num, mating_type);
 }
 
 void cPopulationInterface::DecNumPreyOrganisms()

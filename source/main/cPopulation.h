@@ -360,7 +360,7 @@ public:
   // Calculates the standard deviation for group tolerance to other group offspring
   double CalcGroupAveOthers(int group_id);
   double CalcGroupSDevOthers(int group_id);
-  int& GetGroupIntolerances(int group_id, int tol_num);
+  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
 
   // -------- HGT support --------
   //! Modify current level of the HGT resource.

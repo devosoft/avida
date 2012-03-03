@@ -206,7 +206,7 @@ public:
   double CalcGroupOddsOffspring(int group_id) { return 0.0; }
   bool AttemptImmigrateGroup(int group_id, cOrganism* org) { return false; }
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
-  int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
+  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) { return *(new int(0)); }
 
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }

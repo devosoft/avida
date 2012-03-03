@@ -269,7 +269,7 @@ public:
   double CalcGroupOddsOffspring(int group_id);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
   void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
-  int& GetGroupIntolerances(int group_id, int tol_num);
+  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
   
   void DecNumPreyOrganisms();
   void DecNumPredOrganisms();

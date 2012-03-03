@@ -208,7 +208,7 @@ public:
   virtual double CalcGroupOddsOffspring(int group_id) = 0;
   virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
   virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; // @JJB
-  virtual int& GetGroupIntolerances(int group_id, int tol_num) = 0;
+  virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
     
   virtual void DecNumPreyOrganisms() = 0;
   virtual void DecNumPredOrganisms() = 0;

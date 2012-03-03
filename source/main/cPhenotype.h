@@ -150,9 +150,6 @@ private:
   tList<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
   tList<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
   tArray<pair<int,int> > intolerances;        // caches temporary values of the intolerance and the update @JJB
-  tArray<pair<int,int> > intolerances_females;        
-  tArray<pair<int,int> > intolerances_males;        
-  tArray<pair<int,int> > intolerances_juvs;        
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   int mating_type;                            // Organism's phenotypic sex @CHC

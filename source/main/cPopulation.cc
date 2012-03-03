@@ -387,6 +387,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
       int group_id = parent_organism->GetOpinion().first;
       group_intolerances[group_id][0].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceImmigrants();
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+        if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+          group_intolerances_females[group_id][0].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceImmigrants();
+        }
+        else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+          group_intolerances_males[group_id][0].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceImmigrants();
+        }
+        else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+          group_intolerances_juvs[group_id][0].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceImmigrants();
+        }
+      }
       group_intolerances[group_id][1].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
     }
   }
@@ -6718,16 +6729,16 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
     int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     int immigrant_tol = org->GetPhenotype().CalcToleranceImmigrants();
-    group_intolerances[group_id][0].second += tol_max - immigrant_tol;
-    group_intolerances[group_id][1].second += tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
+    group_intolerances[group_id][0].second -= tol_max - immigrant_tol;
+    group_intolerances[group_id][1].second -= tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
     if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
       if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-        group_intolerances_females[group_id][0].second += tol_max - immigrant_tol;
+        group_intolerances_females[group_id][0].second -= tol_max - immigrant_tol;
       }
       else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-        group_intolerances_males[group_id][0].second += tol_max - immigrant_tol;
+        group_intolerances_males[group_id][0].second -= tol_max - immigrant_tol;
       }
-      else group_intolerances_juvs[group_id][0].second += tol_max - immigrant_tol;      
+      else group_intolerances_juvs[group_id][0].second -= tol_max - immigrant_tol;      
     }
   }
 
@@ -6815,26 +6826,39 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
   if (group_id < 0) return tolerance_max;
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
+  int tol_update = group_intolerances[group_id][0].first;
+  int group_intol = group_intolerances[group_id][0].second;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+    if (mating_type == 0) { 
+      tol_update = group_intolerances_females[group_id][0].first;
+      group_intol = group_intolerances_females[group_id][0].second;
+    }
+    if (mating_type == 1) { 
+      tol_update = group_intolerances_males[group_id][0].first;
+      group_intol = group_intolerances_males[group_id][0].second;
+    }
+    else { 
+      tol_update = group_intolerances_juvs[group_id][0].first;
+      group_intol = group_intolerances_juvs[group_id][0].second;
+    }
+  }  
   int cur_update = m_world->GetStats().GetUpdate();
-  if (group_intolerances[group_id][0].first == cur_update) {
-    return max(0 , tolerance_max - group_intolerances[group_id][0].second);
-  }
+  if (tol_update == cur_update) return max(0 , tolerance_max - group_intol);
 
-  int group_intolerance = 0;
-  int single_member_intolerance = 0;
   // Sum the total group intolerance
+  int group_intolerance = 0;  
+  int single_member_intolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    bool use_org = false;
-    if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) use_org = true;
-    else {
-        if (mating_type == 0 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE)  use_org = true;
-        else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE)  use_org = true;
-        else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE)  use_org = true;
+    bool use_org = true;
+    if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+      if (mating_type == 0 && group_list[group_id][index]->GetPhenotype().GetMatingType() != MATING_TYPE_FEMALE)  use_org = false;
+      else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() != MATING_TYPE_MALE)  use_org = false;
+      else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() != MATING_TYPE_JUVENILE)  use_org = false;
     }
     if (use_org) single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
     group_intolerance += single_member_intolerance;
   }
-
+  
   // Save current update and current intolerance to cache
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) {
     group_intolerances[group_id][0].first = cur_update;
@@ -6919,13 +6943,14 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
   }
   // Calculate chances based on target group tolerance of another org successfully immigrating
   else {
-    double probability_immigration = 1.0;
-    if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) probability_immigration = CalcGroupOddsImmigrants(group_id, -1);
-    else {
-      if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE && NumberGroupFemales(group_id) == 0) probability_immigration = CalcGroupOddsImmigrants(group_id, 0);
-      else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE && NumberGroupMales(group_id) == 0) probability_immigration = CalcGroupOddsImmigrants(group_id, 1);
-      else probability_immigration = CalcGroupOddsImmigrants(group_id, 2);
+    int mating_type = -1;
+    if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+      if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
+      else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) mating_type = 1;
+      else mating_type = 2;
     }
+    double probability_immigration = CalcGroupOddsImmigrants(group_id, mating_type);
+
     double rand = m_world->GetRandom().GetDouble();
     if (rand <= probability_immigration) immigrate = true;
   }
@@ -7087,13 +7112,14 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       }
       else {
         // If there are group members, retrieve the target group's tolerance to immigrants
-        double probability_born_target_group = 1;
-        if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) probability_born_target_group = CalcGroupOddsImmigrants(target_group, -1);
-        else {
-          if (offspring->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE && NumberGroupFemales(target_group) == 0) probability_born_target_group = CalcGroupOddsImmigrants(target_group, 0);
-          else if (offspring->GetPhenotype().GetMatingType() == MATING_TYPE_MALE && NumberGroupMales(target_group) == 0) probability_born_target_group = CalcGroupOddsImmigrants(target_group, 1);
-          else probability_born_target_group = CalcGroupOddsImmigrants(target_group, 2);
+        int mating_type = -1;
+        if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+          if (offspring->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
+          else if (offspring->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) mating_type = 1;
+          else mating_type = 2;
         }
+        double probability_born_target_group = CalcGroupOddsImmigrants(target_group, mating_type);
+        
         rand = m_world->GetRandom().GetDouble();
         // Calculate if the offspring successfully immigrates
         if (rand <= probability_born_target_group) {
@@ -7191,9 +7217,13 @@ double cPopulation::CalcGroupSDevOthers(int group_id)
 }
 
 // @JJB
-int& cPopulation::GetGroupIntolerances(int group_id, int tol_num)
+int& cPopulation::GetGroupIntolerances(int group_id, int tol_num, int mating_type)
 {
-  return group_intolerances[group_id][tol_num].second;
+  int& intolerance = group_intolerances[group_id][tol_num].second;
+  if (mating_type == 0) intolerance = group_intolerances_females[group_id][tol_num].second;
+  else if (mating_type == 1) intolerance = group_intolerances_males[group_id][tol_num].second;
+  else if (mating_type == 2) intolerance = group_intolerances_juvs[group_id][tol_num].second;
+  return intolerance;
 }
 
 /*!	Modify current level of the HGT resource.

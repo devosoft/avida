@@ -5184,13 +5184,13 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
       const int group_id = m_organism->GetOpinion().first;
       if (group_id == -1) return false;
       
-      double immigrant_odds = 1;
-      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, -1);
-      else {
-        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE && m_organism->GetOrgInterface().NumberGroupFemales(group_id) == 0) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 0);
-        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE && m_organism->GetOrgInterface().NumberGroupMales(group_id) == 0) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 1);
-        else immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 2);
+      int mating_type = -1;
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
+        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) mating_type = 1;
+        else mating_type = 2;
       }
+      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, mating_type);
       double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
       double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
       
