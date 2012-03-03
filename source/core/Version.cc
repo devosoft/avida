@@ -39,7 +39,7 @@ Apto::String Avida::Version::Banner()
   banner += "Active developers include:\n";
   banner += "Brian Baer, James Bosko, Brian Connelly, Art Covert, Heather Goldsby,\n";
   banner += "David Knoester, Philip McKinley, Dusan Misevic, Anu Pakanati, Robert Pennock,\n";
-  banner += "Matthew Rupp, Aaron Wagner, Bess Walker, Jacob Walker, and Luis Zaman\n\n";
+  banner += "Matthew Rupp, Aaron P Wagner, Bess Walker, Jacob Walker, and Luis Zaman\n\n";
   
   banner += "For a more complete list of contributors, see the AUTHORS file.\n\n";
   

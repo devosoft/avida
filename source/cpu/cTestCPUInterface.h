@@ -195,7 +195,7 @@ public:
   int NumberGroupFemales(int group_id) { return 0; }
   int NumberGroupMales(int group_id) { return 0; }
   int NumberGroupJuvs(int group_id) { return 0; }
-  void ChangeGroupMatingTypes(int group_id, int old_type, int new_type) { return 0; }
+  void ChangeGroupMatingTypes(int group_id, int old_type, int new_type) { ; }
     
   int IncTolerance(int toleranceType, cAvidaContext &ctx) { return 0;}
   int DecTolerance(int toleranceType, cAvidaContext &ctx) { return 0;}

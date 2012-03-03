@@ -29,7 +29,6 @@
 #include "cWorld.h"
 #include "cGenomeUtil.h"
 #include "cPopulationCell.h"
-#include "cSensing.h"
 
 namespace Avida {
   class Sequence;
