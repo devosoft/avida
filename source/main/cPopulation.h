@@ -335,29 +335,22 @@ public:
   int NumberGroupFemales(int group_id);
   int NumberGroupMales(int group_id);
   int NumberGroupJuvs(int group_id);
-  void ChangeGroupMatingTypes(int group_id, int old_type, int new_type);
+  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type);
   // Get the group information
   map<int, int> GetFormedGroups() { return m_groups; }
 
   // -------- Tolerance support --------
-  // Calculate tolerance of group towards immigrants @JJB
   int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
-  // Calculate tolerance of group towards offspring (not including parent) @JJB
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
   double CalcGroupOddsImmigrants(int group_id, int mating_type);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
-  // Calculates the odds (out of 1) for offspring to be born into the group @JJB
   double CalcGroupOddsOffspring(int group_id);
   double CalcGroupOddsOffspring(cOrganism* parent);
   bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
-  // Calculates the standard deviation for group tolerance to immigrants
   double CalcGroupAveImmigrants(int group_id);
   double CalcGroupSDevImmigrants(int group_id);
-  // Calculates the standard deviation for group tolerance to their own offspring
   double CalcGroupAveOwn(int group_id);
   double CalcGroupSDevOwn(int group_id);
-  // Calculates the standard deviation for group tolerance to other group offspring
   double CalcGroupAveOthers(int group_id);
   double CalcGroupSDevOthers(int group_id);
   int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);

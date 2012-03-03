@@ -1384,9 +1384,9 @@ int cPopulationInterface::NumberGroupJuvs(int group_id)
   return m_world->GetPopulation().NumberGroupJuvs(group_id);
 }
 
-void cPopulationInterface::ChangeGroupMatingTypes(int group_id, int old_type, int new_type)  
+void cPopulationInterface::ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type)  
 {
-  m_world->GetPopulation().ChangeGroupMatingTypes(group_id, old_type, new_type);  
+  m_world->GetPopulation().ChangeGroupMatingTypes(org, group_id, old_type, new_type);  
 }
 
 /* Increases tolerance towards the addition of members to the group.
@@ -1428,7 +1428,7 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
     // Update tolerance list by removing the most recent dec_tolerance record
     delete  GetOrganism()->GetPhenotype().GetToleranceOffspringOwn().Pop();
     
-    // If not at max tolerance, increase the cache
+    // If not at max tolerance, decrease the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[1].second != 0) {
       GetOrganism()->GetPhenotype().GetIntolerances()[1].second--;
     }
@@ -1442,8 +1442,7 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
     // Update tolerance list by removing the most recent dec_tolerance record
     delete GetOrganism()->GetPhenotype().GetToleranceOffspringOthers().Pop();
     
-    
-    // If not at max tolerance, increase the cache
+    // If not at max tolerance, decrease the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != 0) {
       GetOrganism()->GetPhenotype().GetIntolerances()[2].second--;
       GetGroupIntolerances(group_id, 1, -1)--;
@@ -1477,7 +1476,7 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     toleranceList.Push(new int(cur_update));
     if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
     
-    // If not at min tolerance, decrease the cache
+    // If not at min tolerance, increase the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
       GetOrganism()->GetPhenotype().GetIntolerances()[0].second++;
       GetGroupIntolerances(group_id, 0, -1)++;
@@ -1499,7 +1498,7 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     toleranceList.Push(new int(cur_update));
     if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
     
-    // If not at min tolerance, decrease the cache
+    // If not at min tolerance, increase the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[1].second != tolerance_max) {
       GetOrganism()->GetPhenotype().GetIntolerances()[1].second++;
     }
@@ -1515,7 +1514,7 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     toleranceList.Push(new int(cur_update));
     if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
     
-    // If not at min tolerance, decrease the cache
+    // If not at min tolerance, increase the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
       GetOrganism()->GetPhenotype().GetIntolerances()[2].second++;
       GetOrganism()->GetOrgInterface().GetGroupIntolerances(group_id, 1, -1)++;
@@ -1523,7 +1522,6 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     // Retrieve modified tolerance total for other offspring in the group.
     return GetOrganism()->GetPhenotype().CalcToleranceOffspringOthers();
   }
-  
   return -1;
 }
 

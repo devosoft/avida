@@ -197,7 +197,7 @@ public:
   virtual int NumberGroupFemales(int group_id) = 0;
   virtual int NumberGroupMales(int group_id) = 0;
   virtual int NumberGroupJuvs(int group_id) = 0;
-  virtual void ChangeGroupMatingTypes(int group_id, int old_type, int new_type) = 0;  
+  virtual void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type) = 0;  
   
   virtual int IncTolerance(int toleranceType, cAvidaContext &ctx) = 0;
   virtual int DecTolerance(int toleranceType, cAvidaContext &ctx) = 0;
@@ -207,7 +207,7 @@ public:
   virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
   virtual double CalcGroupOddsOffspring(int group_id) = 0;
   virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
-  virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; // @JJB
+  virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; 
   virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
     
   virtual void DecNumPreyOrganisms() = 0;

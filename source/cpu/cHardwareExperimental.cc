@@ -5081,12 +5081,12 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    // Exit if the org is not a predator
    if (m_organism->GetForageTarget() != -2) return false;
    // Exit if tolerance is not enabled
-   if (! m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-   if (! m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
+   if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
    // Exit if organism is not in a group
-   if (! m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
    // Exit if the instruction is not nop-modified
-   if (! m_inst_set->IsNop(getIP().GetNextInst())) return false;
+   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
    
    const int tolerance_to_modify = FindModifiedNextRegister(rBX);
    
@@ -5099,13 +5099,11 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    if (toleranceType == -1) return false;
    
    // Update the tolerance and store the result in register B
-   int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);
-   
+   int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);   
    if (result == -1) return false;
-   else {
-     setInternalValue(rBX, result, true);
-     return true;
-   }
+  
+   setInternalValue(rBX, result, true);
+   return true;
 }
 
 /* Decreases tolerance towards the addition of members to the group,
@@ -5125,7 +5123,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   // Exit if organism is not in a group
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
   // Exit if the instruction is not nop-modified
-  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
   const int tolerance_to_modify = FindModifiedRegister(rBX);
   
@@ -5149,6 +5147,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
+  bool exec_success = false;
   if (m_organism->GetForageTarget() != -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
@@ -5161,10 +5160,10 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
       setInternalValue(rAX, tolerance_immigrants, true);
       setInternalValue(rBX, tolerance_own, true);
       setInternalValue(rCX, tolerance_others, true);  
-      return true;
+      exec_success = true;
     }
   }
-  return false;
+  return exec_success;
 }  
 
 /* Retrieve group tolerances placing each in a different register.
@@ -5174,8 +5173,9 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
  */
 bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {
+  bool exec_success = false;
   // If not a predator in a group, return false
-  if ((m_organism->GetForageTarget() != -2) || (m_organism->GetOpinion().first < 0)) return false;
+  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
@@ -5203,10 +5203,10 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
       setInternalValue(rAX, (int) percent_immigrants, true);
       setInternalValue(rBX, (int) percent_offspring_own, true);
       setInternalValue(rCX, (int) percent_offspring_others, true);
-      return true;
+      exec_success = true;
     }
   }
-  return false;
+  return exec_success;
 }
 
 // Active messaging

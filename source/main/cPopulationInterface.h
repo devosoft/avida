@@ -257,7 +257,7 @@ public:
   int NumberGroupFemales(int group_id);
   int NumberGroupMales(int group_id);
   int NumberGroupJuvs(int group_id);
-  void ChangeGroupMatingTypes(int group_id, int old_type, int new_type); 
+  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type); 
   
   // ----- Tolerance/Group support ------
   int IncTolerance(const int toleranceType, cAvidaContext &ctx);

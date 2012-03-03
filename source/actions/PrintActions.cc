@@ -181,8 +181,8 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
-STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); // @JJB
-STATS_OUT_FILE(PrintToleranceData,            tolerance.dat); // @JJB
+STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
+STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
@@ -246,7 +246,7 @@ public:
   }
 };
 
-class cActionPrintGroupTolerance : public cAction // @JJB
+class cActionPrintGroupTolerance : public cAction 
 {
 private:
   cString m_filename;
@@ -4600,9 +4600,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
   action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
-  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
+  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); 
+  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
+  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
   action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 

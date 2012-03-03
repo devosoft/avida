@@ -3295,7 +3295,7 @@ void cStats::PrintGroupIds(const cString& filename)
 	df.Endl();
 }
 
-// Print data for each group's tolerances. @JJB
+// Print data for each group's tolerances. 
 void cStats::PrintGroupTolerance(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
@@ -3328,7 +3328,7 @@ void cStats::PrintGroupTolerance(const cString& filename)
 }
 
 // Prints number of executions within the update of tolerance instructions executed,
-// differentiated between different nop-modifications on each. @JJB
+// differentiated between different nop-modifications on each. 
 void cStats::PrintToleranceInstructionData(const cString& filename)
 {
   const int num_tol_inst = 8;
@@ -3358,7 +3358,7 @@ void cStats::PrintToleranceInstructionData(const cString& filename)
   df.Endl();
 }
 
-// Prints the circumstances around each tolerance instruction executed within the last update. @JJB
+// Prints the circumstances around each tolerance instruction executed within the last update. 
 void cStats::PrintToleranceData(const cString& filename)
 {
   // TRACK_TOLERANCE must be on in config for output file to function
@@ -3414,7 +3414,7 @@ void cStats::PushToleranceInstExe(int tol_inst)
   }
 }
 
-// Adds a record of a tolerance instruction execution w its circumstances. @JJB
+// Adds a record of a tolerance instruction execution w its circumstances. 
 void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
           double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max)
 {
@@ -3451,7 +3451,7 @@ void cStats::PushToleranceInstExe(int tol_inst, int group_id, int group_size, do
   m_is_tolerance_exe_insts.Push(tol_circ);
 }
 
-// Clears all tolerance execution circumstances. @JJB
+// Clears all tolerance execution circumstances. 
 void cStats::ZeroToleranceInst()
 {
   const int num_tol_inst = 8;
