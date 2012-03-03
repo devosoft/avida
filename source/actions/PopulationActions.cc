@@ -5437,10 +5437,10 @@ public:
 		assert(is.InstInSet(m_inst_name));
 				
 		//Get the new redundancy
-		m_redundancy = largs.PopWord().AsDouble();
+		m_redundancy = largs.PopWord().AsInt();
 	}
 	
-	static const cString GetDescription() { return "Arguments: <char instruction> <double redundancy>"; }
+	static const cString GetDescription() { return "Arguments: <char instruction> <int redundancy>"; }
 	
 	void Process(cAvidaContext& ctx)
 	{
