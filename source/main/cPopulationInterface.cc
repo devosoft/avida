@@ -1517,9 +1517,9 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
   return -1;
 }
 
-int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id)
+int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id, int mating_type)
 {
-  return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
+  return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id, mating_type);
 }
 
 int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism)
@@ -1527,9 +1527,9 @@ int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism
   return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism);
 }
 
-double cPopulationInterface::CalcGroupOddsImmigrants(int group_id)
+double cPopulationInterface::CalcGroupOddsImmigrants(int group_id, int mating_type)
 {
-  return m_world->GetPopulation().CalcGroupOddsImmigrants(group_id);
+  return m_world->GetPopulation().CalcGroupOddsImmigrants(group_id, mating_type);
 }
 
 double cPopulationInterface::CalcGroupOddsOffspring(cOrganism* parent)
@@ -1561,7 +1561,7 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
   double resource_level = res_count[group_id];
   int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   
-  double immigrant_odds = CalcGroupOddsImmigrants(group_id);
+  double immigrant_odds = CalcGroupOddsImmigrants(group_id, -1);
   double offspring_own_odds;
   double offspring_others_odds;
   int tol_immi = GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
@@ -1777,7 +1777,9 @@ bool cPopulationInterface::FacedHasOutputAV()
 int cPopulationInterface::GetAVFacedCellID(int index)//** GetCellXPosition()
 {
   assert(m_world->GetConfig().USE_AVATARS.Get());
-  //assert(HasAvatars());
+  assert(m_world->GetPopulation().GetCell(m_av_cell_id).HasAvatar());
+
+  int new_cell_id = m_avatars[0].av_cell_id;
   if ((m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) && (m_world->GetConfig().WORLD_GEOMETRY.Get() != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
   if (index < GetNumAV()) {
     const int x_size = m_world->GetConfig().WORLD_X.Get();
@@ -1822,10 +1824,9 @@ int cPopulationInterface::GetAVFacedCellID(int index)//** GetCellXPosition()
     }
 
     deme_cell_id = y * x_size + x;
-    int new_cell_id = deme_id * deme_size + deme_cell_id;
-
-    return new_cell_id;
+    new_cell_id = deme_id * deme_size + deme_cell_id;
   }
+  return new_cell_id;
 }
 
 void cPopulationInterface::BeginSleep()

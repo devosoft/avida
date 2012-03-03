@@ -201,9 +201,9 @@ public:
   
   virtual int IncTolerance(int toleranceType, cAvidaContext &ctx) = 0;
   virtual int DecTolerance(int toleranceType, cAvidaContext &ctx) = 0;
-  virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
+  virtual int CalcGroupToleranceImmigrants(int target_group_id, int mating_type) = 0;
   virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism) = 0;
-  virtual double CalcGroupOddsImmigrants(int group_id) = 0;
+  virtual double CalcGroupOddsImmigrants(int group_id, int mating_type) = 0;
   virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
   virtual double CalcGroupOddsOffspring(int group_id) = 0;
   virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;

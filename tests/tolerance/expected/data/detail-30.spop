@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Mon Nov 14 20:46:57 2011
+# Sat Mar  3 14:27:16 2012
 #  1: ID
 #  2: Source
 #  3: Source Args
@@ -23,407 +23,381 @@
 # 19: Gestation (CPU) Cycle Offsets
 # 20: Lineage Label
 
-6626 org:divide (none) 5913 1 1 42 0 0 0 206 30 -1 7 0 heads_default efahaglijkljmcaiaccbbkcccccgcccccccccccaec 361 7 0 
-5913 org:divide (none) 5586 5 68 42 41 2.78947 38.9038 171 28 -1 6 0 heads_default efahagcijkljmcaiaccbbkcccccgcccccccccccaec 360,362,380,382,383 0,0,0,0,5 0,0,0,0,0 
-6672 org:divide (none) 5571 1 1 45 0 0 0 120 30 -1 8 0 heads_default ejahbgcijkccemccaaacdbecccccclcccccccccccmcec 254 6 0 
-5982 org:divide (none) 1935 6 14 43 24 4.6 19.4526 144 28 -1 7 0 heads_default egahagcmjklcmccaaaccbbceclcfcclcccccccdccek 241,242,261,262,263,283 6,4,18,5,18,4 0,0,0,0,0,0 
-6442 org:divide (none) 6140 1 1 42 0 0 0 201 30 -1 7 0 heads_default egalafcijicmccaaakcdbbcccchccgecccceccccec 199 23 0 
-6695 org:divide (none) 4974 1 1 42 0 0 0 136 30 -1 8 0 heads_default egbhagcijklcmccadaccbbmicccccccccclcccmcec 189 5 0 
-6396 org:divide (none) 4088 1 1 41 0 0 0 206 30 -1 6 0 heads_default egahagcielccccaaaccbmcccccccccccccccmccec 150 31 0 
-6603 org:divide (none) 5888 1 1 45 0 0 0 114 30 -1 10 0 heads_default ecgahagccijklhmcbaaalcbccdcchccccmcclccccccec 49 11 0 
-6465 org:divide (none) 4876 1 1 44 0 0 0 100 30 -1 9 0 heads_default ecgafagcbjklemcbadalcbccdccmccccmcclccccccec 47 20 0 
-5821 org:divide (none) 5177 1 4 44 26 9.4 16.0727 159 28 -1 8 0 heads_default efachcghijklcmccaaajcbbccecccfcccccccdcccaei 25 10 0 
-5729 org:divide (none) 3400 5 22 43 42 4.57692 20.2821 164 28 -1 5 0 heads_default kefahagcijklcmcaiaccbbkcccccccccccccccccaec 3,5,364,384,385 6,16,6,0,35 0,0,0,0,0 
-6649 org:divide (none) 6036 1 1 42 0 0 0 168 30 -1 9 0 heads_default efgjagcijklcmcgaafcbbkmcccccccccccgmcccaec 0 8 0 
-6562 org:divide (none) 5858 3 3 43 22 4.75 16.8438 133 30 -1 8 0 heads_default egahaacmjkhcmhcafccibeccccfccccccjcccccjcjc 322,342,343 0,5,5 0,0,0 
-6654 org:divide (none) 6069 1 1 43 0 0 0 130 30 -1 9 0 heads_default egahagcmjklcmcfaagcbbceaccfcckcccccccccccek 321 4 0 
-6585 org:divide (none) 6166 1 1 42 0 0 0 106 30 -1 8 0 heads_default egbhagcijklcmccadacbbcicccccccccclcclcmcec 250 26 0 
-6470 org:divide (none) 5104 1 1 44 0 0 0 102 30 -1 7 0 heads_default ejahbgcijkccemccaaacdbbcccccclciccccccccccec 231 25 0 
-6447 org:divide (none) 1951 2 2 42 23 8.5 12.2188 146 30 -1 5 0 heads_default egahbgcijklcmchaaaedbcecccclkcccccccccccec 175,194 0,0 0,0 
-6102 org:divide (none) 4730 4 9 43 24 2.13333 22.4889 153 29 -1 10 0 heads_default egahaagbjklcmccaamccbbcecccfcccccfcccccccgc 162,163,182,203 5,5,12,0 0,0,0,0 
-6631 org:divide (none) 4334 1 1 45 0 0 0 172 30 -1 5 0 heads_default mgghagcijklcmccaahaccbbccdcccccccccclacccccec 61 20 0 
-5205 org:divide (none) 4396 3 22 41 21 2.82857 18.7412 194 26 -1 6 0 heads_default eghagcdjlcmccaaaccbbeecccccccccbcccccccec 59,60,81 16,4,0 0,0,0 
-6700 org:divide (none) 6036 1 1 42 0 0 0 173 30 -1 9 0 heads_default efgjagcijklcmcaaafcbbkmcccccccbcccgmcccaec 20 3 0 
-6355 org:divide (none) 5773 2 2 43 27 23 1.17391 171 30 -1 10 0 heads_default egahdgcijlceccaacjbbcfccccecccccgccccmchcec 1,381 0,0 0,0 
-6473 org:divide (none) 6001 1 1 42 0 0 0 129 30 -1 5 0 heads_default ejahbgcijklcmbcaaaedbbccccclccccccccccccec 331 34 0 
-6657 org:divide (none) 6069 1 1 43 0 0 0 132 30 -1 9 0 heads_default egahagcmjklcmcfaagcbbcecccfccjcccccccccccek 319 4 0 
-6565 org:divide (none) 4962 1 1 43 0 0 0 190 30 -1 4 0 heads_default egadgagcijklcmccaaedbbccmcccccccccccdccccek 296 18 0 
-6128 org:divide (none) 5835 2 5 45 44 5.85714 37.8939 153 29 -1 11 0 heads_default egahagcifjaccmccddaccmblccccccchgccclcccccaec 256,277 28,16 0,0 
-5829 org:divide (none) 4950 2 13 41 40 2.6 38.0606 133 28 -1 9 0 heads_default egahagijklcmcajaccbbccccchbcclcchccccjcek 167,188 30,30 0,0 
-6450 org:divide (none) 6055 1 1 42 0 0 0 129 30 -1 9 0 heads_default egahagaijklcmcgjaccbbccccchbcccccfccccjcek 161 27 0 
-6634 org:divide (none) 4334 1 1 44 0 0 0 173 30 -1 5 0 heads_default egghagcijklcmccaajccbbccdcccccccccclacccccec 103 8 0 
-6703 org:divide (none) 5888 1 1 45 0 0 0 117 30 -1 10 0 heads_default ecgahagccijkllmcbaaalcbhcdcchccccmcclccccccec 89 7 0 
-4334 org:divide (none) 3490 2 93 44 43 4.06977 39.4324 131 24 -1 4 0 heads_default egghagcijklcmccaaaccbbccdcccccccccclacccccec 83,101 20,36 0,0 
-6496 org:divide (none) 4876 1 1 44 0 0 0 103 30 -1 9 0 heads_default ecbafagcbjklemcbaaalcfccdccmccccmcclccccccec 68 10 0 
-5852 org:divide (none) 5312 3 16 43 42 4.64706 37.2132 160 28 -1 8 0 heads_default egahagcijkcmcchaamccbbcfcccchccccccclcdccec 35,55,75 28,28,28 0,0,0 
-2701 org:divide (none) 1856 5 87 43 42 3.95522 38.6454 89 19 -1 5 0 heads_default efahcgcijklcmccaaaccbbccccccccccccccccccaei 6,7,8,386,387 36,36,36,36,36 0,0,0,0,0 
-6036 org:divide (none) 5665 3 9 42 41 3.61538 37.9363 160 29 -1 8 0 heads_default efgjagcijklcmcaaafcbbkmcccccccccccgmcccaec 2,21,41 3,0,9 0,0,0 
-6707 org:divide (none) 6562 1 1 43 0 0 0 136 30 -1 9 0 heads_default egahaacmjkhcmhcafccibeccccfccccccjcciccjcjc 341 0 0 
-6684 org:divide (none) 5571 1 1 45 0 0 0 121 30 -1 8 0 heads_default ejahbgcickccemccaaacdbbcccccclcccccccccccmcec 252 6 0 
-6109 org:divide (none) 5368 2 3 43 30 25 1.2 185 29 -1 8 0 heads_default egalaacijicmccaaacdbbcccckccgeccicaccccccec 221,240 0,0 0,0 
-6638 org:divide (none) 1951 1 1 42 0 0 0 156 30 -1 5 0 heads_default egahbgcijklcmchaaaedbcecccclccecccccccccec 193 5 0 
-6661 org:divide (none) 5729 1 1 42 0 0 0 178 30 -1 6 0 heads_default kefhagcijklcmcaiafcbbkcccccccccccccccccaec 4 6 0 
-5979 org:divide (none) 5194 5 13 43 42 3.90909 38.2975 145 28 -1 9 0 heads_default eahagcijlcmcchfaemccbkcmcccchcccccccccdccec 351,352,353,372,392 17,15,17,15,11 0,0,0,0,0 
-6255 org:divide (none) 4962 1 9 42 41 3.53846 37.9389 190 29 -1 4 0 heads_default egadgagcijklcmccaaedbbccmcccccccccccccccek 335 2 0 
-6416 org:divide (none) 5237 1 1 45 0 0 0 126 30 -1 6 0 heads_default egahaacmjklccmchaaaccibbcccccccccccccccccjmdc 328 38 0 
-6646 org:divide (none) 6219 1 1 42 0 0 0 128 30 -1 9 0 heads_default egahagcmjllcmcfaaccbbceccefccccccgccccccek 299 4 0 
-6232 org:divide (none) 4962 1 3 43 42 7.6 33.8471 187 29 -1 4 0 heads_default egadgagcijklcmccaaedbbccmcccccccccccmccccek 294 29 0 
-5887 org:divide (none) 4730 1 3 44 25 5.5 19.0789 158 28 -1 10 0 heads_default egahaagbmjklcmccaamccbbcecccfcccccdcccccccgc 260 18 0 
-6140 org:divide (none) 3983 1 5 42 31 3.875 27.2865 195 29 -1 6 0 heads_default egalafcijicmccaaakcdbbcccchccgecccccccccec 198 23 0 
-6577 org:divide (none) 1951 1 1 42 0 0 0 151 30 -1 5 0 heads_default egahbgcijklcmchaaaedbmecccclccccccccccccec 195 7 0 
-6715 org:divide (none) 4950 1 1 42 0 0 0 161 30 -1 9 0 heads_default egahagcijklcmcajaccbbccmcchbcclcchccccjcek 165 0 0 
-6600 org:divide (none) 5779 1 1 41 0 0 0 206 30 -1 7 0 heads_default egahagciellcccaaaccbccicccccccccccccmccec 131 5 0 
-6623 org:divide (none) 6346 1 1 43 0 0 0 145 30 -1 10 0 heads_default ecgahagcbjklemcbaalcbccdccmgcccmcclccccccec 86 14 0 
-6669 org:divide (none) 6353 1 1 41 0 0 0 147 30 -1 11 0 heads_default egahagcijcmchhaamccbbcfccfhccclhccccdbcec 9 11 0 
-6583 org:divide (none) 5913 1 2 42 0 0 0 198 30 -1 7 0 heads_default efmhagcijkljmcaiaccbbkcccccgcccccccccccaec 363 17 0 
-5134 org:divide (none) 4819 4 19 43 42 6.28 35.4776 146 26 -1 6 0 heads_default egahagcmjklcmcaaaccbiccccccccccchcccccfccec 338,357,358,379 4,4,0,4 0,0,0,0 
-5571 org:divide (none) 5104 6 30 45 44 4.14894 40.3539 98 27 -1 7 0 heads_default ejahbgcijkccemccaaacdbbcccccclcccccccccccmcec 233,234,251,253,274,292 11,1,25,1,10,17 0,0,0,0,0,0 
-5502 org:divide (none) 1951 4 27 42 23 2.125 21.3828 131 27 -1 5 0 heads_default egahbgcijklcmchaaaedbceaccclccccccccccccec 213,214,235,255 8,5,5,8 0,0,0,0 
-6422 org:divide (none) 1951 1 1 42 0 0 0 141 30 -1 5 0 heads_default egahbgcijklcmchaaaedbcecccclcccclcccccccec 196 8 0 
-4950 org:divide (none) 4071 6 66 42 41 4.81651 36.2583 116 25 -1 8 0 heads_default egahagcijklcmcajaccbbccccchbcclcchccccjcek 186,205,206,225,265,286 0,0,6,5,0,0 0,0,0,0,0,0 
-6652 org:divide (none) 3355 1 1 43 0 0 0 144 30 -1 6 0 heads_default mgahagcikklcmccaaaccbbcmccccccccccclcclccec 145 7 0 
-6675 org:divide (none) 5205 1 1 41 0 0 0 213 30 -1 7 0 heads_default eghagcdjlcmcfaaaccbbeecccccccccbcccccccec 80 4 0 
-6514 org:divide (none) 6096 1 1 46 0 0 0 170 30 -1 10 0 heads_default egahdgcijlceccaaacjblbhcfccccecccccgccccmchcec 37 15 0 
-6353 org:divide (none) 5055 1 3 42 41 11 27.7742 144 30 -1 10 0 heads_default egahagcijcmchhaamccbbcfcchfhccclhccccdbcec 10 7 0 
-6705 org:divide (none) 5871 1 1 45 0 0 0 143 30 -1 11 0 heads_default egaihagcijlcmcchammccfbcfccefhccccccccdcdbcec 366 0 0 
-6498 org:divide (none) 6069 1 1 43 0 0 0 130 30 -1 9 0 heads_default egahagcmjklcmcfaakcbbcecccfcckcccccccccccek 340 16 0 
-6590 org:divide (none) 6255 1 1 41 0 0 0 205 30 -1 5 0 heads_default egadgagcijklcmccaaebbccmcccccccccccccccek 315 13 0 
-6682 org:divide (none) 4950 1 1 42 0 0 0 160 30 -1 9 0 heads_default egahagcijklcmcajaccbbccccchbcclkchccccjcek 187 5 0 
-6659 org:divide (none) 6187 1 1 42 0 0 0 183 30 -1 10 0 heads_default eghaigcijklcmccmfaccbbccccjefcccccccmccchc 76 6 0 
-5877 org:divide (none) 4334 1 8 43 42 6.83333 35.1944 158 28 -1 5 0 heads_default egghagcijklcmccaaaccbbcdcccccccccclacccccec 65 6 0 
-6429 org:divide (none) 6108 1 1 44 0 0 0 171 30 -1 9 0 heads_default efaagciejklcmhcaimccbbkcccccccccccfccdccgaec 45 29 0 
-5233 org:divide (none) 3811 1 31 45 29 2.88235 26.8165 145 26 -1 8 0 heads_default egahdgcijlceccaaacjbbbcfccccecccccgccccmchcec 19 0 0 
-6222 org:divide (none) 5312 6 16 42 41 2.47619 39.1086 173 29 -1 8 0 heads_default egahagcijkcmcchaamccbbcfcccchccccccccdccec 11,12,31,32,390,391 0,5,5,5,5,5 0,0,0,0,0,0 
-6513 org:divide (none) 5678 1 1 45 0 0 0 138 30 -1 6 0 heads_default egahaacmjjlcmccaaaccigbccccccbccccccccccchcdc 326 37 0 
-6444 org:divide (none) 6078 1 1 45 0 0 0 120 30 -1 7 0 heads_default ebahaaacmjklccmchjaaccibbccccccccccccccccjcdc 325 37 0 
-6674 org:divide (none) 5891 1 1 42 0 0 0 174 30 -1 7 0 heads_default eaahagcijklcgchaaalbbbccacccciccckcfccccec 306 6 0 
-6329 org:divide (none) 5952 2 3 44 25 10.5 13.125 137 29 -1 8 0 heads_default egahagcmjklcimccacaccbbcecccfcclccfcccccccek 244,264 4,4 0,0 
-6697 org:divide (none) 4950 1 1 41 0 0 0 159 30 -1 9 0 heads_default egahagcijklcmcajaccbccccchbcclcchccccjcek 226 5 0 
-6605 org:divide (none) 5952 1 1 44 0 0 0 144 30 -1 8 0 heads_default egahagcmhklcimccacaccbbcecccfcclccccccccccek 223 4 0 
-5248 org:divide (none) 4725 6 19 44 25 3.47826 21.9022 132 26 -1 10 0 heads_default egahaagbmjklcmccaaaccbbcecicfcccccdcccccccgc 217,218,219,238,239,258 9,5,5,0,0,0 0,0,0,0,0,0 
-6559 org:divide (none) 6298 1 1 43 0 0 0 172 30 -1 6 0 heads_default egglagcijklcmccaaacjeccdcccccccccclacccccec 141 7 0 
-6582 org:divide (none) 5517 1 1 42 0 0 0 183 30 -1 8 0 heads_default egalahcijicmccaaacdbbcccchccgemcccccccceca 134 7 0 
-6651 org:divide (none) 5205 1 1 42 0 0 0 212 30 -1 7 0 heads_default eghagcdjlcmdcaaaccbbeecccccccccbcccccccehc 82 4 0 
-6214 org:divide (none) 5826 1 5 41 41 5.375 36.0174 148 29 -1 8 0 heads_default egahagckjlcmccaaacccbcdccccccccccaccccccc 13 0 0 
-6522 org:divide (none) 5979 1 1 44 0 0 0 154 30 -1 10 0 heads_default eahagcijlcmcchfaemccibkcmcccchcccccccccdccec 371 17 0 
-6637 org:divide (none) 6255 1 1 42 0 0 0 209 30 -1 5 0 heads_default egadgagcijklcmccaaedbbmcmcccccccccccccccek 356 6 0 
-6499 org:divide (none) 5949 1 1 42 0 0 0 137 30 -1 9 0 heads_default egahagcmjklcmcfaagcbbcecfcfccccccccccfccek 318 15 0 
-6591 org:divide (none) 4962 1 1 43 0 0 0 191 30 -1 4 0 heads_default egadglgcijklcmccaaedbbccmccccccccccccccccek 317 19 0 
-6453 org:divide (none) 6100 1 1 43 0 0 0 101 30 -1 8 0 heads_default egbhagcijklcmccadaccbbciccccdccbcclccccmcec 227 21 0 
-6706 org:divide (none) 6447 1 1 42 0 0 0 147 30 -1 6 0 heads_default egahbgcijklcmchaaaedbcecccmlkcccccccccccec 215 0 0 
-5993 org:divide (none) 4305 2 7 41 30 7.57143 21.7857 166 28 -1 7 0 heads_default egalafcikicmccaaacdbbcccckccgecccccccccec 137,179 7,13 0,0 
-6683 org:divide (none) 5817 1 1 41 0 0 0 202 30 -1 7 0 heads_default egahagcielcccjaaaccbccccccccccccicccmccec 130 6 0 
-6016 org:divide (none) 3999 4 10 44 43 7.6 34.6529 136 28 -1 8 0 heads_default ecgahagcbjklemcbajalcbccdccmgcccmcclccccccec 105,124,125,126 33,33,13,6 0,0,0,0 
-6476 org:divide (none) 6096 1 1 45 0 0 0 166 30 -1 10 0 heads_default egahdgcijlceccaaaijbbhcfccccecccccgccccmchcec 36 7 0 
-6108 org:divide (none) 5823 2 4 43 42 5.71429 36.1765 169 29 -1 8 0 heads_default efaagcijklcmhcaimccbbkcccccccccccfccdccgaec 23,24 28,30 0,0 
-6660 org:divide (none) 3576 1 1 43 0 0 0 168 30 -1 5 0 heads_default egahfgcmjklcmcaaaicbacccccccccccccccccfccec 14 33 0 
-6704 org:divide (none) 6069 1 1 43 0 0 0 136 30 -1 9 0 heads_default egahbgcmjklcmcfaagcbbcecccfcckcccccccccccek 320 0 0 
-6451 org:divide (none) 5889 1 1 42 0 0 0 171 30 -1 7 0 heads_default eaahagcijklcmccaaalcblccacccciccckcfccccec 288 26 0 
-6589 org:divide (none) 6166 1 1 42 0 0 0 107 30 -1 8 0 heads_default egbhagcijklcmccadgcbbcicccccccccclccccmcec 269 8 0 
-5324 org:divide (none) 4305 2 20 41 30 4.17241 26.0345 176 27 -1 7 0 heads_default egalagcijicmccaaacdbbcccckccgecccccccccec 160,180 23,23 0,0 
-6681 org:divide (none) 6376 1 1 44 0 0 0 147 30 -1 10 0 heads_default ecgahagcbjklemcbajalcbccdccmccccmcclcccccjec 104 6 0 
-5646 org:divide (none) 4305 7 20 42 31 5.28571 25.6857 177 27 -1 7 0 heads_default egaklafcijicmccaaacdbbcccckccgecccccccccec 98,99,118,119,120,138,139 0,20,0,0,4,2,0 0,0,0,0,0,0,0 
-6635 org:divide (none) 6346 1 1 44 0 0 0 147 30 -1 10 0 heads_default ecgahagcbjklemcbafalcbccdccmgaccmcclccccccec 64 7 0 
-6313 org:divide (none) 5888 4 6 45 44 8 35.4444 111 29 -1 10 0 heads_default ecgahagccijkllmcbaaaljbccdcchccccmcclccccccec 50,71,72,92 7,0,7,7 0,0,0,0 
-6658 org:divide (none) 6036 1 1 42 0 0 0 170 30 -1 9 0 heads_default efgjagcijklcmcaaafcbbkmccccccccjccgmcccaec 22 7 0 
-3576 org:divide (none) 2741 6 78 43 42 6.08547 36.067 123 21 -1 4 0 heads_default egahagcmjklcmcaaaccbacccccccccccccccccfccec 15,16,374,394,395,396 0,4,4,4,0,4 0,0,0,0,0,0 
-6395 org:divide (none) 3594 1 1 44 0 0 0 139 30 -1 5 0 heads_default egahbgcijklcmccahaaedbbcccccclbccjccccccccec 333 34 0 
-6648 org:divide (none) 5982 1 1 44 0 0 0 147 30 -1 8 0 heads_default egahagcmjklcmccaaaccbbceclcfcclcccccccdlccek 303 4 0 
-6694 org:divide (none) 6035 1 1 42 0 0 0 186 30 -1 9 0 heads_default eahagijklcmcjlaaccbbcccbccccccccahccclccec 289 5 0 
-6556 org:divide (none) 6219 1 1 42 0 0 0 123 30 -1 9 0 heads_default egahagcmjllcmcfaaccbbcecccfccmcccgccccccek 280 6 0 
-6533 org:divide (none) 6232 1 1 43 0 0 0 188 30 -1 5 0 heads_default egadgagcijklcmccaaedbbccmcccclccccccmccccek 276 13 0 
-5889 org:divide (none) 5204 4 28 42 41 2.64103 38.9611 149 28 -1 6 0 heads_default eaahagcijklcmccaaalcbgccacccciccckcfccccec 246,247,266,287 26,14,26,26 0,0,0,0 
-5084 org:divide (none) 4707 4 22 44 43 7.19355 34.9296 141 26 -1 9 0 heads_default egahagcijgccmccddaccmblccccccchgccclcccccaec 220,257,278,279 26,5,0,5 0,0,0,0 
-5774 org:divide (none) 4876 1 13 45 44 6.66667 36.8762 92 28 -1 9 0 heads_default ekcgafagcbjklemcbaaalcbccdccmccccmcclccccccec 67 34 0 
-6717 org:divide (none) 6354 1 1 44 0 0 0 169 30 -1 9 0 heads_default egahahgcijlemcchammccbbcfcccchcccccccccdccec 33 0 0 
-6487 org:divide (none) 4876 1 1 44 0 0 0 102 30 -1 9 0 heads_default ecgafagcbjklemcbaaalcbccdccmccccdcclccccccec 30 25 0 
-6096 org:divide (none) 5233 3 6 45 29 3.55556 25.912 161 29 -1 9 0 heads_default egahdgcijlceccaaacjbbhcfccccecccccgccccmchcec 17,18,38 15,19,15 0,0,0 
-6549 org:divide (none) 4987 1 1 40 0 0 0 151 30 -1 11 0 heads_default egahagcdjlbccaaaccibejcjccccccccecccccec 397 6 0 
-4962 org:divide (none) 4144 1 34 43 42 4.92308 37.2923 176 26 -1 3 0 heads_default egadgagcijklcmccaaedbbccmccccccccccccccccek 297 34 0 
-6503 org:divide (none) 5571 1 1 45 0 0 0 125 30 -1 8 0 heads_default ejahbgcijkccemccaaacdbbcccccclccccccjccccmcec 290 25 0 
-6388 org:divide (none) 5891 2 5 42 41 9 31.0606 169 30 -1 7 0 heads_default ekahagcijklcmchaaalbcbccacccciccckcfccccec 284,304 6,8 0,0 
-6687 org:divide (none) 5248 1 1 44 0 0 0 151 30 -1 11 0 heads_default egahaagbmjklccccaaaccbbcecicfcccccdcccccccgc 259 5 0 
-6595 org:divide (none) 5889 1 1 42 0 0 0 162 30 -1 7 0 heads_default eaahagcijklcmccaaalcbgccacccdiccckcfccccec 248 6 0 
-6710 org:divide (none) 4950 1 1 41 0 0 0 150 30 -1 9 0 heads_default egahagcijklcmcajacclccccchbcclcchccccjcek 245 0 0 
-6664 org:divide (none) 5817 1 1 41 0 0 0 199 30 -1 7 0 heads_default egahagciblccccaaaccbccccccccccccicccmccec 149 5 0 
-4088 org:divide (none) 3247 3 94 41 40 4.25 36.2857 132 23 -1 5 0 heads_default egahagcielccccaaaccbccccccccccccccccmccec 91,93,132 32,5,32 0,0,0 
-6342 org:divide (none) 6008 1 1 44 0 0 0 170 29 -1 9 0 heads_default efachcgcijkklcmccaaajcbccecccfcccccccdcccaei 26 10 0 
-6440 org:divide (none) 2701 1 1 42 0 0 0 171 30 -1 6 0 heads_default efahcgcijklcmcaaaccbbccccccccccccccccccaei 388 35 0 
-6210 org:divide (none) 5312 1 3 43 36 10 24.4286 172 29 -1 8 0 heads_default egahagcijkcmcchaamccbbcfcccchcccccceccdccec 373 17 0 
-6302 org:divide (none) 3594 1 4 43 42 12 28.4118 132 29 -1 5 0 heads_default egahbgcijklcmccghaedbbcccccclbcccccccccccec 354 21 0 
-6670 org:divide (none) 6069 1 1 44 0 0 0 135 30 -1 9 0 heads_default egahagcmjklcmcfaagcbbcecccfcckccccjcccccccej 339 4 0 
-6647 org:divide (none) 6255 1 1 43 0 0 0 212 30 -1 5 0 heads_default egadgagcijklcmccaaedbbccmccdcccckccccccccek 336 8 0 
-6716 org:divide (none) 6562 1 1 43 0 0 0 137 30 -1 9 0 heads_default egahagcmjkhcmhcafccibcccccfccccccjcccccjcjc 302 0 0 
-5359 org:divide (none) 1951 1 14 42 23 3.36842 19.5954 127 27 -1 5 0 heads_default egadbgcijklcmchaaaedbcecccclccccccccccccec 273 12 0 
-6417 org:divide (none) 6140 1 1 41 0 0 0 197 30 -1 7 0 heads_default egalafcijcmccaaakcdbbcccchccgecccccccccec 178 23 0 
-6555 org:divide (none) 5497 1 1 42 0 0 0 138 30 -1 9 0 heads_default egahigciklcmccaaaccbbcmcccccccccccldclckec 168 18 0 
-5497 org:divide (none) 4892 3 19 42 41 7.4 33.0485 119 27 -1 8 0 heads_default egahagciklcmccaaaccbbcmcccccccccccldclckec 146,147,148 17,17,17 0,0,0 
-5796 org:divide (none) 4586 3 15 44 43 6.36842 36.4045 210 28 -1 6 0 heads_default egahagcijklcmccaaaccbdmccccbgccccaclccccccec 123,143,144 16,16,16 0,0,0 
-6187 org:divide (none) 4925 4 6 41 27 4.5 22.7045 178 29 -1 9 0 heads_default eghagcijklcmccmfaccbbccccjefcccccccmccchc 58,77,78,96 5,0,5,5 0,0,0,0 
-5888 org:divide (none) 5475 3 11 45 44 4.77778 39.2508 104 28 -1 9 0 heads_default ecgahagccijkllmcbaaalcbccdcchccccmcclccccccec 51,69,90 16,11,7 0,0,0 
-5773 org:divide (none) 5233 1 12 44 28 3.55556 25.0185 164 28 -1 9 0 heads_default egahdgcijlceccaaacjbbcfccccecccccgccccmchcec 39 15 0 
-4876 org:divide (none) 3999 4 50 44 43 4.88235 38.09 82 25 -1 8 0 heads_default ecgafagcbjklemcbaaalcbccdccmccccmcclccccccec 27,29,46,48 27,25,33,25 0,0,0,0 
-6550 org:divide (none) 2701 1 1 43 0 0 0 183 30 -1 6 0 heads_default efahcgcijklcmccaaaccbbccccccccccccccicccaei 368 35 0 
-6642 org:divide (none) 6255 1 1 42 0 0 0 211 30 -1 5 0 heads_default egadgagcijklcmccaaedbbcbmcccccccccccccccek 337 6 0 
-6504 org:divide (none) 5344 1 1 42 0 0 0 204 30 -1 8 0 heads_default eahagijklcmcclaaccabccccccccccccahccacccec 330 35 0 
-6711 org:divide (none) 5084 1 1 43 0 0 0 161 30 -1 10 0 heads_default egahagcijgccmccddaccmblcccccchgccclcccccaec 298 5 0 
-5952 org:divide (none) 1935 2 9 44 25 3.71429 21.6071 135 28 -1 7 0 heads_default egahagcmjklcimccacaccbbcecccfcclccccccccccek 204,224 4,0 0,0 
-6297 org:divide (none) 5646 1 2 43 31 9 21.08 183 29 -1 8 0 heads_default egaklafcijicmccaaacdbbcccckccgeccdccccccech 159 14 0 
-6665 org:divide (none) 5559 1 1 39 0 0 0 201 30 -1 9 0 heads_default egihagcijlcmccaaaccbbcfkcccbccccccjccec 113 0 0 
-6389 org:divide (none) 5646 1 3 41 31 13 16.12 188 30 -1 8 0 heads_default egaklafcijicmccaaacdbbcccckccgeccccccccec 97 6 0 
-6688 org:divide (none) 6231 1 1 44 0 0 0 160 30 -1 7 0 heads_default egghagcijklcmccaaaccbbccdcccccmcccclacmcccef 44 6 0 
-6481 org:divide (none) 4876 1 1 44 0 0 0 101 30 -1 9 0 heads_default ecgafagcbjklemcbaaalcbccdcbmccccacclccccccec 28 28 0 
-5871 org:divide (none) 4906 4 25 44 27 2.94286 24.0857 129 28 -1 10 0 heads_default egahagcijlcmcchammccfbcfccefhccccccccdcdbcec 347,348,349,367 0,7,13,10 0,0,0,0 
-6078 org:divide (none) 5237 1 3 44 44 13.6667 29.7094 119 29 -1 6 0 heads_default egahaacmjklccmchjaaccibbccccccccccccccccjcdc 346 35 0 
-3594 org:divide (none) 3119 2 77 44 43 3.06957 40.4574 61 22 -1 4 0 heads_default egahbgcijklcmccahaaedbbcccccclbcccccccccccec 314,334 34,34 0,0 
-6561 org:divide (none) 1935 1 1 43 0 0 0 142 30 -1 7 0 heads_default egahagcmjklcmccaaaccbbcejccfcclccccccccccek 301 8 0 
-6584 org:divide (none) 5248 1 1 44 0 0 0 145 30 -1 11 0 heads_default egahaagbmjklcbccaaaccbbcecicfcccccdccccccmgc 237 20 0 
-6055 org:divide (none) 4071 2 7 42 41 5.71429 35.3151 128 29 -1 8 0 heads_default egahagaijklcmcajaccbbccccchbcccccfccccjcek 181,201 27,27 0,0 
-6630 org:divide (none) 1951 1 1 42 0 0 0 157 30 -1 5 0 heads_default egahbgcijklchchaaaedbcecccclccccccccccccec 176 5 0 
-5779 org:divide (none) 4088 1 17 41 40 6.5 33.5294 193 28 -1 6 0 heads_default egahagcielccccaaaccbccicccccccccccccmccec 170 31 0 
-4974 org:divide (none) 2515 8 50 43 42 4.2 37.9273 95 26 -1 7 0 heads_default egbhagcijklcmccadaccbbmicccccccccclccccmcec 169,190,208,209,210,228,229,230 0,5,11,5,5,27,16,5 0,0,0,0,0,0,0,0 
-6699 org:divide (none) 5559 1 1 39 0 0 0 183 30 -1 9 0 heads_default egihagcijlcmccaaaccbbcfccccbccccccdccec 135 0 0 
-6400 org:divide (none) 4088 1 1 41 0 0 0 207 30 -1 6 0 heads_default egahagcielccccaaacchccccccccccccccccmccec 111 31 0 
-6354 org:divide (none) 4855 4 11 44 43 3.46154 39.7925 157 30 -1 8 0 heads_default egahahgcijlcmcchammccbbcfcccchcccccccccdccec 34,52,53,54 0,6,0,0 0,0,0,0 
-6656 org:divide (none) 4987 1 1 40 0 0 0 154 30 -1 11 0 heads_default egahagcdjlbjcaaaccibejccccccccccecccccec 375 4 0 
-6035 org:divide (none) 5715 2 3 42 41 14.6 25.0686 183 29 -1 8 0 heads_default eahagijklcmcclaaccbbcccbccccccccahccclccec 308,310 0,32 0,0 
-6495 org:divide (none) 5237 1 1 44 0 0 0 123 30 -1 6 0 heads_default eahaacmjklccmchaaaccibbcccccccccccccccccjcdc 307 35 0 
-5828 org:divide (none) 4962 3 17 43 42 4.57895 37.7053 194 28 -1 4 0 heads_default egadgagcijhlcmccaaedbbccmccccccccccccccccek 275,293,295 9,13,6 0,0,0 
-6610 org:divide (none) 5889 1 1 42 0 0 0 165 30 -1 7 0 heads_default eaahagcijklcmccaaalcbgccaccccicdckcfccccec 267 9 0 
-6403 org:divide (none) 5774 5 8 46 45 4.88889 40.1389 102 30 -1 10 0 heads_default ekcgafagcbjllemcbaaablcbccdccmccccmcclccccccec 87,88,107,108,129 4,0,0,0,1 0,0,0,0,0 
-6472 org:divide (none) 5773 1 1 44 0 0 0 175 30 -1 10 0 heads_default eghhdccijlcechaaacjbbcfccccecccccgccccmchcec 40 15 0 
-6226 org:divide (none) 1935 1 1 43 0 0 0 139 29 -1 7 0 heads_default egaaagcmjklcmccaaaccbblecccfcclccccccccccek 285 19 0 
-6410 org:divide (none) 5324 1 1 41 0 0 0 191 30 -1 8 0 heads_default egalagcijicmccaaagdbbcccckccgecccccccccec 200 13 0 
-6571 org:divide (none) 6297 1 1 43 0 0 0 184 30 -1 9 0 heads_default egaklafcijicmccaaacdbbcccckccgeccdbcccccech 158 14 0 
-6617 org:divide (none) 4088 1 1 41 0 0 0 211 30 -1 6 0 heads_default egahagcielccccaaagcbccccccccccccccccmccec 112 6 0 
-5559 org:divide (none) 5308 6 28 39 38 3.90909 34.6501 173 27 -1 8 0 heads_default egihagcijlcmccaaaccbbcfkcccbccccccdccec 73,74,94,95,114,133 6,0,0,30,0,6 0,0,0,0,0,0 
-5168 org:divide (none) 4268 1 11 42 41 7 33.9714 128 26 -1 6 0 heads_default efajagcijklcmcaalhcbbkmccccccccccccccccaec 62 34 0 
-6686 org:divide (none) 6036 1 1 41 0 0 0 172 30 -1 9 0 heads_default efgjaglijklcmcaaafcbkmcccccccccccgmcccaec 42 3 0 
-6599 org:divide (none) 5871 1 1 43 0 0 0 145 30 -1 11 0 heads_default gahagcijlcmcchammccfbcfccefhccccccccdcdbcec 327 10 0 
-6576 org:divide (none) 6255 1 1 43 0 0 0 203 30 -1 5 0 heads_default egadgagcijklcmccaaedbbfccmcccccccccccccccek 316 16 0 
-6001 org:divide (none) 3883 3 10 42 41 3.125 38.5107 114 28 -1 4 0 heads_default ejahbgcijklcmccaaaedbbccccclccccccccccccec 311,312,332 34,22,34 0,0,0 
-6691 org:divide (none) 5891 1 1 42 0 0 0 176 30 -1 7 0 heads_default eaahagcijklcmlhaaalbbbccacccciccckcfccccec 305 6 0 
-6461 org:divide (none) 6100 1 1 43 0 0 0 103 30 -1 8 0 heads_default egbhagcijklcmccadaccbbciccccdccccclccccmcek 249 26 0 
-5104 org:divide (none) 4714 1 19 44 43 6.28571 37.0188 91 26 -1 6 0 heads_default ejahbgcijkccemccaaacdbbcccccclccccccccccccec 211 25 0 
-6714 org:divide (none) 6102 1 1 43 0 0 0 168 30 -1 11 0 heads_default egahaagbjklcmccaamccbbcecacfcccccfcccccccgc 183 0 0 
-5886 org:divide (none) 4616 2 5 42 42 15 25.6667 125 28 -1 7 0 heads_default egahaecijlccccaaaccbiccfcccccccccccclcccdc 152,172 3,0 0,0 
-6507 org:divide (none) 5497 1 1 42 0 0 0 134 30 -1 9 0 heads_default egahagciklcmcclaaccbbcmcccccccccccldclckec 127 27 0 
-5817 org:divide (none) 4088 2 5 41 40 10.9 28.3529 194 28 -1 6 0 heads_default egahagcielccccaaaccbccccccccccccicccmccec 110,151 6,5 0,0 
-6346 org:divide (none) 6016 3 5 44 43 4.2 38.8303 141 29 -1 9 0 heads_default ecgahagcbjklemcbafalcbccdccmgcccmcclccccccec 84,85,106 10,6,6 0,0,0 
-6231 org:divide (none) 5842 2 2 44 43 18.5 22.0972 159 29 -1 6 0 heads_default egghagcijklcmccaaaccbbccdcccccccccclacmcccef 43,63 6,0 0,0 
-5914 org:divide (none) 3576 1 5 43 42 19 21.5676 161 28 -1 5 0 heads_default egahagcmjklcjcaaaccbacccccccccccccccccfhcec 355 4 0 
-6512 org:divide (none) 5571 1 1 45 0 0 0 126 30 -1 8 0 heads_default ejahbgcijkccemccaaacdbbcccccclcccccccccccmcem 271 36 0 
-6581 org:divide (none) 6166 1 1 42 0 0 0 105 30 -1 8 0 heads_default egbhagcijklcmccadccbbcicccccccccclccccmcel 270 26 0 
-1935 org:divide (none) 1232 3 113 43 24 3.31579 21.0748 61 17 -1 6 0 heads_default egahagcmjklcmccaaaccbbcecccfcclccccccccccek 222,281,282 6,5,5 0,0,0 
-6259 org:divide (none) 5502 1 2 42 23 15 1.53333 149 29 -1 6 0 heads_default egahbgcijklcmchaiaedbceaccclccccccccccmcec 216 6 0 
-6650 org:divide (none) 1951 1 1 42 0 0 0 157 30 -1 5 0 heads_default egahbgcajklcmchaaaedbcecccclccccccccccccec 171 5 0 
-4925 org:divide (none) 4571 3 19 42 28 6.28 21.5722 159 25 -1 8 0 heads_default eghagcijklcmccmfaccbbcccccjefcccccccmccchc 56,57,79 21,21,7 0,0,0 
-5949 org:divide (none) 5453 1 12 42 23 3.64706 19.1949 132 28 -1 8 0 heads_default egahagcmjklcmcfaagcbbcecccfccccccccccfccek 359 6 0 
-6294 org:divide (none) 5194 1 2 43 42 33 1.27273 159 29 -1 9 0 heads_default eglhagcijlcmcchaemccbkcmcccchcccccccccdccec 313 8 0 
-6685 org:divide (none) 5571 1 1 45 0 0 0 122 30 -1 8 0 heads_default ejahbgcijkccemccaaacgbbccmccclcccccccccccmcec 272 6 0 
-6156 org:divide (none) 5835 1 2 44 43 34 1.26471 157 29 -1 11 0 heads_default egahagcijaccmccddaccmblcckcccchgccclcccccaec 236 33 0 
-6593 org:divide (none) 1951 1 1 41 0 0 0 153 30 -1 5 0 heads_default eghbgcijklcmchaaaedbcecccclccccccccccccec 157 7 0 
-6639 org:divide (none) 5976 1 1 41 0 0 0 185 30 -1 11 0 heads_default eghbgcijklcmccmfccbbcccccjefcccccccmccchc 136 5 0 
-6708 org:divide (none) 5888 1 1 45 0 0 0 118 30 -1 10 0 heads_default ecgahagccijkllmcbaaalcbccdkchccccmcclccccccec 70 7 0 
-6616 org:divide (none) 6346 1 1 44 0 0 0 144 30 -1 10 0 heads_default ecgahagcbjklemcbafalchccdccmgcccmcclccccccec 66 13 0 
-6689 org:divide (none) 6214 1 1 41 0 0 0 156 30 -1 9 0 heads_default ekahagckjlcmccaaacccbcdccccccccccaccccccc 393 5 0 
-4987 org:divide (none) 4632 4 46 40 21 2.36364 19.2102 118 26 -1 10 0 heads_default egahagcdjlbccaaaccibejccccccccccecccccec 376,377,378,398 4,15,15,0 0,0,0,0 
-5194 org:divide (none) 3127 3 39 43 42 5.01852 36.7257 129 26 -1 8 0 heads_default egahagcijlcmcchaemccbkcmcccchcccccccccdccec 369,370,389 29,14,29 0,0,0 
-1951 org:divide (none) 559 6 189 42 23 2.5704 20.7426 67 17 -1 4 0 heads_default egahbgcijklcmchaaaedbcecccclccccccccccccec 156,173,177,192,197,212 6,0,12,0,5,5 0,0,0,0,0,0 
-5976 org:divide (none) 5370 4 9 42 28 3.93333 24.429 174 28 -1 10 0 heads_default eghbgcijklcmccmffccbbcccccjefcccccccmccchc 115,116,117,155 5,0,5,8 0,0,0,0 
-6712 org:divide (none) 5205 1 1 41 0 0 0 216 30 -1 7 0 heads_default eghagcdjlcmacaaacgbbeecccccccccbcccccccec 102 4 0 
-6298 org:divide (none) 4334 5 8 43 21 2.45455 19.2032 169 29 -1 5 0 heads_default egghagcijklcmccaaacceccdcccccccccclacccccec 100,121,122,140,142 6,0,6,6,6 0,0,0,0,0 
-5678 org:divide (none) 5302 2 17 44 44 4.89474 39.4903 125 28 -1 5 0 heads_default egahaacmjklcmccaaaccigbccccccccccccccccchcdc 345,365 36,36 0,0 
-5908 org:divide (none) 5160 2 10 43 23 4.4 18.6556 135 28 -1 9 0 heads_default egahcacmjkhcmccaaciibbecclfccccccccccccjcdc 323,344 6,5 0,0 
-6069 org:divide (none) 5453 1 5 43 23 4 18.6875 128 29 -1 8 0 heads_default egahagcmjklcmcfaagcbbcecccfcckcccccccccccek 300 4 0 
-6598 org:divide (none) 5952 1 1 44 0 0 0 143 30 -1 8 0 heads_default egahagcmjklcimccacaccbbcecccfcclcckcccccccek 243 4 0 
-6529 org:divide (none) 6238 1 1 46 0 0 0 119 30 -1 9 0 heads_default ejahbgcijkccemccaaacdbbcccccclccckccccccccmced 232 25 0 
-6460 org:divide (none) 6100 1 1 44 0 0 0 102 30 -1 8 0 heads_default egbhagcijklcmccadaccabbciccccdccccclccccmcec 207 27 0 
-6690 org:divide (none) 1951 1 1 42 0 0 0 159 30 -1 5 0 heads_default egalbgcijklcmchaaaedbcecccclccccccccccccec 191 0 0 
-3355 org:divide (none) 2973 4 65 43 42 5.66304 36.2398 82 21 -1 5 0 heads_default egahagcikklcmccaaaccbbcmccccccccccclcclccec 164,166,184,185 5,7,5,0 0,0,0,0 
-5517 org:divide (none) 4483 3 21 42 30 2.51724 28.021 161 27 -1 7 0 heads_default egalafcijicmccaaacdbbcccchccgemcccccccceca 153,154,174 7,5,3 0,0,0 
-6713 org:divide (none) 6403 1 1 46 0 0 0 110 30 -1 11 0 heads_default ekcgafaghbjllemcbaaablcbccdccmccccmcclccjcccec 128 1 0 
-6391 org:divide (none) 5774 1 4 44 43 12.3333 29.0762 100 30 -1 10 0 heads_default ekcgafagcbjklemcbaaalcbccccmccccmcclccccccec 109 4 0 
-5344 org:divide (none) 4874 2 15 42 41 6 35.3056 183 27 -1 7 0 heads_default eahagijklcmcclaaccbbccccccccccccahccacccec 329,350 35,35 0,0 
-6678 org:divide (none) 5891 1 1 42 0 0 0 175 30 -1 7 0 heads_default eaahagcijklcmchaaalbbbciacccciccckcfccccec 324 6 0 
-6701 org:divide (none) 6035 1 1 42 0 0 0 187 30 -1 9 0 heads_default eahagijklcmfclaaccbbcccbccccccccahccclccec 309 5 0 
-6471 org:divide (none) 6001 1 1 42 0 0 0 128 30 -1 5 0 heads_default ejahbgcijklcmccaaaedbbccccclccccccccccciec 291 34 0 
-6632 org:divide (none) 5889 1 1 41 0 0 0 169 30 -1 7 0 heads_default eaahagcijklcmccaalcbgccacccciccckcfccccec 268 9 0 
-6655 org:divide (none) 6102 1 1 43 0 0 0 164 30 -1 11 0 heads_default egahaagbjklcmccaamccbbcecccfcccccfcccccccmc 202 5 0 
-5891 org:divide (none) 5204 0 15 42 41 3.46154 37.9417 150 28 30 6 0 heads_default eaahagcijklcmchaaalbbbccacccciccckcfccccec 
-6376 org:divide (none) 6016 0 1 44 43 34 1.26471 146 30 30 9 0 heads_default ecgahagcbjklemcbajalcbccdccmgcccmcclcccccjec 
-5453 org:divide (none) 2895 0 35 42 23 3 20.125 116 27 30 7 0 heads_default egahagcmjklcmcfaagcbbcecccfcccccccccccccek 
-5312 org:divide (none) 2677 0 43 43 42 4.09677 38.0587 141 26 30 7 0 heads_default egahagcijkcmcchaamccbbcfcccchcccccccccdccec 
-6219 org:divide (none) 4298 0 9 42 23 2.33333 21.1961 116 29 30 8 0 heads_default egahagcmjllcmcfaaccbbcecccfccccccgccccccek 
-4386 org:divide (none) 3926 0 34 43 42 3.95652 38.4522 140 24 30 6 0 heads_default efaagcijklcmccaiaccbbkcccccccccccfccdcccaec 
-5842 org:divide (none) 4334 0 7 44 43 4.6 38.8162 152 28 30 5 0 heads_default egghagcijklcmccaaaccbbccdcccccccccclacccccef 
-6166 org:divide (none) 2515 0 1 42 41 11.3333 27.7604 104 29 30 7 0 heads_default egbhagcijklcmccadacbbcicccccccccclccccmcec 
-5835 org:divide (none) 5084 0 7 44 43 7.6 34.6529 149 28 30 10 0 heads_default egahagcijaccmccddaccmblccccccchgccclcccccaec 
-5858 org:divide (none) 4107 0 9 43 43 7.54545 35.3931 129 28 30 7 0 heads_default egahaacmjkhcmhcafccibkccccfccccccccccccjcjc 
-4730 org:divide (none) 3418 0 36 44 25 3.33333 21.9298 126 25 30 9 0 heads_default egahaagbmjklcmccaamccbbcecccfcccccfcccccccgc 
-6238 org:divide (none) 5571 0 1 46 45 39 1.15385 118 29 30 8 0 heads_default ejahbgcijkccemccaaacdbbcccccclccckccccccccmcec 
-5826 org:divide (none) 5338 0 3 41 41 6.83333 34.3565 144 28 30 7 0 heads_default egahagckjlcmccaaacccbcmccccccccccaccccccc 
-6100 org:divide (none) 2515 0 2 43 42 8.75 31.8281 100 29 30 7 0 heads_default egbhagcijklcmccadaccbbciccccdccccclccccmcec 
-4298 org:divide (none) 2895 0 29 42 23 3 20.2941 88 24 30 7 0 heads_default egahagcmjllcmcfaaccbbcecccfcccccccccccccek 
-5237 org:divide (none) 4103 0 13 45 44.7273 9.63636 34.8065 115 26 30 5 0 heads_default egahaacmjklccmchaaaccibbcccccccccccccccccjcdc 
-5177 org:divide (none) 4485 0 13 44 26 3.4 23.0286 149 26 30 7 0 heads_default efachcgcijklcmccaaajcbbccecccfcccccccdcccaei 
-2515 org:divide (none) 1217 0 113 43 42 4.92638 37.0028 64 18 30 6 0 heads_default egbhagcijklcmccadaccbbcicccccccccclccccmcec 
-5055 org:divide (none) 4633 0 17 43 42 5.8 35.4968 123 26 30 9 0 heads_default egahagcijlcmchhaamccbbcfcchfhcccchccccdbcec 
-3883 org:divide (none) 385 0 53 43 42 5.43662 36.8239 69 22 30 3 0 heads_default ejahbgcijklcmccaaaedbbcccccclccccccccccccec 
-3983 org:divide (none) 2145 0 69 41 30 2.69231 27.7926 141 23 30 5 0 heads_default egalafcijicmccaaacdbbcccchccgecccccccccec 
-5665 org:divide (none) 4840 0 6 42 41 5.25 36.0214 158 28 30 7 0 heads_default efgjagcijklcmcaaafcbbkmccccccccccccmcccaec 
-4144 org:divide (none) 218 0 42 43 42 4.64286 37.6286 153 23 30 2 0 heads_default egadhagcijklcmccaaedbbccmccccccccccccccccek 
-4616 org:divide (none) 2555 0 49 42 42 5.56338 36.8199 103 25 30 6 0 heads_default egahaecijlccccaaaccbiccccccccccccccclcccdc 
-4855 org:divide (none) 2677 0 46 43 42 4.39062 37.5498 120 25 30 7 0 heads_default egahagcijlcmcchammccbbcfcccchcccccccccdccec 
-4305 org:divide (none) 3983 0 69 41 30 3.69149 26.6356 153 24 30 6 0 heads_default egalafcijicmccaaacdbbcccckccgecccccccccec 
-3999 org:divide (none) 3607 0 61 44 43 3.22472 40.1864 73 23 30 7 0 heads_default ecgahagcbjklemcbaaalcbccdccmccccmcclccccccec 
-6008 org:divide (none) 5177 0 1 43 25 20 1.25 169 28 29 8 0 heads_default efachcgcijklcmccaaajcbccecccfcccccccdcccaei 
-5204 org:divide (none) 3059 0 18 42 41 4.96 36.2247 133 26 29 5 0 heads_default eaahagcijklcmccaaalcbbccacccciccckcfccccec 
-5368 org:divide (none) 4305 0 6 42 30 10 19.2 182 27 29 7 0 heads_default egalaacijicmccaaacdbbcccckccgeccicccccccec 
-5338 org:divide (none) 3882 0 22 41 41 3.59259 38.0473 135 27 29 6 0 heads_default egahagckjlcmccaaacccbcfccccccccccaccccccc 
-5160 org:divide (none) 4863 0 21 43 23 3.61538 19.6581 118 26 29 8 0 heads_default egahaacmjkhcmccaaciibbecclfccccccccccccjcdc 
-5823 org:divide (none) 4386 0 2 43 42 12 28.4118 168 28 29 7 0 heads_default efaagcijklcmccaiaccbbkcccccccccccfccdccgaec 
-4906 org:divide (none) 3902 0 16 44 43 5.96 36.335 110 25 29 9 0 heads_default egahagcijlcmcchammccbbcfcchfhccccccccdcdbcec 
-5475 org:divide (none) 5137 0 10 44 43 5.125 37.7831 102 27 29 8 0 heads_default ecgahagcijkllmcbaaalcbccdcchccccmcclccccccec 
-5370 org:divide (none) 4925 0 8 42 28 3 25.5652 164 27 29 9 0 heads_default eghbgcijklcmccmfaccbbcccccjefcccccccmccchc 
-4483 org:divide (none) 3983 0 31 42 30 2.95556 27.4493 148 24 29 6 0 heads_default egalafcijicmccaaacdbbcccchccgejcccccccceca 
-4071 org:divide (none) 3674 0 58 42 41 3.59551 37.8701 89 23 29 7 0 heads_default egahagcijklcmcajaccbbccccchbccccchccccjcek 
-3400 org:divide (none) 1760 0 101 42 41 3.41135 38.1753 105 21 29 4 0 heads_default efahagcijklcmcaiaccbbkcccccccccccccccccaec 
-4586 org:divide (none) 3178 0 32 44 43 4.86364 38.2532 180 24 29 5 0 heads_default egahagcijklcmccaaaccbdmccccbgcccccclccccccec 
-5715 org:divide (none) 4874 0 1 42 41 35 1.17143 182 28 29 7 0 heads_default eahagijklcmcclaaccbbccccccccccccahccclccec 
-5302 org:divide (none) 1568 0 2 44 44 19.5 22.5789 124 26 29 4 0 heads_default egahaacmjklcmccaaaccibbccccccccccccccccchcdc 
-4396 org:divide (none) 3510 0 30 41 21 3 18.5294 170 24 28 5 0 heads_default eghagcdjlcmccaaaccbbeecccccccccccccccccec 
-4874 org:divide (none) 3720 0 13 42 41 6.83333 34.3565 171 25 28 6 0 heads_default eahagijklcmcclaaccbbccccccccccccahccccccec 
-4107 org:divide (none) 3758 0 33 43 43 5.32 37.9795 103 23 28 6 0 heads_default egahaacmjkhcmhcafccibbccccfccccccccccccjcjc 
-5586 org:divide (none) 3400 0 1 42 41 34 1.20588 170 27 28 5 0 heads_default efahagcijklcmcaiaccbbkcccccgcccccccccccaec 
-3059 org:divide (none) 2316 0 65 42 41 2.92 38.6145 67 20 28 4 0 heads_default egahagcijklcmccaaalcbbccacccciccckcfccccec 
-4725 org:divide (none) 3418 0 14 44 25 2.65217 22.9348 125 25 28 9 0 heads_default egahaagbmjklcmccaaaccbbcecccfcccccdcccccccgc 
-2895 org:divide (none) 1232 0 63 42 23 4.05618 18.8652 70 20 28 6 0 heads_default egahagcmjklcmcfaaccbbcecccfcccccccccccccek 
-3882 org:divide (none) 2308 0 18 42 41 8.08333 32.7024 123 22 28 5 0 heads_default egahagckjlcmccaaacccbcfccccccccccaccccccec 
-1616 org:divide (none) 67 0 129 43 42 3.6114 39.0357 83 16 28 3 0 heads_default eahagcijklcmccaaaccbbccccccccccccalccccccec 
-4840 org:divide (none) 4268 0 29 42 41 5.58333 35.473 134 25 28 6 0 heads_default efajagcijklcmcaaahcbbkmccccccccccccmcccaec 
-3127 org:divide (none) 2677 0 53 43 42 4.57692 37.3053 91 20 28 7 0 heads_default egahagcijlcmcchaamccbkcfcccchcccccccccdccec 
-5137 org:divide (none) 3607 0 6 44 43 5.71429 37.0378 95 26 28 7 0 heads_default ecgahagcijklemcbaaalcbccdcchccccmcclccccccec 
-3418 org:divide (none) 2636 0 58 44 25 2.87912 22.6511 94 21 28 8 0 heads_default egahaagbmjklcmccaaaccbbcecccfcccccfcccccccgc 
-2677 org:divide (none) 2350 0 83 43 42 4.44444 37.4792 83 19 28 6 0 heads_default egahagcijlcmcchaamccbbcfcccchcccccccccdccec 
-5308 org:divide (none) 4720 0 2 39 38 16.5 19.5938 171 26 27 7 0 heads_default egahagcijlcmccaaaccbbcfkcccbccccccdccec 
-4892 org:divide (none) 3702 0 13 43 42 3.0625 39.4522 103 25 27 7 0 heads_default egahagcikklcmccaaaccbbcmcccccccccccldclckec 
-3902 org:divide (none) 3466 0 24 44 43 6.16667 36.0573 91 23 27 8 0 heads_default egahagcijlcmcchaamccbbcfcchfhccccccccdcdbcec 
-4632 org:divide (none) 3170 0 11 40 21 4.46154 16.4567 111 25 27 9 0 heads_default egahagcijlbccaaaccibejccccccccccecccccec 
-4714 org:divide (none) 4248 0 12 43 42 5 37.4595 82 25 27 5 0 heads_default ejahbgcijkccmccaaacdbbcccccclccccccccccccec 
-4720 org:divide (none) 3785 0 16 40 39 2.77778 36.899 155 25 27 6 0 heads_default egahagcijlcmccaaaccbbcfkcccccccccccdccec 
-1568 org:divide (none) 425 0 100 44 43.9456 6.94558 37.2444 52 15 27 3 0 heads_default egahaacmjklcmccaaaccibbcccccccccccccccccjcdc 
-4485 org:divide (none) 2701 0 14 44 43 2.44 41.3265 124 24 27 6 0 heads_default efachcgcijklcmccaaaccbbccccccfcccccccccccaei 
-3607 org:divide (none) 2452 0 35 44 43 5.91489 36.7841 69 22 27 6 0 heads_default ecgahagcijklemcbaaalcbccdccmccccmcclccccccec 
-2555 org:divide (none) 2146 0 50 42 42 4.91765 37.67 68 19 27 5 0 heads_default egahaecijlccccaaaccbbccccccccccccccclcccdc 
-3702 org:divide (none) 3355 0 18 43 42 6.89286 34.7206 85 22 27 6 0 heads_default egahagcikklcmccaaaccbbcmccccccccccclcclckec 
-4633 org:divide (none) 3466 0 6 43 42 6.16667 35.2188 116 25 27 8 0 heads_default egahagcijlcmchhaamccbbcfcchfhcccccccccdbcec 
-4819 org:divide (none) 3576 0 7 43 42 5.85714 36.1714 143 25 27 5 0 heads_default egahagcmjklcmcaaaccbicccccccccccccccccfccec 
-4103 org:divide (none) 1568 0 23 44 44 6.28571 37.8797 93 23 26 4 0 heads_default egahaacmjklcmchaaaccibbcccccccccccccccccjcdc 
-3170 org:divide (none) 2900 0 67 41 22 2.45161 20.004 81 20 26 8 0 heads_default egahagcijlbmccaaaccibejccccccccccecccccec 
-3811 org:divide (none) 3028 0 20 44 28 6.19355 21.9409 139 22 26 7 0 heads_default egahdgcijlceccaaacjbbcfccccecccccgccccmchcec 
-4707 org:divide (none) 3977 0 4 44 43 6.5 36.0441 135 25 26 8 0 heads_default egahagcijgccmccddaccbblccccccchgccclcccccaec 
-4268 org:divide (none) 3873 0 15 42 41 6.36842 34.7113 122 24 26 5 0 heads_default efajagcijklcmcaaahcbbkmccccccccccccccccaec 
-3977 org:divide (none) 3617 0 19 44 43 6.73913 35.7417 122 23 26 7 0 heads_default egahagcijgccmccddaccbblccccccccgccclccccccec 
-3406 org:divide (none) 2986 0 23 41 41 5.12121 36.1723 137 21 26 6 0 heads_default eghagcijklcmccmaaccbbcccccjccccccccmccchc 
-4863 org:divide (none) 4123 0 1 43 43 13 29.0541 115 25 26 7 0 heads_default egahaacmjkhcmccaaciibbccclfccccccccccccjcdc 
-4123 org:divide (none) 3758 0 14 43 43 4.78947 38.596 105 23 26 6 0 heads_default egahaacmjkhcmccaaciibbccccfccccccccccccjcdc 
-3785 org:divide (none) 3101 0 21 41 40 4.66667 35.6863 129 22 26 5 0 heads_default egahagcijlcmccaaaccbbcfkccccccccccccdccec 
-2145 org:divide (none) 1691 0 129 42 41 4.18483 37.0431 77 17 26 4 0 heads_default egahafcijklcmccaaacdbbcccchccgccccccccccec 
-4571 org:divide (none) 3406 0 3 42 41 9.5 31.0429 155 24 26 7 0 heads_default eghagcijklcmccmaaccbbcccccjcfcccccccmccchc 
-3720 org:divide (none) 3193 0 16 43 42 8.2 33.827 162 22 26 5 0 heads_default eahagiijklcmcclaaccbbccccccccccccahccccccec 
-4248 org:divide (none) 3883 0 7 43 42 5.375 36.8958 74 23 26 4 0 heads_default ejahbgcijklcmccaaacdbbcccccclccccccccccccec 
-3466 org:divide (none) 2677 0 18 43 42 6 35.4375 90 21 26 7 0 heads_default egahagcijlcmcchaamccbbcfcchfhcccccccccdbcec 
-3926 org:divide (none) 2243 0 7 43 42 7.36364 34.5758 133 23 25 5 0 heads_default efaagcijklcmccaiaccbbkccccccccccccccdcccaec 
-3490 org:divide (none) 554 0 13 44 43 9.23529 33.1634 119 21 25 3 0 heads_default egahagcijklcmccaaaccbbccdcccccccccclacccccec 
-3873 org:divide (none) 1760 0 10 42 41 9.5 31.0429 115 22 25 4 0 heads_default efahagcijklcmcaaaccbbkmccccccccccccccccaec 
-2452 org:divide (none) 1452 0 20 44 43 10.1538 31.7538 59 18 25 5 0 heads_default ecgahagcijklemccaaalcbcccccmccccmcclccccccec 
-3178 org:divide (none) 1628 0 33 44 43 5.03846 38.1763 154 20 25 4 0 heads_default egahagcijklcmccaaaccbdmcccccccccccclccccccec 
-3674 org:divide (none) 3112 0 12 42 41 7.375 33.5321 86 22 25 6 0 heads_default egahagcijklcmcajaccbbccccccbccccchccccjcek 
-3193 org:divide (none) 1616 0 45 43 42 3.80303 38.9019 132 20 25 4 0 heads_default eahagiijklcmccaaaccbbccccccccccccalccccccec 
-3758 org:divide (none) 3394 0 19 43 43 5.32 37.9795 91 22 25 5 0 heads_default egahaacmjkhcmccaaccibbccccfccccccccccccjcdc 
-385 org:divide (none) 218 0 207 43 42 5.72222 36.3333 31 11 25 2 0 heads_default egahbgcijklcmccaaaedbbcccccclccccccccccccec 
-3101 org:divide (none) 330 0 17 41 40 9 30.303 123 20 24 4 0 heads_default egahagcijlcmccaaaccbbcfcccccccccccccdccec 
-2741 org:divide (none) 558 0 23 44 43 7.75 35.1554 107 19 24 3 0 heads_default egahagcmjklcmccaaaccbacccccccccccccccccfccec 
-2636 org:divide (none) 2114 0 30 44 25 3.98039 21.2745 81 19 24 7 0 heads_default egahaagcmjklcmccaaaccbbcecccfcccccfcccccccgc 
-330 org:divide (none) 27 0 125 42 41 4.91525 36.2787 61 10 24 3 0 heads_default egahagcijlcmccaaaccbbcfccccccccccccccdccec 
-3247 org:divide (none) 1730 0 16 41 40 4.04348 36.6184 117 21 24 4 0 heads_default egahagcielccccaaaccbcccccccccccccccccccec 
-2243 org:divide (none) 816 0 85 44 43 6.17391 36.82 105 18 24 4 0 heads_default efahagcijklcmccaiaccbbkccccccccccccccdcccaec 
-3510 org:divide (none) 2213 0 9 41 21 3.13333 18.3647 155 21 24 4 0 heads_default eghagcijlcmccaaaccbbeecccccccccccccccccec 
-218 org:divide (none) 1 0 154 43 42 4.75 37.625 28 9 24 1 0 heads_default egahagcijklcmccaaaedbbcccccccccccccccccccec 
-3394 org:divide (none) 1568 0 11 44 44 6.06667 38.2838 90 21 24 4 0 heads_default egahaacmjkhcmccaaaccibbcccccccccccccccccjcdc 
-3617 org:divide (none) 2856 0 4 44 43 9.25 32.5662 118 22 23 6 0 heads_default egahagcijgccmccdaaccbblccccccccgccclccccccec 
-1730 org:divide (none) 56 0 72 41 40 5.50495 34.9945 55 16 23 3 0 heads_default egahagcijlccccaaaccbcccccccccccccccccccec 
-3028 org:divide (none) 1939 0 12 44 28 4.47368 23.7712 126 20 23 6 0 heads_default egahagcijlceccaaacjbbcfccccecccccgccccmchcec 
-1760 org:divide (none) 191 0 54 42 41 5.03846 36.4006 81 16 23 3 0 heads_default efahagcijklcmcaaaccbbkcccccccccccccccccaec 
-2316 org:divide (none) 1992 0 20 42 41 5.57143 35.3203 52 18 23 3 0 heads_default egahagcijklcmccaaalcbbccaccccicccccfccccec 
-1217 org:divide (none) 735 0 42 43 42 5.05263 36.9938 43 14 23 5 0 heads_default egbhagcijklcmccadaccbbcccccccccccclccccmcec 
-558 org:divide (none) 31 0 256 43 42 2.98347 39.7485 39 12 23 2 0 heads_default egahagcmjklcmccaaaccbacccccccccccccccccccec 
-3112 org:divide (none) 2407 0 12 42 41 2.94444 38.7855 72 20 23 5 0 heads_default egahagcijklcmcajaccbbccccccbccccccccccjcek 
-2213 org:divide (none) 855 0 65 42 22 2.30233 20.3146 109 18 23 3 0 heads_default egahagcijlcmccaaaccbbeecccccccccccccccccec 
-2308 org:divide (none) 1948 0 44 42 41 4.45763 36.9496 75 18 23 4 0 heads_default egahagckjlcmccaaacccbcfcccccccccccccccccec 
-554 org:divide (none) 32 0 147 43 42 4.00505 38.4941 57 12 23 2 0 heads_default egahagcijklcmccaaaccbbcccccccccccclacccccec 
-2856 org:divide (none) 2125 0 11 44 43 7.6 34.6529 107 19 22 5 0 heads_default egahagcijglcmccdaaccbblccccccccgccclccccccec 
-2315 org:divide (none) 992 0 29 42 42 4.5 37.9167 109 18 22 4 0 heads_default egahagcijklcmccmaaccbbcccccjccccccccaccchc 
-3119 org:divide (none) 385 0 2 44 43 18 22.1143 60 20 22 3 0 heads_default egahbgcijklcmccahaaedbbcccccclccccccccccccec 
-2973 org:divide (none) 1770 0 3 43 42 12.3333 28.4 80 20 22 4 0 heads_default egahagcikklcmccaaaccbbcmccccccccccclcccccec 
-632 org:divide (none) 233 0 43 44 43 6 37.0278 39 12 21 3 0 heads_default ecgahagcijklemccaaalcbbcccccccccmcclccccccec 
-1511 org:divide (none) 1147 0 65 41 22 2.94393 19.4843 56 15 21 6 0 heads_default egahagcijlbmccaaaccbbejccccccccccccccccec 
-1856 org:divide (none) 579 0 22 43 42 7.54545 34.57 80 16 21 4 0 heads_default efahagcijklcmccaaaccbbccccccccccccccccccaei 
-1628 org:divide (none) 1187 0 54 44 43 3.33333 40.213 99 16 21 3 0 heads_default egahagcijklcmccaaaccbbmcccccccccccclccccccec 
-2986 org:divide (none) 2315 0 1 41 41 36 1.13889 136 20 21 5 0 heads_default eghagcijklcmccmaaccbbcccccjccccccccaccchc 
-1939 org:divide (none) 1695 0 21 43 28 3.0625 25.4891 108 17 21 5 0 heads_default egahagcijlceccaaacjbbcfcccceccccccccccchcec 
-2407 org:divide (none) 2022 0 5 42 41 18.5 21.0694 67 18 21 4 0 heads_default egahagcijklcmcajaccbbccccccbccccccccccjcec 
-1232 org:divide (none) 789 0 15 43 24 5.32 18.5432 52 15 21 5 0 heads_default egahagcmjklcmccaaaccbbcecccfcccccccccccccek 
-2146 org:divide (none) 1654 0 8 42 41 7.54545 33.7469 65 17 21 4 0 heads_default egahaecijlccccaaaccbbccccccccccccccclcccec 
-1452 org:divide (none) 632 0 32 43 42 4.09091 38.2909 48 15 21 4 0 heads_default ecgahagcijklemccaaalcbcccccccccmcclccccccec 
-1770 org:divide (none) 272 0 18 42 41 4.77778 36.5746 62 16 21 3 0 heads_default egahagcikklcmccaaaccbbcccccccccccclcccccec 
-855 org:divide (none) 4 0 123 42 23 2.28649 21.3562 67 13 21 2 0 heads_default egahagcijlcmccaaaccbbcecccccccccccccccccec 
-2900 org:divide (none) 1511 0 1 41 22 8.5 11.6875 80 20 20 7 0 heads_default egahagcijlbmccaaaccibejccccccccccccccccec 
-839 org:divide (none) 406 0 38 43 42 6.05263 36.2646 49 13 20 2 0 heads_default egahagcijklcmccaaaccbbccccccbccccccccccjcec 
-2125 org:divide (none) 1782 0 20 44 43 5.68966 37.2384 92 17 20 4 0 heads_default egahagcijglcmccdaaccbblcccccccccccclccccccec 
-1654 org:divide (none) 56 0 22 42 41 6.64516 34.5708 56 16 20 3 0 heads_default egahagcijlccccaaaccbbccccccccccccccclcccec 
-1992 org:divide (none) 1739 0 20 42 41 4.80769 36.4084 48 17 20 2 0 heads_default egahagcijklcmccaaalcbbccacccckcccccfccccec 
-2114 org:divide (none) 1378 0 9 44 25 2.1875 23.5156 66 17 20 6 0 heads_default egahaagcmjklcmccaaaccbbcecccfcccccccccccccgc 
-2022 org:divide (none) 839 0 3 42 41 18.5 21.0694 65 17 19 3 0 heads_default egahagcijklcmcaaaccbbccccccbccccccccccjcec 
-2350 org:divide (none) 1659 0 3 43 42 7.4 33.8545 80 18 19 5 0 heads_default egahagcijlcmcchaaaccbbcfcccchcccccccccdccec 
-992 org:divide (none) 344 0 41 43 42 4.88889 37.463 78 14 19 3 0 heads_default egahagcijklcmccmaaccbbccccccjccccccccacccec 
-1659 org:divide (none) 330 0 26 43 42 6.82353 34.8062 70 16 19 4 0 heads_default egahagcijlcmcchaaaccbbcfccccccccccccccdccec 
-27 org:divide (none) 4 0 228 42 41 5.06289 36.2406 19 4 19 2 0 heads_default egahagcijlcmccaaaccbbcfcccccccccccccccccec 
-735 org:divide (none) 387 0 31 43 42 3.93333 38.3765 40 13 19 4 0 heads_default egahagcijklcmccadaccbbcccccccccccclccccmcec 
-1948 org:divide (none) 27 0 2 42 41 9.5 31.0429 73 17 19 3 0 heads_default egahagckjlcmccaaaccbbcfcccccccccccccccccec 
-816 org:divide (none) 191 0 31 43 42 3.97872 38.5248 62 13 19 3 0 heads_default efahagcijklcmccaiaccbbkcccccccccccccccccaec 
-67 org:divide (none) 32 0 126 42 41 4.97297 36.4752 26 6 18 2 0 heads_default eahagcijklcmccaaaccbbcccccccccccclccccccec 
-191 org:divide (none) 29 0 100 43 42 5.58599 36.7943 39 9 18 2 0 heads_default efahagcijklcmccaaaccbbkcccccccccccccccccaec 
-1 org:file_load (none) (none) 0 289 43 42 6.09735 36.2138 0 -1 18 0 0 heads_default egahagcijklcmccaaaccbbcccccccccccccccccccec 
-1187 org:divide (none) 32 0 34 44 43 3.91667 39.5162 76 14 18 2 0 heads_default egahagcijklcmccaaaccbblcccccccccccclccccccec 
-1739 org:divide (none) 1 0 4 43 42 12.6667 28.3889 47 16 18 1 0 heads_default egahagcijklcmccaaalcbbcccccccccccccccccccec 
-387 org:divide (none) 217 0 42 43 42 4.51724 37.7793 37 11 18 3 0 heads_default egahagcijklcmccadaccbbcccccccccccclccccacec 
-123 org:divide (none) 1 0 62 42 41 5.23077 36.1816 30 7 18 1 0 heads_default egahagcijklcmccaaaccbbccccccccccccccccccec 
-1782 org:divide (none) 1187 0 11 44 43 2.7 40.9114 89 16 18 3 0 heads_default egahagcijklcmccdaaccbblcccccccccccclccccccec 
-366 org:divide (none) 27 0 52 42 41 3.91667 37.6782 61 10 18 3 0 heads_default egahagcijlceccaaaccbbcfcccccccccccccccccec 
-56 org:divide (none) 4 0 137 42 41 4.87692 36.704 14 6 18 2 0 heads_default egahagcijlccccaaaccbbcccccccccccccccccccec 
-1695 org:divide (none) 366 0 4 42 28 8.33333 19.0725 106 16 18 4 0 heads_default egahagcijlceccaaacjbbcfcccceccccccccccccec 
-396 org:divide (none) 31 0 132 43 42 1.18617 41.7828 39 11 18 2 0 heads_default egahagcmjklcmccaaaccbbccccfccccccccccccccec 
-1691 org:divide (none) 1354 0 10 43 42 3.125 39.45 67 16 18 3 0 heads_default egahagcijklcmccaaaccbbcccchccgcccccccccccec 
-559 org:divide (none) 385 0 32 43 24 3.18182 20.9198 38 12 17 3 0 heads_default egahbgcijklcmchaaaedbbcecccclccccccccccccec 
-272 org:divide (none) 32 0 53 42 41 6.51351 34.5413 38 10 17 2 0 heads_default egahagcijklcmccaaaccbbcccccccccccclcccccec 
-1378 org:divide (none) 789 0 7 43 24 5 18.9474 59 15 17 5 0 heads_default egahagcmjklcmccaaaccbbcecccfcccccccccccccgc 
-789 org:divide (none) 575 0 28 43 24 3.7 20.5895 44 13 17 4 0 heads_default egahagcmjklcmccaaaccbbcecccfcccccccccccccec 
-217 org:divide (none) 32 0 31 43 42 7.51064 34.1872 31 9 17 2 0 heads_default egahagcijklcmccadaccbbcccccccccccclccccccec 
-579 org:divide (none) 191 0 20 43 42 4.85714 37.6216 53 12 16 3 0 heads_default efahagcijklcmccaaaccbbccccccccccccccccccaec 
-1354 org:divide (none) 123 0 4 42 41 7.8 33.0343 62 15 16 2 0 heads_default egahagcijklcmccaaaccbbccccccgcccccccccccec 
-930 org:divide (none) 615 0 14 41 22 2.52381 20.028 50 14 16 4 0 heads_default egahagcijlcmccaaaccbbegccccccccccccccccec 
-160 org:divide (none) 4 0 55 41 40 4 36.5714 25 8 16 2 0 heads_default egahagcijlcmccaaaccbbccccccccccccccccccec 
-29 org:divide (none) 1 0 99 43 42 5.27972 37.1419 21 5 16 1 0 heads_default egahagcijklcmccaaaccbbkcccccccccccccccccaec 
-32 org:divide (none) 1 0 85 43 42 4.5 37.9167 25 5 16 1 0 heads_default egahagcijklcmccaaaccbbcccccccccccclccccccec 
-425 org:divide (none) 31 0 32 43 43 5.88679 37.4702 42 11 16 2 0 heads_default egahagcmjklcmccaaaccbbcccccccccccccccccjcdc 
-1147 org:divide (none) 930 0 1 41 22 17 1.29412 55 14 15 5 0 heads_default egahagcijlcmccaaaccbbejccccccccccccccccec 
-31 org:divide (none) 1 0 352 43 42 2.75135 40.012 23 5 15 1 0 heads_default egahagcmjklcmccaaaccbbcccccccccccccccccccec 
-406 org:divide (none) 1 0 20 43 42 4.27273 38.285 34 11 15 1 0 heads_default egahagcijklcmccaaaccbbccccccbccccccccccccec 
-575 org:divide (none) 396 0 16 42 41 6.66667 34.3619 41 12 15 3 0 heads_default egahagcmjklcmccaaaccbbccccfcccccccccccccec 
-344 org:divide (none) 200 0 25 43 42 6.30303 35.8131 56 10 14 2 0 heads_default egahagcijklcmccmaaccbbcccccccccccccccacccec 
-4 org:divide (none) 1 0 98 42 41 5.88971 35.4312 7 1 14 1 0 heads_default egahagcijlcmccaaaccbbcccccccccccccccccccec 
-615 org:divide (none) 160 0 6 40 39 4.55556 34.798 44 12 14 3 0 heads_default egahagcijlcmccaaaccbbgccccccccccccccccec 
-233 org:divide (none) 32 0 10 43 42 7.8 33.84 32 9 13 2 0 heads_default egahagcijklcmccaaalcbbcccccccccccclccccccec 
-200 org:divide (none) 1 0 9 43 42 3.76923 38.8565 46 9 11 1 0 heads_default egahagcijklcmccaaaccbbcccccccccccccccacccec 
+8657 org:divide (none) 7718 1 17 44 28 1.95238 26.7302 169 28 -1 10 0 heads_default efahagcijklcmccaghcjcdbccacececccccccccccgbc 368 13 0 
+9922 org:divide (none) 8978 1 1 44 0 0 0 131 30 -1 4 0 heads_default egahaccijdlcmccaaaccbbccccclcccgfcccccccccec 331 23 0 
+6242 org:divide (none) 3437 11 149 43 29 2.3945 26.978 131 25 -1 9 0 heads_default egahagcijkicmccadamcibcakcgceccddgcccccccec 191,209,210,229,230,231,248,268,269,288,289 11,8,0,5,0,16,16,0,0,19,0 0,0,0,0,0,0,0,0,0,0,0 
+9784 org:divide (none) 7098 1 1 43 0 0 0 188 30 -1 6 0 heads_default egfhagchjklcmccaaaccabblccccccccccccccfccec 65 19 0 
+8611 org:divide (none) 7164 1 13 43 34 5.66667 28.5287 206 28 -1 8 0 heads_default egahagcijklcmcjaejccckcccccccccccehcccccjec 57 0 0 
+10175 org:divide (none) 7825 1 1 43 0 0 0 156 30 -1 7 0 heads_default egahagcdjkljmcfiaabacbbcccccccccdccccccccec 49 4 0 
+3850 org:divide (none) 1150 6 212 43 42 3.80449 38.7281 126 20 -1 4 0 heads_default egahagcijkljmccaaabcbbcccccccchcdccccccccec 9,10,29,69,70,389 27,27,35,0,0,35 0,0,0,0,0,0 
+6219 org:divide (none) 2546 3 104 43 38 2.69536 36.0478 169 25 -1 8 0 heads_default egihagcijklckclaaaccbbcgcccaccccccccdeccchc 0,380,381 0,0,0 0,0,0 
+9421 org:divide (none) 3996 1 1 43 42 34 1.23529 157 29 -1 5 0 heads_default gahagciacklcgckaaaccbbccccccccccccccmcdccec 350 30 0 
+9007 org:divide (none) 6276 1 9 44 32 3.07692 29.6264 130 29 -1 3 0 heads_default egahaccijdlcmccaaaccbbcbccccccceccccccccccec 313 0 0 
+8984 org:divide (none) 6213 2 5 43 42 8.75 31.8281 145 29 -1 7 0 heads_default egamagcijklcmcceaaccbhcccccgciccclcccccgcec 238,259 31,25 0,0 
+8731 org:divide (none) 5153 1 17 43 24 1.59259 23.1634 147 28 -1 9 0 heads_default egahagcdajmdcgckadaccbbeccccccccccccddccech 235 11 0 
+9145 org:divide (none) 5025 1 8 44 43 5.5 37.7703 163 29 -1 6 0 heads_default egahagcijklcmaccaaaccabcccccccjcjchcacccccec 220 0 0 
+8294 org:divide (none) 5238 3 33 43 42 3.64151 38.9182 213 27 -1 7 0 heads_default egahagcejklcmccaeaccckccccccccckcchcccccgec 218,237,239 0,0,4 0,0,0 
+9053 org:divide (none) 5202 2 20 43 32 2.04 30.7674 179 29 -1 8 0 heads_default egahagcijhlfmcmaackcbbcccccccccecccccchcchc 144,163 0,13 0,0 
+5281 org:divide (none) 4539 3 104 42 42 2.63333 40.0944 129 23 -1 7 0 heads_default egahagcijlfmcmaacccbbcccccccccccccccchcchc 66,85,105 35,35,35 0,0,0 
+9950 org:divide (none) 9322 1 1 42 0 0 0 151 30 -1 6 0 heads_default egahagciklchccaaacchbcacccccccckcccjccgcec 39 25 0 
+7098 org:divide (none) 5985 2 66 43 42 3.49505 39.1678 146 26 -1 5 0 heads_default egfhagchjklcmccaaaccabblcccccccccccccccccec 25,26 19,36 0,0 
+7834 org:divide (none) 6331 4 38 43 29 2.48387 27.207 206 27 -1 9 0 heads_default egahagckjklciccjaaccbbcjccacecchcccccecccac 2,3,4,382 0,0,18,23 0,0,0,0 
+9306 org:divide (none) 6219 1 3 43 38 7.2 30.6375 194 29 -1 9 0 heads_default egihagcijklckclaaaccbbcgcccaccccclccdeccchc 1 0 0 
+9719 org:divide (none) 9044 1 1 44 0 0 0 186 30 -1 10 0 heads_default egihagcijklckclaaaccbbcgccccaccicccccdeccchc 344 31 0 
+9811 org:divide (none) 9096 1 1 42 0 0 0 173 30 -1 10 0 heads_default egahagciaalcmkcagcbdbkcaccceccciccecccccec 310 13 0 
+1623 org:divide (none) 350 3 165 42 28 2.57676 25.7925 72 15 -1 4 0 heads_default egahagciaklcmccagcbdbccaccceccccccccccccec 287,308,327 19,0,19 0,0,0 
+10179 org:divide (none) 8253 1 1 44 0 0 0 161 30 -1 7 0 heads_default egahagcijklcmccaaalcbhcccccfcccjcgccckdcccef 280 5 0 
+9788 org:divide (none) 9081 1 1 44 0 0 0 163 30 -1 8 0 heads_default egaaagcijklcmcceaacchhcccccgccccclcccccmgcec 257 27 0 
+9673 org:divide (none) 9127 1 1 43 0 0 0 182 30 -1 4 0 heads_default egahagcijklcmccabagcbbccccckcjcccccccccccec 242 21 0 
+9926 org:divide (none) 9072 1 1 42 0 0 0 236 30 -1 7 0 heads_default egahagcijklcmccaagmcckccckccccckcacccccgec 198 13 0 
+9880 org:divide (none) 8958 1 1 44 0 0 0 232 30 -1 9 0 heads_default egeamagcieklkmccaaaccchcfcccccccccccccccgcec 175 20 0 
+9857 org:divide (none) 8982 1 1 45 0 0 0 210 30 -1 9 0 heads_default egahagcijkflceccaafccbblcccccccicckccccchacec 130 27 0 
+10133 org:divide (none) 9321 1 1 44 0 0 0 179 30 -1 8 0 heads_default egahagcijklfmcmaacccabcccccccccccccccchccchc 122 5 0 
+10156 org:divide (none) 9598 1 1 44 0 0 0 195 30 -1 7 0 heads_default egaaagcijkdlcmccaafcfbbccccceccccccccccmccec 109 6 0 
+9052 org:divide (none) 7199 3 17 44 32 2.42105 30.3759 159 29 -1 8 0 heads_default egahagcmjklcmeckaaaccckccccccccecccaccccbcea 78,80,99 27,18,11 0,0,0 
+10064 org:divide (none) 9306 1 1 43 0 0 0 195 30 -1 10 0 heads_default egicagcijklckclaakccbbcgcccaccccclccdeccchc 21 6 0 
+7557 org:divide (none) 5861 3 31 42 41 2.41667 39.3405 134 26 -1 4 0 heads_default egahagciklchccaaacchbcaccccccccccccjccccec 20,40,59 29,29,5 0,0,0 
+8224 org:divide (none) 3953 6 30 44 43 5.26829 37.9018 223 27 -1 5 0 heads_default egajagcijklbmccaaacibbccccmcccccccccccdcccec 5,24,44,346,366,385 32,32,32,2,0,32 0,0,0,0,0,0 
+2134 org:divide (none) 1213 2 142 43 42 3.32301 39.2898 75 17 -1 2 0 heads_default egchagcijklcmccaaaccbbccccccccfccccccccccec 374,394 25,25 0,0 
+9954 org:divide (none) 1623 1 1 42 0 0 0 200 30 -1 5 0 heads_default egahggciaklcmccagcbdbccaccceccccccccccccec 309 6 0 
+7861 org:divide (none) 5775 12 76 43 42 2.90654 39.7121 167 27 -1 9 0 heads_default egahagckahdchckaaaccbbkcjcccccccmccccddccec 233,234,251,252,253,254,271,272,273,274,293,294 27,27,9,27,0,19,0,4,0,27,19,32 0,0,0,0,0,0,0,0,0,0,0,0 
+9287 org:divide (none) 7920 1 8 45 44 6 37.8889 171 29 -1 9 0 heads_default egahagcijkflccccaafccbadcccccccicckccccchacek 208 7 0 
+10092 org:divide (none) 8559 1 1 43 0 0 0 235 30 -1 7 0 heads_default egahagccjkflcmccaafccbbccccccgcccdcccchccec 205 5 0 
+8666 org:divide (none) 2646 2 13 42 42 4.68421 37.7018 169 28 -1 5 0 heads_default egahagcjkdcmccaaaccbbccccccccccckcccdcccfc 133,154 4,0 0,0 
+8160 org:divide (none) 3850 4 38 42 41 2.85455 38.8275 152 27 -1 5 0 heads_default egahagcijkljmccaaabcbbcccccccchcdcccccccec 91,92,111,112 0,27,27,27 0,0,0,0 
+5561 org:divide (none) 2015 1 109 44 34 1.16667 33.8046 153 23 -1 6 0 heads_default egahagcijklcmcjaaaccckccccccccccceaccaccccec 19 0 0 
+9425 org:divide (none) 4118 1 1 44 0 0 0 194 29 -1 4 0 heads_default egchagcijklcmccaaaccbbkccccccclfccccccccccec 13 36 0 
+5285 org:divide (none) 1217 8 142 44 43 2.88889 40.6794 113 23 -1 4 0 heads_default egahagcijkflcmccaafcfbbccccccccccccccccmccec 6,7,8,46,47,48,87,88 32,9,32,32,32,32,32,32 0,0,0,0,0,0,0,0 
+9734 org:divide (none) 9066 1 1 44 0 0 0 145 30 -1 6 0 heads_default egahagcilcklcgckaaaccbbccccccccccccccmcdciec 349 31 0 
+9044 org:divide (none) 6219 4 17 43 38 2.34783 36.3995 182 29 -1 9 0 heads_default egihagcijklckclaaaccbbcgcccaccicccccdeccchc 322,323,342,343 30,30,7,0 0,0,0,0 
+9872 org:divide (none) 7991 1 1 43 0 0 0 182 30 -1 5 0 heads_default egahagcijklemccaaagibbccccmccccccccccchccec 305 21 0 
+9113 org:divide (none) 7991 4 9 44 43 4.5 38.8194 189 29 -1 5 0 heads_default egahagcijeklkmccaaagibbccccmccccccccccchccec 283,284,303,304 22,22,22,22 0,0,0,0 
+2466 org:divide (none) 1306 2 187 44 43 3.91176 39.6161 77 17 -1 4 0 heads_default egahagcijklcmaccaaaccabcccccccjcjcccdcccccec 226,246 0,5 0,0 
+10148 org:divide (none) 7014 1 1 44 0 0 0 219 30 -1 8 0 heads_default egeamagcieklcmccaaaccbhcfcccccccccccccccgcel 214 7 0 
+9780 org:divide (none) 8559 1 1 44 0 0 0 218 30 -1 7 0 heads_default egahagccjkflgmccaafccbbccccccgcccdccccchccec 206 27 0 
+9159 org:divide (none) 8073 1 12 43 42 3.125 39.45 175 29 -1 6 0 heads_default egaaagcijkflcmccaafcfbbcccccccccccccccmccec 90 15 0 
+9228 org:divide (none) 4539 1 9 43 43 4.36364 39.1938 169 29 -1 7 0 heads_default egahfgcijklfmcmaacccbbcccccccccccccccchcchc 82 0 0 
+9090 org:divide (none) 7473 1 4 42 41 17.5 21.1029 135 29 -1 5 0 heads_default egahagciklcmccaaacchbcaccccccccfdccjccccec 36 0 0 
+8653 org:divide (none) 7825 1 9 43 42 4.18182 38.2879 141 28 -1 7 0 heads_default egahagcijkljhcfaaabacbbcccccccccdccccccccec 12 35 0 
+7825 org:divide (none) 6195 4 29 43 42 4.80435 37.5616 140 27 -1 6 0 heads_default egahagcijkljmcfaaabacbbcccccccccdccccccccec 11,32,50,52 0,8,0,0 0,0,0,0 
+9175 org:divide (none) 7322 1 1 41 40 32 1.25 183 29 -1 8 0 heads_default fgahagbijklcgcaaccbbcccccfccgclcccckcccec 377 20 0 
+9681 org:divide (none) 3850 1 1 43 0 0 0 246 30 -1 5 0 heads_default egahagcijkljmccaaabccbcccccccchcdccccccccec 369 27 0 
+10049 org:divide (none) 9066 1 1 44 0 0 0 159 30 -1 6 0 heads_default egahagcilcklcgckaaabcbbccccccccccccccmcdccec 330 5 0 
+9658 org:divide (none) 6214 1 2 42 28 11 14.6667 189 30 -1 7 0 heads_default egahkgciaalcmjcagcbdbcclccceccccccccccccec 270 0 0 
+9773 org:divide (none) 7973 1 1 43 0 0 0 164 30 -1 11 0 heads_default egahagcijkicmccamamckbcaccgceccddgcccccgcec 245 11 0 
+9980 org:divide (none) 9391 1 1 45 0 0 0 188 30 -1 10 0 heads_default egahagcidkflccccaafccdbdccccccfiickccccjhlcec 190 8 0 
+9750 org:divide (none) 7199 1 1 43 0 0 0 170 30 -1 8 0 heads_default egahagcmjklcmeckaaaccckcccccccccccaccccbcea 139 18 0 
+9359 org:divide (none) 7287 1 1 41 33 14.5 17.0893 231 29 -1 8 0 heads_default egahagcijklcmcjaaccckcccccccccccehcccccec 77 0 0 
+9244 org:divide (none) 8525 1 6 43 42 6.625 18.5096 228 29 -1 9 0 heads_default ceaahagaijlfmcmaacccbbcccccccccccccccchcchc 64 0 0 
+7473 org:divide (none) 5861 3 61 42 41 3.81707 37.6029 125 26 -1 4 0 heads_default egahagciklcmccaaacchbcaccccccccfcccjccccec 14,16,35 0,33,0 0,0,0 
+8727 org:divide (none) 7191 1 15 43 42 4.89474 37.6953 154 28 -1 6 0 heads_default egfhagchjklckccamaccabbjcccccccccccccccccec 387 0 0 
+7991 org:divide (none) 2596 1 39 43 42 3.84483 38.4858 161 27 -1 4 0 heads_default egahagcijklcmccaaagibbccccmccccccccccchccec 302 33 0 
+5944 org:divide (none) 3437 3 83 43 29 1.6129 28.1113 131 24 -1 9 0 heads_default egahagcijkicmccamamcibcaccgceccddgcccccccec 265,285,286 5,19,19 0,0,0 
+10015 org:divide (none) 8971 1 1 44 0 0 0 243 30 -1 14 0 heads_default egahagijkklcmmagaeadckkcccjdcccccccaccccicec 194 12 0 
+8451 org:divide (none) 6242 4 21 43 29 1.57143 28.2109 158 28 -1 10 0 heads_default egahagcijkicmccadamcijcakcgceccddgcccccccec 193,211,212,232 20,20,0,5 0,0,0,0 
+9072 org:divide (none) 4654 2 14 43 42 2.59091 40.1439 230 29 -1 6 0 heads_default egahagcijklcmccaaglcckccckccccckccacccccgec 177,178 0,13 0,0 
+10084 org:divide (none) 8559 1 1 43 0 0 0 212 30 -1 7 0 heads_default egahagccjkflcmccaafccbbccccccgcccdccccchcce 164 5 0 
+5162 org:divide (none) 3506 2 35 43 26 2.43396 24.1358 150 23 -1 6 0 heads_default egahagcijklfmcmagaccbbcccecccccccccccchcchc 126,127 7,19 0,0 
+10107 org:divide (none) 5285 1 1 44 0 0 0 196 30 -1 5 0 heads_default egahagcijkflcmccaadcfbbccccccccccccccccmccec 67 5 0 
+9946 org:divide (none) 7473 1 1 42 0 0 0 152 30 -1 5 0 heads_default egahagciklcmccaaacchbhaccccccccfcccjccccec 15 24 0 
+10024 org:divide (none) 9288 1 1 44 0 0 0 227 30 -1 11 0 heads_default egahagckjklciccjaaccbjijccacecchcckcccecccac 384 5 0 
+9564 org:divide (none) 7110 1 1 44 0 0 0 264 30 -1 9 0 heads_default egahaegcijklciccjaachbicjccacccchcccccecccac 379 30 0 
+9311 org:divide (none) 7322 3 12 41 40 3.5 36.7742 186 29 -1 8 0 heads_default egahagcijklcgcaacdbbcccccfccgclcccckcccec 316,336,337 5,0,12 0,0,0 
+8253 org:divide (none) 7627 2 33 44 43 3.0625 40.3915 143 27 -1 6 0 heads_default egahagcijklcmccaaaccbhcccccfcccjcgccckdcccef 260,281 0,0 0,0 
+9081 org:divide (none) 6213 2 13 44 43 2.73684 40.8034 151 29 -1 7 0 heads_default egamagcijklcmcceaacchhcccccgccccclcccccmgcec 258,278 26,31 0,0 
+9495 org:divide (none) 2466 1 3 45 33 10 22.3929 198 29 -1 5 0 heads_default egahagcijklcmaccaaaccabcccccccjcejcccdcccccec 227 0 0 
+9127 org:divide (none) 659 2 7 43 42 6 36.1667 180 29 -1 3 0 heads_default egahagcijklcmccaaagcbbccccckcjcccccccccccec 202,243 21,21 0,0 
+10254 org:divide (none) 8666 1 1 42 0 0 0 186 30 -1 6 0 heads_default egahagcjkdcmccaaaccbbecccccccccckcccdcccfc 153 0 0 
+9771 org:divide (none) 6368 1 1 40 0 0 0 212 30 -1 7 0 heads_default egahagciklcmccaaagdbbacccccccccccjccccfc 136 27 0 
+9909 org:divide (none) 8020 1 1 41 0 0 0 158 30 -1 5 0 heads_default egahachiklcmbaaaccbbcaccccccccccccjccfckc 55 30 0 
+9955 org:divide (none) 5285 1 1 45 0 0 0 180 30 -1 5 0 heads_default egahagcijkflcdccaafcfbbcccccfcccccccccccmccec 28 13 0 
+5861 org:divide (none) 2754 2 84 42 41 2.96694 38.6959 117 24 -1 3 0 heads_default egahagciklcmccaaacchbcaccccccccccccjccccec 17,37 0,29 0,0 
+8618 org:divide (none) 7920 1 13 45 44 6.14286 37.8842 172 28 -1 9 0 heads_default egahagcijkflccccaafccbbdcccccccccckccccchacek 188 0 0 
+8687 org:divide (none) 2909 1 5 44 43 6.5 36.0441 196 28 -1 6 0 heads_default egamagcieklcmccaaacckbhcfcccclccccccccccgcec 157 33 0 
+8986 org:divide (none) 7372 3 7 45 44 6.23077 37.4242 193 29 -1 8 0 heads_default egahcgcgjkflcmccaafccbbdcccccccicckccccchccec 151,152,172 26,34,0 0,0,0 
+6410 org:divide (none) 659 3 57 42 41 2.17978 39.6564 147 25 -1 3 0 heads_default egahagcijklcccaaagcbbcccccccjcccccccccccec 141,181,199 35,35,35 0,0,0 
+8020 org:divide (none) 4157 6 37 41 40 3.83333 36.7619 123 27 -1 4 0 heads_default egahachiklcmgaaaccbbcaccccccccccccjccfcec 54,56,75,76,95,96 30,30,0,33,30,0 0,0,0,0,0,0 
+5605 org:divide (none) 4127 1 76 44 35 1.54545 34.3842 157 24 -1 7 0 heads_default egahgagcijklcmgjaaaccckccccccccccceaccccccec 18 0 0 
+9275 org:divide (none) 7834 2 9 43 29 2.91667 26.684 217 29 -1 10 0 heads_default egahagckjklcigcjaaccbbcjccacecchcccccecccac 363,383 0,4 0,0 
+9091 org:divide (none) 7131 4 11 44 32 3.54545 29.1912 130 29 -1 4 0 heads_default egahaccijdlcmjcaaacjbbccccccccceccccccccccec 353,372,373,392 16,16,9,7 0,0,0,0 
+9620 org:divide (none) 7110 1 1 44 0 0 0 266 30 -1 9 0 heads_default egahaegcijklcicfjaachbbcjccacccchcccccecccac 340 31 0 
+7205 org:divide (none) 5589 1 52 42 41 3.07792 38.4183 139 26 -1 6 0 heads_default egahagcijklcgccaaccbbcmccccccgclcccckcccec 298 28 0 
+9827 org:divide (none) 8731 1 1 43 0 0 0 174 30 -1 10 0 heads_default egahagcdajfdcgckadaccbbeccccccccccccddccech 215 9 0 
+9321 org:divide (none) 4539 1 5 43 43 4.27273 39.1966 173 29 -1 7 0 heads_default egahagcijklfmcmaacccabcccccccccccccccchcchc 121 0 0 
+10172 org:divide (none) 9321 1 1 43 0 0 0 181 30 -1 8 0 heads_default egahagcijklfmcmaacccabcciccccccccccccchcchc 102 5 0 
+9781 org:divide (none) 7834 1 1 43 0 0 0 231 30 -1 10 0 heads_default egahagckjklciccjaaccbbcjccacecmhcccccecccac 22 18 0 
+9345 org:divide (none) 7322 4 14 41 40 2.63158 37.9605 189 29 -1 8 0 heads_default egahagcijklcgcaaccbbccaccfccgclcccckcccec 334,335,354,355 20,0,20,20 0,0,0,0 
+9943 org:divide (none) 8253 1 1 43 0 0 0 174 30 -1 7 0 heads_default egahagcijklcmccaaaccbhcccccfccjcgccckdcccef 261 6 0 
+9391 org:divide (none) 8741 1 9 45 44 3.91667 40.4352 187 29 -1 9 0 heads_default egahagcidkflccccaafccbbdccccccfiickccccjhlcec 189 0 0 
+9782 org:divide (none) 7372 1 1 45 0 0 0 201 30 -1 8 0 heads_default egahagcgjkflcmccaafccbbdcccccccicckccccchccel 171 5 0 
+9529 org:divide (none) 8408 1 3 45 44 12.6667 29.7407 202 29 -1 9 0 heads_default egahagcgjkflcmccaacccbbdcccccccicckccccclccec 170 0 0 
+9759 org:divide (none) 8982 1 1 45 0 0 0 203 30 -1 9 0 heads_default egahagcijkflceccaafccbbdcccccccicckccccchalec 169 27 0 
+9736 org:divide (none) 8049 1 1 44 0 0 0 173 30 -1 10 0 heads_default egahamcijkglciccaaaccbhccglgccccicckccccccee 160 34 0 
+9598 org:divide (none) 8073 3 8 44 29 3 26.4783 188 30 -1 6 0 heads_default egaaagcijkflcmccaafcfbbccccceccccccccccmccec 68,89,108 6,0,9 0,0,0 
+9322 org:divide (none) 7557 1 3 42 41 6.66667 34.3619 150 29 -1 5 0 heads_default egahagciklchccaaacchbcacccccccckcccjccccec 58 0 0 
+8954 org:divide (none) 7098 1 2 43 43 39 1.10256 176 29 -1 6 0 heads_default egfhagchjklcmccaaaccabblcccccccccccccccccac 45 38 0 
+8770 org:divide (none) 3850 3 10 43 42 3.42857 39.0857 201 28 -1 5 0 heads_default egahagcijkljmccaaabcbbhccccccchcdccccccccec 31,51,72 34,34,34 0,0,0 
+9552 org:divide (none) 8770 1 1 43 0 0 0 211 30 -1 6 0 heads_default egahagfijkljmccaaabcbbhccccccchcdccccccccec 30 27 0 
+9851 org:divide (none) 7709 1 1 43 0 0 0 154 30 -1 5 0 heads_default egadaicijkbcmccaaacibbccccmccceccccccccccec 23 9 0 
+9645 org:divide (none) 9044 1 1 43 0 0 0 184 30 -1 10 0 heads_default egihagcijklckclgaaccbbcgcccaccicccccdeccchc 324 30 0 
+9530 org:divide (none) 7205 1 1 42 0 0 0 163 29 -1 7 0 heads_default egjhagcijklcgccaaccbbcmccccccgclcccckcccec 318 33 0 
+8978 org:divide (none) 6276 1 10 44 43 3.4 40.2108 128 29 -1 3 0 heads_default egahaccijdlcmccaaaccbbccccclcccgccccccccccec 312 0 0 
+8495 org:divide (none) 2596 3 18 43 42 3.53846 38.8643 177 28 -1 4 0 heads_default egahagcijklcmccaaacibbccccmcccccccccccmccec 299,300,321 31,0,20 0,0,0 
+7322 org:divide (none) 6267 6 94 41 40 3.16279 37.2965 157 26 -1 7 0 heads_default egahagcijklcgcaaccbbcccccfccgclcccckcccec 295,296,297,317,397,398 27,27,27,20,27,0 0,0,0,0,0,0 
+9829 org:divide (none) 8049 1 1 44 0 0 0 208 30 -1 10 0 heads_default egahamcijkglcmccaaaccbhccglgccccicckjcccccee 201 20 0 
+9737 org:divide (none) 7098 1 1 43 0 0 0 185 30 -1 6 0 heads_default egfhagchjkilcmccaaaccabblccccccccccccccccec 27 36 0 
+9571 org:divide (none) 8366 1 1 42 0 0 0 232 30 -1 4 0 heads_default egcgamciklcmccaaaccbbccccccccfccccccccccec 356 34 0 
+9755 org:divide (none) 7110 1 1 44 0 0 0 252 30 -1 9 0 heads_default egahacgcijklciccjaachbbcjccacccchcccccecccac 338 31 0 
+9709 org:divide (none) 9066 1 1 45 0 0 0 143 30 -1 6 0 heads_default egahagcilcklcgckaaabccbbccccccccccccccmcdccec 328 32 0 
+7110 org:divide (none) 2538 9 153 44 39 2.06897 37.6972 197 26 -1 8 0 heads_default egahaegcijklciccjaachbbcjccacccchcccccecccac 301,319,339,341,357,358,359,360,378 31,31,31,31,18,31,31,0,0 0,0,0,0,0,0,0,0,0 
+9640 org:divide (none) 6242 1 2 43 29 11 15.1905 156 30 -1 10 0 heads_default egakagcijkicmccadamcibcakcgceccddicccccccec 267 0 0 
+9985 org:divide (none) 8294 1 1 43 0 0 0 236 30 -1 8 0 heads_default egaeagcejklcmccaeaccckccccccccckcchcccccgec 256 12 0 
+8559 org:divide (none) 6339 5 47 44 43 2.11236 41.5932 184 28 -1 6 0 heads_default egahagccjkflcmccaafccbbccccccgcccdccccchccec 165,166,185,186,187 26,26,0,0,0 0,0,0,0,0 
+9065 org:divide (none) 8211 1 8 44 35 4.5 30.7759 170 29 -1 10 0 heads_default egahagcidkecmckaaacfccccccmccccccceaccccccec 159 21 0 
+9778 org:divide (none) 7211 1 1 42 0 0 0 128 30 -1 5 0 heads_default egahkchiklcmcgaaaccbbcjccccccccccccjccfcec 93 18 0 
+9272 org:divide (none) 7557 1 6 42 41 7.6 33.0412 146 29 -1 5 0 heads_default egahagciklchccaaacchblaccccccccccccjccccec 79 0 0 
+9502 org:divide (none) 8653 1 1 43 0 0 0 150 29 -1 8 0 heads_default egahagciikljhcfaaabacbbcccccccccdccccccccec 33 35 0 
+7131 org:divide (none) 6276 3 41 44 32 2.61538 30.2175 113 26 -1 3 0 heads_default egahaccijdlcmjcaaaccbbccccccccceccccccccccec 351,352,371 0,10,28 0,0,0 
+9983 org:divide (none) 8657 1 1 45 0 0 0 190 30 -1 11 0 heads_default efahagcijklcmcjaghcjcbdbccacececccccccccccgbc 348 8 0 
+9937 org:divide (none) 3953 1 1 42 0 0 0 218 30 -1 5 0 heads_default egajagcijklbmccaaacibbccccmcccccccccccccec 347 21 0 
+6257 org:divide (none) 3838 1 96 42 41 2.71429 39.1004 162 25 -1 5 0 heads_default egjagfijklcmccaaacibbccccmccccccccccccccec 325 36 0 
+7660 org:divide (none) 3687 2 36 39 23 2.53846 20.9186 122 26 -1 8 0 heads_default egahagcijklcmccaaccdcceecceccccccacccec 306,307 0,14 0,0 
+5015 org:divide (none) 1592 2 89 43 42 3.33628 39.114 96 23 -1 5 0 heads_default egamagcijklcmcceaaccbhcccccgcccccccccccgcec 221,241 33,33 0,0 
+10098 org:divide (none) 9199 1 1 44 0 0 0 188 30 -1 7 0 heads_default egahagcijkflcmcmaafmcjbccccccgcccdccccchccec 203 6 0 
+8971 org:divide (none) 5937 2 19 44 43 2.17857 41.5095 218 29 -1 13 0 heads_default egahagcijkklcmmagaeadckkcccdcccccccaccccicec 155,174 20,5 0,0 
+10167 org:divide (none) 8160 1 1 41 0 0 0 188 30 -1 6 0 heads_default egahagcijklmccaaabcbbcccccccchcdcccccccec 71 0 0 
+9661 org:divide (none) 7473 1 2 42 41 34 1.20588 143 30 -1 5 0 heads_default egahagciklcmccaaacchbcaccccccccfcccjcccjec 34 0 0 
+4392 org:divide (none) 1741 1 135 43 42 2.93488 39.5374 102 21 -1 4 0 heads_default egahagcijklcmccaaaccbhcccccccccfcgcgcccccef 362 25 0 
+9728 org:divide (none) 9081 1 1 43 0 0 0 156 30 -1 8 0 heads_default egamagcijklcmcceaacchhcccccgcccclcccccmgcec 279 25 0 
+9590 org:divide (none) 2466 2 3 44 43 12.6667 29.0648 203 30 -1 5 0 heads_default egahagcijklcmaccaaaccabcclccccjcjcccdcccccec 247,266 0,5 0,0 
+9958 org:divide (none) 6213 1 1 43 25 19 1.31579 154 30 -1 7 0 heads_default egamagcijklcmcceaaccbhcceccgccccclcccccgcec 236 0 0 
+9429 org:divide (none) 3437 1 2 43 29 20 1.45 167 29 -1 9 0 heads_default lgahagcijkicmccadamcibcaccgceccddgcccccccec 228 5 0 
+8417 org:divide (none) 8049 1 20 44 43 3.64 39.6612 156 28 -1 10 0 heads_default egahamcickglcmccaaaccbhccglgccccicckccccccee 222 33 0 
+7014 org:divide (none) 5718 1 70 44 43 2.98113 40.6336 187 26 -1 7 0 heads_default egeamagcieklcmccaaaccbhcfcccccccccccccccgcec 195 0 0 
+9199 org:divide (none) 6339 1 10 44 43 3.66667 39.5253 183 29 -1 6 0 heads_default egahagcijkflcmcmaafmcbbccccccgcccdccccchccec 184 0 0 
+9774 org:divide (none) 8049 1 1 44 0 0 0 203 30 -1 10 0 heads_default egahamcijkglcmccaaaccbhccglggcccicckccccccee 179 20 0 
+8049 org:divide (none) 4788 2 57 44 43 3.07317 40.453 151 27 -1 9 0 heads_default egahamcijkglcmccaaaccbhccglgccccicckccccccee 161,200 27,27 0,0 
+9176 org:divide (none) 5162 2 13 43 26 2.05556 24.6278 185 29 -1 7 0 heads_default egahagcimklfmcmagaccbbcccecccccccccccchcahc 145,146 0,19 0,0 
+9015 org:divide (none) 5162 3 20 43 26 1.67857 25.1179 183 29 -1 7 0 heads_default egahagcijklfmcmagaccbbcccecccccccccccchchhc 104,124,125 6,7,5 0,0,0 
+9981 org:divide (none) 8611 1 1 43 0 0 0 217 30 -1 9 0 heads_default egahagcijklcmcjaejccckccccaccccccehcccccjec 38 16 0 
+8134 org:divide (none) 3996 2 19 44 43 5.375 37.7743 126 27 -1 5 0 heads_default egahhgciacklcgckaaaccbbccccccccccccccmcdccec 290,311 35,0 0,0 
+9813 org:divide (none) 8049 1 1 43 0 0 0 207 30 -1 10 0 heads_default egahamcjkglcmccaaaccbhccglgccccicckccccccee 219 19 0 
+7973 org:divide (none) 5944 2 42 43 29 2.2459 27.1934 145 27 -1 10 0 heads_default egahagcijkicmccamamcibcaccgceccddgcccccgcec 204,225 11,0 0,0 
+9537 org:divide (none) 6213 2 2 43 42 33 1.27273 150 30 -1 7 0 heads_default egamagcijklcmcceajccbhcccccgccccclcccccgcec 197,217 2,0 0,0 
+659 org:divide (none) 245 4 405 43 42 3.58427 38.985 50 12 -1 2 0 heads_default egahagcijklcmccaaagcbbcccccccjcccccccccccec 162,183,223,224 23,35,23,0 0,0,0,0 
+4224 org:divide (none) 3801 2 86 44 43 3.85714 39.4898 116 21 -1 5 0 heads_default egahagcijkflcmccaafccbbcccccccicckccccchccec 107,147 0,34 0,0 
+8525 org:divide (none) 5281 1 19 42 42 3.25806 39.3656 222 28 -1 8 0 heads_default egahagaijlfmcmaacccbbcccccccccccccccchcchc 103 0 0 
+9721 org:divide (none) 5285 1 1 44 0 0 0 172 30 -1 5 0 heads_default egahagcijkflcmlcaafcfbbccccccccccccccccmccec 86 34 0 
+9123 org:divide (none) 4218 2 6 43 35 5.66667 29.3678 246 29 -1 6 0 heads_default efahagcijklcmccaaahcckcccccccccccbecccccceh 41,60 5,5 0,0 
+9066 org:divide (none) 3996 1 20 44 43 2.0625 41.6946 135 29 -1 5 0 heads_default egahagcilcklcgckaaaccbbccccccccccccccmcdccec 329 0 0 
+9687 org:divide (none) 8495 1 1 43 0 0 0 185 30 -1 5 0 heads_default egahagcijklcmlcaaacibbccccmcccccccccccmccec 320 31 0 
+6214 org:divide (none) 4177 2 40 42 28 3 25.3333 156 25 -1 6 0 heads_default egahagciaalcmjcagcbdbccaccceccccccccccccec 249,250 0,20 0,0 
+9480 org:divide (none) 659 1 1 43 0 0 0 148 29 -1 3 0 heads_default egahagcijglcmccaaagcbbcccccccjcccccccccccec 182 35 0 
+9250 org:divide (none) 8559 1 7 43 42 5.125 36.9044 198 29 -1 7 0 heads_default egahagccjkflcmccaaccbbccccccgcccdccccchccec 167 0 0 
+5202 org:divide (none) 4539 2 71 43 32 2.34021 30.4116 123 23 -1 7 0 heads_default egahagcijhlfmcmaacccbbcccccccccecccccchcchc 142,143 26,26 0,0 
+9572 org:divide (none) 5281 1 1 42 0 0 0 240 30 -1 8 0 heads_default egahagcijbfmcmaacccbbcccccccccccccccchcchc 106 35 0 
+7709 org:divide (none) 1816 5 61 43 31 3.16471 28.2039 112 27 -1 4 0 heads_default egahaicijklcmccaaacibbccccmccceccccccccccec 42,43,61,63,81 0,0,0,6,20 0,0,0,0,0 
+9856 org:divide (none) 7473 1 1 42 0 0 0 148 30 -1 5 0 heads_default egahagciklcmccaaacchbcaccccccckfcccjccccec 393 24 0 
+7372 org:divide (none) 5687 2 45 45 44 3.36111 41.0317 160 26 -1 7 0 heads_default egahagcgjkflcmccaafccbbdcccccccicckccccchccec 173,192 26,0 0,0 
+9511 org:divide (none) 5416 1 1 44 0 0 0 196 29 -1 8 0 heads_default egahabcilklcmckaaaccckccccccccccckacecccihec 131 32 0 
+9741 org:divide (none) 8982 1 1 46 0 0 0 202 30 -1 9 0 heads_default egadagcijkflceccaafccbbdcccccccicckcccccheacec 129 34 0 
+8982 org:divide (none) 7351 5 15 45 44 2.2963 42.4156 194 29 -1 8 0 heads_default egahagcijkflceccaafccbbdcccccccicckccccchacec 128,148,149,150,168 27,14,0,27,18 0,0,0,0,0 
+9028 org:divide (none) 7709 1 3 43 31 5.6 25.0583 132 29 -1 5 0 heads_default egahaicijklcmacaaacibbccccmccceccccccccccec 83 23 0 
+7211 org:divide (none) 4157 3 37 42 41 3.83333 37.681 114 26 -1 4 0 heads_default egahachiklcmcgaaaccbbcjccccccccccccjccfcec 53,73,74 30,30,17 0,0,0 
+9556 org:divide (none) 7110 1 1 44 0 0 0 263 30 -1 9 0 heads_default egahaegcijklcicchaachbbcjccacccchcccccecccac 361 30 0 
+7440 org:divide (none) 5962 3 24 43 27 2.95122 24.4913 144 26 -1 9 0 heads_default ejahagcijklcmccaghlcdbccacececccccccccccgbc 345,364,365 6,1,0 0,0,0 
+9096 org:divide (none) 8477 1 12 42 28 2.17647 26.4314 171 29 -1 9 0 heads_default egahagciaalcmkcagcbdbccaccceccciccecccccec 291 0 0 
+9832 org:divide (none) 7973 1 1 43 0 0 0 166 30 -1 11 0 heads_default egahagcijkicmccamaicibcaccgceccddgcccccgcec 244 19 0 
+8958 org:divide (none) 7014 3 5 44 43 6.14286 37.0232 226 29 -1 8 0 heads_default egeamagcieklkmccaaaccbhcfcccccccccccccccgcec 176,196,216 20,20,20 0,0,0 
+5416 org:divide (none) 4720 2 84 44 37 2.48837 35.3312 120 23 -1 7 0 heads_default egahabcijklcmckaaaccckccccccccccckacecccihec 113,132 17,17 0,0 
+9694 org:divide (none) 7709 1 1 43 0 0 0 144 30 -1 5 0 heads_default egahaicijklcmccaaacibbccccmccceccccccacccec 62 23 0 
+10068 org:divide (none) 8096 1 1 40 0 0 0 149 30 -1 7 0 heads_default egacagcijklcgccfaccbbcccccccgcccccccccec 390 6 0 
+8366 org:divide (none) 2134 4 39 43 42 2.94444 39.7315 200 28 -1 3 0 heads_default egcgagcijklcmccaaaccbbccccccccfccccccccccec 375,376,395,396 25,5,0,0 0,0,0,0 
+3996 org:divide (none) 2080 1 170 44 43 3.125 40.3893 67 21 -1 4 0 heads_default egahagciacklcgckaaaccbbccccccccccccccmcdccec 370 0 0 
+9562 org:divide (none) 7861 1 1 42 0 0 0 183 30 -1 10 0 heads_default eahagckahdchckaaaccbbkcjcccccccmccccddccec 292 27 0 
+5238 org:divide (none) 3272 1 68 43 42 3.29091 39.3995 163 23 -1 6 0 heads_default egahagcejklcmccaeaccckccccccccckccacccccgec 158 26 0 
+10091 org:divide (none) 9321 1 1 43 0 0 0 178 30 -1 8 0 heads_default egahagcijklfmcmfacccabcccccccccccccccchcchc 120 11 0 
+9792 org:divide (none) 7199 1 1 44 0 0 0 176 30 -1 8 0 heads_default egahagcmjklcmeckafaccckccccccccccccaccccbcea 119 37 0 
+9585 org:divide (none) 5281 1 1 42 0 0 0 241 30 -1 8 0 heads_default ejahagcijlfmcmaacccbbcccccccccccccccchcchc 84 36 0 
+10117 org:divide (none) 8978 1 1 44 0 0 0 141 30 -1 4 0 heads_default egaiaccijdlcmccaaaccbbccccclcccgccccccccccec 332 6 0 
+3953 org:divide (none) 2473 4 206 43 42 2.87291 39.8149 128 20 -1 4 0 heads_default egajagcijklbmccaaacibbccccmccccccccccccccec 326,367,386,388 0,0,21,21 0,0,0,0 
+6276 org:divide (none) 5647 2 37 44 32 4.0566 28.5067 110 25 -1 2 0 heads_default egahaccijdlcmccaaaccbbccccccccceccccccccccec 314,333 8,0 0,0 
+8668 org:divide (none) 5025 1 7 44 43 6.83333 36.0324 178 28 -1 6 0 heads_default egahagcijklcmaccaaaccabcccckccjcjchcdcccccec 240 0 0 
+9358 org:divide (none) 6410 1 1 43 0 0 0 194 29 -1 4 0 heads_default megahagcijklcccaaagcbbcccccccjcccccccccccec 140 36 0 
+6368 org:divide (none) 5655 6 115 41 41 2.49686 39.2465 148 25 -1 6 0 heads_default egahagciklcmccaaagdbbaccccccccccccjccccfc 114,115,116,134,135,137 13,5,0,5,0,5 0,0,0,0,0,0 
+9703 org:divide (none) 8020 1 1 41 0 0 0 146 30 -1 5 0 heads_default egahachiklcmgaaaccbbcabcccccccccccjccfcec 94 30 0 
+8096 org:divide (none) 7454 1 30 41 40 2.6 38.0606 120 27 -1 6 0 heads_default egacagcijklcgccfaccbbccicccccgcccccccccec 391 0 0 
+9637 org:divide (none) 8740 1 1 44 0 0 0 184 30 -1 8 0 heads_default egahhgcijhlcmaccaagccabcccccccjcjchcdcccccec 264 25 0 
+8740 org:divide (none) 7192 3 25 44 43 1.92308 41.9272 170 28 -1 7 0 heads_default egahhgcijhlcmaccaaaccabcccccccjcjchcdcccccec 262,263,282 26,0,26 0,0,0 
+9729 org:divide (none) 8451 1 1 43 0 0 0 179 30 -1 11 0 heads_default egahagcijkicmccadamcijcakcgceccddmcccccccec 213 11 0 
+10097 org:divide (none) 8559 1 1 44 0 0 0 237 30 -1 7 0 heads_default egahagccjkflcmccaafccbbccccccgcccdccccchcccc 207 6 0 
+9959 org:divide (none) 9053 1 1 43 0 0 0 193 30 -1 9 0 heads_default egahahcijhlfmcmaackcbbcccccccccecccccchcchc 123 7 0 
+8073 org:divide (none) 5285 1 33 44 43 2.52174 41.1824 145 27 -1 5 0 heads_default egaaagcijkflcmccaafcfbbccccccccccccccccmccec 110 33 0 
+7199 org:divide (none) 4418 7 46 44 43 4.04 39.6482 149 26 -1 7 0 heads_default egahagcmjklcmeckaaaccckccccccccccccaccccbcea 97,98,100,101,117,118,138 38,38,38,38,38,0,18 0,0,0,0,0,0,0 
+9685 org:divide (none) 7322 1 1 42 0 0 0 182 30 -1 8 0 heads_default egfahagcijklcgcaaccbbcccccfccgclcccckcccec 315 21 0 
+5775 org:divide (none) 4856 3 114 43 42 2.9125 39.705 147 24 -1 8 0 heads_default egahagckajhdcgckaaaccbbcjcccccccmccccddccec 275,276,277 27,0,19 0,0,0 
+9731 org:divide (none) 5775 1 1 42 0 0 0 222 30 -1 9 0 heads_default egahagckajhdcgckaaaccbbcjcccccccmccccddccc 255 27 0 
+9846 org:divide (none) 8049 1 1 44 0 0 0 210 30 -1 10 0 heads_default egahgmcijkglcmccaaaccbhccglgccccicckccccccee 180 21 0 
+9662 org:divide (none) 6368 1 1 41 0 0 0 205 30 -1 7 0 heads_default egahagciklcmccaaaadbbacccccjccccccjccccfc 156 28 0 
+9288 org:divide (none) 7834 0 10 43 29 2.64286 27.0149 219 29 30 10 0 heads_default egahagckjklciccjaaccbjcjccacecchcccccecccac 
+7351 org:divide (none) 5687 0 43 45 44 3.8 40.5778 158 26 30 7 0 heads_default egahagcijkflccccaafccbbdcccccccicckccccchacec 
+6213 org:divide (none) 5015 0 42 43 42 3.53968 38.7677 101 25 30 6 0 heads_default egamagcijklcmcceaaccbhcccccgccccclcccccgcec 
+8741 org:divide (none) 7351 0 14 45 44 2.75 41.8611 175 28 30 8 0 heads_default egahagcijkflccccaafccbbdccccccciickccccchlcec 
+4539 org:divide (none) 3360 0 41 43 43 4.04225 39.4644 122 22 30 6 0 heads_default egahagcijklfmcmaacccbbcccccccccccccccchcchc 
+5937 org:divide (none) 5139 0 60 44 43 2.40426 41.224 143 24 30 12 0 heads_default egahagcijkklcmdagaecdckkcccdcccccccaccccicec 
+8408 org:divide (none) 7372 0 8 45 44 7.36364 36.2222 193 28 30 8 0 heads_default egahagcgjkflcmccaacccbbdcccccccicckccccchccec 
+7287 org:divide (none) 5650 0 54 42 34 2.81818 31.8683 201 26 30 7 0 heads_default egahagcijklcmcjaaaccckcccccccccccehcccccec 
+5153 org:divide (none) 3812 0 89 43 41 3.21538 38.2476 113 23 30 8 0 heads_default egahagcdajmdcgckadaccbbcccccccccccccddccech 
+4218 org:divide (none) 3013 0 109 43 35 3.01307 32.5704 155 21 30 5 0 heads_default efahagcijklcmccaaahcckcccccccccccbeccccccec 
+4118 org:divide (none) 2134 0 55 43 42 4.29412 38.1569 130 21 30 3 0 heads_default egchagcijklcmccaaaccbbkcccccccfccccccccccec 
+3437 org:divide (none) 2179 0 201 43 29 2.4 26.97 75 20 29 8 0 heads_default egahagcijkicmccadamcibcaccgceccddgcccccccec 
+7920 org:divide (none) 7351 0 12 45 44 4.04348 40.2802 160 27 29 8 0 heads_default egahagcijkflccccaafccbbdcccccccicckccccchacek 
+7164 org:divide (none) 5650 0 10 43 34 5 29.3103 194 26 29 7 0 heads_default egahagcijklcmcjaajccckcccccccccccehccccccec 
+5025 org:divide (none) 2466 0 66 44 43 3.64151 39.8449 127 23 29 5 0 heads_default egahagcijklcmaccaaaccabcccccccjcjchcdcccccec 
+8477 org:divide (none) 7939 0 2 42 28 11 14.6667 170 28 29 8 0 heads_default egahagciaalcmkcagcbdbccaccceccccccecccccec 
+6339 org:divide (none) 5807 0 18 44 43 6.5 36.0441 165 25 29 5 0 heads_default egahagcijkflcmccaafccbbccccccgcccdccccchccec 
+4654 org:divide (none) 1049 0 86 43 42 3.17054 39.4677 146 22 29 5 0 heads_default egahagcijklcmccaagccckccccccccckccacccccgec 
+4788 org:divide (none) 3622 0 73 44 43 2.88889 40.6794 97 22 29 8 0 heads_default egahamcijkglcmccaaaccbhccglgccccicckccccccea 
+8211 org:divide (none) 7427 0 1 44 35 15 18.1034 168 27 29 9 0 heads_default egahagcidkecmckaaacfcckcccmccccccceaccccccec 
+6331 org:divide (none) 2538 0 49 43 29 2.74242 26.8946 185 25 29 8 0 heads_default egahagcijklciccjaaccbbcjccacecchcccccecccac 
+2646 org:divide (none) 1678 0 136 43 43 4.07109 39.4309 85 18 29 4 0 heads_default egahagcgjkdcmccaaaccbbccccccccccckcccdcccfc 
+7718 org:divide (none) 5962 0 13 44 28 1.875 26.8864 151 27 29 9 0 heads_default ejahagcijklcmccaghcjcdbccacececccccccccccgbc 
+2909 org:divide (none) 2140 0 136 44 43 3.27835 40.2009 95 18 28 5 0 heads_default egamagcieklcmccaaacckbhcfcccccccccccccccgcec 
+7427 org:divide (none) 4515 0 16 44 35 2.47368 33.2214 159 26 28 8 0 heads_default egahagcijkecmckaaacfcckcccmccccccceaccccccec 
+2596 org:divide (none) 590 0 81 43 42 3.25641 39.2127 87 18 28 3 0 heads_default egahagcijklcmccaaacibbccccmccccccccccchccec 
+1217 org:divide (none) 795 0 247 44 43 3.09091 40.5025 54 14 28 3 0 heads_default egahagcijkflcmccaafccbbcccccccccccccccchccec 
+7191 org:divide (none) 5985 0 4 43 42 15.4 25.6541 150 26 28 5 0 heads_default egfhagchjklcmccamaccabbjcccccccccccccccccec 
+7192 org:divide (none) 5025 0 5 44 43 15.4 26.2649 165 26 28 6 0 heads_default egahhgcijklcmaccaaaccabcccccccjcjchcdcccccec 
+1816 org:divide (none) 590 0 183 43 31 2.93684 28.4982 59 16 28 3 0 heads_default egahagcijklcmccaaacibbccccmccceccccccccccec 
+2015 org:divide (none) 1589 0 168 43 34 3.14516 31.485 117 16 28 5 0 heads_default egahagcijklcmcjaaaccckccccccccccceaccccccec 
+7939 org:divide (none) 6214 0 2 42 28 7.66667 19.1111 169 27 28 7 0 heads_default egahagciaalcmkcagcbdbccaccceccccccccccccec 
+4157 org:divide (none) 2754 0 57 42 41 4.87342 36.4626 86 21 28 3 0 heads_default egahachiklcmcgaaaccbbcaccccccccccccjccfcec 
+3687 org:divide (none) 3125 0 80 39 24 2.20354 22.3953 73 20 28 7 0 heads_default egahagcijklcmccaaccdccaecceccccccacccec 
+5687 org:divide (none) 4224 0 28 45 44 3.95652 40.2832 144 24 28 6 0 heads_default egahagcijkflcmccaafccbbdcccccccicckccccchccec 
+2538 org:divide (none) 1946 0 320 43 38 1.96875 36.8496 84 18 28 7 0 heads_default egahagcijklciccjaaccbbcjccacccchcccccecccac 
+7454 org:divide (none) 4469 0 9 41 40 3.75 36.7647 117 26 28 5 0 heads_default egacagcijklcgccaaccbbccicccccgcccccccccec 
+2546 org:divide (none) 1981 0 302 43 38 2.04429 36.7975 82 18 28 7 0 heads_default egihagcijklckclaaaccbbcgcccaccccccccceccchc 
+3050 org:divide (none) 2161 0 124 44 43 2.98964 40.4074 102 19 27 9 0 heads_default egahagcijkklcmcdaaecdckgcccdcccccccaccccicec 
+6195 org:divide (none) 3850 0 7 43 42 10.8182 30.855 138 25 27 5 0 heads_default egahagcijkljmccaaabacbbcccccccccdccccccccec 
+1152 org:divide (none) 534 0 164 42 41 4.15574 37.406 47 14 27 2 0 heads_default egahagchjklcmccaaaccabjcccccccccccccccccec 
+7627 org:divide (none) 4521 0 8 44 43 4.55556 38.367 136 26 27 5 0 heads_default egahagcijklcmccaaaccbhcccccfcccfcgccckdcccef 
+5985 org:divide (none) 3644 0 22 43 42 6.28571 36.1579 135 24 27 4 0 heads_default egfhagchjklcmccaaaccabbjcccccccccccccccccec 
+6267 org:divide (none) 5589 0 11 41 40 4.76471 35.4367 147 25 27 6 0 heads_default egahagcijklcgcaaccbbccccccccgclcccckcccec 
+1690 org:divide (none) 1230 0 171 43 42 2.64516 40.0258 35 16 27 5 0 heads_default egahagciajkdcgckaaaccbbccccccccccccccddccec 
+4469 org:divide (none) 2117 0 30 41 40 3.61224 36.8336 88 22 27 4 0 heads_default egahagcijklcgccaaccbbccicccccgcccccccccec 
+4515 org:divide (none) 3561 0 44 44 35 2.26562 33.418 119 22 27 7 0 heads_default egahagcijkicmckaaacfcckcccmccccccceaccccccec 
+1686 org:divide (none) 1266 0 105 42 28 2.64667 25.6947 46 16 27 6 0 heads_default egahagcijkicmccadamcibcaccceccddccccccccec 
+4521 org:divide (none) 1741 0 25 44 43 4.88235 38.09 111 22 27 4 0 heads_default egahagcijklcmccaaaccbhcccccccccfcgccckdcccef 
+4418 org:divide (none) 3864 0 112 43 42 2.14198 40.7378 69 22 27 6 0 heads_default egahagcmjklcmecaaaccckccccccccccccaccccbcea 
+5650 org:divide (none) 2015 0 31 43 34 1.71795 33.1583 165 24 27 6 0 heads_default egahagcijklcmcjaaaccckcccccccccccehccccccec 
+5807 org:divide (none) 1217 0 14 44 43 4.57895 38.603 158 24 27 4 0 heads_default egahagcijkflcmccaafccbbccccccccccdccccchccec 
+5962 org:divide (none) 4780 0 18 43 27 1.58824 26.2437 118 24 27 8 0 heads_default ejahagcijklcmccaghccdbccacececccccccccccgbc 
+3644 org:divide (none) 1152 0 45 43 42 3.85714 38.7568 100 20 27 3 0 heads_default egahagchjklcmccaaaccabbjcccccccccccccccccec 
+5718 org:divide (none) 2909 0 21 43 42 1.94286 40.8353 153 24 27 6 0 heads_default egamagcieklcmccaaaccbhcfcccccccccccccccgcec 
+5589 org:divide (none) 4165 0 21 42 41 3.75 37.6838 136 23 26 5 0 heads_default egahagcijklcgccaaccbbccccccccgclcccckcccec 
+3838 org:divide (none) 2473 0 48 43 42 2.44 40.3654 123 20 26 4 0 heads_default egajagfijklcmccaaacibbccccmccccccccccccccec 
+5655 org:divide (none) 4459 0 6 41 41 4.4 37.0171 143 24 26 5 0 heads_default egahagciklcmccaaacdbbaccccccccccccjccccfc 
+4177 org:divide (none) 1623 0 22 42 28 4.125 23.8333 131 21 26 5 0 heads_default egahagciaklcmjcagcbdbccaccceccccccccccccec 
+4856 org:divide (none) 4253 0 15 43 42 3.19355 39.3677 134 22 26 7 0 heads_default egahagckajhdcgckaaaccbbcccccccccmccccddccec 
+4459 org:divide (none) 4209 0 53 42 42 2.43836 40.3219 107 22 26 4 0 heads_default egahagciklcmccaaacdbbcaccccccccccccjccccfc 
+4165 org:divide (none) 2894 0 48 43 42 3.2973 39.2432 103 21 26 4 0 heads_default egahagcijklcgccaaccbbccccccccgclccccckcccec 
+5139 org:divide (none) 4220 0 13 43 42 4.14286 38.1176 133 23 26 11 0 heads_default egahagcijkklcmdaaecdckkcccdcccccccaccccicec 
+4220 org:divide (none) 3050 0 25 43 42 5 36.9091 109 21 25 10 0 heads_default egahagcijkklcmdaaecdckgcccdcccccccaccccicec 
+1592 org:divide (none) 947 0 67 43 42 3.92473 38.4903 54 15 25 4 0 heads_default egamagcijklcmcceaaccbhcccccccccccccccccgcec 
+5647 org:divide (none) 1 0 1 43 42 38 1.10526 109 24 25 1 0 heads_default egahaccijklcmccaaaccbbcccccccccccccccccccec 
+3360 org:divide (none) 2747 0 17 43 43 8.2 34.6324 113 19 24 5 0 heads_default egahagcijklfmcmaajccbbcccccccccccccccchcchc 
+3272 org:divide (none) 1049 0 44 43 42 2.6875 40.0845 115 19 24 5 0 heads_default egahagcejklcmccaaaccckccccccccckccacccccgec 
+1557 org:divide (none) 393 0 121 44 37 2.9711 34.7209 70 15 24 5 0 heads_default egahagcijklcmckaaaccckccccccccccccacecccihec 
+4780 org:divide (none) 2798 0 8 43 27 6.18182 20.0045 112 22 24 7 0 heads_default egahagcijklcmccaghccdbccacececccccccccccgbc 
+2754 org:divide (none) 243 0 62 42 41 3.85714 37.746 79 18 24 2 0 heads_default egahagciklcmccaaaccbbcaccccccccccccjccccec 
+1 org:file_load (none) (none) 0 760 43 42 4.98594 37.4754 0 -1 24 0 0 heads_default egahagcijklcmccaaaccbbcccccccccccccccccccec 
+4127 org:divide (none) 2015 0 11 43 34 5.46154 28.9436 148 21 24 6 0 heads_default egahagcijklcmgjaaaccckccccccccccceaccccccec 
+3812 org:divide (none) 3255 0 28 43 41 3.23256 38.2262 90 20 24 7 0 heads_default egahagcdajkdcgckadaccbbcccccccccccccddccech 
+2473 org:divide (none) 590 0 82 43 42 2.2963 40.4877 72 17 24 3 0 heads_default egajagcijklcmccaaacibbccccmccccccccccccccec 
+4720 org:divide (none) 1557 0 5 44 37 3.58333 34.013 116 22 23 6 0 heads_default egahagcijklcmckaaaccckccccccccccckacecccihec 
+1049 org:divide (none) 128 0 101 43 42 3.11765 39.5962 64 14 23 4 0 heads_default egahagcijklcmccaaaccckccccccccckccacccccgec 
+4209 org:divide (none) 2754 0 20 42 41 2 39.8286 106 21 23 3 0 heads_default egahagciklcmccaaacdbbcaccccccccccccjccccec 
+3561 org:divide (none) 1019 0 26 44 35 2.4359 33.267 102 20 23 6 0 heads_default egahagcijkicmckaaacfcckccccccccccceaccccccec 
+3506 org:divide (none) 2747 0 21 43 26 2.93548 23.6037 126 20 23 5 0 heads_default egahagcijklfmcmaaaccbbcccecccccccccccchcchc 
+2798 org:divide (none) 2231 0 31 42 26 2.53191 23.9037 82 18 23 6 0 heads_default egahagcijklcmccagccdbccacececccccccccccgbc 
+3013 org:divide (none) 461 0 19 43 42 4.3871 38.0484 136 18 23 4 0 heads_default efahagcijklcmccaaahcckcccccccccccbaccccccec 
+2747 org:divide (none) 1242 0 16 43 42.3846 5.15385 37.5946 110 18 23 4 0 heads_default egahagcijklfmcmaaaccbbcccccccccccccccchcchc 
+2179 org:divide (none) 1686 0 45 43 29 2.01333 27.5307 51 17 23 7 0 heads_default egahagcijkicmccadamcibcaccgceccddccccccccec 
+3622 org:divide (none) 3047 0 15 43 42 6.5 35.2059 87 20 23 7 0 heads_default egahamcijklcmccaaaccbhccglgccccicckccccccea 
+2117 org:divide (none) 634 0 22 42 41 9.55556 30.683 68 17 23 3 0 heads_default egahagcijklcgccaaccbbccicccccgccccccccccec 
+1741 org:divide (none) 617 0 40 43 42 3.5 38.9118 73 16 23 3 0 heads_default egahagcijklcmccaaaccbhcccccccccfcgcccccccef 
+4253 org:divide (none) 1690 0 4 43 42 6.66667 35.2 129 21 23 6 0 heads_default egahagciajhdcgckaaaccbbccccccccccccccddccec 
+3864 org:divide (none) 3357 0 7 43 42 5.11111 37.4561 68 20 22 5 0 heads_default egahagcijklcmecaaaccckccccccccccccaccccbcea 
+2080 org:divide (none) 557 0 30 44 43 6.28302 36.6897 33 16 22 3 0 heads_default egahagciacklcgckaaaccbbccccccccccccccccdccec 
+1019 org:divide (none) 686 0 101 44 43 4.86577 38.5073 61 13 22 5 0 heads_default egahagcijkicmckaaacfcckccccccccccccaccccccec 
+3801 org:divide (none) 1217 0 5 44 43 9.5 32.5571 115 20 22 4 0 heads_default egahagcijkflcmccaafccbbcccccccicccccccchccec 
+1150 org:divide (none) 901 0 81 43 42 3.98246 38.4211 58 14 22 3 0 heads_default egahagcijklcmccaaabcbbcccccccchcdccccccccec 
+2894 org:divide (none) 634 0 26 43 42 1.91892 40.8973 67 18 22 3 0 heads_default egahagcijklcgccaaccbbccccccccgclcccccccccec 
+1009 org:divide (none) 792 0 47 39 24 3.46377 20.715 49 13 21 5 0 heads_default egahagcijklcmccaaccdccaecceccccccccccec 
+3047 org:divide (none) 2558 0 2 43 42 7.6 33.8471 82 19 21 6 0 heads_default egahamcijklcmccaaaccbhccgdgccccfcccccccccec 
+1702 org:divide (none) 1232 0 30 44 43 4.83721 38.1471 68 16 21 7 0 heads_default egahagcijkklcmckaaacdckgcccdcccccccaccccicec 
+3255 org:divide (none) 1690 0 4 44 42 7.8 33.84 85 19 21 6 0 heads_default egahagciajkdcgckaaaccbbccccccccccccccddccech 
+3357 org:divide (none) 1663 0 6 43 42 5.11111 37.4561 63 19 21 4 0 heads_default egahagcijklcmecaaaccckccccccccccccaccccccea 
+243 org:divide (none) 1 0 74 43 42 4.63303 37.876 33 9 21 1 0 heads_default egahagcijklcmccaaaccbbcacccccccccccccccccec 
+3125 org:divide (none) 1009 0 10 38 24 2.30769 22.2564 64 19 20 6 0 heads_default egahagcijklcmccaaccdccaeccecccccccccec 
+1663 org:divide (none) 22 0 18 43 42 6.53846 35.7131 55 15 20 3 0 heads_default egahagcijklcmccaaaccckccccccccccccaccccccea 
+1242 org:divide (none) 592 0 71 42 42 3.42857 39.0857 79 14 20 3 0 heads_default egahagcijklcmcmaaaccbbccccccccccccccchcchc 
+590 org:divide (none) 430 0 103 43 42 3.9781 38.4263 29 12 20 2 0 heads_default egahagcijklcmccaaacibbccccmccccccccccccccec 
+2140 org:divide (none) 947 0 25 44 43 4.68421 38.5994 73 17 20 4 0 heads_default egamagcijklcmccaaacckbhcccccccccccccccccgcec 
+557 org:divide (none) 109 0 46 44 43 6.33898 36.6229 19 11 20 2 0 heads_default egahagciajklcgckaaaccbbccccccccccccccccdccec 
+2558 org:divide (none) 2053 0 3 43 42 9 31.8182 79 18 20 5 0 heads_default egahamcijklcmccaaaccbhccgcgccccfcccccccccec 
+350 org:divide (none) 226 0 109 42 28 3.71605 24.3786 33 10 19 3 0 heads_default egahagcijklcmccagccdbccaccceccccccccccccec 
+1946 org:divide (none) 670 0 12 42 37 6.16667 31.026 78 16 19 6 0 heads_default egahagcijklciccjaaccbbcjccacccccccccecccac 
+1678 org:divide (none) 1187 0 31 44 44 2.6087 42.1373 58 15 19 3 0 heads_default egahagcgjkdcmccaaaccbbccccccccccckccccdcccfc 
+2231 org:divide (none) 1810 0 6 42 26 2.63636 23.7608 76 17 19 5 0 heads_default egahagcijklcmccagccdbccacececcccccccccccbc 
+2161 org:divide (none) 1702 0 16 44 43 2.26923 41.3948 77 17 19 8 0 heads_default egahagcijkklcmckaaecdckgcccdcccccccaccccicec 
+1514 org:divide (none) 675 0 16 43 38 5.63636 32.9662 65 15 19 5 0 heads_default egihagcijklckccaaaccbbcjcccacccccccccecccec 
+634 org:divide (none) 109 0 113 42 41 3.61538 37.9363 26 12 19 2 0 heads_default egahagcijklcgccaaccbbccccccccgccccccccccec 
+2053 org:divide (none) 967 0 10 43 42 2.77778 39.7374 64 16 19 4 0 heads_default egahagcijklcmccaaaccbhccgcgccccfcccccccccec 
+1306 org:divide (none) 427 0 29 44 43 3.76923 39.7817 58 14 18 3 0 heads_default egahagcijklcmaccaaaccabcccccccjcccccdcccccec 
+461 org:divide (none) 22 0 87 43 42 4.68504 37.817 73 11 18 3 0 heads_default egahagcijklcmccaaaccckcccccccccccbaccccccec 
+1981 org:divide (none) 1514 0 10 43 38 2.73684 36.0588 73 16 18 6 0 heads_default egihagcijklckclaaaccbbcjcccaccccccccceccchc 
+967 org:divide (none) 617 0 29 43 42 4.92857 37.1471 51 13 18 3 0 heads_default egahagcijklcmccaaaccbhccccgccccfcccccccccec 
+534 org:divide (none) 1 0 61 43 42 3.4 39.2757 33 11 18 1 0 heads_default egahagcijklcmccaaaccabcccccccccccccccccccec 
+1232 org:divide (none) 842 0 23 43 42 6.15625 35.6305 56 14 18 6 0 heads_default egahagcijklcmckaaacdckccccdcccccccaccccicec 
+1213 org:divide (none) 1 0 22 43 42 4.5 37.9167 55 14 18 1 0 heads_default egahagcijklcmccaaaccbbccccccccfccccccccccec 
+345 org:divide (none) 236 0 92 42 28 3.69841 24.4021 24 10 18 4 0 heads_default egahagcijklcmccadaccibcaccceccddccccccccec 
+1810 org:divide (none) 350 0 8 42 26 2.5 23.9474 65 16 17 4 0 heads_default egahagcijklcmccagccdbccacececcccccccccccec 
+670 org:divide (none) 473 0 33 42 37 2.29167 35.5065 37 12 17 5 0 heads_default egahagcijklcdccjaaccbbcjccacccccccccecccac 
+592 org:divide (none) 70 0 41 43 43 4.24074 39.1291 49 12 17 2 0 heads_default egahagcijklcmcmaaaccbbcccccccccccccccchcchc 
+792 org:divide (none) 459 0 15 40 27 3.72727 23.4935 45 12 17 4 0 heads_default egahagcijklcmccaaccdccacccecccccccccccec 
+617 org:divide (none) 224 0 22 43 42 5.12121 37.0545 43 12 17 2 0 heads_default egahagcijklcmccaaaccbhcccccccccfcccccccccec 
+947 org:divide (none) 607 0 16 43 42 7.8 33.84 52 13 17 3 0 heads_default egamagcijklcmccaaaccbhcccccccccccccccccgcec 
+1589 org:divide (none) 461 0 3 43 34 4.11111 30.3525 109 15 17 4 0 heads_default egahagcijklcmccaaaccckccccccccccceaccccccec 
+1187 org:divide (none) 620 0 20 44 44 2.48 42.2863 48 14 17 2 0 heads_default egahagcijkdcmccaaaccbbccccccccccckccccdcccfc 
+393 org:divide (none) 206 0 45 43 42 5.63235 36.5956 52 10 17 4 0 heads_default egahagcijklcmckaaaccckccccccccccccaccccicec 
+795 org:divide (none) 70 0 15 43 42 3.61538 38.8615 42 13 16 2 0 heads_default egahagcijklcmccaafccbbcccccccccccccccchccec 
+1230 org:divide (none) 837 0 3 43 42 12.3333 28.4 33 14 16 4 0 heads_default egahagciajkdcgckaaaccbbcccccccccccccccdccec 
+675 org:divide (none) 95 0 29 43 38 4 34.6471 37 12 16 4 0 heads_default egihagcijklcmccaaaccbbcjcccacccccccccecccec 
+22 org:divide (none) 12 0 119 43 42 3.95082 38.6504 9 4 16 2 0 heads_default egahagcijklcmccaaaccckccccccccccccaccccccec 
+95 org:divide (none) 48 0 205 43 38 2.7 36.0424 16 7 16 3 0 heads_default egahagcijklcmccaaaccbbcjcccacccccccccecccec 
+1266 org:divide (none) 345 0 6 42 28 2.72727 25.5818 35 14 16 5 0 heads_default egahagcijklcmccadamcibcaccceccddccccccccec 
+620 org:divide (none) 1 0 21 44 43 3.18182 40.4644 36 12 16 1 0 heads_default egahagcijklcmccaaaccbbccccccccccckccccdcccec 
+842 org:divide (none) 393 0 4 43 42 6.66667 35.2 55 13 16 5 0 heads_default egahagcijklcmckaaaccckccccdcccccccaccccicec 
+294 org:divide (none) 1 0 32 43 42 3.33333 39.2778 32 10 15 1 0 heads_default egahagcijklcmccaaaccbbccccccccccdccccccccec 
+32 org:divide (none) 1 0 65 43 29 5.18182 23.947 16 5 15 1 0 heads_default egahagcijklcmccaaaccbbccaccceccccccccccccec 
+128 org:divide (none) 22 0 32 43 42 7.89362 34.1748 38 8 15 3 0 heads_default egahagcijklcmccaaaccckccccccccccccacccccgec 
+901 org:divide (none) 294 0 4 43 42 5.85714 36.1714 57 13 15 2 0 heads_default egahagcijklcmccaaaccbbcccccccchcdccccccccec 
+427 org:divide (none) 245 0 16 43 42 7.66667 34.2222 42 11 15 2 0 heads_default egahagcijklcmccaaaccbbcccccccjcccccdcccccec 
+48 org:divide (none) 27 0 31 43 38 4.84 33.5782 14 6 15 2 0 heads_default egahagcijklcmccaaaccbbcccccacccccccccecccec 
+837 org:divide (none) 557 0 10 43 42 3.125 39.45 21 13 15 3 0 heads_default egahagciajklcgckaaaccbbcccccccccccccccdccec 
+459 org:divide (none) 226 0 11 41 28 3.33333 25.0303 33 11 14 3 0 heads_default egahagcijklcmccaaccdbccacccecccccccccccec 
+224 org:divide (none) 1 0 28 43 42 6.97561 35.0285 30 9 14 1 0 heads_default egahagcijklcmccaaaccbhcccccccccccccccccccec 
+607 org:divide (none) 224 0 11 43 42 3.61538 38.8615 42 12 14 2 0 heads_default egahagcijklcmccaaaccbhcccccccccccccccccgcec 
+686 org:divide (none) 206 0 3 43 42 7 35.1892 58 12 14 4 0 heads_default egahagcijkicmckaaaccckccccccccccccaccccccec 
+109 org:divide (none) 1 0 32 43 42 4.13043 38.4465 8 7 14 1 0 heads_default egahagcijklcgccaaaccbbcccccccccccccccccccec 
+245 org:divide (none) 1 0 30 43 42 5.18605 37.2483 38 9 14 1 0 heads_default egahagcijklcmccaaaccbbcccccccjcccccccccccec 
+70 org:divide (none) 1 0 39 43 42 4.44262 37.9836 15 6 13 1 0 heads_default egahagcijklcmccaaaccbbcccccccccccccccchccec 
+473 org:divide (none) 95 0 8 42 37 3.38462 34.2428 27 11 13 4 0 heads_default egahagcijklcmccjaaccbbcjccacccccccccecccac 
+206 org:divide (none) 22 0 20 43 42 6.14286 36.1622 43 9 13 3 0 heads_default egahagcijklcmckaaaccckccccccccccccaccccccec 
+226 org:divide (none) 32 0 26 42 28 2.61538 25.9441 22 9 12 2 0 heads_default egahagcijklcmccaaccdbccaccceccccccccccccec 
+430 org:divide (none) 1 0 1 43 42 12.6667 28.3889 28 11 12 1 0 heads_default egahagcijklcmccaaaccbbccccmccccccccccccccec 
+236 org:divide (none) 86 0 3 42 28 6.25 21.3182 22 9 11 3 0 heads_default egahagcijklcmccaaaccibcaccceccdcccccccccec 
+27 org:divide (none) 1 0 18 43 38 4.69231 33.7483 12 5 10 1 0 heads_default egahagcijklcmccaaaccbbcccccccccccccccecccec 
+86 org:divide (none) 32 0 7 43 29 4.88235 24.1049 18 7 9 2 0 heads_default egahagcijklcmccaaaccibccaccceccccccccccccec 
+12 org:divide (none) 1 0 7 43 42 6.14286 36.1622 6 3 5 1 0 heads_default egahagcijklcmccaaaccbbccccccccccccaccccccec 

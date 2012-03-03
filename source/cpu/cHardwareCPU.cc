@@ -9354,7 +9354,7 @@ bool cHardwareCPU::Inst_ProduceString(cAvidaContext& ctx)
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 {
-  int opinion;
+  int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
   // Check if the org is currently part of a group
   assert(m_organism != 0);
 
@@ -9764,7 +9764,13 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 
       const int group_id = m_organism->GetOpinion().first;
 
-      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+      double immigrant_odds = 1;
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, -1);
+      else {
+        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE && m_organism->GetOrgInterface().NumberGroupFemales(group_id) == 0) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 0);
+        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE && m_organism->GetOrgInterface().NumberGroupMales(group_id) == 0) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 1);
+        else immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 2);
+      }
       double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
       double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
 

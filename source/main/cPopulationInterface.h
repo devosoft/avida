@@ -262,9 +262,9 @@ public:
   // ----- Tolerance/Group support ------
   int IncTolerance(const int toleranceType, cAvidaContext &ctx);
   int DecTolerance(const int toleranceType, cAvidaContext &ctx);
-  int CalcGroupToleranceImmigrants(int prop_group_id);
+  int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  double CalcGroupOddsImmigrants(int group_id);
+  double CalcGroupOddsImmigrants(int group_id, int mating_type);
   double CalcGroupOddsOffspring(cOrganism* parent);
   double CalcGroupOddsOffspring(int group_id);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);

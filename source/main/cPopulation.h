@@ -68,8 +68,10 @@ private:
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
   //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  //std::map<int, std::vector<cOrganism*> > group_list;
   tArrayMap<int, tArray<pair<int,int> > > group_intolerances;
+  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_females;
+  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_males;
+  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_juvs;
   
   // Keep list of live organisms
   tSmartArray<cOrganism* > live_org_list;
@@ -339,11 +341,11 @@ public:
 
   // -------- Tolerance support --------
   // Calculate tolerance of group towards immigrants @JJB
-  int CalcGroupToleranceImmigrants(int group_id);
+  int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
   // Calculate tolerance of group towards offspring (not including parent) @JJB
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
   // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
-  double CalcGroupOddsImmigrants(int group_id);
+  double CalcGroupOddsImmigrants(int group_id, int mating_type);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
   // Calculates the odds (out of 1) for offspring to be born into the group @JJB
   double CalcGroupOddsOffspring(int group_id);

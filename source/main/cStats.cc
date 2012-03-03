@@ -3314,7 +3314,7 @@ void cStats::PrintGroupTolerance(const cString& filename)
     df.Write(resource_count[i],"group resource available [grfood]");
     df.Write(resource_count[i] / cur_size, "per capita group resource available [grfoodper]");
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-      df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i),   "odds for immigrants coming into group [oddsimmigrants]");
+      df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i, -1),   "odds for immigrants coming into group [oddsimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i),    "average intra-group tolerance to immigrants [aveimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i),   "standard deviation for group tolerance to immigrants [sdevimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupOddsOffspring(i),    "odds for offspring being accepted by group [oddsoffspring]");

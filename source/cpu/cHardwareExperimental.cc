@@ -4231,7 +4231,7 @@ bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
 {
-  int group = m_world->GetConfig().DEFAULT_GROUP.Get();
+  int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
   // Check if the org is currently part of a group
   assert(m_organism != 0);
 	
@@ -4243,45 +4243,39 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
     return false; 
   }
   // injected orgs might not have an opinion
-  if (m_organism->HasOpinion()) {
-    group = m_organism->GetOpinion().first;
+  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    opinion = m_organism->GetOpinion().first;
+    
     //return false if org setting opinion to current one (avoid paying costs for not switching)
-    if (group == prop_group_id) return false;
+    if (opinion == prop_group_id) return false;
+    
+    // A random chance for failure to join group based on config, if failed return true for resource cost.
+    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+      int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
+      double prob_failure = (double) percent_failure / 100.0;
+      double rand = m_world->GetRandom().GetDouble();
+      if (rand <= prob_failure) return true;
+    }
     
     // If tolerances are on the org must pass immigration chance @JJB
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-      // If there are no members of the target group, automatically successful immigration
-      if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
-        m_organism->LeaveGroup(group);
-      }
-      // Calculate chances based on target group tolerance of another org successfully immigrating
-      else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
-        const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
-        const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
-        double probability_immigration = target_group_tolerance / tolerance_max;
-        double rand = m_world->GetRandom().GetDouble();
-        if (rand <= probability_immigration) {
-          // Org successfully immigrates
-          m_organism->LeaveGroup(group);
-        }
-        // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
-        else {
-          return true;
-        }
-      }
+      m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
+      return true;
     }
     else {
       // otherwise, subtract org from current group
-      m_organism->LeaveGroup(group);
+      m_organism->LeaveGroup(opinion);
     }
   }
-	
+  
   // Set the opinion
-  m_organism->SetOpinion(prop_group_id);
+  m_organism->GetOrgInterface().SetOpinion(prop_group_id, m_organism);
   
   // Add org to group count
-  group = m_organism->GetOpinion().first;	
-  m_organism->JoinGroup(group);
+  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    opinion = m_organism->GetOpinion().first;	
+    m_organism->JoinGroup(opinion);
+  }
   
   return true;
 }
@@ -5190,7 +5184,13 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
       const int group_id = m_organism->GetOpinion().first;
       if (group_id == -1) return false;
       
-      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+      double immigrant_odds = 1;
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, -1);
+      else {
+        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE && m_organism->GetOrgInterface().NumberGroupFemales(group_id) == 0) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 0);
+        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE && m_organism->GetOrgInterface().NumberGroupMales(group_id) == 0) immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 1);
+        else immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, 2);
+      }
       double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
       double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
       

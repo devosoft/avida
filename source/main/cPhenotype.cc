@@ -1718,6 +1718,20 @@ int cPhenotype::CalcToleranceImmigrants()
   // Update cached values
   intolerances[0].first = cur_update;
   intolerances[0].second = tolerance_immigrants.GetSize();
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+    if (GetMatingType() == MATING_TYPE_FEMALE) {
+      intolerances_females[0].first = cur_update;
+      intolerances_females[0].second = tolerance_immigrants.GetSize();
+    }
+    else if (GetMatingType() == MATING_TYPE_MALE) {
+      intolerances_males[0].first = cur_update;
+      intolerances_males[0].second = tolerance_immigrants.GetSize();
+    }
+    else {
+      intolerances_juvs[0].first = cur_update;
+      intolerances_juvs[0].second = tolerance_immigrants.GetSize();      
+    }
+  }
   return tolerance;
 }
 

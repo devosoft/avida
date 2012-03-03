@@ -199,9 +199,9 @@ public:
     
   int IncTolerance(int toleranceType, cAvidaContext &ctx) { return 0;}
   int DecTolerance(int toleranceType, cAvidaContext &ctx) { return 0;}
-  int CalcGroupToleranceImmigrants(int prop_group_id) { return 0; }
+  int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type) { return 0; }
   int CalcGroupToleranceOffspring(cOrganism* parent_organism) { return 0; }
-  double CalcGroupOddsImmigrants(int group_id) { return 0.0; }
+  double CalcGroupOddsImmigrants(int group_id, int mating_type) { return 0.0; }
   double CalcGroupOddsOffspring(cOrganism* parent) { return 0.0; }
   double CalcGroupOddsOffspring(int group_id) { return 0.0; }
   bool AttemptImmigrateGroup(int group_id, cOrganism* org) { return false; }
