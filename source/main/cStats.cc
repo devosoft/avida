@@ -1131,7 +1131,7 @@ void cStats::PrintInterruptData(const cString& filename) {
   int interruptTypeCounts[NUM_INTERRUPT_MSG_TYPES] = {0};
 
 	for( int i = 0; i < numDemes; ++i ){
-    const cDeme & cur_deme = m_world->GetPopulation().GetDeme(i);;
+    const cDeme & cur_deme = m_world->GetPopulation().GetDeme(i);
     for (int j = 0; j < cur_deme.GetSize(); ++j) {
       cPopulationCell& cur_cell = cur_deme.GetCell(j);
       cOrganism* org = cur_cell.GetOrganism();

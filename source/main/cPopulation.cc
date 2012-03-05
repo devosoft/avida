@@ -390,13 +390,13 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       group_intolerances[group_id][0].second -= tol_max - org_imm_tolerance; 
       if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
         if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-          group_intolerances_females[group_id][0].second -= tol_max - org_imm_tolerance;;
+          group_intolerances_females[group_id][0].second -= tol_max - org_imm_tolerance;
         }
         else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-          group_intolerances_males[group_id][0].second -= tol_max - org_imm_tolerance;;
+          group_intolerances_males[group_id][0].second -= tol_max - org_imm_tolerance;
         }
         else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
-          group_intolerances_juvs[group_id][0].second -= tol_max - org_imm_tolerance;;
+          group_intolerances_juvs[group_id][0].second -= tol_max - org_imm_tolerance;
         }
       }
       group_intolerances[group_id][1].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
@@ -6935,7 +6935,6 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   int parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
 
   int group_intolerance = 0;
-  bool used_parent = false;
   if (group_intolerances[group_id][1].first == cur_update) {
     group_intolerance = group_intolerances[group_id][1].second;
   } else {

@@ -930,7 +930,7 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   (void) cross_num;
   last_child_fertile = child_fertile;
   child_fertile     = true;
-  (void) child_copied_size;;
+  (void) child_copied_size;
   
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
