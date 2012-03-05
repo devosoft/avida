@@ -27,6 +27,7 @@
 
 #include "avida/core/Genome.h"
 #include "avida/core/InstructionSequence.h"
+#include "avida/viewer/Types.h"
 
 class cWorld;
 

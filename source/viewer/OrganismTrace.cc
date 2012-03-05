@@ -86,6 +86,7 @@ void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*
 {
   // Create internal reference to the snapshot array so that the tracing methods can create snapshots
   m_snapshots = &snapshots;
+  m_snapshots->Resize(300);
   
   // Set up tracking objects and variables
   m_snapshot_count = 0;
@@ -185,7 +186,7 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
   // - handle the offspring part of the memory
   memory.Resize(hw.GetMemory().GetSize() - memory.GetSize());
   for (int i = m_genome_length; i < hw.GetMemory().GetSize(); i++) {
-    memory[i] = hw.GetMemory()[i];
+    memory[i - m_genome_length] = hw.GetMemory()[i];
   }
   
   // - determine the maximum position of any head

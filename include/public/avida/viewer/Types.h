@@ -39,12 +39,14 @@ namespace Avida {
     struct FreezerID;
     class Listener;
     class Map;
+    class OrganismTrace;
     
     
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
     
     typedef Apto::SmartPtr<Freezer> FreezerPtr;
+    typedef Apto::SmartPtr<OrganismTrace> OrganismTracePtr;
   };
 };
 
