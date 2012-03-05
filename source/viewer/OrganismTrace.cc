@@ -27,9 +27,12 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
+#include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
+#include "cHeadCPU.h"
+#include "cOrganism.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
 
@@ -51,6 +54,11 @@ private:
 
   Apto::Array<HardwareSnapshot*>* m_snapshots;
   int m_snapshot_count;
+  
+  int m_genome_length;
+  Instruction m_first_inst;
+  int m_last_mem_space;
+  int m_last_idx;
   
 
 public:
@@ -82,6 +90,14 @@ void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*
   // Set up tracking objects and variables
   m_snapshot_count = 0;
   
+  InstructionSequencePtr seq;
+  seq.DynamicCastFrom(genome->Representation());
+  m_genome_length = seq->GetSize();
+  m_first_inst = (*seq)[0];
+  
+  m_last_mem_space = 0;
+  m_last_idx = 0;
+  
   
   // Setup context
   cRandom rng(100);
@@ -105,6 +121,11 @@ void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*
 
 void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool bonus, bool mini, int exec_success)
 {
+  (void)ctx;
+  (void)bonus;
+  (void)mini;
+  (void)exec_success;
+  
   // Create snapshot based on current hardware state
   m_snapshot_count++;
   
@@ -136,14 +157,78 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
     snapshot->AddBuffer(Apto::FormatStr("stack %c", 'A' + stk), buffer_values);
   }
   
+  // Handle function counts
+  const tArray<int>& task_counts = hw.GetOrganism()->GetPhenotype().GetCurTaskCount();
+  for (int i = 0; i < task_counts.GetSize(); i++) {
+    snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetDesc(), task_counts[i]);
+  }
   
+  // Handle memory spaces
+  Apto::Array<Instruction> memory;
   
-  // @TODO
+  // - handle the genome part of the memory
+  memory.Resize((m_genome_length < hw.GetMemory().GetSize()) ? m_genome_length : hw.GetMemory().GetSize());
+  for (int i = 0; i < m_genome_length && i < hw.GetMemory().GetSize(); i++) {
+    memory[i] = hw.GetMemory()[i];
+  }
+  snapshot->AddMemSpace("genome", memory);
+  
+  // - handle all heads that are in the first part of the memory space
+  for (int i = 0; i < hw.GetNumHeads(); i++) {
+    Apto::String name = "FLOW";
+    if (i == 0) name = "IP";
+    if (i == 1) name = "READ";
+    if (i == 2) name = "WRITE";
+    if (hw.GetHead(i).GetPosition() < m_genome_length) snapshot->AddHead(name, 0, hw.GetHead(i).GetPosition());
+  }
+  
+  // - handle the offspring part of the memory
+  memory.Resize(hw.GetMemory().GetSize() - memory.GetSize());
+  for (int i = m_genome_length; i < hw.GetMemory().GetSize(); i++) {
+    memory[i] = hw.GetMemory()[i];
+  }
+  
+  // - determine the maximum position of any head
+  int max_head_pos = 0;
+  for (int i = 0; i < hw.GetNumHeads(); i++) {
+    int head_pos = hw.GetHead(i).GetPosition();
+    if (head_pos > max_head_pos) max_head_pos = head_pos;
+  }
+  
+  // - if the maximum position is in the offspring part of the memory
+  if (max_head_pos >= m_genome_length) {
+    // truncate the offspring part of the memory to the position of the last head
+    memory.Resize(max_head_pos - m_genome_length + 1);
+    snapshot->AddMemSpace("offsping", memory);
+    
+    // handle all heads that are in the second part of the memory space
+    for (int i = 0; i < hw.GetNumHeads(); i++) {
+      Apto::String name = "FLOW";
+      if (i == 0) name = "IP";
+      if (i == 1) name = "READ";
+      if (i == 2) name = "WRITE";
+      if (hw.GetHead(i).GetPosition() >= m_genome_length) snapshot->AddHead(name, 1, hw.GetHead(i).GetPosition());
+    }
+  }  
+  
+  // Add/Update jump based on this current instruction execution
+  snapshot->AddJump(m_last_mem_space, m_last_idx, hw.IP().GetMemSpace(), hw.IP().GetPosition());
+  
+  // Cache the head position for calculating the next jump
+  m_last_mem_space = hw.IP().GetMemSpace();
+  m_last_idx = hw.IP().GetPosition();  
+  
+  // Store next instruction that will be executed
+  snapshot->SetNextInst(hw.IP().GetInst());
 }
 
 
 void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)
 {
+  (void)time_used;
+  (void)time_allocated;
+  (void)organism;
+  
   // Trace finished, cleanup...
   
   // Resize the snapshot array to the actual number of snapshots
@@ -153,10 +238,10 @@ void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrga
 
 
 
-HardwareSnapshot::HardwareSnapshot(int num_regs)
+HardwareSnapshot::HardwareSnapshot(int num_regs, HardwareSnapshot* previous_snapshot)
 : m_registers(num_regs), m_layout(false)
 {
-  
+  if (previous_snapshot) m_jumps = previous_snapshot->m_jumps;
 }
 
 
@@ -196,9 +281,17 @@ void HardwareSnapshot::AddHead(const Apto::String& label, int mem_space, int ind
 }
 
 
-void HardwareSnapshot::AddJump(int from_mem_space, int from_idx, int to_mem_space, int to_idx, int freq)
+void HardwareSnapshot::AddJump(int from_mem_space, int from_idx, int to_mem_space, int to_idx)
 {
-  m_jumps.Push(Jump(from_mem_space, from_idx, to_mem_space, to_idx, freq));
+  for (int i = 0; i < m_jumps.GetSize(); i++) {
+    Jump& jmp = m_jumps[i];
+    if (jmp.from_mem_space == from_mem_space && jmp.from_idx == from_idx &&
+        jmp.to_mem_space == to_mem_space && jmp.to_idx == to_idx) {
+      jmp.freq++;
+      return;
+    }
+  }
+  m_jumps.Push(Jump(from_mem_space, from_idx, to_mem_space, to_idx, 1));
 }
 
 

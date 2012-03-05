@@ -84,6 +84,7 @@ public:
 
   inline const Instruction& GetInst() const { return GetMemory()[m_position]; }
   inline const Instruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }
+  inline Instruction GetPrevInst() const;
   inline Instruction GetNextInst() const;
 
   inline void SetInst(const Instruction& value) { GetMemory()[m_position] = value; }
@@ -160,6 +161,11 @@ inline bool cHeadCPU::operator==(const cHeadCPU& in_cpu_head) const
 {
   return (m_hardware == in_cpu_head.m_hardware) && (m_position == in_cpu_head.m_position) &&
   (m_mem_space == in_cpu_head.m_mem_space);
+}
+
+inline Instruction cHeadCPU::GetPrevInst() const
+{
+  return (AtFront()) ? GetMemory()[GetMemory().GetSize() - 1] : GetMemory()[m_position - 1];
 }
 
 inline Instruction cHeadCPU::GetNextInst() const

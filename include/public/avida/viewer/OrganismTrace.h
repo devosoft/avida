@@ -70,7 +70,6 @@ namespace Avida {
       };
       Apto::Array<Jump, Apto::Smart> m_jumps;
       
-      Instruction m_last_inst;
       Instruction m_next_inst;
       
       mutable Apto::Array<GraphicObject*> m_graphic_objects;
@@ -78,7 +77,7 @@ namespace Avida {
       
       
     public:
-      LIB_EXPORT HardwareSnapshot(int num_regs);
+      LIB_EXPORT HardwareSnapshot(int num_regs, HardwareSnapshot* previous_snapshot = NULL);
       LIB_EXPORT ~HardwareSnapshot();
       
       
@@ -88,7 +87,8 @@ namespace Avida {
       LIB_LOCAL void SetFunctionCount(const Apto::String& function, int count);
       LIB_LOCAL int AddMemSpace(const Apto::String& label, const Apto::Array<Instruction>& memory);
       LIB_LOCAL void AddHead(const Apto::String& label, int mem_space, int index);
-      LIB_LOCAL void AddJump(int from_mem_space, int from_idx, int to_mem_space, int to_idx, int freq);
+      LIB_LOCAL void AddJump(int from_mem_space, int from_idx, int to_mem_space, int to_idx);
+      LIB_LOCAL inline void SetNextInst(Instruction inst) { m_next_inst = inst; }
 
 
       // Access Methods
@@ -101,8 +101,10 @@ namespace Avida {
       LIB_EXPORT inline int FunctionCount(const Apto::String& function) const { return m_function_counts.GetWithDefault(function, 0); };
       
       
-      LIB_EXPORT inline Instruction LastInstruction() const { return m_last_inst; }
       LIB_EXPORT inline Instruction NextInstruction() const { return m_next_inst; }
+      
+      
+      
       
       
       LIB_EXPORT inline int NumGraphicObjects() const { if (!m_layout) doLayout(); return m_graphic_objects.GetSize(); }
