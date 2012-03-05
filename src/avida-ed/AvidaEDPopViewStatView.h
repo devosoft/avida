@@ -2,7 +2,7 @@
 //  AvidaEDPopViewStatView.h
 //  avida/apps/viewer-macos
 //
-//  Created by David Bryson on 4/15/11.
+//  Created by David M. Bryson on 4/15/11.
 //  Copyright 2011-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //

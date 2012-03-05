@@ -1,9 +1,9 @@
 //
-//  main.mm
-//  avida/apps/viewer-macos
+//  OrganismView.mm
+//  viewer-macos
 //
-//  Created by David M. Bryson on 10/20/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 3/5/12.
+//  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,16 +27,23 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import "OrganismView.h"
 
-namespace Avida {
-  void Initialize();
-};
+@implementation OrganismView
 
-
-int main(int argc, char *argv[])
+- (id)initWithFrame:(NSRect)frame
 {
-  Avida::Initialize();
-  
-  return NSApplicationMain(argc, (const char **)argv);
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code here.
+    }
+    
+    return self;
 }
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    // Drawing code here.
+}
+
+@end

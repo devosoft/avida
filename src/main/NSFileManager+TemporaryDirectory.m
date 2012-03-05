@@ -2,7 +2,7 @@
 //  NSFileManager+TemporaryDirectory.m
 //  viewer-macos
 //
-//  Created by David Michael Bryson on 1/5/12.
+//  Created by David M. Bryson on 1/5/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //

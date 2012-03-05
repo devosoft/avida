@@ -2,7 +2,7 @@
 //  AvidaEDController.mm
 //  avida/apps/viewer-macos
 //
-//  Created by David on 11/30/10.
+//  Created by David M. Bryson on 11/30/10.
 //  Copyright 2010-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //

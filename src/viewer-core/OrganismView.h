@@ -1,9 +1,9 @@
 //
-//  main.mm
-//  avida/apps/viewer-macos
+//  OrganismView.h
+//  viewer-macos
 //
-//  Created by David M. Bryson on 10/20/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 3/5/12.
+//  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -29,14 +29,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-namespace Avida {
-  void Initialize();
-};
+@interface OrganismView : NSView
 
-
-int main(int argc, char *argv[])
-{
-  Avida::Initialize();
-  
-  return NSApplicationMain(argc, (const char **)argv);
-}
+@end

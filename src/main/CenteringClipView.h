@@ -2,7 +2,7 @@
 //  CenteringClipView.h
 //  avida/apps/viewer-macos
 //
-//  Created by David on 4/22/11.
+//  Created by David M. Bryson on 4/22/11.
 //  Copyright 2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //

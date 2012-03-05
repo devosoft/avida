@@ -2,7 +2,7 @@
 //  SubtleSplitView.h
 //  avida/apps/viewer-macos
 //
-//  Created by David on 12/16/10.
+//  Created by David M. Bryson on 12/16/10.
 //  Copyright 2010-2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //

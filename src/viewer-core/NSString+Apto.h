@@ -2,7 +2,7 @@
 //  NSString+Apto.h
 //  viewer-macos
 //
-//  Created by David Michael Bryson on 7/7/11.
+//  Created by David M. Bryson on 7/7/11.
 //  Copyright 2011-2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
