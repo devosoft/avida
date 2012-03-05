@@ -1,5 +1,5 @@
 //
-//  OrganismView.h
+//  DropDelegate.h
 //  viewer-macos
 //
 //  Created by David M. Bryson on 3/5/12.
@@ -29,18 +29,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "DropDelegate.h"
 
-
-@interface OrganismView : NSView <NSDraggingDestination> {
-  IBOutlet id<DropDelegate> dropDelegate;
-}
-
-// NSDraggingDestination
-- (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;
-- (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender;
-- (BOOL) prepareForDragOperation:(id<NSDraggingInfo>)sender;
-- (BOOL) performDragOperation:(id<NSDraggingInfo>)sender;
-- (BOOL) wantsPeriodicDraggingUpdates;   
-
+@protocol DropDelegate <NSObject>
+@optional
+- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) wantsPeriodicDraggingUpdatesForDestination:(id<NSDraggingDestination>)destination;
 @end

@@ -43,6 +43,7 @@
 @class MapScaleView;
 
 @class AvidaEDPopViewStatView;
+@class AvidaEDOrganismView;
 
 
 @interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, DropDelegate, MapDragDelegate, ViewerListener,
@@ -121,7 +122,7 @@
   
   // Organism View
   // --------------------------------------------------------------------------------------------------------------  
-  IBOutlet NSView* orgView;
+  IBOutlet AvidaEDOrganismView* orgView;
   
 
   AvidaAppDelegate* app;
@@ -142,6 +143,7 @@
 
 
 - (void) duplicateFreezerAtURL:(NSURL*)url;
+- (Avida::Viewer::FreezerPtr) freezer;
 
 
 // NSWindowController Methods

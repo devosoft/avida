@@ -1,5 +1,5 @@
 //
-//  OrganismView.h
+//  AvidaEDOrgansimView.h
 //  viewer-macos
 //
 //  Created by David M. Bryson on 3/5/12.
@@ -31,16 +31,36 @@
 
 #import "DropDelegate.h"
 
+#include "avida/viewer/OrganismTrace.h"
 
-@interface OrganismView : NSView <NSDraggingDestination> {
-  IBOutlet id<DropDelegate> dropDelegate;
+@class AvidaEDController;
+@class AvidaRun;
+@class OrganismView;
+
+
+@interface AvidaEDOrganismView : NSView <DropDelegate> {
+  IBOutlet OrganismView* orgView;
+  IBOutlet NSTextField* txtOrgName;
+  IBOutlet NSTableView* tblTaskCounts;
+  IBOutlet NSSlider* sldStatus;
+  
+  IBOutlet NSButton* btnBegin;
+  IBOutlet NSButton* btnBack;
+  IBOutlet NSButton* btnGo;
+  IBOutlet NSButton* btnForward;
+  IBOutlet NSButton* btnEnd;
+  
+  IBOutlet AvidaEDController* ctlr;
+  
+  AvidaRun* testWorld;
+  Avida::Viewer::OrganismTracePtr trace;
 }
 
-// NSDraggingDestination
-- (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;
-- (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender;
-- (BOOL) prepareForDragOperation:(id<NSDraggingInfo>)sender;
-- (BOOL) performDragOperation:(id<NSDraggingInfo>)sender;
-- (BOOL) wantsPeriodicDraggingUpdates;   
+
+// DropDelegate
+- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
 
 @end

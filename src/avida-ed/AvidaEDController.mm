@@ -42,6 +42,7 @@
 #import "NSString+Apto.h"
 
 #import "AvidaEDPopViewStatView.h"
+#import "AvidaEDOrganismView.h"
 
 #include "avida/viewer/Map.h"
 
@@ -561,6 +562,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   freezer->DuplicateFreezerAt(path);
 }
 
+- (Avida::Viewer::FreezerPtr) freezer {
+  return freezer;
+}
 
 
 - (void) windowDidLoad {

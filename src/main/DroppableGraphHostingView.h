@@ -30,14 +30,7 @@
 #import <Cocoa/Cocoa.h>
 #import <CorePlot/CorePlot.h>
 
-@protocol DropDelegate <NSObject>
-@optional
-- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) wantsPeriodicDraggingUpdatesForDestination:(id<NSDraggingDestination>)destination;
-@end
+#import "DropDelegate.h"
 
 
 @interface DroppableGraphHostingView : CPTGraphHostingView <NSDraggingDestination> {
