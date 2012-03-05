@@ -40,7 +40,7 @@ namespace Avida {
     class HardwareSnapshot
     {
     public:
-      struct GraphicObject;
+      class GraphicObject;
       
     private:
       Apto::Array<int> m_registers;
@@ -112,30 +112,61 @@ namespace Avida {
       
       
     public:
-      struct GraphicObject
+      class GraphicObject
       {
-        float x;
-        float y;
-        float x2;
-        float y2;
-        float radius;
-        float stroke;
-        
-        enum { CIRCLE, ARC } shape;
-        Apto::String label;
-        
+      public:
         struct Color
         {
-          float r;
-          float g;
-          float b;
-          float a;
-        };
-        Color fill_color;
-        Color stroke_color;
-        Color label_color;
+          float r, g, b, a;  // Red, Green, Blue, and Alpha (opacity), all 0.0 to 1.0.
+          Color(float _r, float _g, float _b, float _a=0.0) : r(_r), g(_g), b(_b), a(_a) { ; }
+
+          static inline Color NONE()  { return Color(0.0, 0.0, 0.0, 0.0); }
+          static inline Color BLACK() { return Color(0.0, 0.0, 0.0, 1.0); }
+          static inline Color WHITE() { return Color(1.0, 1.0, 1.0, 1.0); }
+          static inline Color RED()   { return Color(1.0, 0.0, 0.0, 1.0); }
+          static inline Color GREEN() { return Color(0.0, 1.0, 0.0, 1.0); }
+          static inline Color BLUE()  { return Color(0.0, 0.0, 1.0, 1.0); }
+       };
+
+        // Bounding box
+        float x, y;           // 1.0 = approximately 1 inch, unzoomed (72 pixels); screen center = (0,0) 
+        float width, height;
         
-        int active_region;
+        // Shape
+        enum GraphicShape { SHAPE_NONE, SHAPE_OVAL, SHAPE_RECT, SHAPE_LINE } shape;
+        Color fill_color;
+
+        // Line
+        float line_width;   // 1.0 is standard 1px
+        Color line_color;
+
+        // Label
+        Apto::String label;
+        float font_size;    // Relative value; 1.0 is default.
+        Color label_color;
+                
+        // Shape specific details
+        union {
+          struct {  // For SHAPE_OVAL
+            float start_angle;  // In radians (0 to 2PI); both zero indicate full circle.
+            float end_angle;
+          };
+          struct {  // For SHAPE_RECT
+            float x_round; // Radius for rounded corners.  Zero inidcated square corners.
+            float y_round;
+          };
+        };
+        
+        // Is this graphic object an active region?
+        int active_region_id;  // -1 is not active
+
+      public:
+        GraphicObject(float _x, float _y, float _width, float _height, GraphicShape _shape=SHAPE_NONE)
+          : x(_x), y(_y), width(_width), height(_height), shape(_shape),
+            fill_color(Color::NONE()), line_width(1.0), line_color(Color::BLACK()),
+            label_color(Color::BLACK()), font_size(1.0), start_angle(0.0), end_angle(0.0)
+        { ; }
+        ~GraphicObject() { ; }
       };
       
     private:
