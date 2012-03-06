@@ -338,6 +338,9 @@ private:
   bool Inst_IfAboveResLevelEnd(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx);
+  
+  bool Inst_IfGerm(cAvidaContext& ctx);
+  bool Inst_IfSoma(cAvidaContext& ctx);  
 
   // Probabilistic ifs.
   bool Inst_IfP0p125(cAvidaContext& ctx);

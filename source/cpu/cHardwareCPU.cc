@@ -112,6 +112,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-notAboveResLevel", &cHardwareCPU::Inst_IfNotAboveResLevel),
     tInstLibEntry<tMethod>("if-notAboveResLevel.end", &cHardwareCPU::Inst_IfNotAboveResLevelEnd),
     
+    tInstLibEntry<tMethod>("if-germ", &cHardwareCPU::Inst_IfGerm),
+    tInstLibEntry<tMethod>("if-soma.end", &cHardwareCPU::Inst_IfSoma),
+    
     // Probabilistic ifs.
     tInstLibEntry<tMethod>("if-p-0.125", &cHardwareCPU::Inst_IfP0p125, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-p-0.25", &cHardwareCPU::Inst_IfP0p25, nInstFlag::STALL),
@@ -2350,6 +2353,25 @@ bool cHardwareCPU::Inst_IfP0p75(cAvidaContext& ctx)
 
   return true;
 }
+
+bool cHardwareCPU::Inst_IfGerm(cAvidaContext& ctx)
+{
+  if (!m_organism->IsGermline()) {
+    getIP().Advance();
+  }
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfSoma(cAvidaContext& ctx)
+{
+  if (m_organism->IsGermline()) {
+    getIP().Advance();
+  }
+  
+  return true;
+}
+
 
 bool cHardwareCPU::Inst_JumpF(cAvidaContext& ctx)
 {
