@@ -733,7 +733,34 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   cOrganism* target_organism = NULL;
   if (m_world->GetConfig().BIRTH_METHOD.Get() ==  POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
     target_organism = GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize())).GetOrganism();
-  } else {
+  } 
+  else if(m_world->GetConfig().NUM_DEMES.Get() > 1 && m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0 && m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 4 && m_world->GetRandom().P(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get())) {
+      // MIGRATION_MATRIX
+      // @TODO: Implement the remaining migration methods into this function rather than just Migration Method #4
+      cDeme& deme = GetDeme(m_world->GetMigrationMatrix().GetProbabilisticDemeID(host_cell.GetDemeID(), m_world->GetRandom()));
+      
+      // Implementation #1 - Picks randomly of ALL cells in to-deme and then finds if the one it chose was occupied
+      // -- Not ensured to infect an individual
+      cPopulationCell& rand_cell = deme.GetCell(m_world->GetRandom().GetInt(deme.GetSize()));
+      if(rand_cell.IsOccupied()){
+          target_organism = rand_cell.GetOrganism();
+      }
+      
+      /* Implementation #2 - Picks randomly from OCCUPIED cells in to-deme 
+      // -- Ensured to infect an individual
+      tArray<int> viable_target_ids;
+      for(int cell = 0; cell < deme.GetSize(); cell++){
+          if(deme.GetCell(cell).IsOccupied()){
+              viable_target_ids.Push(cell);
+          }
+      }
+      if(viable_target_ids.GetSize() > 0){
+          target_organism = deme.GetCell(viable_target_ids[m_world->GetRandom().GetInt(viable_target_ids.GetSize())]).GetOrganism();
+      }
+      */
+      
+  }
+  else {
     target_organism =
     host_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(host->GetNeighborhoodSize()))->GetOrganism();
   }
