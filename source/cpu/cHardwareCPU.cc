@@ -113,7 +113,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-notAboveResLevel.end", &cHardwareCPU::Inst_IfNotAboveResLevelEnd),
     
     tInstLibEntry<tMethod>("if-germ", &cHardwareCPU::Inst_IfGerm),
-    tInstLibEntry<tMethod>("if-soma.end", &cHardwareCPU::Inst_IfSoma),
+    tInstLibEntry<tMethod>("if-soma", &cHardwareCPU::Inst_IfSoma),
     
     // Probabilistic ifs.
     tInstLibEntry<tMethod>("if-p-0.125", &cHardwareCPU::Inst_IfP0p125, nInstFlag::STALL),
