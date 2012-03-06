@@ -48,10 +48,10 @@ Avida::Environment::Manager::Manager()
 }
 
 bool Avida::Environment::Manager::DefineActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc,
-                                                      ConstProductPtr product)
+                                                      ConstProductPtr product, int tmp_order)
 {
   if (m_action_triggers.Has(trigger_id)) return false;
-  ActionTriggerPtr trigger(new ActionTrigger(trigger_id, desc, product));
+  ActionTriggerPtr trigger(new ActionTrigger(trigger_id, desc, product, tmp_order));
   m_action_triggers[trigger_id] = trigger;
   if (m_action_trigger_ids) m_action_trigger_ids->Insert(trigger_id);
   return true;

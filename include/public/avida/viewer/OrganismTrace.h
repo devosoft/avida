@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Authors: David M. Bryson <david@programerror.com>
+ *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <charles.ofria@gmail.com>
  *
  */
 
@@ -165,7 +165,7 @@ namespace Avida {
         GraphicObject(float _x, float _y, float _width, float _height, GraphicShape _shape=SHAPE_NONE)
           : x(_x), y(_y), width(_width), height(_height), shape(_shape),
             fill_color(Color::NONE()), line_width(1.0), line_color(Color::BLACK()),
-            label_color(Color::BLACK()), font_size(1.0), start_angle(0.0), end_angle(0.0)
+            font_size(1.0), label_color(Color::BLACK()), start_angle(0.0), end_angle(0.0)
         { ; }
         ~GraphicObject() { ; }
       };

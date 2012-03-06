@@ -739,7 +739,8 @@ bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
   if (cur_task == NULL) return false;
   new_reaction->SetTask(cur_task);      // Attack task to reaction.
   Environment::ManagerPtr env = Environment::Manager::Of(m_world->GetNewWorld());
-  env->DefineActionTrigger((const char*)cur_task->GetName(), (const char*)cur_task->GetDesc(), Environment::ConstProductPtr());
+  env->DefineActionTrigger((const char*)cur_task->GetName(), (const char*)cur_task->GetDesc(), Environment::ConstProductPtr(),
+                           m_tasklib.GetSize() - 1);
 
   while (desc.GetSize()) {
     cString desc_entry = desc.PopWord();      // Get the next argument

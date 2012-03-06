@@ -40,8 +40,10 @@ namespace Avida {
       const ActionTriggerID m_id;
       const Apto::String m_desc;
       ConstProductPtr m_product;
+      int m_tmp_order;
       
-      LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, ConstProductPtr product)
+      LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, ConstProductPtr product,
+                                     int tmp_order = -1)
         : m_id(trigger_id), m_desc(desc), m_product(product) { ; }
 
     public:
@@ -50,6 +52,9 @@ namespace Avida {
       LIB_EXPORT inline const ActionTriggerID& GetID() const { return m_id; }
       LIB_EXPORT inline const Apto::String& GetDescription() const { return m_desc; }
       LIB_EXPORT inline ConstProductPtr GetProduct() const { return m_product; }
+
+      // Transitionary methods
+      LIB_EXPORT inline int TempOrdering() const { return m_tmp_order; }
     };
     
   };
