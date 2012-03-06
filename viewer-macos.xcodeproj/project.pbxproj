@@ -17,6 +17,7 @@
 		7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7029A49C1361CDBD0031433A /* CenteringClipView.m */; };
 		7032D0B715051F260090C93C /* OrganismView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0B615051F260090C93C /* OrganismView.mm */; };
 		7032D0BB150534F40090C93C /* AvidaEDOrganismView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0BA150534F40090C93C /* AvidaEDOrganismView.mm */; };
+		7032D0BE15067D6A0090C93C /* AvidaEDEnvActionsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */; };
 		7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
 		703549A91337A4B100D3865C /* Avida-ED-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A61337A4B100D3865C /* Avida-ED-MainWindow.xib */; };
 		703549AA1337A4B100D3865C /* Avida-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A71337A4B100D3865C /* Avida-MainWindow.xib */; };
@@ -82,8 +83,10 @@
 		7032D0B515051F260090C93C /* OrganismView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrganismView.h; sourceTree = "<group>"; };
 		7032D0B615051F260090C93C /* OrganismView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OrganismView.mm; sourceTree = "<group>"; };
 		7032D0B8150528C30090C93C /* DropDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DropDelegate.h; sourceTree = "<group>"; };
-		7032D0B9150534F40090C93C /* AvidaEDOrganismView.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AvidaEDOrganismView.h; sourceTree = "<group>"; };
+		7032D0B9150534F40090C93C /* AvidaEDOrganismView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismView.h; sourceTree = "<group>"; };
 		7032D0BA150534F40090C93C /* AvidaEDOrganismView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDOrganismView.mm; sourceTree = "<group>"; };
+		7032D0BC15067D680090C93C /* AvidaEDEnvActionsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDEnvActionsDataSource.h; sourceTree = "<group>"; };
+		7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDEnvActionsDataSource.m; sourceTree = "<group>"; };
 		7035497113379FBD00D3865C /* Avida.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avida.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7035497513379FBD00D3865C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7035497813379FBD00D3865C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -264,6 +267,8 @@
 			children = (
 				703549B11337AD1600D3865C /* AvidaEDController.h */,
 				703549B21337AD1600D3865C /* AvidaEDController.mm */,
+				7032D0BC15067D680090C93C /* AvidaEDEnvActionsDataSource.h */,
+				7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */,
 				7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */,
 				7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */,
 				70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */,
@@ -447,6 +452,7 @@
 				7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */,
 				7032D0B715051F260090C93C /* OrganismView.mm in Sources */,
 				7032D0BB150534F40090C93C /* AvidaEDOrganismView.mm in Sources */,
+				7032D0BE15067D6A0090C93C /* AvidaEDEnvActionsDataSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,17 +30,27 @@
 #import "AvidaEDOrganismView.h"
 
 #import "AvidaEDController.h"
+#import "AvidaEDEnvActionsDataSource.h"
 #import "AvidaRun.h"
 #import "Freezer.h"
 #import "NSFileManager+TemporaryDirectory.h"
+#import "NSString+Apto.h"
 
+#include "avida/environment/ActionTrigger.h"
+#include "avida/environment/Manager.h"
+#include "avida/environment/Product.h"
 #include "avida/viewer/Freezer.h"
 
-@interface AvidaEDOrganismView (Private)
+
+
+@interface AvidaEDOrganismView (hidden)
 - (AvidaRun*) world;
+- (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;
+
+- (void) setTaskCountsWithSnapshot:(const Avida::Viewer::HardwareSnapshot&)snapshot;
 @end
 
-@implementation AvidaEDOrganismView (Private)
+@implementation AvidaEDOrganismView (hidden)
 
 - (AvidaRun*) world {
   if (!testWorld) {
@@ -52,9 +62,54 @@
     Avida::Viewer::FreezerPtr freezer = [ctlr freezer];
     freezer->InstantiateWorkingDir(default_world, [runPath cStringUsingEncoding:NSASCIIStringEncoding]);
     testWorld = [[AvidaRun alloc] initWithDirectory:runPath];
+    
+    
+    Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of([testWorld world]);
+    Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
+    for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next();) {
+      Avida::Environment::ConstActionTriggerPtr action = env->GetActionTrigger(*it.Get());
+      NSString* entryName = [NSString stringWithAptoString:action->GetID()];
+      NSString* entryDesc = [NSString stringWithAptoString:action->GetDescription()];
+      [envActions addNewEntry:entryName withDescription:entryDesc withOrder:action->TempOrdering()];
+    }
+    [tblTaskCounts reloadData];
   }
   
   return testWorld;
+}
+
+
+- (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name {
+  // Trace genome
+  trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([[self world] oldworld], genome));
+
+  [txtOrgName setStringValue:name];
+  [txtOrgName setEnabled:YES];
+  
+  [sldStatus setMinValue:0];
+  [sldStatus setMaxValue:trace->SnapshotCount()];
+  [sldStatus setIntValue:0];
+  [sldStatus setEnabled:YES];
+  
+  [btnBegin setEnabled:NO];
+  [btnBack setEnabled:NO];
+  [btnGo setEnabled:YES];
+  [btnGo setTitle:@"Run"];
+  [btnForward setEnabled:YES];
+  [btnEnd setEnabled:YES];
+  
+  if (trace->SnapshotCount() > 0) {
+    [self setTaskCountsWithSnapshot:trace->Snapshot(0)];
+  }
+}
+
+- (void) setTaskCountsWithSnapshot:(const Avida::Viewer::HardwareSnapshot&)snapshot {
+  
+  for (NSUInteger i = 0; i < [envActions entryCount]; i++) {
+    NSString* entry_name = [envActions entryAtIndex:i];
+    [envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:snapshot.FunctionCount([entry_name UTF8String])]];
+  }
+  [tblTaskCounts reloadData];
 }
 
 @end
@@ -66,13 +121,30 @@
 - (id) initWithFrame:(NSRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    // initialize
   }
   
   return self;
 }
 
 - (void) awakeFromNib {
+  
+  [btnBegin setEnabled:NO];
+  [btnBack setEnabled:NO];
+  [btnGo setEnabled:NO];
+  [btnGo setTitle:@"Run"];
+  [btnForward setEnabled:NO];
+  [btnEnd setEnabled:NO];
+  
+  [sldStatus setEnabled:NO];
+  [txtOrgName setStringValue:@"(none)"];
+  [txtOrgName setEnabled:NO];
+  
   [orgView registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, nil]];
+  
+  envActions = [[AvidaEDEnvActionsDataSource alloc] init];
+  [tblTaskCounts setDataSource:envActions];
+  [tblTaskCounts reloadData];
 }
 
 
@@ -128,9 +200,7 @@
     Avida::Viewer::FreezerPtr freezer = [ctlr freezer];
     Avida::GenomePtr genome = freezer->InstantiateGenome(fid);
     
-    
-    // Trace genome
-    trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([[self world] oldworld], genome));
+    [self setGenome:genome withName:[NSString stringWithAptoString:freezer->NameOf(fid)]];
   }
   
   return YES;

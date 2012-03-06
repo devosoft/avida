@@ -1,8 +1,8 @@
 //
-//  AvidaEDOrgansimView.h
+//  AvidaEDEnvActionsDataSource.h
 //  viewer-macos
 //
-//  Created by David M. Bryson on 3/5/12.
+//  Created by David M. Bryson on 3/6/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -29,41 +29,19 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "DropDelegate.h"
-
-#include "avida/viewer/OrganismTrace.h"
-
-@class AvidaEDController;
-@class AvidaEDEnvActionsDataSource;
-@class AvidaRun;
-@class OrganismView;
-
-
-@interface AvidaEDOrganismView : NSView <DropDelegate> {
-  IBOutlet OrganismView* orgView;
-  IBOutlet NSTextField* txtOrgName;
-  IBOutlet NSTableView* tblTaskCounts;
-  IBOutlet NSSlider* sldStatus;
-  
-  IBOutlet NSButton* btnBegin;
-  IBOutlet NSButton* btnBack;
-  IBOutlet NSButton* btnGo;
-  IBOutlet NSButton* btnForward;
-  IBOutlet NSButton* btnEnd;
-  
-  IBOutlet AvidaEDController* ctlr;
-  
-  AvidaRun* testWorld;
-  Avida::Viewer::OrganismTracePtr trace;
-  
-  AvidaEDEnvActionsDataSource* envActions;
+@interface AvidaEDEnvActionsDataSource : NSObject <NSTableViewDataSource> {
+  NSMutableArray* entries;
+  NSMutableDictionary* entrymap;
 }
+- (id) init;
+- (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc withOrder:(int)order;
+- (void) updateEntry:(NSString*)name withValue:(NSNumber*)value;
+- (void) clearEntries;
+- (NSString*) entryAtIndex:(NSUInteger)idx;
+- (int) orderOfIndex:(NSUInteger)idx;
+- (NSUInteger) entryCount;
 
-
-// DropDelegate
-- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-
+- (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;
+- (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
+- (void) tableView:(NSTableView*)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
 @end
