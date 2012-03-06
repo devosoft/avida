@@ -146,10 +146,10 @@ private:
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
-  tList<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants @JJB
-  tList<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
-  tList<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
-  tArray<pair<int,int> > intolerances;        // caches temporary values of the intolerance and the update @JJB
+  tList<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants 
+  tList<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring 
+  tList<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group 
+  tArray<pair<int,int> > intolerances;        // caches temporary values of the intolerance and the update 
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   int mating_type;                            // Organism's phenotypic sex @CHC
@@ -424,13 +424,13 @@ public:
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
-  tList<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
-  tList<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
-  tList<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
-  tArray<pair<int,int> >& GetIntolerances() { assert(initialized == true); return intolerances; }                // @JJB
-  int CalcToleranceImmigrants();       // @JJB
-  int CalcToleranceOffspringOwn();     // @JJB
-  int CalcToleranceOffspringOthers();  // @JJB
+  tList<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            
+  tList<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       
+  tList<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } 
+  tArray<pair<int,int> >& GetIntolerances() { assert(initialized == true); return intolerances; }                
+  int CalcToleranceImmigrants();       
+  int CalcToleranceOffspringOwn();     
+  int CalcToleranceOffspringOthers();  
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }

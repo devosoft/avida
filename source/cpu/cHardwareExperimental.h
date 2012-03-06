@@ -26,18 +26,21 @@
 #include "avida/Avida.h"
 
 #include "cCodeLabel.h"
-#include "nHardware.h"
-#include "cHeadCPU.h"
+#include "cCoords.h"
 #include "cCPUMemory.h"
+#include "cEnvReqs.h"
+#include "cEnvironment.h"
 #include "cHardwareBase.h"
+#include "cHeadCPU.h"
+#include "cOrgSensor.h"
 #include "cStats.h"
 #include "cString.h"
+
+#include "nHardware.h"
+
 #include "tArray.h"
 #include "tInstLib.h"
 #include "tManagedPointerArray.h"
-#include "cEnvReqs.h"
-#include "cEnvironment.h"
-#include "cCoords.h"
 
 #include <cstring>
 #include <iomanip>
@@ -189,6 +192,7 @@ private:
   int m_cur_thread;
   
   int m_avatar;
+  cOrgSensor m_sensor;
   
   struct {
     unsigned int m_cycle_count:16;
@@ -628,12 +632,7 @@ public:
   bool Inst_ReadCellData(cAvidaContext& ctx);
 
   // ---------- Some Instruction Helpers -----------
-  struct searchInfo {
-    double amountFound;
-    int resource_id;
-    bool has_edible;
-  };
-  struct lookRegAssign {
+  struct sLookRegAssign {
     int habitat;
     int distance;
     int search_type;
@@ -643,39 +642,10 @@ public:
     int group;
     int ft;
   };
-  struct lookOut {
-    int report_type;
-    int habitat;
-    int distance;
-    int search_type;
-    int id_sought;
-    int count;
-    int value;
-    int group;
-    int forage;
-  }; 
-  struct bounds {
-    int min_x;
-    int min_y;
-    int max_x;
-    int max_y;
-  };
   
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
-  searchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
-                      const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step);  
-  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
-  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
-  lookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
-  lookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
-  void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
-  int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
-  int GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, const int distance_sought, 
-                 const int facing);
-  int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& res_bounds);
-  bounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
-  bool TestBounds(const cCoords cell_id, bounds& bounds_set);
-  tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
+  cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
+  void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
 };
 
 

@@ -145,8 +145,8 @@ public:
   void DivideOrgTestamentAmongDeme(double value) {;}
 	void SendFlash() { }
   
-  int GetNortherly() {return 0; }
-  int GetEasterly() {return 0; }
+  int GetNortherly() { return 0; }
+  int GetEasterly() { return 0; }
 	
 	void RotateToGreatestReputation(){ }
 	void RotateToGreatestReputationWithDifferentTag(int tag){ }
@@ -191,18 +191,22 @@ public:
   void JoinGroup(int group_id) { ; }
   void MakeGroup() { ; }
   void LeaveGroup(int group_id) { ; }
-  int NumberOfOrganismsInGroup(int group_id) {return 0; }
+  int NumberOfOrganismsInGroup(int group_id) { return 0; }
+  int NumberGroupFemales(int group_id) { return 0; }
+  int NumberGroupMales(int group_id) { return 0; }
+  int NumberGroupJuvs(int group_id) { return 0; }
+  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type) { ; }
     
-  int IncTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
-  int DecTolerance(int toleranceType, cAvidaContext &ctx) {return 0;}
-  int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
-  int CalcGroupToleranceOffspring(cOrganism* parent_organism) {return 0; }
-  double CalcGroupOddsImmigrants(int group_id) {return 0.0; }
-  double CalcGroupOddsOffspring(cOrganism* parent) {return 0.0; }
-  double CalcGroupOddsOffspring(int group_id) {return 0.0; }
-  bool AttemptImmigrateGroup(int group_id, cOrganism* org) {return false; }
+  int IncTolerance(int toleranceType, cAvidaContext &ctx) { return 0;}
+  int DecTolerance(int toleranceType, cAvidaContext &ctx) { return 0;}
+  int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type) { return 0; }
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism) { return 0; }
+  double CalcGroupOddsImmigrants(int group_id, int mating_type) { return 0.0; }
+  double CalcGroupOddsOffspring(cOrganism* parent) { return 0.0; }
+  double CalcGroupOddsOffspring(int group_id) { return 0.0; }
+  bool AttemptImmigrateGroup(int group_id, cOrganism* org) { return false; }
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
-  int& GetGroupIntolerances(int group_id, int tol_num) { return *(new int(0)); }
+  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) { return *(new int(0)); }
 
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }

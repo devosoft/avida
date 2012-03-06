@@ -155,10 +155,9 @@ private:
   tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
   tArray<pair<int,int> > m_is_tolerance_exe_counts;
-  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; // @JJB
+  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
-//@JJB**  tArray<tSmartArray<s_inst_circumstances> > m_is_tolerance_exe_insts; // @JJB
 
   // --------  Calculated Stats  ---------
   double entropy;
@@ -892,9 +891,9 @@ public:
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
-  void PrintGroupTolerance(const cString& filename); // @JJB
-  void PrintToleranceInstructionData(const cString& filename); // @JJB
-  void PrintToleranceData(const cString& filename); // @JJB
+  void PrintGroupTolerance(const cString& filename); 
+  void PrintToleranceInstructionData(const cString& filename); 
+  void PrintToleranceData(const cString& filename); 
 
   // deme predicate stats
   void IncEventCount(int x, int y);
@@ -963,10 +962,10 @@ protected:
 
   // -------- Tolerance support --------
 public:
-  void PushToleranceInstExe(int tol_inst); // @JJB
+  void PushToleranceInstExe(int tol_inst); 
   void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-              double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max); // @JJB
-  void ZeroToleranceInst(); // @JJB
+              double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max); 
+  void ZeroToleranceInst(); 
 
 
   // -------- Deme replication support --------

@@ -979,32 +979,32 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-		
+    
     if (energy_req > 0.0) {
       if (m_organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
-				m_inst_energy_cost[cur_inst.GetOp()] = 0.0;
-				// subtract energy used from current org energy.
+        m_inst_energy_cost[cur_inst.GetOp()] = 0.0;
+        // subtract energy used from current org energy.
         m_organism->GetPhenotype().ReduceEnergy(energy_req);  
         
         // tracking sleeping organisms
         if (m_inst_set->ShouldSleep(cur_inst)) m_organism->SetSleeping(true);
       } else {
         m_organism->GetPhenotype().SetToDie();
-				return false; // no more, your died...  (evil laugh)
+        return false; // no more, your died...  (evil laugh)
       }
     }
   }
-
+  
   // If task switching costs need to be paid off...
-	if (m_task_switching_cost > 0) { 
-		m_task_switching_cost--;
-		// update deme level stats
-		cDeme* deme = m_organism->GetOrgInterface().GetDeme();
-		if(deme != NULL) {
-			deme->IncNumSwitchingPenalties(1);
-		}
-		return false;
-	}
+  if (m_task_switching_cost > 0) { 
+    m_task_switching_cost--;
+    // update deme level stats
+    cDeme* deme = m_organism->GetOrgInterface().GetDeme();
+    if(deme != NULL) {
+      deme->IncNumSwitchingPenalties(1);
+    }
+    return false;
+  }
   
   // If first time cost hasn't been paid off...
   if (m_has_ft_costs && m_inst_ft_cost[cur_inst.GetOp()] > 0) {
@@ -1012,6 +1012,25 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
     return false;
   }
   
+  // Check for res_costs and fail if org does not have enough resources to process instruction
+  // As post-cost, res_cost will not be paid unless all pre-costs are paid and all restrictions inside of instruction pass
+  if (m_has_res_costs) {
+    
+    double res_req = m_inst_set->GetResCost(cur_inst); 
+    
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    tArray<double> res_change(res_count.GetSize());
+    res_change.SetAll(0.0);
+    
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    if (resource < 0) cout << "Instruction res_cost requires use of COLLECT_SPECIFIC_RESOURCE and USE_RESOURCE_BINS" << '\n';
+    assert(resource >= 0);
+    
+    double res_stored = m_organism->GetRBin(resource);
+    // fail if org does not have enough resources to process instruction
+    if (res_stored < res_req) return false;
+  }
+
   //@CHC: If this organism is female, or a choosy female, we may need to impose additional costs for her to execute the instruction
   int per_use_cost = 0;
   if (m_has_costs) {
@@ -1066,7 +1085,6 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   return true;
 }
 
-
 void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
   if (m_has_res_costs) {
@@ -1082,15 +1100,14 @@ void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cIns
     assert(resource >= 0);
     
     double res_stored = m_organism->GetRBin(resource);
-    if (res_stored >= res_req) {
-      
+    if (res_stored >= res_req) {      
       // subtract res used from current bin by adding negative value
       double cost = res_req * -1.0;
       m_organism->AddToRBin(resource, cost); 
     } 
-    if (res_stored < res_req) {
-      m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
-    }
+//    if (res_stored < res_req) {
+//      m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
+//    }
   }
   return;
 }

@@ -2422,7 +2422,7 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
       // Skip a line between histograms...
       fp << endl;
     } else {
-      fp << "</table><br><br>" << endl << endl;;
+      fp << "</table><br><br>" << endl << endl;
     }
   }
   
@@ -3570,7 +3570,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
         oo_conditional_entropy = total_conditional_entropy;
         used_genotype = given_genotypes[j];
         cout << "        " << "New closest genotype " << used_genotype->GetID() 
-          << " " << new_info << endl;;
+          << " " << new_info << endl;
       }
       
     }
