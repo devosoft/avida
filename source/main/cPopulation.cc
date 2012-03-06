@@ -1121,7 +1121,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
 #endif
     
     // Swap inputs between cells to fix bus error when Avidian moves into an unoccupied cell
-    environment.SwapInputs(ctx, src_cell.m_inputs, dest_cell.m_inputs);
+    // LHZ: Moved to SwapCells function
+    //environment.SwapInputs(ctx, src_cell.m_inputs, dest_cell.m_inputs);
     
     // Find neighborhood size for facing
     if (NULL != dest_cell.GetOrganism()) {
@@ -1415,6 +1416,10 @@ void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
   } else {
     AdjustSchedule(cell2, cMerit(0));
   }
+  
+  //LHZ: Take organism imputs from the PopulationCell along with the organisms
+  environment.SwapInputs(ctx, cell1.m_inputs, cell2.m_inputs);
+
 }
 
 // CompeteDemes  probabilistically copies demes into the next generation
