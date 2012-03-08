@@ -305,16 +305,20 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
  * which are also used as predators and prey, respectively. @JJB**
  */
 
-// Adds an organism to the cell's input avatars
+// Adds an organism to the cell's input avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
 void cPopulationCell::AddInputAV(cOrganism* org)
 {
   m_av_inputs.Push(org);
+  // Swaps the added avatar into a random position in the array
+  m_av_inputs.Swap(m_world->GetRandom().GetUInt(0, m_av_inputs.GetSize()), m_av_inputs.GetSize() - 1);
 }
 
-// Adds an organism to the cell's output avatars
+// Adds an organism to the cell's output avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
 void cPopulationCell::AddOutputAV(cOrganism* org)
 {
   m_av_outputs.Push(org);
+  // Swaps the added avatar into a random position in the array
+  m_av_outputs.Swap(m_world->GetRandom().GetUInt(0, m_av_outputs.GetSize()), m_av_outputs.GetSize() - 1);
 }
 
 // Removes the organism from the cell's input avatars
@@ -362,25 +366,38 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
   return false;
 }
 
+// Randomly returns an avatar from the cell, all avatars equally likely
+//********** DO NOT CALL FOR VIEWER, DOING SO WILL BREAK CONSISTENCY FROM RUN TO RUN **********
 cOrganism* cPopulationCell::GetRandAV() const
 {
-  assert(HasAV());
-  if (HasPreyAV() && (m_world->GetRandom().GetUInt(0,2) == 0 || !HasPredAV())) {
-    return m_av_outputs[m_world->GetRandom().GetUInt(0, GetNumPreyAV())];
+  if (HasAV()) {
+    int rand = m_world->GetRandom().GetUInt(0, GetNumAV());
+    if (rand < GetNumAVInputs()) {
+      return m_av_inputs[rand];
+    }
+    else {
+      return m_av_outputs[rand - GetNumAVInputs()];
+    }
   }
-  else return m_av_inputs[m_world->GetRandom().GetUInt(0, GetNumPredAV())];
+  return NULL;
 }
 
+// Returns the first predator (input) avatar, which should be random as the list is mixed whenever a new avatar is added
 cOrganism* cPopulationCell::GetRandPredAV() const
 {
-  assert(HasAV());
-  return m_av_inputs[m_world->GetRandom().GetUInt(0, GetNumPredAV())];
+  if (HasInputAV()) {
+    return m_av_inputs[0];
+  }
+  return NULL;
 }
 
+// Returns the first prey (output) avatar, which should be random as the list is mixed whenever a new avatar is added
 cOrganism* cPopulationCell::GetRandPreyAV() const
 {
-  assert(HasAV());
-  return m_av_outputs[m_world->GetRandom().GetUInt(0, GetNumPreyAV())];
+  if (HasOutputAV()) {
+    return m_av_outputs[0];
+  }
+  return NULL;
 }
 
 // Returns all input avatars (organisms) contained in the cell
