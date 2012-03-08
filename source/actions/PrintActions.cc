@@ -107,6 +107,8 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
+STATS_OUT_FILE(PrintParasiteMigrationCounts,parasite_migration_counts.dat); // MIGRATION_MATRIX
+STATS_OUT_FILE(PrintOffspringMigrationCounts,offspring_migration_counts.dat); // MIGRATION_MATRIX
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
 STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
@@ -4436,6 +4438,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintParasiteMigrationCounts>("PrintParasiteMigrationCounts"); // MIGRATION_MATRIX
+  action_lib->Register<cActionPrintOffspringMigrationCounts>("PrintOffspringMigrationCounts"); // MIGRATION_MATRIX
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
   action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");

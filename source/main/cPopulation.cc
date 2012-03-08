@@ -747,7 +747,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
    // If there's any migration turned on ... try this first
    if(m_world->GetConfig().NUM_DEMES.Get() > 1 && m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0 && m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 4 && m_world->GetRandom().P(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get())){
        // MIGRATION_MATRIX
-     cDeme& deme = GetDeme(m_world->GetMigrationMatrix().GetProbabilisticDemeID(host_cell.GetDemeID(), m_world->GetRandom()));
+     cDeme& deme = GetDeme(m_world->GetMigrationMatrix().GetProbabilisticDemeID(host_cell.GetDemeID(), m_world->GetRandom(),true));
            
      // Implementation #1 - Picks randomly of ALL cells in to-deme and then finds if the one it chose was occupied
      // -- Not ensured to infect an individual
@@ -4353,7 +4353,7 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
     
   else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 4){
       // MIGRATION_MATRIX
-      deme_id = m_world->GetMigrationMatrix().GetProbabilisticDemeID(parent_id,m_world->GetRandom());      
+      deme_id = m_world->GetMigrationMatrix().GetProbabilisticDemeID(parent_id,m_world->GetRandom(),false);      
   }
   
   GetDeme(deme_id).AddMigrationIn();

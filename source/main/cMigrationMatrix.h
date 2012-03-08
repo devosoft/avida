@@ -28,14 +28,21 @@ class cMigrationMatrix
         cMigrationMatrix();
         ~cMigrationMatrix();
 
-        bool Load(const int num_demes, const cString& filename, const cString& working_dir, Feedback& feedback);
         bool AlterConnectionWeight(const int from_deme_id, const int to_deme_id, const double alter_amount);
-        int GetProbabilisticDemeID(const int from_deme_id,cRandom& p_rng);
+        int GetProbabilisticDemeID(const int from_deme_id,cRandom& p_rng,bool p_is_parasite_migration);
+        cString GetParasiteCountMatrixChars();
+        cString GetOffspringCountMatrixChars();
+        bool Load(const int num_demes, const cString& filename, const cString& working_dir,bool p_count_parasites, bool p_count_offspring, bool p_is_reload, Feedback& feedback);
         void Print();
+        void ResetParasiteCounts();
+        void ResetOffspringCounts();
     
     private:
         tSmartArray< tSmartArray<double> > m_migration_matrix;
         tSmartArray<double> m_row_connectivity_sums;
+        tSmartArray< tSmartArray<int> > m_parasite_migration_counts;
+        tSmartArray< tSmartArray<int> > m_offspring_migration_counts;
+        
 
     
     
