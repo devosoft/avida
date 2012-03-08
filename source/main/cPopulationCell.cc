@@ -296,27 +296,28 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
   return uptakeAmount;
 }
 
-// -------- Avatar support -------- @JJB**
+
+// -------- Avatar support --------
+/* In the avatar system, each cell contains an array of organism pointers to tie the cell
+ * back to all organisms with avatars in that cell. Each organism then contains a list
+ * (in cPopulationInterface) of all it's avatars and the cell for each avatar.
+ * Currently there are two supported avatar types, input and output,
+ * which are also used as predators and prey, respectively. @JJB**
+ */
+
+// Adds an organism to the cell's input avatars
 void cPopulationCell::AddInputAV(cOrganism* org)
 {
   m_av_inputs.Push(org);
 }
 
+// Adds an organism to the cell's output avatars
 void cPopulationCell::AddOutputAV(cOrganism* org)
 {
   m_av_outputs.Push(org);
 }
 
-void cPopulationCell::AddPredPreyAV(cOrganism* org)
-{
-  // Add predator..
-  if (org->GetForageTarget() == -2) {
-    m_av_inputs.Push(org);
-  }
-  // Add prey..
-  else m_av_outputs.Push(org);
-}
-
+// Removes the organism from the cell's input avatars
 void cPopulationCell::RemoveInputAV(cOrganism* org)
 {
   assert(HasInputAV());
@@ -330,6 +331,7 @@ void cPopulationCell::RemoveInputAV(cOrganism* org)
   }
 }
 
+// Removes the organism from the cell's output avatars
 void cPopulationCell::RemoveOutputAV(cOrganism* org)
 {
   assert(HasOutputAV());
@@ -343,39 +345,14 @@ void cPopulationCell::RemoveOutputAV(cOrganism* org)
   }
 }
 
-void cPopulationCell::RemovePredPreyAV(cOrganism* org)
-{
-  // Remove predator..
-  if (org->GetForageTarget() == -2) {
-    for (int i = 0; i < GetNumPredAV(); i++) {
-      if (m_av_inputs[i] == org) {
-        unsigned int last = GetNumPredAV() - 1;
-        m_av_inputs.Swap(i, last);
-        m_av_inputs.Pop();
-        break;
-      }
-    }
-  }
-  // Remove prey..
-  else {
-    for (int i = 0; i < GetNumPreyAV(); i++) {
-      if (m_av_outputs[i] == org) {
-        unsigned int last = GetNumPreyAV() - 1;
-        m_av_outputs.Swap(i, last);
-        m_av_outputs.Pop();
-        break;
-      }
-    }
-  }
-}
-
-// Whether a cell has an output AV that the org will be able to receive messages from @JJB**
+// Returns whether a cell has an output AV that the org will be able to receive messages from.
 bool cPopulationCell::HasOutputAV(cOrganism* org)
 {
   // No output avatars
   if (!HasOutputAV()) return false;
   // If org can talk to itself, any avatar in the cell works
   if (m_world->GetConfig().SELF_COMMUNICATION.Get()) return true;
+
   // If no self-messaging, is there an output avatar for another organism in the cell
   for (int i = 0; i < GetNumAVOutputs(); i++) {
     if (m_av_outputs[i] != org) {
@@ -406,21 +383,7 @@ cOrganism* cPopulationCell::GetRandPreyAV() const
   return m_av_outputs[m_world->GetRandom().GetUInt(0, GetNumPreyAV())];
 }
 
-// Call after the forage target has already been changed
-void cPopulationCell::ChangePredPreyAV(cOrganism* org)
-{
-  // Switch prey to predator..
-  if (org->GetForageTarget() == -2) {
-    RemoveOutputAV(org);
-    AddInputAV(org);
-  }
-  // Switch predator to prey..
-  else {
-    RemoveInputAV(org);
-    AddOutputAV(org);
-  }
-}
-
+// Returns all input avatars (organisms) contained in the cell
 tArray<cOrganism*> cPopulationCell::GetCellInputAVs()
 {
   assert(HasInputAV());
@@ -432,6 +395,7 @@ tArray<cOrganism*> cPopulationCell::GetCellInputAVs()
   return avatar_inputs;
 }
 
+// Returns all output avatars (organisms) contained in the cell
 tArray<cOrganism*> cPopulationCell::GetCellOutputAVs()
 {
   assert(HasOutputAV());
@@ -443,6 +407,7 @@ tArray<cOrganism*> cPopulationCell::GetCellOutputAVs()
   return avatar_outputs;
 }
 
+// Returns all avatars (organisms) contained in the cell
 tArray<cOrganism*> cPopulationCell::GetCellAVs()
 {
   assert(HasAV());
@@ -458,10 +423,7 @@ tArray<cOrganism*> cPopulationCell::GetCellAVs()
   return avatars;
 }
 
-tArray<cOrganism*> cPopulationCell::GetCellPreyAVs()
-{
-  return GetCellOutputAVs();
-}
+
 
 /*! Diffuse genome fragments from this cell to its neighbors.
  

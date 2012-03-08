@@ -50,9 +50,6 @@ private:
   cWorld* m_world;
   int m_cell_id;
   int m_deme_id;
-  int m_av_cell_id;
-  int m_av_facing;
-  int m_av_cell_faced;
   
   int m_prevseen_cell_id;	// Previously-seen cell's ID
   int m_prev_task_cell;		// Cell ID of previous task
@@ -74,7 +71,6 @@ public:
   //! Retrieve the cell in which this organism lives.
   cPopulationCell* GetCell();
   cPopulationCell* GetCell(int cell_id);
-  cPopulationCell* GetAvatarCell();
   //! Retrieve the cell currently faced by this organism.
   cPopulationCell* GetCellFaced();
   int GetDemeID() { return m_deme_id; }
@@ -85,28 +81,16 @@ public:
   int GetCellXPosition();
   int GetCellYPosition();
   
-  int GetAvatarCellID();
-  void SetAvatarCellID(int av_cell_id); 
-  void SetAvatarFacing(int facing);
-  void SetAvatarFacedCell(int av_cell_id);
-  int GetAvatarFacedCellID();
-  int GetAvatarFacedDir();
-  
   int GetCellData();//**
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
   int GetCellDataForagerType();
   void SetCellData(const int newData);
-  void SetAvatarCellData(const int newData, const int org_id);
   int GetFacedCellData();
   int GetFacedCellDataOrgID();
   int GetFacedCellDataUpdate();
   int GetFacedCellDataTerritory();
-  int GetFacedAvatarData();//**
-  int GetFacedAvatarDataOrgID();
-  int GetFacedAvatarDataUpdate();
-  int GetFacedAvatarDataTerritory();
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }
@@ -117,17 +101,8 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
-  tArray<cOrganism*> GetAvatarNeighbors();
-  tArray<cOrganism*> GetAvatarNeighborPrey();
-  cOrganism* GetAvatarRandNeighbor();
-  cOrganism* GetAvatarRandNeighborPrey();
-  cOrganism* GetAvatarRandNeighborPred();
   bool IsNeighborCellOccupied();
-  bool HasAvatarNeighbor();
-  bool HasAvatarNeighborPrey();
-  bool HasAvatarNeighborPred();
   int GetNumNeighbors();
-  int GetAvatarNumNeighbors();
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
@@ -139,9 +114,7 @@ public:
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
-  const tArray<double>& GetAvatarResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
-  const tArray<double>& GetFacedAvatarResources(cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
@@ -152,7 +125,6 @@ public:
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id);
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
-  void UpdateAvatarResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void Die(cAvidaContext& ctx); 
   void KillCellID(int target, cAvidaContext& ctx); 
@@ -182,7 +154,6 @@ public:
   int GetStateGridID(cAvidaContext& ctx);
 	
   bool Move(cAvidaContext& ctx, int src_id, int dest_id);
-  bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell);
 
   // Reputation
   void RotateToGreatestReputation();
@@ -268,7 +239,7 @@ public:
   int& GetGroupIntolerances(int group_id, int tol_num);
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
 
-  // -------- Avatar support -------- @JJB**
+// -------- Avatar support -------- @JJB
 private:
   struct io_avatar
   {
@@ -277,30 +248,45 @@ private:
     int av_faced_cell;
     bool input;
     bool output;
-    io_avatar(int av_cell_id, int av_facing, bool input, bool output) : av_cell_id(av_cell_id), av_facing(av_facing), av_faced_cell(-1), input(input), output(output) { ; }
-    io_avatar(int av_cell_id, int av_facing, int av_faced_cell) : av_cell_id(av_cell_id), av_facing(av_facing), av_faced_cell(av_faced_cell), input(false), output(false) { ; }
     io_avatar() : av_cell_id(-1), av_facing(0), av_faced_cell(-1), input(false), output(false) { ; }
+    io_avatar(int av_cell_id, int av_facing, int av_faced_cell, bool input, bool output) : av_cell_id(av_cell_id), av_facing(av_facing), av_faced_cell(av_faced_cell), input(input), output(output) { ; }
   };
 
   tSmartArray<io_avatar> m_avatars;
   inline int GetNumAV() { return m_avatars.GetSize(); }
 public:
-  //cPopulationCell* GetAvatarCell();
-  //void SetAvatarFacedCell(int av_cell_id);
+  bool HasOutputAV(int av_num = 0);
+  bool FacedHasOutputAV(int av_num = 0);
+  bool FacedHasAV(int av_num = 0);
+  bool FacedHasPredAV(int av_num = 0);
+  bool FacedHasPreyAV(int av_num = 0);
   void AddAV(int av_cell_id, int av_facing, bool input, bool output);
-  void InitPredPreyAV(int av_cell_id, int av_facing, int av_faced_cell);
+  void AddPredPreyAV(int av_cell_id);
+  void SwitchPredPrey(int av_num = 0);
   void RemoveAllAV();
-  void SetAVCellID(int av_cell_id);
-  void MoveAV();
-  void SetAVFacing(int av_facing);
-  bool RotateAV(int increment);
-  bool HasOutputAV();
-  bool FacedHasOutputAV();
-  int GetAVFacedCellID(int index);
-  //void SetAVInput(bool input);
-  //void SetAVOutput(bool output);
-  //int GetAVCellID();
-  //int GetAVFacing();
+  int GetAVFacing(int av_num = 0);
+  int GetAVCellID(int av_num = 0);
+  int GetAVFacedCellID(int av_num = 0);
+  int GetAVNumNeighbors(int av_num = 0);
+  int GetAVFacedData(int av_num = 0);
+  int GetAVFacedDataOrgID(int av_num = 0);
+  int GetAVFacedDataUpdate(int av_num = 0);
+  int GetAVFacedDataTerritory(int av_num = 0);
+  void SetAVFacing(int av_facing, int av_num = 0);
+  bool SetAVCellID(int av_cell_id, int av_num = 0);
+  void SetAVFacedCellID(int av_num = 0);
+  void SetAVCellData(const int newData, const int org_id, int av_num = 0);
+  bool MoveAV(int av_num = 0);
+  bool MoveAvatar(cAvidaContext& ctx, int av_num = 0);//* *
+  bool RotateAV(int increment, int av_num = 0);
+  cOrganism* GetRandFacedAV(int av_num = 0);
+  cOrganism* GetRandFacedPredAV(int av_num = 0);
+  cOrganism* GetRandFacedPreyAV(int av_num = 0);
+  tArray<cOrganism*> GetFacedAVs(int av_num = 0);
+  tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0);
+  const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
+  const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);
+  void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num = 0);
   
   void BeginSleep();
   void EndSleep();

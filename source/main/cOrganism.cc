@@ -421,7 +421,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
 //  const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & avatar_resource_count = m_interface->GetAvatarResources(ctx); 
+  const tArray<double> & avatar_resource_count = m_interface->GetAVResources(ctx); 
 //  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
   const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
@@ -430,10 +430,10 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   
   // If tasks require us to consider neighbor inputs, collect them...
   if (m_world->GetEnvironment().UseNeighborInput()) {
-    const int num_neighbors = m_interface->GetAvatarNumNeighbors();
+    const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAvatarNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_input_list.Push( &(cur_neighbors[i]->m_input_buf) );
@@ -443,10 +443,10 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   
   // If tasks require us to consider neighbor outputs, collect them...
   if (m_world->GetEnvironment().UseNeighborOutput()) {
-    const int num_neighbors = m_interface->GetAvatarNumNeighbors();
+    const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAvatarNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_output_list.Push( &(cur_neighbors[i]->m_output_buf) );
@@ -472,7 +472,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
-  int cell_id = m_interface->GetAvatarCellID();
+  int cell_id = m_interface->GetAVCellID();
   if (cell_id_lists.GetSize())
   {
 	  for (int i=0; i<cell_id_lists.GetSize(); i++)
@@ -514,7 +514,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
 			GetPhenotype().SetToDie();
 		}
   }
-  m_interface->UpdateAvatarResources(ctx, avatar_res_change);
+  m_interface->UpdateAVResources(ctx, avatar_res_change);
   //update deme resources
 //  m_interface->UpdateDemeResources(ctx, deme_res_change);
   
@@ -856,7 +856,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     if (habitat_required != -1) {
       tArray<double> resource_count;
       if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
-      else resource_count = m_interface->GetAvatarResources(ctx);
+      else resource_count = m_interface->GetAVResources(ctx);
       const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
       const double required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
       bool has_req_res = false;
@@ -1570,40 +1570,39 @@ void cOrganism::DonateResConsumedToDeme()
 bool cOrganism::MoveAV(cAvidaContext& ctx)
 {
   assert(m_interface);
-  if (m_is_dead) return false;  
+  if (m_is_dead) return false;
   
-  int fromcellID = m_interface->GetAvatarCellID();         // facing unique to this avatar
-  int destcellID = m_interface->GetAvatarFacedCellID();    // facing unique to this avatar
-  int true_cell = GetCellID();            // where the real org is...in case we need to kill it
-  int facing = m_interface->GetAvatarFacedDir();
+  int facing = m_interface->GetAVFacing();
   
   // Actually perform the move
-  if (m_interface->MoveAvatar(ctx, fromcellID, destcellID, true_cell)) {
+  if (m_interface->MoveAvatar(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
-      if (facing == 0) m_northerly = m_northerly - 1;       // N
-      else if (facing == 1) {                           // NE
-        m_northerly = m_northerly - 1; 
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+      if (facing == 0)
+        m_northerly = m_northerly - 1;                  // N
+      else if (facing == 1) {
+        m_northerly = m_northerly - 1;                  // NE
         m_easterly = m_easterly + 1;
       }  
-      else if (facing == 2) m_easterly = m_easterly + 1;    // E
-      else if (facing == 3) {                           // SE
-        m_northerly = m_northerly + 1; 
+      else if (facing == 2)
+        m_easterly = m_easterly + 1;                    // E
+      else if (facing == 3) {
+        m_northerly = m_northerly + 1;                  // SE
         m_easterly = m_easterly + 1;
       }
-      else if (facing == 4) m_northerly = m_northerly + 1;  // S
-      else if (facing == 5) {                           // SW
-        m_northerly = m_northerly + 1; 
+      else if (facing == 4)
+        m_northerly = m_northerly + 1;                  // S
+      else if (facing == 5) {
+        m_northerly = m_northerly + 1;                  // SW
         m_easterly = m_easterly - 1;
       }
-      else if (facing == 6) m_easterly = m_easterly - 1;    // W    
-      else if (facing == 7) {                           // NW
-        m_northerly = m_northerly - 1; 
+      else if (facing == 6)
+        m_easterly = m_easterly - 1;                    // W    
+      else if (facing == 7) {
+        m_northerly = m_northerly - 1;                  // NW
         m_easterly = m_easterly - 1;
       }      
-      m_interface->SetAvatarCellID(destcellID);
-      m_interface->SetAvatarFacedCell(destcellID);
     }
     else return false;                  
   }

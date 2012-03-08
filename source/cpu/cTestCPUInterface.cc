@@ -38,20 +38,6 @@ const tSmartArray <cOrganism*> cTestCPUInterface::GetLiveOrgList() const
   return empty;
 }
 
-tArray<cOrganism*> cTestCPUInterface::GetAvatarNeighbors()
-{
-  tArray<cOrganism*> null_array;
-  null_array.SetAll(NULL);
-  return null_array;
-}
-
-tArray<cOrganism*> cTestCPUInterface::GetAvatarNeighborPrey()
-{
-  tArray<cOrganism*> null_array;
-  null_array.SetAll(NULL);
-  return null_array;
-}
-
 int cTestCPUInterface::GetInputAt(int& input_pointer)
 {
   return m_testcpu->GetInputAt(input_pointer);
@@ -77,11 +63,6 @@ const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ct
   return m_testcpu->GetFacedCellResources(ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetFacedAvatarResources(cAvidaContext& ctx) 
-{
-  return m_testcpu->GetFacedAvatarResources(ctx); 
-}
-
 const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 { 
   return m_testcpu->GetDemeResources(deme_id, ctx); 
@@ -90,11 +71,6 @@ const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaCon
 const tArray<double>& cTestCPUInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
 {
   return m_testcpu->GetCellResources(cell_id, ctx); 
-}
-
-const tArray<double>& cTestCPUInterface::GetAvatarResources(cAvidaContext& ctx) 
-{
-  return m_testcpu->GetAvatarResources(ctx); 
 }
 
 const tArray<double>& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
@@ -110,11 +86,6 @@ const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
 void cTestCPUInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
 {
    m_testcpu->ModifyResources(ctx, res_change);
-}
-
-void cTestCPUInterface::UpdateAvatarResources(cAvidaContext& ctx, const tArray<double>& res_change)
-{
-  m_testcpu->ModifyResources(ctx, res_change);
 }
 
 void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
@@ -143,4 +114,33 @@ bool cTestCPUInterface::UpdateMerit(double new_merit)
 int cTestCPUInterface::GetStateGridID(cAvidaContext& ctx)
 {
   return m_test_info.GetStateGridID();
+}
+
+tArray<cOrganism*> cTestCPUInterface::GetFacedAVs(int av_num)
+{
+  tArray<cOrganism*> null_array;
+  null_array.SetAll(NULL);
+  return null_array;
+}
+
+tArray<cOrganism*> cTestCPUInterface::GetFacedPreyAVs(int av_num)
+{
+  tArray<cOrganism*> null_array;
+  null_array.SetAll(NULL);
+  return null_array;
+}
+
+const tArray<double>& cTestCPUInterface::GetAVResources(cAvidaContext& ctx, int av_num)
+{
+  return m_testcpu->GetAvatarResources(ctx);
+}
+
+const tArray<double>& cTestCPUInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
+{
+  return m_testcpu->GetFacedAvatarResources(ctx);
+}
+
+void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num)
+{
+  m_testcpu->ModifyResources(ctx, res_change);
 }

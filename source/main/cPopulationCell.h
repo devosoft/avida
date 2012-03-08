@@ -150,7 +150,7 @@ public:
 
   double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
   
-  // -------- Avatar support -------- @JJB**
+// -------- Avatar support -------- @JJB
 private:
   tSmartArray<cOrganism*> m_av_inputs;
   tSmartArray<cOrganism*> m_av_outputs;
@@ -158,20 +158,17 @@ public:
   inline int GetNumAVInputs() const { return m_av_inputs.GetSize(); }
   inline int GetNumAVOutputs() const { return m_av_outputs.GetSize(); }
   inline int GetNumAV() const { return m_av_inputs.GetSize() + m_av_outputs.GetSize(); }
-  inline int GetNumPredAV() const { return m_av_inputs.GetSize(); } //* *
-  inline int GetNumPreyAV() const { return m_av_outputs.GetSize(); } //* *
+  inline int GetNumPredAV() const { return m_av_inputs.GetSize(); }
+  inline int GetNumPreyAV() const { return m_av_outputs.GetSize(); }
   void AddInputAV(cOrganism* org);
   void AddOutputAV(cOrganism* org);
-  void AddPredPreyAV(cOrganism* org);
   void RemoveInputAV(cOrganism* org);
   void RemoveOutputAV(cOrganism* org);
-  void RemovePredPreyAV(cOrganism* org);
-  void ChangePredPreyAV(cOrganism* org);
   inline bool HasInputAV() const { return m_av_inputs.GetSize() > 0; }
   inline bool HasOutputAV() const { return m_av_outputs.GetSize() > 0; }
   inline bool HasAV() const { return (m_av_inputs.GetSize() > 0 || m_av_outputs.GetSize() > 0); }
-  inline bool HasPredAV() const { return m_av_inputs.GetSize() > 0; } //* *
-  inline bool HasPreyAV() const { return m_av_outputs.GetSize() > 0; } //* *
+  inline bool HasPredAV() const { return m_av_inputs.GetSize() > 0; }
+  inline bool HasPreyAV() const { return m_av_outputs.GetSize() > 0; }
   bool HasOutputAV(cOrganism* org);
   cOrganism* GetRandAV() const;
   cOrganism* GetRandPredAV() const;
@@ -179,7 +176,6 @@ public:
   tArray<cOrganism*> GetCellInputAVs();
   tArray<cOrganism*> GetCellOutputAVs();
   tArray<cOrganism*> GetCellAVs();
-  tArray<cOrganism*> GetCellPreyAVs(); //* *
 
   // -------- HGT support --------
 public:
