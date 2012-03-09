@@ -266,6 +266,24 @@ public:
   }
 };
 
+class cActionPrintGroupMTTolerance : public cAction 
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintGroupMTTolerance(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "groupMTtolerance.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"groupMTtolerance.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintGroupMTTolerance(m_filename);
+  }
+};
+
 class cActionPrintData : public cAction
 {
 private:
@@ -4605,6 +4623,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
   action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
   action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); 
+  action_lib->Register<cActionPrintGroupMTTolerance>("PrintGroupMTTolerance"); 
   action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
