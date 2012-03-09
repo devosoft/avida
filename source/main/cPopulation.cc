@@ -1026,7 +1026,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     if (faced_is_boundary) {
       if (true_cell != -1) GetCell(true_cell).GetOrganism()->Die(ctx);
       else if (true_cell == -1) src_cell.GetOrganism()->Die(ctx);
-      return false; 
+      return false;
     }
   }    
   
@@ -1041,15 +1041,15 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   bool curr_is_barrier = false;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 2 && src_cell_resources[i] > 0) {
-      curr_is_barrier = true;      
+      curr_is_barrier = true;
       break;
     }
   }
   if (!curr_is_barrier) {
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 2) { 
+      if (resource_lib.GetResource(i)->GetHabitat() == 2) {
         // fail if faced cell has this wall resource
-        if (dest_cell_resources[i] > 0) return false;     
+        if (dest_cell_resources[i] > 0) return false;
       }    
     }
   }

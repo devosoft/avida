@@ -3360,8 +3360,7 @@ bool cHardwareExperimental::Inst_RotateAVRight(cAvidaContext& ctx)
 // ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
 bool cHardwareExperimental::Inst_MoveAV(cAvidaContext& ctx)
 {
-  m_organism->GetOrgInterface().MoveAV();
-  return true;
+  return m_organism->GetOrgInterface().MoveAV(ctx);
 }
 
 // ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**

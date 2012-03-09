@@ -1,4 +1,4 @@
-# Thu Mar  8 13:07:15 2012
+# Thu Mar  8 16:57:56 2012
 # Filename........: archive/ft1_grp-1_110-aaaac.org
 # Update Output...: 750
 # Is Viable.......: 0
@@ -15,7 +15,7 @@
 # Executed Size...: 110
 # Last Birth Group ID........: -1
 # Last Birth Forager Type....: 1
-# Last Birth Cell............: 1873
+# Last Birth Cell............: 615
 # Offspring.......: NONE
 # 
 # Tasks Performed:

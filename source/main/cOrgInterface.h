@@ -204,8 +204,7 @@ public:
   virtual bool SetAVCellID(int av_cell_id, int av_num = 0) = 0;
   virtual void SetAVFacedCellID(int av_num = 0) = 0;
   virtual void SetAVCellData(const int newData, const int org_id, int av_num = 0) = 0;
-  virtual bool MoveAV(int av_num = 0) = 0;
-  virtual bool MoveAvatar(cAvidaContext& ctx, int av_num = 0) = 0;
+  virtual bool MoveAV(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual bool RotateAV(int increment, int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedAV(int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPredAV(int av_num = 0) = 0;

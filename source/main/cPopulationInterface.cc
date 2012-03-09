@@ -1610,64 +1610,41 @@ int cPopulationInterface::GetAVFacedCellID(int av_num)//** GetCellXPosition()
     return m_avatars[av_num].av_faced_cell;
   }
   return -1;
+}
 
+// Returns the number of cells neighboring the avatar's
+// Avatar facing and movement only works in bounded or toroidial geometries
+int cPopulationInterface::GetAVNumNeighbors(int av_num)
+{
   if ((m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) && (m_world->GetConfig().WORLD_GEOMETRY.Get() != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
+
+  // If the avatar exists..
   if (av_num < GetNumAV()) {
+    if (m_world->GetConfig().WORLD_GEOMETRY.Get() == 2) return 8;
+
+    const int cell_id = m_avatars[av_num].av_cell_id;
     const int x_size = m_world->GetConfig().WORLD_X.Get();
     const int y_size = m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get();
     const int deme_size = x_size * y_size;
+    int deme_cell = cell_id % deme_size;
+    int x = deme_cell % x_size;
+    int y = deme_cell / x_size;
 
-    const int old_cell_id = m_avatars[av_num].av_cell_id;
-    const int av_facing = m_avatars[av_num].av_facing;
-
-    int deme_id = old_cell_id / deme_size;
-    int deme_cell_id = old_cell_id % deme_size;
-
-    int x = deme_cell_id % x_size;
-    int y = deme_cell_id / x_size;
-
-    // North facing
-    if ((av_facing == 0) || (av_facing == 1) || (av_facing == 7)) {
-      if ((y != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
-        y = (y + y_size - 1) % y_size;
+    // Is the cell on a corner..
+    if (x == 0 || x == (x_size - 1)) {
+      if (y == 0 || y == (y_size - 1)) {
+        return 3;
       }
+      // Is the cell on a side-edge..
+      else
+        return 5;
     }
-
-    // South facing
-    if ((av_facing == 3) || (av_facing == 4) || (av_facing == 5)) {
-      if ((y != (y_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
-        y = (y + 1) % y_size;
-      }
+    // Is the cell on a top or bottom edge..
+    if (y == 0 || y == (y_size - 1)) {
+      return 5;
     }
-
-    // East facing
-    if ((av_facing == 1) || (av_facing == 2) || (av_facing == 3)) {
-      if ((x != (x_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
-        x = (x + 1) % x_size;
-      }
-    }
-
-    // West facing
-    if ((av_facing == 5) || (av_facing == 6) || (av_facing == 7)) {
-      if ((x != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
-        x = (x + x_size - 1) % x_size;
-      }
-    }
-
-    deme_cell_id = y * x_size + x;
-    int new_cell_id = deme_id * deme_size + deme_cell_id;
-
-    return new_cell_id;
-  }
-}
-
-//@JJB**
-int cPopulationInterface::GetAVNumNeighbors(int av_num)
-{
-  // If the avatar exists..
-  if (av_num < GetNumAV()) {
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id);
-    return cell.ConnectionList().GetSize();
+    // The cell must be on the interior..
+    return 8;
   }
   return 0;
 }
@@ -1764,17 +1741,63 @@ bool cPopulationInterface::SetAVCellID(int av_cell_id, int av_num)
   return false;
 }
 
-// Find and store the cell id faced by the avatar @JJB**
+// Determine and store the cell id faced by the avatar
 void cPopulationInterface::SetAVFacedCellID(int av_num)
 {
+  // Avatars only supported in bounded and toroidal world geometries
+  if ((m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) && (m_world->GetConfig().WORLD_GEOMETRY.Get() != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
+
   // If the avatar exists..
   if (av_num < GetNumAV()) {
-    cPopulationCell& av_cell = m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id);
-    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
-      av_cell.ConnectionList().CircNext();
-      if (av_cell.GetFacedDir() == m_avatars[av_num].av_facing) break;
+    // Convert the cell id into a deme x,y position
+    const int x_size = m_world->GetConfig().WORLD_X.Get();
+    const int y_size = m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get();
+    const int deme_size = x_size * y_size;
+
+    const int old_cell_id = m_avatars[av_num].av_cell_id;
+    const int facing = m_avatars[av_num].av_facing;
+
+    const int deme_id = old_cell_id / deme_size;
+    const int old_deme_cell = old_cell_id % deme_size;
+
+    int x = old_deme_cell % x_size;
+    int y = old_deme_cell / x_size;
+
+
+    // North facing
+    if ((facing == 0) || (facing == 1) || (facing == 7)) {
+      if ((y != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        y = (y - 1 + y_size) % y_size;
+      }
     }
-    m_avatars[av_num].av_faced_cell = m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellFaced().GetID();
+
+    // South facing
+    if ((facing == 3) || (facing == 4) || (facing == 5)) {
+      if ((y != (y_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        y = (y + 1) % y_size;
+      }
+    }
+
+    // East facing
+    if ((facing == 1) || (facing == 2) || (facing == 3)) {
+      if ((x != (x_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        x = (x + 1) % x_size;
+      }
+    }
+
+    // West facing
+    if ((facing == 5) || (facing == 6) || (facing == 7)) {
+      if ((x != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+        x = (x - 1 + x_size) % x_size;
+      }
+    }
+
+    // Convert the x,y deme coordinates back into a cell id
+    const int new_deme_cell = y * x_size + x;
+    const int new_cell_id = deme_id * deme_size + new_deme_cell;
+
+    // Store the faced cell id
+    m_avatars[av_num].av_faced_cell = new_cell_id;
   }
 }
 
@@ -1788,30 +1811,17 @@ void cPopulationInterface::SetAVCellData(const int newData, const int org_id, in
 }
 
 // Move input avatar into faced cell
-bool cPopulationInterface::MoveAV(int av_num)
+bool cPopulationInterface::MoveAV(cAvidaContext& ctx, int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {
     // Move the avatar into the faced cell
-    return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
-  }
-  return false;
-}
-
-// ALWAYS set cell first, facing second, faced cell third.
-// record avatar cell location any time avatar is moved, injected, or born into cell (not on rotate)
-bool cPopulationInterface::MoveAvatar(cAvidaContext& ctx, int av_num)
-{
-  // If the avatar exists..
-  if (av_num < GetNumAV()) {
     int src_id = m_avatars[av_num].av_cell_id;
     int dest_id = m_avatars[av_num].av_faced_cell;
     int true_cell = m_cell_id;
-    bool success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
-    if (success) {
-      SetAVCellID(dest_id, av_num);
+    if (m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
+      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
     }
-    return success;
   }
   return false;
 }

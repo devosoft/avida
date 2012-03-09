@@ -202,8 +202,7 @@ public:
   bool SetAVCellID(int av_cell_id, int av_num = 0) { return false; }
   void SetAVFacedCellID(int av_num = 0) { ; }
   void SetAVCellData(const int newData, const int org_id, int av_num = 0) { ; }
-  bool MoveAV(int av_num = 0) { return false; }
-  bool MoveAvatar(cAvidaContext& ctx, int av_num = 0) { return false; }
+  bool MoveAV(cAvidaContext& ctx, int av_num = 0) { return false; }
   bool RotateAV(int increment, int av_num = 0) { return false; }
   cOrganism* GetRandFacedAV(int av_num = 0) { return NULL; }
   cOrganism* GetRandFacedPredAV(int av_num = 0) { return NULL; }

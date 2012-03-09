@@ -1575,7 +1575,7 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   int facing = m_interface->GetAVFacing();
   
   // Actually perform the move
-  if (m_interface->MoveAvatar(ctx)) {
+  if (m_interface->MoveAV(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
     if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
