@@ -1,7 +1,7 @@
 # Targets in use on update boundary.
 # -2: is predator, -1: no targets(default), >=0: id of environmental resource targeted).
 # Format is update + target0 + count0 + target1 + count1 ...
-# Thu Mar  8 16:57:47 2012
+# Fri Mar  9 09:04:32 2012
 #  1: Update
 #  2: Target ID
 #  3: Num Orgs Targeting ID
