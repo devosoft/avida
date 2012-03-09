@@ -29,7 +29,6 @@
 #include "cWorld.h"
 #include "cGenomeUtil.h"
 #include "cPopulationCell.h"
-#include "cSensing.h"
 
 namespace Avida {
   class Sequence;
@@ -225,18 +224,28 @@ public:
   void MakeGroup();
   void LeaveGroup(int group_id);
   int NumberOfOrganismsInGroup(int group_id);
+  int NumberGroupFemales(int group_id);
+  int NumberGroupMales(int group_id);
+  int NumberGroupJuvs(int group_id);
+  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type); 
   
   // ----- Tolerance/Group support ------
   int IncTolerance(const int toleranceType, cAvidaContext &ctx);
   int DecTolerance(const int toleranceType, cAvidaContext &ctx);
-  int CalcGroupToleranceImmigrants(int prop_group_id);
+  int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  double CalcGroupOddsImmigrants(int group_id);
+  double CalcGroupOddsImmigrants(int group_id, int mating_type);
   double CalcGroupOddsOffspring(cOrganism* parent);
   double CalcGroupOddsOffspring(int group_id);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
   void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx);
-  int& GetGroupIntolerances(int group_id, int tol_num);
+  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
+  
+  void DecNumPreyOrganisms();
+  void DecNumPredOrganisms();
+  void IncNumPreyOrganisms();
+  void IncNumPredOrganisms();
+  
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
 
 // -------- Avatar support -------- @JJB

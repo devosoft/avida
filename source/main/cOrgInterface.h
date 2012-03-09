@@ -169,18 +169,27 @@ public:
   virtual void MakeGroup() = 0;
   virtual void LeaveGroup(int group_id) = 0;
   virtual int NumberOfOrganismsInGroup(int group_id) = 0;
-    
+  virtual int NumberGroupFemales(int group_id) = 0;
+  virtual int NumberGroupMales(int group_id) = 0;
+  virtual int NumberGroupJuvs(int group_id) = 0;
+  virtual void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type) = 0;  
+  
   virtual int IncTolerance(int toleranceType, cAvidaContext &ctx) = 0;
   virtual int DecTolerance(int toleranceType, cAvidaContext &ctx) = 0;
-  virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
+  virtual int CalcGroupToleranceImmigrants(int target_group_id, int mating_type) = 0;
   virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism) = 0;
-  virtual double CalcGroupOddsImmigrants(int group_id) = 0;
+  virtual double CalcGroupOddsImmigrants(int group_id, int mating_type) = 0;
   virtual double CalcGroupOddsOffspring(cOrganism* parent) = 0;
   virtual double CalcGroupOddsOffspring(int group_id) = 0;
   virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
-  virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; // @JJB
-  virtual int& GetGroupIntolerances(int group_id, int tol_num) = 0;
+  virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; 
+  virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
     
+  virtual void DecNumPreyOrganisms() = 0;
+  virtual void DecNumPredOrganisms() = 0;
+  virtual void IncNumPreyOrganisms() = 0;
+  virtual void IncNumPredOrganisms() = 0;
+  
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;

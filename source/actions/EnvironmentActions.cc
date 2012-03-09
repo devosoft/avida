@@ -26,6 +26,7 @@
 #include "cActionLibrary.h"
 #include "cEnvironment.h"
 #include "cOrganism.h"
+#include "cMigrationMatrix.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -1257,6 +1258,64 @@ public:
 	}
 };
 
+// MIGRATION_MATRIX
+class cActionSetMigrationMatrix : public cAction
+{
+private:
+    cString m_fname;
+    
+public:
+    cActionSetMigrationMatrix(cWorld* world, const cString& args, Feedback&) : cAction(world, args) 
+    {
+        cString largs(args);
+        if (largs.GetSize()) m_fname = largs.PopWord();
+    }
+    
+    static const cString GetDescription() { return "Arguments: <string filename>"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+        cUserFeedback feedback;
+        bool count_parasites,count_offspring = false;
+        if(m_world->GetConfig().DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
+          count_parasites = true;
+        if(m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
+          count_offspring = true;
+        assert(m_world->GetMigrationMatrix().Load(m_world->GetPopulation().GetNumDemes(), m_fname, m_world->GetWorkingDir(),count_parasites,count_offspring,true,feedback));
+    }
+};
+
+// MIGRATION_MATRIX
+class cActionAlterMigrationConnection : public cAction
+{
+private:
+    int from_deme, to_deme;
+    double alter_amount;
+    
+public:
+    cActionAlterMigrationConnection(cWorld* world, const cString& args, Feedback&) : cAction(world, args) 
+    {
+        cString largs(args);
+        if (largs.GetSize()) from_deme = largs.PopWord().AsInt();
+        if (largs.GetSize()) to_deme = largs.PopWord().AsInt();
+        if (largs.GetSize()) alter_amount = largs.PopWord().AsDouble();
+        
+        assert(from_deme >= 0 && from_deme < m_world->GetPopulation().GetNumDemes());
+        assert(to_deme >= 0 && to_deme < m_world->GetPopulation().GetNumDemes());
+        
+    }
+    
+    static const cString GetDescription() { return "Arguments: <int from_deme> <int to_deme> <double alter_amount>"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+        assert(m_world->GetMigrationMatrix().AlterConnectionWeight(from_deme, to_deme, alter_amount));
+    }
+};
+
+ // Migrations(MIN_NUM_MIGS, MAX_NUM_MIGS, PROB_MIG, 
+
+
 class cActionSetConfig : public cAction
 {
 private:
@@ -1327,5 +1386,9 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
   
+    // MIGRATION_MATRIX
+  action_lib->Register<cActionSetMigrationMatrix>("SetMigrationMatrix");
+  action_lib->Register<cActionAlterMigrationConnection>("AlterMigrationConnection");
+  
   action_lib->Register<cActionSetConfig>("SetConfig");
-}
+};

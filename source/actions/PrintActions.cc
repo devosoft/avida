@@ -107,6 +107,8 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
+STATS_OUT_FILE(PrintParasiteMigrationCounts,parasite_migration_counts.dat); // MIGRATION_MATRIX
+STATS_OUT_FILE(PrintOffspringMigrationCounts,offspring_migration_counts.dat); // MIGRATION_MATRIX
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
 STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
@@ -181,8 +183,8 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
-STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); // @JJB
-STATS_OUT_FILE(PrintToleranceData,            tolerance.dat); // @JJB
+STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
+STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
@@ -246,7 +248,7 @@ public:
   }
 };
 
-class cActionPrintGroupTolerance : public cAction // @JJB
+class cActionPrintGroupTolerance : public cAction 
 {
 private:
   cString m_filename;
@@ -4436,6 +4438,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintParasiteMigrationCounts>("PrintParasiteMigrationCounts"); // MIGRATION_MATRIX
+  action_lib->Register<cActionPrintOffspringMigrationCounts>("PrintOffspringMigrationCounts"); // MIGRATION_MATRIX
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
   action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");
@@ -4600,9 +4604,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
   action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
-  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); // @JJB
-  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); // @JJB
+  action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); 
+  action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
+  action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
   action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 

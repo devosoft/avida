@@ -248,9 +248,11 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cGradientCount.cc
   ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
+  ${MAIN_DIR}/cMigrationMatrix.cc
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cOrganism.cc
   ${MAIN_DIR}/cOrgMessage.cc
+  ${MAIN_DIR}/cOrgSensor.cc
   ${MAIN_DIR}/cParasite.cc
   ${MAIN_DIR}/cPhenotype.cc
   ${MAIN_DIR}/cPhenPlastGenotype.cc
