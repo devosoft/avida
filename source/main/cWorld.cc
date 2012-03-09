@@ -117,10 +117,18 @@ bool cWorld::setup(cUserFeedback* feedback)
     success = false;
   }
     
-    if(m_conf->DEMES_MIGRATION_METHOD.Get() == 4 && !m_mig_mat->Load(m_conf->NUM_DEMES.AsString().AsInt(), m_conf->MIGRATION_FILE.Get(), m_working_dir, *feedback)){
-        // MIGRATION_MATRIX   
-        success = false;
-    }
+  if(m_conf->DEMES_MIGRATION_METHOD.Get() == 4){
+    // MIGRATION_MATRIX   
+    
+    bool count_parasites,count_offspring = false;
+    if(m_conf->DEMES_PARASITE_MIGRATION_RATE.Get() > 0.0)
+      count_parasites = true;
+    if(m_conf->DEMES_MIGRATION_RATE.Get() > 0.0)
+      count_offspring = true;
+    
+    if(!m_mig_mat->Load(m_conf->NUM_DEMES.AsString().AsInt(), m_conf->MIGRATION_FILE.Get(), m_working_dir,count_parasites,count_offspring,false,*feedback))
+      success = false;
+  }
   
   
   // Setup Stats Object

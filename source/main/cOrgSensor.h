@@ -35,7 +35,7 @@ class cOrgSensor
   protected:
   cWorld* m_world;
   cOrganism* m_organism;     // Organism using this sensor
-  bool m_avatar;
+  bool use_avatar;
   
   public:
   cOrgSensor(cWorld* world, cOrganism* in_organism);

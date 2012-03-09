@@ -1,21 +1,21 @@
-# Sat Feb 25 14:33:38 2012
-# Filename........: archive/ft1_grp-1_109-aaaah.org
+# Fri Mar  9 09:04:41 2012
+# Filename........: archive/ft-2_grp-1_111-aaaal.org
 # Update Output...: 750
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 109.000000
+# Merit...........: 111.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 109
-# Copied Size.....: 109
-# Executed Size...: 109
+# Genome Size.....: 111
+# Copied Size.....: 111
+# Executed Size...: 111
 # Last Birth Group ID........: -1
-# Last Birth Forager Type....: 1
-# Last Birth Cell............: 739
+# Last Birth Forager Type....: -2
+# Last Birth Cell............: 2388
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -32,7 +32,7 @@
 
 zero
 nop-A
-repro
+inc
 nop-A
 set-ft-once
 nop-A
@@ -44,34 +44,16 @@ nop-C
 nop-C
 nop-C
 nop-C
-IO
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
 nop-C
 IO
 nop-C
+if-not-0
+nop-C
+move
 nop-C
 nop-C
 nop-C
-nop-C
-nop-C
-fork-thread
-nop-C
-nop-C
-IO
-nop-C
-jmp-head
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
+shift-l
 nop-C
 nop-C
 IO
@@ -94,17 +76,6 @@ nop-C
 nop-C
 nop-C
 nop-C
-nop-C
-IO
-nop-C
-nop-C
-rotate-x
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
 IO
 nop-C
 nop-C
@@ -115,9 +86,28 @@ nop-C
 nop-C
 nop-C
 nop-C
+if-not-0
+if-n-equ
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
 IO
 nop-C
 nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
 nop-C
 if-not-0
 nop-C
@@ -125,17 +115,29 @@ nop-C
 nop-C
 nop-C
 nop-C
-IO
-move
-nop-C
-nop-C
-nop-C
-get-forage-target
-nop-C
-nop-C
 nop-C
 nop-C
 IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-X
+nop-C
+nop-C
+attack-ft-prey
 teach-offspring
 rotate-x
 repro

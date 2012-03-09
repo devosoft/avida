@@ -107,6 +107,8 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
+STATS_OUT_FILE(PrintParasiteMigrationCounts,parasite_migration_counts.dat); // MIGRATION_MATRIX
+STATS_OUT_FILE(PrintOffspringMigrationCounts,offspring_migration_counts.dat); // MIGRATION_MATRIX
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
 STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
@@ -3374,7 +3376,7 @@ public:
         for (int i = 0; i < worldx; i++) {
           cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
           int target = -99;
-          if (cell.HasAvatar()) target = cell.GetRandAvatar()->GetForageTarget();
+          if (cell.HasAV()) target = cell.GetRandAV()->GetForageTarget();//***
           fp << target << " ";
         }
         fp << endl;
@@ -4454,6 +4456,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintParasiteMigrationCounts>("PrintParasiteMigrationCounts"); // MIGRATION_MATRIX
+  action_lib->Register<cActionPrintOffspringMigrationCounts>("PrintOffspringMigrationCounts"); // MIGRATION_MATRIX
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
   action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");

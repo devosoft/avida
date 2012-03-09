@@ -111,23 +111,25 @@ char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
   else return '!';
 }
 
+//***
 char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
 {
-  if (cell.HasAvatar() == false) return ' ';
-  const int org_target = cell.GetRandAvatar()->GetForageTarget();
-  
-  if (org_target == -2) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
-  else if (org_target == -1) return '1';              //no target = bold-white
-  else return 'B' + org_target;                       //other valid targets = colors -> white
+  if (cell.HasAV() == false) return ' ';
+  if (cell.HasPredAV()) return 'A';           //we just want to color the predators red, the symbol used will still be a 'P'
+
+  const int org_target = cell.GetRandPreyAV()->GetForageTarget();
+  if (org_target == -1) return '1';           //no target = bold-white
+  else return 'B' + org_target;               //other valid targets = colors -> white
 }
 
+//***
 char cSymbolUtil::GetAVForagerSymbol(const cPopulationCell & cell)
 {
-  if (cell.HasAvatar() == false) return ' ';
-  const int org_target = cell.GetRandAvatar()->GetForageTarget();
-  
-  if (org_target == -2) return 'P';
-  else if (org_target == -1) return '-';
+  if (cell.HasAV() == false) return ' ';
+  if (cell.HasPredAV()) return 'P';
+
+  const int org_target = cell.GetRandPreyAV()->GetForageTarget();
+  if (org_target == -1) return '-';
   else if (org_target < 10) return '0' + org_target;
   // switch to lower case letters after digits
   else if (org_target >= 10 && org_target <= 35) return 'a' + org_target - 10;

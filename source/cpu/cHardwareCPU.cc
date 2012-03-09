@@ -112,6 +112,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-notAboveResLevel", &cHardwareCPU::Inst_IfNotAboveResLevel),
     tInstLibEntry<tMethod>("if-notAboveResLevel.end", &cHardwareCPU::Inst_IfNotAboveResLevelEnd),
     
+    tInstLibEntry<tMethod>("if-germ", &cHardwareCPU::Inst_IfGerm),
+    tInstLibEntry<tMethod>("if-soma", &cHardwareCPU::Inst_IfSoma),
+    
     // Probabilistic ifs.
     tInstLibEntry<tMethod>("if-p-0.125", &cHardwareCPU::Inst_IfP0p125, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-p-0.25", &cHardwareCPU::Inst_IfP0p25, nInstFlag::STALL),
@@ -257,6 +260,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect),
     tInstLibEntry<tMethod>("collect-unit-prob", &cHardwareCPU::Inst_CollectUnitProbabilistic, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-specific", &cHardwareCPU::Inst_DonateSpecific, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("check-faced-kin", &cHardwareCPU::Inst_CheckFacedKin, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -2354,6 +2359,25 @@ bool cHardwareCPU::Inst_IfP0p75(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_IfGerm(cAvidaContext& ctx)
+{
+  if (!m_organism->IsGermline()) {
+    getIP().Advance();
+  }
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfSoma(cAvidaContext& ctx)
+{
+  if (m_organism->IsGermline()) {
+    getIP().Advance();
+  }
+  
+  return true;
+}
+
+
 bool cHardwareCPU::Inst_JumpF(cAvidaContext& ctx)
 {
   ReadLabel();
@@ -4083,7 +4107,58 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
   return success;
 }
 
+/*Donates resources to the a neighboring cell */
+bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
+{
+  if(!m_organism->IsNeighborCellOccupied())return false;
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+    double res_before = m_organism->GetRBin(resource);
+    if (res_before >= 1)
+    {   
+      cOrganism* target = NULL;
+      target = m_organism->GetOrgInterface().GetNeighbor();
+      target->AddToRBin (resource, 1);
+      m_organism->AddToRBin(resource , -1);
+      return true;
+    }
+  }
+  return false;
+}
 
+
+bool cHardwareCPU::Inst_CheckFacedKin(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor =m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead())  return false;  
+  
+  // If there is no valid max genetic distance, go out to cousins.
+  int gen_dist = GetRegister(FindModifiedRegister(REG_BX));
+  if (gen_dist > 4 || gen_dist < 0) gen_dist = 4;
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  GetRegister(FindModifiedRegister(REG_BX))= gen_dist;
+  const int out_reg = FindModifiedNextRegister(REG_BX);   
+  GetRegister(out_reg)= (int) is_kin;    
+  return true;
+}
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following

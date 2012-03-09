@@ -191,7 +191,7 @@ private:
   int m_thread_id_chart;
   int m_cur_thread;
   
-  int m_avatar;
+  int use_avatar;
   cOrgSensor m_sensor;
   
   struct {

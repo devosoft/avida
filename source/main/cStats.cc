@@ -35,6 +35,7 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cDeme.h"
+#include "cMigrationMatrix.h" // MIGRATION_MATRIX
 #include "cStringUtil.h"
 #include "cWorld.h"
 #include "tDataEntry.h"
@@ -886,10 +887,34 @@ void cStats::PrintParasiteData(const cString& filename)
 
   df.WriteComment("Avida Dominant Parasite Data");
   df.WriteTimeStamp();
-
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
   df.Endl();
+}
+
+void cStats::PrintParasiteMigrationCounts(const cString& filename)
+{
+  // MIGRATION_MATRIX
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida Parasite Migration Counts");
+  df.WriteTimeStamp();
+  df.Write(cStringUtil::Stringf("[%d]\n",m_update) + m_world->GetMigrationMatrix().GetParasiteCountMatrixChars(),"[Update] Count_Matrix");
+  df.Endl();
+  m_world->GetMigrationMatrix().ResetParasiteCounts();
+}
+
+void cStats::PrintOffspringMigrationCounts(const cString& filename)
+{
+  // MIGRATION_MATRIX
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida Offspring Migration Counts");
+  df.WriteTimeStamp();
+  df.Write(cStringUtil::Stringf("[%d]\n",m_update) + m_world->GetMigrationMatrix().GetOffspringCountMatrixChars(),"[Update] Count_Matrix");
+  df.Endl();
+  m_world->GetMigrationMatrix().ResetOffspringCounts();
+  
 }
 
 void cStats::PrintPreyAverageData(const cString& filename)

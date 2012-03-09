@@ -338,6 +338,9 @@ private:
   bool Inst_IfAboveResLevelEnd(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx);
+  
+  bool Inst_IfGerm(cAvidaContext& ctx);
+  bool Inst_IfSoma(cAvidaContext& ctx);  
 
   // Probabilistic ifs.
   bool Inst_IfP0p125(cAvidaContext& ctx);
@@ -518,6 +521,8 @@ private:
   bool Inst_NopCollect(cAvidaContext& ctx);  
   bool Inst_CollectUnitProbabilistic(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
+  bool Inst_DonateSpecific(cAvidaContext& ctx);
+  bool Inst_CheckFacedKin(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation
