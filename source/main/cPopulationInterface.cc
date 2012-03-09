@@ -224,26 +224,13 @@ void cPopulationInterface::Rotate(int direction)
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
 	
-  if (direction >= 0) cell.ConnectionList().CircNext();
-  else cell.ConnectionList().CircPrev();
-
-  if (m_world->GetConfig().USE_AVATARS.Get()) {//@JJB**
-    cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_avatars[0].av_cell_id);
-    assert(av_cell.HasAV());
-    int org_facing = av_cell.GetFacedDir();
-    // rotate the avatar cell to match the direction of the true org cell
-    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
-      av_cell.ConnectionList().CircNext();
-      if (av_cell.GetFacedDir() == cell.GetFacedDir()) break;
-    }
-    // save the avatar facing and faced cell data for this org...we cannot rely on av_cell facing after this b/c other avatars could rotate same cell
-    SetAVFacing(cell.GetFacedDir());
-    
-    // now put the avatar cell back where it belongs in case there is a real org in the avatar cell
-    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
-      av_cell.ConnectionList().CircNext();
-      if (av_cell.GetFacedDir() == org_facing) break;
-    }    
+  if (m_world->GetConfig().USE_AVATARS.Get()) {
+    if (direction >= 0) RotateAV(1);
+    else RotateAV(-1);
+  }
+  else {
+    if (direction >= 0) cell.ConnectionList().CircNext();
+    else cell.ConnectionList().CircPrev();
   }
 }
 
