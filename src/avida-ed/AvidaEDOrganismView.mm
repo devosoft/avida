@@ -35,6 +35,7 @@
 #import "Freezer.h"
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
+#import "OrganismView.h"
 
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Manager.h"
@@ -47,6 +48,7 @@
 - (AvidaRun*) world;
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;
 
+- (void) setSnapshot:(int)snapshot;
 - (void) setTaskCountsWithSnapshot:(const Avida::Viewer::HardwareSnapshot&)snapshot;
 @end
 
@@ -86,22 +88,51 @@
   [txtOrgName setStringValue:name];
   [txtOrgName setEnabled:YES];
   
-  [sldStatus setMinValue:0];
-  [sldStatus setMaxValue:trace->SnapshotCount()];
-  [sldStatus setIntValue:0];
-  [sldStatus setEnabled:YES];
-  
-  [btnBegin setEnabled:NO];
-  [btnBack setEnabled:NO];
-  [btnGo setEnabled:YES];
-  [btnGo setTitle:@"Run"];
-  [btnForward setEnabled:YES];
-  [btnEnd setEnabled:YES];
-  
   if (trace->SnapshotCount() > 0) {
-    [self setTaskCountsWithSnapshot:trace->Snapshot(0)];
+    [sldStatus setMinValue:0];
+    [sldStatus setMaxValue:trace->SnapshotCount() - 1];
+    [sldStatus setIntValue:0];
+    [sldStatus setEnabled:YES];
+    
+    [btnBegin setEnabled:NO];
+    [btnBack setEnabled:NO];
+    [btnGo setEnabled:YES];
+    [btnGo setTitle:@"Run"];
+    [btnForward setEnabled:YES];
+    [btnEnd setEnabled:YES];
+    
+    [self setSnapshot:0];
+  } else {
+    [sldStatus setIntValue:0];
+    [sldStatus setEnabled:NO];
+    
+    [btnBegin setEnabled:NO];
+    [btnBack setEnabled:NO];
+    [btnGo setEnabled:NO];
+    [btnGo setTitle:@"Run"];
+    [btnForward setEnabled:NO];
+    [btnEnd setEnabled:NO];
+    
+    [orgView setSnapshot:NULL];
   }
 }
+
+
+
+- (void) setSnapshot:(int)snapshot {
+  assert(trace);
+
+  if (snapshot >= 0 && snapshot < trace->SnapshotCount()) {
+    curSnapshotIndex = snapshot;
+    [self setTaskCountsWithSnapshot:trace->Snapshot(snapshot)];
+    [orgView setSnapshot:&trace->Snapshot(snapshot)];
+  } else {
+    [sldStatus setIntValue:curSnapshotIndex];
+  }
+  
+}
+
+
 
 - (void) setTaskCountsWithSnapshot:(const Avida::Viewer::HardwareSnapshot&)snapshot {
   
@@ -146,6 +177,13 @@
   [tblTaskCounts setDataSource:envActions];
   [tblTaskCounts reloadData];
 }
+
+
+- (IBAction) selectSnapshot:(id)sender {
+  int snapshot = [sldStatus intValue];
+  [self setSnapshot:snapshot];
+}
+
 
 
 - (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {

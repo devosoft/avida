@@ -31,10 +31,16 @@
 
 #import "DropDelegate.h"
 
+#include "avida/viewer/Types.h"
+
 
 @interface OrganismView : NSView <NSDraggingDestination> {
   IBOutlet id<DropDelegate> dropDelegate;
+  
+  const Avida::Viewer::HardwareSnapshot* snapshot;
 }
+
+@property (readwrite, nonatomic) const Avida::Viewer::HardwareSnapshot* snapshot;
 
 // NSDraggingDestination
 - (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;

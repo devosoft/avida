@@ -55,9 +55,12 @@
   
   AvidaRun* testWorld;
   Avida::Viewer::OrganismTracePtr trace;
+  int curSnapshotIndex;
   
   AvidaEDEnvActionsDataSource* envActions;
 }
+
+- (IBAction) selectSnapshot:(id)sender;
 
 
 // DropDelegate

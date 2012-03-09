@@ -29,6 +29,9 @@
 
 #import "OrganismView.h"
 
+#include "avida/viewer/OrganismTrace.h"
+
+
 @implementation OrganismView
 
 - (id)initWithFrame:(NSRect)frame
@@ -36,6 +39,7 @@
   self = [super initWithFrame:frame];
   if (self) {
     // Initialization code here.
+    snapshot = NULL;
   }
   
   return self;
@@ -45,6 +49,33 @@
 {
   [[NSColor darkGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
+  
+  if (snapshot) {
+    NSRect bounds = [self bounds];
+    NSPoint centerPoint = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
+    
+    [[NSColor yellowColor] set];
+    
+    for (int object_idx = 0; object_idx < snapshot->NumGraphicObjects(); object_idx++) {
+      const Avida::Viewer::HardwareSnapshot::GraphicObject& obj = snapshot->Object(object_idx);
+      
+      NSRect objRect = NSMakeRect(centerPoint.x + (obj.x * 72.0), centerPoint.y + (obj.y * 72.0), obj.width * 72.0, obj.height * 72.0);
+      NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:objRect];
+      
+      [path fill];
+    }
+  }
+}
+
+
+
+- (const Avida::Viewer::HardwareSnapshot*) snapshot {
+  return snapshot;
+}
+
+- (void) setSnapshot:(const Avida::Viewer::HardwareSnapshot*)new_snapshot {
+  snapshot = new_snapshot;
+  [self setNeedsDisplay:YES];
 }
 
 
