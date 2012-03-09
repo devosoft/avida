@@ -106,8 +106,6 @@ namespace Avida {
       
       
       
-      
-      
       LIB_EXPORT inline int NumGraphicObjects() const { if (!m_layout) doLayout(); return m_graphic_objects.GetSize(); }
       LIB_EXPORT inline const GraphicObject& Object(int idx) const { if (!m_layout) doLayout(); return *m_graphic_objects[idx]; }
       
@@ -138,12 +136,12 @@ namespace Avida {
         Color fill_color;
 
         // Line
-        float line_width;   // 1.0 is standard 1px
+        float line_width;    // 1.0 is standard 1px
         Color line_color;
 
         // Label
         Apto::String label;
-        float font_size;    // Relative value; 1.0 is default.
+        float font_size;     // Relative value; 1.0 is default.
         Color label_color;
                 
         // Shape specific details
@@ -153,9 +151,12 @@ namespace Avida {
             float end_angle;
           };
           struct {  // For SHAPE_RECT
-            float x_round; // Radius for rounded corners.  Zero inidcated square corners.
+            float x_round;      // Radius for rounded corners.  Zero inidcated square corners.
             float y_round;
           };
+          struct {  // For SHAPE_LINE
+            float arrow_width;  // How wide and deep should the arrow be?  0.0 for no arrow
+            float arrow_depth;
         };
         
         // Is this graphic object an active region?
