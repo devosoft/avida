@@ -51,8 +51,8 @@
 		4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EE91332B6590037A393 /* cDynamicCount.h */; };
 		4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EEA1332B6590037A393 /* cGradientCount.cc */; };
 		4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EEB1332B6590037A393 /* cGradientCount.h */; };
-		4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cSensing.cc */; };
-		4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cSensing.h */; };
+		4AC3D9F4144E087000CAEA62 /* cOrgSensor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cOrgSensor.cc */; };
+		4AC3D9F5144E087000CAEA62 /* cOrgSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cOrgSensor.h */; };
 		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
 		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		700E2996085A1F6000CF158A /* avida in Create work dir */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
@@ -556,8 +556,8 @@
 		4A587EEA1332B6590037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
 		4A587EEB1332B6590037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
 		4ABC70211350AF3000EB56AA /* gradient.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = gradient.html; sourceTree = "<group>"; };
-		4AC3D9F2144E087000CAEA62 /* cSensing.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSensing.cc; sourceTree = "<group>"; };
-		4AC3D9F3144E087000CAEA62 /* cSensing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSensing.h; sourceTree = "<group>"; };
+		4AC3D9F2144E087000CAEA62 /* cOrgSensor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgSensor.cc; sourceTree = "<group>"; };
+		4AC3D9F3144E087000CAEA62 /* cOrgSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSensor.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -1910,6 +1910,8 @@
 				D7FB16D50ED62684002E939E /* cOrgMessage.cc */,
 				422B64520C8305C40012C545 /* cOrgMessagePredicate.h */,
 				709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */,
+				4AC3D9F3144E087000CAEA62 /* cOrgSensor.h */,
+				4AC3D9F2144E087000CAEA62 /* cOrgSensor.cc */,
 				70DA5E9D09DA1A8D00FFF42B /* cOrgSeqMessage.h */,
 				7027621A09D73E7700741717 /* cOrgSinkMessage.h */,
 				7027621909D73E5900741717 /* cOrgSourceMessage.h */,
@@ -1946,8 +1948,6 @@
 				70B0872508F5E82D00FC65FE /* cResourceLib.cc */,
 				70B0871508F5E81000FC65FE /* cResourceLib.h */,
 				706C6F480B83E69D003174C1 /* cSaleItem.h */,
-				4AC3D9F3144E087000CAEA62 /* cSensing.h */,
-				4AC3D9F2144E087000CAEA62 /* cSensing.cc */,
 				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
 				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
 				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
@@ -2115,7 +2115,7 @@
 				7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */,
 				4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */,
 				4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */,
-				4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */,
+				4AC3D9F5144E087000CAEA62 /* cOrgSensor.h in Headers */,
 				7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */,
 				D86E627614F6BA6600AE1489 /* cMigrationMatrix.h in Headers */,
 			);
@@ -2414,7 +2414,7 @@
 				70A53BCC135B766600C3E661 /* Version.cc in Sources */,
 				70FEF65E1382C48900A9D082 /* Manager.cc in Sources */,
 				70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */,
-				4AC3D9F4144E087000CAEA62 /* cSensing.cc in Sources */,
+				4AC3D9F4144E087000CAEA62 /* cOrgSensor.cc in Sources */,
 				7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */,
 				7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */,
 				D86E627414F6BA6600AE1489 /* cMigrationMatrix.cc in Sources */,

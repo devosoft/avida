@@ -2022,11 +2022,11 @@ bool cHardwareGX::Inst_TaskGet2(cAvidaContext& ctx)
   const int reg_used_1 = FindModifiedRegister(REG_BX);
   const int reg_used_2 = FindNextRegister(reg_used_1);
   
-  const int value1 = m_organism->GetNextInput(m_current->m_input_pointer);;
+  const int value1 = m_organism->GetNextInput(m_current->m_input_pointer);
   GetRegister(reg_used_1) = value1;
   m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value1); 
   
-  const int value2 = m_organism->GetNextInput(m_current->m_input_pointer);;
+  const int value2 = m_organism->GetNextInput(m_current->m_input_pointer);
   GetRegister(reg_used_2) = value2;
   m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value2); 
   

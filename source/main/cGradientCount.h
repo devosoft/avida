@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Authors: Aaron Wagner <apwagner@msu.edu>
+ *  Authors: Aaron P Wagner <apwagner@msu.edu>
  *
  */
 
