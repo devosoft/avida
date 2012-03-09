@@ -518,6 +518,8 @@ private:
   bool Inst_NopCollect(cAvidaContext& ctx);  
   bool Inst_CollectUnitProbabilistic(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
+  bool Inst_DonateSpecific(cAvidaContext& ctx);
+  bool Inst_CheckFacedKin(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation

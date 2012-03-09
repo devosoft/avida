@@ -291,6 +291,7 @@ private:
   void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_Optimize(cTaskContext& ctx) const;
   
+
   
   // Communication Tasks
   double Task_CommEcho(cTaskContext& ctx) const;
@@ -336,6 +337,10 @@ private:
   // Feed Specific Tasks
   void Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_ConsumeTarget(cTaskContext& ctx) const; 
+  
+  
+  void Load_CollectOdds(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
+	double Task_CollectOdds(cTaskContext& ctx) const; 
   
   // String Matching Tasks
 	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);

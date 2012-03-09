@@ -303,9 +303,12 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "form-group") Load_FormSpatialGroup(name, info, envreqs, feedback);
   if (name == "form-group-id") Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
   if (name == "live-on-patch-id") Load_LiveOnPatchRes(name, info, envreqs, feedback);
-	
+  if (name == "collect-odds") Load_CollectOdds(name, info, envreqs, feedback);
+  
   // Feed Specific Tasks
   if (name == "eat-target") Load_ConsumeTarget(name, info, envreqs, feedback);
+  
+  if (name == "collect-odds") Load_CollectOdds(name, info, envreqs, feedback);
   
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
@@ -3442,6 +3445,39 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
   return reward;
 }
 
+/* Reward organisms for having a given group-id.*/
+void cTaskLib::Load_CollectOdds(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
+{
+  cArgSchema schema;
+  
+  schema.AddEntry("even_or_odd", 0, 0);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
+  if (args) NewTask(name, "collect-odds", &cTaskLib::Task_CollectOdds, 0, args);
+  
+}
+
+double cTaskLib::Task_CollectOdds(cTaskContext& ctx) const
+{
+  
+  int even_odds = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  
+  double reward = 0.0;
+  // If the organism is in an odd cell...
+  int cell_id_mod_2 = ctx.GetOrganism()->GetCellID()%2;
+  if (even_odds == 0){
+    if (cell_id_mod_2 != 0){
+      reward = 1;
+    }
+  }
+  else{
+    if (cell_id_mod_2 ==0){
+      reward = 1;
+    }
+  }
+  return reward;
+}
 /* Reward organisms for having found a targeted resource*/
 void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
@@ -3469,6 +3505,8 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
   return reward;
 }
 
+
+
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
@@ -3477,7 +3515,6 @@ void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "all-ones", &cTaskLib::Task_AllOnes, 0, args);
 }
-
 
 double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 {
