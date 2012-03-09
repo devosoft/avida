@@ -7,3 +7,6 @@
 [submodule "avida-core"]
 	path = avida-core
 	url = git://avida.devosoft.org/avida-core.git
+[submodule "apps/viewer-windows"]
+	path = apps/viewer-windows
+	url = git://avida.devosoft.org/viewer-windows.git
