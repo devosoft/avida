@@ -33,8 +33,6 @@
 		703549EB1337D25300D3865C /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EA1337D25300D3865C /* libapto.a */; };
 		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
-		7038059214ACF616002FA72A /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
-		7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7038059114ACF616002FA72A /* CorePlot.framework */; };
 		7046CF7714D0B5320030F1DF /* petri.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7046CF7614D0B5320030F1DF /* petri.icns */; };
 		7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */; };
 		7046CFBC14D9C55B0030F1DF /* graph-preview-dashed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */; };
@@ -51,6 +49,7 @@
 		709D24C714CF500400AB0425 /* Genome.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709D24C414CF4B8100AB0425 /* Genome.mm */; };
 		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
+		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,7 +59,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				7038059714ACF779002FA72A /* CorePlot.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,7 +112,6 @@
 		703549EA1337D25300D3865C /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7038059114ACF616002FA72A /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CorePlot.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/CorePlot.framework"; sourceTree = "<group>"; };
 		7046CF7414D0B4F80030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
 		7046CF7614D0B5320030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
 		7046CFB614D9B7BA0030F1DF /* DroppableGraphHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroppableGraphHostingView.h; sourceTree = "<group>"; };
@@ -142,6 +139,7 @@
 		70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
+		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,7 +150,7 @@
 				708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */,
 				7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */,
 				7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */,
-				7038059214ACF616002FA72A /* CorePlot.framework in Frameworks */,
+				70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */,
 				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
 				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
 				703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */,
@@ -186,8 +184,8 @@
 		7035497413379FBD00D3865C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70E09DD7150AAC5400154C00 /* CorePlot.framework */,
 				7035497513379FBD00D3865C /* Cocoa.framework */,
-				7038059114ACF616002FA72A /* CorePlot.framework */,
 				708308F614B6ADEB0051B354 /* OpenGL.framework */,
 				7047394714B65F19009D285C /* QuartzCore.framework */,
 				7035497713379FBD00D3865C /* Other Frameworks */,
