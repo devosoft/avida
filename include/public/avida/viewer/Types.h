@@ -37,6 +37,7 @@ namespace Avida {
     class Driver;
     class Freezer;
     struct FreezerID;
+    class HardwareSnapshot;
     class Listener;
     class Map;
     class OrganismTrace;

@@ -310,9 +310,9 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
 
   // Draw each memory space
   int num_mem_spaces = m_mem_spaces.GetSize();
-  for (cur_mem_id = 0; cur_mem_id < 2 && cur_mem_id < num_mem_spaces; cur_mem_id++) {
-    MemSpace * cur_memspace = m_mem_spaces[cur_mem_id];
-    Apto::Array<Instruction> & cur_mem = cur_memspace->memory;
+  for (int cur_mem_id = 0; cur_mem_id < 2 && cur_mem_id < num_mem_spaces; cur_mem_id++) {
+    const MemSpace& cur_memspace = m_mem_spaces[cur_mem_id];
+    const Apto::Array<Instruction>& cur_mem = cur_memspace.memory;
     const int cur_length = cur_mem.GetSize();
 
     const double genome_circumference = ((double) cur_length) * inst_spacing;
@@ -323,17 +323,17 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
     // Setup the central position for this memory space.  For the moment, assume we only have parent and offspring.
     double center_x = 0.0;
     double center_y = 0.0;
-    if (cur_mem_id == 0) center_x -= genome offset; else center_x += genome_offset;
+    if (cur_mem_id == 0) center_x -= genome_offset; else center_x += genome_offset;
 
     // Step through the genome, placing each instruction on the screen;
     for (int i = 0; i < cur_length; i++) {
       // Calculate where this instruction should be drawn on the screen.
       // Center position + angular offset - radius (since we need the lower, left corner of each circle to draw)
       double cur_angle = angle_step * (double) i;
-      inst_x = center_x + sin(cur_angle) * genome_radius - inst_radius;
-      inst_y = center_y + cos(cur_angle) * genome_radius - inst_radius;
+      float inst_x = center_x + sin(cur_angle) * genome_radius - inst_radius;
+      float inst_y = center_y + cos(cur_angle) * genome_radius - inst_radius;
 
-      GraphicObject * inst_go = new GraphicObject(inst_x, inst_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
+      GraphicObject* inst_go = new GraphicObject(inst_x, inst_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
       // @CAO setup color of circle based on instruction at that point;
       m_graphic_objects.Push(inst_go);
     }
@@ -342,7 +342,8 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
   // @CAO Draw heads
   // @CAO Draw arcs showing prior execution path.
   // @CAO Draw other hardware as needed
-
+  
+  m_layout = true;
 }
 
 

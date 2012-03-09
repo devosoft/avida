@@ -157,6 +157,7 @@ namespace Avida {
           struct {  // For SHAPE_LINE
             float arrow_width;  // How wide and deep should the arrow be?  0.0 for no arrow
             float arrow_depth;
+          };
         };
         
         // Is this graphic object an active region?
