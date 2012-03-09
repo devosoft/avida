@@ -48,12 +48,12 @@ public:
   const cString& GetDescription() const { return m_desc; }
   
   inline unsigned int GetFlags() const { return m_flags; }
-  inline bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT); }
-  inline bool IsNop() const { return (m_flags & nInstFlag::NOP); }
-  inline bool IsLabel() const { return (m_flags & nInstFlag::LABEL); }
-  inline bool IsPromoter() const { return (m_flags & nInstFlag::PROMOTER); }
-  inline bool ShouldStall() const { return (m_flags & nInstFlag::STALL); }
-  inline bool ShouldSleep() const { return (m_flags & nInstFlag::SLEEP); }
+  inline bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT) != 0; }
+  inline bool IsNop() const { return (m_flags & nInstFlag::NOP) != 0; }
+  inline bool IsLabel() const { return (m_flags & nInstFlag::LABEL) != 0; }
+  inline bool IsPromoter() const { return (m_flags & nInstFlag::PROMOTER) != 0; }
+  inline bool ShouldStall() const { return (m_flags & nInstFlag::STALL) != 0; }
+  inline bool ShouldSleep() const { return (m_flags & nInstFlag::SLEEP) != 0; }
 };
 
 #endif

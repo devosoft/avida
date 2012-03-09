@@ -50,12 +50,12 @@ public:
   cCPUMemory(const Apto::String& in_string) : InstructionSequence(in_string), m_flag_array(in_string.GetSize()) { ; }
   ~cCPUMemory() { ; }
 
-  inline bool FlagCopied(int pos) const     { return MASK_COPIED   & m_flag_array[pos]; }
-  inline bool FlagMutated(int pos) const    { return MASK_MUTATED  & m_flag_array[pos]; }
-  inline bool FlagExecuted(int pos) const   { return MASK_EXECUTED & m_flag_array[pos]; }
-  inline bool FlagPointMut(int pos) const   { return MASK_POINTMUT & m_flag_array[pos]; }
-  inline bool FlagCopyMut(int pos) const    { return MASK_COPYMUT  & m_flag_array[pos]; }
-  inline bool FlagInjected(int pos) const   { return MASK_INJECTED & m_flag_array[pos]; }
+  inline bool FlagCopied(int pos) const     { return (MASK_COPIED   & m_flag_array[pos]) != 0; }
+  inline bool FlagMutated(int pos) const    { return (MASK_MUTATED  & m_flag_array[pos]) != 0; }
+  inline bool FlagExecuted(int pos) const   { return (MASK_EXECUTED & m_flag_array[pos]) != 0; }
+  inline bool FlagPointMut(int pos) const   { return (MASK_POINTMUT & m_flag_array[pos]) != 0; }
+  inline bool FlagCopyMut(int pos) const    { return (MASK_COPYMUT  & m_flag_array[pos]) != 0; }
+  inline bool FlagInjected(int pos) const   { return (MASK_INJECTED & m_flag_array[pos]) != 0; }
   
   inline void SetFlagCopied(int pos)     { m_flag_array[pos] |= MASK_COPIED;   }
   inline void SetFlagMutated(int pos)    { m_flag_array[pos] |= MASK_MUTATED;  }

@@ -232,3 +232,10 @@ int cWorld::CalculateUpdateSize()
 {
 	return GetConfig().AVE_TIME_SLICE.Get() * GetPopulation().GetNumOrganisms();
 }
+
+void cWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage)
+{
+  (void)org; (void)cell; (void)merit; (void)lineage;
+}
+
+bool cWorld::IsWorldBoundary(const cPopulationCell& cell) { (void)cell; return false; }

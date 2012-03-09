@@ -23,10 +23,11 @@
 
 #include "cStats.h"
 
+#include "cPopulationCell.h"
+
 class cDeme;
 class cDataFile;
 class cWorld;
-class cPopulationCell;
 class cPopulationInterface;
 
 /*! Provides the organisms in a deme with a shared network object.

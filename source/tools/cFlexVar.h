@@ -90,7 +90,7 @@ private:
     void Print(std::ostream& out) const { out << m_value; }
     
 #define CREATE_FLEX_VAR_BOOL_MATH_OP(OP, RETURN_TYPE)                                                           \
-RETURN_TYPE operator OP (bool in_var) const { return (int)m_value OP in_var; }                                   \
+RETURN_TYPE operator OP (bool in_var) const { return (int)m_value OP (int)in_var; }                                   \
 RETURN_TYPE operator OP (int in_var) const { return (int)m_value OP in_var; }                                   \
 RETURN_TYPE operator OP (char in_var) const { return (int)m_value OP (int) in_var; }                            \
 RETURN_TYPE operator OP (double in_var) const { return ((double) m_value) OP in_var; }                     \
@@ -112,7 +112,7 @@ RETURN_TYPE operator OP (const cString & in_var) const { return ((double) m_valu
     cFlexVar_Int(int in_val) : m_value(in_val) { ; }
     ~cFlexVar_Int() { ; }
 
-    bool AsBool() const { return (m_value); }
+    bool AsBool() const { return (m_value) != 0; }
     int AsInt() const { return m_value; }
     char AsChar() const { return (char) m_value; }
     double AsDouble() const { return (double) m_value; }
@@ -147,7 +147,7 @@ RETURN_TYPE operator OP (const cString & in_var) const { return ((double) m_valu
     cFlexVar_Char(char in_val) : m_value(in_val) { ; }
     ~cFlexVar_Char() { ; }
 
-    bool AsBool() const { return ((int)m_value); }
+    bool AsBool() const { return ((int)m_value) != 0; }
     int AsInt() const { return (int) m_value; }
     char AsChar() const { return m_value; }
     double AsDouble() const { return (double) m_value; }
@@ -182,7 +182,7 @@ RETURN_TYPE operator OP (const cString & in_var) const { return ((double) m_valu
     cFlexVar_Double(double in_val) : m_value(in_val) { ; }
     ~cFlexVar_Double() { ; }
 
-    bool AsBool() const { return ((int)m_value); }
+    bool AsBool() const { return m_value != 0.0; }
     int AsInt() const { return (int) m_value; }
     char AsChar() const { return (char) m_value; }
     double AsDouble() const { return m_value; }
@@ -225,7 +225,7 @@ RETURN_TYPE operator OP (const cString & in_var) const { return ((double) m_valu
       if (val == "TRUE" || val == "T") return true;
       if (val == "FALSE" || val == "F") return false;
       
-      return (val.AsInt());
+      return (val.AsInt()) != 0;
     }
     
     int AsInt() const { return m_value.AsInt(); }

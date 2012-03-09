@@ -178,8 +178,8 @@ public:
   }
   
 protected:
-  int m_time; //!< Number of seconds after which Avida should exit.
-  int m_then; //!< Time at which this object was constructed (the 'start' of Avida).
+  time_t m_time; //!< Number of seconds after which Avida should exit.
+  time_t m_then; //!< Time at which this object was constructed (the 'start' of Avida).
 };
 
 /*! Exit Avida when a certain number of deme replications has occurred.
