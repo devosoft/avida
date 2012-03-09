@@ -2801,9 +2801,14 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   m_organism->GetPhenotype().SetLinesExecuted(lines_executed);
   
   
+  // Setup child
+  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  child_genome = m_organism->GetGenome().GetSequence();
+
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-    for (int i = 0; i < m_memory.GetSize(); i++) {
+    for (int i = 0; i < child_genome.GetSize(); i++) {    
+//    for (int i = 0; i < m_memory.GetSize(); i++) {
       if (m_organism->TestCopyMut(ctx)) m_organism->OffspringGenome().GetSequence()[i] = m_inst_set->GetRandomInst(ctx);
     }
   }
@@ -5018,19 +5023,24 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
+  bool halt = false;
   if (m_organism->HadParentTeacher()) {
     int old_target = m_organism->GetForageTarget();
     int prop_target = -1;
     prop_target = m_organism->GetParentFT();
-    if (m_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
-        (m_organism->GetOrgInterface().GetAvatarCellID() != -1)) {
-      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
-      m_organism->CopyParentFT();
-      m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+
+    halt = (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1);
+    if (!halt) {
+      if (m_avatar && m_organism->GetOrgInterface().GetAvatarCellID() != -1 && 
+      ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2))) {
+          m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->RemoveAvatar(m_organism);
+          m_organism->CopyParentFT();
+          m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAvatarCellID())->AddAvatar(m_organism);
+      }
+      else m_organism->CopyParentFT();
     }
-    else m_organism->CopyParentFT();
   }
-  return true;
+  return !halt;
 }
 
 bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)

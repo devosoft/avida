@@ -892,6 +892,7 @@ public:
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
   void PrintGroupTolerance(const cString& filename); 
+  void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 
   void PrintToleranceData(const cString& filename); 
 

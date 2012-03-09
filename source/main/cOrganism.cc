@@ -732,8 +732,8 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   	m_interface->UpdateResources(ctx, GetRBins());
   }
   
-	// Make sure the group composition is updated.
-	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
+  // Make sure the group composition is updated.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
 }
 
 
