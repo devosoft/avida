@@ -30,7 +30,7 @@
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism)
 {
- use_avatar = m_world->GetConfig().USE_AVATARS.Get();
+ m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
 }
 
 const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft)
@@ -185,12 +185,12 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
   org_search.value = 0;
   org_search.group = -9;
   org_search.forage = -9;  
-  if (use_avatar && use_avatar != 2) return org_search;
+  if (m_use_avatar && m_use_avatar != 2) return org_search;
   
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   int target_org_cell = target_org->GetOrgInterface().GetCellID();
   int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
-  if (use_avatar) {
+  if (m_use_avatar) {
     target_org_cell = target_org->GetOrgInterface().GetAVCellID();
     searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
   }
@@ -265,8 +265,8 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
   double val = 0;
   if (id_sought != -1) {
     tArray<double> res_count;
-    if (!use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-    else if (use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
+    if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
+    else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
     val = res_count[id_sought];
   }
   
@@ -311,7 +311,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   stuff_seen.value = -9;
   stuff_seen.group = -9;
   stuff_seen.forage = -9;
-  if (use_avatar && use_avatar != 2 && habitat_used == -2) return stuff_seen;
+  if (m_use_avatar && m_use_avatar != 2 && habitat_used == -2) return stuff_seen;
   
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
@@ -327,7 +327,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
   int faced_cell_int = m_organism->GetOrgInterface().GetFacedCellID();
-  if (use_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAVFacedCellID();
+  if (m_use_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAVFacedCellID();
   
   cCoords faced_cell(faced_cell_int % worldx, faced_cell_int / worldx);
   const cCoords ahead_dir(faced_cell.GetX() - this_cell.GetX(), faced_cell.GetY() - this_cell.GetY());
@@ -573,7 +573,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     else if (habitat_used == -2 && found_edible) {
       const cPopulationCell* first_good_cell = m_organism->GetOrgInterface().GetCell(first_success_cell.GetY() * worldx + first_success_cell.GetX());
       cOrganism* first_org = first_good_cell->GetOrganism();
-      if (use_avatar) {
+      if (m_use_avatar) {
         if (search_type == 0) first_org = first_good_cell->GetRandAV();
         else if (search_type > 0) first_org = first_good_cell->GetRandPredAV();
         else if (search_type < 0) first_org = first_good_cell->GetRandPreyAV();
@@ -652,7 +652,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx,  const cResourc
   // if we're looking for other organisms (looking for specific org already handled)
   else if (habitat_used == -2) {
     const cPopulationCell* target_cell = m_organism->GetOrgInterface().GetCell(target_cell_num);
-    if (!use_avatar) {
+    if (!m_use_avatar) {
       if(target_cell->IsOccupied() && !target_cell->GetOrganism()->IsDead()) {
         int type_seen = target_cell->GetOrganism()->GetForageTarget();
         if(search_type == 0) {
@@ -673,7 +673,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx,  const cResourc
         }
       }
     }
-    if (use_avatar == 2) {
+    if (m_use_avatar == 2) {
       if(search_type == 0) {
         if (target_cell->HasAV()) {
           returnInfo.amountFound += target_cell->GetNumAV();

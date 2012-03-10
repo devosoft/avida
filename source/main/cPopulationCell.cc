@@ -367,7 +367,7 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
 }
 
 // Randomly returns an avatar from the cell, all avatars equally likely
-//********** DO NOT CALL FOR VIEWER, DOING SO WILL BREAK CONSISTENCY FROM RUN TO RUN **********
+//********** DO NOT CALL FROM VIEWER OR DATA COLLECTION, DOING SO WILL AFFECT RESULTS DURING RUN **********
 cOrganism* cPopulationCell::GetRandAV() const
 {
   if (HasAV()) {
