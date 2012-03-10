@@ -10,8 +10,8 @@ nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  require - treat zero exit codes as failures, useful
                          ;            for creating tests for app error checking
 
-createdby = Grayson Wright
-email = wright.grayson@gmail.com
+createdby = Aaron P Wagner
+email = apwagner@msu.edu
 
 [consistency]
 enabled = yes            ; Is this test a consistency test?
