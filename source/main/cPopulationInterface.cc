@@ -221,11 +221,14 @@ int cPopulationInterface::GetNeighborCellContents() {
 
 void cPopulationInterface::Rotate(int direction)
 {
-  if (m_world->GetConfig().USE_AVATARS.Get()) RotateAV(direction); 
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
+  assert(cell.IsOccupied());
+	
+  if (m_world->GetConfig().USE_AVATARS.Get()) {
+    if (direction >= 0) RotateAV(1);
+    else RotateAV(-1);
+  }
   else {
-    cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-    assert(cell.IsOccupied());
-      
     if (direction >= 0) cell.ConnectionList().CircNext();
     else cell.ConnectionList().CircPrev();
   }

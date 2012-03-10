@@ -1590,13 +1590,13 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   assert(m_interface);
   if (m_is_dead) return false;
   
-  int facing = m_interface->GetAVFacing();
-  
   // Actually perform the move
   if (m_interface->MoveAV(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {   
+      int facing = m_interface->GetAVFacing();
+
       if (facing == 0)
         m_northerly = m_northerly - 1;                  // N
       else if (facing == 1) {
