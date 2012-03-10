@@ -3817,22 +3817,6 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default
-  //  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-
-  /*  int prop_target = GetRegister(FindModifiedRegister(rBX));
-   
-   // a little mod help...can't set to -1, that's for juevniles only
-   int num_fts = 0;
-   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-   set <int>::iterator itr;    
-   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-   if (abs(prop_target) >= num_fts && prop_target != -2) prop_target = abs(prop_target) % num_fts;
-
-   */
-//  const int prop_target = GetRegister(FindModifiedRegister(rBX));
-  
-  // make sure we use a valid (resource) target
-  // -2 target means setting to predator; -1 (nothing) is default
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
 
   //return false if org setting target to current one (avoid paying costs for not switching)
@@ -3880,22 +3864,6 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
     for (int i = 0; i < ft_num; i++) itr++;
     prop_target = *itr;
   }
-  
-  // make sure we use a valid (resource) target
-  // -2 target means setting to predator; -1 (nothing) is default
-  //  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-  
-  /*  int prop_target = GetRegister(FindModifiedRegister(rBX));
-   
-   // a little mod help...can't set to -1, that's for juevniles only
-   int num_fts = 0;
-   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-   set <int>::iterator itr;    
-   for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-   if (abs(prop_target) >= num_fts && prop_target != -2) prop_target = abs(prop_target) % num_fts;
-   
-   */
-  //  const int prop_target = GetRegister(FindModifiedRegister(rBX));
   
   // make sure we use a valid (resource) target
   // -2 target means setting to predator; -1 (nothing) is default

@@ -1583,7 +1583,7 @@ void cPopulationInterface::SwitchPredPrey(int av_num)
       m_avatars[av_num].av_output = true;
     }
     // Is prey, switching to a predator (output to intput)
-    if (m_avatars[av_num].av_output) {
+    else if (m_avatars[av_num].av_output) {
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveOutputAV(GetOrganism());
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).AddInputAV(GetOrganism());
       m_avatars[av_num].av_output = false;
