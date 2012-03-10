@@ -3377,7 +3377,7 @@ public:
           cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
           int target = -99;
           if (cell.HasAV()) {
-            if (cell.HasPredAV()) cell.GetRandPredAV()->GetForageTarget();
+            if (cell.HasPredAV()) target = cell.GetRandPredAV()->GetForageTarget();
             else target = cell.GetRandPreyAV()->GetForageTarget();
           } 
           fp << target << " ";
