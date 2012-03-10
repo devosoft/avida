@@ -1289,8 +1289,16 @@ void cOrganism::SetForageTarget(int forage_target) {
   // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }
 
-void cOrganism::Teach(bool teach) {
-  m_teach = teach;
+void cOrganism::CopyParentFT() {
+  bool copy_ft = true;
+  // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
+  // switch ft to pred, and then copy parent to become prey again.
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
+    if (m_parent_ft != -2 && m_forage_target < -1) {
+      copy_ft = false;
+    }
+  }
+  if (copy_ft) SetForageTarget(m_parent_ft); 
 }
 
 /*! Called when an organism receives a flash from a neighbor. */

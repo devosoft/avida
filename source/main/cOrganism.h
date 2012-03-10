@@ -607,12 +607,12 @@ public:
   bool HasSetFT() const { return m_has_set_ft; }
   void RecordFTSet() { m_has_set_ft = true; }
   bool IsTeacher() const { return m_teach; }
-  void Teach(bool m_teach);
+  void Teach(bool teach) { m_teach = teach; }
   bool HadParentTeacher() const { return m_parent_teacher; }
   void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
   void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
   int GetParentFT() const { return m_parent_ft; } 
-  void CopyParentFT() { SetForageTarget(m_parent_ft); }
+  void CopyParentFT();
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
   
