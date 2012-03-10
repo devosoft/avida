@@ -4422,10 +4422,10 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   cOrganism* neighbor = NULL;
-  if ( !m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
+  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasAV()) return false;
   
-  if ( !m_use_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  if (!m_use_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
   else if (m_use_avatar == 2) neighbor = m_organism->GetOrgInterface().GetRandFacedAV();
   if (neighbor->IsDead())  return false;  
   
