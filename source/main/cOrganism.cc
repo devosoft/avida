@@ -59,6 +59,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_interface(NULL)
 , m_lineage_label(-1)
 , m_lineage(NULL)
+, m_org_list_index(-1)
 , m_input_pointer(0)
 , m_input_buf(world->GetEnvironment().GetInputSize())
 , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -95,6 +96,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_parent_ft(-1)
 , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
 , m_num_point_mut(0)
+, m_av_in_index(-1)
+, m_av_out_index(-1)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();

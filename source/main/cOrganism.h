@@ -78,6 +78,8 @@ private:
   cLineage* m_lineage;                    // A lineage descriptor... (different from label)
   int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
 
+  int m_org_list_index;
+  
   // Other stats
   Genome m_offspring_genome;              // Child genome, while under construction.
 
@@ -207,10 +209,11 @@ public:
 
   const cStateGrid& GetStateGrid() const;
 
-
   double GetVitality() const;
 
-
+  inline void SetOrgIndex(int index) { m_org_list_index = index; }
+  inline int GetOrgIndex() { return m_org_list_index; }
+  
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
   int GetID() { return m_id; }
@@ -694,9 +697,16 @@ private:
 	// -------- Avatar support --------
 public:
   bool MoveAV(cAvidaContext& ctx);
+  inline void SetAVInIndex(int index) { m_av_in_index = index; }
+  inline int GetAVInIndex() { return m_av_in_index; }
+  inline void SetAVOutIndex(int index) { m_av_out_index = index; }
+  inline int GetAVOutIndex() { return m_av_out_index; }
     
 	// -------- Internal Support Methods --------
 private:
+  int m_av_in_index;
+  int m_av_out_index;
+  
   void initialize(cAvidaContext& ctx);
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
