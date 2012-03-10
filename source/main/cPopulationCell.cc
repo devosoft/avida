@@ -312,9 +312,11 @@ void cPopulationCell::AddInputAV(cOrganism* org)
   // Swaps the added avatar into a random position in the array
   int loc = m_world->GetRandom().GetUInt(0, m_av_inputs.GetSize());
   cOrganism* exist_org = m_av_inputs[loc];
-  m_av_inputs.Swap(loc, m_av_inputs.GetSize() - 1);
-  exist_org->SetAVInIndex(m_av_inputs.GetSize() - 1);
-  org->SetAVInIndex(loc);
+  if (exist_org != org) {
+    m_av_inputs.Swap(loc, m_av_inputs.GetSize() - 1);
+    exist_org->SetAVInIndex(m_av_inputs.GetSize() - 1);
+    org->SetAVInIndex(loc);
+  }
 }
 
 // Adds an organism to the cell's output avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
@@ -324,9 +326,11 @@ void cPopulationCell::AddOutputAV(cOrganism* org)
   // Swaps the added avatar into a random position in the array
   int loc = m_world->GetRandom().GetUInt(0, m_av_outputs.GetSize());
   cOrganism* exist_org = m_av_outputs[loc];
-  m_av_outputs.Swap(loc, m_av_outputs.GetSize() - 1);
-  exist_org->SetAVOutIndex(m_av_outputs.GetSize() - 1);
-  org->SetAVOutIndex(loc);
+  if (exist_org != org) {
+    m_av_outputs.Swap(loc, m_av_outputs.GetSize() - 1);
+    exist_org->SetAVOutIndex(m_av_outputs.GetSize() - 1);
+    org->SetAVOutIndex(loc);
+  }
 }
 
 // Removes the organism from the cell's input avatars
