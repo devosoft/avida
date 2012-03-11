@@ -3842,7 +3842,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   
   // Set the new target and return the value
   m_organism->RecordFTSet();
-	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+  setInternalValue(FindModifiedRegister(rBX), prop_target, false);
   return true;
 }
 
@@ -3850,50 +3850,7 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
-  int prop_target = GetRegister(FindModifiedRegister(rBX));
-  
-  // a little mod help...can't set to -1, that's for juevniles only
-  int num_fts = 0;
-  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-  set <int>::iterator itr;    
-  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
-    // ft's may not be sequentially numbered
-    int ft_num = abs(prop_target) % num_fts;
-    itr = fts_avail.begin();
-    for (int i = 0; i < ft_num; i++) itr++;
-    prop_target = *itr;
-  }
-  
-  // make sure we use a valid (resource) target
-  // -2 target means setting to predator; -1 (nothing) is default
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-
-  //return false if org setting target to current one (avoid paying costs for not switching)
-  const int old_target = m_organism->GetForageTarget();
-  if (old_target == prop_target) return false;
-  
-  // return false if predator trying to become prey and this has been disallowed
-  if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
-  
-  // return false if trying to become predator and there are none in the experiment
-  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
-  
-  // return false if trying to become predator this has been disallowed via setforagetarget
-  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
-  
-  // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-  if (m_use_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
-      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
-    m_organism->SetForageTarget(prop_target);
-    m_organism->GetOrgInterface().SwitchPredPrey();
-  }
-  else m_organism->SetForageTarget(prop_target);
-  
-  // Set the new target and return the value
-  m_organism->RecordFTSet();
-	setInternalValue(FindModifiedRegister(rBX), prop_target, false);
-  return true;
+  else return Inst_SetForageTarget(ctx);
 }
 
 bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
@@ -4778,7 +4735,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   }
   else {
     cOrganism* target = NULL;
-    if ( !m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+    if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
     else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     if (target->IsDead()) return false;  
     if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
