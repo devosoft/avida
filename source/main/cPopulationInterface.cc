@@ -1848,16 +1848,16 @@ void cPopulationInterface::SetAVCellData(const int newData, const int org_id, in
 bool cPopulationInterface::MoveAV(cAvidaContext& ctx, int av_num)
 {
   // If the avatar exists..
+  bool success = false;
   if (av_num < GetNumAV()) {
     // Move the avatar into the faced cell
     int src_id = m_avatars[av_num].av_cell_id;
     int dest_id = m_avatars[av_num].av_faced_cell;
     int true_cell = m_cell_id;
-    if (m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
-      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
-    }
+    success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
+    if (success) SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
   }
-  return false;
+  return success;
 }
 
 // Rotate the avatar by input increment, then set the new faced cell
@@ -1873,9 +1873,7 @@ bool cPopulationInterface::RotateAV(int increment, int av_num)
       increment = -increment;
     }
     // Adjust facing by increment
-    m_avatars[av_num].av_facing = (m_avatars[av_num].av_facing + increment + 8) % 8;
-    // Set the new faced cell id
-    SetAVFacedCellID(av_num);
+    SetAVFacing((m_avatars[av_num].av_facing + increment + 8) % 8);
     return true;
   }
   return false;

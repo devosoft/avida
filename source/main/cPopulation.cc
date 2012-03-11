@@ -6654,19 +6654,17 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
 void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
+  org->SetOrgIndex(live_org_list.GetSize()-1);
 }
 
 // Remove an organism from live org list  
 void  cPopulation::RemoveLiveOrg(cOrganism* org)
 {
-  for (int i = 0; i < live_org_list.GetSize(); i++) {
-    if (live_org_list[i] == org) {
-      unsigned int last = live_org_list.GetSize() - 1;
-      live_org_list.Swap(i, last);
-      live_org_list.Pop();
-      break;
-    }
-  }
+  unsigned int last = live_org_list.GetSize() - 1;
+  cOrganism* exist_org = live_org_list[last];
+  exist_org->SetOrgIndex(org->GetOrgIndex());
+  live_org_list.Swap(org->GetOrgIndex(), last);
+  live_org_list.Pop();
 }
 
 
