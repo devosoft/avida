@@ -615,6 +615,8 @@ public:
   void CopyParentFT() { SetForageTarget(m_parent_ft); }
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
+  void ChangeBeg() { m_beggar = !m_beggar; }
+  bool IsBeggar() { return m_beggar; }
   
 protected:
   // The organism's own raw materials
@@ -650,6 +652,7 @@ protected:
   bool m_parent_teacher;
   int m_parent_ft;
   int m_parent_group;
+  bool m_beggar;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade

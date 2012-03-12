@@ -94,6 +94,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_parent_teacher(false)
 , m_parent_ft(-1)
 , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+, m_beggar(false)
 , m_num_point_mut(0)
 {
 	// initializing this here because it may be needed during hardware creation:
