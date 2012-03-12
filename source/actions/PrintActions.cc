@@ -107,6 +107,8 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
+STATS_OUT_FILE(PrintParasiteMigrationCounts,parasite_migration_counts.dat); // MIGRATION_MATRIX
+STATS_OUT_FILE(PrintOffspringMigrationCounts,offspring_migration_counts.dat); // MIGRATION_MATRIX
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
 STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
@@ -261,6 +263,24 @@ public:
   {
     m_world->GetPopulation().UpdateResStats(ctx);
     m_world->GetStats().PrintGroupTolerance(m_filename);
+  }
+};
+
+class cActionPrintGroupMTTolerance : public cAction 
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintGroupMTTolerance(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "groupMTtolerance.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"groupMTtolerance.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintGroupMTTolerance(m_filename);
   }
 };
 
@@ -3356,7 +3376,10 @@ public:
         for (int i = 0; i < worldx; i++) {
           cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
           int target = -99;
-          if (cell.HasAvatar()) target = cell.GetRandAvatar()->GetForageTarget();
+          if (cell.HasAV()) {
+            if (cell.HasPredAV()) target = cell.GetRandPredAV()->GetForageTarget();
+            else target = cell.GetRandPreyAV()->GetForageTarget();
+          } 
           fp << target << " ";
         }
         fp << endl;
@@ -4436,6 +4459,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  action_lib->Register<cActionPrintParasiteMigrationCounts>("PrintParasiteMigrationCounts"); // MIGRATION_MATRIX
+  action_lib->Register<cActionPrintOffspringMigrationCounts>("PrintOffspringMigrationCounts"); // MIGRATION_MATRIX
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
   action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");
@@ -4601,6 +4626,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
   action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
   action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); 
+  action_lib->Register<cActionPrintGroupMTTolerance>("PrintGroupMTTolerance"); 
   action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");

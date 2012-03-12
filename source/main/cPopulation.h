@@ -342,13 +342,13 @@ public:
   // -------- Tolerance support --------
   int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  double CalcGroupOddsImmigrants(int group_id, int mating_type);
+  double CalcGroupOddsImmigrants(int group_id, int mating_type  = -1);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
   double CalcGroupOddsOffspring(int group_id);
   double CalcGroupOddsOffspring(cOrganism* parent);
   bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
-  double CalcGroupAveImmigrants(int group_id);
-  double CalcGroupSDevImmigrants(int group_id);
+  double CalcGroupAveImmigrants(int group_id, int mating_type = -1);
+  double CalcGroupSDevImmigrants(int group_id, int mating_type = -1);
   double CalcGroupAveOwn(int group_id);
   double CalcGroupSDevOwn(int group_id);
   double CalcGroupAveOthers(int group_id);

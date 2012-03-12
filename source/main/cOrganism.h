@@ -78,6 +78,8 @@ private:
   cLineage* m_lineage;                    // A lineage descriptor... (different from label)
   int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
 
+  int m_org_list_index;
+  
   // Other stats
   Genome m_offspring_genome;              // Child genome, while under construction.
 
@@ -207,10 +209,11 @@ public:
 
   const cStateGrid& GetStateGrid() const;
 
-
   double GetVitality() const;
 
-
+  inline void SetOrgIndex(int index) { m_org_list_index = index; }
+  inline int GetOrgIndex() { return m_org_list_index; }
+  
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
   int GetID() { return m_id; }
@@ -225,27 +228,14 @@ public:
   int GetCellDataTerritory() { return m_interface->GetCellDataTerritory(); }
   int GetCellDataForagerType() { return m_interface->GetCellDataForagerType(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
-  void SetAVCellData(const int data, const int org_id) { m_interface->SetAVCellData(data, org_id); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
   int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
   int GetFacedCellDataTerritory() { return m_interface->GetFacedCellDataTerritory(); }
-  int GetFacedAVData() { return m_interface->GetFacedAVData(); }
-  int GetFacedAVDataOrgID() { return m_interface->GetFacedAVDataOrgID(); }
-  int GetFacedAVDataUpdate() { return m_interface->GetFacedAVDataUpdate(); }
-  int GetFacedAVDataTerritory() { return m_interface->GetFacedAVDataTerritory(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
-  tArray<cOrganism*> GetAVNeighbors() { return m_interface->GetAVNeighbors(); }
-  cOrganism* GetAVRandNeighbor() { return m_interface->GetAVRandNeighbor(); }
-  cOrganism* GetAVRandNeighborPrey() { return m_interface->GetAVRandNeighborPrey(); }
-  cOrganism* GetAVRandNeighborPred() { return m_interface->GetAVRandNeighborPred(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
-  bool HasAVNeighbor() { return m_interface->HasAVNeighbor(); }
-  bool HasAVNeighborPrey() { return m_interface->HasAVNeighborPrey(); }
-  bool HasAVNeighborPred() { return m_interface->HasAVNeighborPred(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
-  int GetAVNeighborhoodSize() { return m_interface->GetAVNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
   int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the faced cell of this organism.
   int GetFacedDir() { assert(m_interface); return m_interface->GetFacedDir(); }  // Returns the human interpretable facing of this org.
@@ -620,14 +610,16 @@ public:
   bool HasSetFT() const { return m_has_set_ft; }
   void RecordFTSet() { m_has_set_ft = true; }
   bool IsTeacher() const { return m_teach; }
-  void Teach(bool m_teach);
+  void Teach(bool teach) { m_teach = teach; }
   bool HadParentTeacher() const { return m_parent_teacher; }
   void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
   void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
   int GetParentFT() const { return m_parent_ft; } 
-  void CopyParentFT() { SetForageTarget(m_parent_ft); }
+  void CopyParentFT();
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
+  void ChangeBeg() { m_beggar = !m_beggar; }
+  bool IsBeggar() { return m_beggar; }
   
 protected:
   // The organism's own raw materials
@@ -663,6 +655,7 @@ protected:
   bool m_parent_teacher;
   int m_parent_ft;
   int m_parent_group;
+  bool m_beggar;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
@@ -707,15 +700,16 @@ private:
 	// -------- Avatar support --------
 public:
   bool MoveAV(cAvidaContext& ctx);
-  int GetAvatarCellID() { return m_interface->GetAvatarCellID(); }
-  void SetAvatarCellID(int av_cell_id) { m_interface->SetAvatarCellID(av_cell_id); }
-  void SetAvatarFacing(int facing) { m_interface->SetAvatarFacing(facing); }
-  void SetAvatarFacedCell(int av_cell_id) { m_interface->SetAvatarFacedCell(av_cell_id); }
-  int GetAvatarFacedCellID() { return m_interface->GetAvatarFacedCellID(); }
-  int GetAVFacedDir() { assert(m_interface); return m_interface->GetAVFacedDir(); }  
+  inline void SetAVInIndex(int index) { m_av_in_index = index; }
+  inline int GetAVInIndex() { return m_av_in_index; }
+  inline void SetAVOutIndex(int index) { m_av_out_index = index; }
+  inline int GetAVOutIndex() { return m_av_out_index; }
     
 	// -------- Internal Support Methods --------
 private:
+  int m_av_in_index;
+  int m_av_out_index;
+  
   void initialize(cAvidaContext& ctx);
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */

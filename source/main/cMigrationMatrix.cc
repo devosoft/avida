@@ -10,6 +10,8 @@
 
 #include "avida/core/Feedback.h"
 #include "cInitFile.h"
+#include "cString.h"
+#include "cStringUtil.h"
 
 cMigrationMatrix::cMigrationMatrix(){
     
@@ -19,78 +21,32 @@ cMigrationMatrix::~cMigrationMatrix(){
     
 }
 
-bool cMigrationMatrix::Load(const int num_demes, const cString& filename, const cString& working_dir, Feedback& feedback)
-{
-    m_migration_matrix.ResizeClear(0);
-    m_row_connectivity_sums.ResizeClear(0);
-    cInitFile infile(filename, working_dir);
-    if (!infile.WasOpened()) {
-        for (int i = 0; i < infile.GetFeedback().GetNumMessages(); i++) {
-            switch (infile.GetFeedback().GetMessageType(i)) {
-                case cUserFeedback::UF_ERROR:
-                    feedback.Error(infile.GetFeedback().GetMessage(i));
-                    break;
-                case cUserFeedback::UF_WARNING:
-                    feedback.Warning(infile.GetFeedback().GetMessage(i));
-                    break;
-                default:
-                    feedback.Notify(infile.GetFeedback().GetMessage(i));
-            }
-        }
-        feedback.Error("failed to load migration matrix '%s'", (const char*)filename);
-        return false;
-    }
-    
-    tSmartArray<double> f_temp_row;
-    for (int line_id = 0; line_id < infile.GetNumLines(); line_id++) {
-        // Load the next line from the file.
-        f_temp_row.ResizeClear(0);
-        cString f_curr_line = infile.GetLine(line_id);
-        double f_row_sum = 0.0;
-        while(!f_curr_line.IsEmpty()){
-            double val = f_curr_line.Pop(',').AsDouble();
-            if(val < 0.0){
-                feedback.Error("Cannot have a negative connection in connection matrix");
-                return false;
-            }
-            f_row_sum += val;
-            f_temp_row.Push(val);
-        }
-        if(f_row_sum == 0.0){
-            feedback.Error("Cannot have a row sum of 0.0 in connection matrix");
-            return false;
-        }
-        else{
-            m_row_connectivity_sums.Push(f_row_sum);
-        }
-        m_migration_matrix.Push(f_temp_row);
-    }
-    
-    if(num_demes != m_migration_matrix.GetSize()){
-        feedback.Error("The number of demes in the migration matrix (%i) did not match the NUM_DEMES (%i) parameter in avida.cfg.",m_migration_matrix.GetSize(),num_demes);
-        return false;
-    }
-    for(int f_row = 0; f_row < m_migration_matrix.GetSize(); f_row++){
-        if(m_migration_matrix[f_row].GetSize() != m_migration_matrix.GetSize()){
-            feedback.Error("The number of columns in row %i did not match total number of demes",f_row);
-            return false;
-        }
-        if(m_migration_matrix[f_row].GetSize() != num_demes){
-            feedback.Error("The number of demes in the migration matrix (%i) did not match the NUM_DEMES (%i) parameter in avida.cfg.",m_migration_matrix.GetSize(),num_demes);
-            return false;
-        }
-    }
-        	
+bool cMigrationMatrix::AlterConnectionWeight(const int from_deme_id, const int to_deme_id, const double alter_amount){
+  m_migration_matrix[from_deme_id][to_deme_id] += alter_amount;
+  m_row_connectivity_sums[from_deme_id] += alter_amount;
+  double row_sum = 0.0;
+  for(int col = 0; col < m_migration_matrix[from_deme_id].GetSize();col++){
+    row_sum += m_migration_matrix[from_deme_id][col];
+  }
+  if(m_migration_matrix[from_deme_id][to_deme_id] < 0.0 || row_sum <= 0.0){
+    return false;
+  }
+  else
     return true;
-}
+};
 
-int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id,cRandom& p_rng){
+int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id,cRandom& p_rng,bool p_is_parasite_migration){
     assert(0 <= from_deme_id && from_deme_id < m_migration_matrix.GetSize());
     double row_range_sum = 0.0;
     double rand_dbl_value_in_range = p_rng.GetDouble(m_row_connectivity_sums[from_deme_id]);
     for(int col = 0; col < m_migration_matrix[from_deme_id].GetSize(); col++){
         rand_dbl_value_in_range -= m_migration_matrix[from_deme_id][col];
         if(rand_dbl_value_in_range <= 0.0){
+            if(p_is_parasite_migration)
+              m_parasite_migration_counts[from_deme_id][col] += 1;
+            else
+              m_offspring_migration_counts[from_deme_id][col] += 1;
+          
             return col;
         }
     }    
@@ -98,19 +54,107 @@ int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id,cRandom& p_r
     assert(false);
 };
 
-bool cMigrationMatrix::AlterConnectionWeight(const int from_deme_id, const int to_deme_id, const double alter_amount){
-    m_migration_matrix[from_deme_id][to_deme_id] += alter_amount;
-    m_row_connectivity_sums[from_deme_id] += alter_amount;
-    double row_sum = 0.0;
-    for(int col = 0; col < m_migration_matrix[from_deme_id].GetSize();col++){
-        row_sum += m_migration_matrix[from_deme_id][col];
+cString cMigrationMatrix::GetParasiteCountMatrixChars(){
+  cString f_temp_string;
+  for(int row = 0; row < m_parasite_migration_counts.GetSize(); row++){
+    for(int col = 0; col < m_parasite_migration_counts[row].GetSize(); col++){
+      if((col+1) >= m_parasite_migration_counts[row].GetSize())
+        f_temp_string += cStringUtil::Stringf("%d", m_parasite_migration_counts[row][col]);
+      else
+        f_temp_string += (cStringUtil::Stringf("%d", m_parasite_migration_counts[row][col]) + ",");
     }
-    if(m_migration_matrix[from_deme_id][to_deme_id] < 0.0 || row_sum <= 0.0){
-        return false;
-    }
-    else
-        return true;
+    f_temp_string += "\n";
+  }
+  return f_temp_string;
 };
+
+cString cMigrationMatrix::GetOffspringCountMatrixChars(){
+  cString f_temp_string;
+  for(int row = 0; row < m_offspring_migration_counts.GetSize(); row++){
+    for(int col = 0; col < m_offspring_migration_counts[row].GetSize(); col++){
+      if((col+1) >= m_offspring_migration_counts[row].GetSize())
+        f_temp_string += cStringUtil::Stringf("%d", m_offspring_migration_counts[row][col]);
+      else
+        f_temp_string += (cStringUtil::Stringf("%d", m_offspring_migration_counts[row][col]) + ",");
+    }
+    f_temp_string += "\n";
+  }
+  return f_temp_string;  
+};
+
+bool cMigrationMatrix::Load(const int num_demes, const cString& filename, const cString& working_dir,bool p_count_parasites, bool p_count_offspring, bool p_is_reload, Feedback& feedback){
+  m_migration_matrix.ResizeClear(0);
+  m_row_connectivity_sums.ResizeClear(0);
+  cInitFile infile(filename, working_dir);
+  if (!infile.WasOpened()) {
+    for (int i = 0; i < infile.GetFeedback().GetNumMessages(); i++) {
+      switch (infile.GetFeedback().GetMessageType(i)) {
+        case cUserFeedback::UF_ERROR:
+          feedback.Error(infile.GetFeedback().GetMessage(i));
+          break;
+        case cUserFeedback::UF_WARNING:
+          feedback.Warning(infile.GetFeedback().GetMessage(i));
+          break;
+        default:
+          feedback.Notify(infile.GetFeedback().GetMessage(i));
+      }
+    }
+    feedback.Error("failed to load migration matrix '%s'", (const char*)filename);
+    return false;
+  }
+  
+  tSmartArray<double> f_temp_row;
+  for (int line_id = 0; line_id < infile.GetNumLines(); line_id++) {
+    // Load the next line from the file.
+    f_temp_row.ResizeClear(0);
+    cString f_curr_line = infile.GetLine(line_id);
+    double f_row_sum = 0.0;
+    while(!f_curr_line.IsEmpty()){
+      double val = f_curr_line.Pop(',').AsDouble();
+      if(val < 0.0){
+        feedback.Error("Cannot have a negative connection in connection matrix");
+        return false;
+      }
+      f_row_sum += val;
+      f_temp_row.Push(val);
+    }
+    if(f_row_sum == 0.0){
+      feedback.Error("Cannot have a row sum of 0.0 in connection matrix");
+      return false;
+    }
+    else{
+      m_row_connectivity_sums.Push(f_row_sum);
+    }
+    m_migration_matrix.Push(f_temp_row);
+  }
+  
+  if(num_demes != m_migration_matrix.GetSize()){
+    feedback.Error("The number of demes in the migration matrix (%i) did not match the NUM_DEMES (%i) parameter in avida.cfg.",m_migration_matrix.GetSize(),num_demes);
+    return false;
+  }
+  for(int f_row = 0; f_row < m_migration_matrix.GetSize(); f_row++){
+    if(m_migration_matrix[f_row].GetSize() != m_migration_matrix.GetSize()){
+      feedback.Error("The number of columns in row %i did not match total number of demes",f_row);
+      return false;
+    }
+    if(m_migration_matrix[f_row].GetSize() != num_demes){
+      feedback.Error("The number of demes in the migration matrix (%i) did not match the NUM_DEMES (%i) parameter in avida.cfg.",m_migration_matrix.GetSize(),num_demes);
+      return false;
+    }
+  }
+  
+  if(p_count_parasites && !p_is_reload){
+    m_parasite_migration_counts.Resize(num_demes, tSmartArray<int>(num_demes,0));
+    ResetParasiteCounts();
+  }
+  
+  if(p_count_offspring && !p_is_reload){
+    m_offspring_migration_counts.Resize(num_demes, tSmartArray<int>(num_demes,0));
+    ResetOffspringCounts();
+  }
+  
+  return true;
+}
 
 void cMigrationMatrix::Print(){
     for(int row = 0; row < m_migration_matrix.GetSize(); row++){
@@ -121,4 +165,20 @@ void cMigrationMatrix::Print(){
         }
         std::cout << std::endl;
     }
+};
+
+void cMigrationMatrix::ResetParasiteCounts(){
+  for(int row = 0; row < m_parasite_migration_counts.GetSize(); row++){
+    for(int col = 0; col < m_parasite_migration_counts[row].GetSize(); col++){
+      m_parasite_migration_counts[row][col] = 0;
+    }
+  }
+};
+
+void cMigrationMatrix::ResetOffspringCounts(){
+  for(int row = 0; row < m_offspring_migration_counts.GetSize(); row++){
+    for(int col = 0; col < m_offspring_migration_counts[row].GetSize(); col++){
+      m_offspring_migration_counts[row][col] = 0;
+    }
+  }
 };
