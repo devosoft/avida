@@ -59,6 +59,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_interface(NULL)
 , m_lineage_label(-1)
 , m_lineage(NULL)
+, m_org_list_index(-1)
 , m_input_pointer(0)
 , m_input_buf(world->GetEnvironment().GetInputSize())
 , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -96,6 +97,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
 , m_beggar(false)
 , m_num_point_mut(0)
+, m_av_in_index(-1)
+, m_av_out_index(-1)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
@@ -733,8 +736,8 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   	m_interface->UpdateResources(ctx, GetRBins());
   }
   
-	// Make sure the group composition is updated.
-	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
+  // Make sure the group composition is updated.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
 }
 
 
@@ -1290,8 +1293,16 @@ void cOrganism::SetForageTarget(int forage_target) {
   // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }
 
-void cOrganism::Teach(bool teach) {
-  m_teach = teach;
+void cOrganism::CopyParentFT() {
+  bool copy_ft = true;
+  // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
+  // switch ft to pred, and then copy parent to become prey again.
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
+    if (m_parent_ft != -2 && m_forage_target < -1) {
+      copy_ft = false;
+    }
+  }
+  if (copy_ft) SetForageTarget(m_parent_ft); 
 }
 
 /*! Called when an organism receives a flash from a neighbor. */
@@ -1583,13 +1594,13 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   assert(m_interface);
   if (m_is_dead) return false;
   
-  int facing = m_interface->GetAVFacing();
-  
   // Actually perform the move
   if (m_interface->MoveAV(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {   
+      int facing = m_interface->GetAVFacing();
+
       if (facing == 0)
         m_northerly = m_northerly - 1;                  // N
       else if (facing == 1) {

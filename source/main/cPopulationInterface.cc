@@ -224,26 +224,13 @@ void cPopulationInterface::Rotate(int direction)
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
 	
-  if (direction >= 0) cell.ConnectionList().CircNext();
-  else cell.ConnectionList().CircPrev();
-
-  if (m_world->GetConfig().USE_AVATARS.Get()) {//@JJB**
-    cPopulationCell & av_cell = m_world->GetPopulation().GetCell(m_avatars[0].av_cell_id);
-    assert(av_cell.HasAV());
-    int org_facing = av_cell.GetFacedDir();
-    // rotate the avatar cell to match the direction of the true org cell
-    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
-      av_cell.ConnectionList().CircNext();
-      if (av_cell.GetFacedDir() == cell.GetFacedDir()) break;
-    }
-    // save the avatar facing and faced cell data for this org...we cannot rely on av_cell facing after this b/c other avatars could rotate same cell
-    SetAVFacing(cell.GetFacedDir());
-    
-    // now put the avatar cell back where it belongs in case there is a real org in the avatar cell
-    for (int i = 0; i < av_cell.ConnectionList().GetSize(); i++) {
-      av_cell.ConnectionList().CircNext();
-      if (av_cell.GetFacedDir() == org_facing) break;
-    }    
+  if (m_world->GetConfig().USE_AVATARS.Get()) {
+    if (direction >= 0) RotateAV(1);
+    else RotateAV(-1);
+  }
+  else {
+    if (direction >= 0) cell.ConnectionList().CircNext();
+    else cell.ConnectionList().CircPrev();
   }
 }
 
@@ -524,7 +511,6 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, int cellid) {
   return SendMessage(msg, cell);
 }
 
-
 /*! Send a message to the faced organism, failing if this cell does not have 
  neighbors or if the cell currently faced is not occupied.
  */
@@ -536,7 +522,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
     //assert(m_avatars);
     bool message_sent = false;
     for (int i = 0; i < GetNumAV(); i++) {
-      if (m_avatars[i].output) {
+      if (m_avatars[i].av_output) {
         message_sent = (message_sent || SendMessage(msg, m_avatars[i].av_cell_id));
       }
     }
@@ -1551,7 +1537,7 @@ bool cPopulationInterface::FacedHasPreyAV(int av_num)
 void cPopulationInterface::AddAV(int av_cell_id, int av_facing, bool input, bool output)
 {
   // Add new avatar to m_avatars
-  io_avatar tmpAV(av_cell_id, av_facing, -1, input, output);
+  sIO_avatar tmpAV(av_cell_id, av_facing, -1, input, output);
   m_avatars.Push(tmpAV);
 
   // If this is an input avatar add to the target cell
@@ -1573,13 +1559,13 @@ void cPopulationInterface::AddPredPreyAV(int av_cell_id)
 {
   // Add predator (saved as input avatar)
   if (GetOrganism()->GetForageTarget() == -2) {
-    io_avatar predAV(av_cell_id, GetFacedDir(), -1, true, false);
+    sIO_avatar predAV(av_cell_id, GetFacedDir(), -1, true, false);
     m_avatars.Push(predAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddInputAV(GetOrganism());
   }
   // Add prey (saved as output avatar)
   else {
-    io_avatar preyAV(av_cell_id, GetFacedDir(), -1, false, true);
+    sIO_avatar preyAV(av_cell_id, GetFacedDir(), -1, false, true);
     m_avatars.Push(preyAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddOutputAV(GetOrganism());
   }
@@ -1593,18 +1579,18 @@ void cPopulationInterface::SwitchPredPrey(int av_num)
   // If the avatar exists..
   if (av_num < GetNumAV()) {
     // Is a predator, switching to a prey (input to output)
-    if (m_avatars[av_num].input) {
+    if (m_avatars[av_num].av_input) {
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveInputAV(GetOrganism());
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).AddOutputAV(GetOrganism());
-      m_avatars[av_num].input = false;
-      m_avatars[av_num].output = true;
+      m_avatars[av_num].av_input = false;
+      m_avatars[av_num].av_output = true;
     }
     // Is prey, switching to a predator (output to intput)
-    if (m_avatars[av_num].output) {
+    else if (m_avatars[av_num].av_output) {
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveOutputAV(GetOrganism());
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).AddInputAV(GetOrganism());
-      m_avatars[av_num].output = false;
-      m_avatars[av_num].input = true;
+      m_avatars[av_num].av_output = false;
+      m_avatars[av_num].av_input = true;
     }
   }
 }
@@ -1614,15 +1600,15 @@ void cPopulationInterface::RemoveAllAV()
 {
   // Cycle through removing all avatars
   for (int i = 0; i < GetNumAV(); i++) {
-    io_avatar tmpAV = m_avatars.Pop();
+    sIO_avatar tmpAV = m_avatars.Pop();
     // Check that avatar is actually in a cell
     if (tmpAV.av_cell_id > 0) {
       // If input avatar remove from the cell
-      if (tmpAV.input) {
+      if (tmpAV.av_input) {
         m_world->GetPopulation().GetCell(tmpAV.av_cell_id).RemoveInputAV(GetOrganism());
       }
       // If output avatar remove from the cell
-      if (tmpAV.output) {
+      if (tmpAV.av_output) {
         m_world->GetPopulation().GetCell(tmpAV.av_cell_id).RemoveOutputAV(GetOrganism());
       }
     }
@@ -1762,20 +1748,20 @@ bool cPopulationInterface::SetAVCellID(int av_cell_id, int av_num)
 
     // If the avatar was previously in another cell remove it
     if (m_avatars[av_num].av_cell_id > -1) {
-      if (m_avatars[av_num].input) {
+      if (m_avatars[av_num].av_input) {
         m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveInputAV(GetOrganism());
       }
-      if (m_avatars[av_num].output) {
+      if (m_avatars[av_num].av_output) {
         m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveOutputAV(GetOrganism());
       }
     }
 
     // If it is an input avatar, add to the new cell
-    if (m_avatars[av_num].input) {
+    if (m_avatars[av_num].av_input) {
       m_world->GetPopulation().GetCell(av_cell_id).AddInputAV(GetOrganism());
     }
     // If it is an output avatar, add to the new cell
-    if (m_avatars[av_num].output) {
+    if (m_avatars[av_num].av_output) {
       m_world->GetPopulation().GetCell(av_cell_id).AddOutputAV(GetOrganism());
     }
 
@@ -1862,16 +1848,16 @@ void cPopulationInterface::SetAVCellData(const int newData, const int org_id, in
 bool cPopulationInterface::MoveAV(cAvidaContext& ctx, int av_num)
 {
   // If the avatar exists..
+  bool success = false;
   if (av_num < GetNumAV()) {
     // Move the avatar into the faced cell
     int src_id = m_avatars[av_num].av_cell_id;
     int dest_id = m_avatars[av_num].av_faced_cell;
     int true_cell = m_cell_id;
-    if (m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
-      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
-    }
+    success = m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell);
+    if (success) SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
   }
-  return false;
+  return success;
 }
 
 // Rotate the avatar by input increment, then set the new faced cell
@@ -1887,9 +1873,7 @@ bool cPopulationInterface::RotateAV(int increment, int av_num)
       increment = -increment;
     }
     // Adjust facing by increment
-    m_avatars[av_num].av_facing = (m_avatars[av_num].av_facing + increment + 8) % 8;
-    // Set the new faced cell id
-    SetAVFacedCellID(av_num);
+    SetAVFacing((m_avatars[av_num].av_facing + increment + 8) % 8);
     return true;
   }
   return false;

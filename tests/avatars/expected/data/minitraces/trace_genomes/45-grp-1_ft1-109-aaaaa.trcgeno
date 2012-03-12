@@ -1,21 +1,18 @@
-# Fri Mar  9 09:04:41 2012
-# Filename........: archive/ft1_grp-1_110-aaaac.org
-# Update Output...: 750
+# Sat Mar 10 13:21:12 2012
+# Filename........: minitraces/trace_genomes/45-grp-1_ft1-109-aaaaa.trcgeno
+# Update Output...: 501
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 110.000000
+# Merit...........: 109.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 110
-# Copied Size.....: 110
-# Executed Size...: 110
-# Last Birth Group ID........: -1
-# Last Birth Forager Type....: 1
-# Last Birth Cell............: 615
+# Genome Size.....: 109
+# Copied Size.....: 109
+# Executed Size...: 109
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -47,17 +44,6 @@ nop-C
 nop-C
 IO
 nop-C
-if-not-0
-nop-C
-move
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-IO
-nop-C
 nop-C
 nop-C
 nop-C
@@ -67,26 +53,6 @@ nop-C
 nop-C
 nop-C
 IO
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-IO
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-if-not-0
 nop-C
 nop-C
 nop-C
@@ -133,7 +99,37 @@ nop-C
 nop-C
 nop-C
 nop-C
-nop-X
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
 nop-C
 nop-C
 IO

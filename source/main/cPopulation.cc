@@ -6654,19 +6654,17 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
 void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
+  org->SetOrgIndex(live_org_list.GetSize()-1);
 }
 
 // Remove an organism from live org list  
 void  cPopulation::RemoveLiveOrg(cOrganism* org)
 {
-  for (int i = 0; i < live_org_list.GetSize(); i++) {
-    if (live_org_list[i] == org) {
-      unsigned int last = live_org_list.GetSize() - 1;
-      live_org_list.Swap(i, last);
-      live_org_list.Pop();
-      break;
-    }
-  }
+  unsigned int last = live_org_list.GetSize() - 1;
+  cOrganism* exist_org = live_org_list[last];
+  exist_org->SetOrgIndex(org->GetOrgIndex());
+  live_org_list.Swap(org->GetOrgIndex(), last);
+  live_org_list.Pop();
 }
 
 
@@ -7192,26 +7190,52 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
 }
 
 // Calculates the average for intra-group tolerance to immigrants
-double cPopulation::CalcGroupAveImmigrants(int group_id)
+double cPopulation::CalcGroupAveImmigrants(int group_id, int mating_type)
 {
   cDoubleSum immigrant_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
-    immigrant_tolerance.Add(single_member_tolerance);
+    bool count_org = false;
+    if (mating_type == -1) count_org = true;
+    else if (mating_type == 0 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+      count_org = true;
+    }
+    else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+      count_org = true;
+    }
+    else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+      count_org = true;
+    }
+    if (count_org) {
+      single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+      immigrant_tolerance.Add(single_member_tolerance);
+    }
   }
   double aveimmigrants = immigrant_tolerance.Average();
   return aveimmigrants;
 }
 
 // Calculates the standard deviation for group tolerance to immigrants
-double cPopulation::CalcGroupSDevImmigrants(int group_id)
+double cPopulation::CalcGroupSDevImmigrants(int group_id, int mating_type)
 {
   cDoubleSum immigrant_tolerance;
   int single_member_tolerance = 0;
   for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
-    immigrant_tolerance.Add(single_member_tolerance);
+    bool count_org = false;
+    if (mating_type == -1) count_org = true;
+    else if (mating_type == 0 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+      count_org = true;
+    }
+    else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+      count_org = true;
+    }
+    else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+      count_org = true;
+    }
+    if (count_org) {
+      single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+      immigrant_tolerance.Add(single_member_tolerance);
+    }
   }
   double sdevimmigrants = immigrant_tolerance.StdDeviation();
   return sdevimmigrants;
