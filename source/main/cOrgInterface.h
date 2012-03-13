@@ -151,6 +151,9 @@ public:
   virtual bool NetworkRotate(int x) = 0;
   virtual bool NetworkSelect(int x) = 0;
 
+  virtual void DoDemeInput(int value) = 0;
+  virtual void DoDemeOutput(cAvidaContext& ctx, int value) = 0;
+
   virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
   virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
   virtual void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) = 0;

@@ -171,6 +171,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("output", &cHardwareExperimental::Inst_TaskOutput, nInstFlag::STALL, "Output ?BX?"),
     tInstLibEntry<tMethod>("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, nInstFlag::STALL, "Output ?BX?"),
     tInstLibEntry<tMethod>("output-expire", &cHardwareExperimental::Inst_TaskOutputExpire, nInstFlag::STALL, "Output ?BX?, as long as the output has not yet expired"),
+    tInstLibEntry<tMethod>("deme-IO", &cHardwareExperimental::Inst_DemeIO, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
@@ -2019,6 +2020,24 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
   
+  return true;
+}
+
+bool cHardwareExperimental::Inst_DemeIO(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+
+  // Do deme output..
+  m_organism->GetOrgInterface().DoDemeOutput(ctx, reg.value);
+  //m_last_output = m_cycle_count; //**
+
+  // Do deme input..
+  //const int value_in = m_organism->GetNextInput();
+  int value_in = m_world->GetRandom().GetInt(2000000);
+  setInternalValue(reg_used, value_in, true);
+  m_organism->GetOrgInterface().DoDemeInput(value_in);
+
   return true;
 }
 

@@ -1194,7 +1194,6 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   return true;
 }
 
-
 bool cEnvironment::LoadSetActive(cString desc, Feedback& feedback)
 {
   cString item_type = desc.PopWord();
@@ -1225,6 +1224,34 @@ bool cEnvironment::LoadSetActive(cString desc, Feedback& feedback)
   return true;
 }
 
+// @JJB**
+bool cEnvironment::LoadIOGrid(cString desc, Feedback& feedback)
+{
+  if (desc.GetSize() == 0) {
+    feedback.Warning("DEME_IO_GRID line with no variables");
+    return false;
+  }
+
+  while (desc.GetSize() > 0) {
+    cString cur_IO = desc.PopWord();
+    const cString inputOutput = cur_IO.Pop(':');
+
+    cString cell_list_str = cur_IO.Pop(':');
+    tArray<int> cell_list = cStringUtil::ReturnArray(cell_list_str);
+
+    if (inputOutput == "Input") {
+      for (int i = 0; i < cell_list.GetSize(); i++) {
+        m_world->GetPopulation().GetCell(cell_list[i]).SetCanInput(true);
+      }
+    }
+    else if (inputOutput == "Output") {
+      for (int i = 0; i < cell_list.GetSize(); i++) {
+        m_world->GetPopulation().GetCell(cell_list[i]).SetCanOutput(true);
+      }
+    }
+  }
+}
+
 bool cEnvironment::LoadLine(cString line, Feedback& feedback)
 
 /* Routine to read in a line from the enviroment file and hand that line
@@ -1241,6 +1268,7 @@ bool cEnvironment::LoadLine(cString line, Feedback& feedback)
   else if (type == "GRID") load_ok = LoadStateGrid(line, feedback);
   else if (type == "DYNAMIC_RESOURCE") load_ok = LoadDynamicResource(line, feedback); //JW
   else if (type == "GRADIENT_RESOURCE") load_ok = LoadGradientResource(line, feedback); 
+  else if (type == "DEME_IO_GRID") load_ok = LoadIOGrid(line, feedback); // @JJB**
   else {
     feedback.Error("unknown environment keyword '%s'", (const char*)type);
     return false;
@@ -1366,8 +1394,8 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
   //flag to skip processing of parasite tasks
   bool skipProcessing = false;
   
-	if (is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get())
-		skipProcessing = true;
+  if (is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get())
+    skipProcessing = true;
 
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
@@ -1389,7 +1417,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
     const bool on_divide = taskctx.GetOnDivide();
-        
+
     // Examine requisites on this reaction
     if (TestRequisites(taskctx, cur_reaction, task_cnt, reaction_count, on_divide) == false) { 
       if (!skipProcessing){
@@ -1461,7 +1489,7 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
   // (unless this is a check upon dividing, in which case we want the default to be to not check the task
   // and only if the requisite has been added to check it
   if (num_reqs == 0) {
-	  return !on_divide;
+    return !on_divide;
   }
 
   tLWConstListIterator<cReactionRequisite> req_it(req_list);
@@ -1470,14 +1498,27 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     const cReactionRequisite* cur_req = req_it.Next();
     bool satisfied = true;
     
-    // Have all reactions been met?     
-    const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); 
-    tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
-    while (reaction_it.Next() != NULL) {
-      int react_id = reaction_it.Get()->GetID();
-      if (reaction_count[react_id] == 0 && stolen_reactions[react_id] == 0) {   
-        satisfied = false;
-        break;
+    if (taskctx.GetOrganism()) {
+      // Have all reactions been met?
+      const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); 
+      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
+      while (reaction_it.Next() != NULL) {
+        int react_id = reaction_it.Get()->GetID();
+        if (reaction_count[react_id] == 0 && stolen_reactions[react_id] == 0) {   
+          satisfied = false;
+          break;
+        }
+      }
+    }
+    // If being called as a deme reaction..
+    else {
+      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
+      while (reaction_it.Next() != NULL) {
+        int react_id = reaction_it.Get()->GetID();
+        if (reaction_count[react_id] == 0) {
+          satisfied = false;
+          break;
+        }
       }
     }
     

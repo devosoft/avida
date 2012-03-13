@@ -364,20 +364,20 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   int cell_id=GetCellID();
   if (cell_id_lists.GetSize())
   {
-	  for (int i=0; i<cell_id_lists.GetSize(); i++)
-	  {
-		  // if cell_id_lists have been set then we have to check if this cell is in the list
-		  if (cell_id_lists[i].GetSize()) {
-			  int j;
-			  for (j=0; j<cell_id_lists[i].GetSize(); j++)
-			  {
-				  if (cell_id==cell_id_lists[i][j])
-					  break;
-			  }
-			  if (j==cell_id_lists[i].GetSize())
-				  globalAndDeme_resource_count[i]=0;
-		  }
-	  }
+    for (int i=0; i<cell_id_lists.GetSize(); i++)
+    {
+      // if cell_id_lists have been set then we have to check if this cell is in the list
+      if (cell_id_lists[i].GetSize()) {
+        int j;
+        for (j=0; j<cell_id_lists[i].GetSize(); j++)
+        {
+          if (cell_id==cell_id_lists[i][j])
+            break;
+        }
+        if (j==cell_id_lists[i].GetSize())
+          globalAndDeme_resource_count[i]=0;
+      }
+    }
   }
   
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
@@ -398,10 +398,10 @@ void cOrganism::doOutput(cAvidaContext& ctx,
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
     double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-		m_interface->UpdateMerit(newMerit);
-		if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
-			GetPhenotype().SetToDie();
-		}
+    m_interface->UpdateMerit(newMerit);
+    if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
+      GetPhenotype().SetToDie();
+    }
   }
   m_interface->UpdateResources(ctx, global_res_change);
 

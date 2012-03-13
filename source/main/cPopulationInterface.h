@@ -176,6 +176,9 @@ public:
   //! Select a new network link.
   bool NetworkSelect(int x);
 
+  void DoDemeInput(int value);
+  void DoDemeOutput(cAvidaContext& ctx, int value);
+
   // -------- HGT support --------
 public:
   //! Container type for fragments used during HGT.

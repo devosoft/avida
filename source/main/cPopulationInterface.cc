@@ -884,6 +884,23 @@ bool cPopulationInterface::NetworkSelect(int x) {
 	return true;
 }
 
+
+// @JJB**
+void cPopulationInterface::DoDemeInput(int value)
+{
+  if (m_world->GetPopulation().GetCell(m_cell_id).GetCanInput()) {
+    GetDeme()->DoDemeInput(value);
+  }
+}
+
+void cPopulationInterface::DoDemeOutput(cAvidaContext& ctx, int value)
+{
+  if (m_world->GetPopulation().GetCell(m_cell_id).GetCanOutput()) {
+    GetDeme()->DoDemeOutput(ctx, value);
+  }
+}
+
+
 /*! Called when this individual is the donor organism during conjugation.
  
  This method causes this individual to "donate" a fragment of its own genome to
@@ -1889,6 +1906,7 @@ cOrganism* cPopulationInterface::GetRandFacedAV(int av_num)
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetRandAV();
   }
+  return NULL;
 }
 
 // Returns a random predator (input) avatar from the faced cell
@@ -1898,6 +1916,7 @@ cOrganism* cPopulationInterface::GetRandFacedPredAV(int av_num)
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetRandPredAV();
   }
+  return NULL;
 }
 
 // Returns a random prey (output) avatar from the faced cell
@@ -1907,6 +1926,7 @@ cOrganism* cPopulationInterface::GetRandFacedPreyAV(int av_num)
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetRandPreyAV();
   }
+  return NULL;
 }
 
 // Returns an array of all avatars in the organism's avatar's faced cell
@@ -1916,6 +1936,8 @@ tArray<cOrganism*> cPopulationInterface::GetFacedAVs(int av_num)
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellAVs();
   }
+  tArray<cOrganism*> null_array(0, NULL);
+  return null_array;
 }
 
 // Returns an array of all prey avatars in the organism's avatar's faced cell
@@ -1925,6 +1947,8 @@ tArray<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellAVs();
   }
+  tArray<cOrganism*> null_array(0, NULL);
+  return null_array;
 }
 
 // Returns the avatar's cell resources
@@ -1934,6 +1958,8 @@ const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx, i
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_cell_id, ctx);
   }
+  tArray<double> tmp_array(0, 0.0);
+  return tmp_array;
 }
 
 // Returns the avatar's faced cell's resources
@@ -1943,6 +1969,8 @@ const tArray<double>& cPopulationInterface::GetAVFacedResources(cAvidaContext& c
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_faced_cell, ctx);
   }
+  tArray<double> tmp_array(0, 0.0);
+  return tmp_array;
 }
 
 // Updates the avatar's cell resources

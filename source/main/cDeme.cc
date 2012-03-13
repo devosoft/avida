@@ -34,6 +34,8 @@
 #include "cOrgMessagePredicate.h"
 #include "cOrgMovementPredicate.h"
 #include "cDemePredicate.h"
+#include "cReactionResult.h" //@JJB**
+#include "cTaskState.h" //@JJB**
 
 #include <cmath>
 
@@ -61,7 +63,6 @@ cDeme::cDeme()
   , MSG_sendFailed(0)
   , MSG_dropped(0)
   , MSG_SuccessfullySent(0)
-  , numOrgsInterruted(0)
   , energyInjectedIntoOrganisms(0.0)
   , energyRemainingInDemeAtReplication(0.0)
   , total_energy_testament(0.0)
@@ -82,11 +83,119 @@ cDeme::cDeme()
   , suicides(0)
   , m_network(0)
   , m_num_reproductives(0)
+  , m_input_buf(0)
+  , m_output_buf(0)
+  , m_reaction_result(NULL) //@JJB**
 {
 }
 
-cDeme::~cDeme() {
-	if(m_network) delete m_network;
+cDeme::~cDeme()
+{
+  if(m_network) delete m_network;
+
+  // Remove Task States @JJB**
+  tArray<cTaskState*> task_states(0);
+  m_task_states.GetValues(task_states);
+  for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+  delete m_reaction_result;
+}
+
+cDeme& cDeme::operator=(const cDeme& in_deme) //@JJB**
+{
+  m_world                             = in_deme.m_world;
+  _id                                 = in_deme._id;
+  cell_ids                            = in_deme.cell_ids;
+  width                               = in_deme.width;
+  replicateDeme                       = in_deme.replicateDeme;
+  treatable                           = in_deme.treatable;
+  treatment_ages                      = in_deme.treatment_ages;
+  cur_birth_count                     = in_deme.cur_birth_count;
+  last_birth_count                    = in_deme.last_birth_count;
+  cur_org_count                       = in_deme.cur_org_count;
+  last_org_count                      = in_deme.last_org_count;
+  injected_count                      = in_deme.injected_count;
+  birth_count_perslot                 = in_deme.birth_count_perslot;
+  _age                                = in_deme._age;
+  generation                          = in_deme.generation;
+  total_org_energy                    = in_deme.total_org_energy;
+  time_used                           = in_deme.time_used;
+  gestation_time                      = in_deme.gestation_time;
+  cur_normalized_time_used            = in_deme.cur_normalized_time_used;
+  last_normalized_time_used           = in_deme.last_normalized_time_used;
+  MSG_sendFailed                      = in_deme.MSG_sendFailed;
+  MSG_dropped                         = in_deme.MSG_dropped;
+  MSG_SuccessfullySent                = in_deme.MSG_SuccessfullySent;
+  energyInjectedIntoOrganisms         = in_deme.energyInjectedIntoOrganisms;
+  energyRemainingInDemeAtReplication  = in_deme.energyRemainingInDemeAtReplication;
+  total_energy_testament              = in_deme.total_energy_testament;
+  eventsTotal                         = in_deme.eventsTotal;
+  eventsKilled                        = in_deme.eventsKilled;
+  eventsKilledThisSlot                = in_deme.eventsKilledThisSlot;
+  eventKillAttempts                   = in_deme.eventKillAttempts;
+  eventKillAttemptsThisSlot           = in_deme.eventKillAttemptsThisSlot;
+  consecutiveSuccessfulEventPeriods   = in_deme.consecutiveSuccessfulEventPeriods;
+  sleeping_count                      = in_deme.sleeping_count;
+  energyUsage                         = in_deme.energyUsage;
+  total_energy_donated                = in_deme.total_energy_donated;
+  total_energy_received               = in_deme.total_energy_received;
+  total_energy_applied                = in_deme.total_energy_applied;
+  cur_task_exe_count                  = in_deme.cur_task_exe_count;
+  cur_reaction_count                  = in_deme.cur_reaction_count;
+  last_task_exe_count                 = in_deme.last_task_exe_count;
+  last_reaction_count                 = in_deme.last_reaction_count;
+  cur_org_task_count                  = in_deme.cur_org_task_count;
+  cur_org_task_exe_count              = in_deme.cur_org_task_exe_count;
+  cur_org_reaction_count              = in_deme.cur_org_reaction_count;
+  last_org_task_count                 = in_deme.last_org_task_count;
+  last_org_task_exe_count             = in_deme.last_org_task_exe_count;
+  last_org_reaction_count             = in_deme.last_org_reaction_count;
+  avg_founder_generation              = in_deme.avg_founder_generation;
+  generations_per_lifetime            = in_deme.generations_per_lifetime;
+  _germline                           = in_deme._germline;
+  cell_events                         = in_deme.cell_events;
+  event_slot_end_points               = in_deme.event_slot_end_points;
+  m_germline_genotype_id              = in_deme.m_germline_genotype_id;
+  m_founder_genotype_ids              = in_deme.m_founder_genotype_ids;
+  m_founder_phenotypes                = in_deme.m_founder_phenotypes;
+  _current_merit                      = in_deme._current_merit;
+  _next_merit                         = in_deme._next_merit;
+  deme_pred_list                      = in_deme.deme_pred_list;
+  message_pred_list                   = in_deme.message_pred_list;
+  movement_pred_list                  = in_deme.movement_pred_list;
+  points                              = in_deme.points;
+  migrations_out                      = in_deme.migrations_out;
+  migrations_in                       = in_deme.migrations_in;
+  suicides                            = in_deme.suicides;
+//m_network                           = in_deme.m_network;
+  m_input_buf                         = in_deme.m_input_buf;
+  m_output_buf                        = in_deme.m_output_buf;
+//m_reaction_result                   = in_deme.m_reaction_result;
+  eff_task_count                      = in_deme.eff_task_count;
+  m_cur_task_count                    = in_deme.m_cur_task_count;
+  m_cur_reaction_count                = in_deme.m_cur_reaction_count;
+  cur_task_quality                    = in_deme.cur_task_quality;
+  cur_task_value                      = in_deme.cur_task_value;
+  cur_task_time                       = in_deme.cur_task_time;
+  last_task_count                     = in_deme.last_task_count;
+  cur_reaction_add_reward             = in_deme.cur_reaction_add_reward;
+  cur_bonus                           = in_deme.cur_bonus;
+  m_total_res_consumed                = in_deme.m_total_res_consumed;
+  m_switch_penalties                  = in_deme.m_switch_penalties;
+  m_shannon_matrix                    = in_deme.m_shannon_matrix;
+  m_num_active                        = in_deme.m_num_active;
+  m_num_reproductives                 = in_deme.m_num_reproductives;
+
+  tList<cTaskState*> hash_values;
+  tList<void*> hash_keys;
+  in_deme.m_task_states.AsLists(hash_keys, hash_values);
+  tListIterator<cTaskState*> vit(hash_values);
+  tListIterator<void*> kit(hash_keys);
+  while(vit.Next() && kit.Next()) {
+    cTaskState* new_ts = new cTaskState(**(vit.Get()));
+    m_task_states.Set(*(kit.Get()), new_ts);
+  }
+
+  return *this;
 }
 
 void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
@@ -99,9 +208,9 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   last_org_count = 0;
   birth_count_perslot = 0;
   m_world = world;
-  
-	replicateDeme = false;
-	
+
+  replicateDeme = false;
+
   _current_merit = 1.0;
   _next_merit = 1.0;
   
@@ -129,11 +238,28 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   last_org_task_exe_count.SetAll(0);
   last_org_reaction_count.ResizeClear(num_reactions);
   last_org_reaction_count.SetAll(0);
-	m_total_res_consumed = 0;
-	m_switch_penalties = 0;
-	m_num_active = 0;
+  m_total_res_consumed = 0;
+  m_switch_penalties = 0;
+  m_num_active = 0;
   m_num_reproductives = 0;
 
+  m_input_buf = tBuffer<int>(m_world->GetEnvironment().GetInputSize()); //@JJB**
+  m_output_buf = tBuffer<int>(m_world->GetEnvironment().GetOutputSize()); //@JJB**
+  eff_task_count.ResizeClear(num_tasks); //@JJB**
+  eff_task_count.SetAll(0);
+  m_cur_reaction_count.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
+  m_cur_reaction_count.SetAll(0);
+  cur_task_quality.ResizeClear(num_tasks); //@JJB**
+  cur_task_quality.SetAll(0.0);
+  cur_task_value.ResizeClear(num_tasks); //@JJB**
+  cur_task_value.SetAll(0.0);
+  cur_task_time.ResizeClear(num_tasks); //@JJB**
+  cur_task_time.SetAll(0.0);
+  last_task_count.ResizeClear(num_tasks); //@JJB**
+  last_task_count.SetAll(0);
+  cur_reaction_add_reward.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
+  cur_reaction_add_reward.SetAll(0.0);
+  cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
   
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
@@ -392,8 +518,22 @@ void cDeme::Reset(cAvidaContext& ctx, bool resetResources, double deme_energy)
   m_shannon_matrix.clear();
   m_num_reproductives = 0;
 
-  
-  numOrgsInterruted = 0;
+  m_input_buf.Clear(); //@JJB**
+  m_output_buf.Clear(); //@JJB**
+  eff_task_count.SetAll(0); //@JJB**
+  m_cur_reaction_count.SetAll(0); //@JJB**
+  cur_task_quality.SetAll(0.0); //@JJB**
+  cur_task_value.SetAll(0.0); //@JJB**
+  cur_task_time.SetAll(0.0); //@JJB**
+  last_task_count = eff_task_count; //@JJB**
+  cur_reaction_add_reward.SetAll(0.0); //@JJB**
+  cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
+
+  // Reset Task States
+  tArray<cTaskState*> task_states(0);
+  m_task_states.GetValues(task_states);
+  for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+  m_task_states.ClearAll();
   
   consecutiveSuccessfulEventPeriods = 0;
   
@@ -461,7 +601,7 @@ void cDeme::DivideReset(cAvidaContext& ctx, cDeme& parent_deme, bool resetResour
   
   last_org_count = parent_deme.GetLastOrgCount(); // Org count was updated upon KillAll()....
   last_birth_count = parent_deme.GetBirthCount();
-  
+
   Reset(ctx, resetResources, deme_energy);
 }
 
@@ -1098,6 +1238,102 @@ cDemeNetwork& cDeme::GetNetwork()
   return *m_network; 
 }
 
+//@JJB**
+void cDeme::DoDemeInput(int value)
+{
+  m_input_buf.Add(value);
+}
+
+//@JJB**
+void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
+{
+  m_output_buf.Add(value);
+  tList<tBuffer<int> > other_input_list;
+  tList<tBuffer<int> > other_output_list;
+  tSmartArray<int> ext_mem;
+
+  cTaskContext taskctx(NULL, m_input_buf, m_output_buf, other_input_list, other_output_list,
+                       ext_mem, false, NULL, this);
+
+  taskctx.SetTaskStates(&m_task_states);
+
+  const cEnvironment& env = m_world->GetEnvironment();
+  const int num_resources = env.GetResourceLib().GetSize();
+  const int num_tasks = env.GetNumTasks();
+  const int num_reactions = env.GetReactionLib().GetSize();
+
+  if (!m_reaction_result) m_reaction_result = new cReactionResult(num_resources, num_tasks, num_reactions);
+  cReactionResult& result = *m_reaction_result;
+
+  tArray<double> res_in;
+  tArray<double> rbins_in;
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, m_cur_reaction_count, res_in, rbins_in);
+
+  // If nothing was found, stop here
+  if (found == false) {
+    result.Invalidate();
+    return;
+  }
+
+  // Update records with the results..
+  // Start with updating task and reaction counters
+  for (int i = 0; i < num_tasks; i++) {
+    if (result.TaskDone(i) == true) {
+      eff_task_count[i]++;
+    }
+
+    if (result.TaskQuality(i) > 0) {
+      cur_task_quality[i] += result.TaskQuality(i);
+    }
+
+    const int cur_update_time = m_world->GetStats().GetUpdate();
+    cur_task_value[i] = result.TaskValue(i);
+    cur_task_time[i] = cur_update_time;
+  }
+
+  for (int i = 0; i < num_tasks; i++) {
+    if (result.TaskDone(i) && !last_task_count[i]) {
+      m_world->GetStats().AddNewTaskCount(i);
+      int prev_num_tasks = 0;
+      int cur_num_tasks = 0;
+      for (int j = 0; j < num_tasks; j++) {
+        if (last_task_count[j] > 0) prev_num_tasks++;
+        if (eff_task_count[j] > 0) cur_num_tasks++;
+      }
+      m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
+    }
+  }
+
+  for (int i = 0; i < num_reactions; i++) {
+    cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
+    if (result.ReactionTriggered(i) && last_reaction_count[i] == 0) {
+      m_world->GetStats().AddNewReactionCount(i);
+    }
+  }
+
+  cur_bonus *= result.GetMultBonus();
+  cur_bonus += result.GetAddBonus();
+
+  if (result.GetActiveDeme()) {
+    double deme_bonus = GetHeritableDemeMerit().GetDouble();
+    deme_bonus *= result.GetMultDemeBonus();
+    deme_bonus += result.GetAddDemeBonus();
+    UpdateHeritableDemeMerit(deme_bonus);
+  }
+
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    UpdateDemeMerit();
+  }
+
+  for (int i = 0; i < num_tasks; i++) {
+    if (result.TaskDone(i) == true) AddCurTask(i);
+  }
+  for (int i = 0; i < num_reactions; i++) {
+    if (result.ReactionTriggered(i) == true) AddCurReaction(i);
+  }
+
+  result.Invalidate();
+}
 
 // Returns the minimum number of times any of the reactions were performed
 int cDeme::MinNumTimesReactionPerformed()

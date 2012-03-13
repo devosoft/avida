@@ -170,6 +170,7 @@ private:
   bool LoadReaction(cString desc, Feedback& feedback);
   bool LoadStateGrid(cString desc, Feedback& feedback);
   bool LoadSetActive(cString desc, Feedback& feedback);
+  bool LoadIOGrid(cString desc, Feedback& feedback); // @JJB**
   
   bool LoadDynamicResource(cString desc, Feedback& feedback);
   bool LoadGradientResource(cString desc, Feedback& feedback);

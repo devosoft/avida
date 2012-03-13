@@ -1942,28 +1942,28 @@ void cStats::PrintPredSatFracDump(const cString& filename) {
 void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 {
   ++m_deme_num_repls;
-	++m_total_deme_num_repls;
+  ++m_total_deme_num_repls;
   m_deme_gestation_time.Add(source_deme.GetAge());
   m_deme_births.Add(source_deme.GetBirthCount());
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
-	m_deme_density.Add(source_deme.GetDensity());
+  m_deme_density.Add(source_deme.GetDensity());
 
-	if(source_deme.isTreatable()) {
-		++m_deme_num_repls_treatable;
-		m_deme_gestation_time_treatable.Add(source_deme.GetAge());
-		m_deme_births_treatable.Add(source_deme.GetBirthCount());
-		m_deme_merit_treatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
-		m_deme_generation_treatable.Add(source_deme.GetGeneration());
-		m_deme_density_treatable.Add(source_deme.GetDensity());
-	} else {
-		++m_deme_num_repls_untreatable;
-		m_deme_gestation_time_untreatable.Add(source_deme.GetAge());
-		m_deme_births_untreatable.Add(source_deme.GetBirthCount());
-		m_deme_merit_untreatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
-		m_deme_generation_untreatable.Add(source_deme.GetGeneration());
-		m_deme_density_untreatable.Add(source_deme.GetDensity());
-	}
+  if(source_deme.isTreatable()) {
+    ++m_deme_num_repls_treatable;
+    m_deme_gestation_time_treatable.Add(source_deme.GetAge());
+    m_deme_births_treatable.Add(source_deme.GetBirthCount());
+    m_deme_merit_treatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
+    m_deme_generation_treatable.Add(source_deme.GetGeneration());
+    m_deme_density_treatable.Add(source_deme.GetDensity());
+  } else {
+    ++m_deme_num_repls_untreatable;
+    m_deme_gestation_time_untreatable.Add(source_deme.GetAge());
+    m_deme_births_untreatable.Add(source_deme.GetBirthCount());
+    m_deme_merit_untreatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
+    m_deme_generation_untreatable.Add(source_deme.GetGeneration());
+    m_deme_density_untreatable.Add(source_deme.GetDensity());
+  }
   
   /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
   int n_mut = source_deme.GetAveGermMut(); 
@@ -2296,8 +2296,8 @@ void cStats::PrintAvgUntreatableDemeTasksExeData(const cString& filename) {
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
   cIntSum tasksum;
 
-	df.WriteComment("Avida average tasks data for untreatable demes");
-	df.WriteTimeStamp();
+  df.WriteComment("Avida average tasks data for untreatable demes");
+  df.WriteTimeStamp();
   df.WriteComment("First column is the update, remaining columns are the average number of times");
   df.WriteComment("each task has been executed by untreatable demes");
   df.WriteComment(cStringUtil::Stringf("Data based on %i demes and %i tasks", num_demes, num_tasks));
@@ -2319,16 +2319,17 @@ void cStats::PrintAvgUntreatableDemeTasksExeData(const cString& filename) {
 }
 
 
-void cStats::PrintPerDemeReactionData(const cString& filename){
+void cStats::PrintPerDemeReactionData(const cString& filename)
+{
   cDataFile& df = m_world->GetDataFile(filename);
-	df.WriteComment("Avida deme reactions data");
-	df.WriteTimeStamp();
+  df.WriteComment("Avida deme reactions data");
+  df.WriteTimeStamp();
   df.WriteComment("First column gives the current update, all further columns give the number");
   df.WriteComment("of currently living organisms each reaction has affected.");
 
   const int num_reactions = m_world->GetEnvironment().GetReactionLib().GetSize();
 
-	df.Write(m_update,   "Update");
+  df.Write(m_update,   "Update");
   for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
     cDeme& deme = m_world->GetPopulation().GetDeme(i);
     for(int j = 0; j < num_reactions; j++) {

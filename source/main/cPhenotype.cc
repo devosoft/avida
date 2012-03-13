@@ -1379,13 +1379,13 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     // Modify TaskQuality amount based on refractory period
     // Logistic equation using refractory period
     // in update units from configuration file.  @WRE 03-20-07, 04-17-07
-		
+
     if (task_refractory_period == 0.0) {
       refract_factor = 1.0;
     } else {
       refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i]) - task_refractory_period * 0.5)));
     }
-		
+
     if (result.TaskDone(i) == true) {
       cur_task_count[i]++;
       eff_task_count[i]++;
@@ -1415,11 +1415,11 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
         cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
       }
     }
-		
+
     cur_task_value[i] = result.TaskValue(i);
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
-	
+
   for (int i = 0; i < num_tasks; i++) {
     if (result.TaskDone(i) && !last_task_count[i]) {
       m_world->GetStats().AddNewTaskCount(i);
@@ -1440,7 +1440,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     }
     if (result.ReactionTriggered(i) == true) {
       if (context_phenotype != 0) {
- 	context_phenotype->GetReactionCounts()[i]++;
+        context_phenotype->GetReactionCounts()[i]++;
       }
       // If the organism has not performed this task,
       // then consider it to be a task switch.
@@ -1496,7 +1496,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // no deme object.  Don't touch deme merit if there is no deme frac component.
   cDeme* deme = taskctx.GetOrganism()->GetDeme();
   if (deme) {
-    
     if (result.GetActiveDeme()) {
       double deme_bonus = deme->GetHeritableDemeMerit().GetDouble();
       deme_bonus *= result.GetMultDemeBonus();
