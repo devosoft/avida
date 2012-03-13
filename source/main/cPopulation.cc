@@ -615,6 +615,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
           offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
         }
       }
+    } else {
+      delete offspring_array[i];
     }
   }
   return parent_alive;
