@@ -442,6 +442,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   
   // Loop through choosing the later placement of each offspring in the population.
   bool parent_alive = true;  // Will the parent live through this process?
+
   for (int i = 0; i < offspring_array.GetSize(); i++) {
     /*
      THIS code will remove zero merit orgnaisms, thus never putting them into the scheduler.
@@ -464,7 +465,15 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
      }
      */
     target_cells[i] = PositionOffspring(parent_cell, ctx, m_world->GetConfig().ALLOW_PARENT.Get()).GetID(); 
-    // If we replaced the parent, make a note of this.
+    // Catch the corner case where birth method = 3 and there are 
+    // no empty cells. Here, we set the cell to -1 so that the rest of the
+    // method can proceed, but we can avoid trying to rotate it.
+    if ((target_cells[i] == parent_cell.GetID()) && 
+        m_world->GetConfig().ALLOW_PARENT.Get()==0) {
+      target_cells[i] = -1;
+      continue;
+    } 
+    // If we replaced the parent, make a note of this.    
     if (target_cells[i] == parent_cell.GetID()) {
       parent_alive = false;
       if (m_world->GetConfig().USE_AVATARS.Get()) parent_organism->GetOrgInterface().RemoveAllAV();
@@ -574,7 +583,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
         if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) {
           for (int i = 0; i < offspring_array.GetSize(); i++) {
-            GetCell(target_cells[i]).Rotate(parent_cell);
+            if (target_cells[i] != -1) {
+              GetCell(target_cells[i]).Rotate(parent_cell);
+            }
           }
         }
       }
@@ -588,17 +599,21 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
-    //@JEB - we may want to pass along some state information from parent to offspring
-    if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
-        || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
-      offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
-    }
-    bool org_survived = ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
-    // only assign an avatar cell if the org lived through birth and it isn't the parent
-    if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
-      int avatar_target_cell = PlaceAvatar(parent_organism);
-      if (target_cells[i] != parent_cell.GetID()) {
-        offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+    
+    if (target_cells[i] != -1) {
+    
+      //@JEB - we may want to pass along some state information from parent to offspring
+      if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
+          || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
+        offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
+      }
+      bool org_survived = ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
+      // only assign an avatar cell if the org lived through birth and it isn't the parent
+      if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
+        int avatar_target_cell = PlaceAvatar(parent_organism);
+        if (target_cells[i] != parent_cell.GetID()) {
+          offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+        }
       }
     }
   }
