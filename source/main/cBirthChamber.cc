@@ -155,7 +155,11 @@ void cBirthChamber::StoreAsEntry(const Genome& offspring, cOrganism* parent, cBi
   entry.SetMatingDisplayA(parent->GetPhenotype().GetLastMatingDisplayA());
   entry.SetMatingDisplayB(parent->GetPhenotype().GetLastMatingDisplayB());
   entry.SetMatePreference(parent->GetPhenotype().GetMatePreference());
-  entry.SetGroupID(parent->GetOpinion().first);
+  if (parent->HasOpinion()) {
+    entry.SetGroupID(parent->GetOpinion().first);
+  } else {
+    entry.SetGroupID(m_world->GetConfig().DEFAULT_GROUP.Get());
+  }
   
   for (int i = 0; i < entry.groups.GetSize(); i++) {
     entry.groups[i]->AddActiveReference();
