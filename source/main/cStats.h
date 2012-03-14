@@ -926,6 +926,8 @@ public:
   void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 
   void PrintToleranceData(const cString& filename); 
+  void PrintMaleAverageData(const cString& filename);
+  void PrintFemaleAverageData(const cString& filename);
 
   // deme predicate stats
   void IncEventCount(int x, int y);

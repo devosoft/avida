@@ -172,6 +172,9 @@ STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 STATS_OUT_FILE(PrintMigrationData,          migration.dat);
 STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 
+//mating type/male-female stats data
+STATS_OUT_FILE(PrintMaleAverageData,    male_average.dat   );
+STATS_OUT_FILE(PrintFemaleAverageData,    female_average.dat   );
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
@@ -4478,7 +4481,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
-
+  action_lib->Register<cActionPrintMaleAverageData>("PrintMaleAverageData");
+  action_lib->Register<cActionPrintFemaleAverageData>("PrintFemaleAverageData");
+  
   // @WRE: Added printing of visit data
   action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
 
