@@ -296,127 +296,73 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
   return uptakeAmount;
 }
 
-void cPopulationCell::AddAvatar(cOrganism* org) 
-{
-  if (org->GetForageTarget() == -2) m_av_predators.Push(org);
-  else m_av_prey.Push(org);
-}
 
-void cPopulationCell::RemoveAvatar(cOrganism* org) 
-{
-  assert (HasAvatar());
-  if (org->GetForageTarget() == -2) {
-    for (int i = 0; i < m_av_predators.GetSize(); i++) {
-      if (m_av_predators[i] == org) {
-        unsigned int last = m_av_predators.GetSize() - 1;
-        m_av_predators.Swap(i, last);
-        m_av_predators.Pop();
-        break;
-      }
-    }
-  }
-  else {
-    for (int i = 0; i < m_av_prey.GetSize(); i++) {
-      if (m_av_prey[i] == org) {
-        unsigned int last = m_av_prey.GetSize() - 1;
-        m_av_prey.Swap(i, last);
-        m_av_prey.Pop();
-        break;
-      }
-    }
-  }
-}
+// -------- Avatar support --------
+/* In the avatar system, each cell contains an array of organism pointers to tie the cell
+ * back to all organisms with avatars in that cell. Each organism then contains a list
+ * (in cPopulationInterface) of all it's avatars and the cell for each avatar.
+ * Currently there are two supported avatar types, input and output,
+ * which are also used as predators and prey, respectively. @JJB**
+ */
 
-tArray<cOrganism*> cPopulationCell::GetCellAvatars()
-{
-  assert (HasAvatar());
-  tArray<cOrganism*> avatar_orgs;
-  avatar_orgs.Resize(m_av_prey.GetSize() + m_av_predators.GetSize());
-  for (int i = 0; i < avatar_orgs.GetSize(); i++) {
-    avatar_orgs[i] = m_av_prey[i];
-    avatar_orgs[i + m_av_prey.GetSize()] = m_av_predators[i];
-  }
-  return avatar_orgs;
-}
-
-tArray<cOrganism*> cPopulationCell::GetCellAVPrey()
-{
-  assert (HasAVPrey());
-  tArray<cOrganism*> avatar_prey;
-  avatar_prey.Resize(m_av_prey.GetSize());
-  for (int i = 0; i < avatar_prey.GetSize(); i++) {
-    avatar_prey[i] = m_av_prey[i];
-  }
-  return avatar_prey;
-}
-
-cOrganism* cPopulationCell::GetRandAvatar() const
-{
-  assert (HasAvatar());
-  if (m_av_prey.GetSize() != 0 && (m_world->GetRandom().GetUInt(0,2) == 0 || m_av_predators.GetSize() == 0)) { 
-    return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
-  }
-  else return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
-}
-
-cOrganism* cPopulationCell::GetRandAVPred() const
-{
-  assert (HasAvatar());
-  return m_av_predators[m_world->GetRandom().GetUInt(0, m_av_predators.GetSize())];
-}
-
-cOrganism* cPopulationCell::GetRandAVPrey() const
-{
-  assert (HasAvatar());
-  return m_av_prey[m_world->GetRandom().GetUInt(0, m_av_prey.GetSize())];
-}
-
-// -------- Neural support -------- @JJB**
+// Adds an organism to the cell's input avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
 void cPopulationCell::AddInputAV(cOrganism* org)
 {
   m_av_inputs.Push(org);
+  // Swaps the added avatar into a random position in the array
+  int loc = m_world->GetRandom().GetUInt(0, m_av_inputs.GetSize());
+  cOrganism* exist_org = m_av_inputs[loc];
+  m_av_inputs.Swap(loc, m_av_inputs.GetSize() - 1);
+  exist_org->SetAVInIndex(m_av_inputs.GetSize() - 1);
+  org->SetAVInIndex(loc);
 }
 
+// Adds an organism to the cell's output avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
 void cPopulationCell::AddOutputAV(cOrganism* org)
 {
   m_av_outputs.Push(org);
+  // Swaps the added avatar into a random position in the array
+  int loc = m_world->GetRandom().GetUInt(0, m_av_outputs.GetSize());
+  cOrganism* exist_org = m_av_outputs[loc];
+  m_av_outputs.Swap(loc, m_av_outputs.GetSize() - 1);
+  exist_org->SetAVOutIndex(m_av_outputs.GetSize() - 1);
+  org->SetAVOutIndex(loc);
 }
 
+// Removes the organism from the cell's input avatars
 void cPopulationCell::RemoveInputAV(cOrganism* org)
 {
   assert(HasInputAV());
-  for (int i = 0; i < m_av_inputs.GetSize(); i++) {
-    if (m_av_inputs[i] == org) {
-      unsigned int last = m_av_inputs.GetSize() - 1;
-      m_av_inputs.Swap(i, last);
-      m_av_inputs.Pop();
-      break;
-    }
-  }
+  assert(m_av_inputs[org->GetAVInIndex()] == org);
+  unsigned int last = GetNumAVInputs() - 1;
+  cOrganism* exist_org = m_av_inputs[last];
+  exist_org->SetAVInIndex(org->GetAVInIndex());
+  m_av_inputs.Swap(org->GetAVInIndex(), last);
+  m_av_inputs.Pop();
 }
 
+// Removes the organism from the cell's output avatars
 void cPopulationCell::RemoveOutputAV(cOrganism* org)
 {
   assert(HasOutputAV());
-  for (int i = 0; i < m_av_outputs.GetSize(); i++) {
-    if (m_av_outputs[i] == org) {
-      unsigned int last = m_av_outputs.GetSize() - 1;
-      m_av_outputs.Swap(i, last);
-      m_av_outputs.Pop();
-      break;
-    }
-  }
+  assert(m_av_outputs[org->GetAVOutIndex()] == org);
+  unsigned int last = GetNumAVOutputs() - 1;
+  cOrganism* exist_org = m_av_outputs[last];
+  exist_org->SetAVOutIndex(org->GetAVOutIndex());
+  m_av_outputs.Swap(org->GetAVOutIndex(), last);
+  m_av_outputs.Pop();
 }
 
-// Whether a cell has an output AV that the org will be able to receive messages from @JJB**
+// Returns whether a cell has an output AV that the org will be able to receive messages from.
 bool cPopulationCell::HasOutputAV(cOrganism* org)
 {
   // No output avatars
   if (!HasOutputAV()) return false;
   // If org can talk to itself, any avatar in the cell works
   if (m_world->GetConfig().SELF_COMMUNICATION.Get()) return true;
+
   // If no self-messaging, is there an output avatar for another organism in the cell
-  for (int i = 0; i < m_av_outputs.GetSize(); i++) {
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
     if (m_av_outputs[i] != org) {
       return true;
     }
@@ -424,27 +370,81 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
   return false;
 }
 
-tArray<cOrganism*> cPopulationCell::GetCellInputAV()
+// Randomly returns an avatar from the cell, all avatars equally likely
+//********** DO NOT CALL FROM VIEWER OR DATA COLLECTION, DOING SO WILL AFFECT RESULTS DURING RUN **********
+cOrganism* cPopulationCell::GetRandAV() const
+{
+  if (HasAV()) {
+    int rand = m_world->GetRandom().GetUInt(0, GetNumAV());
+    if (rand < GetNumAVInputs()) {
+      return m_av_inputs[rand];
+    }
+    else {
+      return m_av_outputs[rand - GetNumAVInputs()];
+    }
+  }
+  return NULL;
+}
+
+// Returns the first predator (input) avatar, which should be random as the list is mixed whenever a new avatar is added
+cOrganism* cPopulationCell::GetRandPredAV() const
+{
+  if (HasInputAV()) {
+    return m_av_inputs[0];
+  }
+  return NULL;
+}
+
+// Returns the first prey (output) avatar, which should be random as the list is mixed whenever a new avatar is added
+cOrganism* cPopulationCell::GetRandPreyAV() const
+{
+  if (HasOutputAV()) {
+    return m_av_outputs[0];
+  }
+  return NULL;
+}
+
+// Returns all input avatars (organisms) contained in the cell
+tArray<cOrganism*> cPopulationCell::GetCellInputAVs()
 {
   assert(HasInputAV());
   tArray<cOrganism*> avatar_inputs;
-  avatar_inputs.Resize(m_av_inputs.GetSize());
-  for (int i = 0; i < avatar_inputs.GetSize(); i++) {
+  avatar_inputs.Resize(GetNumAVInputs());
+  for (int i = 0; i < GetNumAVInputs(); i++) {
     avatar_inputs[i] = m_av_inputs[i];
   }
   return avatar_inputs;
 }
 
-tArray<cOrganism*> cPopulationCell::GetCellOutputAV()
+// Returns all output avatars (organisms) contained in the cell
+tArray<cOrganism*> cPopulationCell::GetCellOutputAVs()
 {
   assert(HasOutputAV());
   tArray<cOrganism*> avatar_outputs;
-  avatar_outputs.Resize(m_av_outputs.GetSize());
-  for (int i = 0; i < avatar_outputs.GetSize(); i++) {
+  avatar_outputs.Resize(GetNumAVOutputs());
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
     avatar_outputs[i] = m_av_outputs[i];
   }
   return avatar_outputs;
 }
+
+// Returns all avatars (organisms) contained in the cell
+tArray<cOrganism*> cPopulationCell::GetCellAVs()
+{
+  assert(HasAV());
+  tArray<cOrganism*> avatars;
+  const int num_outputs = GetNumAVOutputs();
+  avatars.Resize(GetNumAV());
+  for (int i = 0; i < GetNumAVOutputs(); i++) {
+    avatars[i] = m_av_outputs[i];
+  }
+  for (int i = 0; i < GetNumAVInputs(); i++) {
+    avatars[i + num_outputs] = m_av_inputs[i];
+  }
+  return avatars;
+}
+
+
 
 /*! Diffuse genome fragments from this cell to its neighbors.
  

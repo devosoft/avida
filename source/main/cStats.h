@@ -842,6 +842,8 @@ public:
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
   void PrintParasiteData(const cString& filename);
+  void PrintParasiteMigrationCounts(const cString& filename); // MIGRATION_MATRIX
+  void PrintOffspringMigrationCounts(const cString& filename); // MIGRATION_MATRIX
   void PrintPreyAverageData(const cString& filename);
   void PrintPredatorAverageData(const cString& filename);
   void PrintPreyErrorData(const cString& filename);
@@ -892,6 +894,7 @@ public:
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
   void PrintGroupTolerance(const cString& filename); 
+  void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 
   void PrintToleranceData(const cString& filename); 
 

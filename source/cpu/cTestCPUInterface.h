@@ -48,7 +48,7 @@ public:
   
   const tSmartArray <cOrganism*> GetLiveOrgList() const;
   cPopulationCell* GetCell() { return NULL; }
-	cPopulationCell* GetCell(int cell_id) { return NULL; }
+  cPopulationCell* GetCell(int cell_id) { return NULL; }
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
   cDeme* GetDeme() { return 0; }
@@ -57,60 +57,37 @@ public:
   int GetCellXPosition() { return -1; }
   int GetCellYPosition() { return -1; }
   
-  int GetAvatarCellID() { return -1; }
-  void SetAvatarCellID(int av_cell_id) { ; }
-  void SetAvatarFacing(int facing) { ; }
-  void SetAvatarFacedCell(int av_cell_id) { ; }
-  int GetAvatarFacedCellID() { return -1; }
-  int GetAVFacedDir() { return 0; }
-  
   int GetCellData() { return -1; }
   int GetCellDataOrgID() { return -1; }
   int GetCellDataUpdate() { return -1; }
   int GetCellDataTerritory() { return -1; }
   int GetCellDataForagerType() { return -99; }
   void SetCellData(const int newData) { ; }
-  void SetAVCellData(const int newData, const int org_id) { ; }
   int GetFacedCellData() { return -1; }
   int GetFacedCellDataOrgID() { return -1; }
   int GetFacedCellDataUpdate() { return -1; }
   int GetFacedCellDataTerritory() { return -1; }
-  int GetFacedAVData() { return -1; }
-  int GetFacedAVDataOrgID() { return -1; }
-  int GetFacedAVDataUpdate() { return -1; }
-  int GetFacedAVDataTerritory() { return -1; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
-  void AddReachedTaskCell() { }
+  void AddReachedTaskCell() { ; }
   int GetNumTaskCellsReached() { return 0; }
   void SetPrevSeenCellID(int in_id) { ; }
   void SetPrevTaskCellID(int in_id) { ; }
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
-  cOrganism* GetNeighbor();
-  cOrganism* GetAVRandNeighbor();
-  cOrganism* GetAVRandNeighborPrey();
-  cOrganism* GetAVRandNeighborPred();
-  tArray<cOrganism*> GetAVNeighbors();
-  tArray<cOrganism*> GetAVNeighborPrey();
-  bool IsNeighborCellOccupied();
-  bool HasAVNeighbor();
-  bool HasAVNeighborPrey();
-  bool HasAVNeighborPred();
-  int GetNumNeighbors();
-  int GetAVNumNeighbors();
-  void GetNeighborhoodCellIDs(tArray<int>& list);
+  cOrganism* GetNeighbor() { return NULL; }
+  bool IsNeighborCellOccupied() { return false; }
+  int GetNumNeighbors() { return 0; }
+  void GetNeighborhoodCellIDs(tArray<int>& list) { ; }
   int GetNeighborCellContents() { return 0; }
-  void Rotate(int direction = 1);
+  void Rotate(int direction = 1) { ; }
   void Breakpoint() { ; }
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
-  const tArray<double>& GetAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
-  const tArray<double>& GetFacedAVResources(cAvidaContext& ctx); 
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
@@ -121,18 +98,17 @@ public:
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
   void TriggerDoUpdates(cAvidaContext& ctx) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
-  void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) {;}
-  void Die(cAvidaContext& ctx); 
-  void KillCellID(int target, cAvidaContext& ctx); 
+  void Die(cAvidaContext& ctx) { ; }
+  void KillCellID(int target, cAvidaContext& ctx) { ; }
   void Kaboom(int distance, cAvidaContext& ctx); 
-  void SpawnDeme(cAvidaContext& ctx); 
+  void SpawnDeme(cAvidaContext& ctx) { ; }
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
   int ReceiveValue();
-  void SellValue(const int data, const int label, const int sell_price, const int org_id);
+  void SellValue(const int data, const int label, const int sell_price, const int org_id) { ; }
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code) { return false; }
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
@@ -140,46 +116,45 @@ public:
   int GetFacedDir() { return 0; }
   bool SendMessage(cOrgMessage& msg) { return false; }
   bool SendMessage(cOrganism* recvr, cOrgMessage& msg) { return false; }
-	bool BroadcastMessage(cOrgMessage& msg, int depth) { return false; }
-	bool BcastAlarm(int jump_label, int bcast_range) { return false; }
-  void DivideOrgTestamentAmongDeme(double value) {;}
-	void SendFlash() { }
+  bool BroadcastMessage(cOrgMessage& msg, int depth) { return false; }
+  bool BcastAlarm(int jump_label, int bcast_range) { return false; }
+  void DivideOrgTestamentAmongDeme(double value) { ; }
+  void SendFlash() { ; }
   
   int GetNortherly() { return 0; }
   int GetEasterly() { return 0; }
 	
-	void RotateToGreatestReputation(){ }
-	void RotateToGreatestReputationWithDifferentTag(int tag){ }
-	void RotateToGreatestReputationWithDifferentLineage(int tag){ }	
-  
+  void RotateToGreatestReputation(){ }
+  void RotateToGreatestReputationWithDifferentTag(int tag){ }
+  void RotateToGreatestReputationWithDifferentLineage(int tag){ }	
+
   int GetStateGridID(cAvidaContext& ctx);
 	
-	//! Link this organism's cell to the cell it is currently facing.
-	void CreateLinkByFacing(double weight=1.0) { }
-	//! Link this organism's cell to the cell with coordinates (x,y).
-	void CreateLinkByXY(int x, int y, double weight=1.0) { }
-	//! Link this organism's cell to the cell with index idx.
-	void CreateLinkByIndex(int idx, double weight=1.0) { }
-	//! Broadcast a message to all organisms that are connected by this network.
-	bool NetworkBroadcast(cOrgMessage& msg) { return false; }
-	//! Unicast a message to the current selected organism.
-	bool NetworkUnicast(cOrgMessage& msg) { return false; }
-	//! Rotate to select a new network link.
-	bool NetworkRotate(int x) { return false; }
-	//! Select a new network link.
-	bool NetworkSelect(int x) { return false; }	
+  //! Link this organism's cell to the cell it is currently facing.
+  void CreateLinkByFacing(double weight=1.0) { }
+  //! Link this organism's cell to the cell with coordinates (x,y).
+  void CreateLinkByXY(int x, int y, double weight=1.0) { }
+  //! Link this organism's cell to the cell with index idx.
+  void CreateLinkByIndex(int idx, double weight=1.0) { }
+  //! Broadcast a message to all organisms that are connected by this network.
+  bool NetworkBroadcast(cOrgMessage& msg) { return false; }
+  //! Unicast a message to the current selected organism.
+  bool NetworkUnicast(cOrgMessage& msg) { return false; }
+  //! Rotate to select a new network link.
+  bool NetworkRotate(int x) { return false; }
+  //! Select a new network link.
+  bool NetworkSelect(int x) { return false; }	
 
-	//! HGT donation (does nothing).
-	void DoHGTDonation(cAvidaContext& ctx) { }
-	//! HGT conjugation (does nothing).
-	void DoHGTConjugation(cAvidaContext& ctx) { }
-	//! HGT mutation (does nothing).
-	void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) { }
-	//! Receive HGT donation (does nothing).
-	void ReceiveHGTDonation(const Sequence& fragment) { }
+  //! HGT donation (does nothing).
+  void DoHGTDonation(cAvidaContext& ctx) { }
+  //! HGT conjugation (does nothing).
+  void DoHGTConjugation(cAvidaContext& ctx) { }
+  //! HGT mutation (does nothing).
+  void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) { }
+  //! Receive HGT donation (does nothing).
+  void ReceiveHGTDonation(const Sequence& fragment) { }
   
   bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
-  bool MoveAvatar(cAvidaContext& ctx, int src_id, int dest_id, int true_cell) { return false; }
 
   void AddLiveOrg() { ; }  
   void RemoveLiveOrg() { ; }  
@@ -215,14 +190,37 @@ public:
 
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
 
+  bool HasOutputAV(int av_num = 0) { return false; }
+  bool FacedHasOutputAV(int av_num = 0) { return false; }
+  bool FacedHasAV(int av_num = 0) { return false; }
+  bool FacedHasPredAV(int av_num = 0) { return false; }
+  bool FacedHasPreyAV(int av_num = 0) { return false; }
   void AddAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
+  void AddPredPreyAV(int av_cell_id) { ; }
+  void SwitchPredPrey(int av_num = 0) { ; }
   void RemoveAllAV() { ; }
-  void SetAVCellID(int av_cell_id) { ; }
-  void MoveAV() { ; }
-  void SetAVFacing(int av_facing) { ; }
-  bool RotateAV(int increment) { return false; }
-  bool HasOutputAV() { return false; }
-  bool FacedHasOutputAV() { return false; }
+  int GetAVFacing(int av_num = 0) { return 0; }
+  int GetAVCellID(int av_num = 0) { return -1; }
+  int GetAVFacedCellID(int av_num = 0) { return -1; }
+  int GetAVNumNeighbors(int av_num = 0) { return 0; }
+  int GetAVFacedData(int av_num = 0) { return -1; }
+  int GetAVFacedDataOrgID(int av_num = 0) { return -1; }
+  int GetAVFacedDataUpdate(int av_num = 0) { return -1; }
+  int GetAVFacedDataTerritory(int av_num = 0) { return -1; }
+  void SetAVFacing(int av_facing, int av_num = 0) { ; }
+  bool SetAVCellID(int av_cell_id, int av_num = 0) { return false; }
+  void SetAVFacedCellID(int av_num = 0) { ; }
+  void SetAVCellData(const int newData, const int org_id, int av_num = 0) { ; }
+  bool MoveAV(cAvidaContext& ctx, int av_num = 0) { return false; }
+  bool RotateAV(int increment, int av_num = 0) { return false; }
+  cOrganism* GetRandFacedAV(int av_num = 0) { return NULL; }
+  cOrganism* GetRandFacedPredAV(int av_num = 0) { return NULL; }
+  cOrganism* GetRandFacedPreyAV(int av_num = 0) { return NULL; }
+  tArray<cOrganism*> GetFacedAVs(int av_num = 0);
+  tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0);
+  const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
+  const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);
+  void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num = 0);
   
   void BeginSleep() { ; }
   void EndSleep() { ; }

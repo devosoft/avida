@@ -7535,7 +7535,7 @@ void cAnalyze::AnalyzeLineageComplexitySitesN(cString cur_string)
     //cout << "Total Combinations: " << totalcombo << endl;
     //cout << "Log of wn and totalcombos: " << log(wn * totalcombo ) << endl;
     if (posneutmut > 0) {
-        entropy = (log(wn * totalcombo ) / log(num_insts));
+        entropy = (log(wn * totalcombo ) / log(double(num_insts)));
     }
 
     //cout << "Entropy: " << entropy << endl;
