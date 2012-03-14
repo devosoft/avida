@@ -3937,3 +3937,41 @@ void cStats::PrintSuccessfulMates(cString& filename) {
   }
   m_world->GetDataFileManager().Remove(filename);
 }
+
+//Prints out average data only for the males in the population (MATING_TYPES option should be turned on)
+void cStats::PrintMaleAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_male_fitness.Average(),        "Fitness");
+  df.Write(sum_male_gestation.Average(),      "Gestation Time");
+  df.Write(sum_male_merit.Average(),          "Merit");
+  df.Write(sum_male_creature_age.Average(),   "Creature Age");
+  df.Write(sum_male_generation.Average(),     "Generation");
+  df.Write(sum_male_size.Average(),           "Genome Length");
+  
+  df.Endl();
+}
+
+//Prints out average data only for the females in the population (MATING_TYPES option should be turned on)
+void cStats::PrintFemaleAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_female_fitness.Average(),        "Fitness");
+  df.Write(sum_female_gestation.Average(),      "Gestation Time");
+  df.Write(sum_female_merit.Average(),          "Merit");
+  df.Write(sum_female_creature_age.Average(),   "Creature Age");
+  df.Write(sum_female_generation.Average(),     "Generation");
+  df.Write(sum_female_size.Average(),           "Genome Length");
+  
+  df.Endl();
+}
