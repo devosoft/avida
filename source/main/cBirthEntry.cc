@@ -46,7 +46,7 @@ cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _time
 , genome(_offspring)
 , merit(_parent->GetPhenotype().GetMerit())
 , timestamp(_timestamp)
-, m_group_id(0)
+, m_group_id(-1)
 {
   // Note: Not checking for energy because we don't want to clear out the parent's energy
   // for a temporary birth entry, otherwise things may get screwed up when the REAL offspring
