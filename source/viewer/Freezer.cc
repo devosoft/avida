@@ -154,7 +154,7 @@ namespace Avida {
         cFile file;
         file.Open((const char*)file_path, std::ios::out);
         std::fstream* fs = file.GetFileStream();
-        *fs << "0,heads_default,wzcagcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab" << std::endl;
+        *fs << "0,heads_default,wzcagcccccccccccccccccccccccccccccccccccczvfcaxgab" << std::endl;
         file.Close();
         
         // entryname.txt

@@ -208,7 +208,7 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
       if (i == 0) name = "IP";
       if (i == 1) name = "READ";
       if (i == 2) name = "WRITE";
-      if (hw.GetHead(i).GetPosition() >= m_genome_length) snapshot->AddHead(name, 1, hw.GetHead(i).GetPosition());
+      if (hw.GetHead(i).GetPosition() >= m_genome_length) snapshot->AddHead(name, 1, hw.GetHead(i).GetPosition() - m_genome_length);
     }
   }  
   
@@ -303,10 +303,13 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
 {
   // Build the various graphic objects that need to be displayed.
   const double genome_spacing = 0.1;                 // Space between two genome circles.
-  const double inst_radius = 0.03;                   // Radius of each instruction circle
+  const double inst_radius = 0.1;                   // Radius of each instruction circle
+  
+  // Calculated constants, based on parameters set above
   const double inst_diameter = inst_radius * 2.0;    // Circumference of each instruction circle
   const double inst_spacing = inst_diameter * 1.05;  // How much room to leave for each instruction?
   const double PI = 3.14159265;
+  const double angular_offset = PI / 2.0;            // 1/4 angle offset to line up memory space starting points
 
   // Draw each memory space
   int num_mem_spaces = m_mem_spaces.GetSize();
@@ -326,21 +329,53 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
     if (cur_mem_id == 0) center_x -= genome_offset; else center_x += genome_offset;
 
     // Step through the genome, placing each instruction on the screen;
-    for (int i = 0; i < cur_length; i++) {
+    for (int cur_inst_idx = 0; cur_inst_idx < cur_length; cur_inst_idx++) {
       // Calculate where this instruction should be drawn on the screen.
       // Center position + angular offset - radius (since we need the lower, left corner of each circle to draw)
-      double cur_angle = angle_step * (double) i;
+      double cur_angle = angle_step * (double) cur_inst_idx;
+      cur_angle += (cur_mem_id == 0) ? angular_offset : -angular_offset; // rotate in opposite 1/4 angles based on mem_space
       float inst_x = center_x + sin(cur_angle) * genome_radius - inst_radius;
       float inst_y = center_y + cos(cur_angle) * genome_radius - inst_radius;
 
       GraphicObject* inst_go = new GraphicObject(inst_x, inst_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
+      
+      inst_go->label = cur_mem[cur_inst_idx].AsString();
+      
       // @CAO setup color of circle based on instruction at that point;
+      inst_go->fill_color = GraphicObject::Color::YELLOW();
+      
+      // Determine what, if any, heads are pointing at this instruction
+      GraphicObject::Color& line_color = inst_go->line_color;
+      inst_go->line_width = 2.0;
+      for (Apto::Map<Apto::String, int>::ConstIterator it = cur_memspace.heads.Begin(); it.Next(); ) {
+        if (*it.Get()->Value2() == cur_inst_idx) {
+          Apto::String head = it.Get()->Value1();
+          if (head == "IP") {
+            line_color = GraphicObject::Color::BLACK();
+            inst_go->line_width = 3.0;
+          } else if (head == "FLOW") {
+            line_color.g = 1.0;
+            line_color.a = 1.0;
+          } else if (head == "READ") {
+            line_color.b = 1.0;
+            line_color.a = 1.0;
+          } else if (head == "WRITE") {
+            line_color.r = 1.0;
+            line_color.a = 1.0;
+          }
+        }
+      }
+      
       m_graphic_objects.Push(inst_go);
     }
   }
 
   // @CAO Draw heads
+  
+  
   // @CAO Draw arcs showing prior execution path.
+  
+  
   // @CAO Draw other hardware as needed
   
   m_layout = true;

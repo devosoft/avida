@@ -119,12 +119,13 @@ namespace Avida {
           float r, g, b, a;  // Red, Green, Blue, and Alpha (opacity), all 0.0 to 1.0.
           Color(float _r, float _g, float _b, float _a=0.0) : r(_r), g(_g), b(_b), a(_a) { ; }
 
-          static inline Color NONE()  { return Color(0.0, 0.0, 0.0, 0.0); }
-          static inline Color BLACK() { return Color(0.0, 0.0, 0.0, 1.0); }
-          static inline Color WHITE() { return Color(1.0, 1.0, 1.0, 1.0); }
-          static inline Color RED()   { return Color(1.0, 0.0, 0.0, 1.0); }
-          static inline Color GREEN() { return Color(0.0, 1.0, 0.0, 1.0); }
-          static inline Color BLUE()  { return Color(0.0, 0.0, 1.0, 1.0); }
+          static inline Color NONE()   { return Color(0.0, 0.0, 0.0, 0.0); }
+          static inline Color BLACK()  { return Color(0.0, 0.0, 0.0, 1.0); }
+          static inline Color WHITE()  { return Color(1.0, 1.0, 1.0, 1.0); }
+          static inline Color RED()    { return Color(1.0, 0.0, 0.0, 1.0); }
+          static inline Color GREEN()  { return Color(0.0, 1.0, 0.0, 1.0); }
+          static inline Color BLUE()   { return Color(0.0, 0.0, 1.0, 1.0); }
+          static inline Color YELLOW() { return Color(1.0, 1.0, 0.0, 1.0); }
        };
 
         // Bounding box
@@ -166,7 +167,7 @@ namespace Avida {
       public:
         GraphicObject(float _x, float _y, float _width, float _height, GraphicShape _shape=SHAPE_NONE)
           : x(_x), y(_y), width(_width), height(_height), shape(_shape),
-            fill_color(Color::NONE()), line_width(1.0), line_color(Color::BLACK()),
+            fill_color(Color::NONE()), line_width(1.0), line_color(Color::NONE()),
             font_size(1.0), label_color(Color::BLACK()), start_angle(0.0), end_angle(0.0)
         { ; }
         ~GraphicObject() { ; }

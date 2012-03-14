@@ -56,6 +56,8 @@ namespace Avida {
     
     LIB_EXPORT Apto::String GetSymbol() const;
     LIB_EXPORT bool SetSymbol(const Apto::String& symbol);    
+    
+    LIB_EXPORT inline Apto::String AsString() const { return GetSymbol(); }
   };
 
   
