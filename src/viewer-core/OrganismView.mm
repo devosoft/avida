@@ -29,6 +29,8 @@
 
 #import "OrganismView.h"
 
+#import "NSString+Apto.h"
+
 #include "avida/viewer/OrganismTrace.h"
 
 
@@ -54,15 +56,66 @@
     NSRect bounds = [self bounds];
     NSPoint centerPoint = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
     
-    [[NSColor yellowColor] set];
-    
+    NSFont* std_font = [NSFont fontWithName:@"Helvetica" size:10.0];
+    NSDictionary* std_str_attributes = [NSDictionary dictionaryWithObject:std_font forKey:NSFontAttributeName];
+
     for (int object_idx = 0; object_idx < snapshot->NumGraphicObjects(); object_idx++) {
       const Avida::Viewer::HardwareSnapshot::GraphicObject& obj = snapshot->Object(object_idx);
       
-      NSRect objRect = NSMakeRect(centerPoint.x + (obj.x * 72.0), centerPoint.y + (obj.y * 72.0), obj.width * 72.0, obj.height * 72.0);
-      NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:objRect];
+      switch (obj.shape) {
+        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_OVAL:
+        {
+          NSRect objRect = NSMakeRect(centerPoint.x + (obj.x * 72.0), centerPoint.y + (obj.y * 72.0), obj.width * 72.0, obj.height * 72.0);
+          
+          // Draw the Oval in the calculated rect
+          if (obj.fill_color.a > 0.0 || obj.line_color.a > 0) {
+            NSBezierPath* path = [NSBezierPath bezierPathWithOvalInRect:objRect];
+            
+            if (obj.fill_color.a > 0.0) {
+              [[NSColor colorWithSRGBRed:obj.fill_color.r green:obj.fill_color.g blue:obj.fill_color.b alpha:obj.fill_color.a] set];
+              [path fill];
+            }
+            if (obj.line_color.a > 0.0) {
+              [[NSColor colorWithSRGBRed:obj.line_color.r green:obj.line_color.g blue:obj.line_color.b alpha:obj.line_color.a] set];
+              [path setLineWidth:obj.line_width];
+              [path stroke];              
+            }
+          }
+          
+          // Draw the label string in the center of the calculated rect
+          if (obj.label.GetSize() && obj.label_color.a > 0.0) {
+            
+            // Set up string attributes for the label
+            NSDictionary* str_attributes = std_str_attributes;
+            if (obj.font_size != 1.0) {
+              // Only create a new set of font attributes if the size is different from the standard size
+              NSFont* font = [NSFont fontWithName:@"Helvetica" size:(10.0 * obj.font_size)];
+              str_attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+            }
+            
+            [[NSColor colorWithSRGBRed:obj.label_color.r green:obj.label_color.g blue:obj.label_color.b alpha:obj.label_color.a] set];
+            NSString* lbl = [NSString stringWithAptoString:obj.label];
+            CGFloat offset_x = [lbl sizeWithAttributes:str_attributes].width / 2.0;
+            CGFloat offset_y = [lbl sizeWithAttributes:str_attributes].height / 2.0;
+            NSPoint lbl_location = NSMakePoint(NSMidX(objRect) - offset_x, NSMidY(objRect) - offset_y);
+            [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
+          }
+        }
+          break;
+        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_RECT:
+        {
+          
+        }
+          break;
+        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_LINE:
+        {
+          
+        }
+          break;
+        default:
+          break;
+      }
       
-      [path fill];
     }
   }
 }
