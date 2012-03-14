@@ -300,7 +300,16 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     for (int i = 0; i < num_waiting; i++) {
       if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
         //Here, heck to see if the current entry belongs to the parent's group! @CHC
-        if ((!ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get()) || (ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get() && (m_entries[i].GetGroupID() == parent->GetOpinion().first))) {
+        bool groups_match = false;
+        if (!(ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get())) {
+          groups_match = true; //Within-group mating is turned off, so don't need to check
+        } else {
+          //Within-group mating is turned on, so we need to check if the parent's group is the same
+          if (parent->HasOpinion()) {
+            groups_match = (m_entries[i].GetGroupID() == parent->GetOpinion().first);
+          }
+        }
+        if (groups_match) {
           if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             last_compatible++;
             compatible_entries[last_compatible] = i;
@@ -316,7 +325,16 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     for (int i = 0; i < num_waiting; i++) {
       if (m_bc->ValidateBirthEntry(m_entries[i])) { //Is the current entry valid/alive?
         //Here, check to see if the current entry belongs to the parent's group! @CHC
-        if ((!ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get()) || (ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get() && (m_entries[i].GetGroupID() == parent->GetOpinion().first))) {
+        bool groups_match = false;
+        if (!(ctx.GetWorld()->GetConfig().MATE_IN_GROUPS.Get())) {
+          groups_match = true; //Within-group mating is turned off, so don't need to check
+        } else {
+          //Within-group mating is turned on, so we need to check if the parent's group is the same
+          if (parent->HasOpinion()) {
+            groups_match = (m_entries[i].GetGroupID() == parent->GetOpinion().first);
+          }
+        }
+        if (groups_match) {
           if (m_entries[i].GetMatingType() == which_mating_type) { //Is the current entry a compatible mating type?
             if (selected_index == -1) selected_index = i;
             else selected_index = compareBirthEntries(ctx, mate_choice_method, m_entries[i], m_entries[selected_index]) ? i : selected_index;
