@@ -127,7 +127,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
     if (m_max_executed < 1) m_max_executed = 1;
   }
   
-  m_germline = (m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get());
   m_repair = (m_world->GetConfig().POINT_MUT_REPAIR_START.Get());
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();

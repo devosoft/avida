@@ -86,6 +86,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_task_id(-1)
 , num_new_unique_reactions(0)
 , res_consumed(0)
+, is_germ_cell(m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get())
 
 { 
   if (parent_generation >= 0) {
@@ -226,7 +227,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   birth_update             = in_phen.birth_update;
   num_new_unique_reactions = in_phen.num_new_unique_reactions;
   last_task_id             = in_phen.last_task_id;
-  res_consumed             = in_phen.res_consumed;  
+  res_consumed             = in_phen.res_consumed; 
+  is_germ_cell             = in_phen.is_germ_cell;
   
   // 5. Status Flags...  (updated at each divide)
   to_die                  = in_phen.to_die;		 
@@ -445,6 +447,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   num_new_unique_reactions = 0;
   last_task_id             = -1;
   res_consumed             = 0;
+  is_germ_cell             = parent_phenotype.is_germ_cell;
   
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
@@ -1248,6 +1251,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   num_new_unique_reactions = clone_phenotype.num_new_unique_reactions;
   last_task_id             = clone_phenotype.last_task_id;
   res_consumed             = clone_phenotype.res_consumed;
+  is_germ_cell             = clone_phenotype.is_germ_cell;
   
   num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
