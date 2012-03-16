@@ -3988,24 +3988,105 @@ void cStats::PrintFemaleAverageData(const cString& filename)
 
 void cStats::PrintMaleErrorData(const cString& filename)
 {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_male_fitness.StdError(),        "Fitness");
+  df.Write(sum_male_gestation.StdError(),      "Gestation Time");
+  df.Write(sum_male_merit.StdError(),          "Merit");
+  df.Write(sum_male_creature_age.StdError(),   "Creature Age");
+  df.Write(sum_male_generation.StdError(),     "Generation");
+  df.Write(sum_male_size.StdError(),           "Genome Length");
+  
+  df.Endl();
 }
 
 void cStats::PrintFemaleErrorData(const cString& filename)
 {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_female_fitness.StdError(),        "Fitness");
+  df.Write(sum_female_gestation.StdError(),      "Gestation Time");
+  df.Write(sum_female_merit.StdError(),          "Merit");
+  df.Write(sum_female_creature_age.StdError(),   "Creature Age");
+  df.Write(sum_female_generation.StdError(),     "Generation");
+  df.Write(sum_female_size.StdError(),           "Genome Length");
+  
+  df.Endl();
 }
 
 void cStats::PrintMaleVarianceData(const cString& filename)
 {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_male_fitness.Variance(),        "Fitness");
+  df.Write(sum_male_gestation.Variance(),      "Gestation Time");
+  df.Write(sum_male_merit.Variance(),          "Merit");
+  df.Write(sum_male_creature_age.Variance(),   "Creature Age");
+  df.Write(sum_male_generation.Variance(),     "Generation");
+  df.Write(sum_male_size.Variance(),           "Genome Length");
+  
+  df.Endl();
 }
 
 void cStats::PrintFemaleVarianceData(const cString& filename)
 {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_female_fitness.Variance(),        "Fitness");
+  df.Write(sum_female_gestation.Variance(),      "Gestation Time");
+  df.Write(sum_female_merit.Variance(),          "Merit");
+  df.Write(sum_female_creature_age.Variance(),   "Creature Age");
+  df.Write(sum_female_generation.Variance(),     "Generation");
+  df.Write(sum_female_size.Variance(),           "Genome Length");
+  
+  df.Endl();
+  
 }
 
-void cStats::PrintMaleInstructionData(const cString& filename)
+void cStats::PrintMaleInstructionData(const cString& filename, const cString& inst_set)
 {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_male_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
+  df.Endl();
 }
 
-void cStats::PrintFemaleInstructionData(const cString& filename)
+void cStats::PrintFemaleInstructionData(const cString& filename, const cString& inst_set)
 {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_female_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
+  df.Endl();  
 }
