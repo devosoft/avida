@@ -158,7 +158,9 @@ private:
   tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
-
+  tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_female_exe_inst_map;
+  
   // --------  Calculated Stats  ---------
   double entropy;
   double species_entropy;
@@ -567,6 +569,7 @@ public:
   cDoubleSum& SumMaleCreatureAge()   { return sum_male_creature_age; }
   cDoubleSum& SumMaleGeneration()    { return sum_male_generation; }
   cDoubleSum& SumMaleSize()          { return sum_male_size; }
+  tArray<cIntSum>& InstMaleExeCountsForInstSet(const cString& inst_set) { return m_is_male_exe_inst_map[inst_set]; }
   
   cDoubleSum& SumFemaleFitness()       { return sum_female_fitness; }
   cDoubleSum& SumFemaleGestation()     { return sum_female_gestation; }
@@ -574,6 +577,8 @@ public:
   cDoubleSum& SumFemaleCreatureAge()   { return sum_female_creature_age; }
   cDoubleSum& SumFemaleGeneration()    { return sum_female_generation; }
   cDoubleSum& SumFemaleSize()          { return sum_female_size; }
+  tArray<cIntSum>& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
+  void ZeroMTInst();
   
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 

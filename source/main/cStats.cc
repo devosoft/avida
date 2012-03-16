@@ -527,6 +527,16 @@ void cStats::ZeroFTInst()
   }
 }
 
+void cStats::ZeroMTInst()
+{
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_male_exe_inst_map.begin(); it != m_is_male_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_female_exe_inst_map.begin(); it != m_is_female_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+}
+
 void cStats::CalcEnergy()
 {
   assert(sum_fitness.Average() >= 0.0);

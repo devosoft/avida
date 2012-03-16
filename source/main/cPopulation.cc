@@ -4859,6 +4859,8 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
   stats.SumFemaleCreatureAge().Clear();
   stats.SumFemaleGeneration().Clear();
   
+  stats.ZeroMTInst();
+  
   for (int i = 0; i < live_org_list.GetSize(); i++) {  
     cOrganism* organism = live_org_list[i];
     const cPhenotype& phenotype = organism->GetPhenotype();
@@ -4872,12 +4874,10 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
       stats.SumMaleCreatureAge().Add(phenotype.GetAge());
       stats.SumMaleGeneration().Add(phenotype.GetGeneration());
       
-      /*
-      tArray<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      tArray<cIntSum>& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet(organism->GetGenome().GetInstSet());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
-        prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+        male_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
-      */
     }
     else if (organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
       stats.SumFemaleFitness().Add(cur_fitness);
@@ -4886,12 +4886,10 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
       stats.SumFemaleCreatureAge().Add(phenotype.GetAge());
       stats.SumFemaleGeneration().Add(phenotype.GetGeneration());
       
-      /*
-      tArray<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      tArray<cIntSum>& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet(organism->GetGenome().GetInstSet());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
-        pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+        female_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
-      */
     }
   }
 }
