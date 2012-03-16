@@ -175,6 +175,10 @@ STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 //mating type/male-female stats data
 STATS_OUT_FILE(PrintMaleAverageData,    male_average.dat   );
 STATS_OUT_FILE(PrintFemaleAverageData,    female_average.dat   );
+STATS_OUT_FILE(PrintMaleErrorData, male_error.dat   );
+STATS_OUT_FILE(PrintFemaleErrorData, female_error.dat   );
+STATS_OUT_FILE(PrintMaleVarianceData, male_variance.dat   );
+STATS_OUT_FILE(PrintFemaleVarianceData, female_variance.dat   );
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
@@ -395,6 +399,65 @@ public:
     m_world->GetStats().PrintPredatorInstructionData(m_filename, m_inst_set);
   }
 };
+
+class cActionPrintMaleInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintMaleInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "male_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("male_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"male_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintMaleInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintFemaleInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintFemaleInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "female_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("female_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"female_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintFemaleInstructionData(m_filename, m_inst_set);
+  }
+};
+
 
 class cActionPrintInstructionAbundanceHistogram : public cAction
 {
@@ -4472,6 +4535,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
+  action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
+  action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
@@ -4483,6 +4548,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
   action_lib->Register<cActionPrintMaleAverageData>("PrintMaleAverageData");
   action_lib->Register<cActionPrintFemaleAverageData>("PrintFemaleAverageData");
+  action_lib->Register<cActionPrintMaleErrorData>("PrintMaleErrorData");
+  action_lib->Register<cActionPrintFemaleErrorData>("PrintFemaleErrorData");
+  action_lib->Register<cActionPrintMaleVarianceData>("PrintMaleVarianceData");
+  action_lib->Register<cActionPrintFemaleVarianceData>("PrintFemaleVarianceData");
   
   // @WRE: Added printing of visit data
   action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
