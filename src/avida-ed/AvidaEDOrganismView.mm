@@ -31,6 +31,7 @@
 
 #import "AvidaEDController.h"
 #import "AvidaEDEnvActionsDataSource.h"
+#import "AvidaEDOrganismSettingsViewController.h"
 #import "AvidaRun.h"
 #import "Freezer.h"
 #import "NSFileManager+TemporaryDirectory.h"
@@ -50,6 +51,12 @@
 
 - (void) setSnapshot:(int)snapshot;
 - (void) setTaskCountsWithSnapshot:(const Avida::Viewer::HardwareSnapshot&)snapshot;
+
+- (void) startAnimation;
+- (void) stopAnimation;
+- (void) nextAnimationFrame:(id)sender;
+
+- (void) createSettingsPopover;
 @end
 
 @implementation AvidaEDOrganismView (hidden)
@@ -94,12 +101,8 @@
     [sldStatus setIntValue:0];
     [sldStatus setEnabled:YES];
     
-    [btnBegin setEnabled:NO];
-    [btnBack setEnabled:NO];
     [btnGo setEnabled:YES];
     [btnGo setTitle:@"Run"];
-    [btnForward setEnabled:YES];
-    [btnEnd setEnabled:YES];
     
     [self setSnapshot:0];
   } else {
@@ -126,10 +129,26 @@
     curSnapshotIndex = snapshot;
     [self setTaskCountsWithSnapshot:trace->Snapshot(snapshot)];
     [orgView setSnapshot:&trace->Snapshot(snapshot)];
-  } else {
-    [sldStatus setIntValue:curSnapshotIndex];
   }
   
+  [sldStatus setIntValue:curSnapshotIndex];
+  
+  if (curSnapshotIndex == 0) {
+    [btnBegin setEnabled:NO];
+    [btnBack setEnabled:NO];
+    [btnForward setEnabled:YES];
+    [btnEnd setEnabled:YES];
+  } else if (curSnapshotIndex == (trace->SnapshotCount() - 1)) {
+    [btnBegin setEnabled:YES];
+    [btnBack setEnabled:YES];
+    [btnForward setEnabled:NO];
+    [btnEnd setEnabled:NO];
+  } else {
+    [btnBegin setEnabled:YES];
+    [btnBack setEnabled:YES];
+    [btnForward setEnabled:YES];
+    [btnEnd setEnabled:YES];
+  }
 }
 
 
@@ -143,6 +162,47 @@
   [tblTaskCounts reloadData];
 }
 
+
+
+- (void) startAnimation {
+  if (tmrAnim == nil) {
+    tmrAnim = [NSTimer scheduledTimerWithTimeInterval:0.075 target:self selector:@selector(nextAnimationFrame:) userInfo:self repeats:YES];
+    [btnGo setTitle:@"Stop"];
+  }
+}
+
+- (void) stopAnimation {
+  if (tmrAnim != nil) {
+    [tmrAnim invalidate];
+    tmrAnim = nil;
+    [btnGo setTitle:@"Run"];
+  }
+}
+
+- (void) nextAnimationFrame:(id)sender {
+  [self setSnapshot:(curSnapshotIndex + 1)];
+}
+
+
+- (void) createSettingsPopover {
+  if (popoverSettings == nil) {
+    // create and setup our popover
+    popoverSettings = [[NSPopover alloc] init];
+    
+    // the popover retains us and we retain the popover, we drop the popover whenever it is closed to avoid a cycle
+    popoverSettings.contentViewController = ctlrSettings;    
+    popoverSettings.appearance = NSPopoverAppearanceHUD;  
+    popoverSettings.animates = YES;
+    
+    // AppKit will close the popover when the user interacts with a user interface element outside the popover.
+    // note that interacting with menus or panels that become key only when needed will not cause a transient popover to close.
+    popoverSettings.behavior = NSPopoverBehaviorTransient;
+    
+    // so we can be notified when the popover appears or closes
+    popoverSettings.delegate = self;
+  }
+}
+
 @end
 
 
@@ -153,6 +213,7 @@
   self = [super initWithFrame:frame];
   if (self) {
     // initialize
+    tmrAnim = nil;
   }
   
   return self;
@@ -176,12 +237,58 @@
   envActions = [[AvidaEDEnvActionsDataSource alloc] init];
   [tblTaskCounts setDataSource:envActions];
   [tblTaskCounts reloadData];
+  
+  
+  
 }
 
 
 - (IBAction) selectSnapshot:(id)sender {
+  [self stopAnimation];
   int snapshot = [sldStatus intValue];
   [self setSnapshot:snapshot];
+}
+
+
+- (IBAction) nextSnapshot:(id)sender {
+  [self stopAnimation];
+  int snapshot = [sldStatus intValue] + 1;
+  if (snapshot >= trace->SnapshotCount()) snapshot = trace->SnapshotCount() - 1;
+  [self setSnapshot:snapshot];
+}
+
+- (IBAction) prevSnapshot:(id)sender {
+  [self stopAnimation];
+  int snapshot = [sldStatus intValue] - 1;
+  if (snapshot < 0) snapshot = 0;
+  [self setSnapshot:snapshot];
+}
+
+- (IBAction) firstSnapshot:(id)sender {
+  [self stopAnimation];
+  [self setSnapshot:0];
+}
+
+- (IBAction) lastSnapshot:(id)sender {
+  [self stopAnimation];
+  [self setSnapshot:(trace->SnapshotCount() - 1)];
+}
+
+
+- (IBAction) toggleAnimation:(id)sender {
+  if (tmrAnim == nil) {
+    [self startAnimation];
+  } else {
+    [self stopAnimation];
+  }
+}
+
+- (IBAction) showSettings:(id)sender {
+  NSButton* targetButton = (NSButton*)sender;
+  
+  [self createSettingsPopover];
+  
+  [popoverSettings showRelativeToRect:[targetButton bounds] ofView:sender preferredEdge:NSMinYEdge];
 }
 
 
@@ -244,5 +351,51 @@
   return YES;
 }
 
+
+
+
+- (void)popoverWillShow:(NSNotification *)notification
+{
+//  NSPopover* popover = [notification object];
+  // add new code here when the popover will be shown
+}
+
+
+- (void)popoverDidShow:(NSNotification *)notification
+{
+  // add new code here after the popover has been shown
+}
+
+
+- (void)popoverWillClose:(NSNotification *)notification
+{
+  NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
+  if (closeReason)
+  {
+    // closeReason can be:
+    //      NSPopoverCloseReasonStandard
+    //      NSPopoverCloseReasonDetachToWindow
+    //
+    // add new code here if you want to respond "before" the popover closes
+    //
+  }
+}
+
+- (void)popoverDidClose:(NSNotification *)notification
+{
+  NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
+  if (closeReason)
+  {
+    // closeReason can be:
+    //      NSPopoverCloseReasonStandard
+    //      NSPopoverCloseReasonDetachToWindow
+    //
+    // add new code here if you want to respond "after" the popover closes
+    //
+  }
+  
+  [popoverSettings release];
+  popoverSettings = nil;
+}
 
 @end

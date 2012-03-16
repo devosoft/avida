@@ -35,11 +35,12 @@
 
 @class AvidaEDController;
 @class AvidaEDEnvActionsDataSource;
+@class AvidaEDOrganismSettingsViewController;
 @class AvidaRun;
 @class OrganismView;
 
 
-@interface AvidaEDOrganismView : NSView <DropDelegate> {
+@interface AvidaEDOrganismView : NSView <DropDelegate, NSPopoverDelegate> {
   IBOutlet OrganismView* orgView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet NSTableView* tblTaskCounts;
@@ -51,6 +52,10 @@
   IBOutlet NSButton* btnForward;
   IBOutlet NSButton* btnEnd;
   
+  IBOutlet AvidaEDOrganismSettingsViewController* ctlrSettings;
+  IBOutlet NSPanel* panelSettings;
+  NSPopover* popoverSettings;
+
   IBOutlet AvidaEDController* ctlr;
   
   AvidaRun* testWorld;
@@ -58,9 +63,17 @@
   int curSnapshotIndex;
   
   AvidaEDEnvActionsDataSource* envActions;
+  
+  NSTimer* tmrAnim;
 }
 
 - (IBAction) selectSnapshot:(id)sender;
+- (IBAction) nextSnapshot:(id)sender;
+- (IBAction) prevSnapshot:(id)sender;
+- (IBAction) firstSnapshot:(id)sender;
+- (IBAction) lastSnapshot:(id)sender;
+- (IBAction) toggleAnimation:(id)sender;
+- (IBAction) showSettings:(id)sender;
 
 
 // DropDelegate
@@ -68,5 +81,6 @@
 - (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
 - (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
 - (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
+
 
 @end

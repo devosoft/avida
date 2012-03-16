@@ -56,9 +56,6 @@
     NSRect bounds = [self bounds];
     NSPoint centerPoint = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
     
-    NSFont* std_font = [NSFont fontWithName:@"Helvetica" size:10.0];
-    NSDictionary* std_str_attributes = [NSDictionary dictionaryWithObject:std_font forKey:NSFontAttributeName];
-
     for (int object_idx = 0; object_idx < snapshot->NumGraphicObjects(); object_idx++) {
       const Avida::Viewer::HardwareSnapshot::GraphicObject& obj = snapshot->Object(object_idx);
       
@@ -84,16 +81,13 @@
           
           // Draw the label string in the center of the calculated rect
           if (obj.label.GetSize() && obj.label_color.a > 0.0) {
-            
             // Set up string attributes for the label
-            NSDictionary* str_attributes = std_str_attributes;
-            if (obj.font_size != 1.0) {
-              // Only create a new set of font attributes if the size is different from the standard size
-              NSFont* font = [NSFont fontWithName:@"Helvetica" size:(10.0 * obj.font_size)];
-              str_attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-            }
+            NSFont* font = [NSFont fontWithName:@"Helvetica" size:(10.0 * obj.font_size)];
+            NSColor* color = [NSColor colorWithSRGBRed:obj.label_color.r green:obj.label_color.g blue:obj.label_color.b
+                                                 alpha:obj.label_color.a];
+            NSDictionary* str_attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                            font, NSFontAttributeName, color, NSForegroundColorAttributeName, nil];
             
-            [[NSColor colorWithSRGBRed:obj.label_color.r green:obj.label_color.g blue:obj.label_color.b alpha:obj.label_color.a] set];
             NSString* lbl = [NSString stringWithAptoString:obj.label];
             CGFloat offset_x = [lbl sizeWithAttributes:str_attributes].width / 2.0;
             CGFloat offset_y = [lbl sizeWithAttributes:str_attributes].height / 2.0;
