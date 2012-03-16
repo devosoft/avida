@@ -2033,10 +2033,11 @@ bool cHardwareExperimental::Inst_DemeIO(cAvidaContext& ctx)
   //m_last_output = m_cycle_count; //**
 
   // Do deme input..
-  //const int value_in = m_organism->GetNextInput();
-  int value_in = m_world->GetRandom().GetInt(2000000);
-  setInternalValue(reg_used, value_in, true);
-  m_organism->GetOrgInterface().DoDemeInput(value_in);
+  int value_in = m_organism->GetOrgInterface().GetNextDemeInput(ctx);
+  if (value_in != -1) {
+    setInternalValue(reg_used, value_in, true);
+    m_organism->GetOrgInterface().DoDemeInput(value_in);
+  }
 
   return true;
 }

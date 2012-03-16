@@ -83,8 +83,9 @@ cDeme::cDeme()
   , suicides(0)
   , m_network(0)
   , m_num_reproductives(0)
-  , m_input_buf(0)
-  , m_output_buf(0)
+  , m_input_pointer(0) //@JJB**
+  , m_input_buf(0) //@JJB**
+  , m_output_buf(0) //@JJB**
   , m_reaction_result(NULL) //@JJB**
 {
 }
@@ -167,18 +168,17 @@ cDeme& cDeme::operator=(const cDeme& in_deme) //@JJB**
   migrations_in                       = in_deme.migrations_in;
   suicides                            = in_deme.suicides;
 //m_network                           = in_deme.m_network;
+  m_inputs                            = in_deme.m_inputs;
   m_input_buf                         = in_deme.m_input_buf;
   m_output_buf                        = in_deme.m_output_buf;
 //m_reaction_result                   = in_deme.m_reaction_result;
-  eff_task_count                      = in_deme.eff_task_count;
+  m_eff_task_count                    = in_deme.m_eff_task_count;
   m_cur_task_count                    = in_deme.m_cur_task_count;
   m_cur_reaction_count                = in_deme.m_cur_reaction_count;
-  cur_task_quality                    = in_deme.cur_task_quality;
-  cur_task_value                      = in_deme.cur_task_value;
-  cur_task_time                       = in_deme.cur_task_time;
-  last_task_count                     = in_deme.last_task_count;
-  cur_reaction_add_reward             = in_deme.cur_reaction_add_reward;
-  cur_bonus                           = in_deme.cur_bonus;
+  m_last_task_count                   = in_deme.m_last_task_count;
+  m_cur_reaction_add_reward           = in_deme.m_cur_reaction_add_reward;
+  m_cur_bonus                         = in_deme.m_cur_bonus;
+  m_cur_merit                         = in_deme.m_cur_merit;
   m_total_res_consumed                = in_deme.m_total_res_consumed;
   m_switch_penalties                  = in_deme.m_switch_penalties;
   m_shannon_matrix                    = in_deme.m_shannon_matrix;
@@ -245,21 +245,22 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
 
   m_input_buf = tBuffer<int>(m_world->GetEnvironment().GetInputSize()); //@JJB**
   m_output_buf = tBuffer<int>(m_world->GetEnvironment().GetOutputSize()); //@JJB**
-  eff_task_count.ResizeClear(num_tasks); //@JJB**
-  eff_task_count.SetAll(0);
+  m_eff_task_count.ResizeClear(num_tasks); //@JJB**
+  m_eff_task_count.SetAll(0);
+  m_cur_task_count.ResizeClear(num_tasks); //@JJB**
+  m_cur_task_count.SetAll(0);
   m_cur_reaction_count.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
   m_cur_reaction_count.SetAll(0);
-  cur_task_quality.ResizeClear(num_tasks); //@JJB**
-  cur_task_quality.SetAll(0.0);
-  cur_task_value.ResizeClear(num_tasks); //@JJB**
-  cur_task_value.SetAll(0.0);
-  cur_task_time.ResizeClear(num_tasks); //@JJB**
-  cur_task_time.SetAll(0.0);
-  last_task_count.ResizeClear(num_tasks); //@JJB**
-  last_task_count.SetAll(0);
-  cur_reaction_add_reward.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
-  cur_reaction_add_reward.SetAll(0.0);
-  cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
+  m_last_task_count.ResizeClear(num_tasks); //@JJB**
+  m_last_task_count.SetAll(0);
+  m_cur_reaction_add_reward.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
+  m_cur_reaction_add_reward.SetAll(0.0);
+  m_cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
+  if (m_world->GetConfig().BASE_MERIT_METHOD.Get() == BASE_MERIT_CONST) {
+    m_cur_merit = m_world->GetConfig().BASE_CONST_MERIT.Get();
+  } else {
+    m_cur_merit = 1.0;
+  }
   
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
@@ -518,16 +519,20 @@ void cDeme::Reset(cAvidaContext& ctx, bool resetResources, double deme_energy)
   m_shannon_matrix.clear();
   m_num_reproductives = 0;
 
+  m_input_pointer = 0; //@JJB**
   m_input_buf.Clear(); //@JJB**
   m_output_buf.Clear(); //@JJB**
-  eff_task_count.SetAll(0); //@JJB**
+  m_last_task_count = m_eff_task_count; //@JJB**
+  m_eff_task_count.SetAll(0); //@JJB**
+  m_cur_task_count.SetAll(0); //@JJB**
   m_cur_reaction_count.SetAll(0); //@JJB**
-  cur_task_quality.SetAll(0.0); //@JJB**
-  cur_task_value.SetAll(0.0); //@JJB**
-  cur_task_time.SetAll(0.0); //@JJB**
-  last_task_count = eff_task_count; //@JJB**
-  cur_reaction_add_reward.SetAll(0.0); //@JJB**
-  cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
+  m_cur_reaction_add_reward.SetAll(0.0); //@JJB**
+  m_cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
+  if (m_world->GetConfig().BASE_MERIT_METHOD.Get() == BASE_MERIT_CONST) {
+    m_cur_merit = m_world->GetConfig().BASE_CONST_MERIT.Get();
+  } else {
+    m_cur_merit = 1.0;
+  }
 
   // Reset Task States
   tArray<cTaskState*> task_states(0);
@@ -1238,6 +1243,20 @@ cDemeNetwork& cDeme::GetNetwork()
   return *m_network; 
 }
 
+void cDeme::ResetInputs(cAvidaContext& ctx)
+{
+  m_world->GetEnvironment().SetupInputs(ctx, m_inputs);
+}
+
+//@JJB**
+int cDeme::GetNextDemeInput(cAvidaContext& ctx)
+{
+  // Hack protection
+  if (!m_inputs.GetSize()) ResetInputs(ctx);
+  m_input_pointer %= m_inputs.GetSize();
+  return m_inputs[m_input_pointer++];
+}
+
 //@JJB**
 void cDeme::DoDemeInput(int value)
 {
@@ -1247,14 +1266,17 @@ void cDeme::DoDemeInput(int value)
 //@JJB**
 void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
 {
+  // Add value to the output buffer
   m_output_buf.Add(value);
+
+  // Needed to setup taskctx, but will not actually be used
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
   tSmartArray<int> ext_mem;
 
+  // Setup the task context
   cTaskContext taskctx(NULL, m_input_buf, m_output_buf, other_input_list, other_output_list,
                        ext_mem, false, NULL, this);
-
   taskctx.SetTaskStates(&m_task_states);
 
   const cEnvironment& env = m_world->GetEnvironment();
@@ -1262,77 +1284,112 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
 
+  // Create a new reaction result
   if (!m_reaction_result) m_reaction_result = new cReactionResult(num_resources, num_tasks, num_reactions);
   cReactionResult& result = *m_reaction_result;
 
+  // Not actually set up for deme's using resources during reactions
   tArray<double> res_in;
   tArray<double> rbins_in;
-  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, m_cur_reaction_count, res_in, rbins_in);
 
-  // If nothing was found, stop here
+  // The environment, evaluates if a task and if a resulting reaction were completed
+  bool found = env.TestOutput(ctx, result, taskctx, m_eff_task_count, m_cur_reaction_count, res_in, rbins_in);
+
+  // No task completed, end here
   if (found == false) {
     result.Invalidate();
     return;
   }
 
   // Update records with the results..
-  // Start with updating task and reaction counters
+
+  // Update deme's task and reaction counters
   for (int i = 0; i < num_tasks; i++) {
     if (result.TaskDone(i) == true) {
-      eff_task_count[i]++;
+      m_eff_task_count[i]++;
+      m_cur_task_count[i]++;
     }
-
-    if (result.TaskQuality(i) > 0) {
-      cur_task_quality[i] += result.TaskQuality(i);
+  }
+  for (int i = 0; i < num_reactions; i++) {
+    if (result.ReactionTriggered(i) == true) {
+      m_cur_reaction_count[i]++;
     }
-
-    const int cur_update_time = m_world->GetStats().GetUpdate();
-    cur_task_value[i] = result.TaskValue(i);
-    cur_task_time[i] = cur_update_time;
   }
 
+  // Update stats task totals
   for (int i = 0; i < num_tasks; i++) {
-    if (result.TaskDone(i) && !last_task_count[i]) {
+    if (result.TaskDone(i) && !m_last_task_count[i]) {
       m_world->GetStats().AddNewTaskCount(i);
       int prev_num_tasks = 0;
       int cur_num_tasks = 0;
       for (int j = 0; j < num_tasks; j++) {
-        if (last_task_count[j] > 0) prev_num_tasks++;
-        if (eff_task_count[j] > 0) cur_num_tasks++;
+        if (m_last_task_count[j] > 0) prev_num_tasks++;
+        if (m_eff_task_count[j] > 0) cur_num_tasks++;
       }
       m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
     }
   }
 
+  // Update stats reaction totals
   for (int i = 0; i < num_reactions; i++) {
-    cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
+    m_cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
     if (result.ReactionTriggered(i) && last_reaction_count[i] == 0) {
       m_world->GetStats().AddNewReactionCount(i);
     }
   }
 
-  cur_bonus *= result.GetMultBonus();
-  cur_bonus += result.GetAddBonus();
+  // Update deme's merit bonus from reaction
+  m_cur_bonus *= result.GetMultBonus(); //**
+  m_cur_bonus += result.GetAddBonus(); //**
 
-  if (result.GetActiveDeme()) {
-    double deme_bonus = GetHeritableDemeMerit().GetDouble();
-    deme_bonus *= result.GetMultDemeBonus();
-    deme_bonus += result.GetAddDemeBonus();
-    UpdateHeritableDemeMerit(deme_bonus);
-  }
+  //**
+  //if (result.GetActiveDeme()) {
+  //  double deme_bonus = GetHeritableDemeMerit().GetDouble();
+  //  deme_bonus *= result.GetMultDemeBonus();
+  //  deme_bonus += result.GetAddDemeBonus();
+  //  UpdateHeritableDemeMerit(deme_bonus);
+  //}
 
+  // If applying merit changes immediately, update the deme's merit merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-    UpdateDemeMerit();
+    UpdateCurMerit();
   }
 
-  for (int i = 0; i < num_tasks; i++) {
-    if (result.TaskDone(i) == true) AddCurTask(i);
-  }
-  for (int i = 0; i < num_reactions; i++) {
-    if (result.ReactionTriggered(i) == true) AddCurReaction(i);
-  }
+  //**
+  //for (int i = 0; i < num_tasks; i++) {
+  //  if (result.TaskDone(i) == true) AddCurTask(i);
+  //}
+  //for (int i = 0; i < num_reactions; i++) {
+  //  if (result.ReactionTriggered(i) == true) AddCurReaction(i);
+  //}
 
   result.Invalidate();
+}
+
+//@JJB**
+void cDeme::UpdateCurMerit()
+{
+  double merit_base;
+  if (m_world->GetConfig().BASE_MERIT_METHOD.Get() == BASE_MERIT_CONST) {
+    merit_base = m_world->GetConfig().BASE_CONST_MERIT.Get();
+  } else {
+    merit_base = 1.0;
+  }
+  m_cur_merit = merit_base * m_cur_bonus;
+}
+
+//@JJB**
+cMerit cDeme::CalcCurMerit()
+{
+  cMerit cur_merit;
+  double merit_base;
+  if (m_world->GetConfig().BASE_MERIT_METHOD.Get() == BASE_MERIT_CONST) {
+    merit_base = m_world->GetConfig().BASE_CONST_MERIT.Get();
+  } else {
+    merit_base = 1.0;
+  }
+  cur_merit = merit_base * m_cur_bonus;
+  return cur_merit;
 }
 
 // Returns the minimum number of times any of the reactions were performed

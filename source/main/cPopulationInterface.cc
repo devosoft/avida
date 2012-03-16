@@ -884,6 +884,14 @@ bool cPopulationInterface::NetworkSelect(int x) {
 	return true;
 }
 
+// @JJB**
+int cPopulationInterface::GetNextDemeInput(cAvidaContext& ctx)
+{
+  if (m_world->GetPopulation().GetCell(m_cell_id).GetCanInput()) {
+    return GetDeme()->GetNextDemeInput(ctx);
+  }
+  return -1;
+}
 
 // @JJB**
 void cPopulationInterface::DoDemeInput(int value)
@@ -893,6 +901,7 @@ void cPopulationInterface::DoDemeInput(int value)
   }
 }
 
+// @JJB**
 void cPopulationInterface::DoDemeOutput(cAvidaContext& ctx, int value)
 {
   if (m_world->GetPopulation().GetCell(m_cell_id).GetCanOutput()) {
@@ -1577,13 +1586,13 @@ void cPopulationInterface::AddPredPreyAV(int av_cell_id)
 {
   // Add predator (saved as input avatar)
   if (GetOrganism()->GetForageTarget() == -2) {
-    io_avatar predAV(av_cell_id, GetFacedDir(), -1, true, false);
+    io_avatar predAV(av_cell_id, 0, -1, true, false);
     m_avatars.Push(predAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddInputAV(GetOrganism());
   }
   // Add prey (saved as output avatar)
   else {
-    io_avatar preyAV(av_cell_id, GetFacedDir(), -1, false, true);
+    io_avatar preyAV(av_cell_id, 0, -1, false, true);
     m_avatars.Push(preyAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddOutputAV(GetOrganism());
   }
@@ -1871,8 +1880,8 @@ bool cPopulationInterface::MoveAV(cAvidaContext& ctx, int av_num)
     int src_id = m_avatars[av_num].av_cell_id;
     int dest_id = m_avatars[av_num].av_faced_cell;
     int true_cell = m_cell_id;
-    if (m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
-      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
+    if (m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
+      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num); //**
     }
   }
   return false;

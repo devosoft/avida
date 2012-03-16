@@ -239,10 +239,10 @@ public:
   void AddCurTask(int task_num) { cur_task_exe_count[task_num]++; }
   void AddCurReaction (int reaction_num) { cur_reaction_count[reaction_num]++; }
 
-  const tArray<int>& GetCurTaskExeCount() const { return cur_task_exe_count; }
-  const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; }
-  const tArray<int>& GetCurReactionCount() const { return cur_reaction_count; }
-  const tArray<int>& GetLastReactionCount() const { return last_reaction_count; }
+  const tArray<int>& GetCurTaskExeCount() const { return cur_task_exe_count; } //**
+  const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; } //**
+  const tArray<int>& GetCurReactionCount() const { return cur_reaction_count; } //**
+  const tArray<int>& GetLastReactionCount() const { return last_reaction_count; } //**
 
   const tArray<int>& GetCurOrgTaskCount() const { return cur_org_task_count; }
   const tArray<int>& GetLastOrgTaskCount() const { return last_org_task_count; }
@@ -370,41 +370,48 @@ public:
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
 	
-	// -= Network creation support =-
+  // -= Network creation support =-
 private:
-	//! Lazily-initialized pointer to the network creation support struct.
-	cDemeNetwork* m_network;
+  //! Lazily-initialized pointer to the network creation support struct.
+  cDemeNetwork* m_network;
 
-	//! Initialize network creation support.
-	inline void InitNetworkCreation() { if(!m_network) m_network = cDemeNetwork::DemeNetworkFactory(m_world, *this); }
-	//! Test for initialization of the network.
-	inline bool IsNetworkInitialized() { return m_network != 0; }
+  //! Initialize network creation support.
+  inline void InitNetworkCreation() { if(!m_network) m_network = cDemeNetwork::DemeNetworkFactory(m_world, *this); }
+  //! Test for initialization of the network.
+  inline bool IsNetworkInitialized() { return m_network != 0; }
 public:
-	//! Retrieve this deme's network.
-	cDemeNetwork& GetNetwork();
-	
+  //! Retrieve this deme's network.
+  cDemeNetwork& GetNetwork();
+
   // -------- Deme Input and Output -------- @JJB**
 private:
+  int m_input_pointer;
+  tArray<int> m_inputs;
   tBuffer<int> m_input_buf;
   tBuffer<int> m_output_buf;
   tHashMap<void*, cTaskState*> m_task_states;
   cReactionResult* m_reaction_result;
-  tArray<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the deme)
+  tArray<int> m_eff_task_count;               // Total times each task was performed (resetable during the life of the deme)
   tArray<int> m_cur_task_count;
-  tArray<int> m_cur_reaction_count;           // Total times each reaction was triggered
-  tArray<double> cur_task_quality;
-  tArray<double> cur_task_value;
-  tArray<double> cur_task_time;
-  tArray<int> last_task_count;
-  tArray<double> cur_reaction_add_reward;
-  double cur_bonus;
+  tArray<int> m_last_task_count;
+  tArray<int> m_cur_reaction_count;
+  tArray<double> m_cur_reaction_add_reward;
+  double m_cur_bonus;
+  cMerit m_cur_merit;
 public:
+  void ResetInputs(cAvidaContext& ctx);
+  void ResetInput() { m_input_pointer = 0; m_input_buf.Clear(); }
+  int GetNextDemeInput(cAvidaContext& ctx);
   void DoDemeInput(int value);
   void DoDemeOutput(cAvidaContext& ctx, int value);
-  const tArray<int>& GetLastTaskCount() const { return last_task_count; }
-  double GetCurBonus() const { return cur_bonus; }
-  void AddTask(int task_num) { m_cur_task_count[task_num]++; }
-  void AddReaction(int reaction_num) { m_cur_reaction_count[reaction_num]++; }
+  double GetCurBonus() const { return m_cur_bonus; }
+  void ResetMeritBonus() { m_cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); }
+  const cMerit& GetCurMerit() { return m_cur_merit; }
+  void UpdateCurMerit();
+  cMerit CalcCurMerit();
+  const tArray<int>& GetCurTaskCount() const { return m_cur_task_count; } //**
+  const tArray<int>& GetReactionCount() const { return m_cur_reaction_count; } //**
+
 
 	// --- Division of Labor --- //
 public: 	

@@ -145,6 +145,7 @@ public:
   //! Select a new network link.
   bool NetworkSelect(int x) { return false; }
 
+  int GetNextDemeInput(cAvidaContext& ctx) { return -1; }
   void DoDemeInput(int value) { ; }
   void DoDemeOutput(cAvidaContext& ctx, int value) { ; }
 

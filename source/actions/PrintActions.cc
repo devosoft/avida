@@ -142,6 +142,8 @@ STATS_OUT_FILE(PrintAvgUntreatableDemeTasksExeData, avg_untreatable_deme_tasks_e
 STATS_OUT_FILE(PrintPerDemeReactionData,    per_deme_reactions.dat  );
 STATS_OUT_FILE(PrintDemeTasksData,          deme_tasks.dat      );
 STATS_OUT_FILE(PrintDemeTasksExeData,       deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintDemeCurTasksData,       deme_cur_tasks.dat); //@JJB**
+STATS_OUT_FILE(PrintDemeCurReactionsData,   deme_cur_reactions.dat); //@JJB**
 STATS_OUT_FILE(PrintDemeReactionData,       deme_reactions.dat  );
 STATS_OUT_FILE(PrintDemeOrgTasksData,       deme_org_tasks.dat      );
 STATS_OUT_FILE(PrintDemeOrgTasksExeData,    deme_org_tasks_exe.dat  );
@@ -4172,6 +4174,20 @@ public:
   }
 };
 
+//@JJB**
+class cActionPrintDemeMerits : public cAction
+{
+public:
+  cActionPrintDemeMerits(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeMerits();
+  }
+};
+
 class cActionPrintDebug : public cAction
 {
 public:
@@ -4537,11 +4553,15 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeReactionData>("PrintDemeReactionData");
   action_lib->Register<cActionPrintDemeOrgTasksData>("PrintDemeOrgTasksData");
   action_lib->Register<cActionPrintDemeOrgTasksExeData>("PrintDemeOrgTasksExeData");
+  action_lib->Register<cActionPrintDemeCurTasksData>("PrintDemeCurTasksData"); //@JJB**
+  action_lib->Register<cActionPrintDemeCurReactionsData>("PrintDemeCurReactionsData"); //@JJB**
   action_lib->Register<cActionPrintDemeOrgReactionData>("PrintDemeOrgReactionData");
   action_lib->Register<cActionPrintDemeCurrentTaskExeData>("PrintDemeCurrentTaskExeData");
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
+  action_lib->Register<cActionPrintDemeMerits>("PrintDemeMerits");
+
   action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");

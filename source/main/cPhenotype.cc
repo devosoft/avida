@@ -738,11 +738,10 @@ void cPhenotype::ResetMerit(const Sequence & _cgenome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
-	
+
   if (m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
     merit = cur_merit_base;
   }
-  
 }
 
 
@@ -765,7 +764,7 @@ void cPhenotype::DivideReset(const Sequence & _genome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
-	
+
   if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
     merit = cur_merit_base;
   

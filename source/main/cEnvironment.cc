@@ -1224,34 +1224,6 @@ bool cEnvironment::LoadSetActive(cString desc, Feedback& feedback)
   return true;
 }
 
-// @JJB**
-bool cEnvironment::LoadIOGrid(cString desc, Feedback& feedback)
-{
-  if (desc.GetSize() == 0) {
-    feedback.Warning("DEME_IO_GRID line with no variables");
-    return false;
-  }
-
-  while (desc.GetSize() > 0) {
-    cString cur_IO = desc.PopWord();
-    const cString inputOutput = cur_IO.Pop(':');
-
-    cString cell_list_str = cur_IO.Pop(':');
-    tArray<int> cell_list = cStringUtil::ReturnArray(cell_list_str);
-
-    if (inputOutput == "Input") {
-      for (int i = 0; i < cell_list.GetSize(); i++) {
-        m_world->GetPopulation().GetCell(cell_list[i]).SetCanInput(true);
-      }
-    }
-    else if (inputOutput == "Output") {
-      for (int i = 0; i < cell_list.GetSize(); i++) {
-        m_world->GetPopulation().GetCell(cell_list[i]).SetCanOutput(true);
-      }
-    }
-  }
-}
-
 bool cEnvironment::LoadLine(cString line, Feedback& feedback)
 
 /* Routine to read in a line from the enviroment file and hand that line
@@ -1268,7 +1240,6 @@ bool cEnvironment::LoadLine(cString line, Feedback& feedback)
   else if (type == "GRID") load_ok = LoadStateGrid(line, feedback);
   else if (type == "DYNAMIC_RESOURCE") load_ok = LoadDynamicResource(line, feedback); //JW
   else if (type == "GRADIENT_RESOURCE") load_ok = LoadGradientResource(line, feedback); 
-  else if (type == "DEME_IO_GRID") load_ok = LoadIOGrid(line, feedback); // @JJB**
   else {
     feedback.Error("unknown environment keyword '%s'", (const char*)type);
     return false;

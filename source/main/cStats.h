@@ -1012,6 +1012,8 @@ public:
   void PrintDemeOrgTasksData(const cString& filename);
   void PrintDemeOrgTasksExeData(const cString& filename);
   void PrintDemeOrgReactionData(const cString& filename);
+  void PrintDemeCurTasksData(const cString& filename); //@JJB**
+  void PrintDemeCurReactionsData(const cString& filename); //@JJB**
   void PrintDemeCurrentTaskExeData(const cString& filename);
   void PrintCurrentTaskCounts(const cString& filename);
   void PrintPerDemeGenPerFounderData(const cString& filename);
