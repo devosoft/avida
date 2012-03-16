@@ -3972,7 +3972,7 @@ void cStats::PrintFemaleAverageData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   
-  df.WriteComment("Male Average Data");
+  df.WriteComment("Female Average Data");
   df.WriteTimeStamp();
   
   df.Write(m_update,                          "Update");
@@ -3984,4 +3984,28 @@ void cStats::PrintFemaleAverageData(const cString& filename)
   df.Write(sum_female_size.Average(),           "Genome Length");
   
   df.Endl();
+}
+
+void cStats::PrintMaleErrorData(const cString& filename)
+{
+}
+
+void cStats::PrintFemaleErrorData(const cString& filename)
+{
+}
+
+void cStats::PrintMaleVarianceData(const cString& filename)
+{
+}
+
+void cStats::PrintFemaleVarianceData(const cString& filename)
+{
+}
+
+void cStats::PrintMaleInstructionData(const cString& filename)
+{
+}
+
+void cStats::PrintFemaleInstructionData(const cString& filename)
+{
 }

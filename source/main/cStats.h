@@ -933,6 +933,12 @@ public:
   void PrintToleranceData(const cString& filename); 
   void PrintMaleAverageData(const cString& filename);
   void PrintFemaleAverageData(const cString& filename);
+  void PrintMaleErrorData(const cString& filename);
+  void PrintFemaleErrorData(const cString& filename);
+  void PrintMaleVarianceData(const cString& filename);
+  void PrintFemaleVarianceData(const cString& filename);
+  void PrintMaleInstructionData(const cString& filename);
+  void PrintFemaleInstructionData(const cString& filename);
 
   // deme predicate stats
   void IncEventCount(int x, int y);
