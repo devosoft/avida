@@ -73,6 +73,8 @@ namespace Avida {
       
       Instruction m_next_inst;
       
+      bool m_post_divide;
+      
       mutable Apto::Array<GraphicObject*> m_graphic_objects;
       mutable bool m_layout;
       
@@ -83,6 +85,8 @@ namespace Avida {
       
       
       // Definition Methods
+      LIB_LOCAL inline void SetPostDivide() { m_post_divide = true; }
+      
       LIB_LOCAL inline void SetRegister(int idx, int value) { m_registers[idx] = value; }
       LIB_LOCAL void AddBuffer(const Apto::String& description, const Apto::Array<int>& values);
       LIB_LOCAL void SetFunctionCount(const Apto::String& function, int count);
@@ -93,6 +97,7 @@ namespace Avida {
 
 
       // Access Methods
+      LIB_EXPORT inline bool IsPostDivide() { return m_post_divide; }
       LIB_EXPORT inline int NumRegisters() const { return m_registers.GetSize(); }
       LIB_EXPORT inline int Register(int idx) const { return m_registers[idx]; }
       

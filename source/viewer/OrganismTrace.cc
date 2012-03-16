@@ -59,6 +59,7 @@ private:
   Instruction m_first_inst;
   int m_last_mem_space;
   int m_last_idx;
+  GenomePtr m_genome;
   
 
 public:
@@ -99,6 +100,8 @@ void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*
   m_last_mem_space = 0;
   m_last_idx = 0;
   
+  m_genome = genome;
+  
   
   // Setup context
   cRandom rng(100);
@@ -116,6 +119,8 @@ void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*
   
   // Clear internal reference to the snapshot array
   m_snapshots = NULL;
+  
+  m_genome = GenomePtr();
 }
 
 
@@ -133,7 +138,8 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
   // Make sure snapshot array is big enough (just in case bonus cycles or threads are in use)
   if (m_snapshots->GetSize() < m_snapshot_count) m_snapshots->Resize(m_snapshots->GetSize() * 2);
   
-  HardwareSnapshot* snapshot = new HardwareSnapshot(hw.GetNumRegisters());
+  HardwareSnapshot* prev_snapshot = (m_snapshot_count > 1) ? (*m_snapshots)[m_snapshot_count - 2] : NULL;
+  HardwareSnapshot* snapshot = new HardwareSnapshot(hw.GetNumRegisters(), prev_snapshot);
   (*m_snapshots)[m_snapshot_count - 1] = snapshot;
   
   // Store register states
@@ -231,6 +237,40 @@ void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrga
   (void)organism;
   
   // Trace finished, cleanup...
+
+  // Create snapshot based on current hardware state
+  m_snapshot_count++;
+  
+  // Make sure snapshot array is big enough (just in case bonus cycles or threads are in use)
+  if (m_snapshots->GetSize() < m_snapshot_count) m_snapshots->Resize(m_snapshots->GetSize() * 2);
+  
+  HardwareSnapshot* snapshot = new HardwareSnapshot(0);
+  (*m_snapshots)[m_snapshot_count - 1] = snapshot;
+  
+  snapshot->SetPostDivide();
+  
+  
+  // Handle memory spaces
+  Apto::Array<Instruction> memory;
+  ConstInstructionSequencePtr seq;
+  
+  // - handle the genome part of the memory
+  seq.DynamicCastFrom(m_genome->Representation());
+  memory.Resize(seq->GetSize());
+  for (int i = 0; i < m_genome_length && i < seq->GetSize(); i++) {
+    memory[i] = (*seq)[i];
+  }
+  snapshot->AddMemSpace("genome", memory);
+    
+  // - handle the offspring part of the memory
+  seq.DynamicCastFrom(organism.GetGenome().Representation());
+  memory.Resize(seq->GetSize());
+  for (int i = m_genome_length; i < seq->GetSize(); i++) {
+    memory[i - m_genome_length] = (*seq)[i];
+  }
+  snapshot->AddMemSpace("offsping", memory);
+  
+  
   
   // Resize the snapshot array to the actual number of snapshots
   m_snapshots->Resize(m_snapshot_count);
@@ -240,7 +280,7 @@ void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrga
 
 
 HardwareSnapshot::HardwareSnapshot(int num_regs, HardwareSnapshot* previous_snapshot)
-: m_registers(num_regs), m_layout(false)
+: m_registers(num_regs), m_post_divide(false), m_layout(false)
 {
   if (previous_snapshot) m_jumps = previous_snapshot->m_jumps;
 }
@@ -302,7 +342,7 @@ void HardwareSnapshot::AddJump(int from_mem_space, int from_idx, int to_mem_spac
 void Avida::Viewer::HardwareSnapshot::doLayout() const
 {
   // Build the various graphic objects that need to be displayed.
-  const double genome_spacing = 0.1;                 // Space between two genome circles.
+  const double genome_spacing = (m_post_divide) ? 0.2 : 0.1;                 // Space between two genome circles.
   const double inst_radius = 0.1;                   // Radius of each instruction circle
   
   // Calculated constants, based on parameters set above
@@ -322,6 +362,7 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
     const double angle_step = 2.0*PI / (double) cur_length;
     const double genome_radius = genome_circumference / (2.0*PI);
     const double genome_offset = genome_radius + genome_spacing;
+    const double head_radius = genome_radius - 2.0 * inst_radius;
 
     // Setup the central position for this memory space.  For the moment, assume we only have parent and offspring.
     double center_x = 0.0;
@@ -333,7 +374,10 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
       // Calculate where this instruction should be drawn on the screen.
       // Center position + angular offset - radius (since we need the lower, left corner of each circle to draw)
       double cur_angle = angle_step * (double) cur_inst_idx;
-      cur_angle += (cur_mem_id == 0) ? angular_offset : -angular_offset; // rotate in opposite 1/4 angles based on mem_space
+      
+      // rotate in opposite 1/4 angles based on mem_space, if post_divide rotate both the same direction
+      cur_angle += (cur_mem_id == 0 || m_post_divide) ? angular_offset : -angular_offset;
+      
       float inst_x = center_x + sin(cur_angle) * genome_radius - inst_radius;
       float inst_y = center_y + cos(cur_angle) * genome_radius - inst_radius;
 
@@ -350,19 +394,37 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
       for (Apto::Map<Apto::String, int>::ConstIterator it = cur_memspace.heads.Begin(); it.Next(); ) {
         if (*it.Get()->Value2() == cur_inst_idx) {
           Apto::String head = it.Get()->Value1();
+          
+          float head_x = center_x + sin(cur_angle) * head_radius - inst_radius;
+          float head_y = center_y + cos(cur_angle) * head_radius - inst_radius;
+          GraphicObject* head_go = new GraphicObject(head_x, head_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
+          
           if (head == "IP") {
             line_color = GraphicObject::Color::BLACK();
             inst_go->line_width = 3.0;
+            head_go->label = "I";
           } else if (head == "FLOW") {
             line_color.g = 1.0;
             line_color.a = 1.0;
+            head_go->label = "F";
+            head_go->label_color = GraphicObject::Color::GREEN();
           } else if (head == "READ") {
             line_color.b = 1.0;
             line_color.a = 1.0;
+            head_go->label = "R";
+            head_go->label_color = GraphicObject::Color::BLUE();
           } else if (head == "WRITE") {
             line_color.r = 1.0;
             line_color.a = 1.0;
+            head_go->label = "W";
+            head_go->label_color = GraphicObject::Color::RED();
+          } else {
+            // Unknown head
+            delete head_go;
+            continue;
           }
+          
+          m_graphic_objects.Push(head_go);
         }
       }
       
@@ -370,9 +432,6 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
     }
   }
 
-  // @CAO Draw heads
-  
-  
   // @CAO Draw arcs showing prior execution path.
   
   
