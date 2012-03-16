@@ -4860,7 +4860,7 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
   stats.SumFemaleGeneration().Clear();
   
   stats.ZeroMTInst();
-  
+
   for (int i = 0; i < live_org_list.GetSize(); i++) {  
     cOrganism* organism = live_org_list[i];
     const cPhenotype& phenotype = organism->GetPhenotype();
