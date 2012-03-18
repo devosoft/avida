@@ -1559,13 +1559,13 @@ void cPopulationInterface::AddPredPreyAV(int av_cell_id)
 {
   // Add predator (saved as input avatar)
   if (GetOrganism()->GetForageTarget() == -2) {
-    sIO_avatar predAV(av_cell_id, GetFacedDir(), -1, true, false);
+    sIO_avatar predAV(av_cell_id, 0, -1, true, false);
     m_avatars.Push(predAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddInputAV(GetOrganism());
   }
   // Add prey (saved as output avatar)
   else {
-    sIO_avatar preyAV(av_cell_id, GetFacedDir(), -1, false, true);
+    sIO_avatar preyAV(av_cell_id, 0, -1, false, true);
     m_avatars.Push(preyAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddOutputAV(GetOrganism());
   }
