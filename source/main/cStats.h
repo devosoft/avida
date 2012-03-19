@@ -876,8 +876,6 @@ public:
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
   void PrintParasiteData(const cString& filename);
-  void PrintParasiteMigrationCounts(const cString& filename); // MIGRATION_MATRIX
-  void PrintOffspringMigrationCounts(const cString& filename); // MIGRATION_MATRIX
   void PrintPreyAverageData(const cString& filename);
   void PrintPredatorAverageData(const cString& filename);
   void PrintPreyErrorData(const cString& filename);
