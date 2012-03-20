@@ -344,6 +344,7 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
   // Build the various graphic objects that need to be displayed.
   const double genome_spacing = (m_post_divide) ? 0.2 : 0.1;                 // Space between two genome circles.
   const double inst_radius = 0.1;                   // Radius of each instruction circle
+  const double jump_freq_increment = 0.025;
   
   // Calculated constants, based on parameters set above
   const double inst_diameter = inst_radius * 2.0;    // Circumference of each instruction circle
@@ -351,6 +352,69 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
   const double PI = 3.14159265;
   const double angular_offset = PI / 2.0;            // 1/4 angle offset to line up memory space starting points
 
+
+  
+  // Draw arcs showing prior execution path (do first so that they are layered below other objects)
+  for (int jump_idx = 0; jump_idx < m_jumps.GetSize(); jump_idx++) {
+    const Jump& jmp = m_jumps[jump_idx];
+    if (jmp.from_mem_space == jmp.to_mem_space) {
+      // Intra-memory space jump, handle internal arcs
+      
+      const MemSpace& cur_memspace = m_mem_spaces[jmp.from_mem_space];
+      const Apto::Array<Instruction>& cur_mem = cur_memspace.memory;
+      const int cur_length = cur_mem.GetSize();
+      
+      const double genome_circumference = ((double) cur_length) * inst_spacing;
+      const double angle_step = 2.0*PI / (double) cur_length;
+      const double genome_radius = genome_circumference / (2.0*PI);
+      const double genome_offset = genome_radius + genome_spacing;
+      
+      // Setup the central position for this memory space.  For the moment, assume we only have parent and offspring.
+      double center_x = 0.0;
+      double center_y = 0.0;
+      if (jmp.from_mem_space == 0) center_x -= genome_offset; else center_x += genome_offset;
+      
+      // Center position + angular offset - radius (since we need the lower, left corner of each circle to draw)
+      double from_inst_angle = angle_step * (double) jmp.from_idx;
+      double to_inst_angle = angle_step * (double) jmp.to_idx;
+      
+      // rotate in opposite 1/4 angles based on mem_space, if post_divide rotate both the same direction
+      from_inst_angle += (jmp.from_mem_space == 0 || m_post_divide) ? angular_offset : -angular_offset;
+      to_inst_angle += (jmp.from_mem_space == 0 || m_post_divide) ? angular_offset : -angular_offset;
+      
+      
+      float x = center_x + sin(from_inst_angle) * (genome_radius - inst_radius);
+      float y = center_y + cos(from_inst_angle) * (genome_radius - inst_radius);
+      float x2 = center_x + sin(to_inst_angle) * (genome_radius - inst_radius);
+      float y2 = center_y + cos(to_inst_angle) * (genome_radius - inst_radius);
+      
+      GraphicObject* arc_go = new GraphicObject(x, y, x2, y2, GraphicObject::SHAPE_CURVE);
+      
+      // Set control points
+      double freq_offset = jmp.freq * jump_freq_increment + inst_radius;
+      double freq_radius = genome_radius - inst_radius - freq_offset;
+      if (freq_radius < inst_radius) freq_radius = inst_radius;
+      
+      arc_go->ctrl_x = center_x + sin(from_inst_angle) * freq_radius;
+      arc_go->ctrl_y = center_y + cos(from_inst_angle) * freq_radius;
+      arc_go->ctrl_x2 = center_x + sin(to_inst_angle) * freq_radius;
+      arc_go->ctrl_y2 = center_y + cos(to_inst_angle) * freq_radius;
+      
+      if (jmp.to_idx < jmp.from_idx) {
+        arc_go->line_color = GraphicObject::Color::RED();
+      } else {
+        arc_go->line_color = GraphicObject::Color::BLACK();
+      }
+      
+      m_graphic_objects.Push(arc_go);
+    } else {
+      // Cross memory space jumps... do nothing for now.
+      // @TODO
+    }
+  }
+  
+  
+  
   // Draw each memory space
   int num_mem_spaces = m_mem_spaces.GetSize();
   for (int cur_mem_id = 0; cur_mem_id < 2 && cur_mem_id < num_mem_spaces; cur_mem_id++) {
@@ -398,6 +462,9 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
           float head_x = center_x + sin(cur_angle) * head_radius - inst_radius;
           float head_y = center_y + cos(cur_angle) * head_radius - inst_radius;
           GraphicObject* head_go = new GraphicObject(head_x, head_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
+          head_go->fill_color = GraphicObject::Color::DARKGRAY();
+          head_go->fill_color.a = 0.8;
+          
           
           if (head == "IP") {
             line_color = GraphicObject::Color::BLACK();
@@ -431,8 +498,6 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
       m_graphic_objects.Push(inst_go);
     }
   }
-
-  // @CAO Draw arcs showing prior execution path.
   
   
   // @CAO Draw other hardware as needed
