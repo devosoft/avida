@@ -46,9 +46,6 @@ void <span class="class">cPopulation</span>::<span class="method">KillOrganism</
   <span class="class">cGenotype</span>* <span class="object">genotype</span> = <span class="object">organism</span>-&gt;<span class="method">GetGenotype</span>();
   <span class="object">m_world</span>-&gt;<span class="method">GetStats</span>().<span class="method">RecordDeath</span>();
 
-  <span class="comment">// Do the lineage handling</span>
-  if (<span class="object">m_world</span>-&gt;<span class="method">GetConfig</span>().<span class="object">LOG_LINEAGES</span>.<span class="method">Get</span>()) { <span class="object">m_world</span>-><span class="method">GetClassificationManager</span>().<span class="method">RemoveLineageOrganism</span>(<span class="object">organism</span>); }
-
   <span class="object">num_organisms</span>--;
   <span class="object">genotype</span>-&gt;<span class="method">RemoveOrganism</span>();
 

@@ -167,7 +167,7 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
   // Handle function counts
   const tArray<int>& task_counts = hw.GetOrganism()->GetPhenotype().GetCurTaskCount();
   for (int i = 0; i < task_counts.GetSize(); i++) {
-    snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetDesc(), task_counts[i]);
+    snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetName(), task_counts[i]);
   }
   
   // Handle memory spaces

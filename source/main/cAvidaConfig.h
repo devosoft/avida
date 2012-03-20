@@ -558,20 +558,12 @@ public:
 
   // -------- Log File config options --------
   CONFIG_ADD_GROUP(LOG_GROUP, "Log Files");
-  CONFIG_ADD_VAR(LOG_GENOTYPES, int, 0, "0 = off, 1 = print ALL, 2 = print threshold ONLY.");
-  CONFIG_ADD_VAR(LOG_THRESHOLD, bool, 0, "0/1 (off/on) toggle to print file.");
-  CONFIG_ADD_VAR(LOG_LINEAGES, bool, 0, "Track lineages over time?\nWARNING: Can slow Avida a lot!");
-  CONFIG_ADD_VAR(LINEAGE_CREATION_METHOD, int, 0, "Requires LOG_LINEAGES = 1\n0 = Manual creation (on inject)\n1 = when a child's (potential) fitness is higher than that of its parent.\n2 = when a child's (potential) fitness is higher than max in population.\n3 = when a child's (potential) fitness is higher than max in dom. lineage\n  *and* the child is in the dominant lineage, or (2)\n4 = when a child's (potential) fitness is higher than max in dom. lineage\n  (and that of its own lineage)\n5 = same as child's (potential) fitness is higher than that of the\n  currently dominant organism, and also than that of any organism\n      currently in the same lineage.\n6 = when a child's (potential) fitness is higher than any organism\n  currently in the same lineage.\n7 = when a child's (potential) fitness is higher than that of any\n  organism in its line of descent");
   CONFIG_ADD_VAR(TRACE_EXECUTION, bool, 0, "Trace the execution of all organisms in the population (WARNING: SLOW!)");
   
 
   // -------- Organism Network config options --------
   CONFIG_ADD_GROUP(ORGANISM_NETWORK_GROUP, "Organism Network Communication");
-  CONFIG_ADD_VAR(NET_ENABLED, bool, 0, "Enable Network Communication Support");
   CONFIG_ADD_VAR(NET_DROP_PROB, double, 0.0, "Message drop rate");
-  CONFIG_ADD_VAR(NET_MUT_PROB, double, 0.0, "Message corruption probability");
-  CONFIG_ADD_VAR(NET_MUT_TYPE, int, 0, "Type of message corruption.  0 = Random Single Bit, 1 = Always Flip Last");
-  CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
   CONFIG_ADD_VAR(NET_LOG_MESSAGES, int, 0, "Whether all messages are logged; 0=false (default), 1=true.");
 
 
@@ -586,8 +578,6 @@ public:
   // -------- Buying and Selling config options --------
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");
-  CONFIG_ADD_VAR(BUY_PRICE, int, 0, "price offered by organisms attempting to buy");
-  CONFIG_ADD_VAR(SELL_PRICE, int, 0, "price offered by organisms attempting to sell");
   
 
   // -------- Resource Hoarding (Collect) config options --------

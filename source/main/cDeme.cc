@@ -280,7 +280,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
         }
         
         // record activation of each cell in stats
-        std::pair<int, int> pos = GetCellPosition(eventCell);
+//        std::pair<int, int> pos = GetCellPosition(eventCell);
 //        m_world->GetStats().IncEventCount(pos.first, pos.second);
         
         
