@@ -648,7 +648,7 @@
 				}
 				break;
 			default:
-				[NSException raise:NSInvalidArgumentException format:@"Invalid coordinate: %lu", newCoordinate];
+				[NSException raise:NSInvalidArgumentException format:@"Invalid coordinate: %u", newCoordinate];
 				break;
 		}
 	}

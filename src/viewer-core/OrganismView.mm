@@ -101,9 +101,20 @@
           
         }
           break;
-        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_LINE:
+        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_CURVE:
         {
+          NSBezierPath* path = [NSBezierPath bezierPath];
+          NSPoint startPoint = NSMakePoint(centerPoint.x + obj.x * 72.0, centerPoint.y + obj.y * 72.0);
+          NSPoint endPoint = NSMakePoint(centerPoint.x + obj.x2 * 72.0, centerPoint.y + obj.y2 * 72.0);
+          NSPoint ctrlPoint1 = NSMakePoint(centerPoint.x + obj.ctrl_x * 72.0, centerPoint.y + obj.ctrl_y * 72.0);
+          NSPoint ctrlPoint2 = NSMakePoint(centerPoint.x + obj.ctrl_x2 * 72.0, centerPoint.y + obj.ctrl_y2 * 72.0);
           
+          [path moveToPoint:startPoint];
+          [path curveToPoint:endPoint controlPoint1:ctrlPoint1 controlPoint2:ctrlPoint2];
+          
+          [[NSColor colorWithSRGBRed:obj.line_color.r green:obj.line_color.g blue:obj.line_color.b alpha:obj.line_color.a] set];
+          [path setLineWidth:obj.line_width];
+          [path stroke];
         }
           break;
         default:

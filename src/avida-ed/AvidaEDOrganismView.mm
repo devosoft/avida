@@ -136,16 +136,20 @@
   if (curSnapshotIndex == 0) {
     [btnBegin setEnabled:NO];
     [btnBack setEnabled:NO];
+    [btnGo setEnabled:YES];
     [btnForward setEnabled:YES];
     [btnEnd setEnabled:YES];
   } else if (curSnapshotIndex == (trace->SnapshotCount() - 1)) {
+    [self stopAnimation];
     [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
+    [btnGo setEnabled:NO];
     [btnForward setEnabled:NO];
     [btnEnd setEnabled:NO];
   } else {
     [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
+    [btnGo setEnabled:YES];
     [btnForward setEnabled:YES];
     [btnEnd setEnabled:YES];
   }
