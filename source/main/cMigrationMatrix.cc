@@ -21,6 +21,18 @@ cMigrationMatrix::~cMigrationMatrix(){
     
 }
 
+int cMigrationMatrix::GetOffspringCountAt(int from_deme_id, int to_deme_id){
+  assert(from_deme_id >= 0 && from_deme_id < m_offspring_migration_counts.GetSize());
+  assert(to_deme_id >= 0 && to_deme_id < m_offspring_migration_counts[from_deme_id].GetSize());
+  return m_offspring_migration_counts[from_deme_id][to_deme_id];
+};
+
+int cMigrationMatrix::GetParasiteCountAt(int from_deme_id, int to_deme_id){
+  assert(from_deme_id >= 0 && from_deme_id < m_parasite_migration_counts.GetSize());
+  assert(to_deme_id >= 0 && to_deme_id < m_parasite_migration_counts[from_deme_id].GetSize());  
+  return m_parasite_migration_counts[from_deme_id][to_deme_id];
+};
+
 bool cMigrationMatrix::AlterConnectionWeight(const int from_deme_id, const int to_deme_id, const double alter_amount){
   m_migration_matrix[from_deme_id][to_deme_id] += alter_amount;
   m_row_connectivity_sums[from_deme_id] += alter_amount;
@@ -52,34 +64,6 @@ int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id,cRandom& p_r
     }    
     // Should never get to this point
     assert(false);
-};
-
-cString cMigrationMatrix::GetParasiteCountMatrixChars(){
-  cString f_temp_string;
-  for(int row = 0; row < m_parasite_migration_counts.GetSize(); row++){
-    for(int col = 0; col < m_parasite_migration_counts[row].GetSize(); col++){
-      if((col+1) >= m_parasite_migration_counts[row].GetSize())
-        f_temp_string += cStringUtil::Stringf("%d", m_parasite_migration_counts[row][col]);
-      else
-        f_temp_string += (cStringUtil::Stringf("%d", m_parasite_migration_counts[row][col]) + ",");
-    }
-    f_temp_string += "\n";
-  }
-  return f_temp_string;
-};
-
-cString cMigrationMatrix::GetOffspringCountMatrixChars(){
-  cString f_temp_string;
-  for(int row = 0; row < m_offspring_migration_counts.GetSize(); row++){
-    for(int col = 0; col < m_offspring_migration_counts[row].GetSize(); col++){
-      if((col+1) >= m_offspring_migration_counts[row].GetSize())
-        f_temp_string += cStringUtil::Stringf("%d", m_offspring_migration_counts[row][col]);
-      else
-        f_temp_string += (cStringUtil::Stringf("%d", m_offspring_migration_counts[row][col]) + ",");
-    }
-    f_temp_string += "\n";
-  }
-  return f_temp_string;  
 };
 
 bool cMigrationMatrix::Load(const int num_demes, const cString& filename, const cString& working_dir,bool p_count_parasites, bool p_count_offspring, bool p_is_reload, Feedback& feedback){
