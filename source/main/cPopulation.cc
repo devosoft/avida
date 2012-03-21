@@ -6757,9 +6757,9 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
       temp_array[1] = make_pair(-1,-1);
       group_intolerances.Set(group_id, temp_array);
       if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
-        if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) group_intolerances_females.Set(group_id, temp_array);
-        else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) group_intolerances_males.Set(group_id, temp_array);
-        else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) group_intolerances_juvs.Set(group_id, temp_array);
+        group_intolerances_females.Set(group_id, temp_array);
+        group_intolerances_males.Set(group_id, temp_array);
+        group_intolerances_juvs.Set(group_id, temp_array);
       }
     }
   }

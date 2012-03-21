@@ -4121,7 +4121,6 @@ bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
       cOrganism* target = NULL;
       target = m_organism->GetOrgInterface().GetNeighbor();
       target->AddToRBin (resource, 1);
-      m_organism->AddToRBin(resource , -1);
       return true;
     }
   }

@@ -340,7 +340,7 @@ private:
   
   
   void Load_CollectOdds(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
-	double Task_CollectOdds(cTaskContext& ctx) const; 
+  double Task_CollectOdds(cTaskContext& ctx) const; 
   
   // String Matching Tasks
 	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
