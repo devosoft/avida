@@ -78,6 +78,8 @@ private:
   cLineage* m_lineage;                    // A lineage descriptor... (different from label)
   int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
 
+  int m_org_list_index;
+  
   // Other stats
   Genome m_offspring_genome;              // Child genome, while under construction.
 
@@ -207,10 +209,11 @@ public:
 
   const cStateGrid& GetStateGrid() const;
 
-
   double GetVitality() const;
 
-
+  inline void SetOrgIndex(int index) { m_org_list_index = index; }
+  inline int GetOrgIndex() { return m_org_list_index; }
+  
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
   int GetID() { return m_id; }
@@ -607,14 +610,16 @@ public:
   bool HasSetFT() const { return m_has_set_ft; }
   void RecordFTSet() { m_has_set_ft = true; }
   bool IsTeacher() const { return m_teach; }
-  void Teach(bool m_teach);
+  void Teach(bool teach) { m_teach = teach; }
   bool HadParentTeacher() const { return m_parent_teacher; }
   void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
   void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
   int GetParentFT() const { return m_parent_ft; } 
-  void CopyParentFT() { SetForageTarget(m_parent_ft); }
+  void CopyParentFT();
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
+  void ChangeBeg() { m_beggar = !m_beggar; }
+  bool IsBeggar() { return m_beggar; }
   
 protected:
   // The organism's own raw materials
@@ -650,6 +655,7 @@ protected:
   bool m_parent_teacher;
   int m_parent_ft;
   int m_parent_group;
+  bool m_beggar;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
@@ -681,22 +687,29 @@ public:
   void DonateResConsumedToDeme(); //! donate consumed resources to the deme.
   int GetNumOfPointMutationsApplied() {return m_num_point_mut; } //! number of point mutations applied to org.
   void IncPointMutations(int n) {m_num_point_mut+=n;} 
-  void JoinGermline() {m_germline = true;}
-  void ExitGermline() {m_germline = false;}
+  void JoinGermline() {m_phenotype.is_germ_cell = true;}
+  void ExitGermline() {m_phenotype.is_germ_cell = false;}
   void RepairPointMutOn() {m_repair = true;}
   void RepairPointMutOff() {m_repair = false;}
-  bool IsGermline() { return m_germline; }
+  bool IsGermline() { return m_phenotype.is_germ_cell; }
 private: 
   int m_num_point_mut;
-  bool m_germline;
+//  bool m_germline;
   bool m_repair;
 	
 	// -------- Avatar support --------
 public:
   bool MoveAV(cAvidaContext& ctx);
+  inline void SetAVInIndex(int index) { m_av_in_index = index; }
+  inline int GetAVInIndex() { return m_av_in_index; }
+  inline void SetAVOutIndex(int index) { m_av_out_index = index; }
+  inline int GetAVOutIndex() { return m_av_out_index; }
     
 	// -------- Internal Support Methods --------
 private:
+  int m_av_in_index;
+  int m_av_out_index;
+  
   void initialize(cAvidaContext& ctx);
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */

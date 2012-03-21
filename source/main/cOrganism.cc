@@ -59,6 +59,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_interface(NULL)
 , m_lineage_label(-1)
 , m_lineage(NULL)
+, m_org_list_index(-1)
 , m_input_pointer(0)
 , m_input_buf(world->GetEnvironment().GetInputSize())
 , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -94,7 +95,10 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_parent_teacher(false)
 , m_parent_ft(-1)
 , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+, m_beggar(false)
 , m_num_point_mut(0)
+, m_av_in_index(-1)
+, m_av_out_index(-1)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
@@ -123,7 +127,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
     if (m_max_executed < 1) m_max_executed = 1;
   }
   
-  m_germline = (m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get());
   m_repair = (m_world->GetConfig().POINT_MUT_REPAIR_START.Get());
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
@@ -1289,8 +1292,16 @@ void cOrganism::SetForageTarget(int forage_target) {
   // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }
 
-void cOrganism::Teach(bool teach) {
-  m_teach = teach;
+void cOrganism::CopyParentFT() {
+  bool copy_ft = true;
+  // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
+  // switch ft to pred, and then copy parent to become prey again.
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
+    if (m_parent_ft != -2 && m_forage_target < -1) {
+      copy_ft = false;
+    }
+  }
+  if (copy_ft) SetForageTarget(m_parent_ft); 
 }
 
 /*! Called when an organism receives a flash from a neighbor. */

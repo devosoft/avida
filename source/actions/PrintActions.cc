@@ -39,6 +39,7 @@
 #include "cHardwareManager.h"
 #include "cHistogram.h"
 #include "cInstSet.h"
+#include "cMigrationMatrix.h" // MIGRATION_MATRIX
 #include "cOrganism.h"
 #include "cPhenPlastGenotype.h"
 #include "cPhenPlastUtil.h"
@@ -107,8 +108,6 @@ STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
-STATS_OUT_FILE(PrintParasiteMigrationCounts,parasite_migration_counts.dat); // MIGRATION_MATRIX
-STATS_OUT_FILE(PrintOffspringMigrationCounts,offspring_migration_counts.dat); // MIGRATION_MATRIX
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
 STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
@@ -175,6 +174,13 @@ STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 STATS_OUT_FILE(PrintMigrationData,          migration.dat);
 STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 
+//mating type/male-female stats data
+STATS_OUT_FILE(PrintMaleAverageData,    male_average.dat   );
+STATS_OUT_FILE(PrintFemaleAverageData,    female_average.dat   );
+STATS_OUT_FILE(PrintMaleErrorData, male_error.dat   );
+STATS_OUT_FILE(PrintFemaleErrorData, female_error.dat   );
+STATS_OUT_FILE(PrintMaleVarianceData, male_variance.dat   );
+STATS_OUT_FILE(PrintFemaleVarianceData, female_variance.dat   );
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
@@ -395,6 +401,65 @@ public:
     m_world->GetStats().PrintPredatorInstructionData(m_filename, m_inst_set);
   }
 };
+
+class cActionPrintMaleInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintMaleInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "male_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("male_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"male_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintMaleInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintFemaleInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintFemaleInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "female_instruction.dat";
+    }
+    
+    if (m_filename == "") m_filename.Set("female_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"female_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintFemaleInstructionData(m_filename, m_inst_set);
+  }
+};
+
 
 class cActionPrintInstructionAbundanceHistogram : public cAction
 {
@@ -3379,7 +3444,10 @@ public:
         for (int i = 0; i < worldx; i++) {
           cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
           int target = -99;
-          if (cell.HasAV()) target = cell.GetRandAV()->GetForageTarget();//***
+          if (cell.HasAV()) {
+            if (cell.HasPredAV()) target = cell.GetRandPredAV()->GetForageTarget();
+            else target = cell.GetRandPreyAV()->GetForageTarget();
+          } 
           fp << target << " ";
         }
         fp << endl;
@@ -3760,7 +3828,75 @@ public:
   }
 };
 
+class cActionDumpOffspringMigrationCounts : public cAction
+{
+  // MIGRATION_MATRIX
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpOffspringMigrationCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("counts_offspring_migration.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    int num_demes = (&m_world->GetPopulation())->GetNumDemes();
+    cMigrationMatrix* mig_mat = &m_world->GetMigrationMatrix();
+    
+    for(int row = 0; row < num_demes; row++){
+      for(int col = 0; col < num_demes; col++){
+        if((col+1) >= num_demes)
+          fp << mig_mat->GetOffspringCountAt(row,col);
+        else
+          fp << mig_mat->GetOffspringCountAt(row,col) << ",";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
+class cActionDumpParasiteMigrationCounts : public cAction
+{
+  // MIGRATION_MATRIX
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpParasiteMigrationCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("counts_parasite_migration.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    int num_demes = (&m_world->GetPopulation())->GetNumDemes();
+    cMigrationMatrix* mig_mat = &m_world->GetMigrationMatrix();
+    
+    for(int row = 0; row < num_demes; row++){
+      for(int col = 0; col < num_demes; col++){
+        if((col+1) >= num_demes)
+          fp << mig_mat->GetParasiteCountAt(row,col);
+        else
+          fp << mig_mat->GetParasiteCountAt(row,col) << ",";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
 //Dump the reaction grid from the last gestation cycle, so skip the
 //test cpu, and just use what the phenotype has.
@@ -4509,8 +4645,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
-  action_lib->Register<cActionPrintParasiteMigrationCounts>("PrintParasiteMigrationCounts"); // MIGRATION_MATRIX
-  action_lib->Register<cActionPrintOffspringMigrationCounts>("PrintOffspringMigrationCounts"); // MIGRATION_MATRIX
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
   action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");
@@ -4519,6 +4653,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
+  action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
+  action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
@@ -4528,7 +4664,13 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
   action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
-
+  action_lib->Register<cActionPrintMaleAverageData>("PrintMaleAverageData");
+  action_lib->Register<cActionPrintFemaleAverageData>("PrintFemaleAverageData");
+  action_lib->Register<cActionPrintMaleErrorData>("PrintMaleErrorData");
+  action_lib->Register<cActionPrintFemaleErrorData>("PrintFemaleErrorData");
+  action_lib->Register<cActionPrintMaleVarianceData>("PrintMaleVarianceData");
+  action_lib->Register<cActionPrintFemaleVarianceData>("PrintFemaleVarianceData");
+  
   // @WRE: Added printing of visit data
   action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
 
@@ -4660,6 +4802,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
   action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
+  action_lib->Register<cActionDumpOffspringMigrationCounts>("DumpOffspringMigrationCounts"); // MIGRATION_MATRIX
+  action_lib->Register<cActionDumpParasiteMigrationCounts>("DumpParasiteMigrationCounts"); // MIGRATION_MATRIX
+  
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");

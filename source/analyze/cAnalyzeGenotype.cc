@@ -292,6 +292,8 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   
   dcm->Add("task", new tDataEntryOfType<cAnalyzeGenotype, int (int, const cStringList&)>
            ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
+  dcm->Add("task_quality", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
+           ("task_quality", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskQuality, 5));
   dcm->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
            ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
   dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>

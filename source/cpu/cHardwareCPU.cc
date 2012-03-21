@@ -262,6 +262,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-specific", &cHardwareCPU::Inst_DonateSpecific, nInstFlag::STALL),
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareCPU::Inst_CheckFacedKin, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("beg", &cHardwareCPU::Inst_SetBeggar, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("check-beggar", &cHardwareCPU::Inst_CheckFacedBeggar, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -4126,7 +4128,6 @@ bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
   return false;
 }
 
-
 bool cHardwareCPU::Inst_CheckFacedKin(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -4159,6 +4160,30 @@ bool cHardwareCPU::Inst_CheckFacedKin(cAvidaContext& ctx)
   GetRegister(out_reg)= (int) is_kin;    
   return true;
 }
+
+bool cHardwareCPU::Inst_CheckFacedBeggar(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor =m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead())  return false;  
+  
+  bool faced_is_beggar = neighbor->IsBeggar();
+  
+  const int out_reg = FindModifiedNextRegister(REG_BX);   
+  GetRegister(out_reg) = (int) faced_is_beggar;    
+  return true;
+}
+
+bool cHardwareCPU::Inst_SetBeggar(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->ChangeBeg();
+  return true;
+}
+
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following

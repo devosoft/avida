@@ -442,6 +442,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   
   // Loop through choosing the later placement of each offspring in the population.
   bool parent_alive = true;  // Will the parent live through this process?
+
   for (int i = 0; i < offspring_array.GetSize(); i++) {
     /*
      THIS code will remove zero merit orgnaisms, thus never putting them into the scheduler.
@@ -464,7 +465,15 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
      }
      */
     target_cells[i] = PositionOffspring(parent_cell, ctx, m_world->GetConfig().ALLOW_PARENT.Get()).GetID(); 
-    // If we replaced the parent, make a note of this.
+    // Catch the corner case where birth method = 3 and there are 
+    // no empty cells. Here, we set the cell to -1 so that the rest of the
+    // method can proceed, but we can avoid trying to rotate it.
+    if ((target_cells[i] == parent_cell.GetID()) && 
+        m_world->GetConfig().ALLOW_PARENT.Get()==0) {
+      target_cells[i] = -1;
+      continue;
+    } 
+    // If we replaced the parent, make a note of this.    
     if (target_cells[i] == parent_cell.GetID()) {
       parent_alive = false;
       if (m_world->GetConfig().USE_AVATARS.Get()) parent_organism->GetOrgInterface().RemoveAllAV();
@@ -574,7 +583,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
         const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
         if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) {
           for (int i = 0; i < offspring_array.GetSize(); i++) {
-            GetCell(target_cells[i]).Rotate(parent_cell);
+            if (target_cells[i] != -1) {
+              GetCell(target_cells[i]).Rotate(parent_cell);
+            }
           }
         }
       }
@@ -588,18 +599,22 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
-    //@JEB - we may want to pass along some state information from parent to offspring
-    if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
-        || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
-      offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
-    }
-    bool org_survived = ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
-    // only assign an avatar cell if the org lived through birth and it isn't the parent
-    if (m_world->GetConfig().USE_AVATARS.Get() && org_survived && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
-      int avatar_target_cell = PlaceAvatar(parent_organism);
-      if (target_cells[i] != parent_cell.GetID()) {
-        offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+    if (target_cells[i] != -1) {
+      //@JEB - we may want to pass along some state information from parent to offspring
+      if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
+          || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
+        offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
       }
+      bool org_survived = ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
+      // only assign an avatar cell if the org lived through birth and it isn't the parent
+      if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
+        int avatar_target_cell = PlaceAvatar(parent_organism);
+        if (target_cells[i] != parent_cell.GetID()) {
+          offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+        }
+      }
+    } else {
+      delete offspring_array[i];
     }
   }
   return parent_alive;
@@ -4839,6 +4854,59 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
   }
 }
 
+void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
+{
+  // Get per-org stats seperately for males and females
+  cStats& stats = m_world->GetStats();
+  
+  // Clear out organism sums...
+  stats.SumMaleFitness().Clear();
+  stats.SumMaleGestation().Clear();
+  stats.SumMaleMerit().Clear();
+  stats.SumMaleCreatureAge().Clear();
+  stats.SumMaleGeneration().Clear();
+  
+  stats.SumFemaleFitness().Clear();
+  stats.SumFemaleGestation().Clear();
+  stats.SumFemaleMerit().Clear();
+  stats.SumFemaleCreatureAge().Clear();
+  stats.SumFemaleGeneration().Clear();
+  
+  stats.ZeroMTInst();
+
+  for (int i = 0; i < live_org_list.GetSize(); i++) {  
+    cOrganism* organism = live_org_list[i];
+    const cPhenotype& phenotype = organism->GetPhenotype();
+    const cMerit cur_merit = phenotype.GetMerit();
+    const double cur_fitness = phenotype.GetFitness();
+    
+    if(organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+      stats.SumMaleFitness().Add(cur_fitness);
+      stats.SumMaleGestation().Add(phenotype.GetGestationTime());
+      stats.SumMaleMerit().Add(cur_merit.GetDouble());
+      stats.SumMaleCreatureAge().Add(phenotype.GetAge());
+      stats.SumMaleGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        male_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+    }
+    else if (organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+      stats.SumFemaleFitness().Add(cur_fitness);
+      stats.SumFemaleGestation().Add(phenotype.GetGestationTime());
+      stats.SumFemaleMerit().Add(cur_merit.GetDouble());
+      stats.SumFemaleCreatureAge().Add(phenotype.GetAge());
+      stats.SumFemaleGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        female_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+    }
+  }
+}
+
 void cPopulation::UpdateResStats(cAvidaContext& ctx) 
 {
   cStats& stats = m_world->GetStats();
@@ -4865,6 +4933,9 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
     stats.SetNumPreyCreatures(GetNumPreyOrganisms());
     stats.SetNumPredCreatures(GetNumPredOrganisms());
     UpdateFTOrgStats(ctx);
+  }
+  if (m_world->GetConfig().MATING_TYPES.Get()) {
+    UpdateMaleFemaleOrgStats(ctx);
   }
   
   // Have stats calculate anything it now can...
@@ -6674,19 +6745,17 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
 void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
+  org->SetOrgIndex(live_org_list.GetSize()-1);
 }
 
 // Remove an organism from live org list  
 void  cPopulation::RemoveLiveOrg(cOrganism* org)
 {
-  for (int i = 0; i < live_org_list.GetSize(); i++) {
-    if (live_org_list[i] == org) {
-      unsigned int last = live_org_list.GetSize() - 1;
-      live_org_list.Swap(i, last);
-      live_org_list.Pop();
-      break;
-    }
-  }
+  unsigned int last = live_org_list.GetSize() - 1;
+  cOrganism* exist_org = live_org_list[last];
+  exist_org->SetOrgIndex(org->GetOrgIndex());
+  live_org_list.Swap(org->GetOrgIndex(), last);
+  live_org_list.Pop();
 }
 
 

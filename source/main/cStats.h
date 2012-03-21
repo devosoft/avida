@@ -158,7 +158,9 @@ private:
   tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
-
+  tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_female_exe_inst_map;
+  
   // --------  Calculated Stats  ---------
   double entropy;
   double species_entropy;
@@ -380,7 +382,21 @@ private:
   double pred_entropy;
   int num_pred_creatures;
 
-
+  // --------  Mating type (male/female) Stats  ---------
+  cDoubleSum sum_male_fitness;
+  cDoubleSum sum_male_gestation;
+  cDoubleSum sum_male_merit;
+  cDoubleSum sum_male_creature_age;
+  cDoubleSum sum_male_generation;
+  cDoubleSum sum_male_size;
+  
+  cDoubleSum sum_female_fitness;
+  cDoubleSum sum_female_gestation;
+  cDoubleSum sum_female_merit;
+  cDoubleSum sum_female_creature_age;
+  cDoubleSum sum_female_generation;
+  cDoubleSum sum_female_size;
+  
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -545,6 +561,24 @@ public:
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
   tArray<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   void ZeroFTInst();
+  
+  //mating type/male-female accessors
+  cDoubleSum& SumMaleFitness()       { return sum_male_fitness; }
+  cDoubleSum& SumMaleGestation()     { return sum_male_gestation; }
+  cDoubleSum& SumMaleMerit()         { return sum_male_merit; }
+  cDoubleSum& SumMaleCreatureAge()   { return sum_male_creature_age; }
+  cDoubleSum& SumMaleGeneration()    { return sum_male_generation; }
+  cDoubleSum& SumMaleSize()          { return sum_male_size; }
+  tArray<cIntSum>& InstMaleExeCountsForInstSet(const cString& inst_set) { return m_is_male_exe_inst_map[inst_set]; }
+  
+  cDoubleSum& SumFemaleFitness()       { return sum_female_fitness; }
+  cDoubleSum& SumFemaleGestation()     { return sum_female_gestation; }
+  cDoubleSum& SumFemaleMerit()         { return sum_female_merit; }
+  cDoubleSum& SumFemaleCreatureAge()   { return sum_female_creature_age; }
+  cDoubleSum& SumFemaleGeneration()    { return sum_female_generation; }
+  cDoubleSum& SumFemaleSize()          { return sum_female_size; }
+  tArray<cIntSum>& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
+  void ZeroMTInst();
   
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
@@ -842,8 +876,6 @@ public:
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
   void PrintParasiteData(const cString& filename);
-  void PrintParasiteMigrationCounts(const cString& filename); // MIGRATION_MATRIX
-  void PrintOffspringMigrationCounts(const cString& filename); // MIGRATION_MATRIX
   void PrintPreyAverageData(const cString& filename);
   void PrintPredatorAverageData(const cString& filename);
   void PrintPreyErrorData(const cString& filename);
@@ -897,6 +929,14 @@ public:
   void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 
   void PrintToleranceData(const cString& filename); 
+  void PrintMaleAverageData(const cString& filename);
+  void PrintFemaleAverageData(const cString& filename);
+  void PrintMaleErrorData(const cString& filename);
+  void PrintFemaleErrorData(const cString& filename);
+  void PrintMaleVarianceData(const cString& filename);
+  void PrintFemaleVarianceData(const cString& filename);
+  void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
+  void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
   // deme predicate stats
   void IncEventCount(int x, int y);

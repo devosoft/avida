@@ -314,7 +314,11 @@ void cPopulationCell::AddInputAV(cOrganism* org)
 {
   m_av_inputs.Push(org);
   // Swaps the added avatar into a random position in the array
-  m_av_inputs.Swap(m_world->GetRandom().GetUInt(0, m_av_inputs.GetSize()), m_av_inputs.GetSize() - 1);
+  int loc = m_world->GetRandom().GetUInt(0, m_av_inputs.GetSize());
+  cOrganism* exist_org = m_av_inputs[loc];
+  m_av_inputs.Swap(loc, m_av_inputs.GetSize() - 1);
+  exist_org->SetAVInIndex(m_av_inputs.GetSize() - 1);
+  org->SetAVInIndex(loc);
 }
 
 // Adds an organism to the cell's output avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
@@ -322,35 +326,35 @@ void cPopulationCell::AddOutputAV(cOrganism* org)
 {
   m_av_outputs.Push(org);
   // Swaps the added avatar into a random position in the array
-  m_av_outputs.Swap(m_world->GetRandom().GetUInt(0, m_av_outputs.GetSize()), m_av_outputs.GetSize() - 1);
+  int loc = m_world->GetRandom().GetUInt(0, m_av_outputs.GetSize());
+  cOrganism* exist_org = m_av_outputs[loc];
+  m_av_outputs.Swap(loc, m_av_outputs.GetSize() - 1);
+  exist_org->SetAVOutIndex(m_av_outputs.GetSize() - 1);
+  org->SetAVOutIndex(loc);
 }
 
 // Removes the organism from the cell's input avatars
 void cPopulationCell::RemoveInputAV(cOrganism* org)
 {
   assert(HasInputAV());
-  for (int i = 0; i < GetNumAVInputs(); i++) {
-    if (m_av_inputs[i] == org) {
-      unsigned int last = GetNumAVInputs() - 1;
-      m_av_inputs.Swap(i, last);
-      m_av_inputs.Pop();
-      break;
-    }
-  }
+  assert(m_av_inputs[org->GetAVInIndex()] == org);
+  unsigned int last = GetNumAVInputs() - 1;
+  cOrganism* exist_org = m_av_inputs[last];
+  exist_org->SetAVInIndex(org->GetAVInIndex());
+  m_av_inputs.Swap(org->GetAVInIndex(), last);
+  m_av_inputs.Pop();
 }
 
 // Removes the organism from the cell's output avatars
 void cPopulationCell::RemoveOutputAV(cOrganism* org)
 {
   assert(HasOutputAV());
-  for (int i = 0; i < GetNumAVOutputs(); i++) {
-    if (m_av_outputs[i] == org) {
-      unsigned int last = GetNumAVOutputs() - 1;
-      m_av_outputs.Swap(i, last);
-      m_av_outputs.Pop();
-      break;
-    }
-  }
+  assert(m_av_outputs[org->GetAVOutIndex()] == org);
+  unsigned int last = GetNumAVOutputs() - 1;
+  cOrganism* exist_org = m_av_outputs[last];
+  exist_org->SetAVOutIndex(org->GetAVOutIndex());
+  m_av_outputs.Swap(org->GetAVOutIndex(), last);
+  m_av_outputs.Pop();
 }
 
 // Returns whether a cell has an output AV that the org will be able to receive messages from.
@@ -371,7 +375,7 @@ bool cPopulationCell::HasOutputAV(cOrganism* org)
 }
 
 // Randomly returns an avatar from the cell, all avatars equally likely
-//********** DO NOT CALL FOR VIEWER, DOING SO WILL BREAK CONSISTENCY FROM RUN TO RUN **********
+//********** DO NOT CALL FROM VIEWER OR DATA COLLECTION, DOING SO WILL AFFECT RESULTS DURING RUN **********
 cOrganism* cPopulationCell::GetRandAV() const
 {
   if (HasAV()) {

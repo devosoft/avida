@@ -111,7 +111,6 @@ char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
   else return '!';
 }
 
-//***
 char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
 {
   if (cell.HasAV() == false) return ' ';
@@ -122,7 +121,6 @@ char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
   else return 'B' + org_target;               //other valid targets = colors -> white
 }
 
-//***
 char cSymbolUtil::GetAVForagerSymbol(const cPopulationCell & cell)
 {
   if (cell.HasAV() == false) return ' ';

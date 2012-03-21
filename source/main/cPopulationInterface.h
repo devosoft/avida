@@ -254,18 +254,18 @@ public:
 
 // -------- Avatar support -------- @JJB
 private:
-  struct io_avatar
+  struct sIO_avatar
   {
     int av_cell_id;
     int av_facing;
     int av_faced_cell;
-    bool input;
-    bool output;
-    io_avatar() : av_cell_id(-1), av_facing(0), av_faced_cell(-1), input(false), output(false) { ; }
-    io_avatar(int av_cell_id, int av_facing, int av_faced_cell, bool input, bool output) : av_cell_id(av_cell_id), av_facing(av_facing), av_faced_cell(av_faced_cell), input(input), output(output) { ; }
+    bool av_input;
+    bool av_output;
+    sIO_avatar() : av_cell_id(-1), av_facing(0), av_faced_cell(-1), av_input(false), av_output(false) { ; }
+    sIO_avatar(int av_cell_id, int av_facing, int av_faced_cell, bool input, bool output) : av_cell_id(av_cell_id), av_facing(av_facing), av_faced_cell(av_faced_cell), av_input(input), av_output(output) { ; }
   };
 
-  tSmartArray<io_avatar> m_avatars;
+  tSmartArray<sIO_avatar> m_avatars;
   inline int GetNumAV() { return m_avatars.GetSize(); }
 public:
   bool HasOutputAV(int av_num = 0);

@@ -381,6 +381,7 @@ private:
   void UpdateDemeStats(cAvidaContext& ctx); 
   void UpdateOrganismStats(cAvidaContext& ctx); 
   void UpdateFTOrgStats(cAvidaContext& ctx); 
+  void UpdateMaleFemaleOrgStats(cAvidaContext& ctx);
   
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
