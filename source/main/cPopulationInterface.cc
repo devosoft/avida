@@ -1803,10 +1803,12 @@ bool cPopulationInterface::SetAVCellID(int av_cell_id, int av_num)
 }
 
 // Determine and store the cell id faced by the avatar
+// Note:
 void cPopulationInterface::SetAVFacedCellID(int av_num)
 {
+  const int world_geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
   // Avatars only supported in bounded and toroidal world geometries
-  if ((m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) && (m_world->GetConfig().WORLD_GEOMETRY.Get() != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
+  if ((world_geometry != 1) && (world_geometry != 2)) m_world->GetDriver().RaiseFatalException(-1, "Not valid WORLD_GEOMETRY for USE_AVATAR, must be torus or bounded.");
 
   // If the avatar exists..
   if (av_num < GetNumAV()) {
@@ -1824,31 +1826,187 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
     int x = old_deme_cell % x_size;
     int y = old_deme_cell / x_size;
 
+    // If this happens to be an avatar in a single cell world, it can't face any cell beyond its own
+    if (deme_size == 1) {
+      m_avatars[av_num].av_faced_cell = m_avatars[av_num].av_cell_id;
+      return;
+    }
 
-    // North facing
-    if ((facing == 0) || (facing == 1) || (facing == 7)) {
-      if ((y != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+    bool off_the_edge_facing = false;
+    // If a bounded grid, do checks for facing off the edge of a bounded world grid..
+    if (world_geometry == 1) {
+      // Check if the avatar is at the end of a single column world
+      if (x_size == 1) {
+        if (y == 0) {
+          y += 1;
+          off_the_edge_facing = true;
+        } else if (y == (y_size - 1)) {
+          y -= 1;
+          off_the_edge_facing = true;
+        }
+      // Check if the avatar is at the end of a single row world
+      } else if (y_size == 1) {
+        if (x == 0) {
+          x += 1;
+          off_the_edge_facing = true;
+        } else if (y == (y_size - 1)) {
+          x -= 1;
+          off_the_edge_facing = true;
+        }
+      }
+
+      // The world is neither a single row or column, continuing border facing checks
+      if (!off_the_edge_facing) {
+        // West edge..
+        if (x == 0) {
+          // Northwest corner
+          if (y == 0 && (facing == 0 || facing == 7 || facing == 6)) {
+            if (m_world->GetRandom().GetInt(0, 2)) {
+              x += 1;
+              off_the_edge_facing = true;
+            } else {
+              y += 1;
+              off_the_edge_facing = true;
+            }
+          // Southwest corner
+          } else if (y == (y_size - 1) && (facing == 4 || facing == 5 || facing == 6)) {
+            if (m_world->GetRandom().GetInt(0, 2)) {
+              x += 1;
+              off_the_edge_facing = true;
+            } else {
+              y -= 1;
+              off_the_edge_facing = true;
+            }
+          }
+          // West edge facings not checked yet
+          if (!off_the_edge_facing) {
+            // West edge facing southwest
+            if (facing == 5) {
+              y -= 1;
+              off_the_edge_facing = true;
+            // West edge facing west
+            } else if (facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) {
+                y += 1;
+                off_the_edge_facing = true;
+              } else {
+                y -= 1;
+                off_the_edge_facing = true;
+              }
+            // West edge facing northwest
+            } else if (facing == 7) {
+              y += 1;
+              off_the_edge_facing = true;
+            }
+          }
+
+        // East edge..
+        } else if (x == (x_size - 1)) {
+          // Northeast corner
+          if (y == 0 && (facing == 0 || facing == 1 || facing == 2)) {
+            if (m_world->GetRandom().GetInt(0, 2)) {
+              x -= 1;
+              off_the_edge_facing = true;
+            } else {
+              y += 1;
+              off_the_edge_facing = true;
+            }
+          // Southeast corner
+          } else if (y == (y_size - 1) && (facing == 2 || facing == 3 || facing == 4)) {
+            if (m_world->GetRandom().GetInt(0, 2)) {
+              x -= 1;
+              off_the_edge_facing = true;
+            } else {
+              y -= 1;
+              off_the_edge_facing = true;
+            }
+          }
+          // East edge facings not checked yet
+          if (!off_the_edge_facing) {
+            // East edge facing northeast
+            if (facing == 1) {
+              y -= 1;
+              off_the_edge_facing = true;
+            // East edge facing east
+            } else if (facing == 2) {
+              if (m_world->GetRandom().GetInt(0, 2)) {
+                y += 1;
+                off_the_edge_facing = true;
+              } else {
+                y -= 1;
+                off_the_edge_facing = true;
+              }
+            // East edge facing southeast
+            } else if (facing == 3) {
+              y += 1;
+              off_the_edge_facing = true;
+            }
+          }
+
+        // North edge..
+        } else if (y == 0) {
+          // North edge facing northwest
+          if (facing == 7) {
+            x -= 1;
+            off_the_edge_facing = true;
+          // North edge facing north
+          } else if (facing == 0) {
+            if (m_world->GetRandom().GetInt(0, 2)) {
+              x += 1;
+              off_the_edge_facing = true;
+            } else {
+              x -= 1;
+              off_the_edge_facing = true;
+            }
+          // North edge facing northeast
+          } else if (facing == 1) {
+            x += 1;
+            off_the_edge_facing = true;
+          }
+
+        // South edge..
+        } else if (y == (y_size - 1)) {
+          // South edge facing southeast
+          if (facing == 3) {
+            x += 1;
+            off_the_edge_facing = true;
+          // South edge facing south
+          } else if (facing == 4) {
+            if (m_world->GetRandom().GetInt(0, 2)) {
+              x += 1;
+              off_the_edge_facing = true;
+            } else {
+              x -= 1;
+              off_the_edge_facing = true;
+            }
+          // South edge facing southwest
+          } else if (facing == 5) {
+            x -= 1;
+            off_the_edge_facing = true;
+          }
+        }
+      }
+    }
+
+    // Torus world geometry or not a bounded outward facing edge..
+    if (!off_the_edge_facing || world_geometry == 2) {
+      // North facing
+      if ((facing == 0) || (facing == 1) || (facing == 7)) {
         y = (y - 1 + y_size) % y_size;
       }
-    }
 
-    // South facing
-    if ((facing == 3) || (facing == 4) || (facing == 5)) {
-      if ((y != (y_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+      // South facing
+      if ((facing == 3) || (facing == 4) || (facing == 5)) {
         y = (y + 1) % y_size;
       }
-    }
 
-    // East facing
-    if ((facing == 1) || (facing == 2) || (facing == 3)) {
-      if ((x != (x_size - 1)) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+      // East facing
+      if ((facing == 1) || (facing == 2) || (facing == 3)) {
         x = (x + 1) % x_size;
       }
-    }
 
-    // West facing
-    if ((facing == 5) || (facing == 6) || (facing == 7)) {
-      if ((x != 0) || (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1)) {
+      // West facing
+      if ((facing == 5) || (facing == 6) || (facing == 7)) {
         x = (x - 1 + x_size) % x_size;
       }
     }
