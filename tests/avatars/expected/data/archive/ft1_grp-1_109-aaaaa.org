@@ -1,5 +1,5 @@
-# Sat Mar 10 13:21:14 2012
-# Filename........: archive/ft1_grp-1_109-aaaaj.org
+# Sun Mar 18 13:16:50 2012
+# Filename........: archive/ft1_grp-1_109-aaaaa.org
 # Update Output...: 750
 # Is Viable.......: 0
 # Repro Cycle Size: 0
@@ -15,7 +15,7 @@
 # Executed Size...: 109
 # Last Birth Group ID........: -1
 # Last Birth Forager Type....: 1
-# Last Birth Cell............: 1204
+# Last Birth Cell............: 77
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -36,16 +36,6 @@ inc
 nop-A
 set-ft-once
 nop-A
-if-gtr-0
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-IO
 nop-C
 nop-C
 nop-C
@@ -100,7 +90,17 @@ nop-C
 nop-C
 nop-C
 nop-C
-move
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
 nop-C
 nop-C
 nop-C

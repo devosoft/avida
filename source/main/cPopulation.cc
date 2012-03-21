@@ -4841,6 +4841,59 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
   }
 }
 
+void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
+{
+  // Get per-org stats seperately for males and females
+  cStats& stats = m_world->GetStats();
+  
+  // Clear out organism sums...
+  stats.SumMaleFitness().Clear();
+  stats.SumMaleGestation().Clear();
+  stats.SumMaleMerit().Clear();
+  stats.SumMaleCreatureAge().Clear();
+  stats.SumMaleGeneration().Clear();
+  
+  stats.SumFemaleFitness().Clear();
+  stats.SumFemaleGestation().Clear();
+  stats.SumFemaleMerit().Clear();
+  stats.SumFemaleCreatureAge().Clear();
+  stats.SumFemaleGeneration().Clear();
+  
+  stats.ZeroMTInst();
+
+  for (int i = 0; i < live_org_list.GetSize(); i++) {  
+    cOrganism* organism = live_org_list[i];
+    const cPhenotype& phenotype = organism->GetPhenotype();
+    const cMerit cur_merit = phenotype.GetMerit();
+    const double cur_fitness = phenotype.GetFitness();
+    
+    if(organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+      stats.SumMaleFitness().Add(cur_fitness);
+      stats.SumMaleGestation().Add(phenotype.GetGestationTime());
+      stats.SumMaleMerit().Add(cur_merit.GetDouble());
+      stats.SumMaleCreatureAge().Add(phenotype.GetAge());
+      stats.SumMaleGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        male_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+    }
+    else if (organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
+      stats.SumFemaleFitness().Add(cur_fitness);
+      stats.SumFemaleGestation().Add(phenotype.GetGestationTime());
+      stats.SumFemaleMerit().Add(cur_merit.GetDouble());
+      stats.SumFemaleCreatureAge().Add(phenotype.GetAge());
+      stats.SumFemaleGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        female_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+    }
+  }
+}
+
 void cPopulation::UpdateResStats(cAvidaContext& ctx) 
 {
   cStats& stats = m_world->GetStats();
@@ -4867,6 +4920,9 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
     stats.SetNumPreyCreatures(GetNumPreyOrganisms());
     stats.SetNumPredCreatures(GetNumPredOrganisms());
     UpdateFTOrgStats(ctx);
+  }
+  if (m_world->GetConfig().MATING_TYPES.Get()) {
+    UpdateMaleFemaleOrgStats(ctx);
   }
   
   // Have stats calculate anything it now can...

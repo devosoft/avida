@@ -527,6 +527,16 @@ void cStats::ZeroFTInst()
   }
 }
 
+void cStats::ZeroMTInst()
+{
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_male_exe_inst_map.begin(); it != m_is_male_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_female_exe_inst_map.begin(); it != m_is_female_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+}
+
 void cStats::CalcEnergy()
 {
   assert(sum_fitness.Average() >= 0.0);
@@ -890,31 +900,6 @@ void cStats::PrintParasiteData(const cString& filename)
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
   df.Endl();
-}
-
-void cStats::PrintParasiteMigrationCounts(const cString& filename)
-{
-  // MIGRATION_MATRIX
-  cDataFile& df = m_world->GetDataFile(filename);
-  
-  df.WriteComment("Avida Parasite Migration Counts");
-  df.WriteTimeStamp();
-  df.Write(cStringUtil::Stringf("[%d]\n",m_update) + m_world->GetMigrationMatrix().GetParasiteCountMatrixChars(),"[Update] Count_Matrix");
-  df.Endl();
-  m_world->GetMigrationMatrix().ResetParasiteCounts();
-}
-
-void cStats::PrintOffspringMigrationCounts(const cString& filename)
-{
-  // MIGRATION_MATRIX
-  cDataFile& df = m_world->GetDataFile(filename);
-  
-  df.WriteComment("Avida Offspring Migration Counts");
-  df.WriteTimeStamp();
-  df.Write(cStringUtil::Stringf("[%d]\n",m_update) + m_world->GetMigrationMatrix().GetOffspringCountMatrixChars(),"[Update] Count_Matrix");
-  df.Endl();
-  m_world->GetMigrationMatrix().ResetOffspringCounts();
-  
 }
 
 void cStats::PrintPreyAverageData(const cString& filename)
@@ -3936,4 +3921,147 @@ void cStats::PrintSuccessfulMates(cString& filename) {
     df_stream << m_successful_mates[i].GetPhenotypeString() << " " << m_choosers[i].GetPhenotypeString() << endl;
   }
   m_world->GetDataFileManager().Remove(filename);
+}
+
+//Prints out average data only for the males in the population (MATING_TYPES option should be turned on)
+void cStats::PrintMaleAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_male_fitness.Average(),        "Fitness");
+  df.Write(sum_male_gestation.Average(),      "Gestation Time");
+  df.Write(sum_male_merit.Average(),          "Merit");
+  df.Write(sum_male_creature_age.Average(),   "Creature Age");
+  df.Write(sum_male_generation.Average(),     "Generation");
+  df.Write(sum_male_size.Average(),           "Genome Length");
+  
+  df.Endl();
+}
+
+//Prints out average data only for the females in the population (MATING_TYPES option should be turned on)
+void cStats::PrintFemaleAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_female_fitness.Average(),        "Fitness");
+  df.Write(sum_female_gestation.Average(),      "Gestation Time");
+  df.Write(sum_female_merit.Average(),          "Merit");
+  df.Write(sum_female_creature_age.Average(),   "Creature Age");
+  df.Write(sum_female_generation.Average(),     "Generation");
+  df.Write(sum_female_size.Average(),           "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintMaleErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_male_fitness.StdError(),        "Fitness");
+  df.Write(sum_male_gestation.StdError(),      "Gestation Time");
+  df.Write(sum_male_merit.StdError(),          "Merit");
+  df.Write(sum_male_creature_age.StdError(),   "Creature Age");
+  df.Write(sum_male_generation.StdError(),     "Generation");
+  df.Write(sum_male_size.StdError(),           "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintFemaleErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_female_fitness.StdError(),        "Fitness");
+  df.Write(sum_female_gestation.StdError(),      "Gestation Time");
+  df.Write(sum_female_merit.StdError(),          "Merit");
+  df.Write(sum_female_creature_age.StdError(),   "Creature Age");
+  df.Write(sum_female_generation.StdError(),     "Generation");
+  df.Write(sum_female_size.StdError(),           "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintMaleVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_male_fitness.Variance(),        "Fitness");
+  df.Write(sum_male_gestation.Variance(),      "Gestation Time");
+  df.Write(sum_male_merit.Variance(),          "Merit");
+  df.Write(sum_male_creature_age.Variance(),   "Creature Age");
+  df.Write(sum_male_generation.Variance(),     "Generation");
+  df.Write(sum_male_size.Variance(),           "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintFemaleVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_female_fitness.Variance(),        "Fitness");
+  df.Write(sum_female_gestation.Variance(),      "Gestation Time");
+  df.Write(sum_female_merit.Variance(),          "Merit");
+  df.Write(sum_female_creature_age.Variance(),   "Creature Age");
+  df.Write(sum_female_generation.Variance(),     "Generation");
+  df.Write(sum_female_size.Variance(),           "Genome Length");
+  
+  df.Endl();
+  
+}
+
+void cStats::PrintMaleInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Male instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_male_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
+  df.Endl();
+}
+
+void cStats::PrintFemaleInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Female instruction execution data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_female_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  
+  df.Endl();  
 }

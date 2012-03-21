@@ -211,6 +211,8 @@ private:
   int last_task_id; // id of the previous task
   int num_new_unique_reactions; // count the number of new unique reactions this organism has performed.
   double res_consumed; // amount of resources consumed since the organism last turned them over to the deme.
+  bool is_germ_cell; // records whether or not the organism is part of the germline.
+  
 
   
   // 5. Status Flags...  (updated at each divide)
