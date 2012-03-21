@@ -3857,6 +3857,7 @@ public:
       fp << endl;
     }
     m_world->GetDataFileManager().Remove(filename);
+    mig_mat->ResetOffspringCounts();
   }
 };
 
@@ -3892,6 +3893,7 @@ public:
       fp << endl;
     }
     m_world->GetDataFileManager().Remove(filename);
+    mig_mat->ResetParasiteCounts();
   }
 };
 
