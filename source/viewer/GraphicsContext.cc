@@ -1,9 +1,10 @@
 /*
- *  cInstLibEntry.h
+ *  viewer/GraphicsContext.cc
  *  Avida
  *
- *  Created by David Bryson on 2/14/07.
- *  Copyright 2007-2011 Michigan State University. All rights reserved.
+ *  Created by David on 3/21/12.
+ *  Copyright 2012 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,29 +18,14 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef tInstLibEntry_h
-#define tInstLibEntry_h
-
-#ifndef cInstLibEntry_h
-#include "cInstLibEntry.h"
-#endif
+#include "avida/viewer/GraphicsContext.h"
 
 
-template <class FUN> class tInstLibEntry : public cInstLibEntry
-{
-private:
-  const FUN m_function;
+Avida::Viewer::GraphicsContextData::~GraphicsContextData() { ; }
 
-  tInstLibEntry(); // @not_implemented
-  
-public:
-  tInstLibEntry(const cString& name, FUN function, InstructionClass _class = INST_CLASS_OTHER, unsigned int flags = 0, const cString& desc = "")
-    : cInstLibEntry(name, _class, flags, desc), m_function(function) { ; }
-  
-  const FUN GetFunction() const { return m_function; }
-};
+Avida::Viewer::GraphicsContext::~GraphicsContext() { ; }
 
-
-#endif

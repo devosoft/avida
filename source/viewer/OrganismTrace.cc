@@ -26,12 +26,14 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/viewer/GraphicsContext.h"
 
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cHeadCPU.h"
+#include "cInstSet.h"
 #include "cOrganism.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
@@ -40,7 +42,94 @@ using namespace Avida;
 using namespace Avida::Viewer;
 
 
-class SnapshotTracer : public cHardwareTracer, public WorldDriver
+// Private Declarations
+// --------------------------------------------------------------------------------------------------------------  
+
+namespace Avida {
+  namespace Viewer {
+    namespace Private {
+      
+      class SnapshotTracer;
+      class InstructionColorChart;
+      
+      typedef Apto::SmartPtr<InstructionColorChart> InstructionColorChartPtr;
+      
+    };
+  };
+};
+
+
+// Private::InstructionColorChart
+// --------------------------------------------------------------------------------------------------------------  
+
+class Private::InstructionColorChart : public GraphicsContextData
+{
+private:
+  Apto::Array<Color> m_inst_colors;
+  
+  static const char* s_id_format;
+  
+  struct HSV { float h, s, v; };
+  
+  
+  LIB_LOCAL InstructionColorChart(const cInstSet& inst_set);
+  
+public:
+  LIB_LOCAL inline const Color& ColorOf(Instruction inst) const { return m_inst_colors[inst.GetOp()]; }
+  
+  LIB_LOCAL static InstructionColorChartPtr OfInstSetForGraphicsContext(const cInstSet& inst_set, GraphicsContext& gctx);
+};
+
+
+
+
+// Private::InstructionColorChart Implementation
+// --------------------------------------------------------------------------------------------------------------  
+
+const char* Private::InstructionColorChart::s_id_format = "_inst_color_chart[%s]";
+
+
+Private::InstructionColorChart::InstructionColorChart(const cInstSet& inst_set)
+{
+  HSV class_colors[NUM_INST_CLASSES];
+  
+  // initialize starting colors
+  for (int i = 0; i < NUM_INST_CLASSES; i++) {
+    class_colors[i].h = (360.0f / NUM_INST_CLASSES) * (i + 1) - 7.0f;
+    class_colors[i].s = 0.6f;
+    class_colors[i].v = 1.0f;
+  }
+  
+  m_inst_colors.Resize(inst_set.GetSize());
+  
+  for (int i = 0; i < inst_set.GetSize(); i++) {
+    InstructionClass inst_class = inst_set.GetInstLib()->Get(inst_set.GetLibFunctionIndex(Instruction(i))).GetClass();
+    m_inst_colors[i] = Color::WithHSV(class_colors[inst_class].h, class_colors[inst_class].s, class_colors[inst_class].v);
+    class_colors[inst_class].v -= 0.04;
+  }
+}
+
+
+Private::InstructionColorChartPtr Private::InstructionColorChart::OfInstSetForGraphicsContext(const cInstSet& inst_set,
+                                                                                              GraphicsContext& gctx)
+{
+  Apto::String chart_id = Apto::FormatStr(s_id_format, (const char*)inst_set.GetInstSetName());
+  InstructionColorChartPtr chart = gctx.GetDataForID<InstructionColorChart>(chart_id);
+  if (!chart) {
+    chart = InstructionColorChartPtr(new InstructionColorChart(inst_set));
+    assert(chart);
+    gctx.AttachDataWithID(chart, chart_id);
+  }
+  return chart;
+}
+
+
+
+
+// Private::SnapshotTracer
+// --------------------------------------------------------------------------------------------------------------  
+
+class Private::SnapshotTracer : public cHardwareTracer, public WorldDriver
 {
 private:
   cWorld* m_world;
@@ -63,27 +152,32 @@ private:
   
 
 public:
-  inline SnapshotTracer(cWorld* world) : m_world(world), m_snapshots(NULL) { ; }
+  LIB_LOCAL inline SnapshotTracer(cWorld* world) : m_world(world), m_snapshots(NULL) { ; }
   
-  void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots);
+  LIB_LOCAL void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots);
   
   // cHardwareTracer
-  void TraceHardware(cAvidaContext& ctx, cHardwareBase&, bool bonus = false, bool mini = false, int exec_success = -2);
-  void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
+  LIB_LOCAL void TraceHardware(cAvidaContext& ctx, cHardwareBase&, bool bonus = false, bool mini = false, int exec_success = -2);
+  LIB_LOCAL void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
   
   
   // WorldDriver
-  void Pause() { ; }
-  void Finish() { ; }
-  void Abort(AbortCondition condition) { ; }
+  LIB_LOCAL void Pause() { ; }
+  LIB_LOCAL void Finish() { ; }
+  LIB_LOCAL void Abort(AbortCondition condition) { ; }
   
-  Avida::Feedback& Feedback() { return m_feedback; }
+  LIB_LOCAL Avida::Feedback& Feedback() { return m_feedback; }
   
-  void RegisterCallback(DriverCallback callback) { ; }
+  LIB_LOCAL void RegisterCallback(DriverCallback callback) { ; }
 };
 
 
-void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots)
+
+
+// Private::SnapshotTracer Implementation
+// --------------------------------------------------------------------------------------------------------------  
+
+void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots)
 {
   // Create internal reference to the snapshot array so that the tracing methods can create snapshots
   m_snapshots = &snapshots;
@@ -124,8 +218,7 @@ void SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*
 }
 
 
-
-void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool bonus, bool mini, int exec_success)
+void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool bonus, bool mini, int exec_success)
 {
   (void)ctx;
   (void)bonus;
@@ -141,6 +234,8 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
   HardwareSnapshot* prev_snapshot = (m_snapshot_count > 1) ? (*m_snapshots)[m_snapshot_count - 2] : NULL;
   HardwareSnapshot* snapshot = new HardwareSnapshot(hw.GetNumRegisters(), prev_snapshot);
   (*m_snapshots)[m_snapshot_count - 1] = snapshot;
+  
+  snapshot->SetInstSet(hw.GetInstSet());
   
   // Store register states
   for (int reg = 0; reg < hw.GetNumRegisters(); reg++) snapshot->SetRegister(reg, hw.GetRegister(reg));
@@ -230,7 +325,7 @@ void SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& hw, bool b
 }
 
 
-void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)
+void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)
 {
   (void)time_used;
   (void)time_allocated;
@@ -247,6 +342,7 @@ void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrga
   HardwareSnapshot* snapshot = new HardwareSnapshot(0);
   (*m_snapshots)[m_snapshot_count - 1] = snapshot;
   
+  snapshot->SetInstSet(organism.GetHardware().GetInstSet());
   snapshot->SetPostDivide();
   
   
@@ -279,8 +375,11 @@ void SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, const cOrga
 
 
 
+// HardwareSnapshot Implementation
+// --------------------------------------------------------------------------------------------------------------  
+
 HardwareSnapshot::HardwareSnapshot(int num_regs, HardwareSnapshot* previous_snapshot)
-: m_registers(num_regs), m_post_divide(false), m_layout(false)
+: m_inst_set(NULL), m_registers(num_regs), m_post_divide(false)
 {
   if (previous_snapshot) m_jumps = previous_snapshot->m_jumps;
 }
@@ -288,9 +387,7 @@ HardwareSnapshot::HardwareSnapshot(int num_regs, HardwareSnapshot* previous_snap
 
 HardwareSnapshot::~HardwareSnapshot()
 {
-  for (int i = 0; i < m_graphic_objects.GetSize(); i++) delete m_graphic_objects[i]; 
 }
-
 
 
 void HardwareSnapshot::AddBuffer(const Apto::String& description, const Apto::Array<int>& values)
@@ -339,8 +436,12 @@ void HardwareSnapshot::AddJump(int from_mem_space, int from_idx, int to_mem_spac
 // This function takes the current state of a CPU and translates it into a set of graphical objects that can be drawn on
 // the screen.
 
-void Avida::Viewer::HardwareSnapshot::doLayout() const
+Avida::Viewer::ConstGraphicPtr Avida::Viewer::HardwareSnapshot::GraphicForContext(GraphicsContext& gctx) const
 {
+  (void)gctx;
+  
+  GraphicPtr graphic(new Graphic);
+  
   // Build the various graphic objects that need to be displayed.
   const double genome_spacing = (m_post_divide) ? 0.2 : 0.1;                 // Space between two genome circles.
   const double inst_radius = 0.1;                   // Radius of each instruction circle
@@ -352,6 +453,10 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
   const double PI = 3.14159265;
   const double angular_offset = PI / 2.0;            // 1/4 angle offset to line up memory space starting points
 
+  
+  Private::InstructionColorChartPtr inst_color_chart =
+    Private::InstructionColorChart::OfInstSetForGraphicsContext(*m_inst_set, gctx);
+  assert(inst_color_chart);
 
   
   // Draw arcs showing prior execution path (do first so that they are layered below other objects)
@@ -388,7 +493,7 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
       float x2 = center_x + sin(to_inst_angle) * (genome_radius - inst_radius);
       float y2 = center_y + cos(to_inst_angle) * (genome_radius - inst_radius);
       
-      GraphicObject* arc_go = new GraphicObject(x, y, x2, y2, GraphicObject::SHAPE_CURVE);
+      GraphicObject* arc_go = new GraphicObject(x, y, x2, y2, SHAPE_CURVE);
       
       // Set control points
       double freq_offset = jmp.freq * jump_freq_increment + inst_radius;
@@ -401,12 +506,12 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
       arc_go->ctrl_y2 = center_y + cos(to_inst_angle) * freq_radius;
       
       if (jmp.to_idx < jmp.from_idx) {
-        arc_go->line_color = GraphicObject::Color::RED();
+        arc_go->line_color = Color::RED();
       } else {
-        arc_go->line_color = GraphicObject::Color::BLACK();
+        arc_go->line_color = Color::BLACK();
       }
       
-      m_graphic_objects.Push(arc_go);
+      graphic->AddObject(arc_go);
     } else {
       // Cross memory space jumps... do nothing for now.
       // @TODO
@@ -445,15 +550,13 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
       float inst_x = center_x + sin(cur_angle) * genome_radius - inst_radius;
       float inst_y = center_y + cos(cur_angle) * genome_radius - inst_radius;
 
-      GraphicObject* inst_go = new GraphicObject(inst_x, inst_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
+      GraphicObject* inst_go = new GraphicObject(inst_x, inst_y, inst_diameter, inst_diameter, SHAPE_OVAL);
       
       inst_go->label = cur_mem[cur_inst_idx].AsString();
-      
-      // @CAO setup color of circle based on instruction at that point;
-      inst_go->fill_color = GraphicObject::Color::YELLOW();
+      inst_go->fill_color = inst_color_chart->ColorOf(cur_mem[cur_inst_idx]);
       
       // Determine what, if any, heads are pointing at this instruction
-      GraphicObject::Color& line_color = inst_go->line_color;
+      Color& line_color = inst_go->line_color;
       inst_go->line_width = 2.0;
       for (Apto::Map<Apto::String, int>::ConstIterator it = cur_memspace.heads.Begin(); it.Next(); ) {
         if (*it.Get()->Value2() == cur_inst_idx) {
@@ -461,56 +564,60 @@ void Avida::Viewer::HardwareSnapshot::doLayout() const
           
           float head_x = center_x + sin(cur_angle) * head_radius - inst_radius;
           float head_y = center_y + cos(cur_angle) * head_radius - inst_radius;
-          GraphicObject* head_go = new GraphicObject(head_x, head_y, inst_diameter, inst_diameter, GraphicObject::SHAPE_OVAL);
-          head_go->fill_color = GraphicObject::Color::DARKGRAY();
+          GraphicObject* head_go = new GraphicObject(head_x, head_y, inst_diameter, inst_diameter, SHAPE_OVAL);
+          head_go->fill_color = Color::DARKGRAY();
           head_go->fill_color.a = 0.8;
           
           
           if (head == "IP") {
-            line_color = GraphicObject::Color::BLACK();
+            line_color = Color::BLACK();
             inst_go->line_width = 3.0;
             head_go->label = "I";
           } else if (head == "FLOW") {
             line_color.g = 1.0;
             line_color.a = 1.0;
             head_go->label = "F";
-            head_go->label_color = GraphicObject::Color::GREEN();
+            head_go->label_color = Color::GREEN();
           } else if (head == "READ") {
             line_color.b = 1.0;
             line_color.a = 1.0;
             head_go->label = "R";
-            head_go->label_color = GraphicObject::Color::BLUE();
+            head_go->label_color = Color::BLUE();
           } else if (head == "WRITE") {
             line_color.r = 1.0;
             line_color.a = 1.0;
             head_go->label = "W";
-            head_go->label_color = GraphicObject::Color::RED();
+            head_go->label_color = Color::RED();
           } else {
             // Unknown head
             delete head_go;
             continue;
           }
           
-          m_graphic_objects.Push(head_go);
+          graphic->AddObject(head_go);
         }
       }
       
-      m_graphic_objects.Push(inst_go);
+      graphic->AddObject(inst_go);
     }
   }
   
   
   // @CAO Draw other hardware as needed
   
-  m_layout = true;
+  return graphic;
 }
 
 
 
+
+// OrganismTrace Implementation
+// --------------------------------------------------------------------------------------------------------------  
+
 OrganismTrace::OrganismTrace(cWorld* world, GenomePtr genome)
   : m_genome(genome)
 {
-  SnapshotTracer tracer(world);
+  Private::SnapshotTracer tracer(world);
   tracer.TraceGenome(genome, m_snapshots);
 }
 

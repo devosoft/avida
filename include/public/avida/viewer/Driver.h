@@ -3,7 +3,7 @@
  *  avida-core
  *
  *  Created by David on 10/28/10.
- *  Copyright 2010-2011 Michigan State University. All rights reserved.
+ *  Copyright 2010-2012 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *

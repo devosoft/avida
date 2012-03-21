@@ -155,6 +155,7 @@ public:
 
   // accessors for instruction library
   cInstLib* GetInstLib() { return m_inst_lib; }
+  const cInstLib* GetInstLib() const { return m_inst_lib; }
 
   inline Instruction GetInst(const cString& in_name) const;
   cString FindBestMatch(const cString& in_name) const;

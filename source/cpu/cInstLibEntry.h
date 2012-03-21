@@ -32,20 +32,37 @@ namespace nInstFlag {
   const unsigned int SLEEP = 0x20;
 }
 
+enum InstructionClass {
+  INST_CLASS_NOP = 0,
+  INST_CLASS_FLOW_CONTROL,
+  INST_CLASS_CONDITIONAL,
+  INST_CLASS_ARITHMETIC_LOGIC,
+  INST_CLASS_DATA,
+  INST_CLASS_ENVIRONMENT,
+  INST_CLASS_LIFECYCLE,
+  INST_CLASS_OTHER,
+  
+  NUM_INST_CLASSES
+};
+
 class cInstLibEntry
 {
 private:
   const cString m_name;
   const unsigned int m_flags;
   const cString m_desc;
+  const InstructionClass m_class;
   
   cInstLibEntry(); // @not_implemented
   
 public:
-  cInstLibEntry(const cString& name, unsigned int flags, const cString& desc) : m_name(name), m_flags(flags), m_desc(desc) { ; }
+  cInstLibEntry(const cString& name, InstructionClass _class, unsigned int flags, const cString& desc)
+    : m_name(name), m_flags(flags), m_desc(desc), m_class(_class) { ; }
 
-  const cString& GetName() const { return m_name; }
-  const cString& GetDescription() const { return m_desc; }
+  inline const cString& GetName() const { return m_name; }
+  inline const cString& GetDescription() const { return m_desc; }
+  
+  inline InstructionClass GetClass() const { return m_class; }
   
   inline unsigned int GetFlags() const { return m_flags; }
   inline bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT) != 0; }

@@ -193,6 +193,7 @@ public:
 
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
+  const cHardwareBase& GetHardware() const { return *m_hardware; }
   int GetID() { return m_id; }
 
   int GetCellID() { return m_interface->GetCellID(); }

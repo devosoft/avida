@@ -27,8 +27,10 @@
 
 #include "avida/core/Genome.h"
 #include "avida/core/InstructionSequence.h"
+#include "avida/viewer/Graphic.h"
 #include "avida/viewer/Types.h"
 
+class cInstSet;
 class cWorld;
 
 
@@ -40,10 +42,9 @@ namespace Avida {
     
     class HardwareSnapshot
     {
-    public:
-      class GraphicObject;
-      
     private:
+      const cInstSet* m_inst_set;
+      
       Apto::Array<int> m_registers;
       Apto::Map<Apto::String, Apto::Array<int> > m_buffers;
       Apto::Array<int> m_default_buffer;
@@ -75,16 +76,13 @@ namespace Avida {
       
       bool m_post_divide;
       
-      mutable Apto::Array<GraphicObject*> m_graphic_objects;
-      mutable bool m_layout;
-      
-      
     public:
       LIB_EXPORT HardwareSnapshot(int num_regs, HardwareSnapshot* previous_snapshot = NULL);
       LIB_EXPORT ~HardwareSnapshot();
       
       
       // Definition Methods
+      LIB_LOCAL inline void SetInstSet(const cInstSet& inst_set) { m_inst_set = &inst_set; }
       LIB_LOCAL inline void SetPostDivide() { m_post_divide = true; }
       
       LIB_LOCAL inline void SetRegister(int idx, int value) { m_registers[idx] = value; }
@@ -97,7 +95,8 @@ namespace Avida {
 
 
       // Access Methods
-      LIB_EXPORT inline bool IsPostDivide() { return m_post_divide; }
+      LIB_EXPORT inline const cInstSet& InstSet() const { return *m_inst_set; }
+      LIB_EXPORT inline bool IsPostDivide() const { return m_post_divide; }
       LIB_EXPORT inline int NumRegisters() const { return m_registers.GetSize(); }
       LIB_EXPORT inline int Register(int idx) const { return m_registers[idx]; }
       
@@ -110,95 +109,7 @@ namespace Avida {
       LIB_EXPORT inline Instruction NextInstruction() const { return m_next_inst; }
       
       
-      
-      LIB_EXPORT inline int NumGraphicObjects() const { if (!m_layout) doLayout(); return m_graphic_objects.GetSize(); }
-      LIB_EXPORT inline const GraphicObject& Object(int idx) const { if (!m_layout) doLayout(); return *m_graphic_objects[idx]; }
-      
-      
-    public:
-      class GraphicObject
-      {
-      public:
-        struct Color
-        {
-          float r, g, b, a;  // Red, Green, Blue, and Alpha (opacity), all 0.0 to 1.0.
-          Color(float _r, float _g, float _b, float _a=0.0) : r(_r), g(_g), b(_b), a(_a) { ; }
-
-          static inline Color NONE()     { return Color(0.0, 0.0, 0.0, 0.0); }
-          static inline Color BLACK()    { return Color(0.0, 0.0, 0.0, 1.0); }
-          static inline Color DARKGRAY() { return Color(1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0); }
-          static inline Color WHITE()    { return Color(1.0, 1.0, 1.0, 1.0); }
-          static inline Color RED()      { return Color(1.0, 0.0, 0.0, 1.0); }
-          static inline Color GREEN()    { return Color(0.0, 1.0, 0.0, 1.0); }
-          static inline Color BLUE()     { return Color(0.0, 0.0, 1.0, 1.0); }
-          static inline Color YELLOW()   { return Color(1.0, 1.0, 0.0, 1.0); }
-       };
-
-        // Shape
-        enum GraphicShape { SHAPE_NONE, SHAPE_OVAL, SHAPE_RECT, SHAPE_CURVE } shape;
-        
-        // Origin
-        float x, y;           // 1.0 = approximately 1 inch, unzoomed (72 pixels); screen center = (0,0)
-
-        
-        union {
-          // Bounding box (SHAPE_OVAL, SHAPE_RECT)
-          struct {
-            float width;
-            float height;
-          };
-          // Second point (SHAPE_CURVE)
-          struct {
-            float x2;
-            float y2;
-          };
-        };
-        
-                
-        // Shape specific details
-        union {
-          struct {  // For SHAPE_OVAL
-            float start_angle;  // In radians (0 to 2PI); both zero indicate full circle.
-            float end_angle;
-          };
-          struct {  // For SHAPE_RECT
-            float x_round;      // Radius for rounded corners.  Zero inidcated square corners.
-            float y_round;
-          };
-          struct {  // For SHAPE_CURVE
-            float ctrl_x;
-            float ctrl_y;
-            float ctrl_x2;
-            float ctrl_y2;
-          };
-        };
-        
-        Color fill_color;
-        
-        // Line
-        float line_width;    // 1.0 is standard 1px
-        Color line_color;
-        
-        // Label
-        Apto::String label;
-        float font_size;     // Relative value; 1.0 is default.
-        Color label_color;
-        
-        // Is this graphic object an active region?
-        int active_region_id;  // -1 is not active
-
-      public:
-        GraphicObject(float _x, float _y, float _width, float _height, GraphicShape _shape=SHAPE_NONE)
-          : shape(_shape), x(_x), y(_y), width(_width), height(_height),
-            ctrl_x(0.0), ctrl_y(0.0), ctrl_x2(0.0), ctrl_y2(0.0),
-            fill_color(Color::NONE()), line_width(1.0), line_color(Color::NONE()),
-            font_size(1.0), label_color(Color::BLACK())
-        { ; }
-        ~GraphicObject() { ; }
-      };
-      
-    private:
-      LIB_EXPORT void doLayout() const;
+      LIB_EXPORT ConstGraphicPtr GraphicForContext(GraphicsContext& gctx) const;
     };
     
 

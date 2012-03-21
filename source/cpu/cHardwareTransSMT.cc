@@ -61,11 +61,11 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
   };
 	
   static const tInstLibEntry<tMethod> s_f_array[] = {
-    tInstLibEntry<tMethod>("Nop-A", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 1
-    tInstLibEntry<tMethod>("Nop-B", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 2
-    tInstLibEntry<tMethod>("Nop-C", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 3
-    tInstLibEntry<tMethod>("Nop-D", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 4
-    tInstLibEntry<tMethod>("Nop-X", &cHardwareTransSMT::Inst_Nop), // 5
+    tInstLibEntry<tMethod>("Nop-A", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 1
+    tInstLibEntry<tMethod>("Nop-B", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 2
+    tInstLibEntry<tMethod>("Nop-C", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 3
+    tInstLibEntry<tMethod>("Nop-D", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP), // 4
+    tInstLibEntry<tMethod>("Nop-X", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP), // 5
     tInstLibEntry<tMethod>("Val-Shift-R", &cHardwareTransSMT::Inst_ShiftR), // 6
     tInstLibEntry<tMethod>("Val-Shift-L", &cHardwareTransSMT::Inst_ShiftL), // 7
     tInstLibEntry<tMethod>("Val-Nand", &cHardwareTransSMT::Inst_Val_Nand), // 8
@@ -111,7 +111,7 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Divide-Asex-Wait", &cHardwareTransSMT::Inst_Divide_Asex_Wait), // 52
     tInstLibEntry<tMethod>("Collect-Unit", &cHardwareTransSMT::Inst_Collect_Unit), // 53
     
-    tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
+    tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop, INST_CLASS_NOP) // Last Instruction Always NULL
   };
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);

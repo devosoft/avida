@@ -34,9 +34,13 @@ namespace Avida {
     // --------------------------------------------------------------------------------------------------------------
     
     class ClassificationInfo;
+    struct Color;
     class Driver;
     class Freezer;
     struct FreezerID;
+    class Graphic;
+    struct GraphicObject;
+    class GraphicsContext;
     class HardwareSnapshot;
     class Listener;
     class Map;
@@ -47,7 +51,13 @@ namespace Avida {
     // --------------------------------------------------------------------------------------------------------------
     
     typedef Apto::SmartPtr<Freezer> FreezerPtr;
+    typedef Apto::SmartPtr<Graphic> GraphicPtr;
+    typedef Apto::SmartPtr<const Graphic> ConstGraphicPtr;
     typedef Apto::SmartPtr<OrganismTrace> OrganismTracePtr;
+    
+
+    enum GraphicShape { SHAPE_NONE, SHAPE_OVAL, SHAPE_RECT, SHAPE_CURVE };
+    
   };
 };
 

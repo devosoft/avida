@@ -12,6 +12,8 @@
 		4AC3D9F5144E087000CAEA62 /* cSensing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cSensing.h */; };
 		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
 		700E2996085A1F6000CF158A /* avida in Create work dir */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
+		701269C7151A61F1004865C2 /* Color.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701269C6151A61F1004865C2 /* Color.cc */; };
+		701269C8151A61F8004865C2 /* GraphicsContext.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701269C4151A495C004865C2 /* GraphicsContext.cc */; };
 		701B356011E7744D00FEF49A /* tHashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B355F11E7744D00FEF49A /* tHashMap.h */; };
 		7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		702082900FB9F2DF00637AD6 /* cBitArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 7020828E0FB9F2DF00637AD6 /* cBitArray.h */; };
@@ -302,6 +304,11 @@
 		70100BD7108F8F4F005999F0 /* cRunningStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRunningStats.h; sourceTree = "<group>"; };
 		7010D0E613841BFB00989C16 /* Recorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
 		7010D0E8138425A800989C16 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		701269C0151A452B004865C2 /* Color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
+		701269C1151A452B004865C2 /* Graphic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Graphic.h; sourceTree = "<group>"; };
+		701269C2151A452B004865C2 /* GraphicsContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphicsContext.h; sourceTree = "<group>"; };
+		701269C4151A495C004865C2 /* GraphicsContext.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsContext.cc; sourceTree = "<group>"; };
+		701269C6151A61F1004865C2 /* Color.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cc; sourceTree = "<group>"; };
 		7012A4F713F1B0BB002176CE /* Archive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Archive.h; sourceTree = "<group>"; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
@@ -1043,9 +1050,12 @@
 		703549261333E36800D3865C /* viewer */ = {
 			isa = PBXGroup;
 			children = (
+				701269C0151A452B004865C2 /* Color.h */,
 				70FD961414AC1911002C8859 /* ClassificationInfo.h */,
 				703549271333E36800D3865C /* Driver.h */,
 				7081844614B37EDB009A9AFE /* Freezer.h */,
+				701269C1151A452B004865C2 /* Graphic.h */,
+				701269C2151A452B004865C2 /* GraphicsContext.h */,
 				703549281333E36800D3865C /* Listener.h */,
 				703549291333E36800D3865C /* Map.h */,
 				702E1A4814EC18DE009E751C /* OrganismTrace.h */,
@@ -1330,8 +1340,10 @@
 			isa = PBXGroup;
 			children = (
 				70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */,
+				701269C6151A61F1004865C2 /* Color.cc */,
 				70E14D4B1279FA5B0059FB9D /* Driver.cc */,
 				70DAE8E314B4B01900FE5A6A /* Freezer.cc */,
+				701269C4151A495C004865C2 /* GraphicsContext.cc */,
 				7042DF13128C90240062501F /* Listener.cc */,
 				70A1E327125CDF2B00D56AC4 /* Map.cc */,
 				702E1A4A14EC1971009E751C /* OrganismTrace.cc */,
@@ -2150,6 +2162,8 @@
 				7042DF15128C90240062501F /* Listener.cc in Sources */,
 				70DAE8E414B4B01900FE5A6A /* Freezer.cc in Sources */,
 				702E1A4B14EC1971009E751C /* OrganismTrace.cc in Sources */,
+				701269C7151A61F1004865C2 /* Color.cc in Sources */,
+				701269C8151A61F8004865C2 /* GraphicsContext.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
