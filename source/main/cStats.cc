@@ -2543,7 +2543,7 @@ void cStats::PrintDemeOrgReactionData(const cString& filename)
 }
 
 //@JJB**
-void cStats::PrintDemeCurTasksData(const cString& filename)
+void cStats::PrintDemesTasksData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteComment("Avida current tasks done by each deme");
@@ -2556,14 +2556,14 @@ void cStats::PrintDemeCurTasksData(const cString& filename)
     cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
     for (int task_id = 0; task_id < num_tasks; task_id++) {
       //**
-      df.Write(deme.GetCurTaskCount()[task_id], cStringUtil::Stringf("%i.", deme_id) + task_names[task_id]);
+      df.Write(deme.GetTaskCount()[task_id], cStringUtil::Stringf("%i.", deme_id) + task_names[task_id]);
     }
   }
   df.Endl();
 }
 
 //@JJB**
-void cStats::PrintDemeCurReactionsData(const cString& filename)
+void cStats::PrintDemesReactionsData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteComment("Avida current reactions done by each deme");
@@ -2578,6 +2578,21 @@ void cStats::PrintDemeCurReactionsData(const cString& filename)
       //**
       df.Write(deme.GetReactionCount()[reaction_id], cStringUtil::Stringf("%i.", deme_id) + m_world->GetEnvironment().GetReactionLib().GetReaction(reaction_id)->GetName());
     }
+  }
+  df.Endl();
+}
+
+//@JJB**
+void cStats::PrintDemesFitnessData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Avida competition fitness for each deme");
+  df.WriteTimeStamp();
+
+  df.Write(m_update, "Update");
+  const int num_demes = m_world->GetPopulation().GetNumDemes();
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    //df.Write(m_deme_fitness[deme_id], cStringUtil::Stringf("%i.Fitness", deme_id));
   }
   df.Endl();
 }
@@ -3842,53 +3857,54 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 
 /*! Prints the genotype ids of all organisms within the maximally-fit deme.
  */
-void cStats::PrintWinningDeme(const cString& filename) {
-	cDataFile& df = m_world->GetDataFile(filename);
+void cStats::PrintWinningDeme(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
   df.WriteComment("Genotype IDs of the constituent organisms within each deme.");
-	df.WriteTimeStamp();
+  df.WriteTimeStamp();
   df.WriteColumnDesc("Update [update]");
   df.WriteColumnDesc("Deme id [demeid]");
-	df.WriteColumnDesc("Deme fitness [fitness]");
-	df.WriteColumnDesc("Number of unique genomes in deme [uniq]");
+  df.WriteColumnDesc("Deme fitness [fitness]");
+  df.WriteColumnDesc("Number of unique genomes in deme [uniq]");
   df.WriteColumnDesc("Genome ID [genomeids]");
   df.FlushComments();
-	
-	std::pair<int, double> max_element = std::make_pair(0, 0.0);
-	bool found_max=false;
-	for(int i=0; i<(int)m_deme_fitness.size(); ++i) {
-		if(m_deme_fitness[i] > max_element.second) {
-			max_element.first = i;
-			max_element.second = m_deme_fitness[i];
-			found_max = true;
-		}
-	}
-  
-	if(!found_max) {
-		return;
-	}
-	
+
+  std::pair<int, double> max_element = std::make_pair(0, 0.0);
+  bool found_max = false;
+  for (int i=0; i<(int)m_deme_fitness.size(); ++i) {
+    if (m_deme_fitness[i] > max_element.second) {
+      max_element.first = i;
+      max_element.second = m_deme_fitness[i];
+      found_max = true;
+    }
+  }
+
+  if(!found_max) {
+    return;
+  }
+
   df.WriteAnonymous(GetUpdate());
   df.WriteAnonymous(max_element.first);
-	df.WriteAnonymous(max_element.second);
-	
-	cDeme& deme = m_world->GetPopulation().GetDeme(max_element.first);
-	
-	std::set<int> uniq;
-	std::vector<int> genotypes;
-	
-	for(int i=0; i<deme.GetSize(); ++i) {
-		cOrganism* org=deme.GetOrganism(i);
-		if(org != 0) {
-			genotypes.push_back(org->GetBioGroup("genotype")->GetID());
-			uniq.insert(org->GetBioGroup("genotype")->GetID());
-		}
-	}
-	
-	df.WriteAnonymous((int)uniq.size());
-	
-	for(int i=0; i<(int)genotypes.size(); ++i) {
-		df.WriteAnonymous(genotypes[i]);
-	}
+  df.WriteAnonymous(max_element.second);
+
+  cDeme& deme = m_world->GetPopulation().GetDeme(max_element.first);
+
+  std::set<int> uniq;
+  std::vector<int> genotypes;
+
+  for(int i=0; i<deme.GetSize(); ++i) {
+    cOrganism* org=deme.GetOrganism(i);
+    if(org != 0) {
+      genotypes.push_back(org->GetBioGroup("genotype")->GetID());
+      uniq.insert(org->GetBioGroup("genotype")->GetID());
+    }
+  }
+
+  df.WriteAnonymous((int)uniq.size());
+
+  for(int i=0; i<(int)genotypes.size(); ++i) {
+    df.WriteAnonymous(genotypes[i]);
+  }
   df.Endl();
 }
 

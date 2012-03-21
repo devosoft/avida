@@ -3275,7 +3275,8 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme, cAvidaContext& ctx) {
 }
 
 // Print out all statistics about individual demes
-void cPopulation::PrintDemeAllStats(cAvidaContext& ctx) { 
+void cPopulation::PrintDemeAllStats(cAvidaContext& ctx)
+{
   PrintDemeFitness();
   PrintDemeLifeFitness();
   PrintDemeMerit();
@@ -3659,10 +3660,10 @@ void cPopulation::PrintDemeMerit()
 }
 
 //@JJB**
-void cPopulation::PrintDemeMerits()
+void cPopulation::PrintDemesMeritsData()
 {
   const int num_demes = deme_array.GetSize();
-  cDataFile& df_merits = m_world->GetDataFile("deme_merits.dat");
+  cDataFile& df_merits = m_world->GetDataFile("demes_merits.dat");
   df_merits.WriteComment("Each deme's current calculated merit");
   df_merits.WriteTimeStamp();
   df_merits.Write(m_world->GetStats().GetUpdate(), "Update");

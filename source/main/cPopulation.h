@@ -206,7 +206,7 @@ public:
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
   void PrintDemeTotalAvgEnergy(cAvidaContext& ctx);
-  void PrintDemeMerits(); //@JJB**
+  void PrintDemesMeritsData(); //@JJB**
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);

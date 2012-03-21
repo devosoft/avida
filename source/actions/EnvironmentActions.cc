@@ -1154,21 +1154,31 @@ public:
     cell_list = cStringUtil::ReturnArray(cell_list_str);
   }
 
-    static const cString GetDescription() { return "Arguments: <Input/Output>:<cell id list>"; }
+  static const cString GetDescription() { return "Arguments: <Input/Output>:<cell id list>"; }
 
-    void Process(cAvidaContext& ctx)
-    {
-      if (inputOutput == "Input") {
-        for (int i = 0; i < cell_list.GetSize(); i++) {
-          m_world->GetPopulation().GetCell(cell_list[i]).SetCanInput(true);
+  void Process(cAvidaContext& ctx)
+  {
+    const int num_demes = m_world->GetPopulation().GetNumDemes();
+    const int deme_size = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() / num_demes);
+    if (inputOutput == "Input") {
+      int cell_id;
+      for (int i = 0; i < cell_list.GetSize(); i++) {
+        for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+          cell_id = cell_list[i] + deme_id * deme_size;
+          m_world->GetPopulation().GetCell(cell_id).SetCanInput(true);
         }
       }
-      else if (inputOutput == "Output") {
-        for (int i = 0; i < cell_list.GetSize(); i++) {
+    }
+    else if (inputOutput == "Output") {
+      int cell_id;
+      for (int i = 0; i < cell_list.GetSize(); i++) {
+        for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+          cell_id = cell_list[i] + deme_id * deme_size;
           m_world->GetPopulation().GetCell(cell_list[i]).SetCanOutput(true);
         }
       }
     }
+  }
 };
 
 class cActionDelayedDemeEvent : public cAction

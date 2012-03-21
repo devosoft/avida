@@ -391,14 +391,15 @@ private:
   tBuffer<int> m_output_buf;
   tHashMap<void*, cTaskState*> m_task_states;
   cReactionResult* m_reaction_result;
-  tArray<int> m_eff_task_count;               // Total times each task was performed (resetable during the life of the deme)
-  tArray<int> m_cur_task_count;
+  tArray<int> m_task_count;               // Total times each task was performed (resetable during the life of the deme)
   tArray<int> m_last_task_count;
-  tArray<int> m_cur_reaction_count;
+  tArray<int> m_reaction_count;
   tArray<double> m_cur_reaction_add_reward;
   double m_cur_bonus;
   cMerit m_cur_merit;
 public:
+  bool HasDoneInput() { return (m_input_buf.GetNumStored() > 0); }
+  bool HasDoneOutput() { return (m_input_buf.GetNumStored() > 0); }
   void ResetInputs(cAvidaContext& ctx);
   void ResetInput() { m_input_pointer = 0; m_input_buf.Clear(); }
   int GetNextDemeInput(cAvidaContext& ctx);
@@ -409,8 +410,8 @@ public:
   const cMerit& GetCurMerit() { return m_cur_merit; }
   void UpdateCurMerit();
   cMerit CalcCurMerit();
-  const tArray<int>& GetCurTaskCount() const { return m_cur_task_count; } //**
-  const tArray<int>& GetReactionCount() const { return m_cur_reaction_count; } //**
+  const tArray<int>& GetTaskCount() const { return m_task_count; } //**
+  const tArray<int>& GetReactionCount() const { return m_reaction_count; } //**
 
 
 	// --- Division of Labor --- //

@@ -172,9 +172,8 @@ cDeme& cDeme::operator=(const cDeme& in_deme) //@JJB**
   m_input_buf                         = in_deme.m_input_buf;
   m_output_buf                        = in_deme.m_output_buf;
 //m_reaction_result                   = in_deme.m_reaction_result;
-  m_eff_task_count                    = in_deme.m_eff_task_count;
-  m_cur_task_count                    = in_deme.m_cur_task_count;
-  m_cur_reaction_count                = in_deme.m_cur_reaction_count;
+  m_task_count                        = in_deme.m_task_count;
+  m_reaction_count                    = in_deme.m_reaction_count;
   m_last_task_count                   = in_deme.m_last_task_count;
   m_cur_reaction_add_reward           = in_deme.m_cur_reaction_add_reward;
   m_cur_bonus                         = in_deme.m_cur_bonus;
@@ -245,12 +244,10 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
 
   m_input_buf = tBuffer<int>(m_world->GetEnvironment().GetInputSize()); //@JJB**
   m_output_buf = tBuffer<int>(m_world->GetEnvironment().GetOutputSize()); //@JJB**
-  m_eff_task_count.ResizeClear(num_tasks); //@JJB**
-  m_eff_task_count.SetAll(0);
-  m_cur_task_count.ResizeClear(num_tasks); //@JJB**
-  m_cur_task_count.SetAll(0);
-  m_cur_reaction_count.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
-  m_cur_reaction_count.SetAll(0);
+  m_task_count.ResizeClear(num_tasks); //@JJB**
+  m_task_count.SetAll(0);
+  m_reaction_count.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
+  m_reaction_count.SetAll(0);
   m_last_task_count.ResizeClear(num_tasks); //@JJB**
   m_last_task_count.SetAll(0);
   m_cur_reaction_add_reward.ResizeClear(m_world->GetEnvironment().GetReactionLib().GetSize()); //@JJB**
@@ -522,10 +519,9 @@ void cDeme::Reset(cAvidaContext& ctx, bool resetResources, double deme_energy)
   m_input_pointer = 0; //@JJB**
   m_input_buf.Clear(); //@JJB**
   m_output_buf.Clear(); //@JJB**
-  m_last_task_count = m_eff_task_count; //@JJB**
-  m_eff_task_count.SetAll(0); //@JJB**
-  m_cur_task_count.SetAll(0); //@JJB**
-  m_cur_reaction_count.SetAll(0); //@JJB**
+  m_last_task_count = m_task_count; //@JJB**
+  m_task_count.SetAll(0); //@JJB**
+  m_reaction_count.SetAll(0); //@JJB**
   m_cur_reaction_add_reward.SetAll(0.0); //@JJB**
   m_cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); //@JJB**
   if (m_world->GetConfig().BASE_MERIT_METHOD.Get() == BASE_MERIT_CONST) {
@@ -1293,7 +1289,7 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   tArray<double> rbins_in;
 
   // The environment, evaluates if a task and if a resulting reaction were completed
-  bool found = env.TestOutput(ctx, result, taskctx, m_eff_task_count, m_cur_reaction_count, res_in, rbins_in);
+  bool found = env.TestOutput(ctx, result, taskctx, m_task_count, m_reaction_count, res_in, rbins_in);
 
   // No task completed, end here
   if (found == false) {
@@ -1306,13 +1302,12 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   // Update deme's task and reaction counters
   for (int i = 0; i < num_tasks; i++) {
     if (result.TaskDone(i) == true) {
-      m_eff_task_count[i]++;
-      m_cur_task_count[i]++;
+      m_task_count[i]++;
     }
   }
   for (int i = 0; i < num_reactions; i++) {
     if (result.ReactionTriggered(i) == true) {
-      m_cur_reaction_count[i]++;
+      m_reaction_count[i]++;
     }
   }
 
@@ -1324,7 +1319,7 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
       int cur_num_tasks = 0;
       for (int j = 0; j < num_tasks; j++) {
         if (m_last_task_count[j] > 0) prev_num_tasks++;
-        if (m_eff_task_count[j] > 0) cur_num_tasks++;
+        if (m_task_count[j] > 0) cur_num_tasks++;
       }
       m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
     }
