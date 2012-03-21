@@ -31,6 +31,7 @@
 
 #import "DropDelegate.h"
 
+#include "avida/viewer/GraphicsContext.h"
 #include "avida/viewer/Types.h"
 
 
@@ -38,6 +39,7 @@
   IBOutlet id<DropDelegate> dropDelegate;
   
   const Avida::Viewer::HardwareSnapshot* snapshot;
+  Avida::Viewer::GraphicsContext graphics_context;
 }
 
 @property (readwrite, nonatomic) const Avida::Viewer::HardwareSnapshot* snapshot;

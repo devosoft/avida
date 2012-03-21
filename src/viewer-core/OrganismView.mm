@@ -31,6 +31,7 @@
 
 #import "NSString+Apto.h"
 
+#include "avida/viewer/GraphicsContext.h"
 #include "avida/viewer/OrganismTrace.h"
 
 
@@ -56,11 +57,13 @@
     NSRect bounds = [self bounds];
     NSPoint centerPoint = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
     
-    for (int object_idx = 0; object_idx < snapshot->NumGraphicObjects(); object_idx++) {
-      const Avida::Viewer::HardwareSnapshot::GraphicObject& obj = snapshot->Object(object_idx);
+    Avida::Viewer::ConstGraphicPtr graphic = snapshot->GraphicForContext(graphics_context);
+    
+    for (int object_idx = 0; object_idx < graphic->NumObjects(); object_idx++) {
+      const Avida::Viewer::GraphicObject& obj = graphic->Object(object_idx);
       
       switch (obj.shape) {
-        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_OVAL:
+        case Avida::Viewer::SHAPE_OVAL:
         {
           NSRect objRect = NSMakeRect(centerPoint.x + (obj.x * 72.0), centerPoint.y + (obj.y * 72.0), obj.width * 72.0, obj.height * 72.0);
           
@@ -96,12 +99,12 @@
           }
         }
           break;
-        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_RECT:
+        case Avida::Viewer::SHAPE_RECT:
         {
           
         }
           break;
-        case Avida::Viewer::HardwareSnapshot::GraphicObject::SHAPE_CURVE:
+        case Avida::Viewer::SHAPE_CURVE:
         {
           NSBezierPath* path = [NSBezierPath bezierPath];
           NSPoint startPoint = NSMakePoint(centerPoint.x + obj.x * 72.0, centerPoint.y + obj.y * 72.0);
