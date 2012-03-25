@@ -1135,6 +1135,51 @@ class cActionSetOptimizeMinMax : public cAction
     }
   };
 
+//@JJB**
+class cActionSetDemeIOGrid: public cAction
+{
+public:
+  tArray<int> cell_list;
+  cString inputOutput;
+
+public:
+  cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback&) :
+    cAction(world, args)
+  , inputOutput("none")
+  , cell_list(0)
+  {
+    cString largs(args);
+    inputOutput = largs.Pop(':');
+    cString cell_list_str = largs.Pop(':');
+    cell_list = cStringUtil::ReturnArray(cell_list_str);
+  }
+
+  static const cString GetDescription() { return "Arguments: <Input/Output>:<cell id list>"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    const int num_demes = m_world->GetPopulation().GetNumDemes();
+    const int deme_size = m_world->GetConfig().WORLD_X.Get() * (m_world->GetConfig().WORLD_Y.Get() / num_demes);
+    if (inputOutput == "Input") {
+      int cell_id;
+      for (int i = 0; i < cell_list.GetSize(); i++) {
+        for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+          cell_id = cell_list[i] + deme_id * deme_size;
+          m_world->GetPopulation().GetCell(cell_id).SetCanInput(true);
+        }
+      }
+    }
+    else if (inputOutput == "Output") {
+      int cell_id;
+      for (int i = 0; i < cell_list.GetSize(); i++) {
+        for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+          cell_id = cell_list[i] + deme_id * deme_size;
+          m_world->GetPopulation().GetCell(cell_list[i]).SetCanOutput(true);
+        }
+      }
+    }
+  }
+};
 
 class cActionDelayedDemeEvent : public cAction
 {
@@ -1345,7 +1390,7 @@ public:
 
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
-	action_lib->Register<cActionSetFracDemeTreatable>("SetFracDemeTreatable");
+  action_lib->Register<cActionSetFracDemeTreatable>("SetFracDemeTreatable");
   action_lib->Register<cActionDelayedDemeEvent>("DelayedDemeEvent");
   action_lib->Register<cActionDelayedDemeEventsPerSlots>("DelayedDemeEventsPerSlots");
   action_lib->Register<cActionInjectResource>("InjectResource");
@@ -1375,9 +1420,9 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
   action_lib->Register<cActionSetEnvironmentRandomMask>("SetEnvironmentRandomMask");
 
-	action_lib->Register<cActionSetSeasonalResource>("SetSeasonalResource");
-	action_lib->Register<cActionSetSeasonalResource1Kyears_1To_1>("SetSeasonalResource1Kyears_1To_1");
-	action_lib->Register<cActionSetSeasonalResource10Kyears_1To_1>("SetSeasonalResource10Kyears_1To_1");
+  action_lib->Register<cActionSetSeasonalResource>("SetSeasonalResource");
+  action_lib->Register<cActionSetSeasonalResource1Kyears_1To_1>("SetSeasonalResource1Kyears_1To_1");
+  action_lib->Register<cActionSetSeasonalResource10Kyears_1To_1>("SetSeasonalResource10Kyears_1To_1");
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
   action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");
 
@@ -1385,8 +1430,10 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");
   action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
+
+  action_lib->Register<cActionSetDemeIOGrid>("SetDemeIOGrid");
   
-    // MIGRATION_MATRIX
+  // MIGRATION_MATRIX
   action_lib->Register<cActionSetMigrationMatrix>("SetMigrationMatrix");
   action_lib->Register<cActionAlterMigrationConnection>("AlterMigrationConnection");
   

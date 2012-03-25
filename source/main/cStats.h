@@ -1059,6 +1059,10 @@ public:
 	void PrintDemeReactionDiversityReplicationData(const cString& filename);
   void PrintWinningDeme(const cString& filename);
 
+  void PrintDemesTasksData(const cString& filename); //@JJB**
+  void PrintDemesReactionsData(const cString& filename); //@JJB**
+  void PrintDemesFitnessData(const cString& filename); //@JJB**
+
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
   int GetNumOccupiedDemes() { return m_num_occupied_demes; }

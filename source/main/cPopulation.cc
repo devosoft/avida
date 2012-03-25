@@ -599,9 +599,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
-    
     if (target_cells[i] != -1) {
-    
       //@JEB - we may want to pass along some state information from parent to offspring
       if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
           || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
@@ -1749,7 +1747,6 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
   switch(m_world->GetConfig().DEMES_COMPETITION_STYLE.Get()) {
     case SELECTION_TYPE_PROPORTIONAL: {
       // Fitness-proportional selection.
-      //
       // Each deme has a probability equal to its fitness / sum(deme fitnesses)
       // of proceeding to the next generation.
       
@@ -1880,10 +1877,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
  8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
  9: 'perf-reactions' ...demes that have performed X number of each task are replicated
  10:'consume-res' ...demes that have consumed a sufficienct amount of resources
- 
- 
  */
-
 void cPopulation::ReplicateDemes(int rep_trigger, cAvidaContext& ctx) 
 {
   assert(GetNumDemes()>1); // Sanity check.
@@ -3296,7 +3290,8 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme, cAvidaContext& ctx) {
 }
 
 // Print out all statistics about individual demes
-void cPopulation::PrintDemeAllStats(cAvidaContext& ctx) { 
+void cPopulation::PrintDemeAllStats(cAvidaContext& ctx)
+{
   PrintDemeFitness();
   PrintDemeLifeFitness();
   PrintDemeMerit();
@@ -3653,17 +3648,18 @@ void cPopulation::PrintDemeLifeFitness()
   df_life_fit.Endl();
 }
 
-void cPopulation::PrintDemeMerit() {
+void cPopulation::PrintDemeMerit()
+{
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_merit = m_world->GetDataFile("deme_merit.dat");
+  cDataFile& df_merit = m_world->GetDataFile("deme_merit.dat");
   df_merit.WriteComment("Average merits for each deme in population");
   df_merit.WriteTimeStamp();
   df_merit.Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
-    const cDeme & cur_deme = deme_array[deme_id];
+    const cDeme& cur_deme = deme_array[deme_id];
     cDoubleSum single_deme_merit;
     
     for (int i = 0; i < cur_deme.GetSize(); i++) {
@@ -3676,6 +3672,23 @@ void cPopulation::PrintDemeMerit() {
     df_merit.Write(single_deme_merit.Ave(), comment);
   }
   df_merit.Endl();
+}
+
+//@JJB**
+void cPopulation::PrintDemesMeritsData()
+{
+  const int num_demes = deme_array.GetSize();
+  cDataFile& df_merits = m_world->GetDataFile("demes_merits.dat");
+  df_merits.WriteComment("Each deme's current calculated merit");
+  df_merits.WriteTimeStamp();
+  df_merits.Write(m_world->GetStats().GetUpdate(), "Update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    comment.Set("Deme %d", deme_id);
+    df_merits.Write(deme_array[deme_id].CalcCurMerit().GetDouble(), comment);
+  }
+  df_merits.Endl();
 }
 
 void cPopulation::PrintDemeMutationRate() {
@@ -5394,7 +5407,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         new_organism->SetParentFT(forager_type);
         org_survived = (ActivateOrganism(ctx, new_organism, cell_array[cell_id], false));
       }
-      if (load_avatars && org_survived && m_world->GetConfig().USE_AVATARS.Get()) {
+      if (load_avatars && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
         new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
@@ -5533,7 +5546,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
-  if(m_world->GetConfig().USE_AVATARS.Get()) {
+  if(m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     cell_array[cell_id].GetOrganism()->GetOrgInterface().AddPredPreyAV(cell_id);
   }
   if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
@@ -5711,6 +5724,11 @@ void cPopulation::ResetInputs(cAvidaContext& ctx)
     if (cell.IsOccupied()) {
       cell.GetOrganism()->ResetInput();
     }
+  }
+  //@JJB**
+  for (int i = 0; i < GetNumDemes(); i++) {
+    GetDeme(i).ResetInputs(ctx);
+    GetDeme(i).ResetInput();
   }
 }
 

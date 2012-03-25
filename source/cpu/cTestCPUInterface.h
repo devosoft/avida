@@ -143,7 +143,11 @@ public:
   //! Rotate to select a new network link.
   bool NetworkRotate(int x) { return false; }
   //! Select a new network link.
-  bool NetworkSelect(int x) { return false; }	
+  bool NetworkSelect(int x) { return false; }
+
+  int GetNextDemeInput(cAvidaContext& ctx) { return -1; }
+  void DoDemeInput(int value) { ; }
+  void DoDemeOutput(cAvidaContext& ctx, int value) { ; }
 
   //! HGT donation (does nothing).
   void DoHGTDonation(cAvidaContext& ctx) { }

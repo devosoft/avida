@@ -141,6 +141,9 @@ STATS_OUT_FILE(PrintAvgUntreatableDemeTasksExeData, avg_untreatable_deme_tasks_e
 STATS_OUT_FILE(PrintPerDemeReactionData,    per_deme_reactions.dat  );
 STATS_OUT_FILE(PrintDemeTasksData,          deme_tasks.dat      );
 STATS_OUT_FILE(PrintDemeTasksExeData,       deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintDemesTasksData,         demes_tasks.dat); //@JJB**
+STATS_OUT_FILE(PrintDemesReactionsData,     demes_reactions.dat); //@JJB**
+STATS_OUT_FILE(PrintDemesFitnessData,       demes_fitness.dat); //@JJB**
 STATS_OUT_FILE(PrintDemeReactionData,       deme_reactions.dat  );
 STATS_OUT_FILE(PrintDemeOrgTasksData,       deme_org_tasks.dat      );
 STATS_OUT_FILE(PrintDemeOrgTasksExeData,    deme_org_tasks_exe.dat  );
@@ -4115,6 +4118,42 @@ public:
   }
 };
 
+class cActionPrintDemeFitness : public cAction
+{
+public:
+  cActionPrintDemeFitness(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx) {
+    m_world->GetPopulation().PrintDemeFitness();
+  }
+};
+
+class cActionPrintDemeLifeFitness : public cAction
+{
+public:
+  cActionPrintDemeLifeFitness(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx) {
+    m_world->GetPopulation().PrintDemeLifeFitness();
+  }
+};
+
+class cActionPrintDemeTasks : public cAction
+{
+public:
+  cActionPrintDemeTasks(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx) {
+    m_world->GetPopulation().PrintDemeTasks();
+  }
+};
+
 class cActionPrintDemesTotalAvgEnergy : public cAction {
 public:
 	cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
@@ -4307,6 +4346,20 @@ public:
 
     df.WriteRaw("];");
     df.Endl();
+  }
+};
+
+//@JJB**
+class cActionPrintDemesMeritsData : public cAction
+{
+public:
+  cActionPrintDemesMeritsData(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemesMeritsData();
   }
 };
 
@@ -4662,7 +4715,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
   action_lib->Register<cActionPrintDemeTreatableCount>("PrintDemeTreatableCount");
-
+  action_lib->Register<cActionPrintDemeFitness>("PrintDemeFitnessData");
+  action_lib->Register<cActionPrintDemeLifeFitness>("PrintDemeLifeFitnessData");
+  action_lib->Register<cActionPrintDemeTasks>("PrintDemeTasksData");
 
   action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
   action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
@@ -4686,6 +4741,12 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
+  
+  action_lib->Register<cActionPrintDemesTasksData>("PrintDemesTasksData"); //@JJB**
+  action_lib->Register<cActionPrintDemesReactionsData>("PrintDemesReactionsData"); //@JJB**
+  action_lib->Register<cActionPrintDemesMeritsData>("PrintDemesMeritsData"); //@JJB**
+  action_lib->Register<cActionPrintDemesFitnessData>("PrintDemesFitnessData"); //@JJB**
+
   action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
