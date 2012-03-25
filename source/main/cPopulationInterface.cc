@@ -1628,7 +1628,7 @@ void cPopulationInterface::RemoveAllAV()
   for (int i = 0; i < GetNumAV(); i++) {
     sIO_avatar tmpAV = m_avatars.Pop();
     // Check that avatar is actually in a cell
-    if (tmpAV.av_cell_id > 0) {
+    if (tmpAV.av_cell_id >= 0) {
       // If input avatar remove from the cell
       if (tmpAV.av_input) {
         m_world->GetPopulation().GetCell(tmpAV.av_cell_id).RemoveInputAV(GetOrganism());

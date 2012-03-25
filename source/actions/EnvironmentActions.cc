@@ -1174,7 +1174,7 @@ public:
       for (int i = 0; i < cell_list.GetSize(); i++) {
         for (int deme_id = 0; deme_id < num_demes; deme_id++) {
           cell_id = cell_list[i] + deme_id * deme_size;
-          m_world->GetPopulation().GetCell(cell_list[i]).SetCanOutput(true);
+          m_world->GetPopulation().GetCell(cell_id).SetCanOutput(true);
         }
       }
     }

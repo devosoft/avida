@@ -177,7 +177,7 @@ public:
   tArray<cOrganism*> GetCellOutputAVs();
   tArray<cOrganism*> GetCellAVs();
 
-// -------- Neural support --------
+// -------- Neural support -------- @JJB
 private:
   bool can_input;
   bool can_output;
