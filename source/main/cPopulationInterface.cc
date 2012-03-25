@@ -1615,8 +1615,8 @@ void cPopulationInterface::SwitchPredPrey(int av_num)
     else if (m_avatars[av_num].av_output) {
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveOutputAV(GetOrganism());
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).AddInputAV(GetOrganism());
-      m_avatars[av_num].av_output = false;
       m_avatars[av_num].av_input = true;
+      m_avatars[av_num].av_output = false;
     }
   }
 }
