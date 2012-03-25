@@ -30,8 +30,8 @@ cBirthEntry::cBirthEntry()
 , m_mating_display_a(0)
 , m_mating_display_b(0)
 , m_mate_preference(MATE_PREFERENCE_RANDOM)
+, m_group_id(-1)
 , timestamp(-1)
-, m_group_id(0)
 {
 }
 
@@ -43,10 +43,10 @@ cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _time
 , m_mating_display_a(_parent->GetPhenotype().GetLastMatingDisplayA())
 , m_mating_display_b(_parent->GetPhenotype().GetLastMatingDisplayB())
 , m_mate_preference(_parent->GetPhenotype().GetMatePreference())
+, m_group_id(-1)
 , genome(_offspring)
 , merit(_parent->GetPhenotype().GetMerit())
 , timestamp(_timestamp)
-, m_group_id(-1)
 {
   // Note: Not checking for energy because we don't want to clear out the parent's energy
   // for a temporary birth entry, otherwise things may get screwed up when the REAL offspring
@@ -93,6 +93,7 @@ cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)
   m_mating_display_b = _birth_entry.m_mating_display_b;
   m_parent_task_count = _birth_entry.m_parent_task_count;
   m_mate_preference = _birth_entry.m_mate_preference;
+  m_group_id = _birth_entry.m_group_id;
   
   genome = _birth_entry.genome;
   energy4Offspring = _birth_entry.energy4Offspring;
