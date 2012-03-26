@@ -2119,23 +2119,15 @@ tArray<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
 // Returns the avatar's cell resources
 const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx, int av_num)
 {
-  // If the avatar exists..
-  if (av_num < GetNumAV()) {
-    return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_cell_id, ctx);
-  }
-  tArray<double> tmp_array(0);
-  return tmp_array;
+  assert(av_num < GetNumAV());
+  return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_cell_id, ctx);
 }
 
 // Returns the avatar's faced cell's resources
 const tArray<double>& cPopulationInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
 {
-  // If the avatar exists..
-  if (av_num < GetNumAV()) {
-    return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_faced_cell, ctx);
-  }
-  tArray<double> tmp_array(0);
-  return tmp_array;
+  assert(av_num < GetNumAV());
+  return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_faced_cell, ctx);
 }
 
 // Updates the avatar's cell resources

@@ -1502,7 +1502,6 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
         // Wake up the thread with matched condition
         m_threads[i].active = true;
         m_waiting_threads--;
-        assert(m_waiting_threads >= 0);
         
         // Set destination register to be the check value
         sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];

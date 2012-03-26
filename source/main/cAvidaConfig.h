@@ -494,7 +494,6 @@ public:
   CONFIG_ADD_VAR(DEMES_TRACK_SHANNON_INFO, int, 0, "Enable shannon mutual information tracking for demes.");
   CONFIG_ADD_VAR(DEMES_MUT_ORGS_ON_REPLICATION, int, 0, "Mutate orgs using germline mutation rates when they are copied to a new deme (using DEMES_SEED_METHOD 1): 0=OFF, 1=ON");
   CONFIG_ADD_VAR(DEMES_ORGS_START_IN_GERM, int, 0, "Are orgs considered part of the germline at start?");
-  CONFIG_ADD_VAR(DEMES_IO_TASKS, int, 0, "Turns on/off deme level io tasks (NOTE: Overrides organism level tasking, not compatable");
   
   
   // -------- Reversion config options --------
