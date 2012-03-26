@@ -36,9 +36,9 @@
     [self willChangeValueForKey:@"decimalString"];
     [self willChangeValueForKey:@"hexString"];
     value = _value;
-    [self didChangeValueForKey:@"value"];
-    [self didChangeValueForKey:@"decimalString"];
     [self didChangeValueForKey:@"hexString"];
+    [self didChangeValueForKey:@"decimalString"];
+    [self didChangeValueForKey:@"value"];
   }
 }
 
