@@ -2123,7 +2123,7 @@ const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx, i
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_cell_id, ctx);
   }
-  tArray<double> tmp_array(0, 0.0);
+  tArray<double> tmp_array(0);
   return tmp_array;
 }
 
@@ -2134,7 +2134,7 @@ const tArray<double>& cPopulationInterface::GetAVFacedResources(cAvidaContext& c
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_faced_cell, ctx);
   }
-  tArray<double> tmp_array(0, 0.0);
+  tArray<double> tmp_array(0);
   return tmp_array;
 }
 

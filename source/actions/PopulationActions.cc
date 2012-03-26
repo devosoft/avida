@@ -1415,7 +1415,7 @@ public:
 				}
 			}
 		}
-		m_minDist.Add(currentMinDist.Average());
+		m_minDist.Add(int(currentMinDist.Average()));
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 		

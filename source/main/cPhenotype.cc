@@ -97,7 +97,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
   double num_resources = m_world->GetEnvironment().GetResourceLib().GetSize();
   if (num_resources <= 0 || num_nops <= 0) return;
   double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
-  cur_collect_spec_counts.Resize((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0));
+  cur_collect_spec_counts.Resize(int((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0)));
 }
 
 cPhenotype::~cPhenotype()

@@ -1951,9 +1951,9 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   }
   
   /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
-  int n_mut = source_deme.GetAveGermMut(); 
+  double n_mut = source_deme.GetAveGermMut();
   if (n_mut >= 0) {
-    m_ave_germ_mut.push_back(n_mut); 
+    m_ave_germ_mut.push_back(n_mut);
     m_ave_non_germ_mut.push_back(source_deme.GetAveNonGermMut());
     m_ave_germ_size.push_back(source_deme.GetGermlinePercent());
   }
