@@ -61,9 +61,11 @@
   NSMutableArray* arrRegisters;
   NSMutableArray* arrInputBuffer;
   NSMutableArray* arrOutputBuffer;
+  NSMutableArray* arrCurStack;
   IBOutlet NSArrayController* arrctlrRegisters;
   IBOutlet NSArrayController* arrctlrInputBuffer;
   IBOutlet NSArrayController* arrctlrOutputBuffer;
+  IBOutlet NSArrayController* arrctlrCurStack;
 
   
   AvidaRun* testWorld;
@@ -78,6 +80,7 @@
 @property (readonly) NSMutableArray* arrRegisters;
 @property (readonly) NSMutableArray* arrInputBuffer;
 @property (readonly) NSMutableArray* arrOutputBuffer;
+@property (readonly) NSMutableArray* arrCurStack;
 
 
 - (IBAction) selectSnapshot:(id)sender;

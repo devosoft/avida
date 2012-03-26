@@ -217,7 +217,23 @@
   } else {
     for (int i = 0; i < output_buf.GetSize(); i++)
       [(AvidaEDOrganismStateValue*)[arrOutputBuffer objectAtIndex:i] setValue:output_buf[i]];
-  }  
+  }
+  
+  // handle current stack
+  const Apto::Array<int>& cur_stack = snapshot.Buffer(snapshot.SelectedBuffer());
+  if ([arrCurStack count] != cur_stack.GetSize()) {
+    NSRange range = NSMakeRange(0, [[arrctlrCurStack arrangedObjects] count]);
+    [arrctlrCurStack removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+    for (int i = 0; i < cur_stack.GetSize(); i++) {
+      AvidaEDOrganismStateValue* sv = [[AvidaEDOrganismStateValue alloc] initWithPrefix:@""];
+      [sv setValue:cur_stack[i]];
+      [arrctlrCurStack addObject:sv];
+    }
+  } else {
+    for (int i = 0; i < cur_stack.GetSize(); i++)
+      [(AvidaEDOrganismStateValue*)[arrCurStack objectAtIndex:i] setValue:cur_stack[i]];
+  }
+  
 }
 
 
@@ -268,6 +284,7 @@
 @synthesize arrRegisters;
 @synthesize arrInputBuffer;
 @synthesize arrOutputBuffer;
+@synthesize arrCurStack;
 
 
 - (void) awakeFromNib {
