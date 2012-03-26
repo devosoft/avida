@@ -31,6 +31,7 @@
 
 #import "AvidaRun.h"
 #import "AvidaEDController.h"
+#import "AvidaEDEnvActionsDataSource.h"
 #import "Genome.h"
 #import "NSString+Apto.h"
 
@@ -49,89 +50,6 @@
 
 static const float PANEL_MIN_WIDTH = 360.0;
 
-@interface AvidaEDPopViewStatViewEnvActions : NSObject <NSTableViewDataSource> {
-  NSMutableArray* entries;
-  NSMutableDictionary* entrymap;
-}
-- (id) init;
-- (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc;
-- (void) updateEntry:(NSString*)name withValue:(NSNumber*)value;
-- (void) clearEntries;
-- (NSString*) entryAtIndex:(NSUInteger)idx;
-- (NSUInteger) entryCount;
-
-- (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;
-- (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
-- (void) tableView:(NSTableView*)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
-@end
-
-
-@implementation AvidaEDPopViewStatViewEnvActions
-
-- (id) init {
-  entries = [[NSMutableArray alloc] init];
-  entrymap = [[NSMutableDictionary alloc] init];
-  return self;
-}
-
-- (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc {
-  NSMutableDictionary* entry = [[NSMutableDictionary alloc] init];
-  [entry setValue:name forKey:@"Action"];
-  [entry setValue:[NSNumber numberWithInt:NSOffState] forKey:@"State"];
-  [entry setValue:desc forKey:@"Description"];
-  [entry setValue:[NSNumber numberWithInt:0] forKey:@"Orgs Performing"];
-  [entries addObject:entry];
-  [entrymap setValue:[NSNumber numberWithLong:([entries count] - 1)] forKey:name];
-}
-
-
-- (void) updateEntry:(NSString*)name withValue:(NSNumber*)value {
-  [[entries objectAtIndex:[[entrymap valueForKey:name] unsignedIntValue]] setValue:value forKey:@"Orgs Performing"];
-}
-
-
-- (void) clearEntries {
-  [entries removeAllObjects];
-}
-
-- (NSString*) entryAtIndex:(NSUInteger)idx
-{
-  return [[entries objectAtIndex:idx] valueForKey:@"Action"];
-}
-- (NSUInteger) entryCount {
-  return [entries count];
-}
-
-
-- (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView {
-  return [entries count];
-}
-
-- (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex {
-  id entry, value;
-  
-  entry = [entries objectAtIndex:rowIndex];
-  value = [entry objectForKey:[tableColumn identifier]];
-  return value;
-}
-
-- (void) tableView:(NSTableView*)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
-{
-  if ([[tableColumn identifier] isEqualToString:@"State"]) {
-    id entry = [entries objectAtIndex:rowIndex];
-    [entry setValue:object forKey:@"State"];
-    if ([[tableView delegate] respondsToSelector:@selector(envActionStateChange:)]) {
-      NSMutableDictionary* states = [[NSMutableDictionary alloc] init];
-      for (int i = 0; i < [entries count]; i++) {
-        NSMutableDictionary* cur_entry = [entries objectAtIndex:i];
-        [states setValue:[cur_entry valueForKey:@"State"] forKey:[cur_entry valueForKey:@"Action"]];
-      }
-      [[tableView delegate] performSelector:@selector(envActionStateChange:) withObject:states];
-    }
-  }
-}
-
-@end
 
 
 @interface AvidaEDPopViewStatViewGraphData : NSObject <CPTPlotDataSource> {
@@ -207,22 +125,22 @@ static const float PANEL_MIN_WIDTH = 360.0;
 - (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 
-@property (readonly) AvidaEDPopViewStatViewEnvActions* envActions;
+@property (readonly) AvidaEDEnvActionsDataSource* envActions;
 @end
 
 @implementation AvidaEDPopViewStatView (hidden)
 @dynamic envActions;
-- (AvidaEDPopViewStatViewEnvActions*)envActions {
+- (AvidaEDEnvActionsDataSource*)envActions {
   return envActions;
 }
 
 - (void) setup {
-  envActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
+  envActions = [[AvidaEDEnvActionsDataSource alloc] init];
   [tblEnvActions setDataSource:envActions];
   [tblEnvActions setDelegate:self];
   [tblEnvActions reloadData];
 
-  orgEnvActions = [[AvidaEDPopViewStatViewEnvActions alloc] init];
+  orgEnvActions = [[AvidaEDEnvActionsDataSource alloc] init];
   [tblOrgEnvActions setDataSource:orgEnvActions];
   [tblOrgEnvActions setDelegate:self];
   [tblOrgEnvActions reloadData];
@@ -478,8 +396,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
     Avida::Environment::ConstActionTriggerPtr action = env->GetActionTrigger(*it.Get());
     NSString* entryName = [NSString stringWithAptoString:action->GetID()];
     NSString* entryDesc = [NSString stringWithAptoString:action->GetDescription()];
-    [envActions addNewEntry:entryName withDescription:entryDesc];
-    [orgEnvActions addNewEntry:entryName withDescription:entryDesc];
+    [envActions addNewEntry:entryName withDescription:entryDesc withOrder:action->TempOrdering()];
+    [orgEnvActions addNewEntry:entryName withDescription:entryDesc withOrder:action->TempOrdering()];
   }
   [tblEnvActions reloadData];
   [tblOrgEnvActions reloadData];

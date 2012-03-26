@@ -41,7 +41,7 @@
 class AvidaEDPopViewStatViewRecorder;
 class AvidaEDPopViewStatViewOrgRecorder;
 class AvidaEDPopViewStatViewTimeRecorder;
-@class AvidaEDPopViewStatViewEnvActions;
+@class AvidaEDEnvActionsDataSource;
 @class AvidaEDPopViewStatViewGraphData;
 
 
@@ -70,8 +70,8 @@ class AvidaEDPopViewStatViewTimeRecorder;
   AvidaRun* run;
   Avida::Data::RecorderPtr recorder;
   Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::ThreadSafeRefCount> org_recorder;
-  AvidaEDPopViewStatViewEnvActions* envActions;
-  AvidaEDPopViewStatViewEnvActions* orgEnvActions;
+  AvidaEDEnvActionsDataSource* envActions;
+  AvidaEDEnvActionsDataSource* orgEnvActions;
   IBOutlet id envActionChangeDelegate;
   
   IBOutlet NSPopUpButton* btnGraphSelect;

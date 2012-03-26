@@ -38,7 +38,6 @@
 - (void) updateEntry:(NSString*)name withValue:(NSNumber*)value;
 - (void) clearEntries;
 - (NSString*) entryAtIndex:(NSUInteger)idx;
-- (int) orderOfIndex:(NSUInteger)idx;
 - (NSUInteger) entryCount;
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;

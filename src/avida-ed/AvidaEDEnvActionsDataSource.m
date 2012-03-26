@@ -29,6 +29,23 @@
 
 #import "AvidaEDEnvActionsDataSource.h"
 
+
+@interface NSDictionary (AvidaEDPopViewStatViewEnvActionsSorting) 
+-(NSComparisonResult)compareEnvActionOrder:(NSDictionary*)row;
+@end
+
+@implementation NSDictionary (AvidaEDPopViewStatViewEnvActionsSorting)
+-(NSComparisonResult)compareEnvActionOrder:(NSDictionary*)row;
+{
+  NSNumber* rowOrder = [row objectForKey:@"Order"];
+  NSNumber* selfOrder = [self objectForKey:@"Order"];
+  
+  return [selfOrder compare:rowOrder];
+}
+@end
+
+
+
 @implementation AvidaEDEnvActionsDataSource
 
 - (id) init {
@@ -44,8 +61,14 @@ return self;
   [entry setValue:desc forKey:@"Description"];
   [entry setValue:[NSNumber numberWithInt:0] forKey:@"Orgs Performing"];
   [entry setValue:[NSNumber numberWithInt:order] forKey:@"Order"];
+  
   [entries addObject:entry];
-  [entrymap setValue:[NSNumber numberWithLong:([entries count] - 1)] forKey:name];
+
+  // Sort and update entry map
+  [entries sortUsingSelector:@selector(compareEnvActionOrder:)];
+  for (NSUInteger i = 0; i < [entries count]; i++) {
+    [entrymap setValue:[NSNumber numberWithLong:i] forKey:[[entries objectAtIndex:i] valueForKey:@"Action"]];
+  }
 }
 
 
@@ -60,10 +83,6 @@ return self;
 
 - (NSString*) entryAtIndex:(NSUInteger)idx {
   return [[entries objectAtIndex:idx] valueForKey:@"Action"];
-}
-
-- (int) orderOfIndex:(NSUInteger)idx {
-  return [[[entries objectAtIndex:idx] valueForKey:@"Order"] intValue];
 }
 
 - (NSUInteger) entryCount {
