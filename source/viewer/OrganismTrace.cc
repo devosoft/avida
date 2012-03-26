@@ -243,13 +243,13 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   Apto::Array<int> buffer_values;
 
   // Handle Input Buffer
-  buffer_values.Resize(hw.GetInputBuf().GetNumStored());
-  for (int i = 0; i < hw.GetInputBuf().GetNumStored(); i++) buffer_values[i] = hw.GetInputBuf()[i];
+  buffer_values.Resize(hw.GetInputBuf().GetCapacity());
+  for (int i = 0; i < hw.GetInputBuf().GetCapacity(); i++) buffer_values[i] = hw.GetInputBuf()[i];
   snapshot->AddBuffer("input", buffer_values);
   
   // Handle Output Buffer
-  buffer_values.Resize(hw.GetOutputBuf().GetNumStored());
-  for (int i = 0; i < hw.GetOutputBuf().GetNumStored(); i++) buffer_values[i] = hw.GetOutputBuf()[i];
+  buffer_values.Resize(hw.GetOutputBuf().GetCapacity());
+  for (int i = 0; i < hw.GetOutputBuf().GetCapacity(); i++) buffer_values[i] = hw.GetOutputBuf()[i];
   snapshot->AddBuffer("output", buffer_values);
   
   // Handle Stacks
