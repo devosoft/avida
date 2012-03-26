@@ -44,7 +44,7 @@ namespace Avida {
       
       LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, ConstProductPtr product,
                                      int tmp_order = -1)
-        : m_id(trigger_id), m_desc(desc), m_product(product) { ; }
+        : m_id(trigger_id), m_desc(desc), m_product(product), m_tmp_order(tmp_order) { ; }
 
     public:
       LIB_EXPORT inline ~ActionTrigger() { ; }
