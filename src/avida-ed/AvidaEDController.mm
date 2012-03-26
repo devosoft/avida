@@ -42,7 +42,7 @@
 #import "NSString+Apto.h"
 
 #import "AvidaEDPopViewStatView.h"
-#import "AvidaEDOrganismView.h"
+#import "AvidaEDOrganismViewController.h"
 
 #include "avida/viewer/Map.h"
 
@@ -764,9 +764,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [btnOrgView setState:NSOffState];
     [btnAnalyzeView setState:NSOffState];
   } else if (sender == btnOrgView) {
-    if (curView != orgView) {
-      [mainSplitView replaceSubview:curView with:orgView];
-      curView = orgView;
+    if (curView != orgViewCtlr.view) {
+      [mainSplitView replaceSubview:curView with:orgViewCtlr.view];
+      curView = orgViewCtlr.view;
     }
     [btnPopView setState:NSOffState];
     [btnOrgView setState:NSOnState];

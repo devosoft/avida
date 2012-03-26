@@ -29,6 +29,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "AvidaEDOrganismValueDisplayView.h"
+#import "AvidaEDOrganismStateValue.h"
+
 namespace Avida {
   void Initialize();
 };
@@ -37,6 +40,10 @@ namespace Avida {
 int main(int argc, char *argv[])
 {
   Avida::Initialize();
+  
+  [AvidaEDOrganismStateValue initialize];
+  [AvidaEDOrganismValueDisplayView initialize];
+  
   
   return NSApplicationMain(argc, (const char **)argv);
 }

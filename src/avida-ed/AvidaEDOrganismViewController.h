@@ -1,5 +1,5 @@
 //
-//  AvidaEDOrgansimView.h
+//  AvidaEDOrgansimViewController.h
 //  viewer-macos
 //
 //  Created by David M. Bryson on 3/5/12.
@@ -40,7 +40,7 @@
 @class OrganismView;
 
 
-@interface AvidaEDOrganismView : NSView <DropDelegate, NSPopoverDelegate> {
+@interface AvidaEDOrganismViewController : NSViewController <DropDelegate, NSPopoverDelegate> {
   IBOutlet OrganismView* orgView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet NSTableView* tblTaskCounts;
@@ -58,6 +58,14 @@
 
   IBOutlet AvidaEDController* ctlr;
   
+  NSMutableArray* arrRegisters;
+  NSMutableArray* arrInputBuffer;
+  NSMutableArray* arrOutputBuffer;
+  IBOutlet NSArrayController* arrctlrRegisters;
+  IBOutlet NSArrayController* arrctlrInputBuffer;
+  IBOutlet NSArrayController* arrctlrOutputBuffer;
+
+  
   AvidaRun* testWorld;
   Avida::Viewer::OrganismTracePtr trace;
   int curSnapshotIndex;
@@ -66,6 +74,11 @@
   
   NSTimer* tmrAnim;
 }
+
+@property (readonly) NSMutableArray* arrRegisters;
+@property (readonly) NSMutableArray* arrInputBuffer;
+@property (readonly) NSMutableArray* arrOutputBuffer;
+
 
 - (IBAction) selectSnapshot:(id)sender;
 - (IBAction) nextSnapshot:(id)sender;

@@ -43,7 +43,7 @@
 @class MapScaleView;
 
 @class AvidaEDPopViewStatView;
-@class AvidaEDOrganismView;
+@class AvidaEDOrganismViewController;
 
 
 @interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, DropDelegate, MapDragDelegate, ViewerListener,
@@ -122,7 +122,7 @@
   
   // Organism View
   // --------------------------------------------------------------------------------------------------------------  
-  IBOutlet AvidaEDOrganismView* orgView;
+  IBOutlet AvidaEDOrganismViewController* orgViewCtlr;
   
 
   AvidaAppDelegate* app;
