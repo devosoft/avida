@@ -130,6 +130,7 @@ public:
   
   // --------  Stack Manipulation...  --------
   virtual int GetStack(int depth = 0, int stack_id = -1, int in_thread = -1) const = 0;
+  virtual int GetCurStack(int in_thread_id = -1) const { return -1; }
   virtual int GetNumStacks() const = 0;
   
   

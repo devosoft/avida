@@ -47,6 +47,7 @@ namespace Avida {
       
       Apto::Array<int> m_registers;
       Apto::Map<Apto::String, Apto::Array<int> > m_buffers;
+      Apto::String m_selected_buffer;
       Apto::Array<int> m_default_buffer;
       Apto::Map<Apto::String, int> m_function_counts;
       
@@ -92,6 +93,7 @@ namespace Avida {
       LIB_LOCAL void AddHead(const Apto::String& label, int mem_space, int index);
       LIB_LOCAL void AddJump(int from_mem_space, int from_idx, int to_mem_space, int to_idx);
       LIB_LOCAL inline void SetNextInst(Instruction inst) { m_next_inst = inst; }
+      LIB_LOCAL void SetSelectedBuffer(const Apto::String& buffer) { m_selected_buffer = buffer; }
 
 
       // Access Methods
@@ -102,6 +104,7 @@ namespace Avida {
       
       LIB_EXPORT inline int NumBuffers() const { return m_buffers.GetSize(); };
       LIB_EXPORT inline const Apto::Array<int>& Buffer(const Apto::String& desc) const { return m_buffers.GetWithDefault(desc, m_default_buffer); }
+      LIB_EXPORT inline const Apto::String& SelectedBuffer() const { return m_selected_buffer; }
       
       LIB_EXPORT inline int FunctionCount(const Apto::String& function) const { return m_function_counts.GetWithDefault(function, 0); };
       

@@ -258,6 +258,7 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
     for (int i = 0; i < nHardware::STACK_SIZE; i++) buffer_values[i] = hw.GetStack(i, stk);
     snapshot->AddBuffer(Apto::FormatStr("stack %c", 'A' + stk), buffer_values);
   }
+  snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));
   
   // Handle function counts
   const tArray<int>& task_counts = hw.GetOrganism()->GetPhenotype().GetCurTaskCount();

@@ -256,6 +256,7 @@ public:
 
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+  inline int GetCurStack(int in_thread = -1) const;
   inline int GetNumStacks() const { return 2; }
 
 
@@ -1081,6 +1082,14 @@ inline int cHardwareCPU::GetStack(int depth, int stack_id, int in_thread) const
 
   return value;
 }
+
+inline int cHardwareCPU::GetCurStack(int in_thread) const
+{
+  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
+  
+  return m_threads[in_thread].cur_stack;  
+}
+
 
 inline void cHardwareCPU::StackClear()
 {
