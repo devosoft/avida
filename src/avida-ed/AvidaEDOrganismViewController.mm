@@ -191,7 +191,6 @@
   // Handle input buffer
   const Apto::Array<int>& input_buf = snapshot.Buffer("input");
   if ([arrInputBuffer count] != input_buf.GetSize()) {
-    printf("input buf: %lu %d\n", [arrInputBuffer count], input_buf.GetSize());
     NSRange range = NSMakeRange(0, [[arrctlrInputBuffer arrangedObjects] count]);
     [arrctlrInputBuffer removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
     for (int i = 0; i < input_buf.GetSize(); i++) {

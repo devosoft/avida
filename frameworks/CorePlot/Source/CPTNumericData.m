@@ -266,7 +266,7 @@
         
         if ( prod != self.numberOfSamples ) {
             [NSException raise:CPTNumericDataException 
-                        format:@"Shape product (%lu) does not match data size (%lu)", prod, self.numberOfSamples];
+                        format:@"Shape product (%u) does not match data size (%u)", (unsigned int)prod, (unsigned int)self.numberOfSamples];
         }
         
         shape = [shapeArray copy];

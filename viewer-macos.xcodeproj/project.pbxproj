@@ -54,6 +54,7 @@
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
 		709D24C714CF500400AB0425 /* Genome.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709D24C414CF4B8100AB0425 /* Genome.mm */; };
 		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
+		70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
 		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
@@ -62,10 +63,11 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		7038059614ACF76A002FA72A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +75,7 @@
 
 /* Begin PBXFileReference section */
 		701269C9151B702D004865C2 /* Avida-ED-Organism-ValueDisplay.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-ED-Organism-ValueDisplay.xib"; sourceTree = "<group>"; };
-		701269D1151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AvidaEDOrganismValueDisplayCollectionView.h; sourceTree = "<group>"; };
+		701269D1151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismValueDisplayCollectionView.h; sourceTree = "<group>"; };
 		701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismValueDisplayCollectionView.m; sourceTree = "<group>"; };
 		701269D4151B724B004865C2 /* AvidaEDGraphicalValueDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDGraphicalValueDisplay.h; sourceTree = "<group>"; };
 		701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDGraphicalValueDisplay.m; sourceTree = "<group>"; };
@@ -498,11 +500,19 @@
 		7035496813379F3F00D3865C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_GC = required;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx10.7;
 			};
@@ -511,10 +521,18 @@
 		7035496913379F3F00D3865C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_GC = required;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx10.7;
 			};
 			name = Release;
@@ -523,28 +541,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_ENABLE_OBJC_GC = required;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
 				WRAPPER_EXTENSION = app;
@@ -555,25 +561,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
 				);
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_ENABLE_OBJC_GC = required;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
 				WRAPPER_EXTENSION = app;
