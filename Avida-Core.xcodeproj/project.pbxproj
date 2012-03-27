@@ -159,6 +159,7 @@
 		70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3512B944F40092B40D /* cContextPhenotype.h */; };
 		70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3612B944F40092B40D /* cContextReactionRequisite.h */; };
 		70D3AD0A1455DFB4000FAB0F /* Package.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70D3AD091455DFB4000FAB0F /* Package.cc */; };
+		70D46D3715222A6300F6B5DA /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70D46D3615222A6300F6B5DA /* Recorder.cc */; };
 		70D5B4D914F4009000D15FFD /* Genome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB801358BD6F0000B036 /* Genome.cc */; };
 		70D5B4DA14F4009000D15FFD /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70D5B4DB14F4009000D15FFD /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
@@ -781,6 +782,7 @@
 		70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenomeUtil.cc; sourceTree = "<group>"; };
 		70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenomeUtil.h; sourceTree = "<group>"; };
 		70D3AD091455DFB4000FAB0F /* Package.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cc; sourceTree = "<group>"; };
+		70D46D3615222A6300F6B5DA /* Recorder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Recorder.cc; sourceTree = "<group>"; };
 		70DAE8E314B4B01900FE5A6A /* Freezer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Freezer.cc; sourceTree = "<group>"; };
 		70DCAC57097AF730002F8733 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		70DCAC59097AF730002F8733 /* cBarScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBarScreen.cc; sourceTree = "<group>"; };
@@ -1534,6 +1536,7 @@
 				70FEF65D1382C48900A9D082 /* Manager.cc */,
 				70D3AD091455DFB4000FAB0F /* Package.cc */,
 				7095867814439E5E00243303 /* Provider.cc */,
+				70D46D3615222A6300F6B5DA /* Recorder.cc */,
 				70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */,
 			);
 			path = data;
@@ -2124,6 +2127,7 @@
 				7070E6BF12109C1D0056BE1E /* (null) in Sources */,
 				7073ADEF14609BF600FECC56 /* cBirthEntry.cc in Sources */,
 				7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */,
+				70D46D3715222A6300F6B5DA /* Recorder.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2248,7 +2252,7 @@
 					../libs/apto/include/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 				WARNING_CFLAGS = (
 					"-fstack-protect-all",
 					"-ferror-limit=0",
@@ -2265,7 +2269,7 @@
 		702442D90859E0B00059BD9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
@@ -2280,7 +2284,7 @@
 					include/private/,
 					../libs/apto/include/,
 				);
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",

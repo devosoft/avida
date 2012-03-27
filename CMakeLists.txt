@@ -188,6 +188,7 @@ SET(DATA_SOURCES
   ${DATA_DIR}/Manager.cc
   ${DATA_DIR}/Package.cc
   ${DATA_DIR}/Provider.cc
+  ${DATA_DIR}/Recorder.cc
   ${DATA_DIR}/TimeSeriesRecorder.cc
 )
 SOURCE_GROUP(data FILES ${DATA_SOURCES})
@@ -324,10 +325,14 @@ LIST(APPEND AVIDA_CORE_SOURCES ${UTIL_SOURCES})
 # The core viewer directory
 SET(VIEWERCORE_DIR ${PROJECT_SOURCE_DIR}/source/viewer)
 SET(VIEWERCORE_SOURCES
-  ${VIEWERCORE_DIR}/AvidaViewer.cc
   ${VIEWERCORE_DIR}/ClassificationInfo.cc
+  ${VIEWERCORE_DIR}/Color.cc
   ${VIEWERCORE_DIR}/Driver.cc
+  ${VIEWERCORE_DIR}/Freezer.cc
+  ${VIEWERCORE_DIR}/GraphicsContext.cc
+  ${VIEWERCORE_DIR}/Listener.cc
   ${VIEWERCORE_DIR}/Map.cc
+  ${VIEWERCORE_DIR}/OrganismTrace.cc
 )
 SOURCE_GROUP(viewer FILES ${VIEWERCORE_SOURCES})
 

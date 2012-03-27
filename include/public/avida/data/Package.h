@@ -40,7 +40,7 @@ namespace Avida {
     class Package
     {
     public:
-      LIB_EXPORT virtual ~Package() { ; }
+      LIB_EXPORT virtual ~Package() = 0;
       
       LIB_EXPORT virtual bool BoolValue() const = 0;
       LIB_EXPORT virtual int IntValue() const = 0;

@@ -2,8 +2,8 @@
  *  data/Recorder.h
  *  avida-core
  *
- *  Created by David on 5/18/11.
- *  Copyright 2011 Michigan State University. All rights reserved.
+ *  Created by David on 3/27/12.
+ *  Copyright 2012 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,31 +22,6 @@
  *
  */
 
-#ifndef AvidaDataRecorder_h
-#define AvidaDataRecorder_h
+#include "avida/data/Recorder.h"
 
-#include "apto/platform.h"
-#include "avida/core/Types.h"
-#include "avida/data/Types.h"
-
-
-namespace Avida {
-  namespace Data {
-    
-    // Data::Recorder - Protocol defining interface for data recorders that can attach to the data manager
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class Recorder
-    {
-    public:
-      LIB_EXPORT virtual ~Recorder() = 0;
-      
-      LIB_EXPORT virtual ConstDataSetPtr RequestedData() const = 0;
-      
-      LIB_EXPORT virtual void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data) = 0; 
-    };
-    
-  };
-};
-
-#endif
+Avida::Data::Recorder::~Recorder() { ; }

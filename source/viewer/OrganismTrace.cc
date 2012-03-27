@@ -136,9 +136,9 @@ private:
   
   class NullFeedback : public Avida::Feedback
   {
-    void Error(const char* fmt, ...) { ; }
-    void Warning(const char* fmt, ...) { ; }
-    void Notify(const char* fmt, ...) { ; }
+    void Error(const char* fmt, ...) { (void)fmt; }
+    void Warning(const char* fmt, ...) { (void)fmt; }
+    void Notify(const char* fmt, ...) { (void)fmt; }
   } m_feedback;
 
   Apto::Array<HardwareSnapshot*>* m_snapshots;
@@ -164,11 +164,11 @@ public:
   // WorldDriver
   LIB_LOCAL void Pause() { ; }
   LIB_LOCAL void Finish() { ; }
-  LIB_LOCAL void Abort(AbortCondition condition) { ; }
+  LIB_LOCAL void Abort(AbortCondition condition) { (void)condition; }
   
   LIB_LOCAL Avida::Feedback& Feedback() { return m_feedback; }
   
-  LIB_LOCAL void RegisterCallback(DriverCallback callback) { ; }
+  LIB_LOCAL void RegisterCallback(DriverCallback callback) { (void)callback; }
 };
 
 

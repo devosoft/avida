@@ -29,6 +29,8 @@
 // Data::Package
 // --------------------------------------------------------------------------------------------------------------
 
+Avida::Data::Package::~Package() { ; }
+
 bool Avida::Data::Package::IsAggregate() const { return false; }
 Apto::String Avida::Data::Package::GetAggregateDescriptor() const { return Apto::String(); }
 int Avida::Data::Package::NumComponents() const { return 0; }

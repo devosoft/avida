@@ -42,6 +42,9 @@ namespace nHashTable {
   // HASH_TYPE = basic object
   template<typename HASH_TYPE> inline int HashKey(const HASH_TYPE& key, int table_size)
   {
+    (void)key;
+    (void)table_size;
+    
     // tHashMap is deprecated and exists only to support tDictionary for now.
     assert(false);
     return 0;
