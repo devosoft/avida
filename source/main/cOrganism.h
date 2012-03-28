@@ -606,7 +606,7 @@ public:
   void ClearNortherly() { m_northerly = 0; }
   
   int GetForageTarget() const { return m_forage_target; }
-  void SetForageTarget(int m_forage_target);
+  void SetForageTarget(int forage_target);
   bool HasSetFT() const { return m_has_set_ft; }
   void RecordFTSet() { m_has_set_ft = true; }
   bool IsTeacher() const { return m_teach; }

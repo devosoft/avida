@@ -905,7 +905,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
   // Keep track of statistics for organism counts...
   num_organisms++;
-  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
     else num_pred_organisms++;
@@ -1101,7 +1101,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }
   if (!curr_is_barrier) {
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 2) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
         // fail if faced cell has this wall resource
         if (dest_cell_resources[i] > 0) return false;
       }    
@@ -1111,7 +1111,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   int steepest_hill = 0;
   double curr_resistance = 1.0;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && src_cell_resources[i] > 0) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && src_cell_resources[i] != 0) {
       if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
         curr_resistance = resource_lib.GetResource(i)->GetResistance();
         steepest_hill = i;
@@ -1290,7 +1290,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Update count statistics...
   num_organisms--;
-  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     if (is_prey) num_prey_organisms--;
     else num_pred_organisms--;
   }
@@ -1305,7 +1305,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 	// this organism's genome needs to be split up into fragments
   // and deposited in its cell.  We then also have to add the size of this genome to
   // the HGT resource.
-  if(m_world->GetConfig().ENABLE_HGT.Get()
+  if (m_world->GetConfig().ENABLE_HGT.Get()
 		 && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
     in_cell.AddGenomeFragments(ctx, organism->GetGenome().GetSequence());
   }

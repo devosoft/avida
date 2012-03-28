@@ -3825,7 +3825,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   int num_fts = 0;
   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
   set <int>::iterator itr;    
-  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
     // ft's may not be sequentially numbered
     int ft_num = abs(prop_target) % num_fts;
@@ -3858,7 +3858,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
     m_organism->SetForageTarget(prop_target);
   }
   else m_organism->SetForageTarget(prop_target);
-  
+    
   // Set the new target and return the value
   m_organism->RecordFTSet();
   setInternalValue(FindModifiedRegister(rBX), prop_target, false);
@@ -4450,8 +4450,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->SetForageTarget(-2);
         m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->SetForageTarget(-2);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4576,8 +4576,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->SetForageTarget(-2);
         m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->SetForageTarget(-2);
       }
       else m_organism->SetForageTarget(-2);
     }    

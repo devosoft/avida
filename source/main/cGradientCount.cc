@@ -70,7 +70,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
                                double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor,
-                               int habitat, int min_size, int max_size, int config, int count, double resistance, double init_plat)
+                               int habitat, int min_size, int max_size, int config, int count, double init_plat)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -81,7 +81,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
   , m_is_plateau_common(is_plateau_common), m_floor(floor) 
   , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count)
-  , m_resistance(resistance), m_initial_plat(init_plat)
+  , m_initial_plat(init_plat)
   , m_geometry(geometry)
   , m_initial(false)
   , m_move_y_scaler(0.5)
