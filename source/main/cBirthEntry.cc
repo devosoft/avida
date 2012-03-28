@@ -67,6 +67,7 @@ cString cBirthEntry::GetPhenotypeString()
   //mate_preference
   //mating_display_a
   //mating_display_b
+  //group
   cString result;
   
   result = genome.GetSequence().AsString();
@@ -76,6 +77,7 @@ cString cBirthEntry::GetPhenotypeString()
   result += " "; result += cStringUtil::Convert(m_mate_preference);
   result += " "; result += cStringUtil::Convert(m_mating_display_a);
   result += " "; result += cStringUtil::Convert(m_mating_display_b);
+  result += " "; result += cStringUtil::Convert(m_group_id);
   
   return result;
 }
@@ -83,7 +85,7 @@ cString cBirthEntry::GetPhenotypeString()
 //Companion function for GetPhenotypeString() that tells what information is contained in each field
 cString cBirthEntry::GetPhenotypeStringFormat()
 {
-  return "genome timestamp merit mating_type mate_preference mating_display_a mating_display_b";
+  return "genome timestamp merit mating_type mate_preference mating_display_a mating_display_b group";
 }
 
 cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)
