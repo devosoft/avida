@@ -3471,6 +3471,46 @@ public:
   }
 };
 
+class cActionDumpFacingGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpFacingGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    const int worldx = m_world->GetPopulation().GetWorldX();
+    cString filename(m_filename);
+    
+    if (filename == "") filename.Set("grid_dumps/facing_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < worldx; i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
+        int facing = -99;
+        if (m_world->GetConfig().USE_AVATARS.Get()) {
+          if (cell.HasAV()) {
+            if (cell.HasPredAV()) facing = cell.GetRandPredAV()->GetOrgInterface().GetAVFacing();
+            else facing = cell.GetRandPreyAV()->GetOrgInterface().GetAVFacing();          } 
+        }   
+        else {
+          if (cell.IsOccupied()) facing = cell.GetOrganism()->GetFacedDir();            
+        }
+        fp << facing << " ";
+      }
+      fp << endl;
+    }    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 //DumpMaxResGrid intended for creating single output file of spatial resources, recording the max value (of any resource) when resources overlap
 class cActionDumpMaxResGrid : public cAction
 {
@@ -4798,6 +4838,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpIDGrid>("DumpIDGrid");
   action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
   action_lib->Register<cActionDumpTargetGrid>("DumpTargetGrid");
+  action_lib->Register<cActionDumpFacingGrid>("DumpFacingGrid");
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
