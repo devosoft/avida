@@ -54,6 +54,9 @@ cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _time
 
   // Similarly, I'm not setting the biogroups here because I don't want to add references to them,
   // since this birth entry is going to be destroyed anyway
+  if (_parent->HasOpinion()) {
+    m_group_id = _parent->GetOpinion().first;
+  }
 }
 
 //Returns a string representation of a birth entry's information (primarily used for print actions
