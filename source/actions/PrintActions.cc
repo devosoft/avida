@@ -305,9 +305,9 @@ public:
     m_filename = largs.PopWord();
     m_format = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <cString fname> <cString format>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetStats().PrintDataFile(m_filename, m_format, ',');
@@ -320,7 +320,7 @@ class cActionPrintInstructionData : public cAction
 private:
   cString m_filename;
   cString m_inst_set;
-
+  
 public:
   cActionPrintInstructionData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
@@ -332,12 +332,12 @@ public:
     else {
       if (m_filename == "") m_filename = "instruction.dat";
     }
-
+    
     if (m_filename == "") m_filename.Set("instruction-%s.dat", (const char*)m_inst_set);
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname=\"instruction-${inst_set}.dat\"] [string inst_set]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetStats().PrintInstructionData(m_filename, m_inst_set);
@@ -466,7 +466,7 @@ class cActionPrintInstructionAbundanceHistogram : public cAction
 private:
   cString m_filename;
   cString m_inst_set;
-
+  
 public:
   cActionPrintInstructionAbundanceHistogram(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
@@ -478,22 +478,22 @@ public:
     else {
       if (m_filename == "") m_filename = "instruction_histogram.dat";
     }
-
+    
     if (m_filename == "") m_filename.Set("instruction_histogram-%s.dat", (const char*)m_inst_set);
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname=\"instruction_histogram-${inst_set}.dat\"] [string inst_set]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cPopulation& population = m_world->GetPopulation();
-
+    
     // ----- number of instructions available?
     const cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_inst_set);
-
+    
     tArray<int> inst_counts(is.GetSize());
     inst_counts.SetAll(0);
-
+    
     //looping through all CPUs counting up instructions
     const int num_cells = population.GetSize();
     for (int x = 0; x < num_cells; x++) {
@@ -505,7 +505,7 @@ public:
         for (int y = 0; y < mem_size; y++) inst_counts[cpu_mem[y].GetOp()]++;
       }
     }
-
+    
     // ----- output instruction counts
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
@@ -525,21 +525,21 @@ public:
     cString largs(args);
     if (largs == "") m_filename = "depth_histogram.dat"; else m_filename = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname=\"depth_histogram.dat\"]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     // Output format:    update  min  max  histogram_values...
     int min = INT_MAX;
     int max = 0;
-
+    
     // Two pass method
-
+    
     // Loop through all genotypes getting min and max values
     cClassificationManager& classmgr = m_world->GetClassificationManager();
     tAutoRelease<tIterator<cBioGroup> > it;
-
+    
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
       cBioGroup* bg = it->Get();
@@ -547,17 +547,17 @@ public:
       if (bg->GetDepth() > max) max = bg->GetDepth();
     }
     assert(max >= min);
-
+    
     // Allocate the array for the bins (& zero)
     tArray<int> n(max - min + 1);
     n.SetAll(0);
-
+    
     // Loop through all genotypes binning the values
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     while (it->Next()) {
       n[it->Get()->GetDepth() - min] += it->Get()->GetNumUnits();
     }
-
+    
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(min, "Minimum");
@@ -699,9 +699,9 @@ private:
   cString m_filename;
 public:
   cActionEcho(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "Arguments: <cString message>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     if (m_args == "") {
@@ -717,30 +717,30 @@ class cActionPrintGenotypeAbundanceHistogram : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionPrintGenotypeAbundanceHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "genotype_abundance_histogram.dat"; else m_filename = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname=\"genotype_abundance_histogram.dat\"]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     // Allocate array for the histogram & zero it
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     tArray<int> hist(it->Next()->GetNumUnits());
     hist.SetAll(0);
-
+    
     // Loop through all genotypes binning the values
     do {
       assert(it->Get()->GetNumUnits() - 1 >= 0);
       assert(it->Get()->GetNumUnits() - 1 < hist.GetSize());
       hist[it->Get()->GetNumUnits() - 1]++;
     } while (it->Next());
-
+    
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     for (int i = 0; i < hist.GetSize(); i++) df.Write(hist[i],"");
@@ -870,9 +870,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
     first_run = false;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat']\n  WARNING: This will only have the appropriate header if all lineages are present before this action is run for the first time."; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     const int update = m_world->GetStats().GetUpdate();
@@ -920,7 +920,7 @@ public:
       
       if (lineage_label_counts.HasEntry(lineage_labels[i]))
         lineage_label_counts.Find(lineage_labels[i], count);
-    
+      
       df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
     }
     
@@ -931,7 +931,7 @@ public:
 
 /*
  Write the currently dominant genotype to disk.
-
+ 
  Parameters:
  filename (string)
  The name under which the genotype should be saved. If no
@@ -943,16 +943,16 @@ class cActionPrintDominantGenotype : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionPrintDominantGenotype(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
@@ -1055,7 +1055,7 @@ public:
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
     for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-
+    
     tSmartArray<int> birth_forage_types_checked;
     cBioGroup* bg = it->Next();
     
@@ -1102,10 +1102,10 @@ public:
  calculates the average fitness from info from the testCPU + the actual
  merit of the organisms, and assigns zero fitness to those organisms
  that will never reproduce.
-
+ 
  The function also determines the maximum fitness genotype, and can
  produce fitness histograms.
-
+ 
  Parameters
  datafn (cString)
  Where the fitness data should be written.
@@ -1130,7 +1130,7 @@ private:
   double m_hist_fmax;
   double m_hist_fstep;
   cString m_filenames[3];
-
+  
 public:
   cActionPrintDetailedFitnessData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_save_max(0), m_print_fitness_histo(0), m_hist_fmax(1.0), m_hist_fstep(0.1)
@@ -1144,26 +1144,26 @@ public:
     if (!largs.GetSize()) m_filenames[1] = "fitness_histos.dat"; else m_filenames[1] = largs.PopWord();
     if (!largs.GetSize()) m_filenames[2] = "fitness_histos_testCPU.dat"; else m_filenames[2] = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [int save_max_f_genotype=0] [int print_fitness_histo=0] [double hist_fmax=1] [double hist_fstep=0.1] [string datafn=\"fitness.dat\"] [string histofn=\"fitness_histos.dat\"] [string histotestfn=\"fitness_histos_testCPU.dat\"]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
     const int update = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
-
+    
     // the histogram variables
     tArray<int> histo;
     tArray<int> histo_testCPU;
     int bins = 0;
-
+    
     if (m_print_fitness_histo) {
       bins = static_cast<int>(m_hist_fmax / m_hist_fstep) + 1;
       histo.Resize(bins, 0);
       histo_testCPU.Resize(bins, 0 );
     }
-
+    
     int n = 0;
     int nhist_tot = 0;
     int nhist_tot_testCPU = 0;
@@ -1171,15 +1171,15 @@ public:
     double fave_testCPU = 0;
     double max_fitness = -1; // we set this to -1, so that even 0 is larger...
     cBioGroup* max_f_genotype = NULL;
-
+    
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-
+    
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;  // One use organisms.
-
+      
       cOrganism* organism = pop.GetCell(i).GetOrganism();
       cBioGroup* genotype = organism->GetBioGroup("genotype");
-
+      
       cCPUTestInfo test_info;
       testcpu->TestGenome(ctx, test_info, Genome(genotype->GetProperty("genome").AsString()));
       // We calculate the fitness based on the current merit,
@@ -1187,7 +1187,7 @@ public:
       // to zero if the creature is not viable.
       const double f = (test_info.IsViable()) ? organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0;
       const double f_testCPU = test_info.GetColonyFitness();
-
+      
       // Get the maximum fitness in the population
       // Here, we want to count only organisms that can truly replicate,
       // to avoid complications
@@ -1195,32 +1195,32 @@ public:
         max_fitness = f_testCPU;
         max_f_genotype = genotype;
       }
-
+      
       fave += f;
       fave_testCPU += f_testCPU;
       n += 1;
-
-
+      
+      
       // histogram
       if (m_print_fitness_histo && f < m_hist_fmax) {
         histo[static_cast<int>(f / m_hist_fstep)] += 1;
         nhist_tot += 1;
       }
-
+      
       if (m_print_fitness_histo && f_testCPU < m_hist_fmax) {
         histo_testCPU[static_cast<int>(f_testCPU / m_hist_fstep)] += 1;
         nhist_tot_testCPU += 1;
       }
     }
-
-
+    
+    
     // determine the name of the maximum fitness genotype
     cString max_f_name;
     if (max_f_genotype->GetProperty("threshold").AsBool())
       max_f_name = max_f_genotype->GetProperty("name").AsString();
     else // we put the current update into the name, so that it becomes unique.
       max_f_name.Set("%03d-no_name-u%i", Genome(max_f_genotype->GetProperty("genome").AsString()).GetSequence().GetSize(), update);
-
+    
     cDataFile& df = m_world->GetDataFile(m_filenames[0]);
     df.Write(update, "Update");
     df.Write(generation, "Generation");
@@ -1230,32 +1230,32 @@ public:
     df.Write(max_fitness, "Maximum Fitness");
     df.Write(max_f_name, "Maxfit genotype name");
     df.Endl();
-
+    
     if (m_save_max) {
       cString filename;
       filename.Set("archive/%s", static_cast<const char*>(max_f_name));
       testcpu->PrintGenome(ctx, Genome(max_f_genotype->GetProperty("genome").AsString()), filename);
     }
-
+    
     delete testcpu;
-
+    
     if (m_print_fitness_histo) {
       cDataFile& hdf = m_world->GetDataFile(m_filenames[1]);
       hdf.Write(update, "Update");
       hdf.Write(generation, "Generation");
       hdf.Write(fave / static_cast<double>(n), "Average Fitness");
-
+      
       // now output the fitness histo
       for (int i = 0; i < histo.GetSize(); i++)
         hdf.WriteAnonymous(static_cast<double>(histo[i]) / static_cast<double>(nhist_tot));
       hdf.Endl();
-
-
+      
+      
       cDataFile& tdf = m_world->GetDataFile(m_filenames[2]);
       tdf.Write(update, "Update");
       tdf.Write(generation, "Generation");
       tdf.Write(fave / static_cast<double>(n), "Average Fitness");
-
+      
       // now output the fitness histo
       for (int i = 0; i < histo_testCPU.GetSize(); i++)
         tdf.WriteAnonymous(static_cast<double>(histo_testCPU[i]) / static_cast<double>(nhist_tot_testCPU));
@@ -1268,15 +1268,15 @@ public:
 /*
  This function requires that TRACK_CCLADES be enabled and avida is
  not in analyze mode.
-
+ 
  Parameters
  filename (cString)
  Where the clade information should be stored.
-
+ 
  Please note the structure to this file is not a matrix.
  Each line is formatted as follows:
  update number_cclades ccladeID0 ccladeID0_count ccladeID1
-
+ 
  @MRR May 2007
  */
 class cActionPrintCCladeCounts : public cAction
@@ -1284,7 +1284,7 @@ class cActionPrintCCladeCounts : public cAction
 private:
   cString filename;
   bool first_time;
-
+  
 public:
   cActionPrintCCladeCounts(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
@@ -1293,25 +1293,25 @@ public:
     filename = (!largs.GetSize()) ? "cclade_count.dat" : largs.PopWord();
     first_time = true;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [filename = \"cclade_count.dat\"]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
     if (ctx.GetAnalyzeMode())
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires avida to be in run mode.");
-
+    
     if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires coalescence clade tracking to be enabled.");
-
-
+    
+    
     tHashMap<int, int> cclade_count;  //A count for each clade in the population
     set<int>             clade_ids;
-
+    
     cPopulation& pop = m_world->GetPopulation();
     const int update = m_world->GetStats().GetUpdate();
-
+    
     //For each organism in the population, find what coalescence clade it belongs to and count
     for (int k = 0; k < pop.GetSize(); k++)
     {
@@ -1323,7 +1323,7 @@ public:
         clade_ids.insert(cclade_id);
       cclade_count.Set(cclade_id, ++count);
     }
-
+    
     ofstream& fp = m_world->GetDataFileManager().GetOFStream(filename);
     if (!fp.is_open())
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount: Unable to open output file.");
@@ -1336,7 +1336,7 @@ public:
     }
     fp << update <<  " "
     << clade_ids.size() << " ";
-
+    
     set<int>::iterator sit = clade_ids.begin();
     while(sit != clade_ids.end())
     {
@@ -1346,7 +1346,7 @@ public:
       sit++;
     }
     fp << endl;
-
+    
   }
 };
 
@@ -1357,15 +1357,15 @@ public:
  calculates the average fitness from info from the testCPU + the actual
  merit of the organisms, and assigns zero fitness to those organisms
  that will never reproduce.
-
+ 
  The function also determines the maximum fitness genotype, and can
  produce fitness histograms.
-
+ 
  This version of the DetailedFitnessData prints the information as a log histogram.
-
+ 
  THIS FUNCTION CONTAINS STATIC METHODS USED IN OTHER PRINT ACTION CLASSES.
  MOVEMENT OF THIS FUNCTION TO A LOWER POINT IN THE FILE MAY CAUSE CONFLICTS.
-
+ 
  Parameters:
  filename   (cString)     Where the fitness histogram should be written.
  fit_mode   (cString)     Either {Current, Actual, TestCPU}, where
@@ -1379,13 +1379,13 @@ public:
 class cActionPrintLogFitnessHistogram : public cAction
 {
 private:
-
+  
   double m_hist_fmin;
   double m_hist_fstep;
   double m_hist_fmax;
   cString m_mode;
   cString m_filename;
-
+  
 public:
   cActionPrintLogFitnessHistogram(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
@@ -1397,16 +1397,16 @@ public:
     m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.5;
     m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 12;
   }
-
+  
   static const cString GetDescription() { return  "Parameters: <filename> <mode> <min> <step> <max>";}
-
+  
   //Given a min:step:max and bin number, return a string reprsenting the range of fitness values.
   //This function may be called from other classes.
   static cString GetHistogramBinLabel(int k, double min, double step, double max)
   {
     int num_bins = static_cast<int>(ceil( (max - min) / step)) + 3;
     cString retval;
-
+    
     if (k == 0)
       retval = "Inviable";
     else if (k == 1)
@@ -1419,8 +1419,8 @@ public:
       retval = cString("[>") + cStringUtil::Convert(max) + cString("]");
     return retval;
   }
-
-
+  
+  
   //This function may get called by outside classes to generate a histogram of log10 fitnesses;
   //max may be updated by this function if the range is not evenly divisible by the step
   static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cBioGroup*>& gens,
@@ -1435,8 +1435,8 @@ public:
     max  = min + (num_bins - 3) * step;
     histogram.Resize(num_bins, 0);
     cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU(ctx);
-
-
+    
+    
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
@@ -1449,7 +1449,7 @@ public:
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
         testcpu->TestGenome(ctx, test_info, Genome((*git)->GetProperty("genome").AsString()));
       }
-
+      
       if (mode == "TEST_CPU"){
         fitness = test_info.GetColonyFitness();
       }
@@ -1462,17 +1462,17 @@ public:
       }
       else
         world->GetDriver().RaiseFatalException(1, "PrintLogFitnessHistogram::MakeHistogram: Invalid fitness mode requested.");
-
+      
       //Update the histogram
       int update_bin = (fitness == 0) ? 0 :
       static_cast<int>((log10(fitness) - min) / step);
-
+      
       // Bin 0   Inviable
       //     1   Below Range
       //     2   [min, min+step)
       // #bin-1  [max-step, max)
       // num_bin Above Range
-
+      
       if (fitness == 0)
         update_bin = 0;
       else if (log10(fitness) < min)
@@ -1481,13 +1481,13 @@ public:
         update_bin = num_bins - 1;
       else
         update_bin = static_cast<int>(log10(fitness) - min / step) + 2;
-
+      
       histogram[update_bin]++;
     }
     delete testcpu;
     return histogram;
   }
-
+  
   void Process(cAvidaContext& ctx)
   {
     //Verify input parameters
@@ -1499,15 +1499,15 @@ public:
       return;
     }
     cerr << "Parameters: " << m_filename << ", " << m_mode << ", " << m_hist_fmin << ":" << m_hist_fstep << ":" << m_hist_fmax << endl;
-
-
+    
+    
     //Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
     tArray<cOrganism*> orgs;
     tArray<cBioGroup*> gens;
-
+    
     for (int i = 0; i < pop.GetSize(); i++)
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
@@ -1516,15 +1516,15 @@ public:
       orgs.Push(organism);
       gens.Push(genotype);
     }
-
+    
     tArray<int> histogram = MakeHistogram(orgs, gens, m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx);
-
-
+    
+    
     //Output histogram
     cDataFile& hdf = m_world->GetDataFile(m_filename);
     hdf.Write(update, "Update");
     hdf.Write(generation, "Generation");
-
+    
     for (int k = 0; k < histogram.GetSize(); k++)
       hdf.Write(histogram[k], GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax));
     hdf.Endl();
@@ -1535,15 +1535,15 @@ public:
 
 /*
  @MRR May 2007  [BETA]
-
+ 
  This function requires Avida be in run mode.
-
+ 
  This function will print histograms of the relative fitness of
  organisms as compared to the parent.
-
+ 
  STATIC METHODS IN THIS CLASS ARE CALLED BY OTHER ACTIONS.
  MOVING THIS CLASS MAY BREAK DEPENDENCIES.
-
+ 
  Parameters:
  filename  (cString)        Name of the output file
  fit_mode (cString)        Either {Current, Actual, TestCPU}, where
@@ -1554,7 +1554,7 @@ public:
  hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: 0.50]
  hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 0.02]
  hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 1.50]
-
+ 
  The file will be formatted:
  <update>  [ <min, min, min+step, ..., max-step, max, >max], each bin [min,max)
  */
@@ -1567,7 +1567,7 @@ private:
   cString m_mode;
   cString m_filename;
   bool    first_run;
-
+  
 public:
   cActionPrintRelativeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
@@ -1578,15 +1578,15 @@ public:
     m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.1;
     m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 2;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
-
-
+  
+  
   static cString GetHistogramBinLabel(int k, double min, double step, double max)
   {
     int num_bins = static_cast<int>(ceil( (max - min) / step)) + 2;
     cString retval;
-
+    
     if (k == 0)
       retval = "Inviable";
     else if (k == 1)
@@ -1597,10 +1597,10 @@ public:
       + cString("]");
     else
       retval = cString("[>") + cStringUtil::Convert(max) + cString("]");
-
+    
     return retval;
   }
-
+  
   static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cBioGroup*>& gens,
                                    double min, double step, double& max, const cString& mode, cWorld* world,
                                    cAvidaContext& ctx)
@@ -1613,8 +1613,8 @@ public:
     max  = min + (num_bins - 3) * step;
     histogram.Resize(num_bins, 0);
     cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU(ctx);
-
-
+    
+    
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
@@ -1626,16 +1626,16 @@ public:
       double parent_fitness = 1.0;
       if ((*git)->GetProperty("parents") != "") {
         cStringList parents((*git)->GetProperty("parents").AsString(), ',');
-
+        
         cBioGroup* pbg = world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(parents.Pop().AsInt());
         parent_fitness = pbg->GetProperty("fitness").AsDouble();
       }
-
+      
       if (mode == "TEST_CPU" || mode == "ACTUAL"){
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
         testcpu->TestGenome(ctx, test_info, Genome((*git)->GetProperty("genome").AsString()));
       }
-
+      
       if (mode == "TEST_CPU"){
         fitness = test_info.GetColonyFitness();
       }
@@ -1648,14 +1648,14 @@ public:
       }
       else
         world->GetDriver().RaiseFatalException(1, "MakeHistogram: Invalid fitness mode requested.");
-
+      
       //Update the histogram
       if (parent_fitness <= 0.0)
         world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->GetProperty("parents").AsString());
-
+      
       int update_bin = 0;
       double rfitness = fitness/parent_fitness;
-
+      
       if (fitness == 0.0)
         update_bin = 0;
       else if (rfitness < min)
@@ -1664,28 +1664,28 @@ public:
         update_bin = num_bins - 1;
       else
         update_bin = static_cast<int>( ((fitness/parent_fitness) - min) / step) + 2;
-
+      
       histogram[update_bin]++;
     }
     delete testcpu;
     return histogram;
   }
-
-
-
+  
+  
+  
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
     if (ctx.GetAnalyzeMode())
       m_world->GetDriver().RaiseFatalException(1, "PrintRelativeFitnessHistogram requires avida to be in run mode.");
-
+    
     //Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
     tArray<cOrganism*> orgs;
     tArray<cBioGroup*> gens;
-
+    
     for (int i = 0; i < pop.GetSize(); i++)
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
@@ -1694,15 +1694,15 @@ public:
       orgs.Push(organism);
       gens.Push(genotype);
     }
-
+    
     tArray<int> histogram = MakeHistogram(orgs, gens, m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx);
-
-
+    
+    
     //Output histogram
     cDataFile& hdf = m_world->GetDataFile(m_filename);
     hdf.Write(update, "Update");
     hdf.Write(generation, "Generation");
-
+    
     for (int k = 0; k < histogram.GetSize(); k++)
       hdf.Write(histogram[k], GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax));
     hdf.Endl();
@@ -1715,10 +1715,10 @@ public:
  @MRR May 2007 [BETA]
  This function requires CCLADE_TRACKING to be enabled and avida
  operating non-analyze mode.
-
+ 
  This function will print histograms of log10 fitness of each of the
  tagged clades.
-
+ 
  Parameters:
  filename  (cString)        Name of the output file
  fit_mode (cString)        Either {Current, Actual, TestCPU}, where
@@ -1728,7 +1728,7 @@ public:
  hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]
  hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]
  hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]
-
+ 
  The file will be formatted:
  <update> <cclade_count> <cclade_id> [...] <cclade_id> [...] ...
  where [...] will be [ <min, min, min+step, ..., max-step, max, > max], each bin (min,max]
@@ -1742,7 +1742,7 @@ private:
   cString m_mode;
   cString m_filename;
   bool    first_run;
-
+  
 public:
   cActionPrintCCladeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
@@ -1754,36 +1754,36 @@ public:
     m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 12;
     first_run = true;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
     if (ctx.GetAnalyzeMode())
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram requires avida to be in run mode.");
-
+    
     if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram requires coalescence clade tracking to be enabled.");
-
+    
     //Verify input parameters
     if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
         m_hist_fmin > m_hist_fmax)
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram: Check parameters.");
-
+    
     //Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
     map< int, tArray<cBioGroup*> > gen_map;  //Map of ccladeID to array of genotype IDs
-
+    
     //Collect clade information
     for (int i = 0; i < pop.GetSize(); i++){
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
       cBioGroup* genotype = organism->GetBioGroup("genotype");
       int cladeID = organism->GetCCladeLabel();
-
+      
       map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
       map< int, tArray<cBioGroup*> >::iterator git = gen_map.find(cladeID);
       if (oit == org_map.end()) {
@@ -1796,7 +1796,7 @@ public:
         git->second.Push(genotype);
       }
     }
-
+    
     //Create and print the histograms; this calls a static method in another action
     ofstream& fp = m_world->GetDataFileManager().GetOFStream(m_filename);
     if (!fp.is_open())
@@ -1814,12 +1814,12 @@ public:
           fp << " " <<  cActionPrintLogFitnessHistogram::GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax);
         fp << endl << endl;
       }
-
+      
       if (oit == org_map.begin()) {
         // Print update and clade count if first clade
         fp << update << " " << org_map.size() << " ";
       }
-
+      
       fp << oit->first << " [";
       for (int k = 0; k < hist.GetSize(); k++) fp << " " << hist[k];
       fp << " ] ";
@@ -1834,10 +1834,10 @@ public:
  @MRR May 2007  [BETA]
  This function requires CCLADE_TRACKING to be enabled and Avida
  operating non-analyze mode.
-
+ 
  This function will print histograms of the relative fitness of
  clade members as compared to the parent.
-
+ 
  Parameters:
  filename  (cString)        Name of the output file
  fit_mode (cString)        Either {Current, Actual, ActualRepro, TestCPU}, where
@@ -1849,7 +1849,7 @@ public:
  hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: 0.50]
  hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 0.02]
  hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 1.50]
-
+ 
  The file will be formatted:
  <update> <cclade_count> <cclade_id> [...] <cclade_id> [...] ...
  where [...] will be [ <min, min, min+step, ..., max-step, max, >max], each bin [min,max}
@@ -1863,7 +1863,7 @@ private:
   cString m_mode;
   cString m_filename;
   bool first_run;
-
+  
 public:
   cActionPrintCCladeRelativeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
@@ -1875,36 +1875,36 @@ public:
     m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 2.0;
     first_run = true;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
     if (ctx.GetAnalyzeMode())
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram requires avida to be in run mode.");
-
+    
     if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram requires coalescence clade tracking to be enabled.");
-
+    
     //Verify input parameters
     if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
         m_hist_fmin > m_hist_fmax)
       m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitness: check parameters");
-
+    
     ///Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
     map< int, tArray<cBioGroup*> > gen_map;  //Map of ccladeID to array of genotype IDs
-
+    
     //Collect clade information
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
       cBioGroup* genotype = organism->GetBioGroup("genotype");
       int cladeID = organism->GetCCladeLabel();
-
+      
       map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
       map< int, tArray<cBioGroup*> >::iterator git = gen_map.find(cladeID);
       if (oit == org_map.end()) {
@@ -1917,7 +1917,7 @@ public:
         git->second.Push(genotype);
       }
     }
-
+    
     //Create and print the histograms; this calls a static method in another action
     ofstream& fp = m_world->GetDataFileManager().GetOFStream(m_filename);
     if (!fp.is_open())
@@ -1943,14 +1943,9 @@ public:
       fp << " ] ";
     }
     fp << endl;
-
+    
   }
 };
-
-
-
-
-
 
 /*
  @MRR March 2007 [UNTESTED]
@@ -1967,20 +1962,20 @@ class cActionPrintGenomicSiteEntropy : public cAction
 private:
   cString m_filename;
   bool    m_use_gap;
-
+  
 public:
   cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args, Feedback&) : cAction(world, args){
     cString largs = args;
     m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
   }
-
+  
   static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData.dat\"]";}
-
+  
   void Process(cAvidaContext& ctx)
   {
     const int        num_insts  = m_world->GetHardwareManager().GetDefaultInstSet().GetSize();
     tArray<cString> aligned;  //This will hold all of our aligned sequences
-
+    
     if (ctx.GetAnalyzeMode()) //We're in analyze mode, so process the current batch
     {
       cAnalyze& analyze = m_world->GetAnalyze();
@@ -2002,18 +1997,18 @@ public:
       }
       AlignStringArray(aligned);  //Align our population genomes
     }
-
+    
     //With all sequences aligned and stored, we can proceed to calculate per-site entropies
     if (!aligned.GetSize())
     {
       m_world->GetDriver().NotifyComment("cActionPrintGenomicSiteEntropy: No sequences available.  Abort.");
       return;
     }
-
+    
     const int gen_size = aligned[0].GetSize();
     tArray<double> site_entropy(gen_size);
     site_entropy.SetAll(0.0);
-
+    
     tArray<int> inst_count( (m_use_gap) ? num_insts + 1 : num_insts);  //Add an extra place if we're using gaps
     inst_count.SetAll(0);
     for (int pos = 0; pos < gen_size; pos++)
@@ -2035,21 +2030,21 @@ public:
       }
     }
   }
-
-
+  
+  
 private:
   void AlignStringArray(tArray<cString>& unaligned)  //Taken from cAnalyze::CommandAnalyze
   {
     // Create an array of all the sequences we need to align.
     const int num_sequences = unaligned.GetSize();
-
+    
     // Move through each sequence an update it.
     cString diff_info;
     for (int i = 1; i < num_sequences; i++) {
       // Track of the number of insertions and deletions to shift properly.
       int num_ins = 0;
       int num_del = 0;
-
+      
       // Compare each string to the previous.
       cStringUtil::EditDistance(unaligned[i], unaligned[i-1], diff_info, '_');
       while (diff_info.GetSize() != 0) {
@@ -2058,13 +2053,13 @@ private:
         cur_mut.ClipFront(1); cur_mut.ClipEnd(1);
         int position = cur_mut.AsInt();
         if (mut_type == 'M') continue;   // Nothing to do with Mutations
-
+        
         if (mut_type == 'I') {           // Handle insertions
           for (int j = 0; j < i; j++)    // Loop back and insert an '_' into all previous sequences
             unaligned[j].Insert('_', position + num_del);
           num_ins++;
         }
-
+        
         else if (mut_type == 'D'){      // Handle Deletions
           // Insert '_' into the current sequence at the point of deletions.
           unaligned[i].Insert("_", position + num_ins);
@@ -2091,7 +2086,7 @@ class cActionPrintPhenotypicPlasticity : public cAction
 private:
   cString m_filename;
   int     m_num_trials;
-
+  
 private:
   void PrintHeader(ofstream& fot)
   {
@@ -2110,10 +2105,10 @@ private:
       fot << "# env_input." << k << endl;
     fot << endl;
   }
-
+  
   void PrintPPG(ofstream& fot, tAutoRelease<cPhenPlastGenotype>& ppgen, int id, const cString& pid)
   {
-
+    
     for (int k = 0; k < ppgen->GetNumPhenotypes(); k++){
       const cPlasticPhenotype* pp = ppgen->GetPlasticPhenotype(k);
       fot << id << " "
@@ -2130,10 +2125,10 @@ private:
       for (int e = 0; e < env_inputs.GetSize(); e++)
         fot << env_inputs[e] << " ";
       fot << endl;
-
+      
     }
   }
-
+  
 public:
   cActionPrintPhenotypicPlasticity(cWorld* world, const cString& args, Feedback&)
   : cAction(world,  args)
@@ -2142,13 +2137,13 @@ public:
     m_filename = (largs.GetSize()) ? largs.PopWord() : "phenplast";
     m_num_trials = (largs.GetSize()) ? largs.PopWord().AsInt() : 1000;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string filename='phenplast'] [int num_trials=1000]"; };
-
+  
   void Process(cAvidaContext& ctx)
   {
     cCPUTestInfo test_info;
-
+    
     if (ctx.GetAnalyzeMode()){ // Analyze mode
       cString this_path = m_filename;
       ofstream& fot = m_world->GetDataFileOFStream(this_path);
@@ -2164,7 +2159,7 @@ public:
       cString this_path = m_filename + "-" + cStringUtil::Convert(m_world->GetStats().GetUpdate()) + ".dat";
       ofstream& fot = m_world->GetDataFileOFStream(this_path);
       PrintHeader(fot);
-
+      
       tAutoRelease<tIterator<cBioGroup> > it;
       it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
       while (it->Next()) {
@@ -2182,7 +2177,7 @@ public:
  @MRR May 2009
  This function will go through all genotypes in the current batch or run-time population
  and print a task probability histogram for each task in the environment.
-
+ 
  Paramters:
  m_fillename (cString)
  The output file
@@ -2197,13 +2192,13 @@ private:
   cString m_filename;  //Name of the output file
   bool    m_first_run; //Is this the first time the process is run?
   bool    m_weighted;  //Weight by num_cpu?
-
+  
   void PrintHeader(ofstream& fot){
     fot << "# Task Probability Histogram" << endl
     << "#format update task_id [0] (0,0.5] (0.5,0.10] ... (0.90,0.95], (0.95, 1.0], [1.0]" << endl << endl;
     return;
   }
-
+  
 public:
   cActionPrintTaskProbHistogram(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_filename("task_prob_hist.dat")
@@ -2213,12 +2208,12 @@ public:
     m_filename = (largs.GetSize()) ? largs.PopWord() : "task_prob_hist.dat";
     m_weighted = (largs.GetSize()) ? (largs.PopWord().AsInt() != 0) : false;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [filename=pp_histogram.dat] [weightbycpus=0]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
-
+    
     // Setup
     tMatrix<int> m_bins; // Task, Plasticity bins
     int num_tasks = m_world->GetEnvironment().GetNumTasks();
@@ -2229,7 +2224,7 @@ public:
       PrintHeader(fot);
       m_first_run = false;
     }
-
+    
     //Select runtime mode
     if (ctx.GetAnalyzeMode()){  // A N A L Y Z E    M O D E
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
@@ -2245,11 +2240,11 @@ public:
     }
     else {  // E X P E R I M E N T    M O D E  (See above for explination)
       tAutoRelease<tIterator<cBioGroup> > it;
-
+      
       it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
       while (it->Next()) {
         cBioGroup* bg = it->Get();
-
+        
         int weight = (m_weighted) ? bg->GetNumUnits() : 1;
         tArray<double> task_prob = cPhenPlastUtil::GetTaskProbabilities(ctx, m_world, bg);
         for (int k = 0; k < task_prob.GetSize(); k++){
@@ -2258,10 +2253,10 @@ public:
         }
       }
     }// End selection of runtime context
-
-
+    
+    
     int update = (ctx.GetAnalyzeMode()) ? -1 : m_world->GetStats().GetUpdate();
-
+    
     //Print out our bins
     for (int t = 0; t < num_tasks; t++){
       fot << update << " " << t << " ";
@@ -2269,7 +2264,7 @@ public:
         fot << m_bins(t,b) << (  (b != 21) ? " " : "" );
       fot << endl;
     }
-
+    
     //Cleanup
     if (ctx.GetAnalyzeMode())
       m_world->GetDataFileManager().Remove(m_filename);
@@ -2280,7 +2275,7 @@ public:
 /* @MRR May 2009
  This function will print some plasticity information about the genotypes
  in the population or batch.
-
+ 
  Parameters:
  m_filename  (cString)
  The output file name
@@ -2290,7 +2285,7 @@ class cActionPrintPlasticGenotypeSummary : public cAction
 private:
   cString m_filename;
   bool    m_first_run;
-
+  
   void PrintHeader(ofstream& fot)
   {
     fot << "# Plastic Genotype Sumary" << endl
@@ -2305,13 +2300,13 @@ private:
     <<  "# median_phenplast_entropy   Median entropy of plastic genotypes." << endl
     <<  "# median_taskplast_entropy   Median entropy of task-plastic genotypes." << endl << endl;
   }
-
+  
   inline bool HasPlasticTasks(tArray<double> task_probs){
     for (int k = 0; k < task_probs.GetSize(); k++)
       if (task_probs[k] != 0 && task_probs[k] != 1) return true;
     return false;
   }
-
+  
 public:
   cActionPrintPlasticGenotypeSummary(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
@@ -2320,12 +2315,12 @@ public:
     m_filename = (largs.GetSize()) ? largs.PopWord() : "genotype_plasticity.dat";
     m_first_run = true;
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string filename='genotype_plsticity.dat']"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
-
+    
     //Setup
     ofstream& fot = m_world->GetDataFileOFStream(m_filename);
     if (m_first_run == true){
@@ -2342,7 +2337,7 @@ public:
     int num_plast_orgs = 0;         // Number of plastic organisms in the population
     int gen_task_plast = 0;         // Number of genotypes with task plasticity
     int org_task_plast = 0;         // Number of organisms with task plasticity
-
+    
     //Collect data using methods from the correct mode
     if (ctx.GetAnalyzeMode()){  // A N A L Y Z E    M O D E
       num_genotypes = m_world->GetAnalyze().GetCurrentBatch().GetSize();
@@ -2384,7 +2379,7 @@ public:
         }
       }
     }// End selection of runtime context
-
+    
     // Finish gathering data
     // The median will be calculated as either -1 (set above) if there is no data
     //    or as the median if there is an odd number of elements or an average
@@ -2400,7 +2395,7 @@ public:
         task_median  = (gen_task_plast % 2 == 1) ? pp_taskentropy[ndx] : (pp_taskentropy[ndx-1] + pp_taskentropy[ndx]) / 2.0;
       }
     }
-
+    
     //Printing
     fot << update << " "
     << num_genotypes << " "
@@ -2411,12 +2406,12 @@ public:
     << org_task_plast << " "
     << median << " "
     << task_median << endl;
-
+    
     //Cleanup
     if (ctx.GetAnalyzeMode())
       m_world->GetDataFileManager().Remove(m_filename);
   }
-
+  
 };
 
 
@@ -2424,7 +2419,7 @@ public:
  This function goes through all genotypes currently present in the soup,
  and writes into an output file the average Hamming distance between the
  creatures in the population and a given reference genome.
-
+ 
  Parameters
  ref_creature_file (cString)
  Filename for the reference genome, defaults to START_ORGANISM
@@ -2436,33 +2431,33 @@ class cActionPrintGeneticDistanceData : public cAction
 private:
   Genome m_reference;
   cString m_filename;
-
+  
 public:
   cActionPrintGeneticDistanceData(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_filename("genetic_distance.dat")
   {
     cString creature_file;
     cString largs(args);
-
+    
     // Load the genome of the reference creature
     creature_file.PopWord();
     if (creature_file == "" || creature_file == "START_ORGANISM") creature_file = m_world->GetConfig().START_ORGANISM.Get();
     m_reference.LoadFromDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager(), feedback);
-
+    
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string ref_creature_file='START_ORGANISM'] [string fname='genetic_distance.dat']"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     double hamming_m1 = 0;
     double hamming_m2 = 0;
     int count = 0;
     int dom_dist = 0;
-
+    
     // get the info for the dominant genotype
-
+    
     tAutoRelease<tIterator<cBioGroup> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     it->Next();
@@ -2478,12 +2473,12 @@ public:
       hamming_m2 += dist*dist;
       count += it->Get()->GetNumUnits();
     }
-
+    
     hamming_m1 /= static_cast<double>(count);
     hamming_m2 /= static_cast<double>(count);
-
+    
     double hamming_best = Sequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
-
+    
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(hamming_m1, "Average Hamming Distance");
@@ -2498,16 +2493,16 @@ class cActionDumpMemory : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpMemory(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
@@ -2529,7 +2524,7 @@ private:
   cString m_creature;
   cString m_filename;
   int m_save_genotypes;
-
+  
 public:
   cActionPrintPopulationDistanceData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_creature("START_ORGANISM"), m_filename(""), m_save_genotypes(0)
@@ -2538,21 +2533,21 @@ public:
     if (largs.GetSize()) m_creature = largs.PopWord();
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_save_genotypes = largs.PopWord().AsInt();
-
+    
     if (m_creature == "" || m_creature == "START_ORGANISM") m_creature = m_world->GetConfig().START_ORGANISM.Get();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string creature=\"START_ORGANISM\"] [string fname=\"\"] [int save_genotypes=0]"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("pop_distance-%d.dat", m_world->GetStats().GetUpdate());
     cDataFile& df = m_world->GetDataFile(filename);
-
+    
     double sum_fitness = 0;
     int sum_num_organisms = 0;
-
+    
     // load the reference genome
     Genome reference_genome;
     cUserFeedback feedback;
@@ -2565,7 +2560,7 @@ public:
       };
       cerr << feedback.GetMessage(i) << endl;
     }
-
+    
     // cycle over all genotypes
     tAutoRelease<tIterator<cBioGroup> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
@@ -2573,30 +2568,30 @@ public:
       cBioGroup* bg = it->Get();
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int num_orgs = bg->GetNumUnits();
-
+      
       // now output
-
+      
       sum_fitness += bg->GetProperty("fitness").AsDouble() * num_orgs;
       sum_num_organisms += num_orgs;
-
+      
       df.Write(bg->GetProperty("name").AsString(), "Genotype Name");
       df.Write(bg->GetProperty("fitness").AsDouble(), "Fitness");
       df.Write(num_orgs, "Abundance");
       df.Write(Sequence::FindHammingDistance(reference_genome.GetSequence(), genome.GetSequence()), "Hamming distance to reference");
       df.Write(Sequence::FindEditDistance(reference_genome.GetSequence(), genome.GetSequence()), "Levenstein distance to reference");
       df.Write(genome.AsString(), "Genome");
-
+      
       // save into archive
       if (m_save_genotypes) {
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->GetProperty("name").AsString())));
         delete testcpu;
       }
-
+      
       df.Endl();
     }
     df.WriteRaw(cStringUtil::Stringf("# ave fitness from Test CPU's: %d\n", sum_fitness / sum_num_organisms));
-
+    
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -2606,7 +2601,7 @@ class cActionTestDominant : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionTestDominant(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("dom-test.dat")
   {
@@ -2619,14 +2614,14 @@ public:
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     cBioGroup* bg = it->Next();
     Genome genome(bg->GetProperty("genome").AsString());
-
+    
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, genome);
     delete testcpu;
-
+    
     cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
-
+    
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
@@ -2645,7 +2640,7 @@ class cActionPrintTaskSnapshot : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionPrintTaskSnapshot(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -2658,20 +2653,20 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("tasks_%d.dat", m_world->GetStats().GetUpdate());
     cDataFile& df = m_world->GetDataFile(filename);
-
+    
     cPopulation& pop = m_world->GetPopulation();
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-
+    
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-
+      
       // create a test-cpu for the current creature
       cCPUTestInfo test_info;
       testcpu->TestGenome(ctx, test_info, organism->GetGenome());
       cPhenotype& test_phenotype = test_info.GetTestPhenotype();
       cPhenotype& phenotype = organism->GetPhenotype();
-
+      
       int num_tasks = m_world->GetEnvironment().GetNumTasks();
       int sum_tasks_all = 0;
       int sum_tasks_rewarded = 0;
@@ -2679,14 +2674,14 @@ public:
       int divide_sum_tasks_rewarded = 0;
       int parent_sum_tasks_all = 0;
       int parent_sum_tasks_rewarded = 0;
-
+      
       for (int j = 0; j < num_tasks; j++) {
         // get the number of bonuses for this task
         int bonuses = 1; //phenotype.GetTaskLib().GetTaskNumBonus(j);
         int task_count = ( phenotype.GetCurTaskCount()[j] == 0 ) ? 0 : 1;
         int divide_tasks_count = (test_phenotype.GetLastTaskCount()[j] == 0)?0:1;
         int parent_task_count = (phenotype.GetLastTaskCount()[j] == 0) ? 0 : 1;
-
+        
         // If only one bonus, this task is not rewarded, as last bonus is + 0.
         if (bonuses > 1) {
           sum_tasks_rewarded += task_count;
@@ -2697,7 +2692,7 @@ public:
         divide_sum_tasks_all += divide_tasks_count;
         parent_sum_tasks_all += parent_task_count;
       }
-
+      
       df.Write(i, "Cell Number");
       df.Write(sum_tasks_rewarded, "Number of Tasks Rewarded");
       df.Write(sum_tasks_all, "Total Number of Tasks Done");
@@ -2709,7 +2704,7 @@ public:
       df.Write(organism->GetBioGroup("genotype")->GetID(), "Genotype ID");
       df.Endl();
     }
-
+    
     m_world->GetDataFileManager().Remove(filename);
     delete testcpu;
   }
@@ -2719,7 +2714,7 @@ class cActionPrintAveNumTasks : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionPrintAveNumTasks(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("ave_num_tasks.dat")
   {
@@ -2731,15 +2726,15 @@ public:
   {
     cDataFile& df = m_world->GetDataFile(m_filename);
     cPopulation& pop = m_world->GetPopulation();
-
+    
     int ave_tot_tasks = 0;
     int num_task_orgs = 0;
     for (int i = 0; i < pop.GetSize(); i++) {
       if (pop.GetCell(i).IsOccupied() == false) continue;
-
+      
       cPhenotype& phenotype = pop.GetCell(i).GetOrganism()->GetPhenotype();
       int num_tasks = m_world->GetEnvironment().GetNumTasks();
-
+      
       int sum_tasks = 0;
       for (int j = 0; j < num_tasks; j++)
         sum_tasks += ( phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
@@ -2751,12 +2746,12 @@ public:
     double pop_ave = -1;
     if (num_task_orgs>0)
       pop_ave = ave_tot_tasks/double(num_task_orgs);
-
+    
     df.WriteComment("Avida num tasks data");
     df.WriteTimeStamp();
     df.WriteComment("First column gives the current update, 2nd column gives the average number of tasks performed");
     df.WriteComment("by each organism in the current population that performs at least one task ");
-
+    
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(pop_ave, "Ave num tasks done by single org that is doing at least one task");
     df.Endl();
@@ -2768,7 +2763,7 @@ class cActionPrintViableTasksData : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionPrintViableTasksData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("viable_tasks.dat")
   {
@@ -2781,10 +2776,10 @@ public:
     cDataFile& df = m_world->GetDataFile(m_filename);
     cPopulation& pop = m_world->GetPopulation();
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-
+    
     tArray<int> tasks(num_tasks);
     tasks.SetAll(0);
-
+    
     for (int i = 0; i < pop.GetSize(); i++) {
       if (!pop.GetCell(i).IsOccupied()) continue;
       if (pop.GetCell(i).GetOrganism()->GetTestFitness(ctx) > 0.0) {
@@ -2792,12 +2787,12 @@ public:
         for (int j = 0; j < num_tasks; j++) if (phenotype.GetCurTaskCount()[j] > 0) tasks[j]++;
       }
     }
-
+    
     df.WriteComment("Avida viable tasks data");
     df.WriteTimeStamp();
     df.WriteComment("First column gives the current update, next columns give the number");
     df.WriteComment("of organisms that have the particular task as a component of their merit");
-
+    
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     for(int i = 0; i < tasks.GetSize(); i++) {
       df.WriteAnonymous(tasks[i]);
@@ -2813,7 +2808,7 @@ class cActionCalcConsensus : public cAction
 private:
   int m_lines_saved;
   cString m_inst_set;
-
+  
 public:
   cActionCalcConsensus(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_lines_saved(0)
@@ -2833,11 +2828,11 @@ public:
     const int num_inst = m_world->GetHardwareManager().GetInstSet(m_inst_set).GetSize();
     const int update = m_world->GetStats().GetUpdate();
     cClassificationManager& classmgr = m_world->GetClassificationManager();
-
+    
     // Setup the histogtams...
     tArray<cHistogram> inst_hist(MAX_GENOME_LENGTH);
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) inst_hist[i].Resize(num_inst,-1);
-
+    
     // Loop through all of the genotypes adding them to the histograms.
     tAutoRelease<tIterator<cBioGroup> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
@@ -2847,31 +2842,31 @@ public:
       const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int length = genome.GetSize();
       if (genome.GetInstSet() != m_inst_set) continue;
-
+      
       // Place this genotype into the histograms.
       for (int j = 0; j < length; j++) {
         assert(genome.GetSequence()[j].GetOp() < num_inst);
         inst_hist[j].Insert(genome.GetSequence()[j].GetOp(), num_organisms);
       }
-
+      
       // Mark all instructions beyond the length as -1 in histogram...
       for (int j = length; j < MAX_GENOME_LENGTH; j++) {
         inst_hist[j].Insert(-1, num_organisms);
       }
     }
-
+    
     // Now, lets print something!
     cDataFile& df = m_world->GetDataFile("consensus.dat");
     cDataFile& df_abundance = m_world->GetDataFile("consensus-abundance.dat");
     cDataFile& df_var = m_world->GetDataFile("consensus-var.dat");
     cDataFile& df_entropy = m_world->GetDataFile("consensus-entropy.dat");
-
+    
     // Determine the length of the concensus genome
     int con_length;
     for (con_length = 0; con_length < MAX_GENOME_LENGTH; con_length++) {
       if (inst_hist[con_length].GetMode() == -1) break;
     }
-
+    
     // Build the concensus genotype...
     Sequence& con_genome = mg.GetSequence();
     con_genome = Sequence(con_length);
@@ -2882,14 +2877,14 @@ public:
       const int total = inst_hist[i].GetCount();
       const double entropy = inst_hist[i].GetNormEntropy();
       if (i < con_length) total_entropy += entropy;
-
+      
       // Break out if ALL creatures have a -1 in this area, and we've
       // finished printing all of the files.
       if (mode == -1 && count == total) break;
-
+      
       if ( i < con_length )
         con_genome[i].SetOp(mode);
-
+      
       // Print all needed files.
       if (i < m_lines_saved) {
         df_abundance.WriteAnonymous(count);
@@ -2897,16 +2892,16 @@ public:
         df_entropy.WriteAnonymous(entropy);
       }
     }
-
+    
     // Put end-of-lines on the files.
     if (m_lines_saved > 0) {
       df_abundance.Endl();
       df_var.Endl();
       df_entropy.Endl();
     }
-
+    
     // --- Study the consensus genome ---
-
+    
     // Loop through genotypes again, and determine the average genetic distance.
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     cDoubleSum distance_sum;
@@ -2915,24 +2910,24 @@ public:
       const int cur_dist = Sequence::FindEditDistance(con_genome, Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       distance_sum.Add(cur_dist, num_organisms);
     }
-
+    
     // Finally, gather last bits of data and print the results.
     // @TODO - find consensus bio group
     //    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
-
+    
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
     const int best_dist = Sequence::FindEditDistance(con_genome, Genome(it->Next()->GetProperty("genome").AsString()).GetSequence());
-
+    
     const double ave_dist = distance_sum.Average();
     const double var_dist = distance_sum.Variance();
     const double complexity_base = static_cast<double>(con_genome.GetSize()) - total_entropy;
-
+    
     cString con_name;
     con_name.Set("archive/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
     testcpu->PrintGenome(ctx, mg, con_name);
-
-
+    
+    
     //    if (con_genotype) {
     //      df.Write(update, "Update");
     //      df.Write(con_genotype->GetMerit(), "Merit");
@@ -2956,13 +2951,13 @@ public:
     //      df.Write(complexity_base, "Complexity");
     //      df.Endl();
     //    } else {
-
+    
     cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, mg);
     delete testcpu;
-
+    
     cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
-
+    
     df.Write(update, "Update");
     df.Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
     df.Write(colony_phenotype.GetGestationTime(), "Gestation Time");
@@ -2985,7 +2980,7 @@ public:
     df.Write(complexity_base, "Complexity");
     df.Endl();
     //    }
-
+    
     delete testcpu;
   }
 };
@@ -3006,9 +3001,9 @@ public:
 		if(largs.GetSize()) { m_sample_size = static_cast<unsigned int>(largs.PopWord().AsInt()); }
     if(largs.GetSize()) {	m_filename = largs.PopWord();	}
   }
-
+  
   static const cString GetDescription() { return "Arguments: [sample size [filename]]"; }
-
+  
 	/*! Calculate our various edit distances.
 	 
 	 We have two different measures that we want to look at:
@@ -3017,7 +3012,7 @@ public:
 	 */
   void Process(cAvidaContext& ctx) {
 		assert(m_world->GetPopulation().GetNumDemes() > 0);
-
+    
 		cDataFile& df = m_world->GetDataFile(m_filename);
 		
 		// within deme edit distance:
@@ -3051,7 +3046,7 @@ public:
 		df.Write(among_deme_ed, "Mean population edit distance [population]");
 		df.Endl();
 	}
-
+  
 protected:
 	//! Calculate the average edit distance of the given container of organisms.
 	double average_edit_distance(std::vector<cOrganism*> organisms, cAvidaContext& ctx) {
@@ -3088,7 +3083,7 @@ class cActionDumpEnergyGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpEnergyGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3101,7 +3096,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_energy.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
@@ -3118,7 +3113,7 @@ class cActionDumpExecutionRatioGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpExecutionRatioGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3131,7 +3126,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_exe_ratio.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
@@ -3148,7 +3143,7 @@ class cActionDumpCellDataGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpCellDataGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3161,7 +3156,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_cell_data.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
@@ -3178,7 +3173,7 @@ class cActionDumpFitnessGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpFitnessGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3191,7 +3186,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_fitness-%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3210,7 +3205,7 @@ class cActionDumpClassificationIDGrid : public cAction
 private:
   cString m_filename;
   cString m_role;
-
+  
 public:
   cActionDumpClassificationIDGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_role("genotype")
   {
@@ -3225,7 +3220,7 @@ public:
     if (filename == "") filename = "grid_class_id";
     filename.Set("%s-%d.dat", (const char*)filename, m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3245,7 +3240,7 @@ private:
   int m_threshold;
   cString m_filename;
   tArray<int> m_genotype_chart;
-
+  
 public:
   cActionDumpGenotypeColorGrid(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_num_colors(12), m_threshold(10), m_filename(""), m_genotype_chart(0)
@@ -3254,20 +3249,20 @@ public:
     if (largs.GetSize()) m_num_colors = largs.PopWord().AsInt();
     if (largs.GetSize()) m_threshold = largs.PopWord().AsInt();
     if (largs.GetSize()) m_filename = largs.PopWord();
-
+    
     m_genotype_chart.Resize(m_num_colors, 0);
   }
-
+  
   static const cString GetDescription() { return "Arguments: [int num_colors=12] [string fname='']"; }
-
-
+  
+  
   void Process(cAvidaContext& ctx)
   {
     // Update current entries in the color chart
     for (int i = 0; i < m_num_colors; i++) {
       if (m_genotype_chart[i] && FindPos(m_genotype_chart[i]) < 0) m_genotype_chart[i] = 0;
     }
-
+    
     // Add new entries where possible
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     for (int i = 0; (it->Next()) && i < m_threshold; i++) {
@@ -3281,11 +3276,11 @@ public:
         }
       }
     }
-
+    
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_genotype_color-%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3303,7 +3298,7 @@ public:
     }
     m_world->GetDataFileManager().Remove(filename);
   }
-
+  
 private:
   int FindPos(int gid)
   {
@@ -3313,10 +3308,10 @@ private:
       if (gid == it->Get()->GetID()) return i;
       i++;
     }
-
+    
     return -1;
   }
-
+  
   inline bool isInChart(int gid)
   {
     for (int i = 0; i < m_num_colors; i++) {
@@ -3331,7 +3326,7 @@ class cActionDumpPhenotypeIDGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpPhenotypeIDGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3344,7 +3339,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_phenotype_id.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3376,7 +3371,7 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     
-  //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
+    //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3407,7 +3402,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_dumps/vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-  
+    
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -3471,46 +3466,6 @@ public:
   }
 };
 
-class cActionDumpFacingGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpFacingGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();  
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
-  {
-    const int worldx = m_world->GetPopulation().GetWorldX();
-    cString filename(m_filename);
-    
-    if (filename == "") filename.Set("grid_dumps/facing_grid.%d.dat", m_world->GetStats().GetUpdate());
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    
-    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-      for (int i = 0; i < worldx; i++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * worldx + i);
-        int facing = -99;
-        if (m_world->GetConfig().USE_AVATARS.Get()) {
-          if (cell.HasAV()) {
-            if (cell.HasPredAV()) facing = cell.GetRandPredAV()->GetOrgInterface().GetAVFacing();
-            else facing = cell.GetRandPreyAV()->GetOrgInterface().GetAVFacing();          } 
-        }   
-        else {
-          if (cell.IsOccupied()) facing = cell.GetOrganism()->GetFacedDir();            
-        }
-        fp << facing << " ";
-      }
-      fp << endl;
-    }    
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
 //DumpMaxResGrid intended for creating single output file of spatial resources, recording the max value (of any resource) when resources overlap
 class cActionDumpMaxResGrid : public cAction
 {
@@ -3566,7 +3521,7 @@ class cActionDumpSleepGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpSleepGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3579,7 +3534,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_sleep.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
@@ -3612,7 +3567,7 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     cPopulation* pop = &m_world->GetPopulation();
-        
+    
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int genome_length= 0;
@@ -3637,7 +3592,7 @@ class cActionDumpTaskGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3650,12 +3605,12 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_task.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     cPopulation* pop = &m_world->GetPopulation();
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-
+    
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-
+    
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
@@ -3673,7 +3628,7 @@ public:
       }
       fp << endl;
     }
-
+    
     delete testcpu;
     m_world->GetDataFileManager().Remove(filename);
   }
@@ -3683,44 +3638,41 @@ public:
 
 /* Dumps the task grid of the last task performed by each organism. */
 class cActionDumpLastTaskGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpLastTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
-  private:
-    cString m_filename;
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_last_task.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     
-  public:
-    cActionDumpLastTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_filename = largs.PopWord();  
-    }
-    static const cString GetDescription() { return "Arguments: [string fname='']"; }
-    void Process(cAvidaContext& ctx)
-    {
-      cString filename(m_filename);
-      if (filename == "") filename.Set("grid_last_task.%d.dat", m_world->GetStats().GetUpdate());
-      ofstream& fp = m_world->GetDataFileOFStream(filename);
-      
-      cPopulation* pop = &m_world->GetPopulation();
-      int task_id;      
-      for (int i = 0; i < pop->GetWorldX(); i++) {
-        for (int j = 0; j < pop->GetWorldY(); j++) {
-          int cell_num = i * pop->GetWorldX() + j;
-          if (pop->GetCell(cell_num).IsOccupied() == true) {
-            cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-            task_id = organism->GetPhenotype().GetLastTaskID();
-          } else {
-            task_id = -1;
-          }
-          fp << m_world->GetStats().GetUpdate() << " " << cell_num << " "  << task_id << endl;
+    cPopulation* pop = &m_world->GetPopulation();
+    int task_id;      
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          task_id = organism->GetPhenotype().GetLastTaskID();
+        } else {
+          task_id = -1;
         }
+        fp << m_world->GetStats().GetUpdate() << " " << cell_num << " "  << task_id << endl;
       }
-      
-      m_world->GetDataFileManager().Remove(filename);
     }
-  };
-
-
-
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
 
 //Dump the reaction grid from the last gestation cycle, so skip the 
@@ -3731,7 +3683,7 @@ class cActionDumpHostTaskGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpHostTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3744,11 +3696,11 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_task_hosts.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     cPopulation* pop = &m_world->GetPopulation();
-
+    
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-
+    
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
@@ -3756,7 +3708,7 @@ public:
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cPhenotype& test_phenotype = organism->GetPhenotype();
-
+          
           for (int k = 0; k < num_tasks; k++) {
             if (test_phenotype.GetLastHostTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k));
           }
@@ -3766,7 +3718,7 @@ public:
       }
       fp << endl;
     }
-
+    
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -3778,7 +3730,7 @@ class cActionDumpParasiteTaskGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpParasiteTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3791,11 +3743,11 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_task_parasite.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     cPopulation* pop = &m_world->GetPopulation();
-
+    
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-
+    
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
@@ -3805,11 +3757,11 @@ public:
           if(organism->GetNumParasites() > 0)
           {
             cPhenotype& test_phenotype = organism->GetPhenotype();
-
+            
             for (int k = 0; k < num_tasks; k++) {
               if (test_phenotype.GetLastParasiteTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k));
             }
-
+            
           }
           else { task_sum = -1; }
         }
@@ -3818,7 +3770,7 @@ public:
       }
       fp << endl;
     }
-
+    
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -3844,7 +3796,7 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     cPopulation* pop = &m_world->GetPopulation();
-        
+    
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         double virulence = 0;
@@ -3946,7 +3898,7 @@ class cActionDumpReactionGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpReactionGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -3959,18 +3911,18 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_reactions.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     cPopulation* pop = &m_world->GetPopulation();
-
+    
     const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-
+    
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
         int cell_num = i * pop->GetWorldX() + j;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
-
+          
           cPhenotype& test_phenotype = organism->GetPhenotype();
           for (int k = 0; k < num_tasks; k++) {
             if (test_phenotype.GetLastReactionCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k));
@@ -3981,7 +3933,7 @@ public:
       }
       fp << endl;
     }
-
+    
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -4074,7 +4026,7 @@ class cActionDumpDonorGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpDonorGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -4087,7 +4039,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_donor.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -4105,7 +4057,7 @@ class cActionDumpReceiverGrid : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionDumpReceiverGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
@@ -4118,7 +4070,7 @@ public:
     cString filename(m_filename);
     if (filename == "") filename.Set("grid_receiver.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
@@ -4131,14 +4083,62 @@ public:
   }
 };
 
+class cActionPrintOrgLocData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintOrgLocData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    /*Print organism locations + other org data (for movies). */
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_dumps/org_loc.%d.dat", m_world->GetStats().GetUpdate());    
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_facing" << endl;
+    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_facing,av_cellx,av_celly,av_facing" << endl;
+    
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    
+    const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {  
+      cOrganism* org = live_orgs[i];
+      const int id = org->GetID();
+      const int loc = org->GetCellID();
+      const int locx = loc % worldx;
+      const int locy = loc / worldx;
+      const int ft = org->GetForageTarget();
+      const int faced_dir = org->GetFacedDir();
+      
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  faced_dir;
+      if (use_av) {
+        const int avloc = org->GetOrgInterface().GetAVCellID();
+        const int avlocx = avloc % worldx;
+        const int avlocy = avloc / worldx;
+        const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
+        
+        fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
+      }
+      fp << endl;
+    }
+  }
+};
 
 class cActionPrintDonationStats : public cAction
 {
 public:
   cActionPrintDonationStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDonationStats();
@@ -4149,9 +4149,9 @@ class cActionPrintDemeAllStats : public cAction
 {
 public:
   cActionPrintDemeAllStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeAllStats(ctx);
@@ -4162,9 +4162,9 @@ class cActionPrintDemeFitness : public cAction
 {
 public:
   cActionPrintDemeFitness(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx) {
     m_world->GetPopulation().PrintDemeFitness();
   }
@@ -4174,9 +4174,9 @@ class cActionPrintDemeLifeFitness : public cAction
 {
 public:
   cActionPrintDemeLifeFitness(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx) {
     m_world->GetPopulation().PrintDemeLifeFitness();
   }
@@ -4186,9 +4186,9 @@ class cActionPrintDemeTasks : public cAction
 {
 public:
   cActionPrintDemeTasks(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx) {
     m_world->GetPopulation().PrintDemeTasks();
   }
@@ -4197,9 +4197,9 @@ public:
 class cActionPrintDemesTotalAvgEnergy : public cAction {
 public:
 	cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
 	static const cString GetDescription() { return "No Arguments"; }
-
+  
 	void Process(cAvidaContext& ctx) {
 		m_world->GetPopulation().PrintDemeTotalAvgEnergy(ctx); 
 	}
@@ -4209,9 +4209,9 @@ class cActionPrintDemeEnergySharingStats : public cAction
 {
 public:
   cActionPrintDemeEnergySharingStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeEnergySharingStats();
@@ -4222,9 +4222,9 @@ class cActionPrintDemeEnergyDistributionStats : public cAction
 {
 public:
   cActionPrintDemeEnergyDistributionStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeEnergyDistributionStats(ctx); 
@@ -4235,9 +4235,9 @@ class cActionPrintDemeDonorStats : public cAction
 {
 public:
   cActionPrintDemeDonorStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeDonor();
@@ -4249,9 +4249,9 @@ class cActionPrintDemeSpacialEnergy : public cAction
 {
 public:
   cActionPrintDemeSpacialEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeSpatialEnergyData();
@@ -4262,9 +4262,9 @@ class cActionPrintDemeSpacialSleep : public cAction
 {
 public:
   cActionPrintDemeSpacialSleep(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeSpatialSleepData();
@@ -4275,9 +4275,9 @@ class cActionPrintDemeResources : public cAction
 {
 public:
   cActionPrintDemeResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeResource(ctx); 
@@ -4288,9 +4288,9 @@ class cActionPrintDemeGlobalResources : public cAction
 {
 public:
   cActionPrintDemeGlobalResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemeGlobalResources(ctx); 
@@ -4301,16 +4301,16 @@ class cActionSaveDemeFounders : public cAction
 {
 private:
   cString m_filename;
-
+  
 public:
   cActionSaveDemeFounders(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
@@ -4324,7 +4324,7 @@ class cActionSetVerbose : public cAction
 {
 private:
   cString m_verbose;
-
+  
 public:
   cActionSetVerbose(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose("")
   {
@@ -4349,7 +4349,7 @@ public:
     else if (m_verbose == "DETAILS") m_world->SetVerbosity(VERBOSE_DETAILS);
     else if (m_verbose == "HIGH") m_world->SetVerbosity(VERBOSE_DETAILS);
     else m_world->SetVerbosity(VERBOSE_NORMAL);
-
+    
     // Print out new verbose level (nothing for silent!)
     if (m_world->GetVerbosity() == VERBOSE_NORMAL) {
       cout << "Verbose NORMAL: Using standard log messages..." << endl;
@@ -4358,7 +4358,7 @@ public:
     } else if (m_world->GetVerbosity() == VERBOSE_DETAILS) {
       cout << "Verbose DETAILS: Using detailed log messages..." << endl;
     }
-
+    
   }
 };
 
@@ -4366,24 +4366,24 @@ class cActionPrintNumOrgsInDeme : public cAction
 {
 public:
   cActionPrintNumOrgsInDeme(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cDataFile & df = m_world->GetDataFile("deme_org_count.dat");
     df.WriteComment("Avida deme resource data");
     df.WriteTimeStamp();
-
+    
     cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
     df.WriteRaw(UpdateStr);
-
+    
     for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
       cDeme& deme = m_world->GetPopulation().GetDeme(d);
       df.WriteBlockElement(d, 0, 2);
       df.WriteBlockElement(deme.GetOrgCount(), 1, 2);
     }
-
+    
     df.WriteRaw("];");
     df.Endl();
   }
@@ -4394,9 +4394,9 @@ class cActionPrintDemesMeritsData : public cAction
 {
 public:
   cActionPrintDemesMeritsData(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().PrintDemesMeritsData();
@@ -4407,9 +4407,9 @@ class cActionPrintDebug : public cAction
 {
 public:
   cActionPrintDebug(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
-
+  
   static const cString GetDescription() { return "No Arguments"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
   }
@@ -4514,7 +4514,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     int display_sums[6] = {0, 0, 0, 0, 0, 0}; //[0-2] = display A values for juvenile/undefined mating type, females, and males
-                                           //[3-5] = display B values for each sex
+    //[3-5] = display B values for each sex
     int mating_type_sums[3] = {0, 0, 0}; //How many organisms of each mating type are present in the population
     double display_avgs[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     
@@ -4651,8 +4651,8 @@ public:
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionPrintDebug>("PrintDebug");
-
-
+  
+  
   // Stats Out Files
   action_lib->Register<cActionPrintAverageData>("PrintAverageData");
   action_lib->Register<cActionPrintDemeAverageData>("PrintDemeAverageData");
@@ -4715,16 +4715,16 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   // @WRE: Added printing of visit data
   action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
-
+  
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintParasitePhenotypeData>("PrintParasitePhenotypeData");
   action_lib->Register<cActionPrintHostPhenotypeData>("PrintHostPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
-
+  
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
   action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
-
+  
   action_lib->Register<cActionPrintDemeResourceThresholdPredicate>("PrintDemeResourceThresholdPredicate");
   action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
   action_lib->Register<cActionPrintCellData>("PrintCellData");
@@ -4734,9 +4734,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
   action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
-
+  
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
-
+  
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
@@ -4758,7 +4758,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeFitness>("PrintDemeFitnessData");
   action_lib->Register<cActionPrintDemeLifeFitness>("PrintDemeLifeFitnessData");
   action_lib->Register<cActionPrintDemeTasks>("PrintDemeTasksData");
-
+  
   action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
   action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
   action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
@@ -4786,18 +4786,19 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemesReactionsData>("PrintDemesReactionsData"); //@JJB**
   action_lib->Register<cActionPrintDemesMeritsData>("PrintDemesMeritsData"); //@JJB**
   action_lib->Register<cActionPrintDemesFitnessData>("PrintDemesFitnessData"); //@JJB**
-
+  
   action_lib->Register<cActionPrintMultiProcessData>("PrintMultiProcessData");
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
+  action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
-
-
+  
+  
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
   action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
   action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
-
+  
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("PrintInstructionAbundanceHistogram");
@@ -4817,18 +4818,18 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
-
+  
   action_lib->Register<cActionPrintPhenotypicPlasticity>("PrintPhenotypicPlasticity");
   action_lib->Register<cActionPrintTaskProbHistogram>("PrintTaskProbHistogram");
   action_lib->Register<cActionPrintPlasticGenotypeSummary>("PrintPlasticGenotypeSummary");
-
+  
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintAveNumTasks>("PrintAveNumTasks");
-
+  
   action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
-
+  
   // Grid Information Dumps
   action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpClassificationIDGrid>("DumpClassificationIDGrid");
@@ -4838,7 +4839,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpIDGrid>("DumpIDGrid");
   action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
   action_lib->Register<cActionDumpTargetGrid>("DumpTargetGrid");
-  action_lib->Register<cActionDumpFacingGrid>("DumpFacingGrid");
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
@@ -4858,17 +4858,15 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
   action_lib->Register<cActionDumpGenotypeGrid>("DumpGenotypeGrid");
   action_lib->Register<cActionDumpParasiteGenotypeGrid>("DumpParasiteGenotypeGrid");
-
-
-
+    
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
   action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
-
+  
   action_lib->Register<cActionPrintReputationData>("PrintReputationData");
   action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
   action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
   action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
-
+  
   action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
   action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
   action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); 
@@ -4877,14 +4875,14 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
   action_lib->Register<cActionPrintHGTData>("PrintHGTData");
-
+  
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   action_lib->Register<cActionSetVerbose>("VERBOSE");
-
+  
   action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
   action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
-
+  
   //@CHC: Mating type-related actions	
   action_lib->Register<cActionPrintMatingTypeHistogram>("PrintMatingTypeHistogram");
   action_lib->Register<cActionPrintMatingDisplayData>("PrintMatingDisplayData");

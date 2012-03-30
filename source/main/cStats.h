@@ -1275,7 +1275,6 @@ public:
 	//! Print organism locations.
 	void PrintOrganismLocation(const cString& filename);
   
-  
 private:
   // Initialization
   void setupProvidedData();
