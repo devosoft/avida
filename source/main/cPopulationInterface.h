@@ -80,7 +80,7 @@ public:
   int GetCellXPosition();
   int GetCellYPosition();
   
-  int GetCellData();//**
+  int GetCellData();
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
@@ -266,7 +266,7 @@ private:
   };
 
   tSmartArray<sIO_avatar> m_avatars;
-  inline int GetNumAV() { return m_avatars.GetSize(); }
+  inline int getNumAV() { return m_avatars.GetSize(); }
 public:
   bool HasOutputAV(int av_num = 0);
   bool FacedHasOutputAV(int av_num = 0);
@@ -285,6 +285,7 @@ public:
   int GetAVFacedDataOrgID(int av_num = 0);
   int GetAVFacedDataUpdate(int av_num = 0);
   int GetAVFacedDataTerritory(int av_num = 0);
+  int FindAV(bool input, bool output, int av_num = 0);
   void SetAVFacing(int av_facing, int av_num = 0);
   bool SetAVCellID(int av_cell_id, int av_num = 0);
   void SetAVFacedCellID(int av_num = 0);

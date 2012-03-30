@@ -542,14 +542,15 @@ private:
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
-  // Avatars
-  bool Inst_RotateAVLeft(cAvidaContext& ctx);
-  bool Inst_RotateAVRight(cAvidaContext& ctx);
-  bool Inst_MoveAV(cAvidaContext& ctx);
-  bool Inst_IfCellHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotCellHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfFacedHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx);
+  // Neural networking @JJB
+  bool Inst_RotateNeuronAVLeft(cAvidaContext& ctx);
+  bool Inst_RotateNeuronAVRight(cAvidaContext& ctx);
+  bool Inst_RotateNeuronAVbyX(cAvidaContext& ctx);
+  bool Inst_MoveNeuronAV(cAvidaContext& ctx);
+  bool Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
@@ -588,7 +589,7 @@ private:
   bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
   bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
 
-  // Active messaging //**
+  // Active messaging
   bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);

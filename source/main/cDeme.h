@@ -410,8 +410,8 @@ public:
   const cMerit& GetCurMerit() { return m_cur_merit; }
   void UpdateCurMerit();
   cMerit CalcCurMerit();
-  const tArray<int>& GetTaskCount() const { return m_task_count; } //**
-  const tArray<int>& GetReactionCount() const { return m_reaction_count; } //**
+  const tArray<int>& GetTaskCount() const { return m_task_count; }
+  const tArray<int>& GetReactionCount() const { return m_reaction_count; }
 
 
 	// --- Division of Labor --- //
