@@ -234,8 +234,8 @@ public:
   void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type); 
   
   // ----- Tolerance/Group support ------
-  int IncTolerance(const int toleranceType, cAvidaContext &ctx);
-  int DecTolerance(const int toleranceType, cAvidaContext &ctx);
+  int IncTolerance(const int tolerance_type, cAvidaContext& ctx);
+  int DecTolerance(const int tolerance_type, cAvidaContext& ctx);
   int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
   double CalcGroupOddsImmigrants(int group_id, int mating_type);
