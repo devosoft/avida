@@ -383,7 +383,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   // If divide method is split, parent will be reset to completely tolerant
   // must remove their intolerance from the group's cached total.
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
       int group_id = parent_organism->GetOpinion().first;
       int org_imm_tolerance = parent_organism->GetPhenotype().CalcToleranceImmigrants();

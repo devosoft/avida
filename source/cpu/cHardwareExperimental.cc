@@ -5030,7 +5030,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    if (m_organism->GetForageTarget() != -2) return false;
    // Exit if tolerance is not enabled
    if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-   if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
    // Exit if organism is not in a group
    if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
    // Exit if the instruction is not nop-modified
@@ -5067,7 +5067,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   if (m_organism->GetForageTarget() != -2) return false;
   // Exit if tolerance is not enabled
   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
   // Exit if organism is not in a group
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
   // Exit if the instruction is not nop-modified
@@ -5097,7 +5097,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
   if (m_organism->GetForageTarget() != -2) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
       m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
@@ -5125,7 +5125,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   // If not a predator in a group, return false
   if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
   // If groups are used and tolerances are on...
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
       

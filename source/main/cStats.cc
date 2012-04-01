@@ -3395,7 +3395,7 @@ void cStats::PrintGroupTolerance(const cString& filename)
     df.Write(cur_size,                                                  "size of groups [grsize]");
     df.Write(resource_count[i],"group resource available [grfood]");
     df.Write(resource_count[i] / cur_size, "per capita group resource available [grfoodper]");
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i, -1),   "odds for immigrants coming into group [oddsimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i, -1),    "average intra-group tolerance to immigrants [aveimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i, -1),   "standard deviation for group tolerance to immigrants [sdevimmigrants]");
@@ -3428,7 +3428,7 @@ void cStats::PrintGroupMTTolerance(const cString& filename)
     df.Write(m_world->GetPopulation().NumberGroupFemales(i),            "number group females");
     df.Write(m_world->GetPopulation().NumberGroupMales(i),              "number group males");
     df.Write(m_world->GetPopulation().NumberGroupJuvs(i),               "number group juvs");
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i, 0),   "immigrant female odds");
       df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i, 0),    "ave female-female tolerance");
       df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i, 0),   "sd female-female tolerance");
