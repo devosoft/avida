@@ -4129,6 +4129,7 @@ public:
       }
       fp << endl;
     }
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
