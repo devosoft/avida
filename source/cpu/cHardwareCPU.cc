@@ -9777,15 +9777,18 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
   // Exit if the instruction is not nop-modified
   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
-  const int tolerance_to_modify = FindModifiedNextRegister(REG_BX);
- 
-  int toleranceType = -1;
-  if (tolerance_to_modify == REG_AX) toleranceType = 0;
-  if (tolerance_to_modify == REG_BX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-  if (tolerance_to_modify == REG_CX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
-  
-  // Not a recognized register
-  if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == REG_AX) toleranceType = 0;
+    else if (tolerance_to_modify == REG_BX) toleranceType = 1;
+    else if (tolerance_to_modify == REG_CX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
    
   // Update the tolerance and store the result in register B
   int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);
@@ -9811,15 +9814,18 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
   // Exit if the instruction is not nop-modified
   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
-  const int tolerance_to_modify = FindModifiedRegister(REG_BX);
-  
-  int toleranceType = -1;
-  if (tolerance_to_modify == REG_AX) toleranceType = 0;
-  if (tolerance_to_modify == REG_BX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-  if (tolerance_to_modify == REG_CX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
-  
-  // Not a recognized register
-  if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == REG_AX) toleranceType = 0;
+    else if (tolerance_to_modify == REG_BX) toleranceType = 1;
+    else if (tolerance_to_modify == REG_CX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
   
   // Update the tolerance and store the result in register B
   GetRegister(REG_BX) = m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx);
