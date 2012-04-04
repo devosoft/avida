@@ -2047,6 +2047,46 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
 
 }
 
+/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently prints information for each org in each deme.
+ */
+void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
+{  
+  
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Cell data per udpate.");
+	df.WriteTimeStamp();
+  
+  cPopulation& pop = m_world->GetPopulation();
+	static const int numDemes = pop.GetNumDemes();
+  
+  for(int i = 0; i < numDemes; ++i) {
+    cDeme& deme = pop.GetDeme(i);
+    for (int j=0; j<deme.GetSize(); ++j) {
+      
+      cPopulationCell& cell = deme.GetCell(j);
+      if (cell.IsOccupied()) {
+        cOrganism* o = cell.GetOrganism();
+        int isGerm = 0;
+        if (o->IsGermline()) isGerm = 1;
+        
+        df.Write(GetUpdate(), "Update [update]");
+        df.Write(o->GetDemeID(), "Deme ID for cell [demeid]");
+        df.Write(j, "Org placement in deme [orgloc]");
+        df.Write(o->GetOrgInterface().GetCellXPosition(), "Org x position [xpos]");
+        df.Write(o->GetOrgInterface().GetCellYPosition(), "Org y position [ypos]");                 
+        df.Write(isGerm, "Org is germ line [isgerm]");
+        df.Write(o->GetNumOfPointMutationsApplied(), "Number of point mutations [numPoint]");
+        
+        tArray<int> react_count = o->GetPhenotype().GetCumulativeReactionCount();
+        for (int k=0; k<react_count.GetSize(); ++k){
+          df.Write(react_count[k], "reaction");
+        }
+        df.Endl();
+        
+      }
+    }
+	}
+}
 
 
 
