@@ -2373,11 +2373,12 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   target_deme.KillAll(ctx2);
   
   for(int i=0; i<target_founders.GetSize(); i++) {
-    int cellid = DemeSelectInjectionCell(target_deme, i);        
+    int cellid = DemeSelectInjectionCell(target_deme, i);       
     
-    cBioGroup* bg = target_founders[i]->GetBioGroup("genotype");
-    Genome mg(bg->GetProperty("genome").AsString());
+    cBioGroup* parent_bg = target_founders[i]->GetBioGroup("genotype");
+    Genome mg(parent_bg->GetProperty("genome").AsString());
     cCPUMemory new_genome(mg.GetSequence());
+      
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
     cAvidaContext ctx(m_world, m_world->GetRandom());
     
@@ -2401,6 +2402,11 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
       new_genome.Remove(mut_line);
     }
     mg.SetSequence(new_genome);
+
+    cDemePlaceholderUnit unit(SRC_DEME_REPLICATE, mg);
+    tArray<cBioGroup*> parents;
+    parents.Push(parent_bg);
+    cBioGroup* new_genotype = parent_bg->ClassifyNewBioUnit(&unit, &parents);
     
     InjectGenome(cellid, SRC_DEME_REPLICATE, mg, ctx, target_founders[i]->GetLineageLabel()); 
     
@@ -2412,7 +2418,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     // For now, just copy the generation...
     organism->GetPhenotype().SetGeneration(target_founders[i]->GetPhenotype().GetGeneration() );
     
-    target_deme.AddFounder(organism->GetBioGroup("genotype"), &organism->GetPhenotype());
+    target_deme.AddFounder(new_genotype, &organism->GetPhenotype());
     
     DemePostInjection(target_deme, cell_array[cellid]);
   }
