@@ -2080,7 +2080,16 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
     df.WriteRaw(UpdateStr);
   }
   
-  ReplaceDeme(source_deme, deme_array[target_id], ctx); 
+  if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 3) {
+    // hjg - this hack is decidedly ugly. However, the current ReplaceDemes method
+    // does some strange things to support the energy model (such as resetting demes prior
+    // to assessing whether the replication will work) that cause strange behavior as 
+    // part of the germ line sequestration code.
+    ReplaceDemeFlaggedGermline(source_deme, deme_array[target_id], ctx); 
+  } else {
+    ReplaceDeme(source_deme, deme_array[target_id], ctx); 
+  }
+  
 }
 
 /*! ReplaceDeme is a helper method that handles all the different configuration
@@ -2292,6 +2301,137 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
 }
 
+/*! ReplaceDemeFlaggedGermline is a helper method that handles deme replication when the organisms are flagging their own germ line. It is similar to ReplaceDeme, but some events are reordered. (Demes are reset only after we know that the replication will work. In addition, it only supports a small subset of the deme replication options. 
+ */
+void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx2) 
+{
+  // Stats tracking; pre-replication hook.
+  m_world->GetStats().DemePreReplication(source_deme, target_deme);
+  
+  bool target_successfully_seeded = true;
+  
+  /* Seed deme part... */
+  cRandom& random = m_world->GetRandom();
+  //bool successfully_seeded = true;
+  tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
+  tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
+  
+  // Grab a random org from the set of orgs that have
+  // flagged themselves as part of the germline.
+  tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
+  
+  // Get list of potential founders
+  for (int i = 0; i<source_deme.GetSize(); ++i) {
+    int cellid = source_deme.GetCellID(i);
+    if (cell_array[cellid].IsOccupied()) {
+      cOrganism* o = cell_array[cellid].GetOrganism();
+      if (o->IsGermline()) {
+        potential_founders.Push(o);
+      }
+    }
+  }
+  
+  
+  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 8) {
+    // pick a random founder...
+    if (potential_founders.GetSize() > 0) {
+      int r = random.GetUInt(potential_founders.GetSize());
+      target_founders.Push(potential_founders[r]);
+    } else {
+      return;
+    }
+  } else {
+    target_founders = potential_founders;
+  }
+  
+  bool source_deme_resource_reset(true), target_deme_resource_reset(true);
+  switch(m_world->GetConfig().DEMES_RESET_RESOURCES.Get()) {
+    case 0:
+      // reset resource in both demes
+      source_deme_resource_reset = target_deme_resource_reset = true;
+      break;
+    case 1:
+      // reset resource only in target deme
+      source_deme_resource_reset = false;
+      target_deme_resource_reset = true;
+      break;
+    case 2:
+      // do not reset either deme resource
+      source_deme_resource_reset = target_deme_resource_reset = false;
+      break;
+    default:
+      cout << "Undefined value " << m_world->GetConfig().DEMES_RESET_RESOURCES.Get() << " for DEMES_RESET_RESOURCES\n";
+      exit(1);
+  }
+  
+  if (target_successfully_seeded) target_deme.DivideReset(ctx2, source_deme, target_deme_resource_reset);
+  source_deme.DivideReset(ctx2, source_deme, source_deme_resource_reset);
+  
+  
+  target_deme.ClearFounders();
+  target_deme.UpdateStats();
+  target_deme.KillAll(ctx2);
+  
+  for(int i=0; i<target_founders.GetSize(); i++) {
+    int cellid = DemeSelectInjectionCell(target_deme, i);       
+    
+    cBioGroup* parent_bg = target_founders[i]->GetBioGroup("genotype");
+    Genome mg(parent_bg->GetProperty("genome").AsString());
+    cCPUMemory new_genome(mg.GetSequence());
+      
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
+    cAvidaContext ctx(m_world, m_world->GetRandom());
+    
+    if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
+      for(int i=0; i<new_genome.GetSize(); ++i) {
+        if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
+          new_genome[i] = instset.GetRandomInst(ctx);
+        }
+      }
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize() + 1);
+      new_genome.Insert(mut_line, instset.GetRandomInst(ctx));
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize());
+      new_genome.Remove(mut_line);
+    }
+    mg.SetSequence(new_genome);
+
+    cDemePlaceholderUnit unit(SRC_DEME_REPLICATE, mg);
+    tArray<cBioGroup*> parents;
+    parents.Push(parent_bg);
+    cBioGroup* new_genotype = parent_bg->ClassifyNewBioUnit(&unit, &parents);
+    
+    InjectGenome(cellid, SRC_DEME_REPLICATE, mg, ctx, target_founders[i]->GetLineageLabel()); 
+    
+    
+    // At this point, the cell had better be occupied...
+    assert(GetCell(cellid).IsOccupied());
+    cOrganism * organism = GetCell(cellid).GetOrganism();
+    
+    // For now, just copy the generation...
+    organism->GetPhenotype().SetGeneration(target_founders[i]->GetPhenotype().GetGeneration() );
+    
+    target_deme.AddFounder(new_genotype, &organism->GetPhenotype());
+    
+    DemePostInjection(target_deme, cell_array[cellid]);
+  }
+  
+  
+  source_deme.ClearTotalResourceAmountConsumed();
+  
+  source_deme.ClearShannonInformationStats();
+  target_deme.ClearShannonInformationStats();
+  
+  // do our post-replication stats tracking.
+  m_world->GetStats().DemePostReplication(source_deme, target_deme);
+}
 
 /*! Helper method to seed a deme from the given genome.
  If the passed-in deme is populated, all resident organisms are terminated.  The
@@ -2706,7 +2846,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
         int cellid = DemeSelectInjectionCell(target_deme, i);        
-        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false);
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(),  target_founders[i]->GetLineageLabel(), false);
        // target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
       }
@@ -2731,7 +2871,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         
         for(int i=0; i<source_founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i);
-          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), ctx, &source_founders[i]->GetPhenotype(), false); 
+          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), ctx, &source_founders[i]->GetPhenotype(), source_founders[i]->GetLineageLabel(), false); 
           source_deme.AddFounder(source_founders[i]->GetBioGroup("genotype"), &source_founders[i]->GetPhenotype());
           DemePostInjection(source_deme, cell_array[cellid]);
         }
@@ -2752,7 +2892,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           int cellid = DemeSelectInjectionCell(source_deme, i);
           //cout << "founder: " << source_founders[i] << endl;
           cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
-          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i], true); 
+          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i], -1, true); 
           DemePostInjection(source_deme, cell_array[cellid]);
         }
         
@@ -2836,7 +2976,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype, bool reset) 
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype, int lineage_label, bool reset) 
 {
   // Mutate the genome?
   if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1 && !reset) {
@@ -2879,12 +3019,13 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvida
      new_genotype->RemoveBioUnit(&unit);
      */
     
-    InjectGenome(_cell_id, SRC_DEME_REPLICATE, mg, ctx); 
-    
+    InjectGenome(_cell_id, SRC_DEME_REPLICATE, mg, ctx, lineage_label); 
+
   } else {
     
-    // phenotype can be NULL
-    InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx); 
+    // phenotype can be NULL    
+    InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx, lineage_label); 
+
   }
   
   // At this point, the cell had better be occupied...

@@ -1,5 +1,5 @@
 # Avida deme replication data
-# Tue Feb 28 09:35:08 2012
+# Mon Apr  2 13:25:25 2012
 #  1: Update [update]
 #  2: Number of deme replications [numrepl]
 #  3: Mean deme gestation time [gesttime]
@@ -74,5 +74,4 @@
 63 0 0 0 0 0 0 
 64 0 0 0 0 0 0 
 65 0 0 0 0 0 0 
-66 0 0 0 0 0 0 
-67 1 68 31 1 0 1 
+66 1 67 29 1 0 0.96 

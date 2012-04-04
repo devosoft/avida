@@ -761,6 +761,7 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   
   m_memory = in_organism->GetGenome().GetSequence();  // Initialize memory...
   Reset(ctx);                            // Setup the rest of the hardware...
+  internalReset();
 }
 
 
@@ -807,6 +808,12 @@ void cHardwareCPU::internalReset()
   }
 
   m_last_cell_data = std::make_pair(false, 0);
+  // Reset our flash information to 0:
+  m_flash_info.first = 0;
+  m_flash_info.second = 0;
+  // ... as well as our current cycle timer:
+  m_cycle_counter = 0;
+
 }
 
 void cHardwareCPU::internalResetOnFailedDivide()
@@ -844,6 +851,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
   m_promoter_inst_executed = 0;
   
   m_messageTriggerType = -1;
+    
 }
 
 // This function processes the very next command in the genome, and is made

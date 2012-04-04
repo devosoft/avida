@@ -1023,6 +1023,8 @@ public:
   void PrintDemeReplicationData(const cString& filename);
   //! Print statistics regarding germline sequestration
   void PrintDemeGermlineSequestration(const cString& filename);
+  //! Print germline sequestration for every individual in every deme
+  void PrintDemeOrgGermlineSequestration(const cString& filename);
   
 
 
