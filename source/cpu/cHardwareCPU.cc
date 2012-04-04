@@ -9608,18 +9608,21 @@ bool cHardwareCPU::Inst_NumberMTInMyGroup(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
 
-  int num_orgs = 0;
+  int num_fem = 0;
+  int num_male = 0;
+  int num_juv = 0;
   if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
     int opinion = m_organism->GetOpinion().first;
-    if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-      num_orgs = m_organism->GetOrgInterface().NumberGroupFemales(opinion);
-    }
-    else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-      num_orgs = m_organism->GetOrgInterface().NumberGroupMales(opinion);
-    }
+    num_fem = m_organism->GetOrgInterface().NumberGroupFemales(opinion);
+    num_male = m_organism->GetOrgInterface().NumberGroupMales(opinion);
+    num_juv = m_organism->GetOrgInterface().NumberGroupJuvs(opinion);
   }
-  const int num_org_reg = FindModifiedRegister(REG_BX);  
-  GetRegister(num_org_reg) = num_orgs;
+  const int reg1 = FindModifiedRegister(REG_BX);  
+  const int reg2 = FindModifiedNextRegister(reg1);  
+  const int reg3 = FindModifiedNextRegister(reg2);  
+  GetRegister(reg1) = num_fem;
+  GetRegister(reg2) = num_male;
+  GetRegister(reg3) = num_juv;
   return true;
 }
 
@@ -9640,18 +9643,18 @@ bool cHardwareCPU::Inst_NumberMTInGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
-
+  
   const int group_id = FindModifiedRegister(REG_BX);
   
-  int num_orgs = 0;
-  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-    num_orgs = m_organism->GetOrgInterface().NumberGroupFemales(group_id);
-  }
-  else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-    num_orgs = m_organism->GetOrgInterface().NumberGroupMales(group_id);
-  }
-  const int num_org_reg = FindModifiedRegister(REG_CX);
-  GetRegister(num_org_reg) = num_orgs;
+  int num_fem = m_organism->GetOrgInterface().NumberGroupFemales(group_id);
+  int num_male = m_organism->GetOrgInterface().NumberGroupMales(group_id);
+  int num_juv = m_organism->GetOrgInterface().NumberGroupJuvs(group_id);
+  const int reg1 = FindModifiedRegister(REG_BX);  
+  const int reg2 = FindModifiedNextRegister(reg1);  
+  const int reg3 = FindModifiedNextRegister(reg2);  
+  GetRegister(reg1) = num_fem;
+  GetRegister(reg2) = num_male;
+  GetRegister(reg3) = num_juv;
   return true;
 }
 
@@ -9736,12 +9739,16 @@ bool cHardwareCPU::Inst_NumberMTNextGroup(cAvidaContext& ctx)
     else if (reg_value < 0) query_group = opinion - 1;
   }
   
-  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-    GetRegister(REG_BX) = m_organism->GetOrgInterface().NumberGroupFemales(query_group);
-  }
-  else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-    GetRegister(REG_BX) = m_organism->GetOrgInterface().NumberGroupMales(query_group);
-  }
+  int num_fem = m_organism->GetOrgInterface().NumberGroupFemales(query_group);
+  int num_male = m_organism->GetOrgInterface().NumberGroupMales(query_group);
+  int num_juv = m_organism->GetOrgInterface().NumberGroupJuvs(query_group);
+  const int reg1 = FindModifiedRegister(REG_BX);  
+  const int reg2 = FindModifiedNextRegister(reg1);  
+  const int reg3 = FindModifiedNextRegister(reg2);  
+  GetRegister(reg1) = num_fem;
+  GetRegister(reg2) = num_male;
+  GetRegister(reg3) = num_juv;
+
   return true;
 }
 
