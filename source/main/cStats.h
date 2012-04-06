@@ -1025,7 +1025,11 @@ public:
   void PrintDemeGermlineSequestration(const cString& filename);
   //! Print germline sequestration for every individual in every deme
   void PrintDemeOrgGermlineSequestration(const cString& filename);
-  
+  //! Print genotype IDs and genotypes for GLS deme founders
+  void PrintDemeGLSFounders(const cString& filename);
+  //! Track GLS Deme Founder Data
+  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
+  void TrackDemeGLSReplication(int source_deme_id, int target_deme_id,   std::vector<std::pair<int, std::string> > founders);
 
 
 	void PrintDemeTreatableReplicationData(const cString& filename);
@@ -1083,6 +1087,7 @@ protected:
   std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
   std::deque<double> m_ave_non_germ_mut; 
   std::deque<double> m_ave_germ_size;
+  t_gls_founder_map m_gls_deme_founders; //! Data structure to track the founders of gls demes.
   
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.
