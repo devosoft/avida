@@ -2089,6 +2089,50 @@ void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
 }
 
 
+/*! Print the genotype ID and genotypes of the founders of recently born demes that use germline method = 3, 
+ where the organisms flag themselves as part of the germline.
+ 
+ Only deme "births" (i.e., due to deme replication) are tracked; the ancestral deme founders are lost.  
+ The update column is the update at which this method executes, not the time at which the given deme was born.
+ */
+void cStats::PrintDemeGLSFounders(const cString& filename){
+
+
+    cDataFile& df = m_world->GetDataFile(filename);
+    
+    df.WriteComment("Avida gls deme founder data.");
+    df.WriteTimeStamp();
+    df.WriteColumnDesc("Update [update]");
+    df.WriteColumnDesc("Soure Deme ID [sdemeid]");
+    df.WriteColumnDesc("Target Deme ID [tdemeid]");
+    df.WriteColumnDesc("Number of founders [size]");
+    df.WriteColumnDesc("{target genotype ID, target genome... founder 0, ...}");
+    df.FlushComments();
+    
+    std::ofstream& out = df.GetOFStream();
+   
+   //  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
+
+    for(t_gls_founder_map::iterator i=m_gls_deme_founders.begin(); i!=m_gls_deme_founders.end(); ++i) {
+      out << GetUpdate() << " " << i->first.first << " " << i->first.second << " " << i->second.size();
+      for(std::vector<std::pair<int, std::string> >::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+        out << " " << (*j).first << " " << (*j).second; 
+//        out << " " << *j;
+      }
+      df.Endl();
+    }
+    m_gls_deme_founders.clear();
+
+}
+
+//! Track GLS Deme Founder Data
+void cStats::TrackDemeGLSReplication(int source_deme_id, int target_deme_id,   std::vector<std::pair<int, std::string> > founders){
+  m_gls_deme_founders[make_pair(source_deme_id, target_deme_id)] = founders;
+}
+
+
+
+
 
 /*! Print statistics related to deme replication.  Currently only prints the
  number of deme replications since the last time PrintDemeReplicationData was

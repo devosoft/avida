@@ -2305,9 +2305,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
  */
 void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx2) 
 {
-  // Stats tracking; pre-replication hook.
-  m_world->GetStats().DemePreReplication(source_deme, target_deme);
-  
+
   bool target_successfully_seeded = true;
   
   /* Seed deme part... */
@@ -2343,6 +2341,9 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   } else {
     target_founders = potential_founders;
   }
+  // Stats tracking; pre-replication hook.
+  m_world->GetStats().DemePreReplication(source_deme, target_deme);
+  
   
   bool source_deme_resource_reset(true), target_deme_resource_reset(true);
   switch(m_world->GetConfig().DEMES_RESET_RESOURCES.Get()) {
@@ -2371,14 +2372,21 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   target_deme.ClearFounders();
   target_deme.UpdateStats();
   target_deme.KillAll(ctx2);
+  std::vector<std::pair<int, std::string> > track_founders;
+  
   
   for(int i=0; i<target_founders.GetSize(); i++) {
     int cellid = DemeSelectInjectionCell(target_deme, i);       
     
+    // this is the genome we need to use. However, we only need part of it...since it can include an offspring
+    cCPUMemory in_memory_genome = target_founders[i]->GetHardware().GetMemory();
+    
+    // this is the genotype of the organism, which does not reflect any point mutations that have occurred. 
+    // we need to use it to get the right length for the genome
     cBioGroup* parent_bg = target_founders[i]->GetBioGroup("genotype");
     Genome mg(parent_bg->GetProperty("genome").AsString());
     cCPUMemory new_genome(mg.GetSequence());
-      
+
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
     cAvidaContext ctx(m_world, m_world->GetRandom());
     
@@ -2386,6 +2394,10 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
       for(int i=0; i<new_genome.GetSize(); ++i) {
         if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
           new_genome[i] = instset.GetRandomInst(ctx);
+        } else {
+          // this line copies the mutations accured as a result of performing tasks to the new genome
+          new_genome[i] = in_memory_genome[i]; 
+          
         }
       }
     }
@@ -2403,11 +2415,6 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     }
     mg.SetSequence(new_genome);
 
-    cDemePlaceholderUnit unit(SRC_DEME_REPLICATE, mg);
-    tArray<cBioGroup*> parents;
-    parents.Push(parent_bg);
-    cBioGroup* new_genotype = parent_bg->ClassifyNewBioUnit(&unit, &parents);
-    
     InjectGenome(cellid, SRC_DEME_REPLICATE, mg, ctx, target_founders[i]->GetLineageLabel()); 
     
     
@@ -2418,7 +2425,9 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     // For now, just copy the generation...
     organism->GetPhenotype().SetGeneration(target_founders[i]->GetPhenotype().GetGeneration() );
     
-    target_deme.AddFounder(new_genotype, &organism->GetPhenotype());
+    target_deme.AddFounder(organism->GetBioGroup("genotype"), &organism->GetPhenotype());
+
+    track_founders.push_back(make_pair(organism->GetBioGroup("genotype")->GetID(), new_genome.AsString())); 
     
     DemePostInjection(target_deme, cell_array[cellid]);
   }
@@ -2431,6 +2440,9 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   
   // do our post-replication stats tracking.
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
+  m_world->GetStats().TrackDemeGLSReplication(source_deme.GetID(), target_deme.GetID(), track_founders);
+
+  
 }
 
 /*! Helper method to seed a deme from the given genome.
