@@ -196,6 +196,9 @@ STATS_OUT_FILE(PrintTargets,                  targets.dat);
 STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
 STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
+//donate-specific
+STATS_OUT_FILE(PrintDonateSpecificData,       donatespec.dat);
+
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
 
@@ -4877,6 +4880,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
+  
+  action_lib->Register<cActionPrintDonateSpecificData>("PrintDonateSpecificData"); 
+  
   action_lib->Register<cActionPrintHGTData>("PrintHGTData");
   
   action_lib->Register<cActionSetVerbose>("SetVerbose");

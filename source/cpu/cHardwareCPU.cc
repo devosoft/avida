@@ -4123,14 +4123,30 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
 {
   if(!m_organism->IsNeighborCellOccupied())return false;
+  cOrganism* target = NULL;
+  target = m_organism->GetOrgInterface().GetNeighbor();
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
     double res_before = m_organism->GetRBin(resource);
+    int kin = 0;
     if (res_before >= 1)
     {   
-      cOrganism* target = NULL;
-      target = m_organism->GetOrgInterface().GetNeighbor();
       target->AddToRBin (resource, 1);
+      
+      bool is_kin = false;
+      cBioGroup* bg = m_organism->GetBioGroup("genotype");
+      if (bg) {
+        cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+        if (!sa) {
+          sa = new cSexualAncestry(bg);
+          bg->AttachData(sa);
+        }
+        cBioGroup* nbg = target->GetBioGroup("genotype");
+        assert(nbg);
+        kin = sa->GetPhyloDistance(nbg);
+      }
+      m_organism->GetPhenotype().IncDonates();
+      m_organism->GetOrgInterface().PushDonateSpecInstExe(ctx, target, kin);
       return true;
     }
   }

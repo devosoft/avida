@@ -1465,6 +1465,21 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
   return;
 }
 
+void cPopulationInterface::PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int relatedness)
+{
+  if(!m_world->GetConfig().TRACK_DONATES.Get()) {
+    return;
+  }
+  
+  int org_id = GetOrganism()->GetID();
+  int cell_id = GetOrganism()->GetCellID();
+  int recipient_id = recipient_org->GetID();
+  bool recip_is_beggar = recipient_org->IsBeggar();
+  int num_donates =GetOrganism()->GetPhenotype().GetCurNumDonates();
+  m_world->GetStats().PushDonateSpecificInstExe(org_id, cell_id, recipient_id, relatedness, recip_is_beggar, num_donates);
+  return;
+}
+
 int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num, int mating_type)
 {
   return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num, mating_type);

@@ -3618,7 +3618,56 @@ void cStats::ZeroToleranceInst()
   }
   m_is_tolerance_exe_insts.ResizeClear(0);
 }
+/*
+ data about donate specific push: id, donated id, kin,
+ */
 
+void cStats::PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int relatedness, int recip_is_beggar, int num_donates)
+{
+  if (m_donate_specific.GetSize() > 0) {
+    if (m_donate_specific[0].update != m_update) {
+      m_donate_specific.ResizeClear(0);
+    }
+  }
+  
+  sDonateSpecificCircumstances donates;
+  donates.update = GetUpdate();
+  donates.org_id = org_id;
+  donates.cell_id = cell_id;
+  donates.recipient_id = recipient_id;
+  donates.relatedness = relatedness;
+  donates.recip_is_beggar = recip_is_beggar;
+  donates.num_donates = num_donates;
+  
+  m_donate_specific.Push(donates);
+}
+
+// Prints the circumstances around each tolerance instruction executed within the last update. 
+void cStats::PrintDonateSpecificData(const cString& filename)
+{
+  // TRACK_TOLERANCE must be on in config for output file to function
+  if(!m_world->GetConfig().TRACK_DONATES.Get()) {
+    m_world->GetDriver().RaiseFatalException(-1, "TRACK_DONATIONS option must be turned on in avida.cfg for PrintDonateSpecificData to function.");
+  }
+  
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida circumstance data for each donate-specific instruction pre-execution");
+  df.WriteTimeStamp();
+  
+  for (int i = 0; i < m_donate_specific.GetSize(); i++) {
+    if (m_donate_specific[i].update == m_update) {
+      df.Write(m_donate_specific[i].update, "Update [update]");
+      df.Write(m_donate_specific[i].org_id, "id of donor [org_id]");
+      df.Write(m_donate_specific[i].cell_id, "cell id of donor [cell_id]");
+      df.Write(m_donate_specific[i].recipient_id, "id of recipient [recipient_id]");
+      df.Write(m_donate_specific[i].relatedness, "relatedness [relatedness]");
+      df.Write(m_donate_specific[i].recip_is_beggar, "recip_is_beggar [is recipient beggar]");
+      df.Write(m_donate_specific[i].num_donates, "num_donates [lifetime num donates]");
+      df.Endl();
+    }
+  }
+}
 /*
  Print data regarding the living org targets.
  */

@@ -86,6 +86,16 @@ struct s_inst_circumstances {
   int tol_max;
 }; // @JJB
 
+struct sDonateSpecificCircumstances {
+  int update;
+  int org_id;
+  int cell_id;
+  int recipient_id;
+  int relatedness;
+  bool recip_is_beggar;
+  int num_donates;
+};
+
 class cStats : public cBioGroupListener, public Data::Provider
 {
 private:
@@ -155,7 +165,8 @@ private:
   tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
   tArray<pair<int,int> > m_is_tolerance_exe_counts;
-  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; 
+  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts;
+  tSmartArray<sDonateSpecificCircumstances> m_donate_specific; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
@@ -929,6 +940,7 @@ public:
   void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 
   void PrintToleranceData(const cString& filename); 
+  void PrintDonateSpecificData(const cString& filename);
   void PrintMaleAverageData(const cString& filename);
   void PrintFemaleAverageData(const cString& filename);
   void PrintMaleErrorData(const cString& filename);
@@ -1002,7 +1014,12 @@ public:
 protected:
   movement_pred_ptr_list m_movement_predicates;
   // -------- End movement support --------
-
+  
+  //--------- Donate Specific support---------
+public:
+  void PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int relatedness, int recip_is_beggar, int num_donates); 
+  void ZeroDonateSpceificInst(); 
+  
   // -------- Tolerance support --------
 public:
   void PushToleranceInstExe(int tol_inst); 
