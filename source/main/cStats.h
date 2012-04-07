@@ -91,6 +91,7 @@ struct sDonateSpecificCircumstances {
   int org_id;
   int cell_id;
   int recipient_id;
+  int recipient_cell_id;
   int relatedness;
   bool recip_is_beggar;
   int num_donates;
@@ -1017,7 +1018,7 @@ protected:
   
   //--------- Donate Specific support---------
 public:
-  void PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int relatedness, int recip_is_beggar, int num_donates); 
+  void PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int recipient_cell_id, int relatedness, int recip_is_beggar, int num_donates); 
   void ZeroDonateSpceificInst(); 
   
   // -------- Tolerance support --------

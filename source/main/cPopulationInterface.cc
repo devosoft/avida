@@ -1474,9 +1474,10 @@ void cPopulationInterface::PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* 
   int org_id = GetOrganism()->GetID();
   int cell_id = GetOrganism()->GetCellID();
   int recipient_id = recipient_org->GetID();
+  int recipient_cell_id = recipient_org->GetCellID();
   bool recip_is_beggar = recipient_org->IsBeggar();
   int num_donates =GetOrganism()->GetPhenotype().GetCurNumDonates();
-  m_world->GetStats().PushDonateSpecificInstExe(org_id, cell_id, recipient_id, relatedness, recip_is_beggar, num_donates);
+  m_world->GetStats().PushDonateSpecificInstExe(org_id, cell_id, recipient_id, recipient_cell_id, relatedness, recip_is_beggar, num_donates);
   return;
 }
 

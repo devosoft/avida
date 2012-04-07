@@ -3666,7 +3666,7 @@ void cStats::ZeroToleranceInst()
  data about donate specific push: id, donated id, kin,
  */
 
-void cStats::PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int relatedness, int recip_is_beggar, int num_donates)
+void cStats::PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int recipient_cell_id, int relatedness, int recip_is_beggar, int num_donates)
 {
   if (m_donate_specific.GetSize() > 0) {
     if (m_donate_specific[0].update != m_update) {
@@ -3679,6 +3679,7 @@ void cStats::PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id
   donates.org_id = org_id;
   donates.cell_id = cell_id;
   donates.recipient_id = recipient_id;
+  donates.recipient_cell_id = recipient_cell_id;
   donates.relatedness = relatedness;
   donates.recip_is_beggar = recip_is_beggar;
   donates.num_donates = num_donates;
@@ -3705,6 +3706,7 @@ void cStats::PrintDonateSpecificData(const cString& filename)
       df.Write(m_donate_specific[i].org_id, "id of donor [org_id]");
       df.Write(m_donate_specific[i].cell_id, "cell id of donor [cell_id]");
       df.Write(m_donate_specific[i].recipient_id, "id of recipient [recipient_id]");
+      df.Write(m_donate_specific[i].recipient_cell_id, "cell id of teh recipient [recipient_cell_id]");
       df.Write(m_donate_specific[i].relatedness, "relatedness [relatedness]");
       df.Write(m_donate_specific[i].recip_is_beggar, "recip_is_beggar [is recipient beggar]");
       df.Write(m_donate_specific[i].num_donates, "num_donates [lifetime num donates]");
