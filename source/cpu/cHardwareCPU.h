@@ -525,6 +525,8 @@ private:
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   bool Inst_SetBeggar(cAvidaContext& ctx);
   bool Inst_CheckFacedBeggar(cAvidaContext& ctx);
+  bool Inst_IfFacedKin(cAvidaContext& ctx);
+  bool Inst_IfFacedBeggar(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation

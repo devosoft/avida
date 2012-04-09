@@ -307,9 +307,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // Feed Specific Tasks
   if (name == "eat-target") Load_ConsumeTarget(name, info, envreqs, feedback);
-  
-  if (name == "collect-odds") Load_CollectOdds(name, info, envreqs, feedback);
-  
+    
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
   else if (name == "royal-road") Load_RoyalRoad(name, info, envreqs, feedback);
@@ -3459,9 +3457,7 @@ void cTaskLib::Load_CollectOdds(const cString& name, const cString& argstr, cEnv
 
 double cTaskLib::Task_CollectOdds(cTaskContext& ctx) const
 {
-  
   int even_odds = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-  
   
   double reward = 0.0;
   // If the organism is in an odd cell...
@@ -3478,6 +3474,7 @@ double cTaskLib::Task_CollectOdds(cTaskContext& ctx) const
   }
   return reward;
 }
+
 /* Reward organisms for having found a targeted resource*/
 void cTaskLib::Load_ConsumeTarget(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {

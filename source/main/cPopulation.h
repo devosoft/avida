@@ -161,6 +161,10 @@ public:
   //! Helper method that replaces a target deme with the given source deme.
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
   
+  //! Helper method that replaces a target deme with a given source deme using
+  // the germ line flagged by the organisms. 
+  void ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx);
+  
   //! Helper method that seeds a deme from the given genome.
   void SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx); 
 
@@ -205,7 +209,8 @@ public:
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
-  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx); 
+  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx);
+  void PrintDemesMeritsData(); //@JJB**
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);
@@ -386,7 +391,7 @@ private:
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, bool reset=false); 
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset=false); 
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	

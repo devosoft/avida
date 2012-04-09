@@ -344,7 +344,6 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     }
   }
   
-  
   if (selected_index == -1) {
     //None found: Store the current one and return NULL
     storeOffspring(ctx, offspring, parent);

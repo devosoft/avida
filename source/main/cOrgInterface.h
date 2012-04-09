@@ -151,6 +151,10 @@ public:
   virtual bool NetworkRotate(int x) = 0;
   virtual bool NetworkSelect(int x) = 0;
 
+  virtual int GetNextDemeInput(cAvidaContext& ctx) = 0;
+  virtual void DoDemeInput(int value) = 0;
+  virtual void DoDemeOutput(cAvidaContext& ctx, int value) = 0;
+
   virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
   virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
   virtual void DoHGTMutation(cAvidaContext& ctx, Genome& offspring) = 0;
@@ -184,6 +188,8 @@ public:
   virtual bool AttemptImmigrateGroup(int group_id, cOrganism* org) = 0;
   virtual void PushToleranceInstExe(int tol_inst, cAvidaContext& ctx) = 0; 
   virtual int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) = 0;
+  
+  virtual void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recip, int kin) = 0;
     
   virtual void DecNumPreyOrganisms() = 0;
   virtual void DecNumPredOrganisms() = 0;

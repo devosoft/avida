@@ -383,7 +383,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   // If divide method is split, parent will be reset to completely tolerant
   // must remove their intolerance from the group's cached total.
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
       int group_id = parent_organism->GetOpinion().first;
       int org_imm_tolerance = parent_organism->GetPhenotype().CalcToleranceImmigrants();
@@ -599,9 +599,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
-    
     if (target_cells[i] != -1) {
-    
       //@JEB - we may want to pass along some state information from parent to offspring
       if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING)
           || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
@@ -907,7 +905,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
   // Keep track of statistics for organism counts...
   num_organisms++;
-  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
     else num_pred_organisms++;
@@ -1103,7 +1101,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }
   if (!curr_is_barrier) {
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 2) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
         // fail if faced cell has this wall resource
         if (dest_cell_resources[i] > 0) return false;
       }    
@@ -1113,7 +1111,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   int steepest_hill = 0;
   double curr_resistance = 1.0;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && src_cell_resources[i] > 0) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 && src_cell_resources[i] != 0) {
       if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
         curr_resistance = resource_lib.GetResource(i)->GetResistance();
         steepest_hill = i;
@@ -1292,7 +1290,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Update count statistics...
   num_organisms--;
-  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     if (is_prey) num_prey_organisms--;
     else num_pred_organisms--;
   }
@@ -1307,7 +1305,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 	// this organism's genome needs to be split up into fragments
   // and deposited in its cell.  We then also have to add the size of this genome to
   // the HGT resource.
-  if(m_world->GetConfig().ENABLE_HGT.Get()
+  if (m_world->GetConfig().ENABLE_HGT.Get()
 		 && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
     in_cell.AddGenomeFragments(ctx, organism->GetGenome().GetSequence());
   }
@@ -1749,7 +1747,6 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
   switch(m_world->GetConfig().DEMES_COMPETITION_STYLE.Get()) {
     case SELECTION_TYPE_PROPORTIONAL: {
       // Fitness-proportional selection.
-      //
       // Each deme has a probability equal to its fitness / sum(deme fitnesses)
       // of proceeding to the next generation.
       
@@ -1880,10 +1877,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
  8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
  9: 'perf-reactions' ...demes that have performed X number of each task are replicated
  10:'consume-res' ...demes that have consumed a sufficienct amount of resources
- 
- 
  */
-
 void cPopulation::ReplicateDemes(int rep_trigger, cAvidaContext& ctx) 
 {
   assert(GetNumDemes()>1); // Sanity check.
@@ -2086,7 +2080,16 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
     df.WriteRaw(UpdateStr);
   }
   
-  ReplaceDeme(source_deme, deme_array[target_id], ctx); 
+  if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 3) {
+    // hjg - this hack is decidedly ugly. However, the current ReplaceDemes method
+    // does some strange things to support the energy model (such as resetting demes prior
+    // to assessing whether the replication will work) that cause strange behavior as 
+    // part of the germ line sequestration code.
+    ReplaceDemeFlaggedGermline(source_deme, deme_array[target_id], ctx); 
+  } else {
+    ReplaceDeme(source_deme, deme_array[target_id], ctx); 
+  }
+  
 }
 
 /*! ReplaceDeme is a helper method that handles all the different configuration
@@ -2298,6 +2301,149 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
 }
 
+/*! ReplaceDemeFlaggedGermline is a helper method that handles deme replication when the organisms are flagging their own germ line. It is similar to ReplaceDeme, but some events are reordered. (Demes are reset only after we know that the replication will work. In addition, it only supports a small subset of the deme replication options. 
+ */
+void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx2) 
+{
+
+  bool target_successfully_seeded = true;
+  
+  /* Seed deme part... */
+  cRandom& random = m_world->GetRandom();
+  //bool successfully_seeded = true;
+  tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
+  tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
+  
+  // Grab a random org from the set of orgs that have
+  // flagged themselves as part of the germline.
+  tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
+  
+  // Get list of potential founders
+  for (int i = 0; i<source_deme.GetSize(); ++i) {
+    int cellid = source_deme.GetCellID(i);
+    if (cell_array[cellid].IsOccupied()) {
+      cOrganism* o = cell_array[cellid].GetOrganism();
+      if (o->IsGermline()) {
+        potential_founders.Push(o);
+      }
+    }
+  }
+  
+  
+  if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 8) {
+    // pick a random founder...
+    if (potential_founders.GetSize() > 0) {
+      int r = random.GetUInt(potential_founders.GetSize());
+      target_founders.Push(potential_founders[r]);
+    } else {
+      return;
+    }
+  } else {
+    target_founders = potential_founders;
+  }
+  // Stats tracking; pre-replication hook.
+  m_world->GetStats().DemePreReplication(source_deme, target_deme);
+  
+  
+  bool source_deme_resource_reset(true), target_deme_resource_reset(true);
+  switch(m_world->GetConfig().DEMES_RESET_RESOURCES.Get()) {
+    case 0:
+      // reset resource in both demes
+      source_deme_resource_reset = target_deme_resource_reset = true;
+      break;
+    case 1:
+      // reset resource only in target deme
+      source_deme_resource_reset = false;
+      target_deme_resource_reset = true;
+      break;
+    case 2:
+      // do not reset either deme resource
+      source_deme_resource_reset = target_deme_resource_reset = false;
+      break;
+    default:
+      cout << "Undefined value " << m_world->GetConfig().DEMES_RESET_RESOURCES.Get() << " for DEMES_RESET_RESOURCES\n";
+      exit(1);
+  }
+  
+  if (target_successfully_seeded) target_deme.DivideReset(ctx2, source_deme, target_deme_resource_reset);
+  source_deme.DivideReset(ctx2, source_deme, source_deme_resource_reset);
+  
+  
+  target_deme.ClearFounders();
+  target_deme.UpdateStats();
+  target_deme.KillAll(ctx2);
+  std::vector<std::pair<int, std::string> > track_founders;
+  
+  
+  for(int i=0; i<target_founders.GetSize(); i++) {
+    int cellid = DemeSelectInjectionCell(target_deme, i);       
+    
+    // this is the genome we need to use. However, we only need part of it...since it can include an offspring
+    cCPUMemory in_memory_genome = target_founders[i]->GetHardware().GetMemory();
+    
+    // this is the genotype of the organism, which does not reflect any point mutations that have occurred. 
+    // we need to use it to get the right length for the genome
+    cBioGroup* parent_bg = target_founders[i]->GetBioGroup("genotype");
+    Genome mg(parent_bg->GetProperty("genome").AsString());
+    cCPUMemory new_genome(mg.GetSequence());
+
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
+    cAvidaContext ctx(m_world, m_world->GetRandom());
+    
+    if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
+      for(int i=0; i<new_genome.GetSize(); ++i) {
+        if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
+          new_genome[i] = instset.GetRandomInst(ctx);
+        } else {
+          // this line copies the mutations accured as a result of performing tasks to the new genome
+          new_genome[i] = in_memory_genome[i]; 
+          
+        }
+      }
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize() + 1);
+      new_genome.Insert(mut_line, instset.GetRandomInst(ctx));
+    }
+    
+    if ((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
+        && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize());
+      new_genome.Remove(mut_line);
+    }
+    mg.SetSequence(new_genome);
+
+    InjectGenome(cellid, SRC_DEME_REPLICATE, mg, ctx, target_founders[i]->GetLineageLabel()); 
+    
+    
+    // At this point, the cell had better be occupied...
+    assert(GetCell(cellid).IsOccupied());
+    cOrganism * organism = GetCell(cellid).GetOrganism();
+    
+    // For now, just copy the generation...
+    organism->GetPhenotype().SetGeneration(target_founders[i]->GetPhenotype().GetGeneration() );
+    
+    target_deme.AddFounder(organism->GetBioGroup("genotype"), &organism->GetPhenotype());
+
+    track_founders.push_back(make_pair(organism->GetBioGroup("genotype")->GetID(), new_genome.AsString())); 
+    
+    DemePostInjection(target_deme, cell_array[cellid]);
+  }
+  
+  
+  source_deme.ClearTotalResourceAmountConsumed();
+  
+  source_deme.ClearShannonInformationStats();
+  target_deme.ClearShannonInformationStats();
+  
+  // do our post-replication stats tracking.
+  m_world->GetStats().DemePostReplication(source_deme, target_deme);
+  m_world->GetStats().TrackDemeGLSReplication(source_deme.GetID(), target_deme.GetID(), track_founders);
+
+  
+}
 
 /*! Helper method to seed a deme from the given genome.
  If the passed-in deme is populated, all resident organisms are terminated.  The
@@ -2712,7 +2858,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
         int cellid = DemeSelectInjectionCell(target_deme, i);        
-        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(), false);
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), ctx, &target_founders[i]->GetPhenotype(),  target_founders[i]->GetLineageLabel(), false);
        // target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
       }
@@ -2737,7 +2883,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         
         for(int i=0; i<source_founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i);
-          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), ctx, &source_founders[i]->GetPhenotype(), false); 
+          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), ctx, &source_founders[i]->GetPhenotype(), source_founders[i]->GetLineageLabel(), false); 
           source_deme.AddFounder(source_founders[i]->GetBioGroup("genotype"), &source_founders[i]->GetPhenotype());
           DemePostInjection(source_deme, cell_array[cellid]);
         }
@@ -2758,7 +2904,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           int cellid = DemeSelectInjectionCell(source_deme, i);
           //cout << "founder: " << source_founders[i] << endl;
           cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
-          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i], true); 
+          SeedDeme_InjectDemeFounder(cellid, bg, ctx, &source_founder_phenotypes[i], -1, true); 
           DemePostInjection(source_deme, cell_array[cellid]);
         }
         
@@ -2842,7 +2988,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype, bool reset) 
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype, int lineage_label, bool reset) 
 {
   // Mutate the genome?
   if (m_world->GetConfig().DEMES_MUT_ORGS_ON_REPLICATION.Get() == 1 && !reset) {
@@ -2885,12 +3031,13 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvida
      new_genotype->RemoveBioUnit(&unit);
      */
     
-    InjectGenome(_cell_id, SRC_DEME_REPLICATE, mg, ctx); 
-    
+    InjectGenome(_cell_id, SRC_DEME_REPLICATE, mg, ctx, lineage_label); 
+
   } else {
     
-    // phenotype can be NULL
-    InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx); 
+    // phenotype can be NULL    
+    InjectGenome(_cell_id, SRC_DEME_REPLICATE, Genome(bg->GetProperty("genome").AsString()), ctx, lineage_label); 
+
   }
   
   // At this point, the cell had better be occupied...
@@ -3296,7 +3443,8 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme, cAvidaContext& ctx) {
 }
 
 // Print out all statistics about individual demes
-void cPopulation::PrintDemeAllStats(cAvidaContext& ctx) { 
+void cPopulation::PrintDemeAllStats(cAvidaContext& ctx)
+{
   PrintDemeFitness();
   PrintDemeLifeFitness();
   PrintDemeMerit();
@@ -3653,17 +3801,18 @@ void cPopulation::PrintDemeLifeFitness()
   df_life_fit.Endl();
 }
 
-void cPopulation::PrintDemeMerit() {
+void cPopulation::PrintDemeMerit()
+{
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_merit = m_world->GetDataFile("deme_merit.dat");
+  cDataFile& df_merit = m_world->GetDataFile("deme_merit.dat");
   df_merit.WriteComment("Average merits for each deme in population");
   df_merit.WriteTimeStamp();
   df_merit.Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
-    const cDeme & cur_deme = deme_array[deme_id];
+    const cDeme& cur_deme = deme_array[deme_id];
     cDoubleSum single_deme_merit;
     
     for (int i = 0; i < cur_deme.GetSize(); i++) {
@@ -3676,6 +3825,23 @@ void cPopulation::PrintDemeMerit() {
     df_merit.Write(single_deme_merit.Ave(), comment);
   }
   df_merit.Endl();
+}
+
+//@JJB**
+void cPopulation::PrintDemesMeritsData()
+{
+  const int num_demes = deme_array.GetSize();
+  cDataFile& df_merits = m_world->GetDataFile("demes_merits.dat");
+  df_merits.WriteComment("Each deme's current calculated merit");
+  df_merits.WriteTimeStamp();
+  df_merits.Write(m_world->GetStats().GetUpdate(), "Update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    comment.Set("Deme %d", deme_id);
+    df_merits.Write(deme_array[deme_id].CalcCurMerit().GetDouble(), comment);
+  }
+  df_merits.Endl();
 }
 
 void cPopulation::PrintDemeMutationRate() {
@@ -5394,7 +5560,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         new_organism->SetParentFT(forager_type);
         org_survived = (ActivateOrganism(ctx, new_organism, cell_array[cell_id], false));
       }
-      if (load_avatars && org_survived && m_world->GetConfig().USE_AVATARS.Get()) {
+      if (load_avatars && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
         new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
@@ -5533,7 +5699,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
-  if(m_world->GetConfig().USE_AVATARS.Get()) {
+  if(m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     cell_array[cell_id].GetOrganism()->GetOrgInterface().AddPredPreyAV(cell_id);
   }
   if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
@@ -5711,6 +5877,11 @@ void cPopulation::ResetInputs(cAvidaContext& ctx)
     if (cell.IsOccupied()) {
       cell.GetOrganism()->ResetInput();
     }
+  }
+  //@JJB**
+  for (int i = 0; i < GetNumDemes(); i++) {
+    GetDeme(i).ResetInputs(ctx);
+    GetDeme(i).ResetInput();
   }
 }
 
@@ -6757,9 +6928,9 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
       temp_array[1] = make_pair(-1,-1);
       group_intolerances.Set(group_id, temp_array);
       if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
-        if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) group_intolerances_females.Set(group_id, temp_array);
-        else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) group_intolerances_males.Set(group_id, temp_array);
-        else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) group_intolerances_juvs.Set(group_id, temp_array);
+        group_intolerances_females.Set(group_id, temp_array);
+        group_intolerances_males.Set(group_id, temp_array);
+        group_intolerances_juvs.Set(group_id, temp_array);
       }
     }
   }

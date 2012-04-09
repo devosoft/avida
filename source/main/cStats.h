@@ -86,6 +86,17 @@ struct s_inst_circumstances {
   int tol_max;
 }; // @JJB
 
+struct sDonateSpecificCircumstances {
+  int update;
+  int org_id;
+  int cell_id;
+  int recipient_id;
+  int recipient_cell_id;
+  int relatedness;
+  bool recip_is_beggar;
+  int num_donates;
+};
+
 class cStats : public cBioGroupListener, public Data::Provider
 {
 private:
@@ -155,7 +166,8 @@ private:
   tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
   tArray<pair<int,int> > m_is_tolerance_exe_counts;
-  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts; 
+  tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts;
+  tSmartArray<sDonateSpecificCircumstances> m_donate_specific; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
@@ -929,6 +941,7 @@ public:
   void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 
   void PrintToleranceData(const cString& filename); 
+  void PrintDonateSpecificData(const cString& filename);
   void PrintMaleAverageData(const cString& filename);
   void PrintFemaleAverageData(const cString& filename);
   void PrintMaleErrorData(const cString& filename);
@@ -1002,7 +1015,12 @@ public:
 protected:
   movement_pred_ptr_list m_movement_predicates;
   // -------- End movement support --------
-
+  
+  //--------- Donate Specific support---------
+public:
+  void PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int recipient_cell_id, int relatedness, int recip_is_beggar, int num_donates); 
+  void ZeroDonateSpceificInst(); 
+  
   // -------- Tolerance support --------
 public:
   void PushToleranceInstExe(int tol_inst); 
@@ -1023,7 +1041,13 @@ public:
   void PrintDemeReplicationData(const cString& filename);
   //! Print statistics regarding germline sequestration
   void PrintDemeGermlineSequestration(const cString& filename);
-  
+  //! Print germline sequestration for every individual in every deme
+  void PrintDemeOrgGermlineSequestration(const cString& filename);
+  //! Print genotype IDs and genotypes for GLS deme founders
+  void PrintDemeGLSFounders(const cString& filename);
+  //! Track GLS Deme Founder Data
+  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
+  void TrackDemeGLSReplication(int source_deme_id, int target_deme_id,   std::vector<std::pair<int, std::string> > founders);
 
 
 	void PrintDemeTreatableReplicationData(const cString& filename);
@@ -1059,6 +1083,10 @@ public:
 	void PrintDemeReactionDiversityReplicationData(const cString& filename);
   void PrintWinningDeme(const cString& filename);
 
+  void PrintDemesTasksData(const cString& filename); //@JJB**
+  void PrintDemesReactionsData(const cString& filename); //@JJB**
+  void PrintDemesFitnessData(const cString& filename); //@JJB**
+
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
   int GetNumOccupiedDemes() { return m_num_occupied_demes; }
@@ -1077,6 +1105,7 @@ protected:
   std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
   std::deque<double> m_ave_non_germ_mut; 
   std::deque<double> m_ave_germ_size;
+  t_gls_founder_map m_gls_deme_founders; //! Data structure to track the founders of gls demes.
   
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.
@@ -1270,7 +1299,6 @@ protected:
 public:
 	//! Print organism locations.
 	void PrintOrganismLocation(const cString& filename);
-  
   
 private:
   // Initialization

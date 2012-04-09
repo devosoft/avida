@@ -176,6 +176,10 @@ public:
   //! Select a new network link.
   bool NetworkSelect(int x);
 
+  int GetNextDemeInput(cAvidaContext& ctx);
+  void DoDemeInput(int value);
+  void DoDemeOutput(cAvidaContext& ctx, int value);
+
   // -------- HGT support --------
 public:
   //! Container type for fragments used during HGT.
@@ -247,6 +251,9 @@ public:
   void IncNumPredOrganisms();
   
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  
+// --------Donate Specific support ----
+  void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int kin); 
 
 // -------- Avatar support -------- @JJB
 private:

@@ -46,6 +46,8 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
 , m_cell_data(in_cell.m_cell_data)
 , m_spec_state(in_cell.m_spec_state)
 , m_hgt(0)
+, can_input(false)
+, can_output(false)
 {
   // Copy the mutation rates into a new structure
   m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
@@ -73,6 +75,8 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
 		m_deme_id = in_cell.m_deme_id;
 		m_cell_data = in_cell.m_cell_data;
 		m_spec_state = in_cell.m_spec_state;
+        can_input = in_cell.can_input;
+        can_output = in_cell.can_output;
 		
 		// Copy the mutation rates, constructing the structure as necessary
 		if (m_mut_rates == NULL)
@@ -329,7 +333,7 @@ void cPopulationCell::AddOutputAV(cOrganism* org)
   org->SetAVOutIndex(loc);
 }
 
-// Removes the organism from the cell's input avatars
+// Removes the organism from the cell's input avatars (predator)
 void cPopulationCell::RemoveInputAV(cOrganism* org)
 {
   assert(HasInputAV());
@@ -341,7 +345,7 @@ void cPopulationCell::RemoveInputAV(cOrganism* org)
   m_av_inputs.Pop();
 }
 
-// Removes the organism from the cell's output avatars
+// Removes the organism from the cell's output avatars (prey)
 void cPopulationCell::RemoveOutputAV(cOrganism* org)
 {
   assert(HasOutputAV());

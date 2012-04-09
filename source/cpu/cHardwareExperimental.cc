@@ -171,6 +171,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("output", &cHardwareExperimental::Inst_TaskOutput, nInstFlag::STALL, "Output ?BX?"),
     tInstLibEntry<tMethod>("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, nInstFlag::STALL, "Output ?BX?"),
     tInstLibEntry<tMethod>("output-expire", &cHardwareExperimental::Inst_TaskOutputExpire, nInstFlag::STALL, "Output ?BX?, as long as the output has not yet expired"),
+    tInstLibEntry<tMethod>("deme-IO", &cHardwareExperimental::Inst_DemeIO, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
@@ -1256,7 +1257,7 @@ bool cHardwareExperimental::ForkThread()
 bool cHardwareExperimental::ExitThread()
 {
   // Make sure that there is always at least one thread awake...
-  if ((m_threads.GetSize() == 1) || (m_waiting_threads == (m_threads.GetSize() - 1))) return false;
+  if ((m_threads.GetSize() == 1) || (int(m_waiting_threads) == (m_threads.GetSize() - 1))) return false;
   
   // Note the current thread and set the current back one.
   const int kill_thread = m_cur_thread;
@@ -1491,7 +1492,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
 void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (i != cur_thread && !m_threads[i].active && m_threads[i].wait_reg == reg_num) {
+    if (i != cur_thread && !m_threads[i].active && int(m_threads[i].wait_reg) == reg_num) {
       int wait_value = m_threads[i].wait_value;
       int check_value = m_threads[cur_thread].reg[reg_num].value;
       if ((m_threads[i].wait_greater && check_value > wait_value) ||
@@ -1501,7 +1502,6 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
         // Wake up the thread with matched condition
         m_threads[i].active = true;
         m_waiting_threads--;
-        assert(m_waiting_threads >= 0);
         
         // Set destination register to be the check value
         sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
@@ -2022,6 +2022,25 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_DemeIO(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+
+  // Do deme output..
+  m_organism->GetOrgInterface().DoDemeOutput(ctx, reg.value);
+  //m_last_output = m_cycle_count; //**
+
+  // Do deme input..
+  int value_in = m_organism->GetOrgInterface().GetNextDemeInput(ctx);
+  if (value_in != -1) {
+    setInternalValue(reg_used, value_in, true);
+    m_organism->GetOrgInterface().DoDemeInput(value_in);
+  }
+
+  return true;
+}
+
 bool cHardwareExperimental::Inst_MoveHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
@@ -2410,7 +2429,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext& ctx)
     }
   }  
   // Fail to sleep if this is the last thread awake
-  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  if (int(m_waiting_threads) == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2440,7 +2459,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext& ctx)
   }
   
   // Fail to sleep if this is the last thread awake
-  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  if (int(m_waiting_threads) == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2470,7 +2489,7 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext& ctx)
   }
   
   // Fail to sleep if this is the last thread awake
-  if (m_waiting_threads == (m_threads.GetSize() - 1)) return false;
+  if (int(m_waiting_threads) == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -3806,7 +3825,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   int num_fts = 0;
   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
   set <int>::iterator itr;    
-  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
     // ft's may not be sequentially numbered
     int ft_num = abs(prop_target) % num_fts;
@@ -3822,9 +3841,9 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
-  
+
   // return false if predator trying to become prey and this has been disallowed
-  if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
+  if (old_target == -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
   
   // return false if trying to become predator and there are none in the experiment
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
@@ -3839,7 +3858,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
     m_organism->SetForageTarget(prop_target);
   }
   else m_organism->SetForageTarget(prop_target);
-  
+    
   // Set the new target and return the value
   m_organism->RecordFTSet();
   setInternalValue(FindModifiedRegister(rBX), prop_target, false);
@@ -4431,8 +4450,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->SetForageTarget(-2);
         m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->SetForageTarget(-2);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4557,8 +4576,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->SetForageTarget(-2);
         m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->SetForageTarget(-2);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -5011,21 +5030,24 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    if (m_organism->GetForageTarget() != -2) return false;
    // Exit if tolerance is not enabled
    if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-   if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
    // Exit if organism is not in a group
    if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
    // Exit if the instruction is not nop-modified
    if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
    
-   const int tolerance_to_modify = FindModifiedNextRegister(rBX);
-   
-   int toleranceType = -1;
-   if (tolerance_to_modify == rAX) toleranceType = 0;
-   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
-   
-   // Not a recognized register
-   if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(rBX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == rAX) toleranceType = 0;
+    else if (tolerance_to_modify == rBX) toleranceType = 1;
+    else if (tolerance_to_modify == rCX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
    
    // Update the tolerance and store the result in register B
    int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);   
@@ -5048,21 +5070,24 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   if (m_organism->GetForageTarget() != -2) return false;
   // Exit if tolerance is not enabled
   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
   // Exit if organism is not in a group
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
   // Exit if the instruction is not nop-modified
   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
-  const int tolerance_to_modify = FindModifiedRegister(rBX);
-  
-  int toleranceType = -1;
-  if (tolerance_to_modify == rAX) toleranceType = 0;
-  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
-  
-  // Not a recognized register
-  if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(rBX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == rAX) toleranceType = 0;
+    else if (tolerance_to_modify == rBX) toleranceType = 1;
+    else if (tolerance_to_modify == rCX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
   
   // Update the tolerance and store the result in register B
   setInternalValue(rBX, m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx));
@@ -5078,7 +5103,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
   if (m_organism->GetForageTarget() != -2) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
       m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
@@ -5106,7 +5131,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   // If not a predator in a group, return false
   if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
   // If groups are used and tolerances are on...
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
       

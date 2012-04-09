@@ -143,7 +143,11 @@ public:
   //! Rotate to select a new network link.
   bool NetworkRotate(int x) { return false; }
   //! Select a new network link.
-  bool NetworkSelect(int x) { return false; }	
+  bool NetworkSelect(int x) { return false; }
+
+  int GetNextDemeInput(cAvidaContext& ctx) { return -1; }
+  void DoDemeInput(int value) { ; }
+  void DoDemeOutput(cAvidaContext& ctx, int value) { ; }
 
   //! HGT donation (does nothing).
   void DoHGTDonation(cAvidaContext& ctx) { }
@@ -182,6 +186,8 @@ public:
   bool AttemptImmigrateGroup(int group_id, cOrganism* org) { return false; }
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
   int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) { return *(new int(0)); }
+  
+  void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recip, int kin) { ; }
 
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }

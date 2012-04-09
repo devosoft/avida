@@ -131,7 +131,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
       const double partial_ent = (abundance == stats.GetNumCreatures()) ? 0.0 : -(p * Log(p)); 
       entropy += partial_ent;
       
-      if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+      if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
         if (bg->GetLastForagerType() > -2) {
           const double prey_p = ((double) abundance) / (double) stats.GetNumPreyCreatures();
           const double prey_partial_ent = (abundance == stats.GetNumPreyCreatures()) ? 0.0 : -(prey_p * Log(prey_p)); 
@@ -152,7 +152,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetEntropy(entropy);
   stats.SetNumGenotypes(active_count, m_historic.GetSize());
   
-  if(m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     stats.SetPreyEntropy(prey_entropy);
     stats.SetPredEntropy(pred_entropy);
   }
