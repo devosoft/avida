@@ -106,6 +106,9 @@ namespace Avida {
     public:
       ~Genotype();
       
+      static void Initialize();
+      
+      
       // Systematics::Group Interface Methods
       RoleID Role() const;
       ArbiterPtr Arbiter() const;

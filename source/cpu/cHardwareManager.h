@@ -47,6 +47,7 @@ private:
   cWorld* m_world;
   tArray<cInstSet*> m_inst_sets;
   tDictionary<int> m_is_name_map;
+
   
   cHardwareManager(); // @not_implemented
   cHardwareManager(const cHardwareManager&); // @not_implemented
@@ -56,6 +57,10 @@ private:
 public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager();
+  
+  static void Initialize();
+  static void SetupPropertyMap(PropertyMap& props, const Apto::String& inst_set);
+  
   
   bool LoadInstSets(cUserFeedback* feedback = NULL);
   bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, cUserFeedback* feedback = NULL);

@@ -218,7 +218,7 @@ void cAnalyze::LoadSequence(cString cur_string)
   // Setup the genotype...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
   Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)sequence)));
   cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
   
@@ -281,7 +281,7 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu)
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& seq = *mod_seq_p;
 
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
   const int num_lines = base_seq.GetSize();
   double base_fitness = genotype->GetFitness();
   
@@ -370,7 +370,7 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& mod_seq = *mod_seq_p;
 
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
   const int num_lines = base_seq.GetSize();
   double base_fitness = genotype->GetFitness();
   
@@ -507,7 +507,7 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& seq = *mod_seq_p;
   
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
   const int num_lines = base_seq.GetSize();
   
   // Loop through all the lines of code, testing all mutations ...
@@ -613,7 +613,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
   genotype1_mod_seq_p.DynamicCastFrom(genotype1_mod_rep_p);
   InstructionSequence& genotype1_mod_seq = *genotype1_mod_seq_p;
   
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype1_base_genome.Properties().Get("instset").Value())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype1_base_genome.Properties().Get("instset").StringValue())).GetSize();
   const int num_lines = genotype1_base_seq.GetSize();
   double genotype1_base_fitness = genotype1->GetFitness();
   vector<double> genotype1_info(num_lines, 0.0);
@@ -820,7 +820,7 @@ void cAnalyze::LoadFile(cString cur_string)
   // Setup the genome...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
   Genome default_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
   int load_count = 0;
   
@@ -2688,7 +2688,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype* genotype = NULL;
     while ((genotype = batch_it.Next()) != NULL) {
-      if (m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().Get("instset").Value())).GetInstSetName() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
+      if (m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().Get("instset").StringValue())).GetInstSetName() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
       
       const Genome& genome_p = genotype->GetGenome();
       ConstInstructionSequencePtr seq_p;
@@ -3542,7 +3542,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
     double base_fitness = genotype->GetFitness();
 
     tMatrix<double> prob(length_genome, num_insts);
@@ -3590,7 +3590,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   double oo_conditional_entropy = 0.0;
   tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
   const Genome& cur_genome = genotype->GetGenome();
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)cur_genome.Properties().Get("instset").Value())).GetSize();  
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)cur_genome.Properties().Get("instset").StringValue())).GetSize();  
   for (int line = 0; line < length_genome; ++ line) {
     double oneline_entropy = 0.0;
     for (int inst = 0; inst < num_insts; ++ inst) {
@@ -4280,7 +4280,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& mod_seq = *mod_seq_p;
     
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)mod_genome.Properties().Get("instset").Value()));
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)mod_genome.Properties().Get("instset").StringValue()));
     
     if (copy_mut_prob == 0.0 &&
         ins_mut_prob == 0.0 &&
@@ -4525,7 +4525,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& mod_seq = *mod_seq_p;
     
-    Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).ActivateNullInst();
+    Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
     
     // Loop through all the lines of code, testing the removal of each.
     // -2=lethal, -1=detrimental, 0=neutral, 1=beneficial
@@ -4812,7 +4812,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       PropertyMap props;
-      props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome null_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
       cAnalyzeGenotype null_genotype(m_world, null_genome);
       while ((data_command = output_it.Next()) != NULL) {
@@ -4851,7 +4851,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       col_fail_count[i] = 0;
     }
     
-    cInstSet& is = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value()));
+    cInstSet& is = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue()));
     const Instruction null_inst = is.ActivateNullInst();
     
     // Loop through all the lines of code, testing the removal of each.
@@ -5098,7 +5098,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       mod_seq_p.DynamicCastFrom(mod_rep_p);
       InstructionSequence& mod_seq = *mod_seq_p;
       
-      Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).ActivateNullInst();
+      Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
       
       // Create and initialize the modularity matrix
       tMatrix<int> mod_matrix(num_cols, max_line);
@@ -5347,7 +5347,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     
     genotype->Recalculate(m_ctx);
     
-    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).ActivateNullInst();
+    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
     
     tMatrix<bool> task_matrix(num_traits, base_length);
     tArray<int> num_inst(num_traits);  // Number of instructions for each task
@@ -5512,9 +5512,9 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
     }
     
     const Genome& genome = genotype->GetGenome();
-    const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)genome.Properties().Get("instset").Value()));
+    const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)genome.Properties().Get("instset").StringValue()));
     cInstSet* modify_inst_set = new cInstSet(original_inst_set);
-    cString isname = cString(genotype->GetGenome().Properties().Get("instset").Value()) + ":analyze_redundancy_by_inst_failure";
+    cString isname = cString(genotype->GetGenome().Properties().Get("instset").StringValue()) + ":analyze_redundancy_by_inst_failure";
     if (!m_world->GetHardwareManager().RegisterInstSet(isname, modify_inst_set)) {
       delete modify_inst_set;
       modify_inst_set = &m_world->GetHardwareManager().GetInstSet(isname);
@@ -5529,7 +5529,7 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
       if (original_inst_set.GetProbFail(inst) > 0) num_pr_fail_insts++;
       modify_inst_set->SetProbFail(inst, 0);
     }
-    genotype->GetGenome().Properties().Get("instset").SetValue((const char*)isname);
+    genotype->GetGenome().Properties().SetValue("instset", (const char*)isname);
   
     // Avoid unintentional use with no instructions having a chance of failure
     if (num_pr_fail_insts == 0) {
@@ -5643,7 +5643,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value()));
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue()));
     const int num_insts = inst_set.GetSize();
     
     // Headers...
@@ -5704,7 +5704,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     tArray<double> col_fitness(num_insts + 1);
     col_fitness.SetAll(0.0);
     
-    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).ActivateNullInst();
+    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
     
     cString color_string;  // For coloring cells...
     
@@ -6398,7 +6398,7 @@ void cAnalyze::CommandMutagenize(cString)
     InstructionSequencePtr seq_p;
     seq_p.DynamicCastFrom(cur_genome.Representation());
     InstructionSequence& cur_seq = *seq_p;
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet((const char*)cur_genome.Properties().Get("instset").Value());
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet((const char*)cur_genome.Properties().Get("instset").StringValue());
 
     int line_num = m_ctx.GetRandom().GetInt(cur_seq.GetSize());
 
@@ -6923,7 +6923,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       // Determine the fitness of the current sequence...
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       PropertyMap props;
-      props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome test_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)test_sequence)));
       cCPUTestInfo test_info;
       testcpu->TestGenome(m_ctx, test_info, test_genome);
@@ -6952,7 +6952,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     for (int i = 0; i <= total_diffs; i++) {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       PropertyMap props;
-      props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome max_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)max_sequence[i])));
       cAnalyzeGenotype max_genotype(m_world, max_genome);
       max_genotype.Recalculate(m_ctx);
@@ -7090,7 +7090,7 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    if (genotype->GetGenome().Properties().Get("instset").Value() != isname) continue;
+    if (genotype->GetGenome().Properties().Get("instset").StringValue() != isname) continue;
     
     // Setup for counting...
     tArray<int> inst_bin(num_insts);
@@ -7178,7 +7178,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    if (genotype->GetGenome().Properties().Get("instset").Value() != isname) continue;
+    if (genotype->GetGenome().Properties().Get("instset").StringValue() != isname) continue;
     
     num_orgs++; 
     
@@ -7436,7 +7436,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
     
     // Loop through all the lines of code, testing all mutations...
     tArray<double> test_fitness(num_insts);
@@ -7625,7 +7625,7 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
 
     // run throught sites in genome
     for (int site1 = 0; site1 < max_line; site1++) {
@@ -7829,7 +7829,7 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").Value())).GetSize();    
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();    
     /*
      * 
      *  ONE SITE CALCULATIONS
@@ -8242,7 +8242,7 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
   
   if (genotype == NULL) return;
   int seq_length = genotype->GetLength();
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().Get("instset").Value())).GetSize();  
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().Get("instset").StringValue())).GetSize();  
   tMatrix<int> inst_stat(seq_length, num_insts);
   
   // Initializing inst_stat ...
@@ -8409,7 +8409,7 @@ void cAnalyze::MutationRevert(cString cur_string)
 					
           const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
           PropertyMap props;
-          props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)is.GetInstSetName())));
+          cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
           Genome rev_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)reverted)));
 					cAnalyzeGenotype new_genotype(m_world, rev_genome);  //Get likely fitness
 					new_genotype.Recalculate(m_ctx, &test_info, NULL, 50);
@@ -9009,7 +9009,7 @@ void cAnalyze::BatchCompete(cString cur_string)
     child_seq_p.DynamicCastFrom(child_rep_p);
     InstructionSequence& child_seq = *child_seq_p;
     
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)child_genome.Properties().Get("instset").Value()));
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)child_genome.Properties().Get("instset").StringValue()));
     
     if (copy_mut_prob > 0.0) {
       for (int n = 0; n < child_seq.GetSize(); n++) {

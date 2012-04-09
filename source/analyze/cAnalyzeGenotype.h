@@ -393,7 +393,7 @@ public:
   const cString & GetTaskOrder() const { return task_order; }
   cString GetTaskList() const;
 
-  cString GetInstSet() const { return cString((const char*)m_genome.Properties().Get("instset").Value()); }
+  cString GetInstSet() const { return cString((const char*)m_genome.Properties().Get("instset").StringValue()); }
   cString GetSequence() const;
   void SetSequence(cString _seq);
   cString GetHTMLSequence() const;

@@ -27,6 +27,7 @@
 #include "cEnvironment.h"
 #include "cInstLib.h"
 #include "cInstSet.h"
+#include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -1123,7 +1124,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 
   InstructionSequencePtr offspring_seq(new InstructionSequence(m_mem_array[mem_space_used]));
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
 
   m_organism->OffspringGenome() = offspring;

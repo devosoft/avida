@@ -1053,7 +1053,7 @@ public:
         assert(seq);
         
         cString name;
-        if ((bool)Apto::StrAs(genotype->Properties().Get("threshold"))) name = genotype->Properties().Get("name").Value();
+        if ((bool)Apto::StrAs(genotype->Properties().Get("threshold"))) name = genotype->Properties().Get("name").StringValue();
         else name.Set("%03d-no_name-u%i-c%i", seq->GetSize(), update, orgdata->GetCellID());
 
         

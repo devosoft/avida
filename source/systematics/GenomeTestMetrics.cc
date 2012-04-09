@@ -37,7 +37,7 @@ Avida::Systematics::GenomeTestMetrics::GenomeTestMetrics(cWorld* world, cAvidaCo
   Apto::SmartPtr<cTestCPU> testcpu(world->GetHardwareManager().CreateTestCPU(ctx));
   
   cCPUTestInfo test_info;
-  testcpu->TestGenome(ctx, test_info, Genome(g->Properties().Get("genome").Value()));
+  testcpu->TestGenome(ctx, test_info, Genome(g->Properties().Get("genome").StringValue()));
   
   m_is_viable = test_info.IsViable();
   

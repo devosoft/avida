@@ -1682,7 +1682,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   // to the new organism
   InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
     
   // Make sure it is an exact copy at this point (before divide mutations) if required
@@ -1758,7 +1758,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   // to the new organism
   InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
 
   m_organism->OffspringGenome() = offspring;
@@ -1854,7 +1854,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   // to the new organism
   InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
 
   m_organism->OffspringGenome() = offspring;
@@ -1945,7 +1945,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   // to the new organism
   InstructionSequencePtr offspring_seq(new InstructionSequence(m_memory.Crop(div_point, div_point + child_size)));
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)m_inst_set->GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
 
   m_organism->OffspringGenome() = offspring;

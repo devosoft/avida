@@ -29,11 +29,50 @@ Avida::PropertyTypeID Avida::Property::Null = "null";
 
 Avida::Property::~Property() { ; }
 
-Apto::String Avida::Property::Value() const { return ""; }
-bool Avida::Property::SetValue(const Apto::String&) { return false; }
 
-Apto::String Avida::StringProperty::Value() const { return m_value; }
+// StringProperty
+// --------------------------------------------------------------------------------------------------------------  
+
+Apto::String Avida::StringProperty::StringValue() const { return m_value; }
+int Avida::StringProperty::IntValue() const { return Apto::StrAs(m_value); }
+double Avida::StringProperty::DoubleValue() const { return Apto::StrAs(m_value); }
+
 bool Avida::StringProperty::SetValue(const Apto::String& value) { m_value = value; return true; }
+bool Avida::StringProperty::SetValue(const int value) { m_value = Apto::AsStr(value); return true; }
+bool Avida::StringProperty::SetValue(const double value) { m_value = Apto::AsStr(value); return true; }
+
+bool Avida::StringProperty::isEqual(const Property& rhs) const { return dynamic_cast<const StringProperty&>(rhs).m_value == m_value; }
+
+
+
+// IntProperty
+// --------------------------------------------------------------------------------------------------------------  
+
+Apto::String Avida::IntProperty::StringValue() const { return Apto::AsStr(m_value); }
+int Avida::IntProperty::IntValue() const { return m_value; }
+double Avida::IntProperty::DoubleValue() const { return m_value; }
+
+bool Avida::IntProperty::SetValue(const Apto::String& value) { m_value = Apto::StrAs(value); return true; }
+bool Avida::IntProperty::SetValue(const int value) { m_value = value; return true; }
+bool Avida::IntProperty::SetValue(const double value) { m_value = value; return true; }
+
+bool Avida::IntProperty::isEqual(const Property& rhs) const { return dynamic_cast<const IntProperty&>(rhs).m_value == m_value; }
+
+
+
+// DoubleProperty
+// --------------------------------------------------------------------------------------------------------------  
+
+Apto::String Avida::DoubleProperty::StringValue() const { return Apto::AsStr(m_value); }
+int Avida::DoubleProperty::IntValue() const { return m_value; }
+double Avida::DoubleProperty::DoubleValue() const { return m_value; }
+
+bool Avida::DoubleProperty::SetValue(const Apto::String& value) { m_value = Apto::StrAs(value); return true; }
+bool Avida::DoubleProperty::SetValue(const int value) { m_value = value; return true; }
+bool Avida::DoubleProperty::SetValue(const double value) { m_value = value; return true; }
+
+bool Avida::DoubleProperty::isEqual(const Property& rhs) const { return dynamic_cast<const DoubleProperty&>(rhs).m_value == m_value; }
+
 
 
 const Avida::PropertyTypeID Avida::PropertyTraits<bool>::Type = "bool";
@@ -42,7 +81,41 @@ const Avida::PropertyTypeID Avida::PropertyTraits<double>::Type = "float";
 const Avida::PropertyTypeID Avida::PropertyTraits<const char*>::Type = "string";
 const Avida::PropertyTypeID Avida::PropertyTraits<Apto::String>::Type = "string";
 
-int Avida::PropertyMap::s_prop_map_count = 0;
+
+Avida::PropertyDescriptionMap Avida::PropertyMap::s_null_desc_map;
+Avida::PropertyPtr Avida::PropertyMap::s_default_prop(new StringProperty("", Property::Null, s_null_desc_map, (const char*)""));
+
+
+bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const Apto::String& prop_value)
+{
+  PropertyPtr prop;
+  if (m_prop_map.Get(p_id, prop)) {
+    return prop->SetValue(prop_value);
+  }
+  return false;
+}
+
+
+bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const int prop_value)
+{
+  PropertyPtr prop;
+  if (m_prop_map.Get(p_id, prop)) {
+    return prop->SetValue(prop_value);
+  }
+  return false;
+}
+
+
+bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const double prop_value)
+{
+  PropertyPtr prop;
+  if (m_prop_map.Get(p_id, prop)) {
+    return prop->SetValue(prop_value);
+  }
+  return false;
+}
+
+
 
 bool Avida::PropertyMap::operator==(const PropertyMap& p) const
 {
@@ -59,7 +132,7 @@ bool Avida::PropertyMap::operator==(const PropertyMap& p) const
   // Compare values
   it = m_prop_map.Keys();
   while (it.Next()) {
-    if (m_prop_map.GetWithDefault(*it.Get(), m_default)->Value() != p.Get(*it.Get()).Value()) return false;
+    if (*m_prop_map.GetWithDefault(*it.Get(), s_default_prop) != p.Get(*it.Get())) return false;
   }
 
   return true;

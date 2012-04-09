@@ -157,7 +157,7 @@ public:
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
     PropertyMap props;
-    props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+    cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
     Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(m_length)));
     InstructionSequencePtr seq_p;
     seq_p.DynamicCastFrom(genome.Representation());
@@ -210,7 +210,7 @@ public:
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       PropertyMap props;
-      props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(m_length + 1)));
       InstructionSequencePtr seq_p;
       seq_p.DynamicCastFrom(genome.Representation());
@@ -407,7 +407,7 @@ public:
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       PropertyMap props;
-      props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
@@ -471,7 +471,7 @@ public:
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       PropertyMap props;
-      props.Set(PropertyPtr(new StringProperty("instset","Instruction Set", (const char*)is.GetInstSetName())));
+      cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
@@ -1179,7 +1179,7 @@ public:
       // count the number of target instructions in the genome
       ConstInstructionSequencePtr seq;
       seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-      cString instset(cell.GetOrganism()->GetGenome().Properties().Get("instset").Value());
+      cString instset(cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue());
 			count = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
@@ -1242,7 +1242,7 @@ public:
 			// get the number of instructions of each type.
       ConstInstructionSequencePtr seq;
       seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-      cString instset((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset").Value());
+      cString instset((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue());
 			count1 = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst1));
 			count2 = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst2));
 			
@@ -1322,7 +1322,7 @@ public:
 				// count the number of target instructions in the genome
         ConstInstructionSequencePtr seq;
         seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-				int count = seq->CountInst(m_world->GetHardwareManager().GetInstSet((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset").Value()).GetInst(m_inst));
+				int count = seq->CountInst(m_world->GetHardwareManager().GetInstSet((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue()).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1427,7 +1427,7 @@ public:
         seq.DynamicCastFrom(mg.Representation());
 				const InstructionSequence& genome = *seq;
 				const double genomeSize = static_cast<double>(genome.GetSize());
-				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").Value()).GetInst(m_inst));
+				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue()).GetInst(m_inst));
 				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));

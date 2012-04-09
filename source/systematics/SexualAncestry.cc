@@ -42,7 +42,7 @@ Avida::Systematics::SexualAncestry::SexualAncestry(GroupPtr g)
   
   ArbiterPtr arbiter = g->Arbiter();
   Apto::Array<GroupPtr> parents;
-  Apto::String parent_str(g->Properties().Get("parents").Value());
+  Apto::String parent_str(g->Properties().Get("parents").StringValue());
   while (parent_str.GetSize()) {
     parents.Push(arbiter->Group(Apto::StrAs(parent_str.Pop(','))));
   }

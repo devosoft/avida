@@ -26,11 +26,14 @@
 
 #include "apto/platform.h"
 #include "avida/core/GlobalObject.h"
+#include "avida/private/systematics/Genotype.h"
 
 #include "AvidaTools.h"
 #include "cActionLibrary.h"
 #include "cAnalyzeGenotype.h"
+#include "cHardwareManager.h"
 #include "cModularityAnalysis.h"
+#include "cOrganism.h"
 
 #include <csignal>
 
@@ -52,5 +55,9 @@ void Avida::Initialize()
   
   cActionLibrary::Initialize();
   cAnalyzeGenotype::Initialize();
+  cHardwareManager::Initialize();
   cModularityAnalysis::Initialize();
+  cOrganism::Initialize();
+  
+  Systematics::Genotype::Initialize();
 }

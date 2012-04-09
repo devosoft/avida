@@ -48,10 +48,45 @@ using namespace std;
 using namespace Avida;
 
 
+// Referenced external properties
+static Apto::String s_ext_prop_name_instset("instset");
+
+
+// Internal cOrganism Properties
+static PropertyDescriptionMap s_prop_desc_map;
+
+static Apto::String s_prop_name_genome("genome");
+static Apto::String s_prop_name_src_transmission_type("src_transmission_type");
+static Apto::String s_prop_name_age("age");
+static Apto::String s_prop_name_generation("generation");
+static Apto::String s_prop_name_last_copied_size("last_copied_size");
+static Apto::String s_prop_name_last_executed_size("last_exectuted_size");
+static Apto::String s_prop_name_last_gestation_time("last_gestation_time");
+static Apto::String s_prop_name_last_metabolic_rate("last_metabolic_rate");
+static Apto::String s_prop_name_last_fitness("last_fitness");
+
+
+void cOrganism::Initialize()
+{
+#define DEFINE_PROP(NAME, DESC) s_prop_desc_map.Set(s_prop_name_ ## NAME, DESC);
+  DEFINE_PROP(genome, "Genome");
+  DEFINE_PROP(src_transmission_type, "Source Transmission Type");
+  DEFINE_PROP(age, "Age");
+  DEFINE_PROP(generation, "Generation");
+  DEFINE_PROP(last_copied_size, "Last Copied Size");
+  DEFINE_PROP(last_executed_size, "Last Exectuted Size");
+  DEFINE_PROP(last_gestation_time, "Last Gestation Time");
+  DEFINE_PROP(last_metabolic_rate, "Last Metabolic Rage");
+  DEFINE_PROP(last_fitness, "Last Fitness");
+#undef DEFINE_PROP
+}
+
+
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").Value()).GetNumNops())
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").StringValue()).GetNumNops())
   , m_src(src)
+  , m_prop_map(NULL)
   , m_initial_genome(genome)
   , m_interface(NULL)
   , m_lineage_label(-1)
@@ -105,7 +140,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 void cOrganism::initialize(cAvidaContext& ctx)
 {
   m_phenotype.SetInstSetSize(m_hardware->GetInstSet().GetSize());
-  const_cast<Genome&>(m_initial_genome).Properties().Get("instset").SetValue((const char*)m_hardware->GetInstSet().GetInstSetName());
+  const_cast<Genome&>(m_initial_genome).Properties().SetValue(s_ext_prop_name_instset,(const char*)m_hardware->GetInstSet().GetInstSetName());
   
   if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     m_max_executed = m_world->GetConfig().AGE_LIMIT.Get();
@@ -133,34 +168,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
 	}
 
 
-#define ADD_FUN_PROP(NAME, DESC, TYPE, VAL) m_prop_map.Set(PropertyPtr(new FunctorProperty<TYPE>(NAME, DESC, FunctorProperty<TYPE>::VAL)));
-#define ADD_REF_PROP(NAME, DESC, TYPE, VAL) m_prop_map.Set(PropertyPtr(new ReferenceProperty<TYPE>(NAME, DESC, const_cast<TYPE&>(VAL))));
-#define ADD_STR_PROP(NAME, DESC, VAL) m_prop_map.Set(PropertyPtr(new StringProperty(NAME, DESC, VAL)));
-  ADD_FUN_PROP("genome", "Genome", Apto::String, GetFunctor(&m_initial_genome, &Genome::AsString));
-  ADD_STR_PROP("src_transmission_type", "Source Transmission Type", (int)m_src.transmission_type); 
-  
-  ADD_FUN_PROP("age", "Age", int, GetFunctor(&m_phenotype, &cPhenotype::GetAge));
-  ADD_FUN_PROP("generation", "Generation", int, GetFunctor(&m_phenotype, &cPhenotype::GetGeneration));
-  ADD_FUN_PROP("last_copied_size", "Average Copied Size", double, GetFunctor(&m_phenotype, &cPhenotype::GetCopiedSize));
-  ADD_FUN_PROP("last_executed_size", "Average Executed Size", double, GetFunctor(&m_phenotype, &cPhenotype::GetExecutedSize));
-  ADD_FUN_PROP("last_gestation_time", "Average Gestation Time", double, GetFunctor(&m_phenotype, &cPhenotype::GetGestationTime));
-  ADD_FUN_PROP("last_metabolic_rate", "Metabolic Rate", double, GetFunctor(&m_phenotype, &cPhenotype::GetLastMerit));
-  ADD_FUN_PROP("last_fitness", "Fitness", double, GetFunctor(&m_phenotype, &cPhenotype::GetFitness));
-  
-  const cEnvironment& env = m_world->GetEnvironment();
-  Apto::Functor<int, Apto::TL::Create<int> > getLastTaskFun(&m_phenotype, &cPhenotype::GetLastCountForTask);
-  for(int i = 0; i < env.GetNumTasks(); i++) {
-    Apto::String task_id("environment.triggers.");
-    task_id += env.GetTask(i).GetName();
-    task_id += ".count";
-
-    m_prop_map.Set(PropertyPtr(new FunctorProperty<int>(task_id, (const char*)env.GetTask(i).GetName(), Apto::BindFirst(getLastTaskFun, i))));
-	}
-
-  
-#undef ADD_FUN_PROP
-#undef ADD_REF_PROP
-#undef ADD_STR_PROP
 }
 
 
@@ -170,10 +177,51 @@ cOrganism::~cOrganism()
   assert(m_is_running == false);
   delete m_hardware;
   delete m_interface;
+  delete m_prop_map;
+  
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
   if(m_neighborhood) delete m_neighborhood;
 }
+
+void cOrganism::setupPropertyMap() const
+{
+  assert(m_prop_map == NULL);
+  
+  m_prop_map = new PropertyMap;
+  
+#define ADD_FUN_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new FunctorProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, FunctorProperty<TYPE>::VAL)));
+#define ADD_REF_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new ReferenceProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, const_cast<TYPE&>(VAL))));
+#define ADD_STR_PROP(NAME, VAL) m_prop_map->Define(PropertyPtr(new StringProperty(s_prop_name_ ## NAME, s_prop_desc_map, VAL)));
+  ADD_FUN_PROP(genome, Apto::String, GetFunctor(&m_initial_genome, &Genome::AsString));
+  ADD_STR_PROP(src_transmission_type, (int)m_src.transmission_type);
+  
+  ADD_FUN_PROP(age, int, GetFunctor(&m_phenotype, &cPhenotype::GetAge));
+  ADD_FUN_PROP(generation, int, GetFunctor(&m_phenotype, &cPhenotype::GetGeneration));
+  ADD_FUN_PROP(last_copied_size, double, GetFunctor(&m_phenotype, &cPhenotype::GetCopiedSize));
+  ADD_FUN_PROP(last_executed_size, double, GetFunctor(&m_phenotype, &cPhenotype::GetExecutedSize));
+  ADD_FUN_PROP(last_gestation_time, double, GetFunctor(&m_phenotype, &cPhenotype::GetGestationTime));
+  ADD_FUN_PROP(last_metabolic_rate, double, GetFunctor(&m_phenotype, &cPhenotype::GetLastMerit));
+  ADD_FUN_PROP(last_fitness, double, GetFunctor(&m_phenotype, &cPhenotype::GetFitness));
+  
+  const cEnvironment& env = m_world->GetEnvironment();
+  Apto::Functor<int, Apto::TL::Create<int> > getLastTaskFun(&m_phenotype, &cPhenotype::GetLastCountForTask);
+  for(int i = 0; i < env.GetNumTasks(); i++) {
+    Apto::String task_id("environment.triggers.");
+    task_id += env.GetTask(i).GetName();
+    task_id += ".count";
+    
+    m_prop_map->Define(PropertyPtr(new FunctorProperty<int>(task_id, s_prop_desc_map, Apto::BindFirst(getLastTaskFun, i))));
+	}
+  
+  
+#undef ADD_FUN_PROP
+#undef ADD_REF_PROP
+#undef ADD_STR_PROP
+}
+
+const PropertyMap& cOrganism::Properties() const { if (!m_prop_map) setupPropertyMap(); return *m_prop_map; }
+
 
 void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface)
 {

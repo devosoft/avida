@@ -108,6 +108,7 @@ namespace Avida {
   typedef Apto::SmartPtr<const PropertyIDSet> ConstPropertyIDSetPtr;
   typedef Apto::SmartPtr<PropertyMap> PropertyMapPtr;
   typedef Apto::SmartPtr<const PropertyMap> ConstPropertyMapPtr;
+  typedef Apto::Map<PropertyID, Apto::String, Apto::DefaultHashBTree, Apto::ImplicitDefault> PropertyDescriptionMap;
   
   typedef Apto::String WorldFacetID;
   typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;

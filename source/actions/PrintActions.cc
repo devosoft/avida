@@ -406,7 +406,7 @@ public:
     const int num_cells = population.GetSize();
     for (int x = 0; x < num_cells; x++) {
       cPopulationCell& cell = population.GetCell(x);
-      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().Properties().Get("instset").Value() == is.GetInstSetName()) {
+      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue() == is.GetInstSetName()) {
         // access this CPU's code block
         cCPUMemory& cpu_mem = cell.GetOrganism()->GetHardware().GetMemory();
         const int mem_size = cpu_mem.GetSize();
@@ -751,7 +751,7 @@ public:
     Systematics::GroupPtr bg = it->Next();
     if (bg) {
       cString filename(m_filename);
-      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->Properties().Get("name").Value());
+      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->Properties().Get("name").StringValue());
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
       testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate());
       delete testcpu;
@@ -812,7 +812,7 @@ public:
           }
         }
         cString filename(m_filename);
-        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").Value());
+        if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         
@@ -877,7 +877,7 @@ public:
           }
         }
         cString filename(m_filename);
-        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").Value());
+        if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
         
@@ -1011,7 +1011,7 @@ public:
     // determine the name of the maximum fitness genotype
     cString max_f_name;
     if ((bool)Apto::StrAs(max_f_genotype->Properties().Get("threshold")))
-      max_f_name = max_f_genotype->Properties().Get("name").Value();
+      max_f_name = max_f_genotype->Properties().Get("name").StringValue();
     else {
       // we put the current update into the name, so that it becomes unique.
       Genome gen(max_f_genotype->Properties().Get("genome"));
@@ -1430,8 +1430,8 @@ public:
       cCPUTestInfo test_info;
       double fitness = 0.0;
       double parent_fitness = 1.0;
-      if ((*git)->Properties().Get("parents").Value() != "") {
-        cStringList parents((const char*)(*git)->Properties().Get("parents").Value(), ',');
+      if ((*git)->Properties().Get("parents").StringValue() != "") {
+        cStringList parents((const char*)(*git)->Properties().Get("parents").StringValue(), ',');
 
         Systematics::GroupPtr pbg = Systematics::Manager::Of(world->GetNewWorld())->ArbiterForRole("genotype")->Group(parents.Pop().AsInt());
         parent_fitness = Apto::StrAs(pbg->Properties().Get("fitness"));
@@ -1458,7 +1458,7 @@ public:
 
       //Update the histogram
       if (parent_fitness <= 0.0) {
-        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->Properties().Get("parents").Value());
+        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->Properties().Get("parents").StringValue());
         ctx.Driver().Abort(Avida::INTERNAL_ERROR);
       }
 
@@ -1993,7 +1993,7 @@ public:
       while (it->Next()) {
         Systematics::GroupPtr bg = it->Get();
         Apto::SmartPtr<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(Genome(bg->Properties().Get("genome")), m_num_trials, test_info, m_world, ctx));
-        PrintPPG(fot, ppgen, bg->ID(), (const char*)bg->Properties().Get("parents").Value());
+        PrintPPG(fot, ppgen, bg->ID(), (const char*)bg->Properties().Get("parents").StringValue());
       }
       m_world->GetDataFileManager().Remove(this_path);
     }
@@ -2388,7 +2388,7 @@ public:
       sum_fitness += (double)Apto::StrAs(bg->Properties().Get("fitness")) * num_orgs;
       sum_num_organisms += num_orgs;
 
-      df.Write(bg->Properties().Get("name").Value(), "Genotype Name");
+      df.Write(bg->Properties().Get("name").StringValue(), "Genotype Name");
       df.Write((double)Apto::StrAs(bg->Properties().Get("fitness")), "Fitness");
       df.Write(num_orgs, "Abundance");
       df.Write(InstructionSequence::FindHammingDistance(*r_seq, *seq), "Hamming distance to reference");
@@ -2398,7 +2398,7 @@ public:
       // save into archive
       if (m_save_genotypes) {
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->Properties().Get("name").Value())));
+        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->Properties().Get("name").StringValue())));
         delete testcpu;
       }
 
@@ -2640,7 +2640,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     PropertyMap mg_props;
-    mg_props.Set(PropertyPtr(new Property("instset", "Instruction Set", (const char*)m_inst_set)));
+    cHardwareManager::SetupPropertyMap(mg_props, (const char*)m_inst_set);
     Genome mg(m_world->GetHardwareManager().GetInstSet(m_inst_set).GetHardwareType(), mg_props, InstructionSequencePtr(new InstructionSequence));
     const int num_inst = m_world->GetHardwareManager().GetInstSet(m_inst_set).GetSize();
     const int update = m_world->GetStats().GetUpdate();
@@ -4351,25 +4351,25 @@ public:
     Systematics::GroupPtr bg = it->Next();
     if (!bg) return;
     
-    df.Write(bg->Properties().Get("ave_metabolic_rate").Value(),       "Average Merit of the Dominant Genotype");
-    df.Write(bg->Properties().Get("ave_gestation_time").Value(),   "Average Gestation Time of the Dominant Genotype");
-    df.Write(bg->Properties().Get("ave_fitness").Value(),     "Average Fitness of the Dominant Genotype");
-    df.Write(bg->Properties().Get("ave_repro_rate").Value(),  "Repro Rate?");
+    df.Write(bg->Properties().Get("ave_metabolic_rate").DoubleValue(),       "Average Merit of the Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_gestation_time").DoubleValue(),   "Average Gestation Time of the Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_fitness").DoubleValue(),     "Average Fitness of the Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_repro_rate").DoubleValue(),  "Repro Rate?");
     
     Genome gen(bg->Properties().Get("genome"));
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(gen.Representation());
     df.Write(seq->GetSize(),        "Size of Dominant Genotype");
-    df.Write(bg->Properties().Get("ave_copy_size").Value(), "Copied Size of Dominant Genotype");
-    df.Write(bg->Properties().Get("ave_exe_size").Value(), "Executed Size of Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_copy_size").DoubleValue(), "Copied Size of Dominant Genotype");
+    df.Write(bg->Properties().Get("ave_exe_size").DoubleValue(), "Executed Size of Dominant Genotype");
     df.Write(bg->NumUnits(),   "Abundance of Dominant Genotype");
-    df.Write(bg->Properties().Get("last_births").Value(),      "Number of Births");
-    df.Write(bg->Properties().Get("last_breed_true").Value(),  "Number of Dominant Breed True?");
+    df.Write(bg->Properties().Get("last_births").IntValue(),      "Number of Births");
+    df.Write(bg->Properties().Get("last_breed_true").IntValue(),  "Number of Dominant Breed True?");
     df.Write(bg->Depth(),  "Dominant Gene Depth");
-    df.Write(bg->Properties().Get("last_breed_in").Value(),    "Dominant Breed In");
-    df.Write(bg->Properties().Get("max_fitness").Value(),     "Max Fitness?");
+    df.Write(bg->Properties().Get("last_breed_in").IntValue(),    "Dominant Breed In");
+    df.Write(bg->Properties().Get("max_fitness").DoubleValue(),     "Max Fitness?");
     df.Write(bg->ID(), "Genotype ID of Dominant Genotype");
-    df.Write(bg->Properties().Get("name").Value(),        "Name of the Dominant Genotype");
+    df.Write(bg->Properties().Get("name").StringValue(),        "Name of the Dominant Genotype");
     df.Endl();    
   }
 };

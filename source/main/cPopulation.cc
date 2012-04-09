@@ -776,7 +776,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   // Pre-check target hardware
   const cHardwareBase& hw = target_organism->GetHardware();
   if (hw.GetType() != parent->UnitGenome().HardwareType() ||
-      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get("instset").Value() ||
+      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get("instset").StringValue() ||
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   //Handle host specific injection
@@ -1008,7 +1008,7 @@ void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
 {
   const int target = in_organism->GetParentFT();
   const int id = in_organism->GetID();
-  const char* genotype_name = in_organism->SystematicsGroup("genotype")->Properties().Get("name").Value();
+  const char* genotype_name = in_organism->SystematicsGroup("genotype")->Properties().Get("name").StringValue();
   cString filename =  cStringUtil::Stringf("minitraces/%d-ft%d-%s.trc", id, target, genotype_name);
   if (in_organism->HasOpinion()) {
     filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, in_organism->GetOpinion().first, target, genotype_name);
@@ -2028,7 +2028,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     Genome next_germ(source_deme.GetGermline().GetLatest());
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(next_germ.Representation());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)next_germ.Properties().Get("instset").Value());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)next_germ.Properties().Get("instset").StringValue());
 
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i = 0; i < seq->GetSize(); ++i) {
@@ -2082,7 +2082,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").Value());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue());
 
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i < new_genome.GetSize(); ++i) {
@@ -2718,7 +2718,7 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").Value());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {
@@ -3471,7 +3471,7 @@ void cPopulation::PrintDemeInstructions()
       for (int i = 0; i < cur_deme.GetSize(); i++) {
         int cur_cell = cur_deme.GetCellID(i);
         if (!cell_array[cur_cell].IsOccupied()) continue;
-        if (cell_array[cur_cell].GetOrganism()->GetGenome().Properties().Get("instset").Value() != inst_set) continue;
+        if (cell_array[cur_cell].GetOrganism()->GetGenome().Properties().Get("instset").StringValue() != inst_set) continue;
         cPhenotype& phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
         
         for (int j = 0; j < num_inst; j++) single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
@@ -4504,7 +4504,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
 
-    Apto::String inst_set = organism->GetGenome().Properties().Get("instset").Value();
+    Apto::String inst_set = organism->GetGenome().Properties().Get("instset").StringValue();
     Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)inst_set);
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
@@ -4655,7 +4655,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPreyCreatureAge().Add(phenotype.GetAge());
       stats.SumPreyGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
+      Apto::Array<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -4667,7 +4667,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPredCreatureAge().Add(phenotype.GetAge());
       stats.SumPredGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").Value());
+      Apto::Array<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5319,7 +5319,7 @@ void cPopulation::InjectParasite(const cString& label, const InstructionSequence
 
   GeneticRepresentationPtr rep(new InstructionSequence(injected_code));
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset","Instruction Set",(const char*)target_organism->GetHardware().GetInstSet().GetInstSetName())));
+  cHardwareManager::SetupPropertyMap(props, (const char*)target_organism->GetHardware().GetInstSet().GetInstSetName());
   Genome mg(target_organism->GetHardware().GetType(), props, rep);
   Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));
   

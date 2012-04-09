@@ -400,7 +400,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   Genome mod_genome(m_genome);
   
   // Setup a NULL instruction needed for testing
-  const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)mod_genome.Properties().Get("instset").Value())).ActivateNullInst();
+  const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)mod_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
   
   // If we are keeping track of the specific effects on tasks from the
   // knockouts, setup the matrix.
@@ -702,7 +702,8 @@ void cAnalyzeGenotype::SetParent2ID(int _parent2_id)
 
 void cAnalyzeGenotype::SetInstSet(const cString& inst_set)
 {
-  m_genome.Properties().Get("instset").SetValue((const char*)inst_set);
+  static const Apto::String prop_instset("instset");
+  m_genome.Properties().SetValue(prop_instset, (const char*)inst_set);
 }
 
 
@@ -735,7 +736,7 @@ cString cAnalyzeGenotype::DescInstExe(int _inst_id) const
   if(_inst_id > inst_executed_counts.GetSize() || _inst_id < 0) return "";
   
   cString desc("# Times ");
-  desc += m_world->GetHardwareManager().GetInstSet(cString((const char*)m_genome.Properties().Get("instset").Value())).GetName(_inst_id);
+  desc += m_world->GetHardwareManager().GetInstSet(cString((const char*)m_genome.Properties().Get("instset").StringValue())).GetName(_inst_id);
   desc += " Executed";
   return desc;
 }

@@ -64,7 +64,8 @@ private:
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   Systematics::Source m_src;
-  PropertyMap m_prop_map;
+  mutable PropertyMap* m_prop_map;
+  
   
   const Genome m_initial_genome;         // Initial genome; can never be changed!
   tArray<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
@@ -110,11 +111,14 @@ public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src);
   ~cOrganism();
   
+  static void Initialize();
+  
+  
   // --------  Systematics::Unit Methods  --------
   Systematics::Source UnitSource() const { return m_src; }
   const Genome& UnitGenome() const { return m_initial_genome; }
   
-  const PropertyMap& Properties() const { return m_prop_map; }
+  const PropertyMap& Properties() const;
   
 
   // --------  Support Methods  --------
@@ -680,6 +684,8 @@ public:
 	// -------- Internal Support Methods --------
 private:
   void initialize(cAvidaContext& ctx);
+  
+  void setupPropertyMap() const;
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);

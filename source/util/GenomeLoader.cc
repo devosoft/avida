@@ -92,6 +92,6 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
   if (!success) return GenomePtr();
   
   PropertyMap props;
-  props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", (const char*)inst_set)));
+  cHardwareManager::SetupPropertyMap(props, (const char*)inst_set);
   return GenomePtr(new Genome(hw_type, props, new_seq));
 }

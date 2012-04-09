@@ -38,6 +38,20 @@
 
 using namespace Avida;
 
+static Apto::String s_prop_id_instset("instset");
+static PropertyDescriptionMap s_prop_desc_map;
+
+void cHardwareManager::Initialize()
+{
+  s_prop_desc_map.Set(s_prop_id_instset, "Instruction Set");
+}
+
+void cHardwareManager::SetupPropertyMap(PropertyMap& props, const Apto::String& instset)
+{
+  props.Define(PropertyPtr(new StringProperty(s_prop_id_instset, s_prop_desc_map, instset)));
+}
+
+
 
 cHardwareManager::cHardwareManager(cWorld* world)
 : m_world(world)
@@ -210,7 +224,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  int inst_set_id = m_is_name_map.GetWithDefault((const char*)mg.Properties().Get("instset").Value(), -1);
+  int inst_set_id = m_is_name_map.GetWithDefault((const char*)mg.Properties().Get("instset").StringValue(), -1);
   if (inst_set_id == -1) return NULL; // No valid instruction set found
   
   cInstSet* inst_set = m_inst_sets[inst_set_id];

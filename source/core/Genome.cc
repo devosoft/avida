@@ -46,7 +46,7 @@ Avida::Genome::Genome(HardwareTypeID hw, const PropertyMap& props, GeneticRepres
   
   // Copy over properties
   PropertyMap::PropertyIDIterator it = props.PropertyIDs();
-  while (it.Next()) m_props.Set(PropertyPtr(new StringProperty(props.Get(*it.Get()))));
+  while (it.Next()) m_props.Define(PropertyPtr(new StringProperty(props.Get(*it.Get()))));
 }
 
 Avida::Genome::Genome(const Apto::String& genome_str)
@@ -54,7 +54,7 @@ Avida::Genome::Genome(const Apto::String& genome_str)
   // @TODO - unpack genome string more generally
   Apto::String str(genome_str);
   m_hw_type = Apto::StrAs(str.Pop(','));
-  m_props.Set(PropertyPtr(new StringProperty("instset", "Instruction Set", str.Pop(','))));
+  cHardwareManager::SetupPropertyMap(m_props, str.Pop(','));
   m_representation = GeneticRepresentationPtr(new InstructionSequence(str));
 }
 
@@ -62,14 +62,14 @@ Avida::Genome::Genome(const Genome& genome)
 : m_hw_type(genome.m_hw_type), m_representation(genome.m_representation->Clone())
 {
   PropertyMap::PropertyIDIterator it = genome.m_props.PropertyIDs();
-  while (it.Next()) m_props.Set(PropertyPtr(new StringProperty(genome.m_props.Get(*it.Get())))); 
+  while (it.Next()) m_props.Define(PropertyPtr(new StringProperty(genome.m_props.Get(*it.Get()))));
 }
 
 
 Apto::String Avida::Genome::AsString() const
 {
   // @TODO - generate genome string more generally
-  return Apto::FormatStr("%d,%s,%s", m_hw_type, (const char*)m_props.Get("instset").Value(), (const char*)m_representation->AsString());
+  return Apto::FormatStr("%d,%s,%s", m_hw_type, (const char*)m_props.Get("instset").StringValue(), (const char*)m_representation->AsString());
   return "";
 }
 
@@ -92,7 +92,7 @@ Avida::Genome& Avida::Genome::operator=(const Genome& genome)
   
   // @TODO - should clear internal properties first
   PropertyMap::PropertyIDIterator it = genome.m_props.PropertyIDs();
-  while (it.Next()) m_props.Set(PropertyPtr(new StringProperty(genome.m_props.Get(*it.Get()))));
+  while (it.Next()) m_props.Define(PropertyPtr(new StringProperty(genome.m_props.Get(*it.Get()))));
 
   m_representation = genome.m_representation->Clone();
   
@@ -117,7 +117,7 @@ bool Avida::Genome::LegacySave(void* dfp) const
 {
   cDataFile& df = *static_cast<cDataFile*>(dfp);
   df.Write(m_hw_type, "Hardware Type ID", "hw_type");
-  df.Write(m_props.Get("instset").Value(), "Inst Set Name" , "inst_set");
+  df.Write(m_props.Get("instset").StringValue(), "Inst Set Name" , "inst_set");
   df.Write(m_representation->AsString(), "Genome Sequence", "sequence");
   return false;
 }

@@ -271,7 +271,7 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;
         m_color_count[mapcolor->color + 4]++;
-        m_scale_labels[mapcolor->color + 4].label = bg->Properties().Get("name").Value();
+        m_scale_labels[mapcolor->color + 4].label = bg->Properties().Get("name").StringValue();
       } else {
         m_color_grid[i] = -1;
         m_color_count[3]++;
