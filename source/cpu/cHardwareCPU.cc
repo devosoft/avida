@@ -270,7 +270,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-beggar-kin",&cHardwareCPU::Inst_IfFacedBeggarAndKin, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-kin-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndNeedResource, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-kin-beggar-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource, nInstFlag::STALL),
-
+    tInstLibEntry<tMethod>("if-kin-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -4137,8 +4138,6 @@ bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
     if (res_before >= 1)
     {   
       target->AddToRBin (resource, 1);
-      
-      bool is_kin = false;
       cBioGroup* bg = m_organism->GetBioGroup("genotype");
       if (bg) {
         cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
@@ -4399,6 +4398,121 @@ bool cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource(cAvidaContext& ctx)
   return true;  
 }
 
+bool cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;
+  
+  //check beg flag
+  bool is_beggar = neighbor->IsBeggar(); 
+  
+  //'needs' resource
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  
+  // default to sibs, grandchild, grandparent
+  int gen_dist = 2;
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    gen_dist = GetRegister(FindModifiedRegister(REG_BX));
+    // Cousins if high
+    if (gen_dist > 4) gen_dist = 4;
+    // Parent/child if low
+    else if (gen_dist < 1) gen_dist = 1;
+  }
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  if (is_kin && needs_resource && is_beggar)
+  {
+    cOrganism* target = NULL;
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+      double res_before = m_organism->GetRBin(resource);
+      int kin = 0;
+      if (res_before >= 1)
+      {   
+        target->AddToRBin (resource, 1);
+    
+        cBioGroup* bg = m_organism->GetBioGroup("genotype");
+        if (bg) {
+          cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+          if (!sa) {
+            sa = new cSexualAncestry(bg);
+            bg->AttachData(sa);
+          }
+          cBioGroup* nbg = target->GetBioGroup("genotype");
+          assert(nbg);
+          kin = sa->GetPhyloDistance(nbg);
+        }
+        m_organism->GetPhenotype().IncDonates();
+        m_organism->GetOrgInterface().PushDonateSpecInstExe(ctx, target, kin);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor =m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead())  return false;  
+  
+  bool is_beggar = neighbor->IsBeggar();
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  if (is_beggar && needs_resource) 
+  {
+    cOrganism* target = NULL;
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+      double res_before = m_organism->GetRBin(resource);
+      int kin = 0;
+      if (res_before >= 1)
+      {   
+        target->AddToRBin (resource, 1);
+        
+        bool is_kin = false;
+        cBioGroup* bg = m_organism->GetBioGroup("genotype");
+        if (bg) {
+          cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+          if (!sa) {
+            sa = new cSexualAncestry(bg);
+            bg->AttachData(sa);
+          }
+          cBioGroup* nbg = target->GetBioGroup("genotype");
+          assert(nbg);
+          kin = sa->GetPhyloDistance(nbg);
+        }
+        m_organism->GetPhenotype().IncDonates();
+        m_organism->GetOrgInterface().PushDonateSpecInstExe(ctx, target, kin);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+}
 bool cHardwareCPU::Inst_SetBeggar(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
