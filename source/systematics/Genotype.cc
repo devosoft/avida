@@ -35,6 +35,13 @@
 #include "tDictionary.h"
 
 
+static Apto::String s_unit_prop_name_last_copied_size("last_copied_size");
+static Apto::String s_unit_prop_name_last_executed_size("last_executed_size");
+static Apto::String s_unit_prop_name_last_gestation_time("last_gestation_time");
+static Apto::String s_unit_prop_name_last_metabolic_rate("last_metabolic_rate");
+static Apto::String s_unit_prop_name_last_fitness("last_fitness");
+
+
 static Avida::PropertyDescriptionMap s_prop_desc_map;
 
 static Apto::String s_prop_name_genome("genome");
@@ -132,7 +139,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   , m_last_birth_cell(0)
   , m_last_group_id(-1)
   , m_last_forager_type(-1)
-  , m_task_counts(mgr->EnvironmentActionTriggerIDs().GetSize())
+  , m_task_counts(mgr->NumEnvironmentActionTriggers())
   , m_prop_map(NULL)
 {
   AddActiveReference();
@@ -147,20 +154,16 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
       if (i > 0) m_parent_str += ",";
       m_parent_str += Apto::AsStr(m_parents[i]->ID());
       
-      m_copied_size.Add(p->Properties().Get("ave_copy_size"));
-      m_exe_size.Add(p->Properties().Get("ave_exe_size"));
-      m_gestation_time.Add(p->Properties().Get("ave_gestation_time"));
-      m_repro_rate.Add(p->Properties().Get("ave_repro_rate"));
-      m_merit.Add(p->Properties().Get("ave_metabolic_rate"));
-      m_fitness.Add(p->Properties().Get("ave_fitness"));
+      m_copied_size.Add(p->Properties().Get(s_prop_name_ave_copy_size));
+      m_exe_size.Add(p->Properties().Get(s_prop_name_ave_exe_size));
+      m_gestation_time.Add(p->Properties().Get(s_prop_name_ave_gestation_time));
+      m_repro_rate.Add(p->Properties().Get(s_prop_name_ave_repro_rate));
+      m_merit.Add(p->Properties().Get(s_prop_name_ave_metabolic_rate));
+      m_fitness.Add(p->Properties().Get(s_prop_name_ave_fitness));
       
       // Collect all relevant action trigger counts
-      for (int i = 0; i < m_mgr->EnvironmentActionTriggerIDs().GetSize(); i++) {
-        PropertyID prop_id("environment.triggers.");
-        prop_id += m_mgr->EnvironmentActionTriggerIDs()[i];
-        prop_id += ".average";
-        
-        m_task_counts[i].Add(static_cast<int>(p->Properties().Get(prop_id)));
+      for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {
+        m_task_counts[i].Add(static_cast<int>(p->Properties().Get(m_mgr->EnvironmentActionTriggerAverageIDs()[i])));
       }
     }
   }
@@ -191,7 +194,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
 , m_last_birth_cell(0)
 , m_last_group_id(-1)
 , m_last_forager_type(-1)
-, m_task_counts(mgr->EnvironmentActionTriggerIDs().GetSize())
+, m_task_counts(mgr->NumEnvironmentActionTriggers())
 , m_prop_map(NULL)
 {
   const tDictionary<cString>& props = *static_cast<const tDictionary<cString>*>(prop_p);
@@ -291,20 +294,18 @@ void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
     m_provisional_stats = false;
   }
   
-  m_copied_size.Add(u->Properties().Get("last_copied_size"));
-  m_exe_size.Add(u->Properties().Get("last_executed_size"));
-  m_gestation_time.Add(u->Properties().Get("last_gestation_time"));
-  m_repro_rate.Add(1.0 / static_cast<double>(u->Properties().Get("last_gestation_time")));
-  m_merit.Add(u->Properties().Get("last_metabolic_rate"));
-  m_fitness.Add(u->Properties().Get("last_fitness"));
+  m_copied_size.Add(u->Properties().Get(s_unit_prop_name_last_copied_size));
+  m_exe_size.Add(u->Properties().Get(s_unit_prop_name_last_executed_size));
+  
+  double last_gestation_time = u->Properties().Get(s_unit_prop_name_last_gestation_time);
+  m_gestation_time.Add(last_gestation_time);
+  m_repro_rate.Add(1.0 / last_gestation_time);
+  m_merit.Add(u->Properties().Get(s_unit_prop_name_last_metabolic_rate));
+  m_fitness.Add(u->Properties().Get(s_unit_prop_name_last_fitness));
 
   // Collect all relevant action trigger counts
-  for (int i = 0; i < m_mgr->EnvironmentActionTriggerIDs().GetSize(); i++) {
-    PropertyID prop_id("environment.triggers.");
-    prop_id += m_mgr->EnvironmentActionTriggerIDs()[i];
-    prop_id += ".count";
-    
-    m_task_counts[i].Add(static_cast<int>(u->Properties().Get(prop_id)));
+  for (int i = 0; i < m_mgr->EnvironmentActionTriggerCountIDs().GetSize(); i++) {
+    m_task_counts[i].Add(static_cast<int>(u->Properties().Get(m_mgr->EnvironmentActionTriggerCountIDs()[i])));
   }
 }
 
@@ -523,11 +524,8 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_REF_PROP(last_forager_type, int, m_last_forager_type);
   
   // Collect all relevant action trigger counts
-  for (int i = 0; i < m_mgr->EnvironmentActionTriggerIDs().GetSize(); i++) {
-    PropertyID prop_id("environment.triggers.");
-    prop_id += m_mgr->EnvironmentActionTriggerIDs()[i];
-    prop_id += ".average";
-    m_prop_map->Define(PropertyPtr(new FunctorProperty<double>(prop_id, s_prop_desc_map, FunctorProperty<double>::GetFunctor(&m_task_counts[i], &cIntSum::Average))));
+  for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {
+    m_prop_map->Define(PropertyPtr(new FunctorProperty<double>(m_mgr->EnvironmentActionTriggerAverageIDs()[i], s_prop_desc_map, FunctorProperty<double>::GetFunctor(&m_task_counts[i], &cIntSum::Average))));
   }
   
 #undef ADD_FUN_PROP

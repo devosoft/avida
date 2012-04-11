@@ -50,10 +50,12 @@ Avida::Systematics::GenotypeArbiter::GenotypeArbiter(World* world, int threshold
 {
   Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(world);
   Avida::Environment::ConstActionTriggerIDSetPtr trigger_ids = env->GetActionTriggerIDs();
-  m_env_action_ids.Resize(trigger_ids->GetSize());
+  m_env_action_average.Resize(trigger_ids->GetSize());
+  m_env_action_count.Resize(trigger_ids->GetSize());
   int idx = 0;
   for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next(); idx++) {
-    m_env_action_ids[idx] = *it.Get();
+    m_env_action_average[idx] = Apto::FormatStr("environment.triggers.%s.average", (const char*)*it.Get());
+    m_env_action_count[idx] = Apto::FormatStr("environment.triggers.%s.count", (const char*)*it.Get());
   }
 }
 

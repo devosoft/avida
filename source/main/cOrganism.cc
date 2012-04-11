@@ -206,12 +206,8 @@ void cOrganism::setupPropertyMap() const
   
   const cEnvironment& env = m_world->GetEnvironment();
   Apto::Functor<int, Apto::TL::Create<int> > getLastTaskFun(&m_phenotype, &cPhenotype::GetLastCountForTask);
-  for(int i = 0; i < env.GetNumTasks(); i++) {
-    Apto::String task_id("environment.triggers.");
-    task_id += env.GetTask(i).GetName();
-    task_id += ".count";
-    
-    m_prop_map->Define(PropertyPtr(new FunctorProperty<int>(task_id, s_prop_desc_map, Apto::BindFirst(getLastTaskFun, i))));
+  for(int i = 0; i < env.GetNumTasks(); i++) {    
+    m_prop_map->Define(PropertyPtr(new FunctorProperty<int>(env.GetTask(i).CountPropertyID(), s_prop_desc_map, Apto::BindFirst(getLastTaskFun, i))));
 	}
   
   

@@ -23,12 +23,10 @@
 #ifndef cTaskEntry_h
 #define cTaskEntry_h
 
-#ifndef cArgContainer_h
+#include "apto/core.h"
+
 #include "cArgContainer.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
 
 class cTaskLib;
 class cTaskContext;
@@ -44,11 +42,15 @@ private:
   int m_id;
   tTaskTest m_test_fun;
   cArgContainer* m_args;
+  Apto::String m_prop_id_ave;
+  Apto::String m_prop_id_count;
 
 public:
   cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest fun, cArgContainer* args)
     : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(fun), m_args(args)
   {
+    m_prop_id_ave = Apto::FormatStr("environment.triggers.%s.average", (const char*)name);
+    m_prop_id_count = Apto::FormatStr("environment.triggers.%s.count", (const char*)name);
   }
   ~cTaskEntry()
   {
@@ -59,6 +61,10 @@ public:
   const cString& GetDesc() const { return m_desc; }
   int GetID() const { return m_id; }
   tTaskTest GetTestFun() const { return m_test_fun; }
+  
+  const Apto::String& AveragePropertyID() const { return m_prop_id_ave; }
+  const Apto::String& CountPropertyID() const { return m_prop_id_count; }
+  
   
   bool HasArguments() const { return (m_args != NULL); }
   cArgContainer& GetArguments() const { return *m_args; }

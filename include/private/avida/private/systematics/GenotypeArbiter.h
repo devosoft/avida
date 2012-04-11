@@ -99,7 +99,8 @@ namespace Avida {
       
       int m_dom_id;
       
-      Apto::Array<Environment::ActionTriggerID> m_env_action_ids;
+      Apto::Array<PropertyID> m_env_action_average;
+      Apto::Array<PropertyID> m_env_action_count;
       
 
       struct ProvidedData
@@ -144,7 +145,9 @@ namespace Avida {
       GenotypePtr ClassifyNewUnit(UnitPtr bu, ConstGroupMembershipPtr parents, const ClassificationHints* hints = NULL);
       void AdjustGenotype(GenotypePtr genotype, int old_size, int new_size);
       
-      inline const Apto::Array<Environment::ActionTriggerID>& EnvironmentActionTriggerIDs() const { return m_env_action_ids; }
+      inline int NumEnvironmentActionTriggers() const { return m_env_action_count.GetSize(); }
+      inline const Apto::Array<PropertyID>& EnvironmentActionTriggerAverageIDs() const { return m_env_action_average; }
+      inline const Apto::Array<PropertyID>& EnvironmentActionTriggerCountIDs() const { return m_env_action_count; }
       
       void PrintListStatus();
       

@@ -362,12 +362,10 @@ void cStats::setupProvidedData()
     )
   );
   for(int i = 0; i < task_names.GetSize(); i++) {
-    Apto::String task_id("core.environment.triggers.");
-    task_id += env.GetTask(i).GetName();
-    task_id += ".organisms";
+    Apto::String task_id(Apto::FormatStr("core.environment.triggers.%s.organisms", (const char*)env.GetTask(i).GetName()));
     Apto::String task_desc(task_names[i]);
 
-    m_provided_data[task_id] = ProvidedData(task_desc, Apto::BindFirst(taskLastCount, i));\
+    m_provided_data[task_id] = ProvidedData(task_desc, Apto::BindFirst(taskLastCount, i));
     mgr->Register(task_id, activate);
 	}
 
