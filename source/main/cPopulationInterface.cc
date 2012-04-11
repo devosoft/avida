@@ -2126,7 +2126,7 @@ tArray<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {
-    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellAVs();
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellOutputAVs();
   }
   tArray<cOrganism*> null_array(0, NULL);
   return null_array;

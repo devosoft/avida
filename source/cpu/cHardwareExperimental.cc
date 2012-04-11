@@ -3821,23 +3821,6 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   assert(m_organism != 0);
   int prop_target = GetRegister(FindModifiedRegister(rBX));
   
-  // a little mod help...can't set to -1, that's for juevniles only
-  int num_fts = 0;
-  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-  set <int>::iterator itr;    
-  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
-    // ft's may not be sequentially numbered
-    int ft_num = abs(prop_target) % num_fts;
-    itr = fts_avail.begin();
-    for (int i = 0; i < ft_num; i++) itr++;
-    prop_target = *itr;
-  }
-  
-  // make sure we use a valid (resource) target
-  // -2 target means setting to predator; -1 (nothing) is default
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
@@ -3851,6 +3834,23 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
+  // a little mod help...can't set to -1, that's for juevniles onl...so only exception to mod help is -2
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
+    int num_fts = 0;
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;    
+    for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+    // ft's may not be sequentially numbered
+    int ft_num = abs(prop_target) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    prop_target = *itr;
+  }
+
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator
+  // if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_use_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
@@ -4410,10 +4410,12 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     cOrganism* target = NULL;
     if (!m_use_avatar) { 
       target = m_organism->GetOrgInterface().GetNeighbor();
-      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
     }
     else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() == -2) return false;
+
     if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
@@ -4477,7 +4479,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
@@ -4495,13 +4496,13 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     
     const int target_reg = FindModifiedRegister(rBX);
     int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
-    
+
     // a little mod help...and allow pred to target juveniles
-    int num_fts = 0;
-    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-    set <int>::iterator itr;    
-    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
     if (!m_world->GetEnvironment().IsTargetID(target_org_type) && target_org_type != -1) {
+      int num_fts = 0;
+      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+      set <int>::iterator itr;    
+      for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
       // ft's may not be sequentially numbered
       int ft_num = abs(target_org_type) % num_fts;
       itr = fts_avail.begin();
@@ -4509,12 +4510,14 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       target_org_type = *itr;
     }
     
+    if (target_org_type == -2) return false;
+    
     cOrganism* target = NULL; 
     if (!m_use_avatar) { 
       target = m_organism->GetOrgInterface().GetNeighbor();
       if (target_org_type != target->GetForageTarget()) return false;
       // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+      if (target->GetForageTarget() == -2) return false;
     }    
     else if (m_use_avatar == 2) {
       const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
