@@ -9809,12 +9809,16 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
     //return false if org setting opinion to current one (avoid paying costs for not switching)
     if (opinion == prop_group_id) return false;
 
-    // A random chance for failure to join group based on config, if failed return true for resource cost.
-    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+    // A random chance for failure to join group based on config.
+    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
       int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-      double prob_failure = (double) percent_failure / 100.0;
+      double prob_failure = abs((double) percent_failure / 100.0);
       double rand = m_world->GetRandom().GetDouble();
-      if (rand <= prob_failure) return true;
+      if (rand <= prob_failure && percent_failure > 0) return true;
+      else if (rand <= prob_failure && percent_failure < 0) {
+        m_organism->Die(ctx);
+        return true;
+      }
     }
 
     // If tolerances are on the org must pass immigration chance @JJB
@@ -9836,7 +9840,6 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
     opinion = m_organism->GetOpinion().first;	
     m_organism->JoinGroup(opinion);
   }
-
   return true;
 }
 
@@ -9859,7 +9862,11 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
 
   // There must be more than the org's current group and the 0 group, which is skipped.
-  const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  int num_groups = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetGroupIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) num_groups++; 
+
   if (num_groups <= 2) return false;
 
   // If not nop-modified, fails to execute.
@@ -9870,12 +9877,16 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   // If no group change
   if (reg_value == 0) return false;
 
-  // A random chance for failure to join group based on config, if failed return true for resource cost.
-  if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+  // A random chance for failure to join group based on config.
+  if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
     int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-    double prob_failure = (double) percent_failure / 100.0;
+    double prob_failure = abs((double) percent_failure / 100.0);
     double rand = m_world->GetRandom().GetDouble();
-    if (rand <= prob_failure) return true;
+    if (rand <= prob_failure && percent_failure > 0) return true;
+    else if (rand <= prob_failure && percent_failure < 0) {
+      m_organism->Die(ctx);
+      return true;
+    }
   }
   
   int opinion = m_organism->GetOpinion().first;
