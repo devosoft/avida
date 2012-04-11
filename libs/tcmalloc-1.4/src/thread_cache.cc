@@ -158,8 +158,7 @@ void* ThreadCache::FetchFromCentralCache(size_t cl, size_t byte_size) {
 
   const int num_to_move = min<int>(list->max_length(), batch_size);
   void *start, *end;
-  int fetch_count = Static::central_cache()[cl].RemoveRange(
-      &start, &end, num_to_move);
+  int fetch_count = Static::central_cache()[cl].RemoveRange(&start, &end, num_to_move);
 
   ASSERT((start == NULL) == (fetch_count == 0));
   if (--fetch_count >= 0) {
@@ -173,14 +172,12 @@ void* ThreadCache::FetchFromCentralCache(size_t cl, size_t byte_size) {
   if (static_cast<int>(list->max_length()) < batch_size) {
     list->set_max_length(list->max_length() + 1);
   } else {
-    // Don't let the list get too long.  In 32 bit builds, the length
-    // is represented by a 16 bit int, so we need to watch out for
-    // integer overflow.
-    int new_length = min<int>(list->max_length() + batch_size,
-                              kMaxDynamicFreeListLength);
-    // The list's max_length must always be a multiple of batch_size,
-    // and kMaxDynamicFreeListLength is not necessarily a multiple
-    // of batch_size.
+    // Don't let the list get too long.  In 32 bit builds, the length is represented by a 16 bit int, so we need to watch out
+    // for integer overflow.
+    int new_length = min<int>(list->max_length() + batch_size, kMaxDynamicFreeListLength);
+    
+    // The list's max_length must always be a multiple of batch_size, and kMaxDynamicFreeListLength is not necessarily a
+    // multiple of batch_size.
     new_length -= new_length % batch_size;
     ASSERT(new_length % batch_size == 0);
     list->set_max_length(new_length);

@@ -633,7 +633,8 @@ static inline ThreadCache* GetCacheIfPresent() {
 
 // This lets you call back to a given function pointer if ptr is invalid.
 // It is used primarily by windows code which wants a specialized callback.
-inline void do_free_with_callback(void* ptr, void (*invalid_free_fn)(void*)) {
+inline void do_free_with_callback(void* ptr, void (*invalid_free_fn)(void*))
+{
   if (ptr == NULL) return;
   ASSERT(Static::pageheap() != NULL);  // Should not call free() before malloc()
   const PageID p = reinterpret_cast<uintptr_t>(ptr) >> kPageShift;

@@ -89,120 +89,110 @@ static const size_t kNumClasses = 61;
 // want this big to avoid locking the central free-list too often.  It
 // should not hurt to make this list somewhat big because the
 // scavenging code will shrink it down when its contents are not in use.
-static const int kMaxDynamicFreeListLength = 8192;
+static const int kMaxDynamicFreeListLength = 65536; // was 8192
 
 static const Length kMaxValidPages = (~static_cast<Length>(0)) >> kPageShift;
 
 namespace tcmalloc {
 
-// Convert byte size into pages.  This won't overflow, but may return
-// an unreasonably large value if bytes is huge enough.
-inline Length pages(size_t bytes) {
-  return (bytes >> kPageShift) +
-      ((bytes & (kPageSize - 1)) > 0 ? 1 : 0);
-}
+  // Convert byte size into pages.  This won't overflow, but may return
+  // an unreasonably large value if bytes is huge enough.
+  inline Length pages(size_t bytes) { return (bytes >> kPageShift) + ((bytes & (kPageSize - 1)) > 0 ? 1 : 0); }
 
-// Size-class information + mapping
-class SizeMap {
- private:
-  // Number of objects to move between a per-thread list and a central
-  // list in one shot.  We want this to be not too small so we can
-  // amortize the lock overhead for accessing the central list.  Making
-  // it too big may temporarily cause unnecessary memory wastage in the
-  // per-thread free list until the scavenger cleans up the list.
-  int num_objects_to_move_[kNumClasses];
+  // Size-class information + mapping
+  class SizeMap
+  {
+  private:
+    // Number of objects to move between a per-thread list and a central
+    // list in one shot.  We want this to be not too small so we can
+    // amortize the lock overhead for accessing the central list.  Making
+    // it too big may temporarily cause unnecessary memory wastage in the
+    // per-thread free list until the scavenger cleans up the list.
+    int num_objects_to_move_[kNumClasses];
 
-  //-------------------------------------------------------------------
-  // Mapping from size to size_class and vice versa
-  //-------------------------------------------------------------------
+    //-------------------------------------------------------------------
+    // Mapping from size to size_class and vice versa
+    //-------------------------------------------------------------------
 
-  // Sizes <= 1024 have an alignment >= 8.  So for such sizes we have an
-  // array indexed by ceil(size/8).  Sizes > 1024 have an alignment >= 128.
-  // So for these larger sizes we have an array indexed by ceil(size/128).
-  //
-  // We flatten both logical arrays into one physical array and use
-  // arithmetic to compute an appropriate index.  The constants used by
-  // ClassIndex() were selected to make the flattening work.
-  //
-  // Examples:
-  //   Size       Expression                      Index
-  //   -------------------------------------------------------
-  //   0          (0 + 7) / 8                     0
-  //   1          (1 + 7) / 8                     1
-  //   ...
-  //   1024       (1024 + 7) / 8                  128
-  //   1025       (1025 + 127 + (120<<7)) / 128   129
-  //   ...
-  //   32768      (32768 + 127 + (120<<7)) / 128  376
-  static const int kMaxSmallSize = 1024;
-  unsigned char class_array_[377];
-  
-  // Compute index of the class_array[] entry for a given size
-  static inline int ClassIndex(int s) {
-    ASSERT(s <= static_cast<int>(kMaxSize));
-    const bool big = (s > kMaxSmallSize);
-    const int add_amount = big ? (127 + (120<<7)) : 7;
-    const int shift_amount = big ? 7 : 3;
-    return (s + add_amount) >> shift_amount;
-  }
+    // Sizes <= 1024 have an alignment >= 8.  So for such sizes we have an
+    // array indexed by ceil(size/8).  Sizes > 1024 have an alignment >= 128.
+    // So for these larger sizes we have an array indexed by ceil(size/128).
+    //
+    // We flatten both logical arrays into one physical array and use
+    // arithmetic to compute an appropriate index.  The constants used by
+    // ClassIndex() were selected to make the flattening work.
+    //
+    // Examples:
+    //   Size       Expression                      Index
+    //   -------------------------------------------------------
+    //   0          (0 + 7) / 8                     0
+    //   1          (1 + 7) / 8                     1
+    //   ...
+    //   1024       (1024 + 7) / 8                  128
+    //   1025       (1025 + 127 + (120<<7)) / 128   129
+    //   ...
+    //   32768      (32768 + 127 + (120<<7)) / 128  376
+    static const int kMaxSmallSize = 1024;
+    unsigned char class_array_[377];
+    
+    // Compute index of the class_array[] entry for a given size
+    static inline int ClassIndex(int s) {
+      ASSERT(s <= static_cast<int>(kMaxSize));
+      const bool big = (s > kMaxSmallSize);
+      const int add_amount = big ? (127 + (120<<7)) : 7;
+      const int shift_amount = big ? 7 : 3;
+      return (s + add_amount) >> shift_amount;
+    }
 
-  int NumMoveSize(size_t size);
+    int NumMoveSize(size_t size);
 
-  // Mapping from size class to max size storable in that class
-  size_t class_to_size_[kNumClasses];
+    // Mapping from size class to max size storable in that class
+    size_t class_to_size_[kNumClasses];
 
-  // Mapping from size class to number of pages to allocate at a time
-  size_t class_to_pages_[kNumClasses];
+    // Mapping from size class to number of pages to allocate at a time
+    size_t class_to_pages_[kNumClasses];
 
- public:
-  // Constructor should do nothing since we rely on explicit Init()
-  // call, which may or may not be called before the constructor runs.
-  SizeMap() { }
+   public:
+    // Constructor should do nothing since we rely on explicit Init()
+    // call, which may or may not be called before the constructor runs.
+    SizeMap() { }
 
-  // Initialize the mapping arrays
-  void Init();
+    // Initialize the mapping arrays
+    void Init();
 
-  inline unsigned int SizeClass(int size) {
-    return class_array_[ClassIndex(size)];
-  }
+    inline unsigned int SizeClass(int size) {
+      return class_array_[ClassIndex(size)];
+    }
 
-  // Get the byte-size for a specified class
-  inline size_t ByteSizeForClass(size_t cl) {
-    return class_to_size_[cl];
-  }
+    // Get the byte-size for a specified class
+    inline size_t ByteSizeForClass(size_t cl) { return class_to_size_[cl]; }
 
-  // Mapping from size class to max size storable in that class
-  inline size_t class_to_size(size_t cl) {
-    return class_to_size_[cl];
-  }
+    // Mapping from size class to max size storable in that class
+    inline size_t class_to_size(size_t cl) { return class_to_size_[cl]; }
 
-  // Mapping from size class to number of pages to allocate at a time
-  inline size_t class_to_pages(size_t cl) {
-    return class_to_pages_[cl];
-  }
+    // Mapping from size class to number of pages to allocate at a time
+    inline size_t class_to_pages(size_t cl) { return class_to_pages_[cl]; }
 
-  // Number of objects to move between a per-thread list and a central
-  // list in one shot.  We want this to be not too small so we can
-  // amortize the lock overhead for accessing the central list.  Making
-  // it too big may temporarily cause unnecessary memory wastage in the
-  // per-thread free list until the scavenger cleans up the list.
-  inline int num_objects_to_move(size_t cl) {
-    return num_objects_to_move_[cl];
-  }
+    // Number of objects to move between a per-thread list and a central
+    // list in one shot.  We want this to be not too small so we can
+    // amortize the lock overhead for accessing the central list.  Making
+    // it too big may temporarily cause unnecessary memory wastage in the
+    // per-thread free list until the scavenger cleans up the list.
+    inline int num_objects_to_move(size_t cl) { return num_objects_to_move_[cl]; }
 
-  // Dump contents of the computed size map
-  void Dump(TCMalloc_Printer* out);
+    // Dump contents of the computed size map
+    void Dump(TCMalloc_Printer* out);
+  };
+
+  // Allocates "bytes" worth of memory and returns it.  Increments
+  // metadata_system_bytes appropriately.  May return NULL if allocation
+  // fails.  Requires pageheap_lock is held.
+  void* MetaDataAlloc(size_t bytes);
+
+  // Returns the total number of bytes allocated from the system.
+  // Requires pageheap_lock is held.
+  uint64_t metadata_system_bytes();
+
 };
-
-// Allocates "bytes" worth of memory and returns it.  Increments
-// metadata_system_bytes appropriately.  May return NULL if allocation
-// fails.  Requires pageheap_lock is held.
-void* MetaDataAlloc(size_t bytes);
-
-// Returns the total number of bytes allocated from the system.
-// Requires pageheap_lock is held.
-uint64_t metadata_system_bytes();
-
-}  // namespace tcmalloc
 
 #endif  // TCMALLOC_COMMON_H_

@@ -138,43 +138,43 @@
 				70FB4E9D1386EBC100D8F6F0 /* atomicops-internals-x86.h */,
 				70FB4E9E1386EBC100D8F6F0 /* atomicops.h */,
 				70FB4E9F1386EBC100D8F6F0 /* basictypes.h */,
-				70FB4EA01386EBC100D8F6F0 /* central_freelist.cc */,
 				70FB4EA11386EBC100D8F6F0 /* central_freelist.h */,
+				70FB4EA01386EBC100D8F6F0 /* central_freelist.cc */,
 				70FB4EA21386EBC100D8F6F0 /* commandlineflags.h */,
-				70FB4EA31386EBC100D8F6F0 /* common.cc */,
 				70FB4EA41386EBC100D8F6F0 /* common.h */,
+				70FB4EA31386EBC100D8F6F0 /* common.cc */,
 				70FB4EA51386EBC100D8F6F0 /* cycleclock.h */,
-				70FB4EA61386EBC100D8F6F0 /* internal_logging.cc */,
 				70FB4EA71386EBC100D8F6F0 /* internal_logging.h */,
+				70FB4EA61386EBC100D8F6F0 /* internal_logging.cc */,
 				70FB4EA81386EBC100D8F6F0 /* linked_list.h */,
 				70FB4EA91386EBC100D8F6F0 /* linux_syscall_support.h */,
-				70FB4EAA1386EBC100D8F6F0 /* malloc_extension.cc */,
 				70FB4EAB1386EBC100D8F6F0 /* malloc_extension.h */,
+				70FB4EAA1386EBC100D8F6F0 /* malloc_extension.cc */,
 				70FB4EAC1386EBC100D8F6F0 /* packed-cache-inl.h */,
-				70FB4EAD1386EBC100D8F6F0 /* page_heap.cc */,
 				70FB4EAE1386EBC100D8F6F0 /* page_heap.h */,
+				70FB4EAD1386EBC100D8F6F0 /* page_heap.cc */,
 				70FB4EAF1386EBC100D8F6F0 /* page_heap_allocator.h */,
 				70FB4EB01386EBC100D8F6F0 /* pagemap.h */,
-				70FB4EB11386EBC100D8F6F0 /* span.cc */,
 				70FB4EB21386EBC100D8F6F0 /* span.h */,
-				70FB4EB31386EBC100D8F6F0 /* spinlock.cc */,
+				70FB4EB11386EBC100D8F6F0 /* span.cc */,
 				70FB4EB41386EBC100D8F6F0 /* spinlock.h */,
+				70FB4EB31386EBC100D8F6F0 /* spinlock.cc */,
 				70FB4EB51386EBC100D8F6F0 /* spinlock_linux-inl.h */,
 				70FB4EB61386EBC100D8F6F0 /* spinlock_posix-inl.h */,
 				70FB4EB71386EBC100D8F6F0 /* spinlock_win32-inl.h */,
-				70FB4EB81386EBC100D8F6F0 /* static_vars.cc */,
 				70FB4EB91386EBC100D8F6F0 /* static_vars.h */,
-				70FB4EBA1386EBC100D8F6F0 /* sysinfo.cc */,
+				70FB4EB81386EBC100D8F6F0 /* static_vars.cc */,
 				70FB4EBB1386EBC100D8F6F0 /* sysinfo.h */,
-				70FB4EBC1386EBC100D8F6F0 /* system-alloc.cc */,
+				70FB4EBA1386EBC100D8F6F0 /* sysinfo.cc */,
 				70FB4EBD1386EBC100D8F6F0 /* system-alloc.h */,
+				70FB4EBC1386EBC100D8F6F0 /* system-alloc.cc */,
 				70FB4EBE1386EBC100D8F6F0 /* tcmalloc-platform.h */,
-				70FB4EBF1386EBC100D8F6F0 /* tcmalloc.cc */,
 				70FB4EC01386EBC100D8F6F0 /* tcmalloc.h */,
+				70FB4EBF1386EBC100D8F6F0 /* tcmalloc.cc */,
 				70FB4EC11386EBC100D8F6F0 /* tcmalloc_guard.h */,
 				70FB4EC21386EBC100D8F6F0 /* thread_annotations.h */,
-				70FB4EC31386EBC100D8F6F0 /* thread_cache.cc */,
 				70FB4EC41386EBC100D8F6F0 /* thread_cache.h */,
+				70FB4EC31386EBC100D8F6F0 /* thread_cache.cc */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -291,7 +291,7 @@
 		70FB4E931386EB5100D8F6F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -302,9 +302,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = "";
+				SDKROOT = macosx10.7;
 			};
 			name = Debug;
 		};
@@ -314,10 +314,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_STRICT_ALIASING = YES;
@@ -325,8 +322,8 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx10.7;
 			};
 			name = Release;
 		};

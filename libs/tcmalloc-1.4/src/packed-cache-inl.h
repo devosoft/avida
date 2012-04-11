@@ -138,8 +138,7 @@
 // A safe way of doing "(1 << n) - 1" -- without worrying about overflow
 // Note this will all be resolved to a constant expression at compile-time
 #define N_ONES_(IntType, N)                                     \
-  ( (N) == 0 ? 0 : ((static_cast<IntType>(1) << ((N)-1))-1 +    \
-                    (static_cast<IntType>(1) << ((N)-1))) )
+  ( (N) == 0 ? 0 : ((static_cast<IntType>(1) << ((N)-1))-1 + (static_cast<IntType>(1) << ((N)-1))) )
 
 // The types K and V provide upper bounds on the number of valid keys
 // and values, but we explicitly require the keys to be less than
@@ -159,8 +158,7 @@ class PackedCache {
     COMPILE_ASSERT(static_cast<int>(kKeybits) <= sizeof(K) * 8, key_size);
     COMPILE_ASSERT(static_cast<int>(kValuebits) <= sizeof(V) * 8, value_size);
     COMPILE_ASSERT(kHashbits <= kKeybits, hash_function);
-    COMPILE_ASSERT(kKeybits - kHashbits + kValuebits <= kTbits,
-                   entry_size_must_be_big_enough);
+    COMPILE_ASSERT(kKeybits - kHashbits + kValuebits <= kTbits, entry_size_must_be_big_enough);
     Clear(initial_value);
   }
 
@@ -176,10 +174,8 @@ class PackedCache {
   }
 
   V GetOrDefault(K key, V default_value) const {
-    // As with other code in this class, we touch array_ as few times
-    // as we can.  Assuming entries are read atomically (e.g., their
-    // type is uintptr_t on most hardware) then certain races are
-    // harmless.
+    // As with other code in this class, we touch array_ as few times as we can.  Assuming entries are read atomically
+    // (e.g., their type is uintptr_t on most hardware) then certain races are harmless.
     ASSERT(key == (key & kKeyMask));
     T entry = array_[Hash(key)];
     return KeyMatch(entry, key) ? EntryToValue(entry) : default_value;
