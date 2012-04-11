@@ -9814,7 +9814,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
       int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
       double prob_failure = abs((double) percent_failure / 100.0);
       double rand = m_world->GetRandom().GetDouble();
-      if (rand <= prob_failure && percent_failure > 0) return false;
+      if (rand <= prob_failure && percent_failure > 0) return true;
       else if (rand <= prob_failure && percent_failure < 0) {
         m_organism->Die(ctx);
         return true;
@@ -9882,7 +9882,7 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
     int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
     double prob_failure = abs((double) percent_failure / 100.0);
     double rand = m_world->GetRandom().GetDouble();
-    if (rand <= prob_failure && percent_failure > 0) return false;
+    if (rand <= prob_failure && percent_failure > 0) return true;
     else if (rand <= prob_failure && percent_failure < 0) {
       m_organism->Die(ctx);
       return true;
