@@ -272,6 +272,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-kin-beggar-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-kin-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("fail-if-empty",&cHardwareCPU::Inst_FailIfEmpty, nInstFlag::STALL),
+    
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -4513,6 +4515,21 @@ bool cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& c
   }
   
 }
+
+bool cHardwareCPU::Inst_FailIfEmpty(cAvidaContext& ctx)
+{
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+    double res_amt = m_organism->GetRBin(resource);
+    if (res_amt < 1)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 bool cHardwareCPU::Inst_SetBeggar(cAvidaContext& ctx)
 {
   assert(m_organism != 0);

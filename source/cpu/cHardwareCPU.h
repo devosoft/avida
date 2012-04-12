@@ -534,7 +534,7 @@ private:
   bool Inst_IfFacedKinAndBeggarAndNeedResource(cAvidaContext& ctx);
   bool Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate(cAvidaContext& ctx);
   bool Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& ctx);
-
+  bool Inst_FailIfEmpty(cAvidaContext& ctx);
   // Donation
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
