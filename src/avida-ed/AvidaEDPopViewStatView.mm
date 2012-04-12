@@ -574,7 +574,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [txtOrgAge setIntValue:(values->update - (int)Apto::StrAs(genotype->Properties().Get("update_born")))];
   
   // Set the name of the parent genotype
-  Apto::String parents(genotype->Properties().Get("parents").Value());
+  Apto::String parents(genotype->Properties().Get("parents").StringValue());
   parents = parents.Pop(','); // extracts the first parent only
   if (parents.GetSize()) {
     Avida::Systematics::GroupPtr parent_genotype = g_arb->Group(Apto::StrAs(parents));

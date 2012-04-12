@@ -19,6 +19,7 @@
 		70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */; };
 		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
+		7026F1B21534D27F00480C8F /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */; };
 		7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7029A49C1361CDBD0031433A /* CenteringClipView.m */; };
 		7032D0B715051F260090C93C /* OrganismView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0B615051F260090C93C /* OrganismView.mm */; };
 		7032D0BB150534F40090C93C /* AvidaEDOrganismViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7032D0BA150534F40090C93C /* AvidaEDOrganismViewController.mm */; };
@@ -94,6 +95,7 @@
 		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
 		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
 		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
+		7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtcmalloc-1.4.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libtcmalloc-1.4.a"; sourceTree = "<group>"; };
 		7029A49B1361CDBD0031433A /* CenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CenteringClipView.h; sourceTree = "<group>"; };
 		7029A49C1361CDBD0031433A /* CenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CenteringClipView.m; sourceTree = "<group>"; };
 		7032D0B515051F260090C93C /* OrganismView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrganismView.h; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
 				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
 				703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */,
+				7026F1B21534D27F00480C8F /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +382,7 @@
 		703549C91337AF1300D3865C /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */,
 				703549EA1337D25300D3865C /* libapto.a */,
 				703549EF1337D28800D3865C /* libavida-core.a */,
 				703549ED1337D28200D3865C /* libviewer-core.a */,
@@ -550,6 +554,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
@@ -570,6 +575,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
