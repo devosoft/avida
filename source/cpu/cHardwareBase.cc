@@ -48,7 +48,7 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts()) 
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
@@ -1105,9 +1105,6 @@ void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cIns
       double cost = res_req * -1.0;
       m_organism->AddToRBin(resource, cost); 
     } 
-//    if (res_stored < res_req) {
-//      m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
-//    }
   }
   return;
 }
@@ -1153,5 +1150,15 @@ void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, cons
 {
   cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
   m_minitracer = minitracer; 
+  m_minitrace_file = filename;
   SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id);
+}
+
+void cHardwareBase::DeleteMiniTrace()
+{
+  if (m_minitracer != NULL) {
+    delete m_minitracer;
+    bool success = m_world->GetDataFileManager().Remove(m_minitrace_file);
+    assert(success);
+  }
 }

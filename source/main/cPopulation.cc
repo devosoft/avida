@@ -1312,7 +1312,10 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // And clear it!
   in_cell.RemoveOrganism(ctx); 
-  if (!organism->IsRunning()) delete organism;
+  if (!organism->IsRunning()) {
+    organism->GetHardware().DeleteMiniTrace();
+    delete organism;
+  }
   else organism->GetPhenotype().SetToDelete();
   
   // Alert the scheduler that this cell has a 0 merit.
@@ -4628,7 +4631,10 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   cell.GetHardware()->SingleProcess(ctx);
   
   double merit = cur_org->GetPhenotype().GetMerit().GetDouble();
-  if (cur_org->GetPhenotype().GetToDelete() == true) delete cur_org;
+  if (cur_org->GetPhenotype().GetToDelete() == true) {
+    cur_org->GetHardware().DeleteMiniTrace();
+    delete cur_org;
+  }
   
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
@@ -4688,6 +4694,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
   }
   
   if (cur_org->GetPhenotype().GetToDelete() == true) {
+    cur_org->GetHardware().DeleteMiniTrace();
     delete cur_org;
     cur_org = NULL;
   }
@@ -5324,8 +5331,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
     df.Endl();
     
     delete genotype_entries[i];
-  }
-  
+  }  
   m_world->GetDataFileManager().Remove(filename);
   return true;
 }
