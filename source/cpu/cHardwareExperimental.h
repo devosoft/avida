@@ -558,6 +558,7 @@ private:
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
+  bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
   bool Inst_LookAroundFT(cAvidaContext& ctx);

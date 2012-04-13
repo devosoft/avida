@@ -295,6 +295,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareExperimental::Inst_LookAheadIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
@@ -3588,6 +3589,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
     facing = m_organism->GetOrgInterface().GetAVFacing();
   }
   return GoLook(ctx, facing, cell);
+}
+
+// Will return relative org facing (rotations to intercept) rather than group info for sighted org
+bool cHardwareExperimental::Inst_LookAheadIntercept(cAvidaContext& ctx)
+{
+  m_sensor.SetReturnRelativeFacing(true);
+  return Inst_LookAhead(ctx);
 }
 
 bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
