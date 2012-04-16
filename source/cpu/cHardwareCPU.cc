@@ -269,6 +269,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-beggar-needs-resource",&cHardwareCPU::Inst_IfFacedBeggarAndNeedResource, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-beggar-kin",&cHardwareCPU::Inst_IfFacedBeggarAndKin, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-kin-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndNeedResource, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-needs-resource",&cHardwareCPU::Inst_IfFacedNeedResource, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-kin-beggar-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-kin-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate, nInstFlag::STALL),
@@ -4356,6 +4357,25 @@ bool cHardwareCPU::Inst_IfFacedKinAndNeedResource(cAvidaContext& ctx)
   return true;
 
 }
+
+bool cHardwareCPU::Inst_IfFacedNeedResource(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;  
+  
+  //'needs' resource
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  
+  if (needs_resource) getIP().Advance();
+  return true;
+
+}
+
 bool cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
