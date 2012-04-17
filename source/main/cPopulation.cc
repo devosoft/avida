@@ -2394,7 +2394,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
       for(int i=0; i<new_genome.GetSize(); ++i) {
         if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
           new_genome[i] = instset.GetRandomInst(ctx);
-        } else {
+        } else if (in_memory_genome.GetSize() > i){
           // this line copies the mutations accured as a result of performing tasks to the new genome
           new_genome[i] = in_memory_genome[i]; 
           
