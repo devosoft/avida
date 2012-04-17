@@ -891,6 +891,10 @@ public:
   //! Execute next instruction is org has an opinion, otherwise skip
   bool Inst_IfOpinionSet(cAvidaContext& ctx);
   bool Inst_IfOpinionNotSet(cAvidaContext& ctx);
+  bool Inst_SetOpinionToZero(cAvidaContext& ctx);
+  bool Inst_SetOpinionToOne(cAvidaContext& ctx);
+  bool Inst_SetOpinionToTwo(cAvidaContext& ctx);
+  
 
   // -------- Cell Data Support --------
 public:

@@ -640,6 +640,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("clear-opinion", &cHardwareCPU::Inst_ClearOpinion, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-opinion-set", &cHardwareCPU::Inst_IfOpinionSet, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-opinion-notset", &cHardwareCPU::Inst_IfOpinionNotSet, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-opinion-0", &cHardwareCPU::Inst_SetOpinionToZero, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-opinion-1", &cHardwareCPU::Inst_SetOpinionToOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-opinion-2", &cHardwareCPU::Inst_SetOpinionToTwo, nInstFlag::STALL),   
     
     // Data collection
     tInstLibEntry<tMethod>("if-cell-data-changed", &cHardwareCPU::Inst_IfCellDataChanged, nInstFlag::STALL),
@@ -8945,6 +8948,40 @@ bool cHardwareCPU::Inst_IfOpinionNotSet(cAvidaContext& ctx)
 
   return true;
 }
+
+/* Sets the organism's opinion to the number 0 and checks for completed tasks. */
+bool cHardwareCPU::Inst_SetOpinionToZero(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = 0;
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(REG_BX)), m_organism);
+  m_organism->DoOutput(ctx, 0);
+  return true;
+}
+
+/* Sets the organism's opinion to the number 1 and checks for completed tasks. */
+bool cHardwareCPU::Inst_SetOpinionToOne(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = 1;
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(REG_BX)), m_organism);
+  m_organism->DoOutput(ctx, 1);
+  return true;
+}
+
+/* Sets the organism's opinion to the number 2 and checks for completed tasks. */
+bool cHardwareCPU::Inst_SetOpinionToTwo(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = 2;
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(REG_BX)), m_organism);
+  m_organism->DoOutput(ctx, 2);
+  return true;
+}
+
 
 
 
