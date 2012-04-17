@@ -266,6 +266,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("check-beggar", &cHardwareCPU::Inst_CheckFacedBeggar, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-faced-kin", &cHardwareCPU::Inst_IfFacedKin, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-beggar", &cHardwareCPU::Inst_IfFacedBeggar, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-beggar-needs-resource",&cHardwareCPU::Inst_IfFacedBeggarAndNeedResource, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-beggar-kin",&cHardwareCPU::Inst_IfFacedBeggarAndKin, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-kin-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndNeedResource, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-needs-resource",&cHardwareCPU::Inst_IfFacedNeedResource, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-kin-beggar-needs-resource",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-kin-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-beggar-needs-resource-donate",&cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("fail-if-empty",&cHardwareCPU::Inst_FailIfEmpty, nInstFlag::STALL),
+    
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -4123,14 +4132,28 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_DonateSpecific(cAvidaContext& ctx)
 {
   if(!m_organism->IsNeighborCellOccupied())return false;
+  cOrganism* target = NULL;
+  target = m_organism->GetOrgInterface().GetNeighbor();
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
     double res_before = m_organism->GetRBin(resource);
+    int kin = 0;
     if (res_before >= 1)
     {   
-      cOrganism* target = NULL;
-      target = m_organism->GetOrgInterface().GetNeighbor();
       target->AddToRBin (resource, 1);
+      cBioGroup* bg = m_organism->GetBioGroup("genotype");
+      if (bg) {
+        cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+        if (!sa) {
+          sa = new cSexualAncestry(bg);
+          bg->AttachData(sa);
+        }
+        cBioGroup* nbg = target->GetBioGroup("genotype");
+        assert(nbg);
+        kin = sa->GetPhyloDistance(nbg);
+      }
+      m_organism->GetPhenotype().IncDonates();
+      m_organism->GetOrgInterface().PushDonateSpecInstExe(ctx, target, kin);
       return true;
     }
   }
@@ -4237,6 +4260,295 @@ bool cHardwareCPU::Inst_IfFacedBeggar(cAvidaContext& ctx)
   if (is_beggar) getIP().Advance();
   return true;
 }
+
+bool cHardwareCPU::Inst_IfFacedBeggarAndNeedResource(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor =m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead())  return false;  
+  
+  bool is_beggar = neighbor->IsBeggar();
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  if (is_beggar && needs_resource) getIP().Advance();
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfFacedBeggarAndKin(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;  
+  
+  //check beg flag
+  bool is_beggar = neighbor->IsBeggar(); 
+  
+  // default to sibs, grandchild, grandparent
+  int gen_dist = 2;
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    gen_dist = GetRegister(FindModifiedRegister(REG_BX));
+    // Cousins if high
+    if (gen_dist > 4) gen_dist = 4;
+      // Parent/child if low
+      else if (gen_dist < 1) gen_dist = 1;
+        }
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+    
+  if (is_kin && is_beggar) getIP().Advance();
+  return true;
+}
+bool cHardwareCPU::Inst_IfFacedKinAndNeedResource(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;  
+  
+  //'needs' resource
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  
+  // default to sibs, grandchild, grandparent
+  int gen_dist = 2;
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    gen_dist = GetRegister(FindModifiedRegister(REG_BX));
+    // Cousins if high
+    if (gen_dist > 4) gen_dist = 4;
+    // Parent/child if low
+    else if (gen_dist < 1) gen_dist = 1;
+  }
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  if (is_kin && needs_resource) getIP().Advance();
+  return true;
+
+}
+
+bool cHardwareCPU::Inst_IfFacedNeedResource(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;  
+  
+  //'needs' resource
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  
+  if (needs_resource) getIP().Advance();
+  return true;
+
+}
+
+bool cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResource(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;
+  
+  //check beg flag
+  bool is_beggar = neighbor->IsBeggar(); 
+  
+  //'needs' resource
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  
+  // default to sibs, grandchild, grandparent
+  int gen_dist = 2;
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    gen_dist = GetRegister(FindModifiedRegister(REG_BX));
+    // Cousins if high
+    if (gen_dist > 4) gen_dist = 4;
+    // Parent/child if low
+    else if (gen_dist < 1) gen_dist = 1;
+  }
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  if (is_kin && needs_resource && is_beggar) getIP().Advance();
+  return true;  
+}
+
+bool cHardwareCPU::Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead()) return false;
+  
+  //check beg flag
+  bool is_beggar = neighbor->IsBeggar(); 
+  
+  //'needs' resource
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  
+  // default to sibs, grandchild, grandparent
+  int gen_dist = 2;
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    gen_dist = GetRegister(FindModifiedRegister(REG_BX));
+    // Cousins if high
+    if (gen_dist > 4) gen_dist = 4;
+    // Parent/child if low
+    else if (gen_dist < 1) gen_dist = 1;
+  }
+  
+  bool is_kin = false;
+  
+  cBioGroup* bg = m_organism->GetBioGroup("genotype");
+  if (!bg) return false;
+  cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+  if (!sa) {
+    sa = new cSexualAncestry(bg);
+    bg->AttachData(sa);
+  }
+  
+  cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+  assert(nbg);
+  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
+  
+  if (is_kin && needs_resource && is_beggar)
+  {
+    cOrganism* target = NULL;
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+      double res_before = m_organism->GetRBin(resource);
+      int kin = 0;
+      if (res_before >= 1)
+      {   
+        target->AddToRBin (resource, 1);
+    
+        cBioGroup* bg = m_organism->GetBioGroup("genotype");
+        if (bg) {
+          cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+          if (!sa) {
+            sa = new cSexualAncestry(bg);
+            bg->AttachData(sa);
+          }
+          cBioGroup* nbg = target->GetBioGroup("genotype");
+          assert(nbg);
+          kin = sa->GetPhyloDistance(nbg);
+        }
+        m_organism->GetPhenotype().IncDonates();
+        m_organism->GetOrgInterface().PushDonateSpecInstExe(ctx, target, kin);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  cOrganism* neighbor =m_organism->GetOrgInterface().GetNeighbor();
+  
+  if (neighbor->IsDead())  return false;  
+  
+  bool is_beggar = neighbor->IsBeggar();
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  bool needs_resource = (neighbor->GetRBin(resource)<1);
+  if (is_beggar && needs_resource) 
+  {
+    cOrganism* target = NULL;
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+      double res_before = m_organism->GetRBin(resource);
+      int kin = 0;
+      if (res_before >= 1)
+      {   
+        target->AddToRBin (resource, 1);
+        
+        bool is_kin = false;
+        cBioGroup* bg = m_organism->GetBioGroup("genotype");
+        if (bg) {
+          cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+          if (!sa) {
+            sa = new cSexualAncestry(bg);
+            bg->AttachData(sa);
+          }
+          cBioGroup* nbg = target->GetBioGroup("genotype");
+          assert(nbg);
+          kin = sa->GetPhyloDistance(nbg);
+        }
+        m_organism->GetPhenotype().IncDonates();
+        m_organism->GetOrgInterface().PushDonateSpecInstExe(ctx, target, kin);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+}
+
+bool cHardwareCPU::Inst_FailIfEmpty(cAvidaContext& ctx)
+{
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()){
+    double res_amt = m_organism->GetRBin(resource);
+    if (res_amt < 1)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 bool cHardwareCPU::Inst_SetBeggar(cAvidaContext& ctx)
 {
@@ -9534,12 +9846,16 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
     //return false if org setting opinion to current one (avoid paying costs for not switching)
     if (opinion == prop_group_id) return false;
 
-    // A random chance for failure to join group based on config, if failed return true for resource cost.
-    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+    // A random chance for failure to join group based on config.
+    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
       int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-      double prob_failure = (double) percent_failure / 100.0;
+      double prob_failure = abs((double) percent_failure / 100.0);
       double rand = m_world->GetRandom().GetDouble();
-      if (rand <= prob_failure) return true;
+      if (rand <= prob_failure && percent_failure > 0) return true;
+      else if (rand <= prob_failure && percent_failure < 0) {
+        m_organism->Die(ctx);
+        return true;
+      }
     }
 
     // If tolerances are on the org must pass immigration chance @JJB
@@ -9561,7 +9877,6 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
     opinion = m_organism->GetOpinion().first;	
     m_organism->JoinGroup(opinion);
   }
-
   return true;
 }
 
@@ -9584,7 +9899,11 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
 
   // There must be more than the org's current group and the 0 group, which is skipped.
-  const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  int num_groups = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetGroupIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) num_groups++; 
+
   if (num_groups <= 2) return false;
 
   // If not nop-modified, fails to execute.
@@ -9595,12 +9914,16 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   // If no group change
   if (reg_value == 0) return false;
 
-  // A random chance for failure to join group based on config, if failed return true for resource cost.
-  if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+  // A random chance for failure to join group based on config.
+  if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
     int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-    double prob_failure = (double) percent_failure / 100.0;
+    double prob_failure = abs((double) percent_failure / 100.0);
     double rand = m_world->GetRandom().GetDouble();
-    if (rand <= prob_failure) return true;
+    if (rand <= prob_failure && percent_failure > 0) return true;
+    else if (rand <= prob_failure && percent_failure < 0) {
+      m_organism->Die(ctx);
+      return true;
+    }
   }
   
   int opinion = m_organism->GetOpinion().first;

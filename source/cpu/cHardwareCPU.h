@@ -528,7 +528,14 @@ private:
   bool Inst_IfFacedKin(cAvidaContext& ctx);
   bool Inst_IfFacedBeggar(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
-
+  bool Inst_IfFacedBeggarAndNeedResource(cAvidaContext& ctx); 
+  bool Inst_IfFacedBeggarAndKin(cAvidaContext& ctx);
+  bool Inst_IfFacedKinAndNeedResource(cAvidaContext& ctx);
+  bool Inst_IfFacedNeedResource(cAvidaContext& ctx);
+  bool Inst_IfFacedKinAndBeggarAndNeedResource(cAvidaContext& ctx);
+  bool Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate(cAvidaContext& ctx);
+  bool Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& ctx);
+  bool Inst_FailIfEmpty(cAvidaContext& ctx);
   // Donation
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);

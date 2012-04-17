@@ -197,6 +197,9 @@ STATS_OUT_FILE(PrintTargets,                  targets.dat);
 STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
 STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
+//donate-specific
+STATS_OUT_FILE(PrintDonateSpecificData,       donatespec.dat);
+
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
 
@@ -3573,7 +3576,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int genome_length= 0;
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
@@ -3616,7 +3619,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cCPUTestInfo test_info;
@@ -3661,7 +3664,7 @@ public:
     int task_id;      
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           task_id = organism->GetPhenotype().GetLastTaskID();
@@ -3706,7 +3709,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cPhenotype& test_phenotype = organism->GetPhenotype();
@@ -3753,7 +3756,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           if(organism->GetNumParasites() > 0)
@@ -3802,7 +3805,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         double virulence = 0;
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           if(organism->GetNumParasites() > 0)
@@ -3921,7 +3924,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int task_sum = 0;
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           
@@ -3963,7 +3966,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         cString genome_seq("");
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
@@ -4002,7 +4005,7 @@ public:
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         cString genome_seq("");
-        int cell_num = i * pop->GetWorldX() + j;
+        int cell_num = j * pop->GetWorldX() + i;
         if (pop->GetCell(cell_num).IsOccupied() == true)
         {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
@@ -4879,6 +4882,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
+  
+  action_lib->Register<cActionPrintDonateSpecificData>("PrintDonateSpecificData"); 
+  
   action_lib->Register<cActionPrintHGTData>("PrintHGTData");
   
   action_lib->Register<cActionSetVerbose>("SetVerbose");

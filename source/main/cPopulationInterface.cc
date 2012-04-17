@@ -1465,6 +1465,22 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
   return;
 }
 
+void cPopulationInterface::PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int relatedness)
+{
+  if(!m_world->GetConfig().TRACK_DONATES.Get()) {
+    return;
+  }
+  
+  int org_id = GetOrganism()->GetID();
+  int cell_id = GetOrganism()->GetCellID();
+  int recipient_id = recipient_org->GetID();
+  int recipient_cell_id = recipient_org->GetCellID();
+  bool recip_is_beggar = recipient_org->IsBeggar();
+  int num_donates =GetOrganism()->GetPhenotype().GetCurNumDonates();
+  m_world->GetStats().PushDonateSpecificInstExe(org_id, cell_id, recipient_id, recipient_cell_id, relatedness, recip_is_beggar, num_donates);
+  return;
+}
+
 int& cPopulationInterface::GetGroupIntolerances(int group_id, int tol_num, int mating_type)
 {
   return m_world->GetPopulation().GetGroupIntolerances(group_id, tol_num, mating_type);
@@ -2110,7 +2126,7 @@ tArray<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {
-    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellAVs();
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellOutputAVs();
   }
   tArray<cOrganism*> null_array(0, NULL);
   return null_array;
