@@ -6062,7 +6062,7 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
   // Setup the child's mutation rates.  Since this organism is being injected
   // and has no parent, we should always take the rate from the environment.
   new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
-  
+  new_organism->SetLineageLabel(lineage_label);
   
   // Activate the organism in the population...
   if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
