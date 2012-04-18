@@ -3727,29 +3727,65 @@ void cStats::PrintTargets(const cString& filename)
 
   df.Write(m_update, "Update");
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  // +2 for predators (-2) and default (-1) targets
-  const int num_targets = resource_lib.GetSize() + 2;
+  bool has_pred = false;
+  int offset = 1;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+    has_pred = true;
+    offset = 2;
+  }
   
+  // ft's may not be sequentially numbered
+  int num_targets = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_targets++; 
+
+  tArray<int> raw_target_list;
+  raw_target_list.Resize(num_targets);
+  raw_target_list.SetAll(0);
+  int this_index = 0;
+  for (itr = fts_avail.begin(); itr!=fts_avail.end(); itr++) {
+    if (*itr != -1 && *itr != -2) raw_target_list[this_index] = *itr; 
+    this_index++;
+  }
+    
+  int tot_targets = num_targets + offset;
   tArray<int> target_list;
-  target_list.Resize(num_targets);
+  target_list.Resize(tot_targets);
   target_list.SetAll(0);
+  for (int i = 0; i < raw_target_list.GetSize(); i++) {
+    target_list[i + offset] = raw_target_list[i];
+  }
+  if (has_pred) {
+    target_list[0] = -2;
+    target_list[1] = -1;
+  }
+  else {
+    target_list[0] = -1;
+  }
+  
+  tArray<int> org_targets;
+  org_targets.Resize(tot_targets);
+  org_targets.SetAll(0);
   
   const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
-    target_list[org->GetForageTarget() + 2]++;
-  }
-  
-  for (int target = 0; target < target_list.GetSize(); target++) {
-    // make sure we always have a listing for predators and no-target orgs, but otherwise only print out for possible targets 
-    // (don't count resources having the same target as additional possible targets (no duplicates))
-    if ((m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && target == 0) || target == 1 || m_world->GetEnvironment().IsTargetID(target - 2)) {
-      df.Write(target - 2, "Target ID");
-      df.Write(target_list[target], "Num Orgs Targeting ID");
+    int this_target = org->GetForageTarget();
+
+    int this_index = this_target;
+    for (int i = 0; i < target_list.GetSize(); i++) {
+      if (target_list[i] == this_target) {
+        this_index = i;
+        break;
+      }
     }
+    org_targets[this_index]++;
   }
-  
+  for (int target = 0; target < org_targets.GetSize(); target++) {
+      df.Write(target_list[target], "Target ID");
+      df.Write(org_targets[target], "Num Orgs Targeting ID");
+  }
   df.Endl();
 }
 

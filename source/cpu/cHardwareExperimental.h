@@ -560,6 +560,7 @@ private:
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
+  bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
   bool Inst_LookAroundFT(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);

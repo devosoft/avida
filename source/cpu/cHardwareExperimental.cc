@@ -297,6 +297,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareExperimental::Inst_LookAheadIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-around-intercept", &cHardwareExperimental::Inst_LookAroundIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
@@ -3634,6 +3635,12 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int cell = m_organism->GetOrgInterface().GetCellID();
   if (m_use_avatar) cell = m_organism->GetOrgInterface().GetAVCellID();
   return GoLook(ctx, facing, cell);
+}
+
+bool cHardwareExperimental::Inst_LookAroundIntercept(cAvidaContext& ctx)
+{
+  m_sensor.SetReturnRelativeFacing(true);
+  return Inst_LookAround(ctx);
 }
 
 bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
