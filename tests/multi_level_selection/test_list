@@ -1,6 +1,6 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
-args = -s 1 -set WORLD_X 5 -set WORLD_Y 5 -set WORLD_GEOMETRY 2 -set SPECULATIVE 0 -set INST_SET instset.cfg -set EVENT_FILE events.cfg -set ENVIRONMENT_FILE environment.cfg -set START_CREATURE default-classic.org -set NUM_DEMES 1 -set DEMES_REPLICATE_SIZE 25 -set DEMES_ORGANISM_SELECTION 1 -set DEMES_ORGANISM_PLACEMENT 3 -set DEMES_ORGANISM_FACING 2 -set SLICING_METHOD 1 -set DEMES_COMPETITION_STYLE 1 -set DEMES_TOURNAMENT_SIZE 5 -set INST_SET_LOAD_LEGACY 1
+args = -s 1 -set WORLD_X 5 -set WORLD_Y 5 -set WORLD_GEOMETRY 2 -set SPECULATIVE 0 -set INST_SET instset.cfg -set EVENT_FILE events.cfg -set ENVIRONMENT_FILE environment.cfg -set NUM_DEMES 1 -set DEMES_REPLICATE_SIZE 25 -set DEMES_ORGANISM_SELECTION 1 -set DEMES_ORGANISM_PLACEMENT 3 -set DEMES_ORGANISM_FACING 2 -set SLICING_METHOD 1 -set DEMES_COMPETITION_STYLE 1 -set DEMES_TOURNAMENT_SIZE 5 -set INST_SET_LOAD_LEGACY 1
 app = %(app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
