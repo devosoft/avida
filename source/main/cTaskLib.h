@@ -291,7 +291,6 @@ private:
   void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback);
   double Task_Optimize(cTaskContext& ctx) const;
   
-  
   // Communication Tasks
   double Task_CommEcho(cTaskContext& ctx) const;
   double Task_CommNot(cTaskContext& ctx) const;

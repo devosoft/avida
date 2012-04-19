@@ -416,7 +416,7 @@ void cHardwareSMT::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   else fp << -99 << " ";
   // environment info / things that affect movement
   fp << m_organism->GetCellID() << " ";
-  fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
+  if (m_world->GetConfig().USE_AVATARS.Get()) fp << m_organism->GetOrgInterface().GetAVCellID() << " ";
   fp << m_organism->GetOrgInterface().GetFacedDir() << " ";
   fp << m_organism->IsNeighborCellOccupied() << " ";  
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();

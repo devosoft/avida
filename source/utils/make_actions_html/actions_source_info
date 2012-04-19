@@ -484,6 +484,22 @@
       <li>neutral metric (double):  A double value that randomly drifts over time - default 0
     </ul>
   </p>
+=== Action SetMigrationMatrix ===
+  Resets the migration matrix to use the connection weights in the specified filename argument. 
+  <p>Parameters:
+    <ul>
+      <li>migration matrix file name (string): name of the migration file (must be in same working directory as Avida)
+    </ul>
+  </p>
+=== Action AlterMigrationConnection ===
+  Alters the migration_matrix[from][to] connection weight by alter_amount (can be positive or negative amount)
+  <p>Parameters:
+    <ul>
+      <li>from_deme_id (int): Index of the "from" subpopulation (must be from 0 to NUM_DEMES)
+      <li>to_deme_id (int): Index of the "to" subpopulation (must be from 0 to NUM_DEMES)
+      <li>alter_amount (double): Value to be added to the current connection weight (note: future "alterings" will use this updated value)
+    </ul>
+  </p>
 === Action SetSeasonalResource ===
   Sets resource availiblity to seasonal
 === Action SetSeasonalResource1Kyears_1To_1 ===

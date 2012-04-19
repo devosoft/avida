@@ -103,7 +103,7 @@ namespace ASAnalyzeLib {
     
     const cString filetype = input_file.GetFiletype();
     if (filetype != "genotype_data") {
-//      conduit.SignalError(cStringUtil::Stringf("unable to load files of type '%s'", *filetype), 1);;
+//      conduit.SignalError(cStringUtil::Stringf("unable to load files of type '%s'", *filetype), 1);
     }
     
     if (world->GetVerbosity() >= VERBOSE_ON) {

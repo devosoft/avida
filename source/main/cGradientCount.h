@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Authors: Aaron Wagner <apwagner@msu.edu>
+ *  Authors: Aaron P Wagner <apwagner@msu.edu>
  *
  */
 
@@ -62,7 +62,6 @@ private:
   int m_max_size; 
   int m_config; 
   int m_count;
-  double m_resistance;
   double m_initial_plat;
   
   int m_geometry;
@@ -96,7 +95,7 @@ public:
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
                  int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count, 
-                 double resistance, double init_plat);
+                 double init_plat);
   ~cGradientCount();
 
   void UpdateCount(cAvidaContext& ctx);
@@ -130,7 +129,6 @@ public:
   void SetGradMaxSize(int max_size) { m_max_size = max_size; }
   void SetGradConfig(int config) { m_config = config; }
   void SetGradCount(int count) { m_count = count; }
-  void SetGradResistance(double resistance) { m_resistance = resistance; }
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   

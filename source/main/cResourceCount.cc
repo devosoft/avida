@@ -310,7 +310,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
                                                       in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed,
                                                       in_plateau_inflow, in_plateau_outflow, in_is_plateau_common, in_floor,
-                                                      in_habitat, in_min_size, in_max_size, in_config, in_count, in_resistance, 
+                                                      in_habitat, in_min_size, in_max_size, in_config, in_count, 
                                                       in_init_plat);
       spatial_resource_count[res_index]->RateAll(0);
     }

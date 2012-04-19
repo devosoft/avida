@@ -55,6 +55,7 @@ protected:
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
   cHardwareTracer* m_minitracer; // Set this if you want execution traced in a condensed and tractable format.
+  cString& m_minitrace_file;
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
@@ -96,6 +97,9 @@ protected:
   cHardwareBase(const cHardwareBase&); // @not_implemented
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
+private: 
+  cString null_str;
+
 public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set);
   virtual ~cHardwareBase() { ; }
@@ -124,6 +128,7 @@ public:
   virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
   void SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id);
+  void DeleteMiniTrace();
   virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) = 0;
   void SetupExtendedMemory(const Apto::Array<int, Apto::Smart>& ext_mem) { m_ext_mem = ext_mem; }
   
@@ -178,7 +183,7 @@ public:
   virtual int GetCurThreadID() const = 0;
   
   // interrupt current thread
-  virtual bool InterruptThread(int interruptType) = 0; // only implemented in cHardwareCPU
+  virtual bool InterruptThread(int interruptType) = 0; // only implemented in cHardwareCPU and cHardwareExperimental
   virtual int GetThreadMessageTriggerType(int _index) = 0;
   
   

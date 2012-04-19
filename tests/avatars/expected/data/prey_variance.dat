@@ -1,5 +1,5 @@
 # Prey Variance Data
-# Fri Feb 10 14:43:24 2012
+# Sun Mar 18 13:16:45 2012
 #  1: Update
 #  2: Fitness
 #  3: Gestation Time
@@ -8,5 +8,5 @@
 #  6: Generation
 #  7: Genome Length
 
-0 0 0 0 0 0 0 
-750 0.260674 1.32513e+07 700.874 5186.01 125.305 0 
+0 0 0 0 0 0 106929 
+750 0.56639 4.77846e+07 0 203.046 11.5461 233484 

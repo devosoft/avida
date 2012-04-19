@@ -26,12 +26,18 @@
 #include "avida/Avida.h"
 
 #include "cCodeLabel.h"
-#include "nHardware.h"
-#include "cHeadCPU.h"
+#include "cCoords.h"
 #include "cCPUMemory.h"
+#include "cEnvReqs.h"
+#include "cEnvironment.h"
 #include "cHardwareBase.h"
+#include "cHeadCPU.h"
+#include "cOrgSensor.h"
 #include "cStats.h"
 #include "cString.h"
+
+#include "nHardware.h"
+
 #include "tArray.h"
 #include "tInstLib.h"
 #include "cEnvReqs.h"
@@ -120,7 +126,7 @@ private:
     int m_id;
     int m_promoter_inst_executed;
     unsigned int m_execurate;
-    
+    int m_messageTriggerType;
   public:
     sInternalValue reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -148,6 +154,7 @@ private:
     cLocalThread(cHardwareExperimental* in_hardware, int in_id = -1) { Reset(in_hardware, in_id); }
     ~cLocalThread() { ; }
     
+    void operator=(const cLocalThread& in_thread);
     void Reset(cHardwareExperimental* in_hardware, int in_id);
     inline int GetID() const { return m_id; }
     inline void SetID(int in_id) { m_id = in_id; }
@@ -158,6 +165,8 @@ private:
     inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
     inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
+    inline void setMessageTriggerType(int value) { m_messageTriggerType = value; }
+    inline int getMessageTriggerType() { return m_messageTriggerType; }
   };
   
   
@@ -184,7 +193,8 @@ private:
   int m_thread_id_chart;
   int m_cur_thread;
   
-  int m_avatar;
+  int m_use_avatar;
+  cOrgSensor m_sensor;
   
   struct {
     unsigned int m_cycle_count:16;
@@ -289,9 +299,9 @@ public:
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
   // interrupt current thread
-  bool InterruptThread(int) { return false; }
-  int GetThreadMessageTriggerType(int) { return -1; }
-
+  bool InterruptThread(int interruptType);
+  int GetThreadMessageTriggerType(int _index) { return -1; }
+  
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
@@ -439,6 +449,7 @@ private:
   bool Inst_TaskOutput(cAvidaContext& ctx);
   bool Inst_TaskOutputZero(cAvidaContext& ctx);
   bool Inst_TaskOutputExpire(cAvidaContext& ctx);
+  bool Inst_DemeIO(cAvidaContext& ctx);
 
   // Head-based Instructions
   bool Inst_HeadAlloc(cAvidaContext& ctx);
@@ -511,6 +522,9 @@ private:
   bool Inst_Move(cAvidaContext& ctx);
   bool Inst_RangeMove(cAvidaContext& ctx);
   bool Inst_RangePredMove(cAvidaContext& ctx);
+  bool Inst_GetCellPosition(cAvidaContext& ctx);
+  bool Inst_GetCellPositionX(cAvidaContext& ctx);
+  bool Inst_GetCellPositionY(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);  
   bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
@@ -529,6 +543,15 @@ private:
   bool Inst_RotateX(cAvidaContext& ctx);
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
+
+  // Avatars
+  bool Inst_RotateAVLeft(cAvidaContext& ctx);
+  bool Inst_RotateAVRight(cAvidaContext& ctx);
+  bool Inst_MoveAV(cAvidaContext& ctx);
+  bool Inst_IfCellHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotCellHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfFacedHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
@@ -537,6 +560,7 @@ private:
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
+  bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
   bool Inst_LookAroundFT(cAvidaContext& ctx);
@@ -551,6 +575,9 @@ private:
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
 
+  bool Inst_SetOpinion(cAvidaContext& ctx);
+  bool Inst_GetOpinion(cAvidaContext& ctx);
+
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB
@@ -563,6 +590,21 @@ private:
   bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
   bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
   bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
+
+  // Active messaging //**
+  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
+
+  bool Inst_START_Handler(cAvidaContext& ctx);
+  bool Inst_End_Handler(cAvidaContext& ctx);
+
+  bool Inst_SendMessage(cAvidaContext& ctx);
+  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
+  bool Inst_RetrieveMessage(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
@@ -585,13 +627,16 @@ private:
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   
+
+private:
+  std::pair<bool, int> m_last_cell_data; // If cell data has been previously collected, and it's value
+public:
+  bool Inst_CollectCellData(cAvidaContext& ctx);
+  bool Inst_IfCellDataChanged(cAvidaContext& ctx);
+  bool Inst_ReadCellData(cAvidaContext& ctx);
+
   // ---------- Some Instruction Helpers -----------
-  struct searchInfo {
-    double amountFound;
-    int resource_id;
-    bool has_edible;
-  };
-  struct lookRegAssign {
+  struct sLookRegAssign {
     int habitat;
     int distance;
     int search_type;
@@ -601,39 +646,10 @@ private:
     int group;
     int ft;
   };
-  struct lookOut {
-    int report_type;
-    int habitat;
-    int distance;
-    int search_type;
-    int id_sought;
-    int count;
-    int value;
-    int group;
-    int forage;
-  }; 
-  struct bounds {
-    int min_x;
-    int min_y;
-    int max_x;
-    int max_y;
-  };
   
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
-  searchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
-                      const cCoords target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step);  
-  lookOut SetLooking(cAvidaContext& ctx, lookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
-  lookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
-  lookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
-  lookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
-  void LookResults(lookRegAssign& lookin_defs, lookOut& look_results);
-  int TestResDist(const int dist_used, const int search_type, const int id_sought, const int facing, const int cell);
-  int GetMinDist(cAvidaContext& ctx, const int worldx, bounds& bounds, const int cell_id, const int distance_sought, 
-                 const int facing);
-  int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, bounds& res_bounds);
-  bounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
-  bool TestBounds(const cCoords cell_id, bounds& bounds_set);
-  Apto::Array<int, Apto::Smart> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
+  cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
+  void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
 };
 
 

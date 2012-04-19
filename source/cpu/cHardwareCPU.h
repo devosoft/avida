@@ -342,6 +342,9 @@ private:
   bool Inst_IfAboveResLevelEnd(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
   bool Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx);
+  
+  bool Inst_IfGerm(cAvidaContext& ctx);
+  bool Inst_IfSoma(cAvidaContext& ctx);  
 
   // Probabilistic ifs.
   bool Inst_IfP0p125(cAvidaContext& ctx);
@@ -941,25 +944,26 @@ public:
 public:
   //! An organism joins a group by setting it opinion to the group id. 
   bool Inst_JoinGroup(cAvidaContext& ctx);
+  bool Inst_JoinMTGroup(cAvidaContext& ctx);
   // Organism joins group +1 or -1 wrapping from the top group back to group 1 (skipping 0)
   // based on whether the nop register is positive or negative. @JJB
   bool Inst_JoinNextGroup(cAvidaContext& ctx);
-  //Kill Random Member in Group 
-  bool Inst_KillGroupMember(cAvidaContext& ctx);
+  bool Inst_JoinNextMTGroup(cAvidaContext& ctx);
   //! Returns the number of organisms in the current organism's group
   bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
+  bool Inst_NumberMTInMyGroup(cAvidaContext& ctx);
   //! Returns the number of organisms in the current organism's group
   bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
+  bool Inst_NumberMTInGroup(cAvidaContext& ctx);
   // Places in BX register, the number of organisms in the group +1 or -1, wrapping from the top back to group 1
   // skipping 0, based on whether the nop register is positive or negative. @JJB
   bool Inst_NumberNextGroup(cAvidaContext& ctx);
-  // Increases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
+  bool Inst_NumberMTNextGroup(cAvidaContext& ctx);
+  bool Inst_KillGroupMember(cAvidaContext& ctx);
+
   bool Inst_IncTolerance(cAvidaContext& ctx);
-  // Decreases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
   bool Inst_DecTolerance(cAvidaContext& ctx);
-  // Get your own tolerance levels @JJB
   bool Inst_GetTolerance(cAvidaContext& ctx);
-  // Get group tolerance levels @JJB
   bool Inst_GetGroupTolerance(cAvidaContext& ctx);
 
   // -------- Network creation support --------

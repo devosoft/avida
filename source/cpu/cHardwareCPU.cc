@@ -112,6 +112,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-notAboveResLevel", &cHardwareCPU::Inst_IfNotAboveResLevel, INST_CLASS_CONDITIONAL),
     tInstLibEntry<tMethod>("if-notAboveResLevel.end", &cHardwareCPU::Inst_IfNotAboveResLevelEnd, INST_CLASS_CONDITIONAL),
     
+    tInstLibEntry<tMethod>("if-germ", &cHardwareCPU::Inst_IfGerm),
+    tInstLibEntry<tMethod>("if-soma", &cHardwareCPU::Inst_IfSoma),
+    
     // Probabilistic ifs.
     tInstLibEntry<tMethod>("if-p-0.125", &cHardwareCPU::Inst_IfP0p125, INST_CLASS_CONDITIONAL),
     tInstLibEntry<tMethod>("if-p-0.25", &cHardwareCPU::Inst_IfP0p25, INST_CLASS_CONDITIONAL),
@@ -512,8 +515,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Promoter Model
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter, INST_CLASS_FLOW_CONTROL),
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate, INST_CLASS_FLOW_CONTROL),
     tInstLibEntry<tMethod>("regulate", &cHardwareCPU::Inst_Regulate, INST_CLASS_FLOW_CONTROL),
     tInstLibEntry<tMethod>("regulate-sp", &cHardwareCPU::Inst_RegulateSpecificPromoters, INST_CLASS_FLOW_CONTROL),
     tInstLibEntry<tMethod>("s-regulate", &cHardwareCPU::Inst_SenseRegulate, INST_CLASS_FLOW_CONTROL),
@@ -678,16 +679,22 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		
     // Group formation instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareCPU::Inst_JoinGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("join-next-group", &cHardwareCPU::Inst_JoinNextGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("join-next-group", &cHardwareCPU::Inst_JoinNextGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("kill-group-member", &cHardwareCPU::Inst_KillGroupMember, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("orgs-in-my-group", &cHardwareCPU::Inst_NumberOrgsInMyGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("number-next-group", &cHardwareCPU::Inst_NumberNextGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("inc-tolerance", &cHardwareCPU::Inst_IncTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),  // @JJB
-    tInstLibEntry<tMethod>("dec-tolerance", &cHardwareCPU::Inst_DecTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),  // @JJB
-    tInstLibEntry<tMethod>("get-tolerance", &cHardwareCPU::Inst_GetTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),  // @JJB    
-    tInstLibEntry<tMethod>("get-group-tolerance", &cHardwareCPU::Inst_GetGroupTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),  // @JJB  
+    tInstLibEntry<tMethod>("number-next-group", &cHardwareCPU::Inst_NumberNextGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+
+    tInstLibEntry<tMethod>("join-mt-group", &cHardwareCPU::Inst_JoinMTGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("join-next-mt-group", &cHardwareCPU::Inst_JoinMTGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("num-mt-in-my-group", &cHardwareCPU::Inst_NumberMTInMyGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("num-mt-in-group", &cHardwareCPU::Inst_NumberMTInGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("num-mt-next-group", &cHardwareCPU::Inst_NumberMTNextGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     
+    tInstLibEntry<tMethod>("inc-tolerance", &cHardwareCPU::Inst_IncTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),  
+    tInstLibEntry<tMethod>("dec-tolerance", &cHardwareCPU::Inst_DecTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-tolerance", &cHardwareCPU::Inst_GetTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
+    tInstLibEntry<tMethod>("get-group-tolerance", &cHardwareCPU::Inst_GetGroupTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     // Network creation instructions
     tInstLibEntry<tMethod>("create-link-facing", &cHardwareCPU::Inst_CreateLinkByFacing, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("create-link-xy", &cHardwareCPU::Inst_CreateLinkByXY, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -753,6 +760,7 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   m_memory = *in_seq_p;
   
   Reset(ctx);                            // Setup the rest of the hardware...
+  internalReset();
 }
 
 
@@ -799,6 +807,12 @@ void cHardwareCPU::internalReset()
   }
   
   m_last_cell_data = std::make_pair(false, 0);
+  // Reset our flash information to 0:
+  m_flash_info.first = 0;
+  m_flash_info.second = 0;
+  // ... as well as our current cycle timer:
+  m_cycle_counter = 0;
+
 }
 
 void cHardwareCPU::internalResetOnFailedDivide()
@@ -836,6 +850,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
   m_promoter_inst_executed = 0;
   
   m_messageTriggerType = -1;
+    
 }
 
 // This function processes the very next command in the genome, and is made
@@ -1422,7 +1437,7 @@ bool cHardwareCPU::ForkThread()
 bool cHardwareCPU::InterruptThread(int interruptType) {
   //Will interrupt be successful? i.e. is head instuction present?
   cString handlerHeadInstructionString;
-	int interruptMsgType(-1);
+  int interruptMsgType(-1);
   
   switch (interruptType) {
     case MSG_INTERRUPT:
@@ -1484,7 +1499,6 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
   }
   return false;
 }
-
 
 bool cHardwareCPU::KillThread()
 {
@@ -2359,6 +2373,25 @@ bool cHardwareCPU::Inst_IfP0p75(cAvidaContext&)
   
   return true;
 }
+
+bool cHardwareCPU::Inst_IfGerm(cAvidaContext&)
+{
+  if (!m_organism->IsGermline()) {
+    getIP().Advance();
+  }
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfSoma(cAvidaContext&)
+{
+  if (m_organism->IsGermline()) {
+    getIP().Advance();
+  }
+  
+  return true;
+}
+
 
 bool cHardwareCPU::Inst_JumpF(cAvidaContext&)
 {
@@ -4069,8 +4102,6 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
   return success;
 }
-
-
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following
@@ -6855,18 +6886,17 @@ bool cHardwareCPU::Inst_GetUpdate(cAvidaContext&)
  Note that this method *will not work* from within the test CPU, so we have to guard
  against that.
  */
-bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext&) {
-  int absolute_cell_ID = m_organism->GetCellID();
-  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx)
+{
+  int x = m_organism->GetOrgInterface().GetCellXPosition();
+  int y = m_organism->GetOrgInterface().GetCellYPosition();
   // Fail if we're running in the test CPU.
-  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  if (x == -1 || y == -1) return false;
   
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int xreg = FindModifiedRegister(REG_BX);
   const int yreg = FindNextRegister(xreg);
-  GetRegister(xreg) = pos.first;
-  GetRegister(yreg) = pos.second;
-  
+  GetRegister(xreg) = x;
+  GetRegister(yreg) = y;
   return true;
 }
 
@@ -6877,15 +6907,13 @@ bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext&) {
  */
 bool cHardwareCPU::Inst_GetCellPositionX(cAvidaContext&)
 {
-  int absolute_cell_ID = m_organism->GetCellID();
-  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  int x = m_organism->GetOrgInterface().GetCellXPosition();
   // Fail if we're running in the test CPU.
-  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  if (x == -1) return false;
   
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int xreg = FindModifiedRegister(REG_BX);
-  GetRegister(xreg) = pos.first;
-  
+  GetRegister(xreg) = x;
+
   return true;
 }
 
@@ -6896,15 +6924,13 @@ bool cHardwareCPU::Inst_GetCellPositionX(cAvidaContext&)
  */
 bool cHardwareCPU::Inst_GetCellPositionY(cAvidaContext&)
 {
-  int absolute_cell_ID = m_organism->GetCellID();
-  int deme_id = m_organism->GetOrgInterface().GetDemeID();
+  int y = m_organism->GetOrgInterface().GetCellYPosition();
   // Fail if we're running in the test CPU.
-  if ((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  if (y == -1) return false;
   
-  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int yreg = FindModifiedRegister(REG_BX);
-  GetRegister(yreg) = pos.second;
-  
+  GetRegister(yreg) = y;
+
   return true;
 }
 
@@ -9389,9 +9415,9 @@ bool cHardwareCPU::Inst_ProduceString(cAvidaContext&)
 }
 
 //! An organism joins a group by setting it opinion to the group id. 
-bool cHardwareCPU::Inst_JoinGroup(cAvidaContext&)
+bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 {
-  int opinion;
+  int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
   // Check if the org is currently part of a group
   assert(m_organism != 0);
   
@@ -9407,13 +9433,17 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext&)
     
     //return false if org setting opinion to current one (avoid paying costs for not switching)
     if (opinion == prop_group_id) return false;
-    
-    // A random chance for failure to join group based on config, if failed return true for resource cost.
-    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+
+    // A random chance for failure to join group based on config.
+    if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
       int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-      double prob_failure = (double) percent_failure / 100.0;
+      double prob_failure = abs((double) percent_failure / 100.0);
       double rand = m_world->GetRandom().GetDouble();
-      if (rand <= prob_failure) return true;
+      if (rand <= prob_failure && percent_failure > 0) return true;
+      else if (rand <= prob_failure && percent_failure < 0) {
+        m_organism->Die(ctx);
+        return true;
+      }
     }
     
     // If tolerances are on the org must pass immigration chance @JJB
@@ -9435,8 +9465,14 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext&)
     opinion = m_organism->GetOpinion().first;	
     m_organism->JoinGroup(opinion);
   }
-  
+
   return true;
+}
+
+bool cHardwareCPU::Inst_JoinMTGroup(cAvidaContext& ctx)
+{
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
+  return Inst_JoinGroup(ctx);
 }
 
 /* Must be nop-modified.
@@ -9452,7 +9488,11 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
   
   // There must be more than the org's current group and the 0 group, which is skipped.
-  const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  int num_groups = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetGroupIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) num_groups++; 
+
   if (num_groups <= 2) return false;
   
   // If not nop-modified, fails to execute.
@@ -9460,14 +9500,19 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   // Retrieves the value from the nop-modifying register.
   const int nop_reg = FindModifiedRegister(REG_BX);
   int reg_value = GetRegister(nop_reg);
+  // If no group change
   if (reg_value == 0) return false;
-  
-  // A random chance for failure to join group based on config, if failed return true for resource cost.
-  if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() > 0) {
+
+  // A random chance for failure to join group based on config.
+  if (m_world->GetConfig().JOIN_GROUP_FAILURE.Get() != 0) {
     int percent_failure = m_world->GetConfig().JOIN_GROUP_FAILURE.Get();
-    double prob_failure = (double) percent_failure / 100.0;
+    double prob_failure = abs((double) percent_failure / 100.0);
     double rand = m_world->GetRandom().GetDouble();
-    if (rand <= prob_failure) return true;
+    if (rand <= prob_failure && percent_failure > 0) return true;
+    else if (rand <= prob_failure && percent_failure < 0) {
+      m_organism->Die(ctx);
+      return true;
+    }
   }
   
   int opinion = m_organism->GetOpinion().first;
@@ -9509,9 +9554,87 @@ bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_JoinNextMTGroup(cAvidaContext& ctx)
+{
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
+  return Inst_JoinNextGroup(ctx);
+}
+
+//! Gets the number of organisms in the current organism's group 
+//! and places the value in the ?BX? register
+bool cHardwareCPU::Inst_NumberOrgsInMyGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  int num_orgs = 0;
+  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int opinion = m_organism->GetOpinion().first;
+    num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(opinion);
+  }
+  const int num_org_reg = FindModifiedRegister(REG_BX);
+  GetRegister(num_org_reg) = num_orgs;
+  return true;
+}
+
+bool cHardwareCPU::Inst_NumberMTInMyGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
+
+  int num_fem = 0;
+  int num_male = 0;
+  int num_juv = 0;
+  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int opinion = m_organism->GetOpinion().first;
+    num_fem = m_organism->GetOrgInterface().NumberGroupFemales(opinion);
+    num_male = m_organism->GetOrgInterface().NumberGroupMales(opinion);
+    num_juv = m_organism->GetOrgInterface().NumberGroupJuvs(opinion);
+  }
+  const int reg1 = FindModifiedRegister(REG_BX);  
+  const int reg2 = FindModifiedNextRegister(reg1);  
+  const int reg3 = FindModifiedNextRegister(reg2);  
+  GetRegister(reg1) = num_fem;
+  GetRegister(reg2) = num_male;
+  GetRegister(reg3) = num_juv;
+  return true;
+}
+
+//! Gets the number of organisms in the group of a given id
+//! specified by the ?BX? register and places the value in the ?CX? register
+bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int group_id = FindModifiedRegister(REG_BX);
+  const int num_org_reg = FindModifiedRegister(REG_CX);
+  
+  int num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
+  GetRegister(num_org_reg) = num_orgs;
+  return true;
+}
+
+bool cHardwareCPU::Inst_NumberMTInGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
+  
+  const int group_id = FindModifiedRegister(REG_BX);
+  
+  int num_fem = m_organism->GetOrgInterface().NumberGroupFemales(group_id);
+  int num_male = m_organism->GetOrgInterface().NumberGroupMales(group_id);
+  int num_juv = m_organism->GetOrgInterface().NumberGroupJuvs(group_id);
+  const int reg1 = FindModifiedRegister(REG_BX);  
+  const int reg2 = FindModifiedNextRegister(reg1);  
+  const int reg3 = FindModifiedNextRegister(reg2);  
+  GetRegister(reg1) = num_fem;
+  GetRegister(reg2) = num_male;
+  GetRegister(reg3) = num_juv;
+  return true;
+}
+
+
 /* Must be nop-modified.
  Places the number of orgs in the +1 group in the BX register, if the nop-modifying register is positive,
- places the number of orgs in the -1 gorup in the BX register, if the nop-modifying register is negative,
+ places the number of orgs in the -1 group in the BX register, if the nop-modifying register is negative,
  wraps from the top group back to group 1 (skipping 0). @JJB
  */
 bool cHardwareCPU::Inst_NumberNextGroup(cAvidaContext& ctx)
@@ -9530,20 +9653,65 @@ bool cHardwareCPU::Inst_NumberNextGroup(cAvidaContext& ctx)
   // Retrieves the value from the nop-modifying register.
   const int nop_reg = FindModifiedRegister(REG_BX);
   int reg_value = GetRegister(nop_reg);
+  // If no group change
   if (reg_value == 0) return false;
   
+  int query_group = opinion;
+  
   if (opinion == (num_groups - 1)) {
-    if (reg_value > 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(1);
-    else if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion - 1);
+    if (reg_value > 0) query_group = 1;
+    else if (reg_value < 0) query_group = opinion - 1;
   }
   else if ((opinion == 1) || (opinion == 0)) {
-    if (reg_value > 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion + 1);
-    else if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(num_groups - 1);
+    if (reg_value > 0) query_group = opinion + 1;
+    else if (reg_value < 0) query_group = num_groups - 1;
   }
   else if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
-    if (reg_value > 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion + 1);
-    else if (reg_value < 0) GetRegister(REG_BX) = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion - 1);
+    if (reg_value > 0) query_group = opinion + 1;
+    else if (reg_value < 0) query_group = opinion - 1;
   }
+  
+  GetRegister(REG_BX) = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(query_group);
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_NumberMTNextGroup(cAvidaContext& ctx)
+{
+  if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) return false;  
+
+  // Check for an opinion.
+  if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+  
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 2) return false;
+  int opinion = m_organism->GetOpinion().first;
+  
+  const int num_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
+  if (num_groups <= 2) return false;
+  
+  // If not nop-modified, fails to execute.
+  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  // Retrieves the value from the nop-modifying register.
+  const int nop_reg = FindModifiedRegister(REG_BX);
+  int reg_value = GetRegister(nop_reg);
+  // If no group change
+  if (reg_value == 0) return false;
+  
+  int query_group = opinion;
+  
+  if (opinion == (num_groups - 1)) {
+    if (reg_value > 0) query_group = 1;
+    else if (reg_value < 0) query_group = opinion - 1;
+  }
+  else if ((opinion == 1) || (opinion == 0)) {
+    if (reg_value > 0) query_group = opinion + 1;
+    else if (reg_value < 0) query_group = num_groups - 1;
+  }
+  else if ((opinion != (num_groups - 1)) && (opinion != 1) && (opinion != 0)) {
+    if (reg_value > 0) query_group = opinion + 1;
+    else if (reg_value < 0) query_group = opinion - 1;
+  }
+  
   return true;
 }
 
@@ -9558,41 +9726,7 @@ bool cHardwareCPU::Inst_KillGroupMember(cAvidaContext& ctx)
     opinion = m_organism->GetOpinion().first;
     // Kill organism in group
     m_world->GetPopulation().KillGroupMember(ctx, opinion, m_organism);
-  }
-  
-  return true;
-}
-
-//! Gets the number of organisms in the current organism's group 
-//! and places the value in the ?CX? register
-bool cHardwareCPU::Inst_NumberOrgsInMyGroup(cAvidaContext&)
-{
-  int num_orgs = 0;
-  assert(m_organism != 0);
-  const int num_org_reg = FindModifiedRegister(REG_CX);
-  int opinion;
-  
-  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    opinion = m_organism->GetOpinion().first;
-    num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(opinion);
-  }
-  GetRegister(num_org_reg) = num_orgs;
-  
-  return true;
-}
-
-//! Gets the number of organisms in the group of a given id
-//! specified by the ?BX? register and places the value in the ?CX? register
-bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext&)
-{
-  int num_orgs = 0;
-  assert(m_organism != 0);
-  const int group_id = FindModifiedRegister(REG_BX);
-  const int num_org_reg = FindModifiedRegister(REG_CX);
-  
-  num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
-  
-  GetRegister(num_org_reg) = num_orgs;
+  }  
   return true;
 }
 
@@ -9606,31 +9740,31 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext&)
 bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 {
   // Exit if tolerance is not enabled
-  if (! m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (! m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
   // Exit if organism is not in a group
-  if (! m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
+  if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
   // Exit if the instruction is not nop-modified
-  if (! m_inst_set->IsNop(getIP().GetNextInst())) return false;
+  if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
-  const int tolerance_to_modify = FindModifiedNextRegister(REG_BX);
- 
-  int toleranceType = -1;
-  if (tolerance_to_modify == REG_AX) toleranceType = 0;
-  if (tolerance_to_modify == REG_BX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
-  if (tolerance_to_modify == REG_CX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
-  
-  // Not a recognized register
-  if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == REG_AX) toleranceType = 0;
+    else if (tolerance_to_modify == REG_BX) toleranceType = 1;
+    else if (tolerance_to_modify == REG_CX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
    
   // Update the tolerance and store the result in register B
   int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);
-  
   if (result == -1) return false;
-  else {
-    GetRegister(REG_BX) = result;
-    return true;
-  }
+  GetRegister(REG_BX) = result;
+  return true;
 }
 
 /* Decreases tolerance towards the addition of members to the group,
@@ -9644,21 +9778,24 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 {
   // Exit if tolerance is not enabled
   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
   // Exit if organism is not in a group
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
   // Exit if the instruction is not nop-modified
-  if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
+  if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
-  const int tolerance_to_modify = FindModifiedRegister(REG_BX);
-  
-  int toleranceType = -1;
-  if (tolerance_to_modify == REG_AX) toleranceType = 0;
-  if (tolerance_to_modify == REG_BX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 1;
-  if (tolerance_to_modify == REG_CX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 1) toleranceType = 2;
-  
-  // Not a recognized register
-  if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == REG_AX) toleranceType = 0;
+    else if (tolerance_to_modify == REG_BX) toleranceType = 1;
+    else if (tolerance_to_modify == REG_CX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
   
   // Update the tolerance and store the result in register B
   GetRegister(REG_BX) = m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx);
@@ -9672,7 +9809,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
 {
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  bool exec_success = false;
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
 
@@ -9682,10 +9820,10 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
       GetRegister(REG_AX) = tolerance_immigrants;
       GetRegister(REG_BX) = tolerance_own;
       GetRegister(REG_CX) = tolerance_others;
-      return true;
+      exec_success = true;
     }
   }
-  return false;
+  return exec_success;
 }  
 
 /* Retrieve group tolerances placing each in a different register.
@@ -9695,14 +9833,21 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 {
+  bool exec_success = false;
   // If groups are used and tolerances are on...
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+    if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
 
       const int group_id = m_organism->GetOpinion().first;
-      
-      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id);
+
+      int mating_type = -1;
+      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
+        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
+        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) mating_type = 1;
+        else mating_type = 2;
+      }
+      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, mating_type);
       double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
       double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
       
@@ -9715,10 +9860,10 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
       GetRegister(REG_AX) = (int) percent_immigrants;
       GetRegister(REG_BX) = (int) percent_offspring_own;
       GetRegister(REG_CX) = (int) percent_offspring_others;
-      return true;
+      exec_success = true;
     }
   }
-  return false;
+  return exec_success;
 }
 
 /*! Create a link to the currently-faced cell.
@@ -9865,6 +10010,12 @@ bool  cHardwareCPU::Inst_SetMatingTypeMale(cAvidaContext&)
     return false;
   } else {
     //Otherwise, set the current sex to male
+    if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      // since org can't be female by this point, only need to figure out if male (type 1) or juv (type 2)
+      int old_type = 1;
+      if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) old_type = 2;
+      m_organism->GetOrgInterface().ChangeGroupMatingTypes(m_organism, m_organism->GetOpinion().first, old_type, 1);
+    }
     m_organism->GetPhenotype().SetMatingType(MATING_TYPE_MALE);
   }
   return true;
@@ -9878,6 +10029,12 @@ bool  cHardwareCPU::Inst_SetMatingTypeFemale(cAvidaContext&)
     return false;
   } else {
     //Otherwise, set the current sex to female
+    if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+      // since org can't be male by this point, only need to figure out if female (type 0) or juv (type 2)
+      int old_type = 0;
+      if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) old_type = 2;
+      m_organism->GetOrgInterface().ChangeGroupMatingTypes(m_organism, m_organism->GetOpinion().first, old_type, 0);
+    }
     m_organism->GetPhenotype().SetMatingType(MATING_TYPE_FEMALE);
   }
   return true;
@@ -9888,6 +10045,12 @@ bool  cHardwareCPU::Inst_SetMatingTypeJuvenile(cAvidaContext&)
   //Set the organism's sex to juvenile
   //In this way, an organism that has already matured as male or female can change its sex
   // if this instruction is included in the instruction set
+  if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
+    int old_type = 0;
+    if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) old_type = 1;
+    else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) old_type = 2;
+    m_organism->GetOrgInterface().ChangeGroupMatingTypes(m_organism, m_organism->GetOpinion().first, old_type, 2);
+  }
   m_organism->GetPhenotype().SetMatingType(MATING_TYPE_JUVENILE);
   return true;
 }

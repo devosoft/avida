@@ -143,6 +143,10 @@ Usage: %(_testrunner_name)s [options] [testname ...]
 
     --show-diff
       Show full file diff for failed consistency tests.
+      
+    --diff-max-threshold=option [1536]
+      Threshold size, in bytes, at which testrunner will no longer
+      calculate detailed diffs. Prevents diff hangups.
 
     --skip-tests
       Do not run tests. Only generate new results, where applicable.
@@ -559,7 +563,7 @@ class cTest:
           match = True
           
           
-          if os.path.getsize(expectstruct[key][0]) < 6144:
+          if os.path.getsize(expectstruct[key][0]) < settings['diff-max-threshold']:
             # Generate the diff between the two files, ignoring comments and blank lines
             differ = difflib.Differ()
             elines = getStrippedLines(path)
@@ -1022,11 +1026,13 @@ def main(argv):
 
   settings["cpus"] = 1
   
+  settings["diff-max-threshold"] = 1536
+  
 
   # Process Command Line Arguments
   try:
     opts, args = getopt.getopt(argv[1:], "fhj:lm:pg:s:v", \
-      ["builddir=", "force-perf", "help", "help-test-cfg", "ignore-consistency", "list-tests", "long-tests", \
+      ["diff-max-threshold=","builddir=", "force-perf", "help", "help-test-cfg", "ignore-consistency", "list-tests", "long-tests", \
        "mode=", "scm=", "reset-expected", "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "git=", "svnmetadir=", "svn=", "svnversion=", \
        "testdir=", "verbose", "version", "xml-report=", "-testrunner-name="])
   except getopt.GetoptError:
@@ -1049,6 +1055,8 @@ def main(argv):
       opt_showhelp = True
     elif opt == "--builddir":
       settings["builddir"] = arg
+    elif opt == "--diff-max-threshold":
+      settings["diff-max-threshold"] = arg
     elif opt == "--help-test-cfg":
       opt_showtestcfg = True
     elif opt == "-j":
