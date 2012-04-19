@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Fri Feb 10 14:43:45 2012
+# Thu Apr 19 10:19:17 2012
 #  1: ID
 #  2: Source
 #  3: Source Args
@@ -36,7 +36,7 @@
 307 div:int (none) 293 10 1463 41 1.36967e+16 41 3.34065e+14 41 13 -1 5 0 instset-heads.cfg aaabbbabbabbabaaabbabbaaaabbbbaaaaaaaaaac 5,6,12,152,179,182,197,199,214,215 19,10,12,28,28,11,21,17,9,14 0,0,0,0,0,0,0,0,0,0 
 698 div:int (none) 660 3 7 41 1.03054e+16 41 2.51351e+14 112 95 -1 6 0 instset-heads.cfg aabbbbabaabbabaaabbaabaaaabbbbaaaaaaaaaac 11,220,221 6,11,7 0,0,0 
 721 div:int (none) 415 1 1 41 0 0 0 117 100 -1 6 0 instset-heads.cfg aabbbbabbabbabaaabbaabaaaababbaaaaaaaaaac 69 11 0 
-629 div:int (none) 293 5 51 41 1.1969e+16 41 2.91927e+14 101 83 -1 5 0 instset-heads.cfg aaabbaabbabbabaaabbaabaaaabbbbaaaaaaaaaac 135,136,150,151,166 15,29,8,7,5 0,0,0,0,0 
+629 div:int (none) 293 5 51 41 1.1969e+16 41 2.91926e+14 101 83 -1 5 0 instset-heads.cfg aaabbaabbabbabaaabbaabaaaabbbbaaaaaaaaaac 135,136,150,151,166 15,29,8,7,5 0,0,0,0,0 
 424 div:int (none) 293 37 638 41 1.83992e+16 41 4.4876e+14 66 40 -1 5 0 instset-heads.cfg aaabbbabbabbabaaabbaabaaaabbbaaaaaaaaaaac 2,7,8,9,17,27,30,36,37,38,39,41,45,46,48,49,51,54,55,59,62,64,65,72,81,82,83,96,97,98,99,114,115,203,211,217,219 21,1,29,35,20,4,1,32,1,0,25,8,3,19,4,19,31,37,25,0,24,4,30,28,33,23,33,15,7,8,24,18,23,34,24,22,34 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
 496 div:int (none) 415 8 204 41 1.72247e+16 41 4.20114e+14 81 55 -1 6 0 instset-heads.cfg aaabbbaababbabaaabbaabaaaababbaaaaaaaaaac 1,16,31,32,47,169,170,186 14,16,38,25,21,12,14,38 0,0,0,0,0,0,0,0 
 704 div:int (none) 442 2 3 41 1.14031e+16 41 2.78125e+14 106 97 -1 6 0 instset-heads.cfg aaabbbabbabbabaaabaabbaaaabbbbaaaaaaaaaac 196,212 15,10 0,0 
@@ -52,4 +52,4 @@
 247 div:int (none) 242 0 617 41 8.30305e+13 41 2.02513e+12 13 3 34 3 0 instset-heads.cfg aaabbbabbabbabaaabbaabaaaabbbbaaaaaaaabac 
 229 div:int (none) 52 0 101 41 6.55012e+08 41 1.59759e+07 3 1 20 1 0 instset-heads.cfg aaabbbabbabbabaaabbaabaaaabbbbabaaaababac 
 52 div:ext random (none) 0 10 41 334135 41 8149.62 0 -1 5 0 0 instset-heads.cfg aaabbbabbabbabaaaabaabaaaabbbbabaaaababac 
-242 div:int (none) 229 0 1 41 4.5181e+06 41 110197 11 2 3 2 0 instset-heads.cfg aaabbbabbabbabaaabbaabaaaabbbbabaaaaaabac 
+242 div:int (none) 229 0 1 41 4.51809e+06 41 110197 11 2 3 2 0 instset-heads.cfg aaabbbabbabbabaaabbaabaaaabbbbabaaaaaabac 
