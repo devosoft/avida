@@ -258,6 +258,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect, INST_CLASS_ENVIRONMENT),
     tInstLibEntry<tMethod>("collect-unit-prob", &cHardwareCPU::Inst_CollectUnitProbabilistic, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -4102,6 +4103,7 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
   return success;
 }
+
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following
@@ -8533,6 +8535,40 @@ bool cHardwareCPU::Inst_IfOpinionNotSet(cAvidaContext&)
   
   return true;
 }
+
+/* Sets the organism's opinion to the number 0 and checks for completed tasks. */
+bool cHardwareCPU::Inst_SetOpinionToZero(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = 0;
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(REG_BX)), m_organism);
+  m_organism->DoOutput(ctx, 0);
+  return true;
+}
+
+/* Sets the organism's opinion to the number 1 and checks for completed tasks. */
+bool cHardwareCPU::Inst_SetOpinionToOne(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = 1;
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(REG_BX)), m_organism);
+  m_organism->DoOutput(ctx, 1);
+  return true;
+}
+
+/* Sets the organism's opinion to the number 2 and checks for completed tasks. */
+bool cHardwareCPU::Inst_SetOpinionToTwo(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = 2;
+  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(REG_BX)), m_organism);
+  m_organism->DoOutput(ctx, 2);
+  return true;
+}
+
 
 
 

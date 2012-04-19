@@ -2351,10 +2351,9 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
       for(int i=0; i<new_genome.GetSize(); ++i) {
         if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
           new_genome[i] = instset.GetRandomInst(ctx2);
-        } else {
+        } else if (in_memory_genome.GetSize() > i){
           // this line copies the mutations accured as a result of performing tasks to the new genome
           new_genome[i] = in_memory_genome[i]; 
-          
         }
       }
     }
@@ -5923,7 +5922,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int, bool assign_group) 
+void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label, bool assign_group) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -5972,7 +5971,7 @@ void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genom
   // Setup the child's mutation rates.  Since this organism is being injected
   // and has no parent, we should always take the rate from the environment.
   new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
-  
+  new_organism->SetLineageLabel(lineage_label);
   
   // Activate the organism in the population...
   if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
