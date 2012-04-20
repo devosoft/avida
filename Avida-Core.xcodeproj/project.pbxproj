@@ -138,6 +138,11 @@
 		7073ADF014609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */; };
 		7073ADF114609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */; };
 		7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
+		707FD8B31541B6700012A090 /* OrganismTrace.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702E1A4A14EC1971009E751C /* OrganismTrace.cc */; };
+		707FD8B41541B6770012A090 /* GraphicsContext.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701269C4151A495C004865C2 /* GraphicsContext.cc */; };
+		707FD8B51541B67B0012A090 /* Freezer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DAE8E314B4B01900FE5A6A /* Freezer.cc */; };
+		707FD8B61541B67F0012A090 /* Color.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701269C6151A61F1004865C2 /* Color.cc */; };
+		707FD8B71541B7890012A090 /* Recorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70D46D3615222A6300F6B5DA /* Recorder.cc */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7095867914439E5E00243303 /* Provider.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7095867814439E5E00243303 /* Provider.cc */; };
 		70972CF51524E49A0015F7A4 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
@@ -2142,6 +2147,7 @@
 				4AAF523B153DE7B100C66840 /* cMigrationMatrix.cc in Sources */,
 				4A9B676515404DD1005AE9B9 /* Types.cc in Sources */,
 				4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */,
+				707FD8B71541B7890012A090 /* Recorder.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2178,6 +2184,10 @@
 				706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */,
 				70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */,
 				7042DF15128C90240062501F /* Listener.cc in Sources */,
+				707FD8B31541B6700012A090 /* OrganismTrace.cc in Sources */,
+				707FD8B41541B6770012A090 /* GraphicsContext.cc in Sources */,
+				707FD8B51541B67B0012A090 /* Freezer.cc in Sources */,
+				707FD8B61541B67F0012A090 /* Color.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2262,7 +2272,7 @@
 					../libs/apto/include/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.7;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2291,7 +2301,7 @@
 					include/private/,
 					../libs/apto/include/,
 				);
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.7;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
