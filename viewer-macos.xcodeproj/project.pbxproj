@@ -393,9 +393,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7035497013379FBD00D3865C /* Avida */ = {
+		7035497013379FBD00D3865C /* Avida-ED */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida" */;
+			buildConfigurationList = 7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida-ED" */;
 			buildPhases = (
 				7035496D13379FBD00D3865C /* Sources */,
 				7035496E13379FBD00D3865C /* Frameworks */,
@@ -406,7 +406,7 @@
 			);
 			dependencies = (
 			);
-			name = Avida;
+			name = "Avida-ED";
 			productName = Avida;
 			productReference = 7035497113379FBD00D3865C /* Avida.app */;
 			productType = "com.apple.product-type.application";
@@ -432,7 +432,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7035497013379FBD00D3865C /* Avida */,
+				7035497013379FBD00D3865C /* Avida-ED */,
 			);
 		};
 /* End PBXProject section */
@@ -595,7 +595,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida" */ = {
+		7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida-ED" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7035498D13379FBD00D3865C /* Debug */,
