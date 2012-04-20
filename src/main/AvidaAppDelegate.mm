@@ -123,10 +123,14 @@
 
 
 - (BOOL) validateMenuItem:(NSMenuItem*)item {
-  if ([item action] == @selector(duplicateAvidaEDWorkspace:)) {
+  
+  SEL item_action = [item action];
+  
+  if (item_action == @selector(duplicateAvidaEDWorkspace:)) {
     NSWindowController* ctrl = [[[NSApplication sharedApplication] mainWindow] windowController];
     if (ctrl == nil || ![ctrl respondsToSelector:@selector(duplicateFreezerAtURL:)]) return NO;
   }
+  
   return YES;
 }
 

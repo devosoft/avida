@@ -568,10 +568,10 @@ static const float PANEL_MIN_WIDTH = 360.0;
   }
   
   [txtOrgName setStringValue:[NSString stringWithAptoString:genotype->Properties().Get("name")]];
-  [txtOrgFitness setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_fitness"))];
-  [txtOrgMetabolicRate setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_metabolic_rate"))];
-  [txtOrgGestation setDoubleValue:Apto::StrAs(genotype->Properties().Get("ave_gestation_time"))];
-  [txtOrgAge setIntValue:(values->update - (int)Apto::StrAs(genotype->Properties().Get("update_born")))];
+  [txtOrgFitness setDoubleValue:genotype->Properties().Get("ave_fitness")];
+  [txtOrgMetabolicRate setDoubleValue:genotype->Properties().Get("ave_metabolic_rate")];
+  [txtOrgGestation setDoubleValue:genotype->Properties().Get("ave_gestation_time")];
+  [txtOrgAge setIntValue:(values->update - genotype->Properties().Get("update_born").IntValue())];
   
   // Set the name of the parent genotype
   Apto::String parents(genotype->Properties().Get("parents").StringValue());
@@ -592,7 +592,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
     Apto::String data_id("environment.triggers.");
     data_id += [entry_name UTF8String];
     data_id += ".average";
-    double count = Apto::StrAs(genotype->Properties().Get(data_id));
+    double count = genotype->Properties().Get(data_id);
     [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
   }
   [tblOrgEnvActions reloadData];

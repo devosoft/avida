@@ -869,6 +869,16 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
+- (IBAction) exportData:(id)sender {
+  printf("exportData\n");
+}
+
+
+- (IBAction) exportGraphics:(id)sender {
+  printf("exportGraphics\n");
+}
+
+
 
 - (IBAction) changeMutationRate:(id)sender {
   double rate;
@@ -1011,8 +1021,35 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (BOOL) validateMenuItem:(NSMenuItem*)item {
-  if ([item action] == @selector(saveCurrentRun:) && runActive == NO) return NO;
-  if ([item action] == @selector(saveSelectedOrganism:) && [popViewStatView selectedOrgGenome] == nil) return NO;
+  SEL item_action = [item action];
+
+  if (item_action == @selector(saveCurrentRun:) && runActive == NO) return NO;
+  if (item_action == @selector(saveSelectedOrganism:) && [popViewStatView selectedOrgGenome] == nil) return NO;
+  
+  if (item_action == @selector(exportData:)) {
+    // Cannot export data while in the organism view
+    if ([[mainSplitView subviews] objectAtIndex:1] == orgViewCtlr.view) return NO;
+  }
+  
+  if (item_action == @selector(exportGraphics:)) {
+    id curView = [[mainSplitView subviews] objectAtIndex:1];
+    
+    switch ([item tag]) {
+      case 0: // Active Population Map
+      case 1: // Active Population Graph
+        if (curView != popView) return NO;
+        break;
+        
+      case 2: // Analysis Graph
+        if (curView != analyzeView) return NO;
+        break;
+        
+      case 3: // Organism Snapshot
+        if (curView != orgViewCtlr.view) return NO;
+        break;
+    }
+  }
+  
   return YES;
 }
 

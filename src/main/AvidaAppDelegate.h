@@ -38,6 +38,7 @@
 - (IBAction) openAvidaEDWorkspace:(id)sender;
 - (IBAction) duplicateAvidaEDWorkspace:(id)sender;
 
+
 // NSMenuValidation Informal Protocol
 - (BOOL) validateMenuItem:(NSMenuItem*)item;
 

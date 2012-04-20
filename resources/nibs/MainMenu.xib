@@ -2,19 +2,19 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">12A154q</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2429</string>
-		<string key="IBDocument.AppKitVersion">1162.3</string>
-		<string key="IBDocument.HIToolboxVersion">604.00</string>
+		<string key="IBDocument.SystemVersion">12A178q</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2488</string>
+		<string key="IBDocument.AppKitVersion">1166.3</string>
+		<string key="IBDocument.HIToolboxVersion">609.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2429</string>
+			<string key="NS.object.0">2488</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSCollectionViewItem</string>
+			<string>NSCustomObject</string>
 			<string>NSMenu</string>
 			<string>NSMenuItem</string>
-			<string>NSCustomObject</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -237,6 +237,74 @@
 										<string key="NSName">_NSRecentDocumentsMenu</string>
 									</object>
 								</object>
+								<object class="NSMenuItem" id="660412681">
+									<reference key="NSMenu" ref="720053764"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<bool key="NSIsSeparator">YES</bool>
+									<string key="NSTitle"/>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="57328297">
+									<reference key="NSMenu" ref="720053764"/>
+									<string key="NSTitle">Export Data</string>
+									<string key="NSKeyEquiv">e</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="938613032">
+									<reference key="NSMenu" ref="720053764"/>
+									<string key="NSTitle">Export Graphics</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<string key="NSAction">submenuAction:</string>
+									<object class="NSMenu" key="NSSubmenu" id="549440935">
+										<string key="NSTitle">Export Graphics</string>
+										<array class="NSMutableArray" key="NSMenuItems">
+											<object class="NSMenuItem" id="206191822">
+												<reference key="NSMenu" ref="549440935"/>
+												<string key="NSTitle">Active Population Map</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+											</object>
+											<object class="NSMenuItem" id="366142589">
+												<reference key="NSMenu" ref="549440935"/>
+												<string key="NSTitle">Active Experiment Graph</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">1</int>
+											</object>
+											<object class="NSMenuItem" id="516743643">
+												<reference key="NSMenu" ref="549440935"/>
+												<string key="NSTitle">Analysis Graph</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">2</int>
+											</object>
+											<object class="NSMenuItem" id="737354248">
+												<reference key="NSMenu" ref="549440935"/>
+												<string key="NSTitle">Organism Snapshot</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">3</int>
+											</object>
+										</array>
+									</object>
+								</object>
 								<object class="NSMenuItem" id="425164168">
 									<reference key="NSMenu" ref="720053764"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -260,7 +328,7 @@
 								<object class="NSMenuItem" id="117038363">
 									<reference key="NSMenu" ref="720053764"/>
 									<bool key="NSIsDisabled">YES</bool>
-									<string key="NSTitle">Duplicate Workspace As…</string>
+									<string key="NSTitle">Duplicate Workspace</string>
 									<string key="NSKeyEquiv">S</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -1196,6 +1264,46 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">exportData:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="57328297"/>
+					</object>
+					<int key="connectionID">607</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">exportGraphics:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="206191822"/>
+					</object>
+					<int key="connectionID">608</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">exportGraphics:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="366142589"/>
+					</object>
+					<int key="connectionID">609</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">exportGraphics:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="516743643"/>
+					</object>
+					<int key="connectionID">610</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">exportGraphics:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="737354248"/>
+					</object>
+					<int key="connectionID">611</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">newAvidaED:</string>
 						<reference key="source" ref="976324537"/>
 						<reference key="destination" ref="747704969"/>
@@ -1312,6 +1420,9 @@
 							<reference ref="117038363"/>
 							<reference ref="1010469920"/>
 							<reference ref="747704969"/>
+							<reference ref="660412681"/>
+							<reference ref="938613032"/>
+							<reference ref="57328297"/>
 						</array>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -1847,6 +1958,56 @@
 						<reference key="object" ref="429364041"/>
 						<reference key="parent" ref="54546985"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">592</int>
+						<reference key="object" ref="660412681"/>
+						<reference key="parent" ref="720053764"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">593</int>
+						<reference key="object" ref="938613032"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="549440935"/>
+						</array>
+						<reference key="parent" ref="720053764"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">594</int>
+						<reference key="object" ref="549440935"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="206191822"/>
+							<reference ref="366142589"/>
+							<reference ref="516743643"/>
+							<reference ref="737354248"/>
+						</array>
+						<reference key="parent" ref="938613032"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">595</int>
+						<reference key="object" ref="206191822"/>
+						<reference key="parent" ref="549440935"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">596</int>
+						<reference key="object" ref="57328297"/>
+						<array class="NSMutableArray" key="children"/>
+						<reference key="parent" ref="720053764"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">599</int>
+						<reference key="object" ref="366142589"/>
+						<reference key="parent" ref="549440935"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">600</int>
+						<reference key="object" ref="516743643"/>
+						<reference key="parent" ref="549440935"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">601</int>
+						<reference key="object" ref="737354248"/>
+						<reference key="parent" ref="549440935"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1933,6 +2094,14 @@
 				<string key="583.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="584.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="585.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="592.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="593.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="594.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="595.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="596.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="599.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="600.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="601.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1949,7 +2118,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">591</int>
+			<int key="maxID">611</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2000,6 +2169,8 @@
 						<string key="changeRepeatability:">id</string>
 						<string key="changeView:">id</string>
 						<string key="changeWorldSize:">id</string>
+						<string key="exportData:">id</string>
+						<string key="exportGraphics:">id</string>
 						<string key="saveCurrentConfig:">id</string>
 						<string key="saveCurrentRun:">id</string>
 						<string key="saveSelectedOrganism:">id</string>
@@ -2052,6 +2223,14 @@
 							<string key="name">changeWorldSize:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="exportData:">
+							<string key="name">exportData:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="exportGraphics:">
+							<string key="name">exportGraphics:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="saveCurrentConfig:">
 							<string key="name">saveCurrentConfig:</string>
 							<string key="candidateClassName">id</string>
@@ -2101,7 +2280,7 @@
 						<string key="matCfgPauseAt">NSMatrix</string>
 						<string key="matCfgPlacement">NSMatrix</string>
 						<string key="matCfgRepeatability">NSMatrix</string>
-						<string key="orgView">AvidaEDOrganismView</string>
+						<string key="orgViewCtlr">AvidaEDOrganismViewController</string>
 						<string key="outlineFreezer">NSOutlineView</string>
 						<string key="pathWorkspace">NSPathControl</string>
 						<string key="popSplitView">NSSplitView</string>
@@ -2210,9 +2389,9 @@
 							<string key="name">matCfgRepeatability</string>
 							<string key="candidateClassName">NSMatrix</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="orgView">
-							<string key="name">orgView</string>
-							<string key="candidateClassName">AvidaEDOrganismView</string>
+						<object class="IBToOneOutletInfo" key="orgViewCtlr">
+							<string key="name">orgViewCtlr</string>
+							<string key="candidateClassName">AvidaEDOrganismViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="outlineFreezer">
 							<string key="name">outlineFreezer</string>
@@ -2285,8 +2464,8 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">AvidaEDOrganismView</string>
-					<string key="superclassName">NSView</string>
+					<string key="className">AvidaEDOrganismViewController</string>
+					<string key="superclassName">NSViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="firstSnapshot:">id</string>
 						<string key="lastSnapshot:">id</string>
@@ -2327,6 +2506,10 @@
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="arrctlrCurStack">NSArrayController</string>
+						<string key="arrctlrInputBuffer">NSArrayController</string>
+						<string key="arrctlrOutputBuffer">NSArrayController</string>
+						<string key="arrctlrRegisters">NSArrayController</string>
 						<string key="btnBack">NSButton</string>
 						<string key="btnBegin">NSButton</string>
 						<string key="btnEnd">NSButton</string>
@@ -2341,6 +2524,22 @@
 						<string key="txtOrgName">NSTextField</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="arrctlrCurStack">
+							<string key="name">arrctlrCurStack</string>
+							<string key="candidateClassName">NSArrayController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="arrctlrInputBuffer">
+							<string key="name">arrctlrInputBuffer</string>
+							<string key="candidateClassName">NSArrayController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="arrctlrOutputBuffer">
+							<string key="name">arrctlrOutputBuffer</string>
+							<string key="candidateClassName">NSArrayController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="arrctlrRegisters">
+							<string key="name">arrctlrRegisters</string>
+							<string key="candidateClassName">NSArrayController</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="btnBack">
 							<string key="name">btnBack</string>
 							<string key="candidateClassName">NSButton</string>
@@ -2392,7 +2591,7 @@
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/AvidaEDOrganismView.h</string>
+						<string key="minorKey">./Classes/AvidaEDOrganismViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -2579,47 +2778,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">NSDocument</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="printDocument:">id</string>
-						<string key="revertDocumentToSaved:">id</string>
-						<string key="runPageLayout:">id</string>
-						<string key="saveDocument:">id</string>
-						<string key="saveDocumentAs:">id</string>
-						<string key="saveDocumentTo:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="printDocument:">
-							<string key="name">printDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="revertDocumentToSaved:">
-							<string key="name">revertDocumentToSaved:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="runPageLayout:">
-							<string key="name">runPageLayout:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocument:">
-							<string key="name">saveDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocumentAs:">
-							<string key="name">saveDocumentAs:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocumentTo:">
-							<string key="name">saveDocumentTo:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSDocument.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">OrgColorBox</string>
 					<string key="superclassName">NSView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -2650,6 +2808,10 @@
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
+		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencies">
+			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin.macosx</string>
+			<real value="1070" key="NS.object.0"/>
+		</object>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin.macosx</string>
 			<real value="1070" key="NS.object.0"/>
