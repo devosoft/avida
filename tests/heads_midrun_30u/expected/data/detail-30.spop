@@ -1,7 +1,7 @@
 #filetype genotype_data
 #format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
 # Structured Population Save
-# Thu Feb 16 17:29:23 2012
+# Thu Apr 19 10:24:49 2012
 #  1: ID
 #  2: Source
 #  3: Source Args
@@ -532,7 +532,7 @@
 1062 div:ext (none) (none) 2 2 101 8.30472e+08 268 3.09878e+06 -1 49992 -1 226 0 (default) rgmzghcqcqippbpcqcggicdzgbcccszvcfcirqipaeopcrevcapccqcbzncqqqafpspltnornipqiqutpptfcpqtptycasttttvab 465,466 86,70 0,0 
 1039 div:ext (none) (none) 1 1 103 0 0 0 -1 49992 -1 229 0 (default) rjmygblqiqippspcqcggicdzgwcadicacfcbbqcpaeopcyebcapccqcbzncqqqafprtplttnosnipqcqutpptfcpqtptycastjttvab 493 375 0 
 1016 div:ext (none) (none) 1 2 101 0 0 0 -1 49991 -1 225 0 (default) romwgzlqcqippbpcqcggicdzgbcbcraxcfcbrqipaeopcyevcapccqcbzncqqqffpstplnaznipqiqutpptfcpqtptycasttttvab 521 29 0 
-4167 div:int (none) 1642 2 3 103 1.27087e+09 267 4.75984e+06 3 17 -1 234 0 instset-heads.cfg yrmggbmqiqippbpcqcggicdzgxcnwbcacfcibqcpaeopcyevctpccqcrzncqqqafpztplztnoinipqcqutpptfcpqtptycasttttvab 596,597 13,13 0,0 
+4167 div:int (none) 1642 2 3 103 1.27087e+09 267 4.75983e+06 3 17 -1 234 0 instset-heads.cfg yrmggbmqiqippbpcqcggicdzgxcnwbcacfcibqcpaeopcyevctpccqcrzncqqqafpztplztnoinipqcqutpptfcpqtptycasttttvab 596,597 13,13 0,0 
 5846 div:int (none) 1642 1 1 103 0 0 0 5 29 -1 234 0 instset-heads.cfg yrmggbmqiqippbpcqcggicdzgxcnwbcacfcibqcpaeopcyevctpccqcrzncqqqafpztplztnoznipqcqutpxtfcpqtptycasttttvab 598 101 0 
 924 div:ext (none) (none) 1 1 103 0 0 0 -1 49989 -1 222 0 (default) rkmwgbqoiqippbpcqcggicdzgmcwcyancfcbrqcpadopcsevcbpccqcbzncqqqpafprtpltnoznipqcqutpptfcpqtptycasttttvab 634 0 0 
 5041 div:int (none) 4371 1 1 103 0 0 0 4 23 -1 228 0 instset-heads.cfg rgmngnuqcqippbpcqdggicazgpcoamarcfcbcqcpayopcyevcapccqctbzncqqqafprpltnayntipqiqutpptfcpqtptycasttttvab 657 359 0 

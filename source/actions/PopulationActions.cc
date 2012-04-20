@@ -332,7 +332,7 @@ public:
       cerr << "error: no organism file specified" << endl;
       return;
     }
-
+    
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       ctx.Driver().Feedback().Warning("InjectRange has invalid range!");
     } else {
@@ -517,7 +517,7 @@ public:
       cerr << "error: no organism file specified" << endl;
       return;
     }
-
+    
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -715,7 +715,7 @@ public:
       cerr << "error: no organism file specified" << endl;
       return;
     }
-
+    
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -791,7 +791,7 @@ public:
       cerr << "error: no organism file specified" << endl;
       return;
     }
-
+    
     GenomePtr genome;
     cUserFeedback feedback;
     genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -1441,7 +1441,7 @@ public:
 				}
 			}
 		}
-		m_minDist.Add(currentMinDist.Average());
+		m_minDist.Add(int(currentMinDist.Average()));
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 		
@@ -2116,14 +2116,14 @@ public:
 		const cString ins = "GERMLINE_INS_MUT";
 		const cString del = "GERMLINE_DEL_MUT";
     const cString inst = "INST_POINT_MUT_PROB";
-
+    
 		const cString val = "0.0";
 		
 		m_world->GetConfig().Set(cpy, val);
 		m_world->GetConfig().Set(ins, val);
 		m_world->GetConfig().Set(del, val);
     m_world->GetConfig().Set(inst, val);
-
+    
   }
 };
 
@@ -2359,50 +2359,50 @@ public:
  */
 class cAbstractMonitoringCompeteDemes : public cAbstractCompeteDemes {
 public:
-	//! Constructor.
-	cAbstractMonitoringCompeteDemes(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback), _compete_period(100)
+  //! Constructor.
+  cAbstractMonitoringCompeteDemes(cWorld* world, const cString& args, Feedback& feedback)
+  : cAbstractCompeteDemes(world, args, feedback), _compete_period(100)
   {
-		if(args.GetSize()) {
-			cString largs(args);
-			_compete_period = largs.PopWord().AsInt();
-		}
+    if(args.GetSize()) {
+      cString largs(args);
+      _compete_period = largs.PopWord().AsInt();
+    }
   }
   
-	//! Destructor.
-	virtual ~cAbstractMonitoringCompeteDemes() { }
-	
-	/*! Update each deme, and possibly compete them.
-	 
-	 Calls Update(...) on every execution, but only calls Fitness(...) when the current
-	 update is an even multiple of the competition period.
-	 */	
-	virtual void Process(cAvidaContext& ctx) {
-		_update_fitness.resize(m_world->GetPopulation().GetNumDemes());													 
+  //! Destructor.
+  virtual ~cAbstractMonitoringCompeteDemes() { }
+  
+  /*! Update each deme, and possibly compete them.
+   
+   Calls Update(...) on every execution, but only calls Fitness(...) when the current
+   update is an even multiple of the competition period.
+   */
+  virtual void Process(cAvidaContext& ctx) {
+    _update_fitness.resize(m_world->GetPopulation().GetNumDemes());													 
     for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-			_update_fitness[i] += Update(m_world->GetPopulation().GetDeme(i), ctx); 
-		}
-		
-		if((m_world->GetStats().GetUpdate() % _compete_period) == 0) {
-			std::vector<double> fitness;
-			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-				fitness.push_back(pow(_update_fitness[i] + Fitness(m_world->GetPopulation().GetDeme(i), ctx), 2.0));
-				assert(fitness.back() >= 0.0);
-			}			
-			m_world->GetPopulation().CompeteDemes(fitness, ctx); 
-			_update_fitness.clear();
-			Clear();
-		}
-	}
-	
-	//! Called on each action invocation, *including* immediately prior to fitness calculation.
-	virtual double Update(cDeme& deme, cAvidaContext& ctx) = 0; 
-	//! Called after demes compete, so that subclasses can clean up any state.
-	virtual void Clear() { }
-	
+      _update_fitness[i] += Update(m_world->GetPopulation().GetDeme(i), ctx); 
+    }
+    
+    if((m_world->GetStats().GetUpdate() % _compete_period) == 0) {
+      std::vector<double> fitness;
+      for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+        fitness.push_back(pow(_update_fitness[i] + Fitness(m_world->GetPopulation().GetDeme(i), ctx), 2.0));
+        assert(fitness.back() >= 0.0);
+      }			
+      m_world->GetPopulation().CompeteDemes(fitness, ctx); 
+      _update_fitness.clear();
+      Clear();
+    }
+  }
+  
+  //! Called on each action invocation, *including* immediately prior to fitness calculation.
+  virtual double Update(cDeme& deme, cAvidaContext& ctx) = 0; 
+  //! Called after demes compete, so that subclasses can clean up any state.
+  virtual void Clear() { }
+  
 protected:
-	int _compete_period; //!< Period at which demes compete.
-	std::vector<double> _update_fitness; //!< Running sum of returns from Update(cDeme).
+  int _compete_period; //!< Period at which demes compete.
+  std::vector<double> _update_fitness; //!< Running sum of returns from Update(cDeme).
 };
 
 
@@ -2412,7 +2412,7 @@ class cActionCompeteDemesByNetwork : public cAbstractCompeteDemes {
 public:
 	//! Constructor.
 	cActionCompeteDemesByNetwork(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
   {
 	}
 	
@@ -2465,7 +2465,7 @@ protected:
 class cActionDistributeData : public cAbstractCompeteDemes {
 public:
 	cActionDistributeData(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
   {
 		world->GetStats().AddMessagePredicate(&m_message_counter);
 	}
@@ -2479,7 +2479,7 @@ public:
 		cAbstractCompeteDemes::Process(ctx);
 		m_message_counter.Reset();
 	}
-
+  
 	//! Calculate the current fitness of this deme.
 	virtual double Fitness(cDeme& deme, cAvidaContext&) {
 		return pow((double)received_data(deme) + 1.0, 2.0);
@@ -2509,7 +2509,7 @@ protected:
 class cActionDistributeDataEfficiently : public cActionDistributeData {
 public:
 	cActionDistributeDataEfficiently(cWorld* world, const cString& args, Feedback& feedback)
-    : cActionDistributeData(world, args, feedback)
+  : cActionDistributeData(world, args, feedback)
   {
 	}
 	
@@ -2541,7 +2541,7 @@ public:
 class cActionDistributeDataCheaply : public cActionDistributeData {
 public:
 	cActionDistributeDataCheaply(cWorld* world, const cString& args, Feedback& feedback)
-    : cActionDistributeData(world, args, feedback)
+  : cActionDistributeData(world, args, feedback)
   {
 		m_world->GetConfig().DEME_NETWORK_TOPOLOGY_FITNESS.Set(4); // link length sum
 	}
@@ -2674,47 +2674,47 @@ public:
 class cActionIteratedConsensus : public cAbstractMonitoringCompeteDemes, ConsensusSupport {
 public:
 	
-	struct state {
-		state(cOrganism::Opinion o) : opinion(o), current(0), max(0) { }
-		void reset() { opinion = 0; current = 0; max = 0; }
-		cOrganism::Opinion opinion;
-		int current;
-		int max;
-	};
-	
-	typedef std::map<int, state> DemeState; //!< To support hold-times for consensus.	
-	
-	//! Constructor.
-	cActionIteratedConsensus(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractMonitoringCompeteDemes(world, args, feedback)
-    , _replace(1), _kill(1), _hold(1), _restrict_range(1), _dont_replace(0)
+  struct state {
+    state(cOrganism::Opinion o) : opinion(o), current(0), max(0) { }
+    void reset() { opinion = 0; current = 0; max = 0; }
+    cOrganism::Opinion opinion;
+    int current;
+    int max;
+  };
+  
+  typedef std::map<int, state> DemeState; //!< To support hold-times for consensus.	
+  
+  //! Constructor.
+  cActionIteratedConsensus(cWorld* world, const cString& args, Feedback& feedback)
+  : cAbstractMonitoringCompeteDemes(world, args, feedback)
+  , _replace(1), _kill(1), _hold(1), _restrict_range(1), _dont_replace(0)
   {
-		if(args.GetSize()) {
-			cString largs(args);
-			largs.PopWord(); //iterations
-			_replace = largs.PopWord().AsInt(); // how many cell data are replaced on consensus (default 1)
-			if(largs.GetSize()) {
-				_kill = largs.PopWord().AsInt(); // whether to kill the owners of replaced cell data (default 1)
-				if(largs.GetSize()) {
-					_restrict_range = largs.PopWord().AsInt(); // whether replaced cell data is restricted to the range [min, max).
-					if(largs.GetSize()) {
-						_dont_replace = largs.PopWord().AsInt();
-					}
-				}
-			}
-		}
-		
-		// hold time is a configuration option, not an event parameter.
-		_hold = m_world->GetConfig().CONSENSUS_HOLD_TIME.Get();
-	}
-	
-	//! Destructor.
-	virtual ~cActionIteratedConsensus() { }
-	
-	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]"; }
-	
-	//! Calculate the current fitness of this deme.
-  virtual double Fitness(cDeme& deme, cAvidaContext&) {
+    if(args.GetSize()) {
+      cString largs(args);
+      largs.PopWord(); //iterations
+      _replace = largs.PopWord().AsInt(); // how many cell data are replaced on consensus (default 1)
+      if(largs.GetSize()) {
+        _kill = largs.PopWord().AsInt(); // whether to kill the owners of replaced cell data (default 1)
+        if(largs.GetSize()) {
+          _restrict_range = largs.PopWord().AsInt(); // whether replaced cell data is restricted to the range [min, max).
+          if(largs.GetSize()) {
+            _dont_replace = largs.PopWord().AsInt();
+          }
+        }
+      }
+    }
+    
+    // hold time is a configuration option, not an event parameter.
+    _hold = m_world->GetConfig().CONSENSUS_HOLD_TIME.Get();
+  }
+  
+  //! Destructor.
+  virtual ~cActionIteratedConsensus() { }
+  
+  static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]"; }
+  
+  //! Calculate the current fitness of this deme.
+  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) {
 		return max_support(deme).first + 1;
 	}
 	
@@ -2821,7 +2821,7 @@ protected:
 			cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data, max_data), deme);
 			cell_ids.insert(cell_ids.end(), extra_cell_ids.begin(), extra_cell_ids.end());
 		}
-				
+    
 		// Ok, if we're going to kill the organisms, do so:
 		if(_kill) {
 			// This is probably only compatible with the "old-style" germline
@@ -2857,46 +2857,46 @@ private:
  */
 class cActionReplaceFromGermline : public cAction {
 public:
-	cActionReplaceFromGermline(cWorld* world, const cString& args, Feedback&) : cAction(world, args), _p_kill(0.0), _update_cell_data(0) {
-		cString largs(args);
-		if(largs.GetSize()) {
-			_p_kill = largs.PopWord().AsDouble();
-			if(largs.GetSize()) {
-				_update_cell_data = largs.PopWord().AsInt();
-			}
-		}
-	}
-	
-	static const cString GetDescription() { return "Arguments: [double p(kill)=0.0 [int update_cell_data=0]]"; }
-	
-	//! Process this event, looping through each deme, randomly killing organisms, and replacing them from the germline.
-	void Process(cAvidaContext& ctx) {
-		if(_p_kill > 0.0) {
-			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-				if(m_world->GetRandom().P(_p_kill)) {
-					cDeme& deme = m_world->GetPopulation().GetDeme(i);
-					
-					// Pick a cell at random, kill the occupant (if any), reset the cell data, and re-seed from the germline.
-					cPopulationCell& cell = deme.GetCell(m_world->GetRandom().GetInt(deme.GetSize()));
-					
-					if(_update_cell_data) {
-						// There are no restrictions on the ID for this cell:
-						cAssignRandomCellData::ReplaceCellData(cell, m_world->GetRandom().GetInt(INT_MAX), deme);
-					}
-					
-					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
-					assert(deme.GetGermline().Size()>0);
-					m_world->GetPopulation().KillOrganism(cell, ctx); 
+  cActionReplaceFromGermline(cWorld* world, const cString& args, Feedback&) : cAction(world, args), _p_kill(0.0), _update_cell_data(0) {
+    cString largs(args);
+    if(largs.GetSize()) {
+      _p_kill = largs.PopWord().AsDouble();
+      if(largs.GetSize()) {
+        _update_cell_data = largs.PopWord().AsInt();
+      }
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double p(kill)=0.0 [int update_cell_data=0]]"; }
+  
+  //! Process this event, looping through each deme, randomly killing organisms, and replacing them from the germline.
+  void Process(cAvidaContext& ctx) {
+    if(_p_kill > 0.0) {
+      for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+        if(m_world->GetRandom().P(_p_kill)) {
+          cDeme& deme = m_world->GetPopulation().GetDeme(i);
+          
+          // Pick a cell at random, kill the occupant (if any), reset the cell data, and re-seed from the germline.
+          cPopulationCell& cell = deme.GetCell(m_world->GetRandom().GetInt(deme.GetSize()));
+          
+          if(_update_cell_data) {
+            // There are no restrictions on the ID for this cell:
+            cAssignRandomCellData::ReplaceCellData(cell, m_world->GetRandom().GetInt(INT_MAX), deme);
+          }
+          
+          // Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
+          assert(deme.GetGermline().Size()>0);
+          m_world->GetPopulation().KillOrganism(cell, ctx); 
 					m_world->GetPopulation().InjectGenome(cell.GetID(), Systematics::Source(Systematics::DUPLICATION, "germline", true), deme.GetGermline().GetLatest(), ctx); 
-					m_world->GetPopulation().DemePostInjection(deme, cell);
-				}
-			}
-		}
-	}
-	
+          m_world->GetPopulation().DemePostInjection(deme, cell);
+        }
+      }
+    }
+  }
+  
 private:
-	double _p_kill; //!< probability that a single individual in each deme will be replaced from the germline.
-	int _update_cell_data; //!< whether to update the cell data of killed individuals.	
+  double _p_kill; //!< probability that a single individual in each deme will be replaced from the germline.
+  int _update_cell_data; //!< whether to update the cell data of killed individuals.	
 };
 
 
@@ -2916,7 +2916,7 @@ public:
 	
 	//! Constructor.
 	cActionCountOpinions(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback), _desired(0), _mult(1), _side(0)
+  : cAbstractCompeteDemes(world, args, feedback), _desired(0), _mult(1), _side(0)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3018,7 +3018,7 @@ public:
 	
 	//! Constructor.
 	cActionCountMultipleOpinions(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3080,7 +3080,7 @@ public:
 	
 	//! Constructor.
 	cActionDemeBalanceTwoTasks(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback), _min(0), _max(0)
+  : cAbstractCompeteDemes(world, args, feedback), _min(0), _max(0)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3136,7 +3136,7 @@ public:
 	
 	//! Constructor.
 	cActionDemeReactionDiversity(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback), _uniq_only(false)
+  : cAbstractCompeteDemes(world, args, feedback), _uniq_only(false)
   {
 		if(args.GetSize()) {
 			cString largs(args);
@@ -3204,7 +3204,7 @@ public:
 		if(args.GetSize()) {
 			cString largs(args);
       std::ifstream ifs(largs.PopWord());
-
+      
       string p;
       while (!ifs.eof()){
         ifs >> p;
@@ -3222,7 +3222,7 @@ public:
   /*! Fitness function.
 	 For each organism, compare the actual phenotype to the desired
    phenotype by computing the euclidean distance between the vectors. Fitness is 1/(sum of Euclidean distances)
-
+   
    */
   virtual double Fitness(cDeme& deme, cAvidaContext&) { 
     double fit = 1.0;
@@ -3263,7 +3263,7 @@ public:
 private:
   //!< The desired phenotypes of the organisms.
 	vector<string> desired_phenotypes; 
-      
+  
 };
 
 
@@ -3276,7 +3276,7 @@ public:
 	
 	//! Constructor.
 	cActionUnitFitness(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
   {
 	}
 	
@@ -3300,32 +3300,71 @@ public:
  */
 class cActionCompeteDemesByTaskCount : public cAbstractCompeteDemes {
 private:
-	int _task_num;	// the task num to use when calculating fitness,
-	// defaults to 0 (the first task)
+  int _task_num;	// the task num to use when calculating fitness,
+  // defaults to 0 (the first task)
 public:
-	cActionCompeteDemesByTaskCount(cWorld* world, const cString& args, Feedback& feedback) 
-    : cAbstractCompeteDemes(world, args, feedback)
+  cActionCompeteDemesByTaskCount(cWorld* world, const cString& args, Feedback& feedback) 
+  : cAbstractCompeteDemes(world, args, feedback)
   {
-		if (args.GetSize() > 0) {
-			cString largs(args);
-			_task_num = largs.PopWord().AsInt();
-			assert(_task_num >= 0);
-			assert(_task_num < m_world->GetEnvironment().GetNumTasks());
-		} else {
-			_task_num = 0;
-		}
-	}
-	~cActionCompeteDemesByTaskCount() {}
-	
-	static const cString GetDescription() { 
-		return "Competes demes according to the number of times a given task has been completed within that deme"; 
-	}
-	
-	virtual double Fitness(cDeme& deme, cAvidaContext&) { 
-		double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
+    if (args.GetSize() > 0) {
+      cString largs(args);
+      _task_num = largs.PopWord().AsInt();
+      assert(_task_num >= 0);
+      assert(_task_num < m_world->GetEnvironment().GetNumTasks());
+    } else {
+      _task_num = 0;
+    }
+  }
+  ~cActionCompeteDemesByTaskCount() {}
+  
+  static const cString GetDescription() { 
+    return "Competes demes according to the number of times a given task has been completed within that deme"; 
+  }
+  
+  virtual double Fitness(cDeme& deme, cAvidaContext& ctx) { 
+    double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
     if (fitness == 0.0) fitness = 0.1;
     return fitness;
-	}
+  }
+};
+
+//@JJB**
+class cActionCompeteDemesByMerit : public cAbstractCompeteDemes
+{
+private:
+public:
+  cActionCompeteDemesByMerit(cWorld* world, const cString& args, Feedback& feedback) : cAbstractCompeteDemes(world, args, feedback)
+  {
+  }
+  
+  ~cActionCompeteDemesByMerit() {}
+  
+  static const cString GetDescription()
+  {
+    return "Compete demes according to the each deme's current merit";
+  }
+  
+  virtual double Fitness(cDeme& deme, cAvidaContext& ctx)
+  {
+    deme.UpdateCurMerit();
+    double messaging_bonus;
+    double input_bonus;
+    double output_bonus;
+    if (deme.GetMessageSuccessfullySent() > 0)
+      messaging_bonus = 1.5;
+    else
+      messaging_bonus = 1.0;
+    if (deme.HasDoneInput())
+      input_bonus = 1.5;
+    else
+      input_bonus = 1.0;
+    if (deme.HasDoneOutput())
+      output_bonus = 1.5;
+    else
+      output_bonus = 1.0;
+    double fitness = deme.GetCurMerit().GetDouble() * messaging_bonus * input_bonus * output_bonus;
+    return fitness;
+  }
 };
 
 class cActionCompeteDemesByTaskCountAndEfficiency : public cAbstractCompeteDemes {
@@ -3335,7 +3374,7 @@ private:
 	// defaults to 0 (the first task)
 public:
 	cActionCompeteDemesByTaskCountAndEfficiency(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
   {
   	cString largs(args);
     if (largs.GetSize() == 0) {
@@ -3378,7 +3417,7 @@ private:
 	
 public:
 	cActionCompeteDemesByEnergyDistribution(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback)
+  : cAbstractCompeteDemes(world, args, feedback)
   {
   }
 	~cActionCompeteDemesByEnergyDistribution() { ; }
@@ -3468,7 +3507,7 @@ class cActionSynchronization : public cAbstractCompeteDemes {
 public:
   //! Constructor.
   cActionSynchronization(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback) { ; }
+  : cAbstractCompeteDemes(world, args, feedback) { ; }
   
 	//! Destructor.
 	virtual ~cActionSynchronization() { }
@@ -3541,7 +3580,7 @@ class cActionDesynchronization : public cActionSynchronization {
 public:
   //! Constructor.
   cActionDesynchronization(cWorld* world, const cString& args, Feedback& feedback)
-    : cActionSynchronization(world, args, feedback)
+  : cActionSynchronization(world, args, feedback)
   {
   }
   
@@ -3584,7 +3623,7 @@ class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompet
 	
 public:
 	cAbstractCompeteDemes_AttackKillAndEnergyConserve(cWorld* world, const cString& args, Feedback& feedback)
-    : cAbstractCompeteDemes(world, args, feedback) { ; }
+  : cAbstractCompeteDemes(world, args, feedback) { ; }
 	
 	static const cString GetDescription() { return "No Arguments"; }
   
@@ -3613,7 +3652,7 @@ public:
  'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
  'perf-reactions' ...demes that have performed X number of each task are replicated
  'consume-res' ...demes that have consumed a sufficienct amount of resources
-
+ 
  */
 
 class cActionReplicateDemes : public cAction
@@ -4663,14 +4702,14 @@ public:
  chosen focal cell.  This allows levels of adversity to be "painted" in the
  environment or controlled by the production of this resource.  This action
  Currently only works for toruses and bounded grids.
-
+ 
  Parameters:
  - The number of kill radii to use (default: 0)
  - The radius of the kill zone (default: 0)
  - The name of the protective resource
  - The amount of resource below which to execute the kill (default: 0)
  - The name of the resource from which to determine the level of adversity
-
+ 
  BDC - 2011-02-17
  */
 
@@ -4711,15 +4750,15 @@ public:
     cDoubleSum resourcesum;
     
     cPopulation& pop = m_world->GetPopulation();
-
+    
     // Get the kill resource
     int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
     assert(res_id != -1);
-
+    
     // Get the adversity resource
     int adv_res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_adv_resname);
     assert(adv_res_id != -1);
-
+    
     long cells_scanned = 0;
     long orgs_killed = 0;
     long cells_empty = 0;
@@ -4728,7 +4767,7 @@ public:
       
       int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
       resourcesum.Clear();
-
+      
       // Get the level of adversity.  Bounded by [0,1]
       double kill_prob = pop.GetResourceCount().GetSpatialResource(adv_res_id).GetAmount(target_cell);
       kill_prob = min(1.0, max(0.0, kill_prob));
@@ -5276,7 +5315,7 @@ public:
       group_check_counts.SetAll(m_orgs_per);
       groups_left = m_orgs_per * groups_to_use.GetSize();
     }
-
+    
     // this will add biogroup genotypes up to max_bgs with priority on dominants, then forager types, then group ids, without repeats
     // priority is non-issue if you don't double up on the settings in one go
     int max_bgs = 1;
@@ -5441,6 +5480,45 @@ public:
   }
 };
 
+/*
+ Modifies an instruction's redundancy during a run 
+ Parameters:
+ instruction [required] = which instruction to modify
+ redundancy [required] = new redundancy value
+ (@CHC, March 2, 2012)
+ */
+class cActionSetRedundancy : public cAction
+{
+private:
+	cString m_inst_name;
+	double m_redundancy;
+public:
+	cActionSetRedundancy(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+	{
+		//Get the instruction set
+		const cInstSet& is = world->GetHardwareManager().GetDefaultInstSet();
+		
+		cString largs(args);
+		m_inst_name = largs.PopWord();
+		
+		//Make sure that the instruction the user has specified is in the instruction set
+		assert(is.InstInSet(m_inst_name));
+    
+		//Get the new redundancy
+		m_redundancy = largs.PopWord().AsInt();
+	}
+	
+	static const cString GetDescription() { return "Arguments: <char instruction> <int redundancy>"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		//cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName());
+		cInstSet& is = m_world->GetHardwareManager().GetInstSet("(default)");
+		Instruction inst = is.GetInst(m_inst_name);
+		is.SetRedundancy(inst, m_redundancy);
+	}
+};
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -5458,7 +5536,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectGroup>("InjectGroup");
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
-
+  
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
@@ -5495,6 +5573,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDecayPoints>("DecayPoints");
   
   action_lib->Register<cActionFlash>("Flash");
+  
+  action_lib->Register<cActionSetRedundancy>("SetRedundancy");
 	
   /****AbstractCompeteDemes sub-classes****/
 	
@@ -5504,7 +5584,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDistributeData>("DistributeData");
   action_lib->Register<cActionDistributeDataEfficiently>("DistributeDataEfficiently");
   action_lib->Register<cActionDistributeDataCheaply>("DistributeDataCheaply");
-
+  
   action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
   action_lib->Register<cActionCountOpinions>("CountOpinions");
@@ -5530,7 +5610,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cActionCompeteDemesByTaskCount>("CompeteDemesByTaskCount");
   action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
-  action_lib->Register<cActionCompeteDemesByEnergyDistribution>("CompeteDemesByEnergyDistribution");	
+  action_lib->Register<cActionCompeteDemesByEnergyDistribution>("CompeteDemesByEnergyDistribution");
+  action_lib->Register<cActionCompeteDemesByMerit>("CompeteDemesByMerit"); //@JJB**
 	
   /* deme predicate*/
   action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");

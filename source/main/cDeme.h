@@ -31,6 +31,7 @@
 #include "cMerit.h"
 #include "cDemeNetwork.h"
 #include "tArray.h"
+#include "tBuffer.h"
 #include "cResourceCount.h"
 #include "cStringList.h"
 #include "cDoubleSum.h"
@@ -42,6 +43,8 @@ class cOrganism;
 class cOrgMovementPredicate;
 class cOrgMessagePredicate;
 class cDemePredicate;
+class cReactionResult; //@JJB**
+class cTaskState; //@JJB**
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -55,10 +58,10 @@ private:
   tArray<int> cell_ids;
   int width; //!< Width of this deme.
 
-	bool replicateDeme;
-	bool treatable;
+  bool replicateDeme;
+  bool treatable;
   std::set<int> treatment_ages;
-	
+
 // The following should be moved to cDemePhenotype / cPopulationPhenotype
   int cur_birth_count; //!< Number of organisms that have been born into this deme since reset.
   int last_birth_count;
@@ -73,13 +76,11 @@ private:
   int gestation_time; // Time used during last generation
   double cur_normalized_time_used; // normalized by merit and number of orgs
   double last_normalized_time_used; 
-	unsigned int MSG_sendFailed;
-	unsigned int MSG_dropped;
-	unsigned int MSG_SuccessfullySent;
-	unsigned int MSG_sent;
-  unsigned int numOrgsInterruted;
-	double energyInjectedIntoOrganisms; //! total amount of energy injected into seed organisms
-	double energyRemainingInDemeAtReplication; //! total amount of energy remaining in deme when deme was last replicated.
+  unsigned int MSG_sendFailed;
+  unsigned int MSG_dropped;
+  unsigned int MSG_SuccessfullySent;
+  double energyInjectedIntoOrganisms; //! total amount of energy injected into seed organisms
+  double energyRemainingInDemeAtReplication; //! total amount of energy remaining in deme when deme was last replicated.
   double total_energy_testament; //! total amount of energy from suicide organisms for offspring deme
   int eventsTotal;
   unsigned int eventsKilled;
@@ -145,7 +146,8 @@ public:
 	
 	//! Destructor.
   ~cDeme();
-
+  
+  cDeme& operator=(const cDeme&); //@JJB**
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
 
   int GetID() const { return _id; }
@@ -156,7 +158,7 @@ public:
   //! Returns an (x,y) pair for the position of the passed-in cell ID.
   std::pair<int, int> GetCellPosition(int cellid) const;
   cPopulationCell& GetCell(int pos) const;
-	cPopulationCell& GetCell(int x, int y) const;
+  cPopulationCell& GetCell(int x, int y) const;
   cOrganism* GetOrganism(int pos) const;
   
   std::vector<int> GetGenotypeIDs();
@@ -168,7 +170,7 @@ public:
   void DivideReset(cAvidaContext& ctx, cDeme& parent_deme, bool resetResources = true, double deme_energy = 0.0);
 
   //! Kills all organisms currently in this deme.
-  void KillAll(cAvidaContext& ctx); 
+  void KillAll(cAvidaContext& ctx);
 
   void UpdateStats();
   
@@ -179,8 +181,8 @@ public:
   int GetOrgCount() const { return cur_org_count; }
   int GetLastOrgCount() const { return last_org_count; }
 
-	double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
-	int GetNumOrgsWithOpinion() const;
+  double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
+  int GetNumOrgsWithOpinion() const;
 	
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }
@@ -196,12 +198,12 @@ public:
 
   bool IsEmpty() const { return cur_org_count == 0; }
   bool IsFull() const { return cur_org_count == cell_ids.GetSize(); }
-	
-	bool TestReplication() const { return replicateDeme; }
-	void ReplicateDeme() { replicateDeme = true; }
-	
-	bool isTreatable() const { return treatable; }
-	void setTreatable(bool value) { treatable = value; }
+
+  bool TestReplication() const { return replicateDeme; }
+  void ReplicateDeme() { replicateDeme = true; }
+
+  bool isTreatable() const { return treatable; }
+  void setTreatable(bool value) { treatable = value; }
   void AddTreatmentAge(const int age) { treatment_ages.insert(age); }
   bool IsTreatableAtAge(const int age);
   bool IsTreatableNow() { return IsTreatableAtAge(_age); }
@@ -236,10 +238,10 @@ public:
   void AddCurTask(int task_num) { cur_task_exe_count[task_num]++; }
   void AddCurReaction (int reaction_num) { cur_reaction_count[reaction_num]++; }
 
-  const tArray<int>& GetCurTaskExeCount() const { return cur_task_exe_count; }
-  const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; }
-  const tArray<int>& GetCurReactionCount() const { return cur_reaction_count; }
-  const tArray<int>& GetLastReactionCount() const { return last_reaction_count; }
+  const tArray<int>& GetCurTaskExeCount() const { return cur_task_exe_count; } //**
+  const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; } //**
+  const tArray<int>& GetCurReactionCount() const { return cur_reaction_count; } //**
+  const tArray<int>& GetLastReactionCount() const { return last_reaction_count; } //**
 
   const tArray<int>& GetCurOrgTaskCount() const { return cur_org_task_count; }
   const tArray<int>& GetLastOrgTaskCount() const { return last_org_task_count; }
@@ -255,12 +257,12 @@ public:
   void ProcessUpdate(cAvidaContext& ctx); 
   //! Returns the age of this deme in updates, where age is defined as the number of updates since the last time Reset() was called.
   int GetAge() const { return _age; }
-	//! Called when an organism living in a cell in this deme is about to be killed.
-	void OrganismDeath(cPopulationCell& cell);
+  //! Called when an organism living in a cell in this deme is about to be killed.
+  void OrganismDeath(cPopulationCell& cell);
   
   const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
   cResourceCount& GetDemeResources() { return deme_resource_count; }
-	void SetResource(cAvidaContext& ctx, int id, double new_level) { deme_resource_count.Set(ctx, id, new_level); }
+  void SetResource(cAvidaContext& ctx, int id, double new_level) { deme_resource_count.Set(ctx, id, new_level); }
   double GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const;
   void AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount);
   void AdjustResource(cAvidaContext& ctx, int resource_id, double amount);
@@ -288,10 +290,10 @@ public:
   
   double CalculateTotalEnergy(cAvidaContext& ctx) const; 
   double CalculateTotalInitialEnergyResources() const;
-	double GetEnergyInjectedIntoOrganisms() const { return energyInjectedIntoOrganisms; }
-	void SetEnergyInjectedIntoOrganisms(double energy) { energyInjectedIntoOrganisms = energy; }
-	double GetEnergyRemainingInDemeAtReplication() const { return energyRemainingInDemeAtReplication; }
-	void SetEnergyRemainingInDemeAtReplication(double energy) { energyRemainingInDemeAtReplication = energy; }
+  double GetEnergyInjectedIntoOrganisms() const { return energyInjectedIntoOrganisms; }
+  void SetEnergyInjectedIntoOrganisms(double energy) { energyInjectedIntoOrganisms = energy; }
+  double GetEnergyRemainingInDemeAtReplication() const { return energyRemainingInDemeAtReplication; }
+  void SetEnergyRemainingInDemeAtReplication(double energy) { energyRemainingInDemeAtReplication = energy; }
   double GetTotalEnergyTestament() { return total_energy_testament; }
   void IncreaseTotalEnergyTestament(double increment) { total_energy_testament += increment; }
   
@@ -316,7 +318,7 @@ public:
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }
 
   // --- Deme/Message/Movement predicates --- //
-	bool DemePredSatisfiedPreviously();
+  bool DemePredSatisfiedPreviously();
   bool MsgPredSatisfiedPreviously();
   bool MovPredSatisfiedPreviously();
   int GetNumDemePredicates();
@@ -326,7 +328,7 @@ public:
   cOrgMessagePredicate* GetMsgPredicate(int i);
   cOrgMovementPredicate* GetMovPredicate(int i);
 
-	void AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue);
+  void AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue);
   void AddEventReceivedCenterPred(int times);
   void AddEventReceivedLeftSidePred(int times);
   void AddEventMoveCenterPred(int times);
@@ -334,32 +336,30 @@ public:
   void AddEventMigrateToTargetsPred(int times);
   void AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times);
 	
-	// --- Messaging stats --- //
-	void IncMessageSent() { ++MSG_sent; }
-	void MessageSuccessfullySent() { ++MSG_SuccessfullySent; }
-	void messageDropped() { ++MSG_dropped; }
-	void messageSendFailed() { ++MSG_sendFailed; }
-	unsigned int GetMessagesSent() { return MSG_sent; }
-	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
-	unsigned int GetMessageDropped() { return MSG_dropped; }
-	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
+  // --- Messaging stats --- //
+  void MessageSuccessfullySent() { ++MSG_SuccessfullySent; }
+  void messageDropped() { ++MSG_dropped; }
+  void messageSendFailed() { ++MSG_sendFailed; }
+  unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
+  unsigned int GetMessageDropped() { return MSG_dropped; }
+  unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
   
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value, cAvidaContext& ctx); 
 	
-	// --- Points --- //
-	double GetNumberOfPoints() { return points; }
-	void AddNumberOfPoints(double num_points) { points += num_points; }
-	void SubtractNumberOfPoints(double num_points) { if (num_points > points) points = 0; }
-	int GetMigrationsOut()  { return migrations_out; }
-	int GetMigrationsIn()  { return migrations_in; }
-	int GetSuicides()  { return suicides; }
-	void AddMigrationOut() { migrations_out++; }
-	void AddMigrationIn() { migrations_in++; }
-	void AddSuicide() { suicides++; }
-	void ClearMigrationOut() { migrations_out = 0; }
-	void ClearMigrationIn() { migrations_in = 0; }
-	void ClearSuicides() { suicides = 0; }
+  // --- Points --- //
+  double GetNumberOfPoints() { return points; }
+  void AddNumberOfPoints(double num_points) { points += num_points; }
+  void SubtractNumberOfPoints(double num_points) { if (num_points > points) points = 0; }
+  int GetMigrationsOut()  { return migrations_out; }
+  int GetMigrationsIn()  { return migrations_in; }
+  int GetSuicides()  { return suicides; }
+  void AddMigrationOut() { migrations_out++; }
+  void AddMigrationIn() { migrations_in++; }
+  void AddSuicide() { suicides++; }
+  void ClearMigrationOut() { migrations_out = 0; }
+  void ClearMigrationIn() { migrations_in = 0; }
+  void ClearSuicides() { suicides = 0; }
   
   // --- Energy Sharing --- //
   double GetEnergyDonated() const { return total_energy_donated; }
@@ -369,19 +369,50 @@ public:
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
 	
-	// -= Network creation support =-
+  // -= Network creation support =-
 private:
-	//! Lazily-initialized pointer to the network creation support struct.
-	cDemeNetwork* m_network;
+  //! Lazily-initialized pointer to the network creation support struct.
+  cDemeNetwork* m_network;
 
-	//! Initialize network creation support.
-	inline void InitNetworkCreation() { if(!m_network) m_network = cDemeNetwork::DemeNetworkFactory(m_world, *this); }
-	//! Test for initialization of the network.
-	inline bool IsNetworkInitialized() { return m_network != 0; }
+  //! Initialize network creation support.
+  inline void InitNetworkCreation() { if(!m_network) m_network = cDemeNetwork::DemeNetworkFactory(m_world, *this); }
+  //! Test for initialization of the network.
+  inline bool IsNetworkInitialized() { return m_network != 0; }
 public:
-	//! Retrieve this deme's network.
-	cDemeNetwork& GetNetwork();
-	
+  //! Retrieve this deme's network.
+  cDemeNetwork& GetNetwork();
+
+  // -------- Deme Input and Output --------
+private:
+  int m_input_pointer;
+  tArray<int> m_inputs;
+  tBuffer<int> m_input_buf;
+  tBuffer<int> m_output_buf;
+  Apto::Map<void*, cTaskState*> m_task_states;
+  cReactionResult* m_reaction_result;
+  tArray<int> m_task_count;               // Total times each task was performed (resetable during the life of the deme)
+  tArray<int> m_last_task_count;
+  tArray<int> m_reaction_count;
+  tArray<double> m_cur_reaction_add_reward;
+  double m_cur_bonus;
+  cMerit m_cur_merit;
+public:
+  bool HasDoneInput() { return (m_input_buf.GetNumStored() > 0); }
+  bool HasDoneOutput() { return (m_input_buf.GetNumStored() > 0); }
+  void ResetInputs(cAvidaContext& ctx);
+  void ResetInput() { m_input_pointer = 0; m_input_buf.Clear(); }
+  int GetNextDemeInput(cAvidaContext& ctx);
+  void DoDemeInput(int value);
+  void DoDemeOutput(cAvidaContext& ctx, int value);
+  double GetCurBonus() const { return m_cur_bonus; }
+  void ResetMeritBonus() { m_cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get(); }
+  const cMerit& GetCurMerit() { return m_cur_merit; }
+  void UpdateCurMerit();
+  cMerit CalcCurMerit();
+  const tArray<int>& GetTaskCount() const { return m_task_count; } //**
+  const tArray<int>& GetReactionCount() const { return m_reaction_count; } //**
+
+
 	// --- Division of Labor --- //
 public: 	
 	int MinNumTimesReactionPerformed();
@@ -401,11 +432,11 @@ public:
 	void ClearTotalResourceAmountConsumed() {m_total_res_consumed = 0;}
     
 private:
-	double m_total_res_consumed; //! Amount of resources consumed by deme.
-	//! get total amount of resources used
-	int m_switch_penalties; //! number of task switching penalties accumulated
+  double m_total_res_consumed; //! Amount of resources consumed by deme.
+  //! get total amount of resources used
+  int m_switch_penalties; //! number of task switching penalties accumulated
   std::vector< std::vector<double> > m_shannon_matrix;
-	int m_num_active; // number of active organisms in the lifetime of the deme
+  int m_num_active; // number of active organisms in the lifetime of the deme
   int m_num_reproductives; // number of organisms that reproduced during the lifetime of the deme
 	
 	

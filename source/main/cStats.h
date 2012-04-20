@@ -82,7 +82,7 @@ struct s_inst_circumstances {
   int tol_own;
   int tol_others;
   int tol_max;
-}; // @JJB
+};
 
 class cStats : public Data::ArgumentedProvider
 {
@@ -146,10 +146,12 @@ private:
   Apto::Map<cString, Apto::Array<cString> > m_is_inst_names_map;
   Apto::Map<cString, Apto::Array<cIntSum> > m_is_exe_inst_map;
   Apto::Array<pair<int,int> > m_is_tolerance_exe_counts;
-  Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts; // @JJB
+  Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts;
   Apto::Map<cString, Apto::Array<cIntSum> > m_is_prey_exe_inst_map;
   Apto::Map<cString, Apto::Array<cIntSum> > m_is_pred_exe_inst_map;
-
+  Apto::Map<cString, Apto::Array<cIntSum> > m_is_male_exe_inst_map;
+  Apto::Map<cString, Apto::Array<cIntSum> > m_is_female_exe_inst_map;
+  
   // --------  Calculated Stats  ---------
 
   // For tracking of advantageous mutations
@@ -320,7 +322,21 @@ private:
   double pred_entropy;
   int num_pred_creatures;
 
-
+  // --------  Mating type (male/female) Stats  ---------
+  cDoubleSum sum_male_fitness;
+  cDoubleSum sum_male_gestation;
+  cDoubleSum sum_male_merit;
+  cDoubleSum sum_male_creature_age;
+  cDoubleSum sum_male_generation;
+  cDoubleSum sum_male_size;
+  
+  cDoubleSum sum_female_fitness;
+  cDoubleSum sum_female_gestation;
+  cDoubleSum sum_female_merit;
+  cDoubleSum sum_female_creature_age;
+  cDoubleSum sum_female_generation;
+  cDoubleSum sum_female_size;
+  
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -435,6 +451,24 @@ public:
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
   Apto::Array<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   void ZeroFTInst();
+  
+  //mating type/male-female accessors
+  cDoubleSum& SumMaleFitness()       { return sum_male_fitness; }
+  cDoubleSum& SumMaleGestation()     { return sum_male_gestation; }
+  cDoubleSum& SumMaleMerit()         { return sum_male_merit; }
+  cDoubleSum& SumMaleCreatureAge()   { return sum_male_creature_age; }
+  cDoubleSum& SumMaleGeneration()    { return sum_male_generation; }
+  cDoubleSum& SumMaleSize()          { return sum_male_size; }
+  Apto::Array<cIntSum>& InstMaleExeCountsForInstSet(const cString& inst_set) { return m_is_male_exe_inst_map[inst_set]; }
+  
+  cDoubleSum& SumFemaleFitness()       { return sum_female_fitness; }
+  cDoubleSum& SumFemaleGestation()     { return sum_female_gestation; }
+  cDoubleSum& SumFemaleMerit()         { return sum_female_merit; }
+  cDoubleSum& SumFemaleCreatureAge()   { return sum_female_creature_age; }
+  cDoubleSum& SumFemaleGeneration()    { return sum_female_generation; }
+  cDoubleSum& SumFemaleSize()          { return sum_female_size; }
+  Apto::Array<cIntSum>& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
+  void ZeroMTInst();
   
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
@@ -733,9 +767,18 @@ public:
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
-  void PrintGroupTolerance(const cString& filename); // @JJB
-  void PrintToleranceInstructionData(const cString& filename); // @JJB
-  void PrintToleranceData(const cString& filename); // @JJB
+  void PrintGroupTolerance(const cString& filename); 
+  void PrintGroupMTTolerance(const cString& filename); 
+  void PrintToleranceInstructionData(const cString& filename); 
+  void PrintToleranceData(const cString& filename); 
+  void PrintMaleAverageData(const cString& filename);
+  void PrintFemaleAverageData(const cString& filename);
+  void PrintMaleErrorData(const cString& filename);
+  void PrintFemaleErrorData(const cString& filename);
+  void PrintMaleVarianceData(const cString& filename);
+  void PrintFemaleVarianceData(const cString& filename);
+  void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
+  void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
@@ -758,27 +801,27 @@ public:
   void RemoveMessagePredicate(cOrgMessagePredicate* predicate);
   //! Prints information regarding messages that "passed" their predicate.
   void PrintPredicatedMessages(const cString& filename);
-	//! Log a message.
-	void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
-	//! Prints logged messages.
-	void PrintMessageLog(const cString& filename);
+  //! Log a message.
+  void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
+  //! Prints logged messages.
+  void PrintMessageLog(const cString& filename);
 
 protected:
   /*! List of all active message predicates.  The idea here is that the predicates,
   rather than cStats / cOrgMessage / etc., do the tracking of particular messages
   of interest. */
   message_pred_ptr_list m_message_predicates;
-	//! Type to store logged messages.
-	struct message_log_entry_t {
-		message_log_entry_t(int u, int de, int s, int d, unsigned int md, unsigned int ml, bool dr, bool l)
-		:	update(u), deme(de), src_cell(s), dst_cell(d), msg_data(md), msg_label(ml), dropped(dr), lost(l) {
-		}
-		int update, deme, src_cell, dst_cell;
-		unsigned int msg_data, msg_label;
-		bool dropped, lost;
-	};
-	typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
-	message_log_t m_message_log; //!< Log for messages.
+  //! Type to store logged messages.
+  struct message_log_entry_t {
+    message_log_entry_t(int u, int de, int s, int d, int t, unsigned int md, unsigned int ml, bool dr, bool l)
+      :	update(u), deme(de), src_cell(s), dst_cell(d), transmit_cell(t), msg_data(md), msg_label(ml), dropped(dr), lost(l) {
+    }
+    int update, deme, src_cell, dst_cell, transmit_cell;
+    unsigned int msg_data, msg_label;
+    bool dropped, lost;
+  };
+  typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
+  message_log_t m_message_log; //!< Log for messages.
 
   // -------- End messaging support --------
 
@@ -792,13 +835,13 @@ public:
 protected:
   movement_pred_ptr_list m_movement_predicates;
   // -------- End movement support --------
-
+  
   // -------- Tolerance support --------
 public:
-  void PushToleranceInstExe(int tol_inst); // @JJB
+  void PushToleranceInstExe(int tol_inst); 
   void PushToleranceInstExe(int tol_inst, int group_id, int group_size, double resource_level, double odds_immi,
-              double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max); // @JJB
-  void ZeroToleranceInst(); // @JJB
+              double odds_own, double odds_others, int tol_immi, int tol_own, int tol_others, int tol_max); 
+  void ZeroToleranceInst(); 
 
 
   // -------- Deme replication support --------
@@ -813,7 +856,13 @@ public:
   void PrintDemeReplicationData(const cString& filename);
   //! Print statistics regarding germline sequestration
   void PrintDemeGermlineSequestration(const cString& filename);
-  
+  //! Print germline sequestration for every individual in every deme
+  void PrintDemeOrgGermlineSequestration(const cString& filename);
+  //! Print genotype IDs and genotypes for GLS deme founders
+  void PrintDemeGLSFounders(const cString& filename);
+  //! Track GLS Deme Founder Data
+  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
+  void TrackDemeGLSReplication(int source_deme_id, int target_deme_id,   std::vector<std::pair<int, std::string> > founders);
 
 
 	void PrintDemeTreatableReplicationData(const cString& filename);
@@ -849,6 +898,10 @@ public:
 	void PrintDemeReactionDiversityReplicationData(const cString& filename);
   void PrintWinningDeme(const cString& filename);
 
+  void PrintDemesTasksData(const cString& filename); //@JJB**
+  void PrintDemesReactionsData(const cString& filename); //@JJB**
+  void PrintDemesFitnessData(const cString& filename); //@JJB**
+
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
   int GetNumOccupiedDemes() { return m_num_occupied_demes; }
@@ -867,6 +920,7 @@ protected:
   std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
   std::deque<double> m_ave_non_germ_mut; 
   std::deque<double> m_ave_germ_size;
+  t_gls_founder_map m_gls_deme_founders; //! Data structure to track the founders of gls demes.
   
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.
@@ -1060,7 +1114,6 @@ protected:
 public:
 	//! Print organism locations.
 	void PrintOrganismLocation(const cString& filename);
-  
   
 private:
   // Initialization

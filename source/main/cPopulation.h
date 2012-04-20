@@ -63,6 +63,9 @@ private:
   //Keeps track of which organisms are in which group.
   Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > group_list;
   Apto::Map<int, tArray<pair<int,int> > > group_intolerances;
+  Apto::Map<int, tArray<pair<int,int> > > group_intolerances_females;
+  Apto::Map<int, tArray<pair<int,int> > > group_intolerances_males;
+  Apto::Map<int, tArray<pair<int,int> > > group_intolerances_juvs;
   
   // Keep list of live organisms
   Apto::Array<cOrganism*, Apto::Smart> live_org_list;
@@ -91,6 +94,8 @@ private:
 	
   // Group formation information
   std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
+  std::map<int, int> m_group_females; //<! Maps the group id to the number of females in the group
+  std::map<int, int> m_group_males; //<! Maps the group id to the number of males in the group
 
   int m_hgt_resid; //!< HGT resource ID.
   
@@ -167,6 +172,10 @@ public:
   //! Helper method that replaces a target deme with the given source deme.
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
   
+  //! Helper method that replaces a target deme with a given source deme using
+  // the germ line flagged by the organisms. 
+  void ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx);
+  
   //! Helper method that seeds a deme from the given genome.
   void SeedDeme(cDeme& deme, Genome& genome, Systematics::Source src, cAvidaContext& ctx); 
 
@@ -211,7 +220,8 @@ public:
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
-  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx); 
+  void PrintDemeTotalAvgEnergy(cAvidaContext& ctx);
+  void PrintDemesMeritsData(); //@JJB**
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);
@@ -287,6 +297,10 @@ public:
 
   int GetNumPreyOrganisms() { return num_prey_organisms; }
   int GetNumPredOrganisms() { return num_pred_organisms; }
+  void DecNumPreyOrganisms() { num_prey_organisms--; }
+  void DecNumPredOrganisms() { num_pred_organisms--; }
+  void IncNumPreyOrganisms() { num_prey_organisms++; }
+  void IncNumPredOrganisms() { num_pred_organisms++; }
   
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
@@ -332,31 +346,28 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   // Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
+  int NumberGroupFemales(int group_id);
+  int NumberGroupMales(int group_id);
+  int NumberGroupJuvs(int group_id);
+  void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type);
   // Get the group information
   map<int, int> GetFormedGroups() { return m_groups; }
 
   // -------- Tolerance support --------
-  // Calculate tolerance of group towards immigrants @JJB
-  int CalcGroupToleranceImmigrants(int group_id);
-  // Calculate tolerance of group towards offspring (not including parent) @JJB
+  int CalcGroupToleranceImmigrants(int group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
-  // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
-  double CalcGroupOddsImmigrants(int group_id);
+  double CalcGroupOddsImmigrants(int group_id, int mating_type  = -1);
   bool AttemptImmigrateGroup(int group_id, cOrganism* org);
-  // Calculates the odds (out of 1) for offspring to be born into the group @JJB
   double CalcGroupOddsOffspring(int group_id);
   double CalcGroupOddsOffspring(cOrganism* parent);
   bool AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* parent, cOrganism* offspring);
-  // Calculates the standard deviation for group tolerance to immigrants
-  double CalcGroupAveImmigrants(int group_id);
-  double CalcGroupSDevImmigrants(int group_id);
-  // Calculates the standard deviation for group tolerance to their own offspring
+  double CalcGroupAveImmigrants(int group_id, int mating_type = -1);
+  double CalcGroupSDevImmigrants(int group_id, int mating_type = -1);
   double CalcGroupAveOwn(int group_id);
   double CalcGroupSDevOwn(int group_id);
-  // Calculates the standard deviation for group tolerance to other group offspring
   double CalcGroupAveOthers(int group_id);
   double CalcGroupSDevOthers(int group_id);
-  int& GetGroupIntolerances(int group_id, int tol_num);
+  int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
 
   // -------- HGT support --------
   //! Modify current level of the HGT resource.
@@ -385,12 +396,13 @@ private:
   void UpdateDemeStats(cAvidaContext& ctx); 
   void UpdateOrganismStats(cAvidaContext& ctx); 
   void UpdateFTOrgStats(cAvidaContext& ctx); 
+  void UpdateMaleFemaleOrgStats(cAvidaContext& ctx);
   
   void InjectClone(int cell_id, cOrganism& orig_org, Systematics::Source src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, bool reset = false); 
+  void SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset=false); 
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	

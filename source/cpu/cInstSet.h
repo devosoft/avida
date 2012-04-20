@@ -152,6 +152,7 @@ public:
   
   // Modification of instructions during run.
   void SetProbFail(const Instruction& inst, double _prob_fail) { m_lib_name_map[inst.GetOp()].prob_fail = _prob_fail; }
+  void SetRedundancy(const Instruction& inst, int _redundancy) { m_lib_name_map[inst.GetOp()].redundancy = _redundancy; m_mutation_index->SetWeight(inst.GetOp(), _redundancy);}
 
   // accessors for instruction library
   cInstLib* GetInstLib() { return m_inst_lib; }

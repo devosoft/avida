@@ -1,5 +1,5 @@
 # Avida Standard Error Data
-# Fri Feb 10 14:43:24 2012
+# Thu Apr 19 10:52:15 2012
 #  1: Update
 #  2: Merit
 #  3: Gestation Time
@@ -18,4 +18,4 @@
 # 16: True Replication Rate (based on births/update, time-averaged)
 
 0 0 0 0 0 0 0 0 0 -1 -1 0 0 0 0 0 
-750 0.909321 124.148 0.0174421 0 0 0.0306183 0.0902904 0 -1 -1 0 0.382142 0.140671 0 1.61231 
+750 0 633.681 0.0689897 0 0 0.0369385 0.0586401 0 -1 -1 0 0.31149 0.302675 0 1.48362 

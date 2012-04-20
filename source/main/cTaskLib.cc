@@ -298,10 +298,10 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "form-group") Load_FormSpatialGroup(name, info, envreqs, feedback);
   if (name == "form-group-id") Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
   if (name == "live-on-patch-id") Load_LiveOnPatchRes(name, info, envreqs, feedback);
-	
+  
   // Feed Specific Tasks
   if (name == "eat-target") Load_ConsumeTarget(name, info, envreqs, feedback);
-  
+    
   // String matching
   if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
   else if (name == "royal-road") Load_RoyalRoad(name, info, envreqs, feedback);
@@ -3448,6 +3448,8 @@ double cTaskLib::Task_ConsumeTarget(cTaskContext& ctx) const
   return reward;
 }
 
+
+
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
@@ -3456,7 +3458,6 @@ void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "all-ones", &cTaskLib::Task_AllOnes, 0, args);
 }
-
 
 double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 {

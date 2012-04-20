@@ -1,5 +1,5 @@
 # Avida Dominant Data
-# Thu Feb 16 17:20:26 2012
+# Thu Apr 19 10:22:34 2012
 #  1: Update
 #  2: Average Merit of the Dominant Genotype
 #  3: Average Gestation Time of the Dominant Genotype
@@ -18,5 +18,5 @@
 # 16: Name of the Dominant Genotype
 
 0 0 0 0 0 101 0 0 20 0 0 0 0 2.22507e-308 1 101-aaaaa 
-100 98 393 0.249364 0.00254453 101 101.254 98 68 0 0 0 0 0.249364 1 101-aaaaa 
-200 98 393 0.249364 0.00254453 101 101.32 98 8 3 1 0 0 0.249364 1 101-aaaaa 
+100 98 393 0.249364 0.00254453 101 101.254 0 68 0 0 0 0 0.249364 1 101-aaaaa 
+200 98 393 0.249364 0.00254453 101 101.32 0 8 3 1 0 0 0.249364 1 101-aaaaa 

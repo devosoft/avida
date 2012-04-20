@@ -56,12 +56,15 @@ public:
   int GetReceiverCellID() const { return m_receiverCellID; }
   int GetReceiverOrgID() const { return m_receiverOrgID; }
 	
-	int GetMessageType() const { return m_messageType; }
+  void SetTransCellID(int transCellID) { m_transCellID = transCellID; } // @JJB**
+  int GetTransCellID() const { return m_transCellID; }
+
+  int GetMessageType() const { return m_messageType; }
 
 private:
   cOrganism* m_pSender;
   cOrganism* m_pReceiver;
-	int m_messageType;
+  int m_messageType;
   unsigned int m_data;
   unsigned int m_label;
 
@@ -76,6 +79,9 @@ private:
 
   //! ID of the cell that the receiving organism occupied when this message was sent
   int m_receiverCellID;
+
+  // ID of the intermediate transmission cell for avatars @JJB**
+  int m_transCellID;
 };
 
 

@@ -277,6 +277,7 @@ private:
   void AnalyzeBranching(cString cur_string);
   void AnalyzeMutationTraceback(cString cur_string);
   void AnalyzeComplexity(cString cur_string);
+  void AnalyzeLineageComplexitySitesN(cString cur_string);
   void AnalyzeFitnessLandscapeTwoSites(cString cur_string);
   void AnalyzeComplexityTwoSites(cString cur_string);
   void AnalyzeKnockouts(cString cur_string);

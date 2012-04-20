@@ -47,7 +47,6 @@
 using namespace std;
 using namespace Avida;
 
-
 // Referenced external properties
 static Apto::String s_ext_prop_name_instset("instset");
 
@@ -91,6 +90,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_interface(NULL)
   , m_lineage_label(-1)
   , m_lineage(NULL)
+  , m_org_list_index(-1)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -126,6 +126,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_parent_ft(-1)
   , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
   , m_num_point_mut(0)
+  , m_av_in_index(-1)
+  , m_av_out_index(-1)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
@@ -134,8 +136,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   
   initialize(ctx);
 }
-
-
 
 void cOrganism::initialize(cAvidaContext& ctx)
 {
@@ -157,7 +157,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
     if (m_max_executed < 1) m_max_executed = 1;
   }
   
-  m_germline = (m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get());
   m_repair = (m_world->GetConfig().POINT_MUT_REPAIR_START.Get());
   
 	// randomize the amout of raw materials an organism has at its 
@@ -396,20 +395,20 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   int cell_id=GetCellID();
   if (cell_id_lists.GetSize())
   {
-	  for (int i=0; i<cell_id_lists.GetSize(); i++)
-	  {
-		  // if cell_id_lists have been set then we have to check if this cell is in the list
-		  if (cell_id_lists[i].GetSize()) {
-			  int j;
-			  for (j=0; j<cell_id_lists[i].GetSize(); j++)
-			  {
-				  if (cell_id==cell_id_lists[i][j])
-					  break;
-			  }
-			  if (j==cell_id_lists[i].GetSize())
-				  globalAndDeme_resource_count[i]=0;
-		  }
-	  }
+    for (int i=0; i<cell_id_lists.GetSize(); i++)
+    {
+      // if cell_id_lists have been set then we have to check if this cell is in the list
+      if (cell_id_lists[i].GetSize()) {
+        int j;
+        for (j=0; j<cell_id_lists[i].GetSize(); j++)
+        {
+          if (cell_id==cell_id_lists[i][j])
+            break;
+        }
+        if (j==cell_id_lists[i].GetSize())
+          globalAndDeme_resource_count[i]=0;
+      }
+    }
   }
   
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
@@ -430,10 +429,10 @@ void cOrganism::doOutput(cAvidaContext& ctx,
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
     double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-		m_interface->UpdateMerit(newMerit);
-		if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
-			GetPhenotype().SetToDie();
-		}
+    m_interface->UpdateMerit(newMerit);
+    if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
+      GetPhenotype().SetToDie();
+    }
   }
   m_interface->UpdateResources(ctx, global_res_change);
 
@@ -465,7 +464,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAVNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_input_list.Push( &(cur_neighbors[i]->m_input_buf) );
@@ -478,7 +477,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetAVNeighbors();
+      const tArray<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_output_list.Push( &(cur_neighbors[i]->m_output_buf) );
@@ -504,7 +503,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
-  int cell_id=GetAVCellID();
+  int cell_id = m_interface->GetAVCellID();
   if (cell_id_lists.GetSize())
   {
 	  for (int i=0; i<cell_id_lists.GetSize(); i++)
@@ -591,8 +590,8 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   	m_interface->UpdateResources(ctx, GetRBins());
   }
   
-	// Make sure the group composition is updated.
-	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
+  // Make sure the group composition is updated.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
 }
 
 
@@ -882,21 +881,22 @@ void cOrganism::MessageSent(cAvidaContext&, cOrgMessage& msg) {
  test CPU!  (Also, BroadcastMessage funnels down to code in the population interface
  too, so this way all the message sending code is in the same place.)
  */
-bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
+bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
+{
   assert(m_interface);
   InitMessaging();
-  
+
   // check to see if we've performed any tasks:
   if (m_world->GetConfig().CHECK_TASK_ON_SEND.Get()) {
     DoOutput(ctx, static_cast<int>(msg.GetData()));
   }
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {
-		MessageSent(ctx, msg);
+    MessageSent(ctx, msg);
     return true;
   }
-	// importantly, m_interface->SendMessage() fails if we're running in the test CPU.
-	return false;
+  // importantly, m_interface->SendMessage() fails if we're running in the test CPU.
+  return false;
 }
 
 
@@ -919,9 +919,9 @@ bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth
 
 /*! Called when this organism receives a message from another.
  */
-void cOrganism::ReceiveMessage(cOrgMessage& msg) {
+void cOrganism::ReceiveMessage(cOrgMessage& msg)
+{
   InitMessaging();
-	
 	// don't store more messages than we're configured to.
 	const int bsize = m_world->GetConfig().MESSAGE_RECV_BUFFER_SIZE.Get();
 	if((bsize != -1) && (bsize <= static_cast<int>(m_msg->received.size()))) {
@@ -1091,7 +1091,7 @@ bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_rang
     // check to see if we've performed any tasks...
     DoOutput(ctx);
     return true;
-  }  
+  }
   return false;
 }
 
@@ -1131,12 +1131,30 @@ bool cOrganism::HasOpinion() {
 }
 
 void cOrganism::SetForageTarget(int forage_target) {
+  // if using avatars, make sure you swap avatar lists if the org type changes!
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+    if (forage_target <= -2 && m_forage_target > -2) {
+      m_interface->DecNumPreyOrganisms();
+      m_interface->IncNumPredOrganisms();
+    }
+    else if (forage_target > -2 && m_forage_target <= -2) {
+      m_interface->IncNumPreyOrganisms();
+      m_interface->DecNumPredOrganisms();
+    }
+  }
   m_forage_target = forage_target;
-  // if using avatars, make sure you swap avatar lists if the org's catorization changes!
 }
 
-void cOrganism::Teach(bool teach) {
-  m_teach = teach;
+void cOrganism::CopyParentFT() {
+  bool copy_ft = true;
+  // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
+  // switch ft to pred, and then copy parent to become prey again.
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
+    if (m_parent_ft != -2 && m_forage_target < -1) {
+      copy_ft = false;
+    }
+  }
+  if (copy_ft) SetForageTarget(m_parent_ft); 
 }
 
 /*! Called when an organism receives a flash from a neighbor. */
@@ -1426,41 +1444,39 @@ void cOrganism::DonateResConsumedToDeme()
 bool cOrganism::MoveAV(cAvidaContext& ctx)
 {
   assert(m_interface);
-  if (m_is_dead) return false;  
-  
-  int fromcellID = GetAVCellID();         // facing unique to this avatar
-  int destcellID = GetAVFacedCellID();    // facing unique to this avatar
-  int true_cell = GetCellID();            // where the real org is...in case we need to kill it
-  
-  int facing = GetAVFacedDir();
+  if (m_is_dead) return false;
   
   // Actually perform the move
-  if (m_interface->MoveAvatar(ctx, fromcellID, destcellID, true_cell)) {
+  if (m_interface->MoveAV(ctx)) {
     //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
     //Skip counting if random < chance of miscounting a step.
-    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get()==0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {  
-      if (facing == 0) m_northerly = m_northerly - 1;       // N
-      else if (facing == 1) {                           // NE
-        m_northerly = m_northerly - 1; 
+    if (m_world->GetConfig().STEP_COUNTING_ERROR.Get() == 0 || m_world->GetRandom().GetInt(0,101) > m_world->GetConfig().STEP_COUNTING_ERROR.Get()) {   
+      int facing = m_interface->GetAVFacing();
+
+      if (facing == 0)
+        m_northerly = m_northerly - 1;                  // N
+      else if (facing == 1) {
+        m_northerly = m_northerly - 1;                  // NE
         m_easterly = m_easterly + 1;
       }  
-      else if (facing == 2) m_easterly = m_easterly + 1;    // E
-      else if (facing == 3) {                           // SE
-        m_northerly = m_northerly + 1; 
+      else if (facing == 2)
+        m_easterly = m_easterly + 1;                    // E
+      else if (facing == 3) {
+        m_northerly = m_northerly + 1;                  // SE
         m_easterly = m_easterly + 1;
       }
-      else if (facing == 4) m_northerly = m_northerly + 1;  // S
-      else if (facing == 5) {                           // SW
-        m_northerly = m_northerly + 1; 
+      else if (facing == 4)
+        m_northerly = m_northerly + 1;                  // S
+      else if (facing == 5) {
+        m_northerly = m_northerly + 1;                  // SW
         m_easterly = m_easterly - 1;
       }
-      else if (facing == 6) m_easterly = m_easterly - 1;    // W    
-      else if (facing == 7) {                           // NW
-        m_northerly = m_northerly - 1; 
+      else if (facing == 6)
+        m_easterly = m_easterly - 1;                    // W    
+      else if (facing == 7) {
+        m_northerly = m_northerly - 1;                  // NW
         m_easterly = m_easterly - 1;
       }      
-      SetAVCellID(destcellID);
-      SetAvatarFacedCell(destcellID);
     }
     else return false;                  
   }
