@@ -2246,7 +2246,7 @@
 					DEBUG_CRANDOM,
 					DEBUG,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
 					include/public/,
@@ -2256,14 +2256,11 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx10.7;
 				WARNING_CFLAGS = (
-					"-fstack-protect-all",
-					"-ferror-limit=0",
 					"-Wall",
 					"-Wextra",
 					"-Wno-unused-parameter",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-ferror-limit=0",
 				);
 			};
 			name = Debug;
@@ -2280,7 +2277,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
