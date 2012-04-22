@@ -854,9 +854,9 @@ tSmartArray<int> cOrgSensor::BuildResArray(const int habitat_used, const int id_
 int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org, const int facing) {
   const int target_facing = sighted_org->GetFacedDir();
   const int org_facing = m_organism->GetFacedDir();
-  int match_heading = target_facing - org_facing;       // to match target's heading, rotate this many times in this direction
-  if (match_heading > 4) match_heading -= 8;            // rotate left x times
-  else if (match_heading < -4) match_heading += 8;      // rotate right x times
-  else if (match_heading == 8) match_heading = 0; // rotating 8 and 0 to look same to org
+  int match_heading = target_facing - org_facing;             // to match target's heading, rotate this many times in this direction
+  if (match_heading > 4) match_heading -= 8;                  // rotate left x times
+  else if (match_heading < -4) match_heading += 8;            // rotate right x times
+  else if (abs(match_heading) == 4) match_heading = 4;        // rotating 4 and -4 to look same to org
   return match_heading;
 }
