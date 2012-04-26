@@ -77,6 +77,7 @@ protected:
   Avida::Data::Manager* m_data_mgr;
 
   cRandom m_rng;
+  cRandom m_srng;         // second random number seq to be used for random sampling etc without changing run processes
   
   bool m_test_on_div;     // flag derived from a collection of configuration settings
   bool m_test_sterilize;  // flag derived from a collection of configuration settings
@@ -109,7 +110,8 @@ public:
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cMigrationMatrix& GetMigrationMatrix(){ return *m_mig_mat; }; // MIGRATION_MATRIX
   cPopulation& GetPopulation() { return *m_pop; }
-  cRandom& GetRandom() { return m_rng; }
+  cRandom& GetRandom() { return m_rng; } 
+  cRandom& GetRandomSample() { return m_srng; }
   cStats& GetStats() { return *m_stats; }
   WorldDriver& GetDriver() { return *m_driver; }
   
