@@ -80,7 +80,7 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-  tSmartArray<cBioGroup*> minitrace_queue;
+  tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
   
   // Default organism setups...
@@ -238,8 +238,10 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
-  tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }

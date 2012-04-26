@@ -1146,12 +1146,12 @@ void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
 	wh.Adjust();
 }
 
-void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id)
+void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype)
 {
   cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
   m_minitracer = minitracer; 
   m_minitrace_file = filename;
-  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id);
+  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id, genotype);
 }
 
 void cHardwareBase::DeleteMiniTrace()

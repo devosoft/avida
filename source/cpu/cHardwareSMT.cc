@@ -357,14 +357,15 @@ void cHardwareSMT::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
   df.WriteComment(org_dat.Set("Org ID: %d", org_id));
-  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
+  df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
   df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");

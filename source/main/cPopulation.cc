@@ -1014,10 +1014,10 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
-  cBioGroup* org_bg = in_organism->GetBioGroup("genotype");
+  int org_bg_id = in_organism->GetBioGroup("genotype")->GetID();
   for (int i = 0; i < minitrace_queue.GetSize(); i++)
   {
-    if (org_bg == minitrace_queue[i]) {
+    if (org_bg_id == minitrace_queue[i]) {
       unsigned int last = minitrace_queue.GetSize() - 1;
       minitrace_queue.Swap(i, last);
       minitrace_queue.Pop();
@@ -1035,12 +1035,12 @@ void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
   if (in_organism->HasOpinion()) group_id = in_organism->GetOpinion().first;
   else group_id = in_organism->GetParentGroup();
   
-  cString filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  cString filename = cStringUtil::Stringf("minitraces/org%d-ud%d-grp%d_ft%d-gt%d.trc", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
   
-  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetID(), in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   
   if (print_mini_trace_genomes) {
-    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/org%d-ud%d-grp%d_ft%d-gt%d.trcgeno", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
     PrintMiniTraceGenome(ctx, in_organism, gen_file);
   }
 }
@@ -1052,11 +1052,61 @@ void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organis
   delete testcpu;
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, const bool print_genomes)
+void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print_genomes)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
   if (print_genomes) print_mini_trace_genomes = true;
+}
+
+void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes)
+{
+  for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
+  if (print_genomes) print_mini_trace_genomes = true;
+}
+
+void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes)
+{
+  cInitFile input_file(filename, m_world->GetWorkingDir());
+  if (!input_file.WasOpened()) {
+    const cUserFeedback& feedback = input_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::UF_ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
+        case cUserFeedback::UF_WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
+        default:                      m_world->GetDriver().NotifyComment(feedback.GetMessage(i)); break;
+      };
+    }
+  }
+  
+  tSmartArray<int> bg_id_list;
+  tSmartArray<int> queue = m_world->GetPopulation().GetMiniTraceQueue();
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString cur_line = input_file.GetLine(line_id);
+    
+    tDictionary<cString>* line = input_file.GetLineAsDict(line_id);
+    int gen_id_num = line->Get("id").AsInt();
+    
+    // setup the genotype 'list' which will be checked in activateorg
+    // skip if enough already in the existing trace queue (e.g if loading multiple genotype id files that overlap)
+    int add_num = orgs_per;
+    for (int i = 0; i < queue.GetSize(); i++) {
+      if (gen_id_num == queue[i]) {
+        add_num--;
+        if (add_num <= 0) break;
+      }
+    }
+    for (int j = 0; j < add_num; j++) {
+      bg_id_list.Push(gen_id_num);
+    }
+  }
+  
+  if (queue.GetSize() > 0) {
+    m_world->GetPopulation().AppendMiniTraces(bg_id_list, print_genomes);
+  }
+  else {
+    m_world->GetPopulation().SetMiniTraceQueue(bg_id_list, print_genomes);
+  }
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
