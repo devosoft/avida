@@ -41,16 +41,15 @@
 		10479F2E0F1BC54B00AF9F6A /* cMutationSteps.cc in Sources */ = {isa = PBXBuildFile; fileRef = 10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */; };
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
-		3E43A41D14E58BB5003DDC89 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E43A41C14E58BB5003DDC89 /* libapto.a */; };
-		3E43A42014E58BCE003DDC89 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E43A41F14E58BCE003DDC89 /* libtcmalloc-1.4.a */; };
-		3E43A42114E58BD7003DDC89 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E43A41F14E58BCE003DDC89 /* libtcmalloc-1.4.a */; };
-		3E43A42214E58BDC003DDC89 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E43A41C14E58BB5003DDC89 /* libapto.a */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		4A587EEC1332B6590037A393 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EE81332B6590037A393 /* cDynamicCount.cc */; };
 		4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EE91332B6590037A393 /* cDynamicCount.h */; };
 		4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EEA1332B6590037A393 /* cGradientCount.cc */; };
 		4A587EEF1332B6590037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EEB1332B6590037A393 /* cGradientCount.h */; };
+		4A5CEAB315505B77006A8998 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
+		4A5CEAB715505EE8006A8998 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
+		4A5CEAB815505EED006A8998 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
 		4AC3D9F4144E087000CAEA62 /* cOrgSensor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3D9F2144E087000CAEA62 /* cOrgSensor.cc */; };
 		4AC3D9F5144E087000CAEA62 /* cOrgSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cOrgSensor.h */; };
 		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
@@ -535,8 +534,6 @@
 		1097463E0AE9606E00929ED6 /* cDeme.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDeme.h; sourceTree = "<group>"; };
 		2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cProbDemeProbSchedule.cc; sourceTree = "<group>"; };
 		2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cProbDemeProbSchedule.h; sourceTree = "<group>"; };
-		3E43A41C14E58BB5003DDC89 /* libapto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libapto.a; path = ../libs/apto/build/Debug/libapto.a; sourceTree = "<group>"; };
-		3E43A41F14E58BCE003DDC89 /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtcmalloc-1.4.a"; path = "../libs/tcmalloc-1.4/build/Debug/libtcmalloc-1.4.a"; sourceTree = "<group>"; };
 		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
 		4216165511DA45A800B49195 /* cMultiProcessWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMultiProcessWorld.cc; sourceTree = "<group>"; };
 		4216165611DA45A800B49195 /* cMultiProcessWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMultiProcessWorld.h; sourceTree = "<group>"; };
@@ -1125,8 +1122,6 @@
 			files = (
 				70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */,
 				7023ECD30C0A447700362B9C /* libavida-core.a in Frameworks */,
-				3E43A42214E58BDC003DDC89 /* libapto.a in Frameworks */,
-				3E43A42114E58BD7003DDC89 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1150,6 +1145,7 @@
 			files = (
 				70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */,
 				70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */,
+				4A5CEAB315505B77006A8998 /* libapto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1158,8 +1154,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
-				3E43A41D14E58BB5003DDC89 /* libapto.a in Frameworks */,
-				3E43A42014E58BCE003DDC89 /* libtcmalloc-1.4.a in Frameworks */,
+				4A5CEAB715505EE8006A8998 /* libapto.a in Frameworks */,
+				4A5CEAB815505EED006A8998 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1759,8 +1755,6 @@
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
-				3E43A41F14E58BCE003DDC89 /* libtcmalloc-1.4.a */,
-				3E43A41C14E58BB5003DDC89 /* libapto.a */,
 				703549221333E30800D3865C /* include */,
 				DCC30C670762539A008F7A48 /* source */,
 				70F962BD135AA2E7008EDD1C /* unittests */,

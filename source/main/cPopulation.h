@@ -399,9 +399,9 @@ private:
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
-  void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  void TestForMiniTrace(cOrganism* in_organism);
+  void SetupMiniTrace(cOrganism* in_organism);
+  void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
   
   int PlaceAvatar(cOrganism* parent);
   

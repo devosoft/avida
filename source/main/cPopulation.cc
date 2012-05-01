@@ -1007,11 +1007,11 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       org_survived = false; 
   }
   // are there mini traces we need to test for?
-  if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(ctx, in_organism);  
+  if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(in_organism);  
   return org_survived;
 }
 
-void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
+void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
   int org_bg_id = in_organism->GetBioGroup("genotype")->GetID();
@@ -1021,13 +1021,13 @@ void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
       unsigned int last = minitrace_queue.GetSize() - 1;
       minitrace_queue.Swap(i, last);
       minitrace_queue.Pop();
-      SetupMiniTrace(ctx, in_organism);
+      SetupMiniTrace(in_organism);
       break;
     }
   }
 }
 
-void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
+void cPopulation::SetupMiniTrace(cOrganism* in_organism)
 {
   const int target = in_organism->GetParentFT();
   const int id = in_organism->GetID();
@@ -1041,14 +1041,18 @@ void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
   
   if (print_mini_trace_genomes) {
     cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/org%d-ud%d-grp%d_ft%d-gt%d.trcgeno", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
-    PrintMiniTraceGenome(ctx, in_organism, gen_file);
+    PrintMiniTraceGenome(in_organism, gen_file);
   }
 }
 
-void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename)
+void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-  testcpu->PrintGenome(ctx, Genome(in_organism->GetBioGroup("genotype")->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
+  // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+  cRandom rng(0);
+  cAvidaContext ctx2(m_world, rng);
+  
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+  testcpu->PrintGenome(ctx2, Genome(in_organism->GetBioGroup("genotype")->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
   delete testcpu;
 }
 
@@ -5758,7 +5762,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   if(m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     cell_array[cell_id].GetOrganism()->GetOrgInterface().AddPredPreyAV(cell_id);
   }
-  if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
+  if (trace) SetupMiniTrace(cell_array[cell_id].GetOrganism());    
 }
 
 void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type, int trace) 
