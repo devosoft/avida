@@ -632,6 +632,10 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   tArray<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
   
   
+  if(infection_mechanism == 0) {
+    interaction_fails = false;
+  }
+  
   // 1: Parasite must match at least 1 task the host does (Overlap)
   if(infection_mechanism == 1)
   {
@@ -734,7 +738,6 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
       return false;
   }
   
-  //infection_mechanism == 0
   return true;
 }
 
