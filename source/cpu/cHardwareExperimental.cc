@@ -4405,6 +4405,9 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
+  // return false if prey pop too low
+  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
+    
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
 
@@ -4493,6 +4496,9 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
+  // return false if prey pop too low
+  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
+
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
