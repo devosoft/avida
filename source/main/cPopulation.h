@@ -68,10 +68,10 @@ private:
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
   //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_females;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_males;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_juvs;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances_females;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances_males;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances_juvs;
   
   // Keep list of live organisms
   tSmartArray<cOrganism* > live_org_list;
@@ -84,7 +84,7 @@ private:
   bool print_mini_trace_genomes;
   
   // Default organism setups...
-  cEnvironment & environment;          // Physics & Chemistry description
+  cEnvironment& environment;          // Physics & Chemistry description
 
   // Other data...
   int world_x;                         // Structured population width.
@@ -329,7 +329,7 @@ public:
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);
-  void MakeGroup(cOrganism* org); // @JJB
+  void MakeGroup(cOrganism* org);
   // Removes an organism from a group 
   void LeaveGroup(cOrganism* org, int group_id);
 

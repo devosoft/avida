@@ -3302,10 +3302,9 @@ public:
   }
 };
 
-//@JJB**
+// Deme competition based on demes' merits with minor fitness bonuses for successful messaging and deme-IO, implemented for neural networking. @JJB
 class cActionCompeteDemesByMerit : public cAbstractCompeteDemes
 {
-private:
 public:
   cActionCompeteDemesByMerit(cWorld* world, const cString& args, Feedback& feedback) : cAbstractCompeteDemes(world, args, feedback)
   {
@@ -3313,10 +3312,7 @@ public:
 
   ~cActionCompeteDemesByMerit() {}
 
-  static const cString GetDescription()
-  {
-    return "Compete demes according to the each deme's current merit";
-  }
+  static const cString GetDescription() { return "Compete demes according to the each deme's current merit"; }
 
   virtual double Fitness(cDeme& deme, cAvidaContext& ctx)
   {
@@ -3324,18 +3320,16 @@ public:
     double messaging_bonus;
     double input_bonus;
     double output_bonus;
-    if (deme.GetMessageSuccessfullySent() > 0)
-      messaging_bonus = 1.5;
-    else
-      messaging_bonus = 1.0;
-    if (deme.HasDoneInput())
-      input_bonus = 1.5;
-    else
-      input_bonus = 1.0;
-    if (deme.HasDoneOutput())
-      output_bonus = 1.5;
-    else
-      output_bonus = 1.0;
+
+    if (deme.GetMessageSuccessfullySent() > 0) messaging_bonus = 1.5;
+    else messaging_bonus = 1.0;
+
+    if (deme.HasDoneInput()) input_bonus = 1.5;
+    else input_bonus = 1.0;
+
+    if (deme.HasDoneOutput()) output_bonus = 1.5;
+    else output_bonus = 1.0;
+
     double fitness = deme.GetCurMerit().GetDouble() * messaging_bonus * input_bonus * output_bonus;
     return fitness;
   }
@@ -5618,7 +5612,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionCompeteDemesByTaskCount>("CompeteDemesByTaskCount");
   action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
   action_lib->Register<cActionCompeteDemesByEnergyDistribution>("CompeteDemesByEnergyDistribution");
-  action_lib->Register<cActionCompeteDemesByMerit>("CompeteDemesByMerit"); //@JJB**
+  action_lib->Register<cActionCompeteDemesByMerit>("CompeteDemesByMerit");
 	
   /* deme predicate*/
   action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
@@ -5630,7 +5624,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
-	action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
+  action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
   action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");

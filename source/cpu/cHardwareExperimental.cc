@@ -278,15 +278,17 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, nInstFlag::STALL),
     
-    // Avatar instructions 
     tInstLibEntry<tMethod>("move-avatar", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-AV-left-one", &cHardwareExperimental::Inst_RotateAVLeft, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-AV-right-one", &cHardwareExperimental::Inst_RotateAVRight, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("move-AV", &cHardwareExperimental::Inst_MoveAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-cell-has-output-AV", &cHardwareExperimental::Inst_IfCellHasOutputAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-not-cell-has-output-AV", &cHardwareExperimental::Inst_IfNotCellHasOutputAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-faced-has-output-AV", &cHardwareExperimental::Inst_IfFacedHasOutputAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-not-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotFacedHasOutputAV, nInstFlag::STALL),
+
+    // Neural networking instructions @JJB
+    tInstLibEntry<tMethod>("rotate-neuron-AV-left-one", &cHardwareExperimental::Inst_RotateNeuronAVLeft, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-neuron-AV-right-one", &cHardwareExperimental::Inst_RotateNeuronAVRight, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-neuron-AV-by-X", &cHardwareExperimental::Inst_RotateNeuronAVbyX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("move-neuron-AV", &cHardwareExperimental::Inst_MoveNeuronAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-not-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-not-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV, nInstFlag::STALL),
     
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
@@ -3401,61 +3403,112 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   }
 }
 
-bool cHardwareExperimental::Inst_RotateAVLeft(cAvidaContext& ctx)
+// -------- Neural networking -------- @JJB
+// All only linked to input avatars for now
+
+// Rotate the register-value-selected avatar, left by one
+bool cHardwareExperimental::Inst_RotateNeuronAVLeft(cAvidaContext& ctx)
 {
-  return m_organism->GetOrgInterface().RotateAV(1);
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().RotateAV(-1, avatar_num);
 }
 
-bool cHardwareExperimental::Inst_RotateAVRight(cAvidaContext& ctx)
+// Rotate the register-value-selected avatar, right by one
+bool cHardwareExperimental::Inst_RotateNeuronAVRight(cAvidaContext& ctx)
 {
-  return m_organism->GetOrgInterface().RotateAV(-1);
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_num].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().RotateAV(1, avatar_num);
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-bool cHardwareExperimental::Inst_MoveAV(cAvidaContext& ctx)
+// Rotate the register-value-selected avatar, by the register set amount
+bool cHardwareExperimental::Inst_RotateNeuronAVbyX(cAvidaContext& ctx)
 {
-  return m_organism->GetOrgInterface().MoveAV(ctx);
+  const int avatar_reg = FindModifiedRegister(rBX);
+  const int rotate_reg = FindModifiedNextRegister(avatar_reg);
+
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+  const int rotate = m_threads[m_cur_thread].reg[rotate_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().RotateAV(rotate, avatar_num);
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org's input avatar occupies a cell that also has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfCellHasOutputAV(cAvidaContext& ctx)
+// Move the register-value-selected avatar forward into its faced cell
+bool cHardwareExperimental::Inst_MoveNeuronAV(cAvidaContext& ctx)
 {
-  if (!m_organism->GetOrgInterface().HasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().MoveAV(ctx, avatar_num);
+}
+
+// If the register-value-selected input avatar occupies a cell that also has an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx)
+{
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (!m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org's input avatar does not occupy a cell that has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotCellHasOutputAV(cAvidaContext& ctx)
+// If the register-value-selected input avatar does not occupy a cell that has an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx)
 {
-  if (m_organism->GetOrgInterface().HasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org is facing a cell with an output avatar, execute next
-bool cHardwareExperimental::Inst_IfFacedHasOutputAV(cAvidaContext& ctx)
+// If the register-value-selected input avatar is facing a cell with an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
 {
-  if (!m_organism->GetOrgInterface().FacedHasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (!m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org is facing a cell without an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx)
+// If the register-value-selected input avatar is facing a cell without an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
 {
-  if (m_organism->GetOrgInterface().FacedHasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
+
 
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {

@@ -55,10 +55,10 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_sense_count(m_world->GetStats().GetSenseSize())
 , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
-, tolerance_immigrants()        
-, tolerance_offspring_own()    
-, tolerance_offspring_others()  
-, intolerances( (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) ? 1 : 3 ) 
+, m_tolerance_immigrants()
+, m_tolerance_offspring_own()
+, m_tolerance_offspring_others()
+, m_intolerances((m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) ? 1 : 3)
 , mating_type(MATING_TYPE_JUVENILE)
 , mate_preference(MATE_PREFERENCE_RANDOM)
 , cur_mating_display_a(0)
@@ -162,10 +162,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_sense_count          = in_phen.cur_sense_count;                 
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;
-  tolerance_immigrants          = in_phen.tolerance_immigrants;        
-  tolerance_offspring_own       = in_phen.tolerance_offspring_own;     
-  tolerance_offspring_others    = in_phen.tolerance_offspring_others;  
-  intolerances                  = in_phen.intolerances;                
+  m_tolerance_immigrants          = in_phen.m_tolerance_immigrants;
+  m_tolerance_offspring_own       = in_phen.m_tolerance_offspring_own;
+  m_tolerance_offspring_others    = in_phen.m_tolerance_offspring_others;
+  m_intolerances                  = in_phen.m_intolerances;
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
   cur_stolen_reaction_count       = in_phen.cur_stolen_reaction_count;  
   mating_type = in_phen.mating_type; //@CHC
@@ -395,10 +395,10 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.Clear();        
-  tolerance_offspring_own.Clear();     
-  tolerance_offspring_others.Clear();  
-  intolerances.SetAll(make_pair(-1,-1));  
+  m_tolerance_immigrants.Clear();        
+  m_tolerance_offspring_own.Clear();     
+  m_tolerance_offspring_others.Clear();  
+  m_intolerances.SetAll(make_pair(-1, -1));  
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   mating_type = MATING_TYPE_JUVENILE; //@CHC
   mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
@@ -553,7 +553,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
  *     - This is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupInject(const Sequence & _genome)
+void cPhenotype::SetupInject(const Sequence& _genome)
 {
   // Setup reasonable initial values injected organism...
   genome_length   = _genome.GetSize();
@@ -602,10 +602,10 @@ void cPhenotype::SetupInject(const Sequence & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.Clear();        
-  tolerance_offspring_own.Clear();     
-  tolerance_offspring_others.Clear();  
-  intolerances.SetAll(make_pair(-1,-1));  
+  m_tolerance_immigrants.Clear();        
+  m_tolerance_offspring_own.Clear();     
+  m_tolerance_offspring_others.Clear();  
+  m_intolerances.SetAll(make_pair(-1, -1));  
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   mating_type = MATING_TYPE_JUVENILE; // @CHC
   mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
@@ -752,7 +752,7 @@ void cPhenotype::ResetMerit(const Sequence & _cgenome)
  * This function is run whenever an organism executes a successful divide.
  **/
 
-void cPhenotype::DivideReset(const Sequence & _genome)
+void cPhenotype::DivideReset(const Sequence& _genome)
 {
   assert(time_used >= 0);
   assert(initialized == true);
@@ -945,10 +945,10 @@ void cPhenotype::DivideReset(const Sequence & _genome)
   }
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-	  tolerance_immigrants.Clear();        
-	  tolerance_offspring_own.Clear();     
-	  tolerance_offspring_others.Clear();  
-      intolerances.SetAll(make_pair(-1,-1));  
+    m_tolerance_immigrants.Clear();        
+    m_tolerance_offspring_own.Clear();     
+    m_tolerance_offspring_others.Clear();  
+    m_intolerances.SetAll(make_pair(-1, -1));  
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
@@ -966,7 +966,7 @@ void cPhenotype::DivideReset(const Sequence & _genome)
  * and copied size in its merit.
  **/
 
-void cPhenotype::TestDivideReset(const Sequence & _genome)
+void cPhenotype::TestDivideReset(const Sequence& _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
@@ -1050,10 +1050,10 @@ void cPhenotype::TestDivideReset(const Sequence & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.Clear();        
-  tolerance_offspring_own.Clear();     
-  tolerance_offspring_others.Clear();  
-  intolerances.SetAll(make_pair(-1,-1));  
+  m_tolerance_immigrants.Clear();
+  m_tolerance_offspring_own.Clear();
+  m_tolerance_offspring_others.Clear();
+  m_intolerances.SetAll(make_pair(-1, -1));  
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Setup other miscellaneous values...
@@ -1152,7 +1152,7 @@ void cPhenotype::TestDivideReset(const Sequence & _genome)
  *   - this is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
+void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
 {
   // Copy divide values from parent, which should already be setup.
   merit           = clone_phenotype.merit;
@@ -1206,10 +1206,10 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.Clear();        
-  tolerance_offspring_own.Clear();     
-  tolerance_offspring_others.Clear();  
-  intolerances.SetAll(make_pair(-1,-1));  
+  m_tolerance_immigrants.Clear();        
+  m_tolerance_offspring_own.Clear();     
+  m_tolerance_offspring_others.Clear();  
+  m_intolerances.SetAll(make_pair(-1, -1));  
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   mating_type = MATING_TYPE_JUVENILE; // @CHC
   mate_preference = MATE_PREFERENCE_RANDOM; //@CHC
@@ -1695,8 +1695,8 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
   return out_fitness;
 }
 
-/* Returns the total tolerance for immigrants by counting
- the total number of updates within the update window that dec-tolerance has been executed. 
+/* Returns the organism's total tolerance towards immigrants by counting
+ the total number of dec-tolerance entries within the update window that have been executed. @JJB
  */
 int cPhenotype::CalcToleranceImmigrants()
 {
@@ -1704,26 +1704,27 @@ int cPhenotype::CalcToleranceImmigrants()
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
 
   // Check if cached value is up-to-date, return
-  if (intolerances[0].first == cur_update) return tolerance_max - intolerances[0].second;
+  if (m_intolerances[0].first == cur_update) return tolerance_max - m_intolerances[0].second;
   
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
   // Update the tolerance list by getting rid of outdated records
-  while (tolerance_immigrants.GetSize() && *tolerance_immigrants.GetLast() < cur_update - update_window)
-    delete tolerance_immigrants.PopRear();
+  while (m_tolerance_immigrants.GetSize() && *m_tolerance_immigrants.GetLast() < cur_update - update_window)
+    delete m_tolerance_immigrants.PopRear();
   
   // And prune the list down to MAX_TOLERANCE entries.
-  while (tolerance_immigrants.GetSize() > tolerance_max)
-    delete tolerance_immigrants.PopRear();
+  while (m_tolerance_immigrants.GetSize() > tolerance_max)
+    delete m_tolerance_immigrants.PopRear();
 
-  const int tolerance = tolerance_max - tolerance_immigrants.GetSize();
+  const int tolerance = tolerance_max - m_tolerance_immigrants.GetSize();
+
   // Update cached values
-  intolerances[0].first = cur_update;
-  intolerances[0].second = tolerance_immigrants.GetSize();
+  m_intolerances[0].first = cur_update;
+  m_intolerances[0].second = m_tolerance_immigrants.GetSize();
   return tolerance;
 }
 
-/* Returns the total tolerance for own offspring by counting
- the total number of updates within the update window that dec-tolerance has been executed. 
+/* Returns the organism's total tolerance towards the organism's own offspring by counting
+ the total number of dec-tolerance entries within the update window that have been executed. @JJB
  */
 int cPhenotype::CalcToleranceOffspringOwn()
 {
@@ -1734,27 +1735,28 @@ int cPhenotype::CalcToleranceOffspringOwn()
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) return tolerance_max;
 
   // Check if cached value is up-to-date, return
-  if (intolerances[1].first == cur_update) return tolerance_max - intolerances[1].second;
+  if (m_intolerances[1].first == cur_update) return tolerance_max - m_intolerances[1].second;
 
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
   
   // Update the tolerance list by getting rid of outdated records
-  while (tolerance_offspring_own.GetSize() && *tolerance_offspring_own.GetLast() < cur_update - update_window)
-    delete tolerance_offspring_own.PopRear();
+  while (m_tolerance_offspring_own.GetSize() && *m_tolerance_offspring_own.GetLast() < cur_update - update_window)
+    delete m_tolerance_offspring_own.PopRear();
   
   // And prune the list down to MAX_TOLERANCE entries.
-  while (tolerance_offspring_own.GetSize() > tolerance_max)
-    delete tolerance_offspring_own.PopRear();
+  while (m_tolerance_offspring_own.GetSize() > tolerance_max)
+    delete m_tolerance_offspring_own.PopRear();
   
-  const int tolerance = tolerance_max - tolerance_offspring_own.GetSize();
+  const int tolerance = tolerance_max - m_tolerance_offspring_own.GetSize();
+
   // Update cached values
-  intolerances[1].first = cur_update;
-  intolerances[1].second = tolerance_offspring_own.GetSize();
+  m_intolerances[1].first = cur_update;
+  m_intolerances[1].second = m_tolerance_offspring_own.GetSize();
   return tolerance;
 }
 
-/* Returns the total tolerance for the offspring of others in the group by counting
- the total number of updates within the update window that dec-tolerance has been executed. 
+/* Returns the organism's total tolerance towards the offspring of others in the group by counting
+ the total number of dec-tolerance entries within the update window that have been executed. @JJB
  */
 int cPhenotype::CalcToleranceOffspringOthers()
 {
@@ -1765,23 +1767,23 @@ int cPhenotype::CalcToleranceOffspringOthers()
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() > 0) return tolerance_max;
 
   // Check if cached value is up-to-date, return
-  if (intolerances[2].first == cur_update) return tolerance_max - intolerances[2].second;
+  if (m_intolerances[2].first == cur_update) return tolerance_max - m_intolerances[2].second;
 
   const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();  
   
   // Update the tolerance list by getting rid of outdated records
-  while (tolerance_offspring_others.GetSize() && *tolerance_offspring_others.GetLast() < cur_update - update_window) 
-    delete tolerance_offspring_others.PopRear();
+  while (m_tolerance_offspring_others.GetSize() && *m_tolerance_offspring_others.GetLast() < cur_update - update_window) 
+    delete m_tolerance_offspring_others.PopRear();
   
   // And prune the list down to MAX_TOLERANCE entries.
-  while (tolerance_offspring_others.GetSize() > tolerance_max)
-    delete tolerance_offspring_others.PopRear();
+  while (m_tolerance_offspring_others.GetSize() > tolerance_max)
+    delete m_tolerance_offspring_others.PopRear();
 
-  const int tolerance = tolerance_max - tolerance_offspring_others.GetSize();
+  const int tolerance = tolerance_max - m_tolerance_offspring_others.GetSize();
 
   // Update cached values
-  intolerances[2].first = cur_update;
-  intolerances[2].second = tolerance_offspring_others.GetSize();
+  m_intolerances[2].first = cur_update;
+  m_intolerances[2].second = m_tolerance_offspring_others.GetSize();
   return tolerance;
 }
 
@@ -1997,10 +1999,10 @@ void cPhenotype::NewTrial()
   //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  tolerance_immigrants.Clear();        
-  tolerance_offspring_own.Clear();     
-  tolerance_offspring_others.Clear();  
-  intolerances.SetAll(make_pair(-1,-1));  
+  m_tolerance_immigrants.Clear();        
+  m_tolerance_offspring_own.Clear();     
+  m_tolerance_offspring_others.Clear();  
+  m_intolerances.SetAll(make_pair(-1, -1));  
   
   // Setup other miscellaneous values...
   num_divides++;
@@ -2083,7 +2085,7 @@ void cPhenotype::NewTrial()
  * by another call (like NewTrial). It is a subset of DivideReset @JEB
  **/
 
-void cPhenotype::TrialDivideReset(const Sequence & _genome)
+void cPhenotype::TrialDivideReset(const Sequence& _genome)
 {
   int cur_merit_base = CalcSizeMerit();
   
@@ -2124,10 +2126,10 @@ void cPhenotype::TrialDivideReset(const Sequence & _genome)
   }
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-	  tolerance_immigrants.Clear();        
-	  tolerance_offspring_own.Clear();     
-	  tolerance_offspring_others.Clear();  
-      intolerances.SetAll(make_pair(-1,-1));  
+    m_tolerance_immigrants.Clear();        
+    m_tolerance_offspring_own.Clear();     
+    m_tolerance_offspring_others.Clear();  
+    m_intolerances.SetAll(make_pair(-1,-1));  
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;

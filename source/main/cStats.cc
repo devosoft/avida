@@ -2624,7 +2624,6 @@ void cStats::PrintDemesTasksData(const cString& filename)
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
     for (int task_id = 0; task_id < num_tasks; task_id++) {
-      //**
       df.Write(deme.GetTaskCount()[task_id], cStringUtil::Stringf("%i.", deme_id) + task_names[task_id]);
     }
   }
@@ -2644,7 +2643,6 @@ void cStats::PrintDemesReactionsData(const cString& filename)
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
     for (int reaction_id = 0; reaction_id < num_reactions; reaction_id++) {
-      //**
       df.Write(deme.GetReactionCount()[reaction_id], cStringUtil::Stringf("%i.", deme_id) + m_world->GetEnvironment().GetReactionLib().GetReaction(reaction_id)->GetName());
     }
   }

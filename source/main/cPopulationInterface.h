@@ -80,7 +80,7 @@ public:
   int GetCellXPosition();
   int GetCellYPosition();
   
-  int GetCellData();//**
+  int GetCellData();
   int GetCellDataOrgID();
   int GetCellDataUpdate();
   int GetCellDataTerritory();
@@ -234,8 +234,8 @@ public:
   void ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_type, int new_type); 
   
   // ----- Tolerance/Group support ------
-  int IncTolerance(const int toleranceType, cAvidaContext &ctx);
-  int DecTolerance(const int toleranceType, cAvidaContext &ctx);
+  int IncTolerance(const int tolerance_type, cAvidaContext& ctx);
+  int DecTolerance(const int tolerance_type, cAvidaContext& ctx);
   int CalcGroupToleranceImmigrants(int prop_group_id, int mating_type = -1);
   int CalcGroupToleranceOffspring(cOrganism* parent_organism);
   double CalcGroupOddsImmigrants(int group_id, int mating_type);
@@ -269,7 +269,7 @@ private:
   };
 
   tSmartArray<sIO_avatar> m_avatars;
-  inline int GetNumAV() { return m_avatars.GetSize(); }
+  inline int getNumAV() { return m_avatars.GetSize(); }
 public:
   bool HasOutputAV(int av_num = 0);
   bool FacedHasOutputAV(int av_num = 0);
@@ -288,6 +288,7 @@ public:
   int GetAVFacedDataOrgID(int av_num = 0);
   int GetAVFacedDataUpdate(int av_num = 0);
   int GetAVFacedDataTerritory(int av_num = 0);
+  int FindAV(bool input, bool output, int av_num = 0);
   void SetAVFacing(int av_facing, int av_num = 0);
   bool SetAVCellID(int av_cell_id, int av_num = 0);
   void SetAVFacedCellID(int av_num = 0);
