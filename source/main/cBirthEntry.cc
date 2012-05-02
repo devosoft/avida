@@ -54,6 +54,9 @@ cBirthEntry::cBirthEntry(const Genome& _offspring, cOrganism* _parent, int _time
 
   // Similarly, I'm not setting the biogroups here because I don't want to add references to them,
   // since this birth entry is going to be destroyed anyway
+  if (_parent->HasOpinion()) {
+    m_group_id = _parent->GetOpinion().first;
+  }
 }
 
 //Returns a string representation of a birth entry's information (primarily used for print actions
@@ -67,6 +70,7 @@ cString cBirthEntry::GetPhenotypeString()
   //mate_preference
   //mating_display_a
   //mating_display_b
+  //group
   cString result;
   
   result = genome.GetSequence().AsString();
@@ -76,6 +80,7 @@ cString cBirthEntry::GetPhenotypeString()
   result += " "; result += cStringUtil::Convert(m_mate_preference);
   result += " "; result += cStringUtil::Convert(m_mating_display_a);
   result += " "; result += cStringUtil::Convert(m_mating_display_b);
+  result += " "; result += cStringUtil::Convert(m_group_id);
   
   return result;
 }
@@ -83,7 +88,7 @@ cString cBirthEntry::GetPhenotypeString()
 //Companion function for GetPhenotypeString() that tells what information is contained in each field
 cString cBirthEntry::GetPhenotypeStringFormat()
 {
-  return "genome timestamp merit mating_type mate_preference mating_display_a mating_display_b";
+  return "genome timestamp merit mating_type mate_preference mating_display_a mating_display_b group";
 }
 
 cBirthEntry& cBirthEntry::operator=(const cBirthEntry& _birth_entry)

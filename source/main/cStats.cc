@@ -2047,6 +2047,90 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
 
 }
 
+/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently prints information for each org in each deme.
+ */
+void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
+{  
+  
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Cell data per udpate.");
+	df.WriteTimeStamp();
+  
+  cPopulation& pop = m_world->GetPopulation();
+	static const int numDemes = pop.GetNumDemes();
+  
+  for(int i = 0; i < numDemes; ++i) {
+    cDeme& deme = pop.GetDeme(i);
+    for (int j=0; j<deme.GetSize(); ++j) {
+      
+      cPopulationCell& cell = deme.GetCell(j);
+      if (cell.IsOccupied()) {
+        cOrganism* o = cell.GetOrganism();
+        int isGerm = 0;
+        if (o->IsGermline()) isGerm = 1;
+        
+        df.Write(GetUpdate(), "Update [update]");
+        df.Write(o->GetDemeID(), "Deme ID for cell [demeid]");
+        df.Write(j, "Org placement in deme [orgloc]");
+        df.Write(o->GetOrgInterface().GetCellXPosition(), "Org x position [xpos]");
+        df.Write(o->GetOrgInterface().GetCellYPosition(), "Org y position [ypos]");                 
+        df.Write(isGerm, "Org is germ line [isgerm]");
+        df.Write(o->GetNumOfPointMutationsApplied(), "Number of point mutations [numPoint]");
+        
+        tArray<int> react_count = o->GetPhenotype().GetCumulativeReactionCount();
+        for (int k=0; k<react_count.GetSize(); ++k){
+          df.Write(react_count[k], "reaction");
+        }
+        df.Endl();
+        
+      }
+    }
+	}
+}
+
+
+/*! Print the genotype ID and genotypes of the founders of recently born demes that use germline method = 3, 
+ where the organisms flag themselves as part of the germline.
+ 
+ Only deme "births" (i.e., due to deme replication) are tracked; the ancestral deme founders are lost.  
+ The update column is the update at which this method executes, not the time at which the given deme was born.
+ */
+void cStats::PrintDemeGLSFounders(const cString& filename){
+
+
+    cDataFile& df = m_world->GetDataFile(filename);
+    
+    df.WriteComment("Avida gls deme founder data.");
+    df.WriteTimeStamp();
+    df.WriteColumnDesc("Update [update]");
+    df.WriteColumnDesc("Soure Deme ID [sdemeid]");
+    df.WriteColumnDesc("Target Deme ID [tdemeid]");
+    df.WriteColumnDesc("Number of founders [size]");
+    df.WriteColumnDesc("{target genotype ID, target genome... founder 0, ...}");
+    df.FlushComments();
+    
+    std::ofstream& out = df.GetOFStream();
+   
+   //  typedef std::map<std::pair<int, int>, std::vector<std::pair<int, std::string> > > t_gls_founder_map;
+
+    for(t_gls_founder_map::iterator i=m_gls_deme_founders.begin(); i!=m_gls_deme_founders.end(); ++i) {
+      out << GetUpdate() << " " << i->first.first << " " << i->first.second << " " << i->second.size();
+      for(std::vector<std::pair<int, std::string> >::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+        out << " " << (*j).first << " " << (*j).second; 
+//        out << " " << *j;
+      }
+      df.Endl();
+    }
+    m_gls_deme_founders.clear();
+
+}
+
+//! Track GLS Deme Founder Data
+void cStats::TrackDemeGLSReplication(int source_deme_id, int target_deme_id,   std::vector<std::pair<int, std::string> > founders){
+  m_gls_deme_founders[make_pair(source_deme_id, target_deme_id)] = founders;
+}
+
+
 
 
 
@@ -3393,7 +3477,7 @@ void cStats::PrintGroupTolerance(const cString& filename)
     df.Write(cur_size,                                                  "size of groups [grsize]");
     df.Write(resource_count[i],"group resource available [grfood]");
     df.Write(resource_count[i] / cur_size, "per capita group resource available [grfoodper]");
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i, -1),   "odds for immigrants coming into group [oddsimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i, -1),    "average intra-group tolerance to immigrants [aveimmigrants]");
       df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i, -1),   "standard deviation for group tolerance to immigrants [sdevimmigrants]");
@@ -3426,7 +3510,7 @@ void cStats::PrintGroupMTTolerance(const cString& filename)
     df.Write(m_world->GetPopulation().NumberGroupFemales(i),            "number group females");
     df.Write(m_world->GetPopulation().NumberGroupMales(i),              "number group males");
     df.Write(m_world->GetPopulation().NumberGroupJuvs(i),               "number group juvs");
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       df.Write(m_world->GetPopulation().CalcGroupOddsImmigrants(i, 0),   "immigrant female odds");
       df.Write(m_world->GetPopulation().CalcGroupAveImmigrants(i, 0),    "ave female-female tolerance");
       df.Write(m_world->GetPopulation().CalcGroupSDevImmigrants(i, 0),   "sd female-female tolerance");
@@ -3576,7 +3660,58 @@ void cStats::ZeroToleranceInst()
   }
   m_is_tolerance_exe_insts.ResizeClear(0);
 }
+/*
+ data about donate specific push: id, donated id, kin,
+ */
 
+void cStats::PushDonateSpecificInstExe(int org_id, int cell_id, int recipient_id, int recipient_cell_id, int relatedness, int recip_is_beggar, int num_donates)
+{
+  if (m_donate_specific.GetSize() > 0) {
+    if (m_donate_specific[0].update != m_update) {
+      m_donate_specific.ResizeClear(0);
+    }
+  }
+  
+  sDonateSpecificCircumstances donates;
+  donates.update = GetUpdate();
+  donates.org_id = org_id;
+  donates.cell_id = cell_id;
+  donates.recipient_id = recipient_id;
+  donates.recipient_cell_id = recipient_cell_id;
+  donates.relatedness = relatedness;
+  donates.recip_is_beggar = recip_is_beggar;
+  donates.num_donates = num_donates;
+  
+  m_donate_specific.Push(donates);
+}
+
+// Prints the circumstances around each tolerance instruction executed within the last update. 
+void cStats::PrintDonateSpecificData(const cString& filename)
+{
+  // TRACK_TOLERANCE must be on in config for output file to function
+  if(!m_world->GetConfig().TRACK_DONATES.Get()) {
+    m_world->GetDriver().RaiseFatalException(-1, "TRACK_DONATIONS option must be turned on in avida.cfg for PrintDonateSpecificData to function.");
+  }
+  
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida circumstance data for each donate-specific instruction pre-execution");
+  df.WriteTimeStamp();
+  
+  for (int i = 0; i < m_donate_specific.GetSize(); i++) {
+    if (m_donate_specific[i].update == m_update) {
+      df.Write(m_donate_specific[i].update, "Update [update]");
+      df.Write(m_donate_specific[i].org_id, "id of donor [org_id]");
+      df.Write(m_donate_specific[i].cell_id, "cell id of donor [cell_id]");
+      df.Write(m_donate_specific[i].recipient_id, "id of recipient [recipient_id]");
+      df.Write(m_donate_specific[i].recipient_cell_id, "cell id of teh recipient [recipient_cell_id]");
+      df.Write(m_donate_specific[i].relatedness, "relatedness [relatedness]");
+      df.Write(m_donate_specific[i].recip_is_beggar, "recip_is_beggar [is recipient beggar]");
+      df.Write(m_donate_specific[i].num_donates, "num_donates [lifetime num donates]");
+      df.Endl();
+    }
+  }
+}
 /*
  Print data regarding the living org targets.
  */
@@ -3590,29 +3725,65 @@ void cStats::PrintTargets(const cString& filename)
 
   df.Write(m_update, "Update");
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  // +2 for predators (-2) and default (-1) targets
-  const int num_targets = resource_lib.GetSize() + 2;
+  bool has_pred = false;
+  int offset = 1;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+    has_pred = true;
+    offset = 2;
+  }
   
+  // ft's may not be sequentially numbered
+  int num_targets = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_targets++; 
+
+  tArray<int> raw_target_list;
+  raw_target_list.Resize(num_targets);
+  raw_target_list.SetAll(0);
+  int this_index = 0;
+  for (itr = fts_avail.begin(); itr!=fts_avail.end(); itr++) {
+    if (*itr != -1 && *itr != -2) raw_target_list[this_index] = *itr; 
+    this_index++;
+  }
+    
+  int tot_targets = num_targets + offset;
   tArray<int> target_list;
-  target_list.Resize(num_targets);
+  target_list.Resize(tot_targets);
   target_list.SetAll(0);
+  for (int i = 0; i < raw_target_list.GetSize(); i++) {
+    target_list[i + offset] = raw_target_list[i];
+  }
+  if (has_pred) {
+    target_list[0] = -2;
+    target_list[1] = -1;
+  }
+  else {
+    target_list[0] = -1;
+  }
+  
+  tArray<int> org_targets;
+  org_targets.Resize(tot_targets);
+  org_targets.SetAll(0);
   
   const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
-    target_list[org->GetForageTarget() + 2]++;
-  }
-  
-  for (int target = 0; target < target_list.GetSize(); target++) {
-    // make sure we always have a listing for predators and no-target orgs, but otherwise only print out for possible targets 
-    // (don't count resources having the same target as additional possible targets (no duplicates))
-    if ((m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && target == 0) || target == 1 || m_world->GetEnvironment().IsTargetID(target - 2)) {
-      df.Write(target - 2, "Target ID");
-      df.Write(target_list[target], "Num Orgs Targeting ID");
+    int this_target = org->GetForageTarget();
+
+    int this_index = this_target;
+    for (int i = 0; i < target_list.GetSize(); i++) {
+      if (target_list[i] == this_target) {
+        this_index = i;
+        break;
+      }
     }
+    org_targets[this_index]++;
   }
-  
+  for (int target = 0; target < org_targets.GetSize(); target++) {
+      df.Write(target_list[target], "Target ID");
+      df.Write(org_targets[target], "Num Orgs Targeting ID");
+  }
   df.Endl();
 }
 

@@ -333,7 +333,7 @@ void cPopulationCell::AddOutputAV(cOrganism* org)
   org->SetAVOutIndex(loc);
 }
 
-// Removes the organism from the cell's input avatars
+// Removes the organism from the cell's input avatars (predator)
 void cPopulationCell::RemoveInputAV(cOrganism* org)
 {
   assert(HasInputAV());
@@ -345,7 +345,7 @@ void cPopulationCell::RemoveInputAV(cOrganism* org)
   m_av_inputs.Pop();
 }
 
-// Removes the organism from the cell's output avatars
+// Removes the organism from the cell's output avatars (prey)
 void cPopulationCell::RemoveOutputAV(cOrganism* org)
 {
   assert(HasOutputAV());

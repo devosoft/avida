@@ -186,6 +186,8 @@ public:
   bool AttemptImmigrateGroup(int group_id, cOrganism* org) { return false; }
   void PushToleranceInstExe(int tol_inst, cAvidaContext &ctx) { ; }
   int& GetGroupIntolerances(int group_id, int tol_num, int mating_type) { return *(new int(0)); }
+  
+  void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recip, int kin) { ; }
 
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }

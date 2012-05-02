@@ -248,7 +248,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) { (void)filename, (void)in_organism, (void)org_id, (void)gen_id; }
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype) { (void)filename, (void)in_organism, (void)org_id, (void)gen_id, (void)genotype; }
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { (void)ctx, (void)fp, (void)next_name; }
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { (void)fp, (void)exec_success; }
 
@@ -525,8 +525,17 @@ private:
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   bool Inst_SetBeggar(cAvidaContext& ctx);
   bool Inst_CheckFacedBeggar(cAvidaContext& ctx);
+  bool Inst_IfFacedKin(cAvidaContext& ctx);
+  bool Inst_IfFacedBeggar(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
-
+  bool Inst_IfFacedBeggarAndNeedResource(cAvidaContext& ctx); 
+  bool Inst_IfFacedBeggarAndKin(cAvidaContext& ctx);
+  bool Inst_IfFacedKinAndNeedResource(cAvidaContext& ctx);
+  bool Inst_IfFacedNeedResource(cAvidaContext& ctx);
+  bool Inst_IfFacedKinAndBeggarAndNeedResource(cAvidaContext& ctx);
+  bool Inst_IfFacedKinAndBeggarAndNeedResourceThenDonate(cAvidaContext& ctx);
+  bool Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& ctx);
+  bool Inst_FailIfEmpty(cAvidaContext& ctx);
   // Donation
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
@@ -882,6 +891,10 @@ public:
   //! Execute next instruction is org has an opinion, otherwise skip
   bool Inst_IfOpinionSet(cAvidaContext& ctx);
   bool Inst_IfOpinionNotSet(cAvidaContext& ctx);
+  bool Inst_SetOpinionToZero(cAvidaContext& ctx);
+  bool Inst_SetOpinionToOne(cAvidaContext& ctx);
+  bool Inst_SetOpinionToTwo(cAvidaContext& ctx);
+  
 
   // -------- Cell Data Support --------
 public:

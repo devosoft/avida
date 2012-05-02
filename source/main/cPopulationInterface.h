@@ -251,6 +251,9 @@ public:
   void IncNumPredOrganisms();
   
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  
+// --------Donate Specific support ----
+  void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int kin); 
 
 // -------- Avatar support -------- @JJB
 private:

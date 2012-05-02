@@ -297,7 +297,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareExperimental::Inst_LookAheadIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-around-intercept", &cHardwareExperimental::Inst_LookAroundIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
@@ -537,7 +539,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000); //APW
+  assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
@@ -778,14 +780,15 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
   df.WriteComment(org_dat.Set("Org ID: %d", org_id));
-  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
+  df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
   df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");
@@ -3643,6 +3646,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell);
 }
 
+// Will return relative org facing (rotations to intercept) rather than group info for sighted org
+bool cHardwareExperimental::Inst_LookAheadIntercept(cAvidaContext& ctx)
+{
+  m_sensor.SetReturnRelativeFacing(true);
+  return Inst_LookAhead(ctx);
+}
+
 bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
 {
   // dir register is 5th mod (will be count reg)
@@ -3679,6 +3689,12 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int cell = m_organism->GetOrgInterface().GetCellID();
   if (m_use_avatar) cell = m_organism->GetOrgInterface().GetAVCellID();
   return GoLook(ctx, facing, cell);
+}
+
+bool cHardwareExperimental::Inst_LookAroundIntercept(cAvidaContext& ctx)
+{
+  m_sensor.SetReturnRelativeFacing(true);
+  return Inst_LookAround(ctx);
 }
 
 bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
@@ -3874,29 +3890,12 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   assert(m_organism != 0);
   int prop_target = GetRegister(FindModifiedRegister(rBX));
   
-  // a little mod help...can't set to -1, that's for juevniles only
-  int num_fts = 0;
-  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-  set <int>::iterator itr;    
-  for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
-    // ft's may not be sequentially numbered
-    int ft_num = abs(prop_target) % num_fts;
-    itr = fts_avail.begin();
-    for (int i = 0; i < ft_num; i++) itr++;
-    prop_target = *itr;
-  }
-  
-  // make sure we use a valid (resource) target
-  // -2 target means setting to predator; -1 (nothing) is default
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
-
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
   if (old_target == prop_target) return false;
-  
+
   // return false if predator trying to become prey and this has been disallowed
-  if (old_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0) return false;
+  if (old_target == -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
   
   // return false if trying to become predator and there are none in the experiment
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
@@ -3904,6 +3903,23 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
+  // a little mod help...can't set to -1, that's for juevniles onl...so only exception to mod help is -2
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
+    int num_fts = 0;
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;    
+    for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+    // ft's may not be sequentially numbered
+    int ft_num = abs(prop_target) % num_fts;
+    itr = fts_avail.begin();
+    for (int i = 0; i < ft_num; i++) itr++;
+    prop_target = *itr;
+  }
+
+  // make sure we use a valid (resource) target
+  // -2 target means setting to predator
+  // if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
+
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
   if (m_use_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
@@ -3911,7 +3927,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
     m_organism->SetForageTarget(prop_target);
   }
   else m_organism->SetForageTarget(prop_target);
-  
+    
   // Set the new target and return the value
   m_organism->RecordFTSet();
   setInternalValue(FindModifiedRegister(rBX), prop_target, false);
@@ -4463,10 +4479,12 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     cOrganism* target = NULL;
     if (!m_use_avatar) { 
       target = m_organism->GetOrgInterface().GetNeighbor();
-      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
     }
     else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() == -2) return false;
+
     if (target->IsDead()) return false;  
     
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
@@ -4503,8 +4521,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->SetForageTarget(-2);
         m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->SetForageTarget(-2);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -4530,7 +4548,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
@@ -4548,13 +4565,13 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     
     const int target_reg = FindModifiedRegister(rBX);
     int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
-    
+
     // a little mod help...and allow pred to target juveniles
-    int num_fts = 0;
-    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-    set <int>::iterator itr;    
-    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
     if (!m_world->GetEnvironment().IsTargetID(target_org_type) && target_org_type != -1) {
+      int num_fts = 0;
+      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+      set <int>::iterator itr;    
+      for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
       // ft's may not be sequentially numbered
       int ft_num = abs(target_org_type) % num_fts;
       itr = fts_avail.begin();
@@ -4562,12 +4579,14 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       target_org_type = *itr;
     }
     
+    if (target_org_type == -2) return false;
+    
     cOrganism* target = NULL; 
     if (!m_use_avatar) { 
       target = m_organism->GetOrgInterface().GetNeighbor();
       if (target_org_type != target->GetForageTarget()) return false;
       // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-      if (target->GetForageTarget() == -2 && m_organism->GetForageTarget() == -2) return false;
+      if (target->GetForageTarget() == -2) return false;
     }    
     else if (m_use_avatar == 2) {
       const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
@@ -4629,8 +4648,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     if (m_organism->GetForageTarget() != -2) { 
       // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->SetForageTarget(-2);
         m_organism->GetOrgInterface().SwitchPredPrey();
+        m_organism->SetForageTarget(-2);
       }
       else m_organism->SetForageTarget(-2);
     }    
@@ -5083,21 +5102,24 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
    if (m_organism->GetForageTarget() != -2) return false;
    // Exit if tolerance is not enabled
    if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-   if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
    // Exit if organism is not in a group
    if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
    // Exit if the instruction is not nop-modified
    if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
    
-   const int tolerance_to_modify = FindModifiedNextRegister(rBX);
-   
-   int toleranceType = -1;
-   if (tolerance_to_modify == rAX) toleranceType = 0;
-   if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-   if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
-   
-   // Not a recognized register
-   if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(rBX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == rAX) toleranceType = 0;
+    else if (tolerance_to_modify == rBX) toleranceType = 1;
+    else if (tolerance_to_modify == rCX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
    
    // Update the tolerance and store the result in register B
    int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);   
@@ -5120,21 +5142,24 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
   if (m_organism->GetForageTarget() != -2) return false;
   // Exit if tolerance is not enabled
   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (!m_world->GetConfig().TOLERANCE_WINDOW.Get()) return false;
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
   // Exit if organism is not in a group
   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
   // Exit if the instruction is not nop-modified
   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
   
-  const int tolerance_to_modify = FindModifiedRegister(rBX);
-  
-  int toleranceType = -1;
-  if (tolerance_to_modify == rAX) toleranceType = 0;
-  if (tolerance_to_modify == rBX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 1;
-  if (tolerance_to_modify == rCX && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) toleranceType = 2;
-  
-  // Not a recognized register
-  if (toleranceType == -1) return false;
+  int toleranceType = 0;
+  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
+    const int tolerance_to_modify = FindModifiedRegister(rBX);
+    
+    toleranceType = -1;
+    if (tolerance_to_modify == rAX) toleranceType = 0;
+    else if (tolerance_to_modify == rBX) toleranceType = 1;
+    else if (tolerance_to_modify == rCX) toleranceType = 2;
+    
+    // Not a recognized register
+    if (toleranceType == -1) return false;
+  }
   
   // Update the tolerance and store the result in register B
   setInternalValue(rBX, m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx));
@@ -5150,7 +5175,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
   if (m_organism->GetForageTarget() != -2) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
       m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
@@ -5178,7 +5203,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   // If not a predator in a group, return false
   if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
   // If groups are used and tolerances are on...
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
       

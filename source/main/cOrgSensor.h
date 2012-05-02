@@ -83,9 +83,12 @@ class cOrgSensor
   sBounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
   bool TestBounds(const cCoords cell_id, sBounds& bounds_set);
   tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
-
-  private:
   
+  void SetReturnRelativeFacing(bool do_set) { m_return_rel_facing = do_set; }
+  int ReturnRelativeFacing(cOrganism* sighted_org, const int facing);
+  
+  private:
+  bool m_return_rel_facing; 
 };
 
 #endif

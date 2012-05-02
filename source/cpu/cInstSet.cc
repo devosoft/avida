@@ -48,6 +48,7 @@ cInstSet::cInstSet(const cInstSet& _in)
   , m_has_ft_costs(_in.m_has_ft_costs)
   , m_has_energy_costs(_in.m_has_energy_costs)
   , m_has_res_costs(_in.m_has_res_costs)
+  , m_has_fem_res_costs(_in.m_has_fem_res_costs)
   , m_has_female_costs(_in.m_has_female_costs)
   , m_has_choosy_female_costs(_in.m_has_choosy_female_costs)
   , m_has_post_costs(_in.m_has_post_costs)
@@ -67,6 +68,7 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
   m_has_ft_costs = _in.m_has_ft_costs;
   m_has_energy_costs = _in.m_has_energy_costs;
   m_has_res_costs = _in.m_has_res_costs;
+  m_has_fem_res_costs = _in.m_has_fem_res_costs;
   m_has_female_costs = _in.m_has_female_costs;
   m_has_choosy_female_costs = _in.m_has_choosy_female_costs;
   m_has_post_costs = _in.m_has_post_costs;
@@ -108,6 +110,7 @@ cInstruction cInstSet::ActivateNullInst()
   m_lib_name_map[inst_id].prob_fail = 0.0;
   m_lib_name_map[inst_id].addl_time_cost = 0;
   m_lib_name_map[inst_id].res_cost = 0.0; 
+  m_lib_name_map[inst_id].fem_res_cost = 0.0; 
   m_lib_name_map[inst_id].post_cost = 0;
   
   return cInstruction(inst_id);
@@ -160,6 +163,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
   schema.AddEntry("prob_fail", 0, 0.0);
   schema.AddEntry("res_cost", 1, 0.0);  
   schema.AddEntry("redundancy", 2, 1.0);
+  schema.AddEntry("fem_res_cost", 3, 0.0);  
   
   // String  
   schema.AddEntry("inst_code", 0, "");
@@ -226,6 +230,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
     m_lib_name_map[inst_id].addl_time_cost = args->GetInt(3);
     m_lib_name_map[inst_id].res_cost = args->GetDouble(1); 
+    m_lib_name_map[inst_id].fem_res_cost = args->GetDouble(3); 
     m_lib_name_map[inst_id].female_cost = args->GetInt(4);
     m_lib_name_map[inst_id].choosy_female_cost = args->GetInt(5);
     m_lib_name_map[inst_id].post_cost = args->GetInt(6);
@@ -234,6 +239,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
     if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;
     if (m_lib_name_map[inst_id].res_cost) m_has_res_costs = true;   
+    if (m_lib_name_map[inst_id].fem_res_cost) m_has_fem_res_costs = true;   
     if (m_lib_name_map[inst_id].female_cost) m_has_female_costs = true;
     if (m_lib_name_map[inst_id].choosy_female_cost) m_has_choosy_female_costs = true;
     if (m_lib_name_map[inst_id].post_cost > 1) m_has_post_costs = true;

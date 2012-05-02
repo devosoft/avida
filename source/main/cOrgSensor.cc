@@ -30,7 +30,8 @@
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism)
 {
- m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
+  m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
+  m_return_rel_facing = false;
 }
 
 const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft)
@@ -252,8 +253,11 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
     org_search.distance = travel_dist;
     org_search.count = 1;
     org_search.value = (int) target_org->GetPhenotype().GetCurBonus();
-    if (target_org->HasOpinion()) {
+    if (!m_return_rel_facing && target_org->HasOpinion()) {
       org_search.group = target_org->GetOpinion().first;
+    }
+    else if (m_return_rel_facing || !target_org->HasOpinion()) {
+      org_search.group = ReturnRelativeFacing(target_org, facing);
     }
     org_search.forage = target_org->GetForageTarget();  
   }
@@ -580,8 +584,11 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       }
       stuff_seen.id_sought = first_org->GetID();
       stuff_seen.value = (int) first_org->GetPhenotype().GetCurBonus();
-      if (first_org->HasOpinion()) {
+      if (!m_return_rel_facing && first_org->HasOpinion()) {
         stuff_seen.group = first_org->GetOpinion().first;
+      }
+      else if (m_return_rel_facing || !first_org->HasOpinion()) {
+        stuff_seen.group = ReturnRelativeFacing(first_org, facing);
       }
       stuff_seen.forage = first_org->GetForageTarget();                  
     }
@@ -842,4 +849,14 @@ tSmartArray<int> cOrgSensor::BuildResArray(const int habitat_used, const int id_
     }
   }
   return val_res;
+}
+
+int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org, const int facing) {
+  const int target_facing = sighted_org->GetFacedDir();
+  const int org_facing = m_organism->GetFacedDir();
+  int match_heading = target_facing - org_facing;             // to match target's heading, rotate this many times in this direction
+  if (match_heading > 4) match_heading -= 8;                  // rotate left x times
+  else if (match_heading < -4) match_heading += 8;            // rotate right x times
+  else if (abs(match_heading) == 4) match_heading = 4;        // rotating 4 and -4 to look same to org
+  return match_heading;
 }

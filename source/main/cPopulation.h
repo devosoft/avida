@@ -80,7 +80,7 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-  tSmartArray<cBioGroup*> minitrace_queue;
+  tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
   
   // Default organism setups...
@@ -161,6 +161,10 @@ public:
   //! Helper method that replaces a target deme with the given source deme.
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
   
+  //! Helper method that replaces a target deme with a given source deme using
+  // the germ line flagged by the organisms. 
+  void ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx);
+  
   //! Helper method that seeds a deme from the given genome.
   void SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx); 
 
@@ -234,8 +238,10 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
-  tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -387,15 +393,15 @@ private:
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, bool reset=false); 
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset=false); 
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
-  void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  void TestForMiniTrace(cOrganism* in_organism);
+  void SetupMiniTrace(cOrganism* in_organism);
+  void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
   
   int PlaceAvatar(cOrganism* parent);
   

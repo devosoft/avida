@@ -248,7 +248,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id);
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype);
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   
@@ -559,7 +559,9 @@ private:
   bool Inst_SenseResDiff(cAvidaContext& ctx); 
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
+  bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
+  bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
   bool Inst_LookAroundFT(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);

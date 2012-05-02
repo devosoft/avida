@@ -48,15 +48,15 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL)
-, m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-, m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts()) 
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str)
+, m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts()) , m_has_energy_costs(m_inst_set->HasEnergyCosts())
+, m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
 , m_has_post_costs(inst_set->HasPostCosts())
 {
 	m_task_switching_cost=0;
 	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost | m_has_female_costs | 
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | m_has_fem_res_costs | switch_cost | m_has_female_costs | 
                      m_has_choosy_female_costs | m_has_post_costs);
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
@@ -96,6 +96,11 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
     for (int i = 0; i < num_inst_cost; i++) m_inst_res_cost[i] = m_inst_set->GetResCost(cInstruction(i));
   }
   
+  if (m_has_fem_res_costs) {
+    m_inst_fem_res_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_fem_res_cost[i] = m_inst_set->GetFemResCost(cInstruction(i));
+  }
+
   if (m_has_costs) {
     m_thread_inst_cost.Resize(num_inst_cost);
     for (int i = 0; i < num_inst_cost; i++) m_thread_inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
@@ -1014,16 +1019,18 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   
   // Check for res_costs and fail if org does not have enough resources to process instruction
   // As post-cost, res_cost will not be paid unless all pre-costs are paid and all restrictions inside of instruction pass
-  if (m_has_res_costs) {
+  if (m_has_res_costs || m_has_fem_res_costs) {
     
-    double res_req = m_inst_set->GetResCost(cur_inst); 
-    
+    double res_cost = m_inst_set->GetResCost(cur_inst); 
+    double fem_res_cost = m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE ? m_inst_set->GetFemResCost(cur_inst) : 0; 
+    double res_req = res_cost + fem_res_cost;
+
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
     tArray<double> res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    if (resource < 0) cout << "Instruction res_cost requires use of COLLECT_SPECIFIC_RESOURCE and USE_RESOURCE_BINS" << '\n';
+    if (resource < 0) cout << "Instruction resource costs require use of COLLECT_SPECIFIC_RESOURCE and USE_RESOURCE_BINS" << '\n';
     assert(resource >= 0);
     
     double res_stored = m_organism->GetRBin(resource);
@@ -1087,27 +1094,23 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
 
 void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
-  if (m_has_res_costs) {
+  if (m_has_res_costs || m_has_fem_res_costs) {
     
-    double res_req = m_inst_set->GetResCost(cur_inst); 
+    double res_cost = m_inst_set->GetResCost(cur_inst); 
+    double fem_res_cost = m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE ? m_inst_set->GetFemResCost(cur_inst) : 0; 
+    double res_req = res_cost + fem_res_cost;
     
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
     tArray<double> res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    if (resource < 0) cout << "Instruction res_cost requires use of COLLECT_SPECIFIC_RESOURCE and USE_RESOURCE_BINS" << '\n';
+    if (resource < 0) cout << "Instruction resource costs require use of COLLECT_SPECIFIC_RESOURCE and USE_RESOURCE_BINS" << '\n';
     assert(resource >= 0);
     
-    double res_stored = m_organism->GetRBin(resource);
-    if (res_stored >= res_req) {      
-      // subtract res used from current bin by adding negative value
-      double cost = res_req * -1.0;
-      m_organism->AddToRBin(resource, cost); 
-    } 
-//    if (res_stored < res_req) {
-//      m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
-//    }
+    // subtract res used from current bin by adding negative value
+    double cost = res_req * -1.0;
+    m_organism->AddToRBin(resource, cost); 
   }
   return;
 }
@@ -1149,9 +1152,19 @@ void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
 	wh.Adjust();
 }
 
-void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id)
+void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype)
 {
   cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
   m_minitracer = minitracer; 
-  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id);
+  m_minitrace_file = filename;
+  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id, genotype);
+}
+
+void cHardwareBase::DeleteMiniTrace()
+{
+  if (m_minitracer != NULL) {
+    delete m_minitracer;
+    bool success = m_world->GetDataFileManager().Remove(m_minitrace_file);
+    assert(success);
+  }
 }
