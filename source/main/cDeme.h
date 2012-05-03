@@ -254,6 +254,7 @@ public:
   bool HasDemeMerit() const { return _current_merit.GetDouble() != 1.0; }
 
   // -= Update support =-
+  void ProcessPreUpdate(); 
   //! Called once, at the end of every update.
   void ProcessUpdate(cAvidaContext& ctx); 
   //! Returns the age of this deme in updates, where age is defined as the number of updates since the last time Reset() was called.

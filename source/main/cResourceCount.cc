@@ -24,6 +24,8 @@
 #include "cResource.h"
 #include "cDynamicCount.h"
 #include "cGradientCount.h"
+#include "cWorld.h"
+#include "cStats.h"
 
 #include "nGeometry.h"
 
@@ -99,6 +101,8 @@ void FlowMatter(cSpatialCountElem &elem1, cSpatialCountElem &elem2,
 cResourceCount::cResourceCount(int num_resources)
   : update_time(0.0)
   , spatial_update_time(0.0)
+  , m_updated(0)
+  , m_spatial_update(0)
 {
   if(num_resources > 0) {
     SetSize(num_resources);
@@ -689,9 +693,11 @@ void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
   if (global_only) return;
 
   // If one (or more) complete update has occured update the spatial resources
-
-  while (spatial_update_time >= 1.0) {
-    spatial_update_time -= 1.0;
+//  while (spatial_update_time >= 1.0) {
+  while (m_spatial_update > m_updated) {
+    m_updated++;
+//    cout << m_spatial_update << "  " << m_updated << endl;
+//    spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
         spatial_resource_count[i]->UpdateCount(ctx);

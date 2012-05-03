@@ -225,6 +225,7 @@ public:
 
   // Calculate the statistics from the most recent update.
   void ProcessPostUpdate(cAvidaContext& ctx);
+  void ProcessPreUpdate();
   void UpdateResStats(cAvidaContext& ctx);
   void ProcessUpdateCellActions(cAvidaContext& ctx);
 

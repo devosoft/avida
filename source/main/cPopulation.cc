@@ -5130,6 +5130,12 @@ void cPopulation::UpdateResStats(cAvidaContext& ctx)
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
 }
 
+void cPopulation::ProcessPreUpdate()
+{
+  resource_count.SetSpatialUpdate(m_world->GetStats().GetUpdate());
+  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessPreUpdate();   
+}
+
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
   ProcessUpdateCellActions(ctx);

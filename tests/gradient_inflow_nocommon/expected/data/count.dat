@@ -1,5 +1,5 @@
 # Avida count data
-# Wed Feb  1 14:59:35 2012
+# Thu May  3 16:44:54 2012
 #  1: update
 #  2: number of insts executed this update
 #  3: number of organisms
@@ -20,4 +20,4 @@
 0 90 3 1 1 0 0 0 3 0 3 3 3 3 0 0 
 10 300 10 2 1 0 0 0 0 0 0 9 4 10 0 0 
 20 660 22 4 1 0 0 0 0 0 0 19 10 22 0 0 
-30 1110 42 9 3 0 0 0 5 0 4 34 17 42 0 0 
+30 1200 45 8 2 0 0 0 5 0 3 38 17 45 0 0 

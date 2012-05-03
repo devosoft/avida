@@ -81,6 +81,8 @@ void cDefaultRunDriver::Run()
     // Increment the Update.
     stats.IncCurrentUpdate();
     
+    population.ProcessPreUpdate();
+
     // Handle all data collection for previous update.
     if (stats.GetUpdate() > 0) {
       // Tell the stats object to do update calculations and printing.
