@@ -505,7 +505,7 @@ private:
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
   bool Inst_SenseResourceID(cAvidaContext& ctx);
   // Resources of next group +1 or -1, based on positive or negative value in the nop register,
-  // wrapping from the top group back to group 1 (skipping 0). @JJB
+  // wrapping from the top group back to group 1 (skipping 0). 
   bool Inst_SenseNextResLevel(cAvidaContext& ctx);
   bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx);
   bool Inst_SenseDiffFaced(cAvidaContext& ctx);
@@ -961,7 +961,7 @@ public:
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_JoinMTGroup(cAvidaContext& ctx);
   // Organism joins group +1 or -1 wrapping from the top group back to group 1 (skipping 0)
-  // based on whether the nop register is positive or negative. @JJB
+  // based on whether the nop register is positive or negative.
   bool Inst_JoinNextGroup(cAvidaContext& ctx);
   bool Inst_JoinNextMTGroup(cAvidaContext& ctx);
   //! Returns the number of organisms in the current organism's group
@@ -971,7 +971,7 @@ public:
   bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
   bool Inst_NumberMTInGroup(cAvidaContext& ctx);
   // Places in BX register, the number of organisms in the group +1 or -1, wrapping from the top back to group 1
-  // skipping 0, based on whether the nop register is positive or negative. @JJB
+  // skipping 0, based on whether the nop register is positive or negative.
   bool Inst_NumberNextGroup(cAvidaContext& ctx);
   bool Inst_NumberMTNextGroup(cAvidaContext& ctx);
   bool Inst_KillGroupMember(cAvidaContext& ctx);

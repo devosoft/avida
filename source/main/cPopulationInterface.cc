@@ -1509,7 +1509,7 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
  * Each cell contains an array of the organisms with avatars in that cell, linking the cells back to
  * the organisms (in cPopulationCell). This allows both multiple organisms to occupy the same cell
  * and organisms to occupy/interact with multiple cells. Currently only two types of avatars are
- * supported: input and output, also used as predators and prey. @JJB
+ * supported: input and output, also used as predators and prey. 
  */
 
 // Check if the avatar has any output avatars sharing the same cell

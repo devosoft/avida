@@ -280,7 +280,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     
     tInstLibEntry<tMethod>("move-avatar", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
 
-    // Neural networking instructions @JJB
+    // Neural networking instructions 
     tInstLibEntry<tMethod>("rotate-neuron-AV-left-one", &cHardwareExperimental::Inst_RotateNeuronAVLeft, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-neuron-AV-right-one", &cHardwareExperimental::Inst_RotateNeuronAVRight, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-neuron-AV-by-X", &cHardwareExperimental::Inst_RotateNeuronAVbyX, nInstFlag::STALL),
@@ -305,8 +305,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
-    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
-    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
     tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, nInstFlag::STALL),    
     
@@ -323,16 +321,16 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
     tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID),
-    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  // @JJB
-    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, nInstFlag::STALL),  // @JJB
-    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, nInstFlag::STALL),  // @JJB    
-    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, nInstFlag::STALL),  // @JJB  
+    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  
+    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, nInstFlag::STALL),     
+    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, nInstFlag::STALL),    
     
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
@@ -3949,40 +3947,6 @@ bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseOpinionResQuant(cAvidaContext& ctx)
-{
-  tArray<double> cell_res;
-  if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  // check if this is a valid group
-  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    int opinion = m_organism->GetOpinion().first;
-    int res_opinion = (int) (cell_res[opinion] * 100 + 0.5);
-    int reg_to_set = FindModifiedRegister(rBX);
-    setInternalValue(reg_to_set, res_opinion, true);
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
-{
-  tArray<double> cell_res;
-  if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    int opinion = m_organism->GetOpinion().first;
-    int reg_to_set = FindModifiedRegister(rBX);
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
-    if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx)[opinion];
-    // return % change
-    int res_diff = 0;
-    if (cell_res[opinion] == 0) res_diff = (int) faced_res;
-    else res_diff = (int) (((faced_res - cell_res[opinion])/cell_res[opinion]) * 100 + 0.5);
-    setInternalValue(reg_to_set, res_diff, true);
-  }
-  return true;
-}
-
 bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx) 
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4272,7 +4236,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
       if (rand <= prob_failure) return true;
     }
     
-    // If tolerances are on the org must pass immigration chance @JJB
+    // If tolerances are on the org must pass immigration chance 
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
       return true;
@@ -4329,7 +4293,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
   return false;
 }
 
-// A predator establishes a new group. @JJB
+// A predator establishes a new group. 
 bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -4348,7 +4312,7 @@ bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 }
 
 // A predator leaves their group to join the nomads in group -3.
-// Joining the nomads is always successful, they can not exclude others so there is no immigration test. @JJB
+// Joining the nomads is always successful, they can not exclude others so there is no immigration test. 
 bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
 {
   // Predator nomad group id
@@ -4373,7 +4337,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
   return true;
 }
 
-// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. @JJB
+// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. 
 bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -5100,7 +5064,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
  nop-B: increases tolerance towards own offspring
  nop-C: increases tolerance towards other offspring of the group.
  Removes the record of a previous update when dec-tolerance was executed,
- and places the modified tolerance total in the BX register. @JJB
+ and places the modified tolerance total in the BX register. 
  */
 bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 {
@@ -5140,7 +5104,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
  nop-B: decreases tolerance towards own offspring
  nop-C: decreases tolerance towards other offspring of the group.
  Adds to records the update during which dec-tolerance was executed,
- and places the modified tolerance total in the BX register. @JJB
+ and places the modified tolerance total in the BX register. 
  */
 bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 {
@@ -5175,7 +5139,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 /* Retrieve current tolerance levels, placing each tolerance in a different register.
  Register AX: tolerance towards immigrants
  Register BX: tolerance towards own offspring
- Register CX: tolerance towards other offspring in the group @JJB
+ Register CX: tolerance towards other offspring in the group 
  */
 bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
@@ -5201,7 +5165,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 /* Retrieve group tolerances placing each in a different register.
  Register AX: group tolerance towards immigrants
  Register BX: group tolerance towards own offspring
- Register CX: group tolerance towards offspring @JJB
+ Register CX: group tolerance towards offspring 
  */
 bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {

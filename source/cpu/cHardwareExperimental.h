@@ -542,7 +542,7 @@ private:
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
-  // Neural networking @JJB
+  // Neural networking 
   bool Inst_RotateNeuronAVLeft(cAvidaContext& ctx);
   bool Inst_RotateNeuronAVRight(cAvidaContext& ctx);
   bool Inst_RotateNeuronAVbyX(cAvidaContext& ctx);
@@ -567,8 +567,6 @@ private:
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
-  bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
-  bool Inst_SenseDiffFaced(cAvidaContext& ctx);
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
@@ -580,16 +578,16 @@ private:
 
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
-  bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB
-  bool Inst_MakePredGroup(cAvidaContext& ctx); // @JJB
-  bool Inst_LeavePredGroup(cAvidaContext& ctx); // @JJB
-  bool Inst_AdoptPredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_ChangePredGroup(cAvidaContext& ctx); 
+  bool Inst_MakePredGroup(cAvidaContext& ctx); 
+  bool Inst_LeavePredGroup(cAvidaContext& ctx); 
+  bool Inst_AdoptPredGroup(cAvidaContext& ctx); 
   bool Inst_GetGroupID(cAvidaContext& ctx);
   bool Inst_GetPredGroupID(cAvidaContext& ctx);
-  bool Inst_IncPredTolerance(cAvidaContext& ctx);  // @JJB
-  bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
-  bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
-  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
+  bool Inst_IncPredTolerance(cAvidaContext& ctx);  
+  bool Inst_DecPredTolerance(cAvidaContext& ctx);  
+  bool Inst_GetPredTolerance(cAvidaContext& ctx);     
+  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
 
   // Active messaging
   bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);

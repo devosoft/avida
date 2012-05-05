@@ -518,7 +518,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       if (parent_organism->HasOpinion()) offspring_array[i]->SetParentGroup(parent_organism->GetOpinion().first);
-      // If tolerances are on ... @JJB
+      // If tolerances are on ... 
       if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
@@ -6989,7 +6989,7 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
     m_groups[group_id] = 0;
     tSmartArray<cOrganism*> temp;
     group_list.Set(group_id, temp);
-    // If tolerance is on, create the new group's tolerance cache @JJB
+    // If tolerance is on, create the new group's tolerance cache
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       tArray<pair<int,int> > temp_array(2);
       temp_array[0] = make_pair(-1, -1);
@@ -7008,7 +7008,7 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) m_group_males[group_id]++;
 
   group_list[group_id].Push(org);
-  // If tolerance is on, must add the organism's intolerance to the group cache @JJB
+  // If tolerance is on, must add the organism's intolerance to the group cache
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     int immigrant_tol = org->GetPhenotype().CalcToleranceImmigrants();
@@ -7026,7 +7026,7 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   }
 }
 
-// Makes a new group (highest current group number +1). @JJB
+// Makes a new group (highest current group number +1)
 void cPopulation::MakeGroup(cOrganism* org)
 {
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return;
@@ -7053,7 +7053,7 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
 
     // If no restrictions on group ids,
     // removes empty groups so the number of total groups being tracked doesn't become excessive
-    // (Removes the highest group even if empty, causes misstep in marching groups). @JJB
+    // (Removes the highest group even if empty, causes misstep in marching groups). 
     if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
       if (m_groups[group_id] <= 0) {
         m_groups.erase(group_id);
@@ -7083,7 +7083,7 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
       unsigned int last = group_list[group_id].GetSize() - 1;
       group_list[group_id].Swap(i,last);
       group_list[group_id].Pop();
-      // If no restrictions, removes empty groups. @JJB
+      // If no restrictions, removes empty groups. 
       if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
         if (group_list[group_id].GetSize() <= 0) {
           group_list.Remove(group_id);
@@ -7177,7 +7177,7 @@ void  cPopulation::ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_
   }
 }
 
-// Calculates group tolerance towards immigrants @JJB
+// Calculates group tolerance towards immigrants 
 int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
 {
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -7242,7 +7242,7 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
   return max(0, group_tolerance);
 }
 
-// Calculates group tolerance towards offspring (not including parent) @JJB
+// Calculates group tolerance towards offspring (not including parent) 
 int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
 {
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -7275,7 +7275,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   return max(0, group_tolerance);
 }
 
-// Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
+// Calculates the odds (out of 1) for successful immigration based on group's tolerance 
 double cPopulation::CalcGroupOddsImmigrants(int group_id, int mating_type)
 {
   if (group_id < 0) return 1.0;
@@ -7286,7 +7286,7 @@ double cPopulation::CalcGroupOddsImmigrants(int group_id, int mating_type)
   return immigrant_odds;
 }
 
-// Returns true if the org successfully passes immigration tolerance and joins the group @JJB
+// Returns true if the org successfully passes immigration tolerance and joins the group 
 bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
 {
   bool immigrate = false;
@@ -7325,7 +7325,7 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
   return immigrate;
 }
 
-// Calculates the odds (out of 1) for the organism's offspring to be born into its parent's group @JJB
+// Calculates the odds (out of 1) for the organism's offspring to be born into its parent's group 
 double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 {
   assert(parent->HasOpinion());
@@ -7346,7 +7346,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
   return prob;
 }
 
-// Calculates the odds (out of 1) for offspring to be born into the group @JJB
+// Calculates the odds (out of 1) for offspring to be born into the group 
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
   // If non-standard group, automatic success

@@ -1146,8 +1146,8 @@ public:
 public:
   cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback&) :
     cAction(world, args)
-  , inputOutput("none")
   , cell_list(0)
+  , inputOutput("none")
   {
     cString largs(args);
     inputOutput = largs.Pop(':');

@@ -58,7 +58,7 @@ private:
   cWorld* m_world;
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
-  mutable int m_updated;
+  mutable int m_last_updated;
   mutable int m_spatial_update;
 
   void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
@@ -153,6 +153,7 @@ public:
   
   void SetSpatialUpdate(int update) { m_spatial_update = update; }
   void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }
+  void UpdateResources(cAvidaContext& ctx) { DoUpdates(ctx, false); }
 };
 
 #endif

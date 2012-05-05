@@ -1696,7 +1696,7 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
 }
 
 /* Returns the organism's total tolerance towards immigrants by counting
- the total number of dec-tolerance entries within the update window that have been executed. @JJB
+ the total number of dec-tolerance entries within the update window that have been executed. 
  */
 int cPhenotype::CalcToleranceImmigrants()
 {
@@ -1724,7 +1724,7 @@ int cPhenotype::CalcToleranceImmigrants()
 }
 
 /* Returns the organism's total tolerance towards the organism's own offspring by counting
- the total number of dec-tolerance entries within the update window that have been executed. @JJB
+ the total number of dec-tolerance entries within the update window that have been executed. 
  */
 int cPhenotype::CalcToleranceOffspringOwn()
 {
@@ -1756,7 +1756,7 @@ int cPhenotype::CalcToleranceOffspringOwn()
 }
 
 /* Returns the organism's total tolerance towards the offspring of others in the group by counting
- the total number of dec-tolerance entries within the update window that have been executed. @JJB
+ the total number of dec-tolerance entries within the update window that have been executed. 
  */
 int cPhenotype::CalcToleranceOffspringOthers()
 {
