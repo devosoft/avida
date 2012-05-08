@@ -5710,45 +5710,42 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   
   cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
   
-	// the following bit of code is required for proper germline support.
-	// even if there's only one deme!!
-	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+  // the following bit of code is required for proper germline support.
+  // even if there's only one deme!!
+  if (m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
-    
+
     // If we're using germlines, then we have to be a little careful here.
     // This should probably not be within Inject() since we mainly want it to
     // apply to the START_ORGANISM? -- @JEB
-    
+
     //@JEB This section is very messy to maintain consistency with other deme ways.
-    
+
     if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 0) {
       if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
         if (deme.GetGermline().Size()==0) {
           deme.GetGermline().Add(GetCell(cell_id).GetOrganism()->GetGenome());
         }
       }
-    }
-    else if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) {
+    } else if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) {
       if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
         //find the genotype we just created from the genome, and save it
         deme.ReplaceGermline(GetCell(cell_id).GetOrganism()->GetBioGroup("genotype"));
-      }
-      else { // not germlines, save org as founder
+      } else { // not germlines, save org as founder
         deme.AddFounder(GetCell(cell_id).GetOrganism()->GetBioGroup("genotype"), &phenotype);
       }
-      
+
       GetCell(cell_id).GetOrganism()->GetPhenotype().SetPermanentGermlinePropensity
-      (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get());
-      
-      
+        (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get());
+
+
       if (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() >= 0.0) {
         GetCell(cell_id).GetOrganism()->GetPhenotype().SetPermanentGermlinePropensity
-        ( m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() );
+          ( m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() );
       }
-      
+
     }
-  }
-  else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
+  } else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
     //find the genotype we just created from the genome, and save it
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
     cDemePlaceholderUnit unit(src, genome);
