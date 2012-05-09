@@ -68,10 +68,10 @@ private:
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
   //Keeps track of which organisms are in which group.
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_females;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_males;
-  tArrayMap<int, tArray<pair<int,int> > > group_intolerances_juvs;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances_females;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances_males;
+  tArrayMap<int, tArray<pair<int,int> > > m_group_intolerances_juvs;
   
   // Keep list of live organisms
   tSmartArray<cOrganism* > live_org_list;
@@ -80,11 +80,11 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-  tSmartArray<cBioGroup*> minitrace_queue;
+  tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
   
   // Default organism setups...
-  cEnvironment & environment;          // Physics & Chemistry description
+  cEnvironment& environment;          // Physics & Chemistry description
 
   // Other data...
   int world_x;                         // Structured population width.
@@ -225,6 +225,7 @@ public:
 
   // Calculate the statistics from the most recent update.
   void ProcessPostUpdate(cAvidaContext& ctx);
+  void ProcessPreUpdate();
   void UpdateResStats(cAvidaContext& ctx);
   void ProcessUpdateCellActions(cAvidaContext& ctx);
 
@@ -238,8 +239,10 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, bool print_genomes);
-  tSmartArray<cBioGroup*> GetMiniTraceQueue() const { return minitrace_queue; }
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -253,7 +256,7 @@ public:
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   const tArray<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
-  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateGlobalResources(ctx); }
+  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateResources(ctx); }
   const tArray< tArray<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
 
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakX(ctx, res_id); } 
@@ -327,7 +330,7 @@ public:
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);
-  void MakeGroup(cOrganism* org); // @JJB
+  void MakeGroup(cOrganism* org);
   // Removes an organism from a group 
   void LeaveGroup(cOrganism* org, int group_id);
 
@@ -397,9 +400,9 @@ private:
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
-  void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  void TestForMiniTrace(cOrganism* in_organism);
+  void SetupMiniTrace(cOrganism* in_organism);
+  void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
   
   int PlaceAvatar(cOrganism* parent);
   

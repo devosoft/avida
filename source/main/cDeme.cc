@@ -338,6 +338,11 @@ int cDeme::GetNumOrgsWithOpinion() const
   return count;
 }
 
+void cDeme::ProcessPreUpdate()
+{
+  deme_resource_count.SetSpatialUpdate(m_world->GetStats().GetUpdate());
+}
+
 void cDeme::ProcessUpdate(cAvidaContext& ctx)
 {
   // test deme predicate

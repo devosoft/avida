@@ -278,15 +278,17 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, nInstFlag::STALL),
     
-    // Avatar instructions 
     tInstLibEntry<tMethod>("move-avatar", &cHardwareExperimental::Inst_Move, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-AV-left-one", &cHardwareExperimental::Inst_RotateAVLeft, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-AV-right-one", &cHardwareExperimental::Inst_RotateAVRight, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("move-AV", &cHardwareExperimental::Inst_MoveAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-cell-has-output-AV", &cHardwareExperimental::Inst_IfCellHasOutputAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-not-cell-has-output-AV", &cHardwareExperimental::Inst_IfNotCellHasOutputAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-faced-has-output-AV", &cHardwareExperimental::Inst_IfFacedHasOutputAV, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-not-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotFacedHasOutputAV, nInstFlag::STALL),
+
+    // Neural networking instructions 
+    tInstLibEntry<tMethod>("rotate-neuron-AV-left-one", &cHardwareExperimental::Inst_RotateNeuronAVLeft, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-neuron-AV-right-one", &cHardwareExperimental::Inst_RotateNeuronAVRight, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-neuron-AV-by-X", &cHardwareExperimental::Inst_RotateNeuronAVbyX, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("move-neuron-AV", &cHardwareExperimental::Inst_MoveNeuronAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-not-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-not-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV, nInstFlag::STALL),
     
     // Resource and Topography Sensing
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
@@ -297,13 +299,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareExperimental::Inst_LookAheadIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("look-around-intercept", &cHardwareExperimental::Inst_LookAroundIntercept, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
-    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResQuant, nInstFlag::STALL), //APW delete after hrdwr experiments
-    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),  //APW delete after hrdwr experiments
     tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, nInstFlag::STALL),    
     
@@ -320,16 +321,16 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     // Grouping instructions
     tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, nInstFlag::STALL), // @JJB
-    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, nInstFlag::STALL), // @JJB
+    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
     tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID),
-    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  // @JJB
-    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, nInstFlag::STALL),  // @JJB
-    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, nInstFlag::STALL),  // @JJB    
-    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, nInstFlag::STALL),  // @JJB  
+    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, nInstFlag::STALL),  
+    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, nInstFlag::STALL),     
+    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, nInstFlag::STALL),    
     
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
@@ -536,7 +537,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000); //APW
+  assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
@@ -777,14 +778,15 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
   df.WriteComment(org_dat.Set("Org ID: %d", org_id));
-  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
+  df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
   df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");
@@ -3399,61 +3401,112 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   }
 }
 
-bool cHardwareExperimental::Inst_RotateAVLeft(cAvidaContext& ctx)
+// -------- Neural networking -------- @JJB
+// All only linked to input avatars for now
+
+// Rotate the register-value-selected avatar, left by one
+bool cHardwareExperimental::Inst_RotateNeuronAVLeft(cAvidaContext& ctx)
 {
-  return m_organism->GetOrgInterface().RotateAV(1);
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().RotateAV(-1, avatar_num);
 }
 
-bool cHardwareExperimental::Inst_RotateAVRight(cAvidaContext& ctx)
+// Rotate the register-value-selected avatar, right by one
+bool cHardwareExperimental::Inst_RotateNeuronAVRight(cAvidaContext& ctx)
 {
-  return m_organism->GetOrgInterface().RotateAV(-1);
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_num].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().RotateAV(1, avatar_num);
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-bool cHardwareExperimental::Inst_MoveAV(cAvidaContext& ctx)
+// Rotate the register-value-selected avatar, by the register set amount
+bool cHardwareExperimental::Inst_RotateNeuronAVbyX(cAvidaContext& ctx)
 {
-  return m_organism->GetOrgInterface().MoveAV(ctx);
+  const int avatar_reg = FindModifiedRegister(rBX);
+  const int rotate_reg = FindModifiedNextRegister(avatar_reg);
+
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+  const int rotate = m_threads[m_cur_thread].reg[rotate_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().RotateAV(rotate, avatar_num);
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org's input avatar occupies a cell that also has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfCellHasOutputAV(cAvidaContext& ctx)
+// Move the register-value-selected avatar forward into its faced cell
+bool cHardwareExperimental::Inst_MoveNeuronAV(cAvidaContext& ctx)
 {
-  if (!m_organism->GetOrgInterface().HasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  return m_organism->GetOrgInterface().MoveAV(ctx, avatar_num);
+}
+
+// If the register-value-selected input avatar occupies a cell that also has an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx)
+{
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (!m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org's input avatar does not occupy a cell that has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotCellHasOutputAV(cAvidaContext& ctx)
+// If the register-value-selected input avatar does not occupy a cell that has an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx)
 {
-  if (m_organism->GetOrgInterface().HasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org is facing a cell with an output avatar, execute next
-bool cHardwareExperimental::Inst_IfFacedHasOutputAV(cAvidaContext& ctx)
+// If the register-value-selected input avatar is facing a cell with an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
 {
-  if (!m_organism->GetOrgInterface().FacedHasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (!m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
 
-// ONLY IMPLEMENTED FOR / ATTACHED TO SINGLE INPUT AVATAR @JJB**
-// If the org is facing a cell without an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx)
+// If the register-value-selected input avatar is facing a cell without an output avatar, execute next
+bool cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
 {
-  if (m_organism->GetOrgInterface().FacedHasOutputAV()) {
+  const int avatar_reg = FindModifiedRegister(rBX);
+  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
+
+  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
+
+  if (m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
     getIP().Advance();
   }
   return true;
 }
+
 
 bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
 {
@@ -3634,6 +3687,12 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int cell = m_organism->GetOrgInterface().GetCellID();
   if (m_use_avatar) cell = m_organism->GetOrgInterface().GetAVCellID();
   return GoLook(ctx, facing, cell);
+}
+
+bool cHardwareExperimental::Inst_LookAroundIntercept(cAvidaContext& ctx)
+{
+  m_sensor.SetReturnRelativeFacing(true);
+  return Inst_LookAround(ctx);
 }
 
 bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
@@ -3885,40 +3944,6 @@ bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
   assert(m_organism != 0);
   const int target_reg = FindModifiedRegister(rBX);
   setInternalValue(target_reg, m_organism->GetForageTarget(), false);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SenseOpinionResQuant(cAvidaContext& ctx)
-{
-  tArray<double> cell_res;
-  if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  // check if this is a valid group
-  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    int opinion = m_organism->GetOpinion().first;
-    int res_opinion = (int) (cell_res[opinion] * 100 + 0.5);
-    int reg_to_set = FindModifiedRegister(rBX);
-    setInternalValue(reg_to_set, res_opinion, true);
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
-{
-  tArray<double> cell_res;
-  if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-    int opinion = m_organism->GetOpinion().first;
-    int reg_to_set = FindModifiedRegister(rBX);
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
-    if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx)[opinion];
-    // return % change
-    int res_diff = 0;
-    if (cell_res[opinion] == 0) res_diff = (int) faced_res;
-    else res_diff = (int) (((faced_res - cell_res[opinion])/cell_res[opinion]) * 100 + 0.5);
-    setInternalValue(reg_to_set, res_diff, true);
-  }
   return true;
 }
 
@@ -4211,7 +4236,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
       if (rand <= prob_failure) return true;
     }
     
-    // If tolerances are on the org must pass immigration chance @JJB
+    // If tolerances are on the org must pass immigration chance 
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
       return true;
@@ -4268,7 +4293,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
   return false;
 }
 
-// A predator establishes a new group. @JJB
+// A predator establishes a new group. 
 bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -4287,7 +4312,7 @@ bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 }
 
 // A predator leaves their group to join the nomads in group -3.
-// Joining the nomads is always successful, they can not exclude others so there is no immigration test. @JJB
+// Joining the nomads is always successful, they can not exclude others so there is no immigration test. 
 bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
 {
   // Predator nomad group id
@@ -4312,7 +4337,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
   return true;
 }
 
-// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. @JJB
+// A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. 
 bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -4397,6 +4422,9 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
+  // return false if prey pop too low
+  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
+    
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
 
@@ -4485,6 +4513,9 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
+  // return false if prey pop too low
+  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
+
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
@@ -5033,7 +5064,7 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
  nop-B: increases tolerance towards own offspring
  nop-C: increases tolerance towards other offspring of the group.
  Removes the record of a previous update when dec-tolerance was executed,
- and places the modified tolerance total in the BX register. @JJB
+ and places the modified tolerance total in the BX register. 
  */
 bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 {
@@ -5073,7 +5104,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
  nop-B: decreases tolerance towards own offspring
  nop-C: decreases tolerance towards other offspring of the group.
  Adds to records the update during which dec-tolerance was executed,
- and places the modified tolerance total in the BX register. @JJB
+ and places the modified tolerance total in the BX register. 
  */
 bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 {
@@ -5108,7 +5139,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 /* Retrieve current tolerance levels, placing each tolerance in a different register.
  Register AX: tolerance towards immigrants
  Register BX: tolerance towards own offspring
- Register CX: tolerance towards other offspring in the group @JJB
+ Register CX: tolerance towards other offspring in the group 
  */
 bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
@@ -5134,7 +5165,7 @@ bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 /* Retrieve group tolerances placing each in a different register.
  Register AX: group tolerance towards immigrants
  Register BX: group tolerance towards own offspring
- Register CX: group tolerance towards offspring @JJB
+ Register CX: group tolerance towards offspring 
  */
 bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {

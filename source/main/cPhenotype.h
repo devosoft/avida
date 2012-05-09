@@ -146,10 +146,10 @@ private:
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
-  tList<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants 
-  tList<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring 
-  tList<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group 
-  tArray<pair<int,int> > intolerances;        // caches temporary values of the intolerance and the update 
+  tList<int> m_tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants 
+  tList<int> m_tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring 
+  tList<int> m_tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group 
+  tArray<pair<int,int> > m_intolerances;        // caches temporary values of the intolerance and the update 
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   int mating_type;                            // Organism's phenotypic sex @CHC
@@ -282,7 +282,7 @@ private:
   bool parent_true;      // Is this genome an exact copy of its parent's?
   bool parent_sex;       // Did the parent divide with sex?
   int  parent_cross_num; // How many corssovers did the parent do?
-  bool born_parent_group;// Was offspring born into the parent's group? @JJB
+  bool born_parent_group;// Was offspring born into the parent's group? 
 
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
@@ -428,13 +428,14 @@ public:
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
-  tList<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            
-  tList<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       
-  tList<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } 
-  tArray<pair<int,int> >& GetIntolerances() { assert(initialized == true); return intolerances; }                
-  int CalcToleranceImmigrants();       
-  int CalcToleranceOffspringOwn();     
-  int CalcToleranceOffspringOthers();  
+
+  tList<int>& GetToleranceImmigrants() { assert(initialized == true); return m_tolerance_immigrants; }
+  tList<int>& GetToleranceOffspringOwn() { assert(initialized == true); return m_tolerance_offspring_own; }
+  tList<int>& GetToleranceOffspringOthers() { assert(initialized == true); return m_tolerance_offspring_others; }
+  tArray<pair<int,int> >& GetIntolerances() { assert(initialized == true); return m_intolerances; }
+  int CalcToleranceImmigrants();
+  int CalcToleranceOffspringOwn();
+  int CalcToleranceOffspringOthers();
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
@@ -535,7 +536,7 @@ public:
   bool ParentTrue() const { assert(initialized == true); return parent_true; }
   bool ParentSex() const  { assert(initialized == true); return parent_sex; }
   int  ParentCrossNum() const  { assert(initialized == true); return parent_cross_num; }
-  bool BornParentGroup() const { assert(initialized == true); return born_parent_group; } // @JJB
+  bool BornParentGroup() const { assert(initialized == true); return born_parent_group; } 
 
   bool CopyTrue() const   { assert(initialized == true); return copy_true; }
   bool DivideSex() const  { assert(initialized == true); return divide_sex; }
@@ -620,7 +621,7 @@ public:
   void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
-  bool& SetBornParentGroup() { return born_parent_group; } // @JJB
+  bool& SetBornParentGroup() { return born_parent_group; } 
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
   void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
   void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }

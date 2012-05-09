@@ -100,6 +100,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   // Setup Random Number Generator
   m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
+  m_srng.ResetSeed(m_conf->RANDOM_SEED.Get());
   
   m_datafile_mgr = new cDataFileManager(cString(Apto::FileSystem::GetAbsolutePath(Apto::String(m_conf->DATA_DIR.Get()), Apto::String(m_working_dir))), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   

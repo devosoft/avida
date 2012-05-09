@@ -248,7 +248,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id);
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype);
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   
@@ -542,14 +542,15 @@ private:
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
-  // Avatars
-  bool Inst_RotateAVLeft(cAvidaContext& ctx);
-  bool Inst_RotateAVRight(cAvidaContext& ctx);
-  bool Inst_MoveAV(cAvidaContext& ctx);
-  bool Inst_IfCellHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotCellHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfFacedHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotFacedHasOutputAV(cAvidaContext& ctx);
+  // Neural networking 
+  bool Inst_RotateNeuronAVLeft(cAvidaContext& ctx);
+  bool Inst_RotateNeuronAVRight(cAvidaContext& ctx);
+  bool Inst_RotateNeuronAVbyX(cAvidaContext& ctx);
+  bool Inst_MoveNeuronAV(cAvidaContext& ctx);
+  bool Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
+  bool Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
   
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
@@ -560,13 +561,12 @@ private:
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAheadIntercept(cAvidaContext& ctx);
   bool Inst_LookAround(cAvidaContext& ctx);
+  bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
   bool Inst_LookAroundFT(cAvidaContext& ctx);
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
-  bool Inst_SenseOpinionResQuant(cAvidaContext& ctx);
-  bool Inst_SenseDiffFaced(cAvidaContext& ctx);
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
@@ -578,18 +578,18 @@ private:
 
   // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
-  bool Inst_ChangePredGroup(cAvidaContext& ctx); // @JJB
-  bool Inst_MakePredGroup(cAvidaContext& ctx); // @JJB
-  bool Inst_LeavePredGroup(cAvidaContext& ctx); // @JJB
-  bool Inst_AdoptPredGroup(cAvidaContext& ctx); // @JJB
+  bool Inst_ChangePredGroup(cAvidaContext& ctx); 
+  bool Inst_MakePredGroup(cAvidaContext& ctx); 
+  bool Inst_LeavePredGroup(cAvidaContext& ctx); 
+  bool Inst_AdoptPredGroup(cAvidaContext& ctx); 
   bool Inst_GetGroupID(cAvidaContext& ctx);
   bool Inst_GetPredGroupID(cAvidaContext& ctx);
-  bool Inst_IncPredTolerance(cAvidaContext& ctx);  // @JJB
-  bool Inst_DecPredTolerance(cAvidaContext& ctx);  // @JJB
-  bool Inst_GetPredTolerance(cAvidaContext& ctx);  // @JJB    
-  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx);  // @JJB
+  bool Inst_IncPredTolerance(cAvidaContext& ctx);  
+  bool Inst_DecPredTolerance(cAvidaContext& ctx);  
+  bool Inst_GetPredTolerance(cAvidaContext& ctx);     
+  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
 
-  // Active messaging //**
+  // Active messaging
   bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);

@@ -71,6 +71,7 @@ protected:
   tArray<int> m_inst_ft_cost;
   tArray<double> m_inst_energy_cost;
   tArray<double> m_inst_res_cost; 
+  tArray<double> m_inst_fem_res_cost; 
   tArray<int> m_thread_inst_cost;
   tArray<int> m_thread_inst_post_cost;
   tArray<int> m_active_thread_costs;
@@ -80,7 +81,8 @@ protected:
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   bool m_has_res_costs; 
-	int m_task_switching_cost;
+  bool m_has_fem_res_costs; 
+  int m_task_switching_cost;
   bool m_has_female_costs;
   bool m_has_choosy_female_costs;
   bool m_has_post_costs;
@@ -135,9 +137,9 @@ public:
   virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) = 0;
   virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
-  void SetMiniTrace(const cString& filename, const int org_id, const cString& gen_id);
+  void SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype);
   void DeleteMiniTrace();
-  virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id) = 0;
+  virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
   
   

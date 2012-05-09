@@ -3302,10 +3302,9 @@ public:
   }
 };
 
-//@JJB**
+// Deme competition based on demes' merits with minor fitness bonuses for successful messaging and deme-IO, implemented for neural networking. @JJB
 class cActionCompeteDemesByMerit : public cAbstractCompeteDemes
 {
-private:
 public:
   cActionCompeteDemesByMerit(cWorld* world, const cString& args, Feedback& feedback) : cAbstractCompeteDemes(world, args, feedback)
   {
@@ -3313,10 +3312,7 @@ public:
 
   ~cActionCompeteDemesByMerit() {}
 
-  static const cString GetDescription()
-  {
-    return "Compete demes according to the each deme's current merit";
-  }
+  static const cString GetDescription() { return "Compete demes according to the each deme's current merit"; }
 
   virtual double Fitness(cDeme& deme, cAvidaContext& ctx)
   {
@@ -3324,18 +3320,16 @@ public:
     double messaging_bonus;
     double input_bonus;
     double output_bonus;
-    if (deme.GetMessageSuccessfullySent() > 0)
-      messaging_bonus = 1.5;
-    else
-      messaging_bonus = 1.0;
-    if (deme.HasDoneInput())
-      input_bonus = 1.5;
-    else
-      input_bonus = 1.0;
-    if (deme.HasDoneOutput())
-      output_bonus = 1.5;
-    else
-      output_bonus = 1.0;
+
+    if (deme.GetMessageSuccessfullySent() > 0) messaging_bonus = 1.5;
+    else messaging_bonus = 1.0;
+
+    if (deme.HasDoneInput()) input_bonus = 1.5;
+    else input_bonus = 1.0;
+
+    if (deme.HasDoneOutput()) output_bonus = 1.5;
+    else output_bonus = 1.0;
+
     double fitness = deme.GetCurMerit().GetDouble() * messaging_bonus * input_bonus * output_bonus;
     return fitness;
   }
@@ -5249,7 +5243,7 @@ public:
     
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     cBioGroup* bg = it->Next();
-    tSmartArray<cBioGroup*> bg_list;
+    tSmartArray<int> bg_id_list;
     tSmartArray<int> fts_to_use;
     tSmartArray<int> groups_to_use;
     int num_doms = 0;
@@ -5300,11 +5294,11 @@ public:
     if (!m_save_foragers) fts_done = true;
     if (!m_save_groups) grps_done = true;
     for (int i = 0; i < num_types; i++) {
-      if (bg_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
+      if (bg_id_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
         if (i == 0 && m_save_dominants && num_doms > 0) {
           for (int j = 0; j < num_doms; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
-              bg_list.Push(bg);
+            if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
+              bg_id_list.Push(bg->GetID());
               if (m_save_foragers) {
                 int ft = bg->GetProperty("last_forager_type").AsInt(); 
                 if (fts_left > 0) {
@@ -5359,12 +5353,12 @@ public:
         
         else if (i == 1 && m_save_foragers && fts_left > 0) {
           for (int j = 0; j < fts_left; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
+            if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
               int ft = bg->GetProperty("last_forager_type").AsInt(); 
               bool found_one = false;
               for (int k = 0; k < fts_to_use.GetSize(); k++) {
                 if (ft == fts_to_use[k]) {
-                  bg_list.Push(bg);
+                  bg_id_list.Push(bg->GetID());
                   ft_check_counts[k]--;
                   if (ft_check_counts[k] == 0) {
                     unsigned int last = fts_to_use.GetSize() - 1;
@@ -5413,12 +5407,12 @@ public:
         
         else if (i == 2 && m_save_groups && groups_left > 0) {
           for (int j = 0; j < groups_left; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_list.GetSize() == 0)) {
+            if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
               int grp = bg->GetProperty("last_group_id").AsInt(); 
               bool found_one = false;
               for (int k = 0; k < groups_to_use.GetSize(); k++) {
                 if (grp == groups_to_use[k]) {
-                  bg_list.Push(bg);
+                  bg_id_list.Push(bg->GetID());
                   group_check_counts[k]--;
                   if (group_check_counts[k] == 0) {
                     unsigned int last = groups_to_use.GetSize() - 1;
@@ -5447,7 +5441,43 @@ public:
         } // end of group id types
       } // end of while < max_bgs  
     }
-    m_world->GetPopulation().SetMiniTraceQueue(bg_list, m_print_genomes);
+    m_world->GetPopulation().SetMiniTraceQueue(bg_id_list, m_print_genomes);
+  }
+};
+
+/* Record condensed trace files for pre-specificied genotypes. */
+class cActionLoadMiniTraceQ : public cAction
+{
+private:
+  cString m_filename; 
+  int m_orgs_per;
+  bool m_print_genomes;
+  
+public:
+  cActionLoadMiniTraceQ(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args), m_filename(""), m_orgs_per(1), m_print_genomes(true)
+  {
+    cArgSchema schema(':','=');
+    
+    // Entries
+    schema.AddEntry("file", 0, "genotype_ids");
+    schema.AddEntry("orgs_per", 0, 1);
+    schema.AddEntry("print_genomes", 1, 0, 1, 1);
+
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (args) {
+      m_filename = argc->GetString(0);
+      m_orgs_per = argc->GetInt(0);
+      m_print_genomes = argc->GetInt(1);
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: <cString fname> [int orgs_per=1] [boolean print_genomes=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().LoadMiniTraceQ(m_filename, m_orgs_per, m_print_genomes);
   }
 };
 
@@ -5582,7 +5612,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionCompeteDemesByTaskCount>("CompeteDemesByTaskCount");
   action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
   action_lib->Register<cActionCompeteDemesByEnergyDistribution>("CompeteDemesByEnergyDistribution");
-  action_lib->Register<cActionCompeteDemesByMerit>("CompeteDemesByMerit"); //@JJB**
+  action_lib->Register<cActionCompeteDemesByMerit>("CompeteDemesByMerit");
 	
   /* deme predicate*/
   action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
@@ -5594,10 +5624,11 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
-	action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
+  action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
   action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
   action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
   
   action_lib->Register<cActionPrintMiniTraces>("PrintMiniTraces");
+  action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
 }

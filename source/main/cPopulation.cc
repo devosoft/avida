@@ -387,19 +387,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
       int group_id = parent_organism->GetOpinion().first;
       int org_imm_tolerance = parent_organism->GetPhenotype().CalcToleranceImmigrants();
-      group_intolerances[group_id][0].second -= tol_max - org_imm_tolerance; 
+      m_group_intolerances[group_id][0].second -= tol_max - org_imm_tolerance; 
       if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
         if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-          group_intolerances_females[group_id][0].second -= tol_max - org_imm_tolerance;
-        }
-        else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-          group_intolerances_males[group_id][0].second -= tol_max - org_imm_tolerance;
-        }
-        else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
-          group_intolerances_juvs[group_id][0].second -= tol_max - org_imm_tolerance;
+          m_group_intolerances_females[group_id][0].second -= tol_max - org_imm_tolerance;
+        } else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+          m_group_intolerances_males[group_id][0].second -= tol_max - org_imm_tolerance;
+        } else if (parent_organism->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+          m_group_intolerances_juvs[group_id][0].second -= tol_max - org_imm_tolerance;
         }
       }
-      group_intolerances[group_id][1].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
+      m_group_intolerances[group_id][1].second -= tol_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
     }
   }
 
@@ -520,7 +518,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // into another group.
     if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
       if (parent_organism->HasOpinion()) offspring_array[i]->SetParentGroup(parent_organism->GetOpinion().first);
-      // If tolerances are on ... @JJB
+      // If tolerances are on ... 
       if (m_world->GetConfig().TOLERANCE_WINDOW.Get() != 0 && m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
         bool joins_group = AttemptOffspringParentGroup(ctx, parent_organism, offspring_array[i]);
         if (!joins_group) {
@@ -632,6 +630,10 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   tArray<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
   
   
+  if(infection_mechanism == 0) {
+    interaction_fails = false;
+  }
+  
   // 1: Parasite must match at least 1 task the host does (Overlap)
   if(infection_mechanism == 1)
   {
@@ -734,7 +736,6 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
       return false;
   }
   
-  //infection_mechanism == 0
   return true;
 }
 
@@ -1007,27 +1008,27 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       org_survived = false; 
   }
   // are there mini traces we need to test for?
-  if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(ctx, in_organism);  
+  if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(in_organism);  
   return org_survived;
 }
 
-void cPopulation::TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism) 
+void cPopulation::TestForMiniTrace(cOrganism* in_organism) 
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
-  cBioGroup* org_bg = in_organism->GetBioGroup("genotype");
+  int org_bg_id = in_organism->GetBioGroup("genotype")->GetID();
   for (int i = 0; i < minitrace_queue.GetSize(); i++)
   {
-    if (org_bg == minitrace_queue[i]) {
+    if (org_bg_id == minitrace_queue[i]) {
       unsigned int last = minitrace_queue.GetSize() - 1;
       minitrace_queue.Swap(i, last);
       minitrace_queue.Pop();
-      SetupMiniTrace(ctx, in_organism);
+      SetupMiniTrace(in_organism);
       break;
     }
   }
 }
 
-void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
+void cPopulation::SetupMiniTrace(cOrganism* in_organism)
 {
   const int target = in_organism->GetParentFT();
   const int id = in_organism->GetID();
@@ -1035,28 +1036,82 @@ void cPopulation::SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism)
   if (in_organism->HasOpinion()) group_id = in_organism->GetOpinion().first;
   else group_id = in_organism->GetParentGroup();
   
-  cString filename =  cStringUtil::Stringf("minitraces/%d-grp%d_ft%d-%s.trc", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  cString filename = cStringUtil::Stringf("minitraces/org%d-ud%d-grp%d_ft%d-gt%d.trc", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
   
-  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetID(), in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   
   if (print_mini_trace_genomes) {
-    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/%d-grp%d_ft%d-%s.trcgeno", id, group_id, target, (const char*) in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
-    PrintMiniTraceGenome(ctx, in_organism, gen_file);
+    cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/org%d-ud%d-grp%d_ft%d-gt%d.trcgeno", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
+    PrintMiniTraceGenome(in_organism, gen_file);
   }
 }
 
-void cPopulation::PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename)
+void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename)
 {
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-  testcpu->PrintGenome(ctx, Genome(in_organism->GetBioGroup("genotype")->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
+  // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+  cRandom rng(0);
+  cAvidaContext ctx2(m_world, rng);
+  
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+  testcpu->PrintGenome(ctx2, Genome(in_organism->GetBioGroup("genotype")->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
   delete testcpu;
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<cBioGroup*> new_queue, const bool print_genomes)
+void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print_genomes)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
   if (print_genomes) print_mini_trace_genomes = true;
+}
+
+void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes)
+{
+  for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
+  if (print_genomes) print_mini_trace_genomes = true;
+}
+
+void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes)
+{
+  cInitFile input_file(filename, m_world->GetWorkingDir());
+  if (!input_file.WasOpened()) {
+    const cUserFeedback& feedback = input_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::UF_ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
+        case cUserFeedback::UF_WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
+        default:                      m_world->GetDriver().NotifyComment(feedback.GetMessage(i)); break;
+      };
+    }
+  }
+  
+  tSmartArray<int> bg_id_list;
+  tSmartArray<int> queue = m_world->GetPopulation().GetMiniTraceQueue();
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString cur_line = input_file.GetLine(line_id);
+    
+    tDictionary<cString>* line = input_file.GetLineAsDict(line_id);
+    int gen_id_num = line->Get("id").AsInt();
+    
+    // setup the genotype 'list' which will be checked in activateorg
+    // skip if enough already in the existing trace queue (e.g if loading multiple genotype id files that overlap)
+    int add_num = orgs_per;
+    for (int i = 0; i < queue.GetSize(); i++) {
+      if (gen_id_num == queue[i]) {
+        add_num--;
+        if (add_num <= 0) break;
+      }
+    }
+    for (int j = 0; j < add_num; j++) {
+      bg_id_list.Push(gen_id_num);
+    }
+  }
+  
+  if (queue.GetSize() > 0) {
+    m_world->GetPopulation().AppendMiniTraces(bg_id_list, print_genomes);
+  }
+  else {
+    m_world->GetPopulation().SetMiniTraceQueue(bg_id_list, print_genomes);
+  }
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
@@ -5075,6 +5130,12 @@ void cPopulation::UpdateResStats(cAvidaContext& ctx)
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
 }
 
+void cPopulation::ProcessPreUpdate()
+{
+  resource_count.SetSpatialUpdate(m_world->GetStats().GetUpdate());
+  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessPreUpdate();   
+}
+
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
   ProcessUpdateCellActions(ctx);
@@ -5649,45 +5710,42 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   
   cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
   
-	// the following bit of code is required for proper germline support.
-	// even if there's only one deme!!
-	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+  // the following bit of code is required for proper germline support.
+  // even if there's only one deme!!
+  if (m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
-    
+
     // If we're using germlines, then we have to be a little careful here.
     // This should probably not be within Inject() since we mainly want it to
     // apply to the START_ORGANISM? -- @JEB
-    
+
     //@JEB This section is very messy to maintain consistency with other deme ways.
-    
+
     if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 0) {
       if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
         if (deme.GetGermline().Size()==0) {
           deme.GetGermline().Add(GetCell(cell_id).GetOrganism()->GetGenome());
         }
       }
-    }
-    else if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) {
+    } else if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) {
       if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
         //find the genotype we just created from the genome, and save it
         deme.ReplaceGermline(GetCell(cell_id).GetOrganism()->GetBioGroup("genotype"));
-      }
-      else { // not germlines, save org as founder
+      } else { // not germlines, save org as founder
         deme.AddFounder(GetCell(cell_id).GetOrganism()->GetBioGroup("genotype"), &phenotype);
       }
-      
+
       GetCell(cell_id).GetOrganism()->GetPhenotype().SetPermanentGermlinePropensity
-      (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get());
-      
-      
+        (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get());
+
+
       if (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() >= 0.0) {
         GetCell(cell_id).GetOrganism()->GetPhenotype().SetPermanentGermlinePropensity
-        ( m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() );
+          ( m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() );
       }
-      
+
     }
-  }
-  else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
+  } else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
     //find the genotype we just created from the genome, and save it
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
     cDemePlaceholderUnit unit(src, genome);
@@ -5708,7 +5766,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   if(m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     cell_array[cell_id].GetOrganism()->GetOrgInterface().AddPredPreyAV(cell_id);
   }
-  if (trace) SetupMiniTrace(ctx, cell_array[cell_id].GetOrganism());    
+  if (trace) SetupMiniTrace(cell_array[cell_id].GetOrganism());    
 }
 
 void cPopulation::InjectGroup(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral, int group_id, int forager_type, int trace) 
@@ -6928,15 +6986,16 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
     m_groups[group_id] = 0;
     tSmartArray<cOrganism*> temp;
     group_list.Set(group_id, temp);
-    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
+    // If tolerance is on, create the new group's tolerance cache
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       tArray<pair<int,int> > temp_array(2);
-      temp_array[0] = make_pair(-1,-1);
-      temp_array[1] = make_pair(-1,-1);
-      group_intolerances.Set(group_id, temp_array);
+      temp_array[0] = make_pair(-1, -1);
+      temp_array[1] = make_pair(-1, -1);
+      m_group_intolerances.Set(group_id, temp_array);
       if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
-        group_intolerances_females.Set(group_id, temp_array);
-        group_intolerances_males.Set(group_id, temp_array);
-        group_intolerances_juvs.Set(group_id, temp_array);
+        m_group_intolerances_females.Set(group_id, temp_array);
+        m_group_intolerances_males.Set(group_id, temp_array);
+        m_group_intolerances_juvs.Set(group_id, temp_array);
       }
     }
   }
@@ -6946,26 +7005,25 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
   else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) m_group_males[group_id]++;
 
   group_list[group_id].Push(org);
-  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { // @JJB
+  // If tolerance is on, must add the organism's intolerance to the group cache
+  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     int immigrant_tol = org->GetPhenotype().CalcToleranceImmigrants();
-    group_intolerances[group_id][0].second += tol_max - immigrant_tol;
+    m_group_intolerances[group_id][0].second += tol_max - immigrant_tol;
     if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
       if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-        group_intolerances_females[group_id][0].second += tol_max - immigrant_tol;
-      }
-      else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-        group_intolerances_males[group_id][0].second += tol_max - immigrant_tol;
-      }
-      else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) { 
-        group_intolerances_juvs[group_id][0].second += tol_max - immigrant_tol;
+        m_group_intolerances_females[group_id][0].second += tol_max - immigrant_tol;
+      } else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+        m_group_intolerances_males[group_id][0].second += tol_max - immigrant_tol;
+      } else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) { 
+        m_group_intolerances_juvs[group_id][0].second += tol_max - immigrant_tol;
       }
     }
-    group_intolerances[group_id][1].second += tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
+    m_group_intolerances[group_id][1].second += tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
   }
 }
 
-// Makes a new group (highest current group number +1). @JJB
+// Makes a new group (highest current group number +1)
 void cPopulation::MakeGroup(cOrganism* org)
 {
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return;
@@ -6992,7 +7050,7 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
 
     // If no restrictions on group ids,
     // removes empty groups so the number of total groups being tracked doesn't become excessive
-    // (Removes the highest group even if empty, causes misstep in marching groups). @JJB
+    // (Removes the highest group even if empty, causes misstep in marching groups). 
     if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
       if (m_groups[group_id] <= 0) {
         m_groups.erase(group_id);
@@ -7000,22 +7058,21 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
     }
   }
 
+  // If tolerance is on, remove the organim's intolerance from the group's cache
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) { 
     int tol_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     int immigrant_tol = org->GetPhenotype().CalcToleranceImmigrants();
-    group_intolerances[group_id][0].second -= tol_max - immigrant_tol;
+    m_group_intolerances[group_id][0].second -= tol_max - immigrant_tol;
     if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
       if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
-        group_intolerances_females[group_id][0].second -= tol_max - immigrant_tol;
-      }
-      else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
-        group_intolerances_males[group_id][0].second -= tol_max - immigrant_tol;
-      }
-      else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) { 
-        group_intolerances_juvs[group_id][0].second -= tol_max - immigrant_tol; 
+        m_group_intolerances_females[group_id][0].second -= tol_max - immigrant_tol;
+      } else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+        m_group_intolerances_males[group_id][0].second -= tol_max - immigrant_tol;
+      } else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) { 
+        m_group_intolerances_juvs[group_id][0].second -= tol_max - immigrant_tol; 
       }
     }
-    group_intolerances[group_id][1].second -= tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
+    m_group_intolerances[group_id][1].second -= tol_max - org->GetPhenotype().CalcToleranceOffspringOthers();
   }
 
   for (int i = 0; i < group_list[group_id].GetSize(); i++) {
@@ -7023,7 +7080,7 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
       unsigned int last = group_list[group_id].GetSize() - 1;
       group_list[group_id].Swap(i,last);
       group_list[group_id].Pop();
-      // If no restrictions, removes empty groups. @JJB
+      // If no restrictions, removes empty groups. 
       if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 1) {
         if (group_list[group_id].GetSize() <= 0) {
           group_list.Remove(group_id);
@@ -7099,29 +7156,25 @@ void  cPopulation::ChangeGroupMatingTypes(cOrganism* org, int group_id, int old_
       int immigrant_tol = org->GetPhenotype().CalcToleranceImmigrants();
       // remove from old
       if (old_type == 0) {
-        group_intolerances_females[group_id][0].second -= tol_max - immigrant_tol;
-      }
-      else if (old_type == 1) {
-        group_intolerances_males[group_id][0].second -= tol_max - immigrant_tol;
-      }
-      else if (old_type == 2) {
-        group_intolerances_juvs[group_id][0].second -= tol_max - immigrant_tol;   
+        m_group_intolerances_females[group_id][0].second -= tol_max - immigrant_tol;
+      } else if (old_type == 1) {
+        m_group_intolerances_males[group_id][0].second -= tol_max - immigrant_tol;
+      } else if (old_type == 2) {
+        m_group_intolerances_juvs[group_id][0].second -= tol_max - immigrant_tol;   
       }
       // add to new
       if (new_type == 0) {
-        group_intolerances_females[group_id][0].second += tol_max - immigrant_tol;
-      }
-      else if (new_type == 1) {
-        group_intolerances_males[group_id][0].second += tol_max - immigrant_tol;
-      }
-      else if (new_type == 2) {
-        group_intolerances_juvs[group_id][0].second += tol_max - immigrant_tol;      
+        m_group_intolerances_females[group_id][0].second += tol_max - immigrant_tol;
+      } else if (new_type == 1) {
+        m_group_intolerances_males[group_id][0].second += tol_max - immigrant_tol;
+      } else if (new_type == 2) {
+        m_group_intolerances_juvs[group_id][0].second += tol_max - immigrant_tol;      
       }
     }
   }
 }
 
-// Calculates group tolerance towards immigrants @JJB
+// Calculates group tolerance towards immigrants 
 int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
 {
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -7130,24 +7183,22 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
   if (group_list[group_id].GetSize() <= 0) return tolerance_max;
 
   // use cache, if up to date
-  int tol_update = group_intolerances[group_id][0].first;
-  int group_intol = group_intolerances[group_id][0].second;
+  int tol_update = m_group_intolerances[group_id][0].first;
+  int group_intol = m_group_intolerances[group_id][0].second;
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
     if (mating_type == 0) { 
-      tol_update = group_intolerances_females[group_id][0].first;
-      group_intol = group_intolerances_females[group_id][0].second;
-    }
-    else if (mating_type == 1) { 
-      tol_update = group_intolerances_males[group_id][0].first;
-      group_intol = group_intolerances_males[group_id][0].second;
-    }
-    else if (mating_type == 2) { 
-      tol_update = group_intolerances_juvs[group_id][0].first;
-      group_intol = group_intolerances_juvs[group_id][0].second;
+      tol_update = m_group_intolerances_females[group_id][0].first;
+      group_intol = m_group_intolerances_females[group_id][0].second;
+    } else if (mating_type == 1) { 
+      tol_update = m_group_intolerances_males[group_id][0].first;
+      group_intol = m_group_intolerances_males[group_id][0].second;
+    } else if (mating_type == 2) { 
+      tol_update = m_group_intolerances_juvs[group_id][0].first;
+      group_intol = m_group_intolerances_juvs[group_id][0].second;
     }
   }  
   int cur_update = m_world->GetStats().GetUpdate();
-  if (tol_update == cur_update) return max(0 , tolerance_max - group_intol);
+  if (tol_update == cur_update) return max(0, tolerance_max - group_intol);
 
   // If can't use cache, sum the total group intolerance
   int group_intolerance = 0;  
@@ -7168,21 +7219,18 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
   // this is the only time we can do this since this is the only 
   // time we ever look at the entire group (updated every individual) or sub-group (by sex)
   if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() != 2) {
-    group_intolerances[group_id][0].first = cur_update;
-    group_intolerances[group_id][0].second = group_intolerance;
-  }
-  else {
+    m_group_intolerances[group_id][0].first = cur_update;
+    m_group_intolerances[group_id][0].second = group_intolerance;
+  } else {
     if (mating_type == 0) {
-      group_intolerances_females[group_id][0].first = cur_update;
-      group_intolerances_females[group_id][0].second = group_intolerance;      
-    }
-    else if (mating_type == 1) {
-      group_intolerances_males[group_id][0].first = cur_update;
-      group_intolerances_males[group_id][0].second = group_intolerance;      
-    }
-    else if (mating_type == 2) {
-      group_intolerances_juvs[group_id][0].first = cur_update;
-      group_intolerances_juvs[group_id][0].second = group_intolerance;      
+      m_group_intolerances_females[group_id][0].first = cur_update;
+      m_group_intolerances_females[group_id][0].second = group_intolerance;      
+    } else if (mating_type == 1) {
+      m_group_intolerances_males[group_id][0].first = cur_update;
+      m_group_intolerances_males[group_id][0].second = group_intolerance;      
+    } else if (mating_type == 2) {
+      m_group_intolerances_juvs[group_id][0].first = cur_update;
+      m_group_intolerances_juvs[group_id][0].second = group_intolerance;      
     }
   }
   
@@ -7191,7 +7239,7 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id, int mating_type)
   return max(0, group_tolerance);
 }
 
-// Calculates group tolerance towards offspring (not including parent) @JJB
+// Calculates group tolerance towards offspring (not including parent) 
 int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
 {
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
@@ -7204,8 +7252,8 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   int parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOthers();
 
   int group_intolerance = 0;
-  if (group_intolerances[group_id][1].first == cur_update) {
-    group_intolerance = group_intolerances[group_id][1].second;
+  if (m_group_intolerances[group_id][1].first == cur_update) {
+    group_intolerance = m_group_intolerances[group_id][1].second;
   } else {
     int single_member_intolerance = 0;
     // Sum the total group intolerance
@@ -7214,8 +7262,8 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
       group_intolerance += single_member_intolerance;
     }
     // Save current update and current intolerance to cache
-    group_intolerances[group_id][1].first = cur_update;
-    group_intolerances[group_id][1].second = group_intolerance;
+    m_group_intolerances[group_id][1].first = cur_update;
+    m_group_intolerances[group_id][1].second = group_intolerance;
   }
   
   // Remove the parent intolerance
@@ -7224,7 +7272,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism)
   return max(0, group_tolerance);
 }
 
-// Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
+// Calculates the odds (out of 1) for successful immigration based on group's tolerance 
 double cPopulation::CalcGroupOddsImmigrants(int group_id, int mating_type)
 {
   if (group_id < 0) return 1.0;
@@ -7235,7 +7283,7 @@ double cPopulation::CalcGroupOddsImmigrants(int group_id, int mating_type)
   return immigrant_odds;
 }
 
-// Returns true if the org successfully passes immigration tolerance and joins the group @JJB
+// Returns true if the org successfully passes immigration tolerance and joins the group 
 bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
 {
   bool immigrate = false;
@@ -7248,9 +7296,8 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
     if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE && NumberGroupFemales(group_id) == 0) immigrate = true;
     else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_MALE && NumberGroupMales(group_id) == 0) immigrate = true;
     else if (org->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE && NumberGroupJuvs(group_id) == 0) immigrate = true;
-  }
   // Calculate chances based on target group tolerance of another org successfully immigrating
-  else {
+  } else {
     int mating_type = -1;
     if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
       if (org->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
@@ -7275,7 +7322,7 @@ bool cPopulation::AttemptImmigrateGroup(int group_id, cOrganism* org)
   return immigrate;
 }
 
-// Calculates the odds (out of 1) for the organism's offspring to be born into its parent's group @JJB
+// Calculates the odds (out of 1) for the organism's offspring to be born into its parent's group 
 double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
 {
   assert(parent->HasOpinion());
@@ -7296,7 +7343,7 @@ double cPopulation::CalcGroupOddsOffspring(cOrganism* parent)
   return prob;
 }
 
-// Calculates the odds (out of 1) for offspring to be born into the group @JJB
+// Calculates the odds (out of 1) for offspring to be born into the group 
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
   // If non-standard group, automatic success
@@ -7344,17 +7391,15 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       offspring->SetOpinion(target_group);
       JoinGroup(offspring, target_group);
       return true;
-    }
-    else {
+    } else {
       // Put the offspring in the parent's group.
       assert(parent->HasOpinion());
       offspring->SetOpinion(parent_group);
       JoinGroup(offspring, parent_group);
       return true;
     }
-  }
   // If using standard tolerances
-  else if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+  } else if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     assert(parent->HasOpinion());
     const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     const int parent_group = parent->GetOpinion().first;
@@ -7381,8 +7426,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
         if (rand2 <= prob_group_allows) {
           // Offspring successfully joins parent's group
           join_parent_group = true;                       
-        }
-        else join_parent_group = false;
+        } else join_parent_group = false;
       }
     }
     
@@ -7392,8 +7436,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
       // Let the parent know that its offspring was born into its group
       parent->GetPhenotype().SetBornParentGroup() = true;
       return true;
-    }
-    else {
+    } else {
       // Let the parent know its offspring was not born into its group
       parent->GetPhenotype().SetBornParentGroup() = false;
     }
@@ -7417,8 +7460,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
         offspring->SetOpinion(target_group);
         JoinGroup(offspring, target_group);
         return true;
-      }
-      else {
+      } else {
         double probability_born_target_group = CalcGroupOddsImmigrants(target_group, -1);
         
         rand = m_world->GetRandom().GetDouble();
@@ -7428,8 +7470,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
           offspring->SetOpinion(target_group);
           JoinGroup(offspring, target_group);
           return true;
-        }
-        else {
+        } else {
           // Offspring fails to immigrate and is doomed
           return false;
         }
@@ -7449,11 +7490,9 @@ double cPopulation::CalcGroupAveImmigrants(int group_id, int mating_type)
     if (mating_type == -1) count_org = true;
     else if (mating_type == 0 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
       count_org = true;
-    }
-    else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+    } else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
       count_org = true;
-    }
-    else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+    } else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
       count_org = true;
     }
     if (count_org) {
@@ -7475,11 +7514,9 @@ double cPopulation::CalcGroupSDevImmigrants(int group_id, int mating_type)
     if (mating_type == -1) count_org = true;
     else if (mating_type == 0 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) {
       count_org = true;
-    }
-    else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
+    } else if (mating_type == 1 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) {
       count_org = true;
-    }
-    else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
+    } else if (mating_type == 2 && group_list[group_id][index]->GetPhenotype().GetMatingType() == MATING_TYPE_JUVENILE) {
       count_org = true;
     }
     if (count_org) {
@@ -7545,10 +7582,10 @@ double cPopulation::CalcGroupSDevOthers(int group_id)
 
 int& cPopulation::GetGroupIntolerances(int group_id, int tol_num, int mating_type)
 {
-  int& intolerance = group_intolerances[group_id][tol_num].second;
-  if (mating_type == 0) intolerance = group_intolerances_females[group_id][tol_num].second;
-  else if (mating_type == 1) intolerance = group_intolerances_males[group_id][tol_num].second;
-  else if (mating_type == 2) intolerance = group_intolerances_juvs[group_id][tol_num].second;
+  int& intolerance = m_group_intolerances[group_id][tol_num].second;
+  if (mating_type == 0) intolerance = m_group_intolerances_females[group_id][tol_num].second;
+  else if (mating_type == 1) intolerance = m_group_intolerances_males[group_id][tol_num].second;
+  else if (mating_type == 2) intolerance = m_group_intolerances_juvs[group_id][tol_num].second;
   return intolerance;
 }
 

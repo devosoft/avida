@@ -1135,7 +1135,8 @@ class cActionSetOptimizeMinMax : public cAction
     }
   };
 
-//@JJB**
+// For deme input/output, an event (SetDemeIOGrid) that sets listed cells deme input/output bool status to true
+// allowing organism's to complete deme-IO in those cells. Does not support and there is not yet an event to turn cells "off". @JJB
 class cActionSetDemeIOGrid: public cAction
 {
 public:
@@ -1145,8 +1146,8 @@ public:
 public:
   cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback&) :
     cAction(world, args)
-  , inputOutput("none")
   , cell_list(0)
+  , inputOutput("none")
   {
     cString largs(args);
     inputOutput = largs.Pop(':');
@@ -1168,8 +1169,7 @@ public:
           m_world->GetPopulation().GetCell(cell_id).SetCanInput(true);
         }
       }
-    }
-    else if (inputOutput == "Output") {
+    } else if (inputOutput == "Output") {
       int cell_id;
       for (int i = 0; i < cell_list.GetSize(); i++) {
         for (int deme_id = 0; deme_id < num_demes; deme_id++) {
@@ -1180,6 +1180,35 @@ public:
     }
   }
 };
+
+//@JJB**
+//class cActionSendOrgInterruptMessage : public cAction
+//{
+//private:
+//  tArray<int> cell_list;
+//public:
+//  cActionSendOrgInterruptMessage(cWorld* world, const cString& args, Feedback&) :
+//    cAction(world, args)
+//  , cell_list(0)
+//  {
+//    cString largs(args);
+//
+//  }
+//};
+
+//@JJB**
+//class cActionSendAvatarsInterruptMessage : public cAction
+//{
+//private:
+//  tArray<int> cell_list;
+//public:
+//  cActionSendAvatarsInterruptMessage(cWorld* world, const cString& args, Feedback&) :
+//    cAction(world, args)
+//  , cell_list(0)
+//  {
+//    cString largs(args);
+//  }
+//};
 
 class cActionDelayedDemeEvent : public cAction
 {
@@ -1432,6 +1461,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
 
   action_lib->Register<cActionSetDemeIOGrid>("SetDemeIOGrid");
+  //action_lib->Register<cActionSendOrgInterruptMessage>("SendOrgInterruptMessage");
+  //action_lib->Register<cActionSendAvatarsInterruptMessage>("SendAvatarsInterruptMessage");
   
   // MIGRATION_MATRIX
   action_lib->Register<cActionSetMigrationMatrix>("SetMigrationMatrix");

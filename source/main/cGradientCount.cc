@@ -143,7 +143,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // once a resource cone has been 'bitten', start the clock that counts down to when the entire peak will be
   // refreshed (carcass rots for only so long before disappearing)
   if (has_edible && GetModified()) m_counter++;
-  
+
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) return; 
                     

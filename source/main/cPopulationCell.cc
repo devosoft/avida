@@ -306,7 +306,7 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
  * back to all organisms with avatars in that cell. Each organism then contains a list
  * (in cPopulationInterface) of all it's avatars and the cell for each avatar.
  * Currently there are two supported avatar types, input and output,
- * which are also used as predators and prey, respectively. @JJB**
+ * which are also used as predators and prey, respectively. 
  */
 
 // Adds an organism to the cell's input avatars, then keeps the list mixed by swapping the new avatar into a random position in the array
