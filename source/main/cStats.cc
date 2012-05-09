@@ -3863,6 +3863,39 @@ void cStats::AgeTaskEvent(int org_id, int task_id, int org_age) {
 	reaction_age_map[task_id].Add(org_age);
 }
 
+/* Add the time between two tasks */ 
+void cStats::AddTaskSwitchTime(int t1, int t2, int time) {
+  intrinsic_task_switch_time[make_pair(t1, t2)].Add(time); 
+}
+
+
+/* Track the relationship between the age of the organism and the task that they perform */
+
+void cStats::PrintIntrinsicTaskSwitchingCostData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	const cEnvironment& env = m_world->GetEnvironment();
+  std::map<std::pair<int, int>, cDoubleSum>::iterator iter;
+  
+  df.WriteComment("Number of cyles it takes to change between tasks");
+  df.WriteTimeStamp();
+	df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("Task 1 [t1]");
+  df.WriteColumnDesc("Task 2 [t2]");
+  df.WriteColumnDesc("Mean cycles [mc]");
+
+  
+  for (iter=intrinsic_task_switch_time.begin(); iter!=intrinsic_task_switch_time.end(); ++iter) {
+    df.Write(m_update,   "Update [update]");
+    df.Write(iter->first.first,   "Task 1 [t1]");
+    df.Write(iter->first.second,   "Task 2 [t2]");
+    df.Write(iter->second.Average(),   "Mean cycles [mc]");
+    iter->second.Clear();
+    df.Endl();
+  }
+  intrinsic_task_switch_time.clear();
+}
+
+
 /* Track the relationship between the age of the organism and the task that they perform */
 
 void cStats::PrintAgePolyethismData(const cString& filename) {

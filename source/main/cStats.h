@@ -50,6 +50,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <utility>
 
 class cWorld;
 class cOrganism;
@@ -1206,15 +1207,18 @@ public:
     m_percent_reproductives.push_back(per_repro);
 
 	}
-
+	void PrintIntrinsicTaskSwitchingCostData(const cString& filename);
 	void PrintAgePolyethismData(const cString& filename);
 	void AgeTaskEvent(int org_id, int task_id, int org_age);
 	//! Get number of deme replications
 	int GetNumDemeReplications() { return m_total_deme_num_repls; }
+  //! Add a task time tracking event
+  void AddTaskSwitchTime(int t1, int t2, int time); 
 
 
 protected:
 	std::map<int, cDoubleSum> reaction_age_map;
+  std::map<std::pair<int,int>, cDoubleSum> intrinsic_task_switch_time; 
 
 
 // -------- Reputation support ---------
