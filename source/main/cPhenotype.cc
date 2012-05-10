@@ -87,6 +87,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , num_new_unique_reactions(0)
 , res_consumed(0)
 , is_germ_cell(m_world->GetConfig().DEMES_ORGS_START_IN_GERM.Get())
+, last_task_time(0)
 
 { 
   if (parent_generation >= 0) {
@@ -227,6 +228,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   birth_update             = in_phen.birth_update;
   num_new_unique_reactions = in_phen.num_new_unique_reactions;
   last_task_id             = in_phen.last_task_id;
+  last_task_time           = in_phen.last_task_time;
   res_consumed             = in_phen.res_consumed; 
   is_germ_cell             = in_phen.is_germ_cell;
   
@@ -448,6 +450,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   last_task_id             = -1;
   res_consumed             = 0;
   is_germ_cell             = parent_phenotype.is_germ_cell;
+  last_task_time           = 0; 
   
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
@@ -862,6 +865,7 @@ void cPhenotype::DivideReset(const Sequence& _genome)
   num_new_unique_reactions = 0;
   last_task_id             = -1;
   res_consumed             = 0;
+  last_task_time           = 0;
   
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -1069,6 +1073,8 @@ void cPhenotype::TestDivideReset(const Sequence& _genome)
   num_new_unique_reactions = 0;
   last_task_id             = -1;
   res_consumed             = 0;
+  last_task_time           = 0;
+
   
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -1251,6 +1257,8 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_task_id             = clone_phenotype.last_task_id;
   res_consumed             = clone_phenotype.res_consumed;
   is_germ_cell             = clone_phenotype.is_germ_cell;
+  last_task_time           = clone_phenotype.last_task_time;
+
   
   num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
@@ -1462,10 +1470,17 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
         case 2: { // "retooling" cost
           if (last_task_id == -1) {
             last_task_id = i;
-          }					
-          if (last_task_id != i) {
-            num_new_unique_reactions++;
-            last_task_id = i;
+            last_task_time = time_used;
+          }	else {
+            // track time used if applicable
+            int cur_time_used = time_used - last_task_time; 
+            last_task_time = time_used;
+            m_world->GetStats().AddTaskSwitchTime(last_task_id, i, cur_time_used);
+            if (last_task_id != i) {
+              num_new_unique_reactions++;
+              last_task_id = i;
+            } 
+
           }
           break;
         }

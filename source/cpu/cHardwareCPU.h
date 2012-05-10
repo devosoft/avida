@@ -1008,6 +1008,10 @@ public:
   int GetTaskSwitchingCost() { return m_task_switching_cost; }
   // Apply point mutations to a genome.
   bool Inst_ApplyPointMutations(cAvidaContext& ctx);
+  // Apply point mutations to a genome, where the mutation rate
+  // depends on the task last performed
+  bool Inst_ApplyVaryingPointMutations(cAvidaContext& ctx);
+
   bool Inst_JoinGermline(cAvidaContext& ctx);
   bool Inst_ExitGermline(cAvidaContext& ctx);
   bool Inst_RepairPointMutOn(cAvidaContext& ctx);

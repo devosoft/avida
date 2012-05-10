@@ -728,6 +728,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("varying-point-mut", &cHardwareCPU::Inst_ApplyVaryingPointMutations, nInstFlag::STALL),
     tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repair-on", &cHardwareCPU::Inst_RepairPointMutOn, nInstFlag::STALL),
@@ -10432,6 +10433,19 @@ bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
     // incur cost of repairs.
     int cost = m_world->GetConfig().INST_POINT_REPAIR_COST.Get(); 
     m_task_switching_cost += cost;
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_ApplyVaryingPointMutations(cAvidaContext& ctx)
+{
+  int last_task = m_organism->GetPhenotype().GetLastTaskID();
+  // Check that the org performed a task...
+  if (last_task != -1) {
+    // Point mut prob is mutation rate * slope * task last performed
+    double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get() * m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() * last_task;
+    int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+    m_organism->IncPointMutations(num_mut);
   }
   return true;
 }
