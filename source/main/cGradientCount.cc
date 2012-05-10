@@ -491,7 +491,9 @@ void cGradientCount::refreshResourceValues()
         }
         else {
           double past_height = Element(old_cell_y + old_cell_x).GetAmount(); 
-          thisheight = past_height + m_cone_inflow - (past_height * m_cone_outflow);
+          int newheight = past_height + m_cone_inflow - (past_height * m_cone_outflow);
+          // don't exceed expected slope value
+          if (newheight < thisheight) thisheight = newheight;
           if (thisheight < 0) thisheight = 0;
         }
       }
@@ -509,7 +511,8 @@ void cGradientCount::refreshResourceValues()
         }
         else {
           double past_height = Element(old_cell_y + old_cell_x).GetAmount(); 
-          thisheight = past_height + m_cone_inflow - (past_height * m_cone_outflow);
+          int newheight = past_height + m_cone_inflow - (past_height * m_cone_outflow);
+          if (newheight < thisheight) thisheight = newheight;
           if (thisheight < 0) thisheight = 0;      
         }
       }
