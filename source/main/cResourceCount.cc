@@ -225,8 +225,8 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
         const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
-        const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
-        const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
+        const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
+        const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
         const int& in_config, const int& in_count, const double& in_resistance, const double& in_init_plat, 
         const double& in_threshold, const int& in_refuge, const bool& isgradient)
 {
@@ -318,9 +318,9 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
                                                       in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed,
-                                                      in_plateau_inflow, in_plateau_outflow, in_is_plateau_common, in_floor,
-                                                      in_habitat, in_min_size, in_max_size, in_config, in_count, 
-                                                      in_init_plat);
+                                                      in_plateau_inflow, in_plateau_outflow, in_cone_inflow, in_cone_outflow,
+                                                      in_is_plateau_common, in_floor, in_habitat, in_min_size, in_max_size, 
+                                                      in_config, in_count, in_init_plat);
       spatial_resource_count[res_index]->RateAll(0);
     }
     
@@ -365,8 +365,8 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
                       const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
                       const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
                       const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
-                      const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
-                      const double& floor, const int& habitat, const int& min_size, const int& max_size,
+                      const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow,
+                      const int& is_plateau_common, const double& floor, const int& habitat, const int& min_size, const int& max_size,
                       const int& config, const int& count, const double& resistance, const double& plat_val, 
                       const double& threshold, const int& refuge) 
 {
@@ -397,6 +397,8 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
   spatial_resource_count[res_id]->SetGradMoveSpeed(move_speed);
   spatial_resource_count[res_id]->SetGradPlatInflow(plateau_inflow);
   spatial_resource_count[res_id]->SetGradPlatOutflow(plateau_outflow);
+  spatial_resource_count[res_id]->SetGradConeInflow(cone_inflow);
+  spatial_resource_count[res_id]->SetGradConeOutflow(cone_outflow);
   spatial_resource_count[res_id]->SetGradPlatIsCommon(is_plateau_common);
   spatial_resource_count[res_id]->SetGradFloor(floor);
   spatial_resource_count[res_id]->SetGradHabitat(habitat);
@@ -423,6 +425,20 @@ void cResourceCount::SetGradientOutflow(const int& res_id, const double& outflow
   assert(res_id >= 0 && res_id < resource_count.GetSize());
   assert(spatial_resource_count[res_id]->GetSize() > 0);
   spatial_resource_count[res_id]->SetGradPlatOutflow(outflow);
+}
+
+void cResourceCount::SetGradientConeInflow(const int& res_id, const double& inflow) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetGradConeInflow(inflow);
+}
+
+void cResourceCount::SetGradientConeOutflow(const int& res_id, const double& outflow) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetGradConeOutflow(outflow);
 }
 
 /*

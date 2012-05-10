@@ -3291,7 +3291,6 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
       break;
     }
   }
-
   if (!have_org2use) return false;
   else {
     int target_org_cell = target_org->GetOrgInterface().GetCellID();
@@ -3362,7 +3361,6 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
   }
   if (!have_org2use) return false;
   else {
-    const int worldx = m_world->GetConfig().WORLD_X.Get();
     int target_org_cell = target_org->GetOrgInterface().GetCellID();
     int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
     if (m_use_avatar == 2) {
@@ -3418,7 +3416,6 @@ bool cHardwareExperimental::Inst_RotateNeuronAVLeft(cAvidaContext& ctx)
 // Rotate the register-value-selected avatar, right by one
 bool cHardwareExperimental::Inst_RotateNeuronAVRight(cAvidaContext& ctx)
 {
-  const int avatar_reg = FindModifiedRegister(rBX);
   int avatar_num = m_threads[m_cur_thread].reg[avatar_num].value;
 
   avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);

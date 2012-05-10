@@ -321,6 +321,8 @@ public:
   void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
   void UpdateGradientInflow(const cString res_name, const double inflow);
   void UpdateGradientOutflow(const cString res_name, const double outflow);
+  void UpdateGradientConeInflow(const cString res_name, const double inflow);
+  void UpdateGradientConeOutflow(const cString res_name, const double outflow);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

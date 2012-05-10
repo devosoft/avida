@@ -55,6 +55,8 @@ private:
   int m_move_speed;
   double m_plateau_inflow;
   double m_plateau_outflow;
+  double m_cone_inflow;
+  double m_cone_outflow;
   int m_is_plateau_common;
   double m_floor;
   int m_habitat;
@@ -77,6 +79,9 @@ private:
   int m_movesignx;
   int m_movesigny;
   
+  int m_old_peakx;
+  int m_old_peaky;
+  
   int m_halo_dir;
   int m_changling;
   bool m_just_reset;
@@ -94,7 +99,8 @@ public:
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
-                 int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count, 
+                 double cone_inflow, double cone_outflow, int is_plateau_common, 
+                 double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double init_plat);
   ~cGradientCount();
 
@@ -122,6 +128,8 @@ public:
   void SetGradMoveSpeed(int move_speed) { m_move_speed = move_speed; }
   void SetGradPlatInflow(double plateau_inflow) { m_plateau_inflow = plateau_inflow; }
   void SetGradPlatOutflow(double plateau_outflow) { m_plateau_outflow = plateau_outflow; }
+  void SetGradConeInflow(double cone_inflow) { m_cone_inflow = cone_inflow; }
+  void SetGradConeOutflow(double cone_outflow) { m_cone_outflow = cone_outflow; }
   void SetGradPlatIsCommon(bool is_plateau_common) { m_is_plateau_common = is_plateau_common; }
   void SetGradFloor(double floor) { m_floor = floor; }
   void SetGradHabitat(int habitat) { m_habitat = habitat; }

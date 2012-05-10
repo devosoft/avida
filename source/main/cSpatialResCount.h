@@ -129,6 +129,8 @@ public:
   virtual void SetGradMoveSpeed(int) { ; }
   virtual void SetGradPlatInflow(double) { ; }
   virtual void SetGradPlatOutflow(double) { ; }
+  virtual void SetGradConeInflow(double) { ; }
+  virtual void SetGradConeOutflow(double) { ; }
   virtual void SetGradPlatIsCommon(bool) { ; }
   virtual void SetGradFloor(double) { ; }
   virtual void SetGradHabitat(int) { ; }

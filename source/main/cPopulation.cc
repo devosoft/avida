@@ -305,7 +305,7 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
@@ -6853,7 +6853,7 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(),
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge()); 
@@ -6887,6 +6887,36 @@ void cPopulation::UpdateGradientOutflow(const cString res_name, const double out
     if (res->GetName() == res_name) {
       res->SetPlateauOutflow(outflow);
       resource_count.SetGradientOutflow(global_res_index, outflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientConeInflow(const cString res_name, const double inflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetConeInflow(inflow);
+      resource_count.SetGradientConeInflow(global_res_index, inflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double outflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetConeOutflow(outflow);
+      resource_count.SetGradientConeOutflow(global_res_index, outflow);
     }
   } 
 }
@@ -6937,7 +6967,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
