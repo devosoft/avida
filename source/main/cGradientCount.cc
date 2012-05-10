@@ -479,10 +479,7 @@ void cGradientCount::refreshResourceValues()
         // now apply any inflow to non-plateau cells
         else {
           if ((m_cone_inflow > 0 || m_cone_outflow > 0 || m_gradient_inflow > 0)) {
-            if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
-              thisheight = m_height;
-            }
-            else {
+            if (!m_just_reset && m_world->GetStats().GetUpdate() > 0) {
               int offsetx = m_old_peakx - m_peakx;
               int offsety = m_old_peaky - m_peaky;
               
@@ -503,30 +500,30 @@ void cGradientCount::refreshResourceValues()
                 if (thisheight < 0) thisheight = 0;
               }
             }
-          }
-          // special override case (don't change peak height if no plateau, no common and using cone inflow and outflow)
-          if (m_plateau < 0 && thisdist == 0 && m_is_plateau_common == 0) { 
-            if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
-              thisheight = m_height;
-            }
-            else {
-              int offsetx = m_old_peakx - m_peakx;
-              int offsety = m_old_peaky - m_peaky;
-              
-              int old_cell_x = ii + offsetx;
-              int old_cell_y = ii + offsety;
-              
-              // cone cells that were previously off the world and moved onto world, start at 0
-              if ( old_cell_x < 0 || old_cell_y < 0 || (old_cell_y > (GetY() - 1)) || (old_cell_x > (GetX() - 1)) ) {
-                thisheight = 0;
+            // special override case (don't change peak height if no plateau, no common and using cone or gradient inflow)
+            if (m_plateau < 0 && thisdist == 0 && m_is_plateau_common == 0) { 
+              if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
+                thisheight = m_height;
               }
               else {
-                double past_height = Element(old_cell_y + old_cell_x).GetAmount(); 
-                double newheight = past_height; 
-                if (m_cone_inflow > 0 || m_cone_outflow > 0) newheight += m_cone_inflow - (past_height * m_cone_outflow);
-                if (m_gradient_inflow > 0) newheight +=  m_gradient_inflow / (thisdist + 1);
-                if (newheight < m_height) thisheight = newheight;
-                if (thisheight < 0) thisheight = 0;      
+                int offsetx = m_old_peakx - m_peakx;
+                int offsety = m_old_peaky - m_peaky;
+                
+                int old_cell_x = ii + offsetx;
+                int old_cell_y = ii + offsety;
+                
+                // cone cells that were previously off the world and moved onto world, start at 0
+                if ( old_cell_x < 0 || old_cell_y < 0 || (old_cell_y > (GetY() - 1)) || (old_cell_x > (GetX() - 1)) ) {
+                  thisheight = 0;
+                }
+                else {
+                  double past_height = Element(old_cell_y + old_cell_x).GetAmount(); 
+                  double newheight = past_height; 
+                  if (m_cone_inflow > 0 || m_cone_outflow > 0) newheight += m_cone_inflow - (past_height * m_cone_outflow);
+                  if (m_gradient_inflow > 0) newheight +=  m_gradient_inflow / (thisdist + 1);
+                  if (newheight < m_height) thisheight = newheight;
+                  if (thisheight < 0) thisheight = 0;      
+                }
               }
             }
           }
