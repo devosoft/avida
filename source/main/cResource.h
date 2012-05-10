@@ -123,6 +123,7 @@ private:
   double m_plateau_outflow;
   double m_cone_inflow;
   double m_cone_outflow;
+  double m_gradient_inflow;
   int m_is_plateau_common;
   double m_floor;
   int m_habitat;
@@ -208,6 +209,7 @@ public:
   double GetPlateauOutflow() { return m_plateau_outflow; }
   double GetConeInflow() { return m_cone_inflow; }
   double GetConeOutflow() { return m_cone_outflow; }
+  double GetGradientInflow() { return m_gradient_inflow; }
   int GetIsPlateauCommon() { return m_is_plateau_common; }
   double GetFloor() { return m_floor; }
   int GetHabitat() { return m_habitat; }
@@ -288,6 +290,7 @@ public:
   void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
   void SetConeInflow(double _cone_inflow) { m_cone_inflow = _cone_inflow; }  
   void SetConeOutflow(double _cone_outflow) { m_cone_outflow = _cone_outflow; } 
+  void SetGradientInflow(double _gradient_inflow) { m_gradient_inflow = _gradient_inflow; }  
   void SetPlatInitial(double _initial_plat_val) { m_init_plat = _initial_plat_val; } 
   void SetIsPlateauCommon(int _is_plateau_common) { m_is_plateau_common = _is_plateau_common; }
   void SetFloor(double _floor) { m_floor = _floor; }

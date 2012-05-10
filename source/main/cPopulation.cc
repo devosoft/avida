@@ -306,7 +306,7 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
@@ -6854,14 +6854,14 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(),
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge()); 
     } 
   }
 }
 
-void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
+void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double inflow)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -6871,12 +6871,12 @@ void cPopulation::UpdateGradientInflow(const cString res_name, const double infl
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPlateauInflow(inflow);
-      resource_count.SetGradientInflow(global_res_index, inflow);
+      resource_count.SetGradientPlatInflow(global_res_index, inflow);
     }
   } 
 }
 
-void cPopulation::UpdateGradientOutflow(const cString res_name, const double outflow)
+void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double outflow)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -6886,7 +6886,7 @@ void cPopulation::UpdateGradientOutflow(const cString res_name, const double out
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPlateauOutflow(outflow);
-      resource_count.SetGradientOutflow(global_res_index, outflow);
+      resource_count.SetGradientPlatOutflow(global_res_index, outflow);
     }
   } 
 }
@@ -6917,6 +6917,21 @@ void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double
     if (res->GetName() == res_name) {
       res->SetConeOutflow(outflow);
       resource_count.SetGradientConeOutflow(global_res_index, outflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetGradientInflow(inflow);
+      resource_count.SetGradientInflow(global_res_index, inflow);
     }
   } 
 }
@@ -6968,7 +6983,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
