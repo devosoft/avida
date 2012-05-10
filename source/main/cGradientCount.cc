@@ -491,7 +491,7 @@ void cGradientCount::refreshResourceValues()
         }
         else {
           double past_height = Element(old_cell_y + old_cell_x).GetAmount(); 
-          int newheight = past_height; 
+          double newheight = past_height; 
           if (m_cone_inflow > 0 || m_cone_outflow > 0) newheight += m_cone_inflow - (past_height * m_cone_outflow);
           if (m_gradient_inflow > 0) newheight += m_gradient_inflow / (thisdist + 1);
           // don't exceed expected slope value
@@ -517,7 +517,7 @@ void cGradientCount::refreshResourceValues()
           }
           else {
             double past_height = Element(old_cell_y + old_cell_x).GetAmount(); 
-            int newheight = past_height; 
+            double newheight = past_height; 
             if (m_cone_inflow > 0 || m_cone_outflow > 0) newheight += m_cone_inflow - (past_height * m_cone_outflow);
             if (m_gradient_inflow > 0) newheight +=  m_gradient_inflow / (thisdist + 1);
             if (newheight < thisheight) thisheight = newheight;
