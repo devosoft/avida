@@ -446,9 +446,9 @@ void cGradientCount::refreshResourceValues()
         // create cylindrical profiles of resources whereever thisheight would be >1 (area where thisdist + 1 <= m_height)
         // and slopes outside of that range
         // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
-        double find_plat_dist = m_height / (thisdist + 1);
-        // this is where we apply plateau inflow and outflow...we are only applying it to plateau cells 
-        if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) { 
+        bool is_plat_cell = ((m_height / (thisdist + 1)) >= 1);
+        // apply plateau inflow(s) and outflow 
+        if ((is_plat_cell && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) { 
           if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
             m_past_height = m_height;
             if (m_plateau >= 0.0) {
@@ -462,9 +462,13 @@ void cGradientCount::refreshResourceValues()
             if (m_is_plateau_common == 0) {
               m_past_height = m_plateau_array[plateau_cell]; 
               thisheight = m_past_height + m_plateau_inflow - (m_past_height * m_plateau_outflow);
+              thisheight += m_gradient_inflow / (thisdist + 1);
               if (thisheight > m_plateau && m_plateau >= 0) {
                 thisheight = m_plateau;
               } 
+              if (m_plateau < 0 && thisdist == 0 && thisheight > m_height) {
+                thisheight = m_height;
+              }
             }
             else if (m_is_plateau_common == 1) {   
               thisheight = m_common_plat_height;
@@ -476,8 +480,8 @@ void cGradientCount::refreshResourceValues()
           m_plateau_cell_IDs[plateau_cell] = jj * GetX() + ii;
           plateau_cell ++;
          }
-        // now apply any inflow to non-plateau cells
-        if ((m_cone_inflow > 0 || m_cone_outflow > 0 || m_gradient_inflow > 0)) {
+        // now apply any off-plateau inflow(s) and outflow
+        else if (!is_plat_cell && (m_cone_inflow > 0 || m_cone_outflow > 0 || m_gradient_inflow > 0)) {
           if (!m_just_reset && m_world->GetStats().GetUpdate() > 0) {
             int offsetx = m_old_peakx - m_peakx;
             int offsety = m_old_peaky - m_peaky;
@@ -497,32 +501,6 @@ void cGradientCount::refreshResourceValues()
               // don't exceed expected slope value
               if (newheight < thisheight) thisheight = newheight;
               if (thisheight < 0) thisheight = 0;
-            }
-          }
-          // special override case (don't change peak height if no plateau, no common and using cone or gradient inflow)
-          if (m_plateau < 0 && thisdist == 0 && m_is_plateau_common == 0) { 
-            if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
-              thisheight = m_height;
-            }
-            else {
-              int offsetx = m_old_peakx - m_peakx;
-              int offsety = m_old_peaky - m_peaky;
-              
-              int old_cell_x = ii + offsetx;
-              int old_cell_y = ii + offsety;
-              
-              // cone cells that were previously off the world and moved onto world, start at 0
-              if ( old_cell_x < 0 || old_cell_y < 0 || (old_cell_y > (GetY() - 1)) || (old_cell_x > (GetX() - 1)) ) {
-                thisheight = 0;
-              }
-              else {
-                double past_height = Element(old_cell_y * GetX() + old_cell_x).GetAmount(); 
-                double newheight = past_height; 
-                if (m_cone_inflow > 0 || m_cone_outflow > 0) newheight += m_cone_inflow - (past_height * m_cone_outflow);
-                if (m_gradient_inflow > 0) newheight +=  m_gradient_inflow / (thisdist + 1);
-                if (newheight < m_height) thisheight = newheight;
-                if (thisheight < 0) thisheight = 0;      
-              }
             }
           }
         }
