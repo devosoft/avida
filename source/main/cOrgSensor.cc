@@ -504,11 +504,11 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
         if (valid_cell) {
           cellResultInfo = TestCell(ctx, resource_lib, habitat_used, search_type, this_cell, val_res, first_step);
           first_step = false;
-          if(cellResultInfo.amountFound > 0) {
+          if (cellResultInfo.amountFound > 0) {
             found = true;
             totalAmount += cellResultInfo.amountFound;
             if (cellResultInfo.has_edible) {
-              count ++;                                                         // count cells with individual edible resources (not sum of res in cell >= threshold)
+              count++;                                                         // count cells with individual edible resources (not sum of res in cell >= threshold)
               found_edible = true;
               if (first_success_cell == cCoords(-1, -1)) first_success_cell = this_cell;
               if (first_whole_resource == -9) first_whole_resource = cellResultInfo.resource_id;
@@ -528,7 +528,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     if (count_center) {
       cellResultInfo = TestCell(ctx, resource_lib, habitat_used, search_type, center_cell, val_res, first_step);
       first_step = false;
-      if(cellResultInfo.amountFound > 0) {
+      if (cellResultInfo.amountFound > 0) {
         found = true;
         totalAmount += cellResultInfo.amountFound;
         if (cellResultInfo.has_edible) {
@@ -550,7 +550,6 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       dist_used = dist;
       break;
     }
-    
     center_cell = center_cell + ahead_dir;
   } // END WALKING
   
@@ -558,9 +557,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   stuff_seen.habitat = habitat_used;
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
-  if(!found){
-    stuff_seen.report_type = 0;
-  }
+  if (!found) stuff_seen.report_type = 0;
   else if(found){
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
@@ -623,17 +620,18 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx,  const cResourc
   if (habitat_used != -2) {
     tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
     // look at every resource ID of this habitat type in the array of resources of interest that we built
+    // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) { 
+      int edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
       if (habitat_used == 0) {
-        if (search_type == 0 && cell_res[val_res[k]] >= resource_lib.GetResource(val_res[k])->GetThreshold()) {
+        if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
-            returnInfo.amountFound += cell_res[val_res[k]];                                                         
+            returnInfo.amountFound += floor(cell_res[val_res[k]] / edible_threshold);                                                         
           }
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < resource_lib.GetResource(val_res[k])->GetThreshold() && 
-                 cell_res[val_res[k]] > 0) {                                                                        // only get sum amounts when < threshold if search = get counts
+        else if (search_type == 1 && cell_res[val_res[k]] < edible_threshold && cell_res[val_res[k]] > 0) {         // only get sum amounts when < threshold if search = get counts
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res[val_res[k]];                                                         
           }
@@ -645,12 +643,12 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx,  const cResourc
         returnInfo.amountFound += cell_res[val_res[k]];
       }
       else if (habitat_used == 4) { 
-        if (search_type == 0 && cell_res[val_res[k]] >= resource_lib.GetResource(val_res[k])->GetThreshold()) {     // dens only work above a config set level, but threshold will override this for OrgSensor
+        if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {                                         // dens only work above a config set level, but threshold will override this for OrgSensor
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
-          returnInfo.amountFound += cell_res[val_res[k]];        
+          returnInfo.amountFound += floor(cell_res[val_res[k]] / edible_threshold);        
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < resource_lib.GetResource(val_res[k])->GetThreshold() && cell_res[val_res[k]] > 0) {
+        else if (search_type == 1 && cell_res[val_res[k]] < edible_threshold && cell_res[val_res[k]] > 0) {
           returnInfo.amountFound += cell_res[val_res[k]];        
         }
       }
