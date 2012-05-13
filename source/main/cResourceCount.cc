@@ -529,8 +529,9 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaConte
 
 {
   int num_resources = resource_count.GetSize();
-  DoUpdates(ctx);
 
+  DoUpdates(ctx);
+              
   for (int i = 0; i < num_resources; i++) {
      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
          curr_grid_res_cnt[i] = resource_count[i];
@@ -543,12 +544,8 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaConte
 }
 
 const tArray<double> & cResourceCount::GetFrozenResources(cAvidaContext& ctx, int cell_id) const 
-
-// Get amount of the resource for a given cell in the grid.  If it is a
-// global resource pass out the entire content of that resource.
 // This differs from GetCellResources by leaving out DoUpdates which is
 // useful inside methods that repeatedly call this before cells can change.
-
 {
   int num_resources = resource_count.GetSize();
   
@@ -579,7 +576,6 @@ const tArray< tArray<double> > &  cResourceCount::GetSpatialRes(cAvidaContext& c
       }
     }
   }
-
   return curr_spatial_res_cnt;
 }
 
@@ -616,7 +612,6 @@ void cResourceCount::ModifyCell(cAvidaContext& ctx, const tArray<double> & res_c
     } else {
       double temp = spatial_resource_count[i]->Element(cell_id).GetAmount();
       spatial_resource_count[i]->Rate(cell_id, res_change[i]);
-
       /* Ideally the state of the cell's resource should not be set till
          the end of the update so that all processes (inflow, outflow, 
          diffision, gravity and organism demand) have the same weight.  However
@@ -624,10 +619,10 @@ void cResourceCount::ModifyCell(cAvidaContext& ctx, const tArray<double> & res_c
          the organism demand to work immediately on the state of the resource */ 
     
       spatial_resource_count[i]->State(cell_id);
-    
       if(spatial_resource_count[i]->Element(cell_id).GetAmount() != temp){
         spatial_resource_count[i]->SetModified(true);
       }
+      assert(spatial_resource_count[i]->Element(cell_id).GetAmount() >= 0.0); //APW
     }
   }
 }

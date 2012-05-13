@@ -1659,7 +1659,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
                                const int reaction_id, cReactionResult& result, cTaskContext& taskctx) const
 {
   const int num_process = process_list.GetSize();
-
+  
   tLWConstListIterator<cReactionProcess> process_it(process_list);
   for (int i = 0; i < num_process; i++) {
     // See if this requisite batch can be satisfied.

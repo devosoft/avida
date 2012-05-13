@@ -1754,6 +1754,50 @@ int cPopulationInterface::GetAVFacedDataTerritory(int av_num)
   return -1;
 }
 
+// Returns the avatar's faced cell data
+int cPopulationInterface::GetAVData(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < getNumAV()) {
+    // Return the avatar's faced cell data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellData();
+  }
+  return -1;
+}
+
+// Returns the avatar's faced cell org id data
+int cPopulationInterface::GetAVDataOrgID(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < getNumAV()) {
+    // Returns the avatar's faced cell org id data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellDataOrgID();
+  }
+  return -1;
+}
+
+// Returns the avatar's faced cell update data
+int cPopulationInterface::GetAVDataUpdate(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < getNumAV()) {
+    // Returns the avatar's faced cell update data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellDataUpdate();
+  }
+  return -1;
+}
+
+// Returns the avatar's faced cell territory data
+int cPopulationInterface::GetAVDataTerritory(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < getNumAV()) {
+    // Returns the avatar's faced cell territory data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellDataTerritory();
+  }
+  return -1;
+}
+
 // Finds the index of the next avatar which matches input/output specifications
 int cPopulationInterface::FindAV(bool input, bool output, int av_num)
 {

@@ -539,6 +539,7 @@ private:
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateDir(cAvidaContext& ctx);
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
@@ -572,6 +573,13 @@ private:
   
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
+  bool Inst_DepositResource(cAvidaContext& ctx);
+  bool Inst_DepositSpecific(cAvidaContext& ctx);
+  bool Inst_DepositExcessSpecific(cAvidaContext& ctx);
+  bool Inst_NopDepositSpecific(cAvidaContext& ctx);    
+  bool Inst_NopDepositExcessSpecific(cAvidaContext& ctx);    
+  bool Inst_GetResStored(cAvidaContext& ctx);
+  bool Inst_GetSpecificStored(cAvidaContext& ctx);
 
   bool Inst_SetOpinion(cAvidaContext& ctx);
   bool Inst_GetOpinion(cAvidaContext& ctx);
@@ -615,6 +623,7 @@ private:
   bool Inst_KillPred(cAvidaContext& ctx); 
   bool Inst_FightPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
+  bool Inst_MarkGroupCell(cAvidaContext& ctx); 
   bool Inst_MarkPredCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
@@ -632,6 +641,7 @@ public:
   bool Inst_CollectCellData(cAvidaContext& ctx);
   bool Inst_IfCellDataChanged(cAvidaContext& ctx);
   bool Inst_ReadCellData(cAvidaContext& ctx);
+  bool Inst_ReadGroupCell(cAvidaContext& ctx);
 
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {

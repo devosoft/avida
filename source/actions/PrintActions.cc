@@ -4110,8 +4110,8 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     bool use_av = m_world->GetConfig().USE_AVATARS.Get();
-    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_facing" << endl;
-    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_facing,av_cellx,av_celly,av_facing" << endl;
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing" << endl;
+    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing" << endl;
     
     const int worldx = m_world->GetConfig().WORLD_X.Get();
     
@@ -4124,8 +4124,10 @@ public:
       const int locy = loc / worldx;
       const int ft = org->GetForageTarget();
       const int faced_dir = org->GetFacedDir();
+      int opinion = -1;
+      if (org->HasOpinion()) opinion = org->GetOpinion().first;
       
-      fp << id << "," << locx << "," << locy << "," << ft << "," <<  faced_dir;
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
       if (use_av) {
         const int avloc = org->GetOrgInterface().GetAVCellID();
         const int avlocx = avloc % worldx;
