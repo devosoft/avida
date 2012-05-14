@@ -905,7 +905,7 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         new_resource->SetConeOutflow( var_value.AsDouble() );
       } 
       else if (var_name == "gradient_inflow") {
-        if (!AssertInputDouble(var_value, "cone_inflow", var_type, feedback)) return false;
+        if (!AssertInputDouble(var_value, "gradient_inflow", var_type, feedback)) return false;
         new_resource->SetGradientInflow( var_value.AsDouble() );
       } 
       else if (var_name == "initial") {
