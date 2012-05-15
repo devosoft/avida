@@ -5521,22 +5521,21 @@ void cHardwareExperimental::MakePred()
 
 bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
 {
-  bool success = true;
-  if (m_use_avatar && m_use_avatar != 2) return success;
+  if (m_use_avatar && m_use_avatar != 2) return false;
   
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return success;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return success;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return success;
+  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
+  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
   
   // return false if prey pop too low
-  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return success; 
+  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
   
   // prevent killing on refuges
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return success;
-    else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return success;
+    if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
+    else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
   }
-  return success;
+  return true;
 }
