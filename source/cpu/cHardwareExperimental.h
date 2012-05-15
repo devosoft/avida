@@ -658,6 +658,10 @@ public:
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  
+  void InjureOrg(cOrganism* target, double injury);
+  void MakePred();
+  bool TestAttack(cAvidaContext& ctx);
 };
 
 

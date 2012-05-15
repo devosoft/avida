@@ -583,6 +583,7 @@ public:
   int GetNumEnergyReceptions() { return num_energy_receptions; }
   int GetNumEnergyApplications() { return num_energy_applications; }
   
+  void SetReactionCount(int index, int val) { cur_reaction_count[index] = val; }
   void SetStolenReactionCount(int index, int val) { cur_stolen_reaction_count[index] = val; }
 
   void SetCurRBinsAvail(const tArray<double>& in_avail) { cur_rbins_avail = in_avail; }

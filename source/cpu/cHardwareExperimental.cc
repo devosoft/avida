@@ -4622,45 +4622,32 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;
+  if (!TestAttack(ctx)) return false;
 
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  cOrganism* target = NULL;
+  if (!m_use_avatar) { 
+    target = m_organism->GetOrgInterface().GetNeighbor();
+  }
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() == -2) return false;
   
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
+  if (target->IsDead()) return false;  
   
-  // return false if prey pop too low
-  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
-    
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
+    double injury = m_world->GetConfig().PRED_INJURY.Get();
+    if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
     return false;
   }
   else {
-    // prevent killing on refuges
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
-      else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
-    }
-    
-    cOrganism* target = NULL;
-    if (!m_use_avatar) { 
-      target = m_organism->GetOrgInterface().GetNeighbor();
-    }
-    else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
-
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2) return false;
-
-    if (target->IsDead()) return false;  
-    
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
@@ -4688,23 +4675,15 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-      setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+      setInternalValue(bin_reg, spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
-    if (m_organism->GetForageTarget() != -2) { 
-      // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-      if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->GetOrgInterface().SwitchPredPrey();
-        m_organism->SetForageTarget(-2);
-      }
-      else m_organism->SetForageTarget(-2);
-    }    
+    MakePred();
     target->Die(ctx);
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
 } 		
@@ -4713,84 +4692,59 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
-  
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
-  
-  // return false if prey pop too low
-  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
+  if (!TestAttack(ctx)) return false;
 
-  const int success_reg = FindModifiedRegister(rBX);   
+  const int target_reg = FindModifiedRegister(rBX);
+  int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
+  cOrganism* target = NULL; 
+  if (!m_use_avatar) { 
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    if (target_org_type != target->GetForageTarget()) return false;
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() == -2) return false;
+  }    
+  else if (m_use_avatar == 2) {
+    const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
+    bool target_match = false;
+    int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
+    int j = 0;
+    for (int i = 0; i < av_neighbors.GetSize(); i++) {
+      if (rand_index + i < av_neighbors.GetSize()) {
+        if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
+          target = av_neighbors[rand_index + i];      
+          target_match = true;
+        }
+        break;
+      }
+      else {
+        if (av_neighbors[j]->GetForageTarget() == target_org_type) {
+          target = av_neighbors[j];      
+          target_match = true;
+        }
+        break;          
+        j++;
+      }
+    }
+    if (!target_match) return false;
+  } 
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() == -2) return false;
+  
+  if (target->IsDead()) return false;  
+  
+  const int success_reg = FindModifiedRegister(target_reg);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
+    double injury = m_world->GetConfig().PRED_INJURY.Get();
+    if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), -1, true);
-    return false;    
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
   }
   else {
-    // prevent killing on refuges
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
-      else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return false;
-    }
-    
-    const int target_reg = FindModifiedRegister(rBX);
-    int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
-
-    // a little mod help...and allow pred to target juveniles
-    if (!m_world->GetEnvironment().IsTargetID(target_org_type) && target_org_type != -1) {
-      int num_fts = 0;
-      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-      set <int>::iterator itr;    
-      for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-      // ft's may not be sequentially numbered
-      int ft_num = abs(target_org_type) % num_fts;
-      itr = fts_avail.begin();
-      for (int i = 0; i < ft_num; i++) itr++;
-      target_org_type = *itr;
-    }
-    
-    if (target_org_type == -2) return false;
-    
-    cOrganism* target = NULL; 
-    if (!m_use_avatar) { 
-      target = m_organism->GetOrgInterface().GetNeighbor();
-      if (target_org_type != target->GetForageTarget()) return false;
-      // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-      if (target->GetForageTarget() == -2) return false;
-    }    
-    else if (m_use_avatar == 2) {
-      const tArray<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
-      bool target_match = false;
-      int rand_index = m_world->GetRandom().GetUInt(0, av_neighbors.GetSize());
-      int j = 0;
-      for (int i = 0; i < av_neighbors.GetSize(); i++) {
-        if (rand_index + i < av_neighbors.GetSize()) {
-          if (av_neighbors[rand_index + i]->GetForageTarget() == target_org_type) {
-            target = av_neighbors[rand_index + i];      
-            target_match = true;
-          }
-          break;
-        }
-        else {
-          if (av_neighbors[j]->GetForageTarget() == target_org_type) {
-            target = av_neighbors[j];      
-            target_match = true;
-          }
-          break;          
-          j++;
-        }
-      }
-      if (!target_match) return false;
-    }
-    if (target->IsDead()) return false;  
-    
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
@@ -4818,23 +4772,15 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-      setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
+      setInternalValue(bin_reg, spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
-    if (m_organism->GetForageTarget() != -2) { 
-      // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-      if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
-        m_organism->GetOrgInterface().SwitchPredPrey();
-        m_organism->SetForageTarget(-2);
-      }
-      else m_organism->SetForageTarget(-2);
-    }    
+    MakePred();
     target->Die(ctx);
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
 } 
@@ -4986,37 +4932,38 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;  
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPredAV()) return false;
+  if (!TestAttack(ctx)) return false;
+
+  cOrganism* target = NULL;
+  if (!m_use_avatar) { 
+    target = m_organism->GetOrgInterface().GetNeighbor();
+  }
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+
+  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
+
+  if (target->IsDead()) return false;  
   
   const int success_reg = FindModifiedRegister(rBX);   
   const int bonus_reg = FindModifiedNextRegister(success_reg);
-  
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
+    double injury = m_world->GetConfig().PRED_INJURY.Get();
+    if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), -1, true);
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), -1, true);
-    return false;    
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
   }
   else {
-    cOrganism* target = NULL;
-    if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
-    else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPredAV();
-    if (target->IsDead()) return false;  
-    if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
-    
-    // add victim's merit to attacker's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
       double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-      attacker_merit += target_merit * 0.1; //m_world->GetConfig().PRED_EFFICIENCY.Get();
+      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
       m_organism->UpdateMerit(attacker_merit);
     }
     
-    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
     tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
     tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
     for (int i = 0; i < org_reactions.GetSize(); i++) {
@@ -5024,28 +4971,22 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
       m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
     }
     
-    // and add current merit bonus after adjusting for conversion efficiency
     const double target_bonus = target->GetPhenotype().GetCurBonus();
-    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * 0.1)); //m_world->GetConfig().PRED_EFFICIENCY.Get()));
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
     
-    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
       tArray<double> target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
       }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
     }
-    
-    // if you weren't a top predator before, you are now!
-    //  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) m_organism->SetForageTarget(-3);
     
     target->Die(ctx);
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
-    const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-    setInternalValue(FindModifiedNextRegister(bonus_reg), spec_bin, true);
-    setInternalValue(FindModifiedNextRegister(FindModifiedNextRegister(bonus_reg)), (int) (m_organism->GetRBinsTotal()), true);
   }
   return true;
 } 
@@ -5542,4 +5483,60 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
     setInternalValue(rAX + i, (int) (ctx.GetRandom().GetDouble()), true);
   }
   return true;
+}
+
+void cHardwareExperimental::InjureOrg(cOrganism* target, double injury)
+{
+  if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+    double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+    target_merit -= target_merit * injury;
+    target->UpdateMerit(target_merit);
+  }
+  tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
+  for (int i = 0; i < target_reactions.GetSize(); i++) {
+    target->GetPhenotype().SetReactionCount(i, target_reactions[i] - ((int)(target_reactions[i] * injury)));
+  }
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  target->GetPhenotype().SetCurBonus(target_bonus - (target_bonus * injury));
+  
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    tArray<double> target_bins = target->GetRBins();
+    for (int i = 0; i < target_bins.GetSize(); i++) {
+      target->AddToRBin(i, -1 * (target_bins[i] * injury));
+    }
+  }
+}
+
+void cHardwareExperimental::MakePred()
+{
+  if (m_organism->GetForageTarget() != -2) { 
+    // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
+    if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
+      m_organism->GetOrgInterface().SwitchPredPrey();
+      m_organism->SetForageTarget(-2);
+    }
+    else m_organism->SetForageTarget(-2);
+  }    
+}
+
+bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
+{
+  bool success = true;
+  if (m_use_avatar && m_use_avatar != 2) return success;
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return success;
+  
+  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return success;
+  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return success;
+  
+  // return false if prey pop too low
+  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return success; 
+  
+  // prevent killing on refuges
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return success;
+    else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i] > 0 && resource_lib.GetResource(i)->GetRefuge()) return success;
+  }
+  return success;
 }
