@@ -74,6 +74,8 @@ namespace Avida {
       LIB_EXPORT bool IsAvailable(const DataID& data_id) const;
       LIB_EXPORT bool IsActive(const DataID& data_id) const;
       
+      LIB_EXPORT Apto::String Describe(const DataID& data_id) const;
+      
       LIB_EXPORT bool AttachRecorder(RecorderPtr recorder, bool concurrent_update = false);
       LIB_EXPORT bool DetachRecorder(RecorderPtr recorder);
       

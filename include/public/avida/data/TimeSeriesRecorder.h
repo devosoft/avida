@@ -54,6 +54,8 @@ namespace Avida {
       LIB_EXPORT void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data);
       
       // Value Access
+      LIB_EXPORT inline const DataID& RecordedDataID() const { return m_data_id; }
+      
       LIB_EXPORT inline int NumPoints() const { return m_data.GetSize(); }
       LIB_EXPORT inline T DataPoint(int idx) const { return m_data[idx].data; }
       LIB_EXPORT inline Update DataTime(int idx) const { return m_data[idx].update; }

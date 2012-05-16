@@ -81,6 +81,46 @@ bool Avida::Data::Manager::IsActive(const DataID& data_id) const
 }
 
 
+Apto::String Avida::Data::Manager::Describe(const DataID& data_id) const
+{
+  Apto::String rtn;
+  
+  // Check for invalid data id
+  if (!data_id.GetSize()) return rtn;
+  
+  if (data_id[data_id.GetSize() - 1] == ']') {
+    // Handle argumented data value
+    
+    // Find start of argument
+    int start_idx = -1;
+    for (int i = 0; i < data_id.GetSize(); i++) {
+      if (data_id[i] == '[') {
+        start_idx = i + 1;
+        break;
+      }
+    }
+    if (start_idx == -1) return false;  // argument start not found
+    
+    // Separate argument from incoming requested data id
+    DataID raw_id = data_id.Substring(0, start_idx) + "]";
+    
+    // Check if argumented provider exists for requested data
+    ArgumentedProviderPtr provider;
+    if (m_active_arg_provider_map.Get(raw_id, provider)) {
+      rtn = provider->DescribeProvidedValue(data_id);
+    }
+  } else {
+    // Check for standard data value availability
+    ProviderPtr provider;
+    if (m_active_provider_map.Get(data_id, provider)) {
+      rtn = provider->DescribeProvidedValue(data_id);
+    }
+  }
+  
+  return rtn;
+}
+
+
 bool Avida::Data::Manager::AttachRecorder(RecorderPtr recorder, bool concurrent_update)
 {
   ConstDataSetPtr requested = recorder->RequestedData();
