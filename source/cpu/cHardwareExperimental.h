@@ -518,6 +518,7 @@ private:
 
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_JuvMove(cAvidaContext& ctx);
   bool Inst_RangeMove(cAvidaContext& ctx);
   bool Inst_RangePredMove(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
@@ -571,13 +572,16 @@ private:
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
+  bool Inst_CollectEdible(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_DepositResource(cAvidaContext& ctx);
   bool Inst_DepositSpecific(cAvidaContext& ctx);
-  bool Inst_DepositExcessSpecific(cAvidaContext& ctx);
+  bool Inst_DepositAllAsSpecific(cAvidaContext& ctx);
+  bool Inst_NopDepositResource(cAvidaContext& ctx);
   bool Inst_NopDepositSpecific(cAvidaContext& ctx);    
-  bool Inst_NopDepositExcessSpecific(cAvidaContext& ctx);    
+  bool Inst_NopDepositAllAsSpecific(cAvidaContext& ctx);
+  bool Inst_NopCollectEdible(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetSpecificStored(cAvidaContext& ctx);
 

@@ -1002,6 +1002,157 @@ public:
   }
 };
 
+/*                                                                                                 
+ Applies a fixed population bottleneck to the current population.                                  
+ Parameters:                                                                                       
+ bottleneck size (int) default: 100                                                                
+ The size of the population bottleneck; kills every organism until the population is of the size specified. 
+ */
+class cActionApplyBottleneck : public cAction
+{
+private:
+  int m_bottleneck_size;                                                                          
+public:
+  cActionApplyBottleneck(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_bottleneck_size(100)
+  {
+    cString largs(args);                                                                        
+    if (largs.GetSize()) m_bottleneck_size = largs.PopWord().AsInt();                           
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int = 0]"; }                        
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();                                                
+    int num_to_kill = pop.GetNumOrganisms() - m_bottleneck_size;
+    
+    while (num_to_kill > 0)
+    {
+      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize() - 1);
+      cPopulationCell& cell = pop.GetCell(target_cell);                                         
+      if (cell.IsOccupied())
+      {
+        pop.KillOrganism(cell, ctx);                                                          
+        num_to_kill--;                                                                        
+      }
+    }
+  }
+};
+
+class cActionAttackDen : public cAction
+{
+private:
+  double m_killprob;
+  int m_juvs_per;
+public:
+  cActionAttackDen(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.0), m_juvs_per(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_juvs_per = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double probability=0.0] [int juvs_per_adult=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().RaiseFatalException(-1, "Den AttackDen requires use of avatars.");
+    int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+    
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      
+      if (!cell.HasAV()) continue;
+      
+      tArray<double> cell_res;
+      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+      
+      for (int j = 0; j < cell_res.GetSize(); j++) {
+        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+          // for every x juvs, we require 1 adult...otherwise use killprob on the rest
+          tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
+          tArray<cOrganism*> juvs;   
+          juvs.Resize(0);
+          int num_juvs = 0;
+          int num_guards = 0;
+          for (int k = 0; k < cell_avs.GetSize(); k++) {
+            if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
+              num_juvs++;
+              juvs.Push(cell_avs[k]);
+            }
+            else num_guards++;
+          }
+          if (num_juvs == 0) break;
+          int guarded_juvs = num_guards * m_juvs_per;
+          int unguarded_juvs = num_juvs - guarded_juvs;
+          for (int k = 0; k < unguarded_juvs; k++) {
+            if (ctx.GetRandom().P(m_killprob)) juvs[k]->Die(ctx); 
+          }
+          break;  // only do this once if two dens overlap
+        }
+      }
+    }
+  }
+};
+
+class cActionRaidDen : public cAction
+{
+private:
+  double m_loss;
+  int m_res_id;
+  double m_units_per;
+public:
+  cActionRaidDen(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_loss(0.0), m_res_id(0), m_units_per(1.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_loss = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_res_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_units_per = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double loss=0.0] [int res_id=1] [int units_per_adult=1.0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().RaiseFatalException(-1, "Den RaidDen requires use of avatars.");
+    int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+    
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      
+      tArray<double> cell_res;
+      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+      
+      for (int j = 0; j < cell_res.GetSize(); j++) {
+        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+          if (cell_res[m_res_id] <= 0) break;
+          
+          // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest
+          int num_guards = 0;
+          tArray<cOrganism*> cell_avs = cell.GetCellAVs();    
+          for (int k = 0; k < cell_avs.GetSize(); k++) {
+            if (cell_avs[k]->GetPhenotype().GetTimeUsed() >= juv_age) num_guards++;
+          }
+          
+          double guarded_res = num_guards * m_units_per;
+          double unguarded_res = cell_res[m_res_id] - guarded_res;
+          
+          tArray<double> res_change(cell_res.GetSize());
+          res_change.SetAll(0.0);
+          res_change[m_res_id] = -1 * unguarded_res * m_loss;          
+          m_world->GetPopulation().UpdateCellResources(ctx, res_change, i);
+          
+          break;  // only do this once if two dens overlap
+        }
+      }
+    }
+  }
+};
+
 /*
  Kills a fraction of organisms in the population in sequence.
  
@@ -5541,6 +5692,10 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionApplyBottleneck>("ApplyBottleneck");
+  action_lib->Register<cActionAttackDen>("AttackDen");
+  action_lib->Register<cActionRaidDen>("RaidDen");
   action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
   action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
 	
