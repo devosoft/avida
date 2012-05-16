@@ -36,6 +36,7 @@
 #import "NSString+Apto.h"
 
 #include "avida/core/Properties.h"
+#include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Manager.h"
@@ -47,6 +48,7 @@
 
 #include "avida/viewer/ClassificationInfo.h"
 
+#include <fstream>
 
 static const float PANEL_MIN_WIDTH = 360.0;
 
@@ -624,6 +626,45 @@ static const float PANEL_MIN_WIDTH = 360.0;
 }
 
 
+- (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url {
+  
+  // Set up active recorder mapping
+  Apto::Array<int> active_export_recorders;
+  for (NSUInteger i = 0; i < [dataValues count]; i++) {
+    Avida::Data::DataID data_id([(NSString*)[dataValues objectAtIndex:i] UTF8String]);
+    for (int j = 0; j < timeRecorders.GetSize(); j++) {
+      if (timeRecorders[j]->RecordedDataID() == data_id) {
+        active_export_recorders.Push(j);
+        break;
+      }
+    }
+  }
+  
+  // Open file for writing
+  std::ofstream ofile([[url path] cStringUsingEncoding:NSASCIIStringEncoding]);
+  if (!ofile.good()) return;
+  
+  // Print header columns
+  ofile << "Update";
+  Avida::Data::ManagerPtr datamgr = Avida::Data::Manager::Of([run world]);
+  for (int i = 0; i < active_export_recorders.GetSize(); i++) {
+    ofile << "," << datamgr->Describe(timeRecorders[active_export_recorders[i]]->RecordedDataID());
+  }
+  ofile << std::endl;
+  
+  // Print data rows
+  for (int i = 0; i < timeRecorders[0]->NumPoints(); i++) {
+    ofile << timeRecorders[0]->DataTime(i);
+    
+    for (int recorder_idx = 0; recorder_idx < active_export_recorders.GetSize(); recorder_idx++) {
+      ofile << "," << timeRecorders[recorder_idx]->DataPoint(i);
+    }
+    ofile << std::endl;
+  }
+  
+  // Close file
+  ofile.close();
+}
 
 
 @end
@@ -729,7 +770,9 @@ AvidaEDPopViewStatViewTimeRecorder::AvidaEDPopViewStatViewTimeRecorder(AvidaEDPo
 
 bool AvidaEDPopViewStatViewTimeRecorder::shouldRecordValue(Avida::Update update)
 {
-  return ((update % 10) == 0);
+//  return ((update % 10) == 0);
+  (void)update;
+  return true;
 }
 
 void AvidaEDPopViewStatViewTimeRecorder::didRecordValue()

@@ -108,6 +108,9 @@ class AvidaEDPopViewStatViewTimeRecorder;
 - (Genome*) selectedOrgGenome;
 
 
+- (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url;
+
+
 // NSDraggingSource
 - (NSDragOperation) draggingSession:(NSDraggingSession*)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
 - (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession*)session;

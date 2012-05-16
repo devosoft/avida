@@ -41,6 +41,7 @@
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
 
+#import "AvidaEDExportAccessoryController.h"
 #import "AvidaEDPopViewStatView.h"
 #import "AvidaEDOrganismViewController.h"
 
@@ -870,12 +871,92 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) exportData:(id)sender {
-  printf("exportData\n");
+  NSSavePanel* saveDlg = [NSSavePanel savePanel];  
+  [saveDlg setCanCreateDirectories:YES];
+  [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"public.comma-separated-values-text"]];
+  exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportData" bundle:nil];
+  [saveDlg setAccessoryView:[exportAccessoryViewCtlr view]];
+  
+  void (^completionHandler)(NSInteger) = ^(NSInteger result) {
+    if (result == NSOKButton) {
+      // Build up list of selected data_ids for output
+      NSMutableArray* dataValues = [[NSMutableArray alloc] init];
+      NSMatrix* optMat = [exportAccessoryViewCtlr optionMatrix];
+      
+      assert(optMat != nil);
+      if ([[optMat cellWithTag:0] state] == NSOnState) [dataValues addObject:@"core.world.ave_fitness"];
+      if ([[optMat cellWithTag:1] state] == NSOnState) [dataValues addObject:@"core.world.ave_gestation_time"];
+      if ([[optMat cellWithTag:2] state] == NSOnState) [dataValues addObject:@"core.world.ave_metabolic_rate"];
+      if ([[optMat cellWithTag:3] state] == NSOnState) [dataValues addObject:@"core.world.organisms"];
+      
+      id curView = [[mainSplitView subviews] objectAtIndex:1];
+      if (curView == popView) {
+        [popViewStatView exportData:dataValues toURL:[saveDlg URL]];
+      } else if (curView == analyzeView) {
+        // @TODO
+      }
+    }
+    
+    // Cleanup
+    exportAccessoryViewCtlr = nil;
+  };
+  
+  // Display the dialog.  If the OK button was pressed, process the files.
+  [saveDlg beginSheetModalForWindow:self.window completionHandler:completionHandler];
 }
 
 
+
 - (IBAction) exportGraphics:(id)sender {
-  printf("exportGraphics\n");
+  void (^completionHandler)(NSInteger);
+  NSSavePanel* saveDlg = [NSSavePanel savePanel];
+
+  [saveDlg setCanCreateDirectories:YES];
+  [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-workspace"]];
+
+  id curView = [[mainSplitView subviews] objectAtIndex:1];
+  if (curView == popView) {
+    exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Population" bundle:nil];
+    completionHandler = ^(NSInteger result) {
+      if (result == NSOKButton) {
+        printf("exporting population graphic\n");
+      }
+      
+      // Cleanup
+      exportAccessoryViewCtlr = nil;
+    };
+    
+  } else if (curView == analyzeView) {
+    exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Analysis" bundle:nil];
+    completionHandler = ^(NSInteger result) {
+      if (result == NSOKButton) {
+        printf("exporting analysis graphic\n");
+      }
+      
+      // Cleanup
+      exportAccessoryViewCtlr = nil;
+    };
+    
+  } else if (curView == orgViewCtlr.view) {
+    exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Organism" bundle:nil];
+    completionHandler = ^(NSInteger result) {
+      if (result == NSOKButton) {
+        printf("exporting organism graphic\n");
+      }
+      
+      // Cleanup
+      exportAccessoryViewCtlr = nil;
+    };
+    
+  } else {
+    return;
+  }
+  
+  // Set the accessory view, if one is necessary
+  if (exportAccessoryViewCtlr != nil) [saveDlg setAccessoryView:[exportAccessoryViewCtlr view]];
+
+  // Display the dialog
+  [saveDlg beginSheetModalForWindow:self.window completionHandler:completionHandler];
 }
 
 
@@ -1028,26 +1109,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   if (item_action == @selector(exportData:)) {
     // Cannot export data while in the organism view
-    if ([[mainSplitView subviews] objectAtIndex:1] == orgViewCtlr.view) return NO;
-  }
-  
-  if (item_action == @selector(exportGraphics:)) {
-    id curView = [[mainSplitView subviews] objectAtIndex:1];
-    
-    switch ([item tag]) {
-      case 0: // Active Population Map
-      case 1: // Active Population Graph
-        if (curView != popView) return NO;
-        break;
-        
-      case 2: // Analysis Graph
-        if (curView != analyzeView) return NO;
-        break;
-        
-      case 3: // Organism Snapshot
-        if (curView != orgViewCtlr.view) return NO;
-        break;
-    }
+    NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
+    if (curView == orgViewCtlr.view) return NO;
+    if (curView == popView && runActive == NO) return NO;
   }
   
   return YES;

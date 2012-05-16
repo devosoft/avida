@@ -42,6 +42,7 @@
 @class FlipView;
 @class MapScaleView;
 
+@class AvidaEDExportAccessoryController;
 @class AvidaEDPopViewStatView;
 @class AvidaEDOrganismViewController;
 
@@ -124,6 +125,8 @@
   // --------------------------------------------------------------------------------------------------------------  
   IBOutlet AvidaEDOrganismViewController* orgViewCtlr;
   
+
+  AvidaEDExportAccessoryController* exportAccessoryViewCtlr;
 
   AvidaAppDelegate* app;
   

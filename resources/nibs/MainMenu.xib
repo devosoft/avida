@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">12A178q</string>
+		<string key="IBDocument.SystemVersion">12A193i</string>
 		<string key="IBDocument.InterfaceBuilderVersion">2488</string>
-		<string key="IBDocument.AppKitVersion">1166.3</string>
-		<string key="IBDocument.HIToolboxVersion">609.00</string>
+		<string key="IBDocument.AppKitVersion">1170</string>
+		<string key="IBDocument.HIToolboxVersion">611.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			<string key="NS.object.0">2488</string>
@@ -259,51 +259,11 @@
 								<object class="NSMenuItem" id="938613032">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">Export Graphics</string>
-									<string key="NSKeyEquiv"/>
+									<string key="NSKeyEquiv">g</string>
+									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
-									<string key="NSAction">submenuAction:</string>
-									<object class="NSMenu" key="NSSubmenu" id="549440935">
-										<string key="NSTitle">Export Graphics</string>
-										<array class="NSMutableArray" key="NSMenuItems">
-											<object class="NSMenuItem" id="206191822">
-												<reference key="NSMenu" ref="549440935"/>
-												<string key="NSTitle">Active Population Map</string>
-												<string key="NSKeyEquiv"/>
-												<int key="NSMnemonicLoc">2147483647</int>
-												<reference key="NSOnImage" ref="35465992"/>
-												<reference key="NSMixedImage" ref="502551668"/>
-											</object>
-											<object class="NSMenuItem" id="366142589">
-												<reference key="NSMenu" ref="549440935"/>
-												<string key="NSTitle">Active Experiment Graph</string>
-												<string key="NSKeyEquiv"/>
-												<int key="NSMnemonicLoc">2147483647</int>
-												<reference key="NSOnImage" ref="35465992"/>
-												<reference key="NSMixedImage" ref="502551668"/>
-												<int key="NSTag">1</int>
-											</object>
-											<object class="NSMenuItem" id="516743643">
-												<reference key="NSMenu" ref="549440935"/>
-												<string key="NSTitle">Analysis Graph</string>
-												<string key="NSKeyEquiv"/>
-												<int key="NSMnemonicLoc">2147483647</int>
-												<reference key="NSOnImage" ref="35465992"/>
-												<reference key="NSMixedImage" ref="502551668"/>
-												<int key="NSTag">2</int>
-											</object>
-											<object class="NSMenuItem" id="737354248">
-												<reference key="NSMenu" ref="549440935"/>
-												<string key="NSTitle">Organism Snapshot</string>
-												<string key="NSKeyEquiv"/>
-												<int key="NSMnemonicLoc">2147483647</int>
-												<reference key="NSOnImage" ref="35465992"/>
-												<reference key="NSMixedImage" ref="502551668"/>
-												<int key="NSTag">3</int>
-											</object>
-										</array>
-									</object>
 								</object>
 								<object class="NSMenuItem" id="425164168">
 									<reference key="NSMenu" ref="720053764"/>
@@ -1274,33 +1234,9 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">exportGraphics:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="206191822"/>
+						<reference key="destination" ref="938613032"/>
 					</object>
-					<int key="connectionID">608</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">exportGraphics:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="366142589"/>
-					</object>
-					<int key="connectionID">609</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">exportGraphics:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="516743643"/>
-					</object>
-					<int key="connectionID">610</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">exportGraphics:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="737354248"/>
-					</object>
-					<int key="connectionID">611</int>
+					<int key="connectionID">612</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -1966,47 +1902,14 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">593</int>
 						<reference key="object" ref="938613032"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="549440935"/>
-						</array>
+						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="720053764"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">594</int>
-						<reference key="object" ref="549440935"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="206191822"/>
-							<reference ref="366142589"/>
-							<reference ref="516743643"/>
-							<reference ref="737354248"/>
-						</array>
-						<reference key="parent" ref="938613032"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">595</int>
-						<reference key="object" ref="206191822"/>
-						<reference key="parent" ref="549440935"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">596</int>
 						<reference key="object" ref="57328297"/>
 						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="720053764"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">599</int>
-						<reference key="object" ref="366142589"/>
-						<reference key="parent" ref="549440935"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">600</int>
-						<reference key="object" ref="516743643"/>
-						<reference key="parent" ref="549440935"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">601</int>
-						<reference key="object" ref="737354248"/>
-						<reference key="parent" ref="549440935"/>
 					</object>
 				</array>
 			</object>
@@ -2096,12 +1999,7 @@
 				<string key="585.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="592.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="593.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="594.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="595.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="596.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="599.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="600.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="601.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2118,7 +2016,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">611</int>
+			<int key="maxID">612</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2267,6 +2165,7 @@
 						<string key="btnPopView">NSButton</string>
 						<string key="btnRunState">NSButton</string>
 						<string key="btnTogglePopViewStatView">NSButton</string>
+						<string key="exportAccessoryView">NSView</string>
 						<string key="graphViewAnalyze">CPTGraphHostingView</string>
 						<string key="mainSplitView">NSSplitView</string>
 						<string key="mainSplitViewLeft">NSView</string>
@@ -2336,6 +2235,10 @@
 						<object class="IBToOneOutletInfo" key="btnTogglePopViewStatView">
 							<string key="name">btnTogglePopViewStatView</string>
 							<string key="candidateClassName">NSButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="exportAccessoryView">
+							<string key="name">exportAccessoryView</string>
+							<string key="candidateClassName">NSView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="graphViewAnalyze">
 							<string key="name">graphViewAnalyze</string>
