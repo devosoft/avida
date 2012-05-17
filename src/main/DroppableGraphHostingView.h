@@ -37,6 +37,8 @@
   IBOutlet id<DropDelegate> dropDelegate;
 }
 
+@property (readwrite) id<DropDelegate> dropDelegate;
+
 // NSDraggingDestination
 - (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;
 - (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender;

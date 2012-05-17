@@ -1,5 +1,5 @@
 //
-//  AvidaEDOrganismStateValue.h
+//  OrgExecStateValue.h
 //  viewer-macos
 //
 //  Created by David Michael Bryson on 3/22/12.
@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AvidaEDOrganismStateValue : NSObject {
+@interface OrgExecStateValue : NSObject {
   NSString* prefix;
   int value;
 }

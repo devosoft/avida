@@ -31,6 +31,8 @@
 
 @implementation DroppableGraphHostingView
 
+@synthesize dropDelegate;
+
 // NSDraggingDestination
 - (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender {
   if (dropDelegate && [dropDelegate respondsToSelector:@selector(draggingEnteredDestination:sender:)]) {

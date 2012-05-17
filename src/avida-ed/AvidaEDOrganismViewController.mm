@@ -32,7 +32,7 @@
 #import "AvidaEDController.h"
 #import "AvidaEDEnvActionsDataSource.h"
 #import "AvidaEDOrganismSettingsViewController.h"
-#import "AvidaEDOrganismStateValue.h"
+#import "OrgExecStateValue.h"
 #import "AvidaRun.h"
 #import "Freezer.h"
 #import "NSFileManager+TemporaryDirectory.h"
@@ -179,13 +179,13 @@
     [arrctlrRegisters removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
     for (int i = 0; i < snapshot.NumRegisters(); i++) {
       NSString* prefix = [NSString stringWithFormat:@"%cX: ", (char)('A' + i)];
-      AvidaEDOrganismStateValue* sv = [[AvidaEDOrganismStateValue alloc] initWithPrefix:prefix];
+      OrgExecStateValue* sv = [[OrgExecStateValue alloc] initWithPrefix:prefix];
       [sv setValue:snapshot.Register(i)];
       [arrctlrRegisters addObject:sv];
     }
   } else {
     for (int i = 0; i < snapshot.NumRegisters(); i++)
-      [(AvidaEDOrganismStateValue*)[arrRegisters objectAtIndex:i] setValue:snapshot.Register(i)];
+      [(OrgExecStateValue*)[arrRegisters objectAtIndex:i] setValue:snapshot.Register(i)];
   }
   
   // Handle input buffer
@@ -194,13 +194,13 @@
     NSRange range = NSMakeRange(0, [[arrctlrInputBuffer arrangedObjects] count]);
     [arrctlrInputBuffer removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
     for (int i = 0; i < input_buf.GetSize(); i++) {
-      AvidaEDOrganismStateValue* sv = [[AvidaEDOrganismStateValue alloc] initWithPrefix:@""];
+      OrgExecStateValue* sv = [[OrgExecStateValue alloc] initWithPrefix:@""];
       [sv setValue:input_buf[i]];
       [arrctlrInputBuffer addObject:sv];
     }
   } else {
     for (int i = 0; i < input_buf.GetSize(); i++)
-      [(AvidaEDOrganismStateValue*)[arrInputBuffer objectAtIndex:i] setValue:input_buf[i]];
+      [(OrgExecStateValue*)[arrInputBuffer objectAtIndex:i] setValue:input_buf[i]];
   }
   
   // handle output buffer
@@ -209,13 +209,13 @@
     NSRange range = NSMakeRange(0, [[arrctlrOutputBuffer arrangedObjects] count]);
     [arrctlrOutputBuffer removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
     for (int i = 0; i < output_buf.GetSize(); i++) {
-      AvidaEDOrganismStateValue* sv = [[AvidaEDOrganismStateValue alloc] initWithPrefix:@""];
+      OrgExecStateValue* sv = [[OrgExecStateValue alloc] initWithPrefix:@""];
       [sv setValue:output_buf[i]];
       [arrctlrOutputBuffer addObject:sv];
     }
   } else {
     for (int i = 0; i < output_buf.GetSize(); i++)
-      [(AvidaEDOrganismStateValue*)[arrOutputBuffer objectAtIndex:i] setValue:output_buf[i]];
+      [(OrgExecStateValue*)[arrOutputBuffer objectAtIndex:i] setValue:output_buf[i]];
   }
   
   // handle current stack
@@ -224,13 +224,13 @@
     NSRange range = NSMakeRange(0, [[arrctlrCurStack arrangedObjects] count]);
     [arrctlrCurStack removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
     for (int i = 0; i < cur_stack.GetSize(); i++) {
-      AvidaEDOrganismStateValue* sv = [[AvidaEDOrganismStateValue alloc] initWithPrefix:@""];
+      OrgExecStateValue* sv = [[OrgExecStateValue alloc] initWithPrefix:@""];
       [sv setValue:cur_stack[i]];
       [arrctlrCurStack addObject:sv];
     }
   } else {
     for (int i = 0; i < cur_stack.GetSize(); i++)
-      [(AvidaEDOrganismStateValue*)[arrCurStack objectAtIndex:i] setValue:cur_stack[i]];
+      [(OrgExecStateValue*)[arrCurStack objectAtIndex:i] setValue:cur_stack[i]];
   }
   
 }

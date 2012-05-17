@@ -11,7 +11,6 @@
 		701269D3151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */; };
 		701269D6151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */; };
 		701269DC151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */; };
-		701269DF151BB152004865C2 /* AvidaEDOrganismStateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 701269DE151BB152004865C2 /* AvidaEDOrganismStateValue.m */; };
 		7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7015B89A14C87DB50031B60B /* DraggableImageView.m */; };
 		7015B89F14C883C60031B60B /* genome65.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89D14C883C60031B60B /* genome65.png */; };
 		7015B8A014C883C60031B60B /* petri128empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015B89E14C883C60031B60B /* petri128empty.png */; };
@@ -64,6 +63,10 @@
 		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E60729156588A200E7AA82 /* OrgExecStateValue.m */; };
+		70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */; };
+		70E6073015658B0600E7AA82 /* AvidaED-AnalyzeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */; };
+		70E6073215658B2400E7AA82 /* AvidaED-OrganismView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,8 +90,6 @@
 		701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDGraphicalValueDisplay.m; sourceTree = "<group>"; };
 		701269DA151BA63E004865C2 /* AvidaEDOrganismValueDisplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismValueDisplayView.h; sourceTree = "<group>"; };
 		701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismValueDisplayView.m; sourceTree = "<group>"; };
-		701269DD151BB152004865C2 /* AvidaEDOrganismStateValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismStateValue.h; sourceTree = "<group>"; };
-		701269DE151BB152004865C2 /* AvidaEDOrganismStateValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismStateValue.m; sourceTree = "<group>"; };
 		7015B89914C87DB50031B60B /* DraggableImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DraggableImageView.h; sourceTree = "<group>"; };
 		7015B89A14C87DB50031B60B /* DraggableImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DraggableImageView.m; sourceTree = "<group>"; };
 		7015B89D14C883C60031B60B /* genome65.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = genome65.png; sourceTree = "<group>"; };
@@ -174,6 +175,12 @@
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		70E60728156588A200E7AA82 /* OrgExecStateValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgExecStateValue.h; sourceTree = "<group>"; };
+		70E60729156588A200E7AA82 /* OrgExecStateValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgExecStateValue.m; sourceTree = "<group>"; };
+		70E6072B15658A6000E7AA82 /* AvidaEDAnalyzeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDAnalyzeViewController.h; sourceTree = "<group>"; };
+		70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDAnalyzeViewController.mm; sourceTree = "<group>"; };
+		70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-AnalyzeView.xib"; sourceTree = "<group>"; };
+		70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-OrganismView.xib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,12 +259,14 @@
 			isa = PBXGroup;
 			children = (
 				703549A61337A4B100D3865C /* Avida-ED-MainWindow.xib */,
+				70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */,
 				702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */,
 				702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */,
 				702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */,
 				702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */,
 				703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */,
 				701269C9151B702D004865C2 /* AvidaED-OrganismValueDisplay.xib */,
+				70E6073115658B2400E7AA82 /* AvidaED-OrganismView.xib */,
 				703549A71337A4B100D3865C /* Avida-MainWindow.xib */,
 				703549A81337A4B100D3865C /* MainMenu.xib */,
 			);
@@ -304,28 +313,16 @@
 		7035499B1337A32D00D3865C /* Avida-ED */ = {
 			isa = PBXGroup;
 			children = (
-				70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */,
-				70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */,
 				703549B11337AD1600D3865C /* AvidaEDController.h */,
 				703549B21337AD1600D3865C /* AvidaEDController.mm */,
 				7032D0BC15067D680090C93C /* AvidaEDEnvActionsDataSource.h */,
 				7032D0BD15067D680090C93C /* AvidaEDEnvActionsDataSource.m */,
-				701269D4151B724B004865C2 /* AvidaEDGraphicalValueDisplay.h */,
-				701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */,
-				70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */,
-				70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */,
-				701269DD151BB152004865C2 /* AvidaEDOrganismStateValue.h */,
-				701269DE151BB152004865C2 /* AvidaEDOrganismStateValue.m */,
-				7032D0B9150534F40090C93C /* AvidaEDOrganismViewController.h */,
-				7032D0BA150534F40090C93C /* AvidaEDOrganismViewController.mm */,
-				701269D1151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.h */,
-				701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */,
-				701269DA151BA63E004865C2 /* AvidaEDOrganismValueDisplayView.h */,
-				701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */,
 				7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */,
 				7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */,
 				70A2A6E0156423000086456A /* AvidaEDExportAccessoryController.h */,
 				70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */,
+				70E6072E15658A6F00E7AA82 /* Analyze View */,
+				70E607261565862500E7AA82 /* Organism View */,
 			);
 			name = "Avida-ED";
 			path = "src/avida-ed";
@@ -352,6 +349,8 @@
 				703549B61337AD2600D3865C /* main.mm */,
 				701BFFEF13CF305200838CC9 /* OrgColorBox.h */,
 				701BFFF013CF305200838CC9 /* OrgColorBox.m */,
+				70E60728156588A200E7AA82 /* OrgExecStateValue.h */,
+				70E60729156588A200E7AA82 /* OrgExecStateValue.m */,
 				703549B71337AD2600D3865C /* SubtleSplitView.h */,
 				703549B81337AD2600D3865C /* SubtleSplitView.m */,
 				708308ED14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.h */,
@@ -405,6 +404,34 @@
 				703549ED1337D28200D3865C /* libviewer-core.a */,
 			);
 			name = Libraries;
+			sourceTree = "<group>";
+		};
+		70E607261565862500E7AA82 /* Organism View */ = {
+			isa = PBXGroup;
+			children = (
+				70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */,
+				70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */,
+				7032D0B9150534F40090C93C /* AvidaEDOrganismViewController.h */,
+				7032D0BA150534F40090C93C /* AvidaEDOrganismViewController.mm */,
+				701269D1151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.h */,
+				701269D2151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m */,
+				701269DA151BA63E004865C2 /* AvidaEDOrganismValueDisplayView.h */,
+				701269DB151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m */,
+				701269D4151B724B004865C2 /* AvidaEDGraphicalValueDisplay.h */,
+				701269D5151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m */,
+			);
+			name = "Organism View";
+			sourceTree = "<group>";
+		};
+		70E6072E15658A6F00E7AA82 /* Analyze View */ = {
+			isa = PBXGroup;
+			children = (
+				70E6072B15658A6000E7AA82 /* AvidaEDAnalyzeViewController.h */,
+				70E6072C15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm */,
+				70178C7B14D84CB900C715D7 /* AvidaEDAnalyzePopulation.h */,
+				70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */,
+			);
+			name = "Analyze View";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -475,6 +502,8 @@
 				702837E7155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib in Resources */,
 				702837E9155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib in Resources */,
 				702837EB155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib in Resources */,
+				70E6073015658B0600E7AA82 /* AvidaED-AnalyzeView.xib in Resources */,
+				70E6073215658B2400E7AA82 /* AvidaED-OrganismView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,8 +544,9 @@
 				701269D3151B71EC004865C2 /* AvidaEDOrganismValueDisplayCollectionView.m in Sources */,
 				701269D6151B724B004865C2 /* AvidaEDGraphicalValueDisplay.m in Sources */,
 				701269DC151BA63F004865C2 /* AvidaEDOrganismValueDisplayView.m in Sources */,
-				701269DF151BB152004865C2 /* AvidaEDOrganismStateValue.m in Sources */,
 				70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */,
+				70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */,
+				70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,7 +564,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -554,7 +584,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

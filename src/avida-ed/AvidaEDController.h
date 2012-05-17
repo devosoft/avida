@@ -42,6 +42,7 @@
 @class FlipView;
 @class MapScaleView;
 
+@class AvidaEDAnalyzeViewController;
 @class AvidaEDExportAccessoryController;
 @class AvidaEDPopViewStatView;
 @class AvidaEDOrganismViewController;
@@ -109,21 +110,8 @@
   
   // Analyze View
   // --------------------------------------------------------------------------------------------------------------  
-  IBOutlet NSView* analyzeView;
-  NSMutableArray* analyzePops;
-  IBOutlet NSArrayController* arrctlrAnalyze;
-  IBOutlet NSPopUpButton* btnAnalyzeGraphSelectLeft;
-  IBOutlet NSPopUpButton* btnAnalyzeGraphSelectRight;
-  IBOutlet CPTGraphHostingView* graphViewAnalyze;
-  CPTXYGraph* graphAnalyze;
-  CPTXYPlotSpace* analyzePrimaryPlotSpace;
-  CPTXYPlotSpace* analyzeSecondaryPlotSpace;
-  CPTXYAxis* analyzeSecondaryYAxis;
-  
-  
-  // Organism View
-  // --------------------------------------------------------------------------------------------------------------  
-  IBOutlet AvidaEDOrganismViewController* orgViewCtlr;
+  IBOutlet AvidaEDAnalyzeViewController* analyzeCtlr;
+  IBOutlet AvidaEDOrganismViewController* orgCtlr;
   
 
   AvidaEDExportAccessoryController* exportAccessoryViewCtlr;
@@ -177,9 +165,6 @@
 - (IBAction) changeRepeatability:(id)sender;
 - (IBAction) changePauseAt:(id)sender;
 
-- (IBAction) changeAnalyzeGraphMode:(id)sender;
-- (IBAction) changeAnalyzePopulationColor:(id)sender;
-- (void) removeAnalyzePopulation:(id)pop;
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 

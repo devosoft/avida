@@ -1,14 +1,14 @@
 //
-//  AvidaEDOrganismStateValue.m
+//  OrgExecStateValue.m
 //  viewer-macos
 //
 //  Created by David Michael Bryson on 3/22/12.
 //  Copyright (c) 2012 Michigan State University. All rights reserved.
 //
 
-#import "AvidaEDOrganismStateValue.h"
+#import "OrgExecStateValue.h"
 
-@implementation AvidaEDOrganismStateValue
+@implementation OrgExecStateValue
 
 + (void) initialize {
   [self exposeBinding:@"prefix"];

@@ -30,7 +30,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "AvidaEDOrganismValueDisplayView.h"
-#import "AvidaEDOrganismStateValue.h"
+#import "OrgExecStateValue.h"
 
 namespace Avida {
   void Initialize();
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 {
   Avida::Initialize();
   
-  [AvidaEDOrganismStateValue initialize];
+  [OrgExecStateValue initialize];
   [AvidaEDOrganismValueDisplayView initialize];
   
   
