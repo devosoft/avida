@@ -702,7 +702,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       if (curView == popView) {
         [popViewStatView exportData:dataValues toURL:[saveDlg URL]];
       } else if (curView == analyzeCtlr.view) {
-        // @TODO
+        [analyzeCtlr exportData:dataValues toURL:[saveDlg URL]];
       }
     }
     
@@ -874,6 +874,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
     if (curView == orgCtlr.view) return NO;
     if (curView == popView && runActive == NO) return NO;
+    if (curView == analyzeCtlr.view && [analyzeCtlr numPops] == 0) return NO;
   }
   
   return YES;

@@ -174,4 +174,12 @@
   return num;
 }
 
+- (NSArray*) xValuesForData:(NSInteger)dataIndex {
+  return [xData objectAtIndex:dataIndex];
+}
+
+- (NSArray*) yValuesForData:(NSInteger)dataIndex {
+  return [yData objectAtIndex:dataIndex];
+}
+
 @end

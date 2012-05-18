@@ -40,5 +40,8 @@
 
 - (void) addPop:(AvidaEDAnalyzePopulation*)pop;
 - (void) removePop:(id)pop;
+- (NSInteger) numPops;
+
+- (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url;
 
 @end

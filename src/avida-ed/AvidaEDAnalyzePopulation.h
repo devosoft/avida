@@ -62,4 +62,7 @@
 @property (readwrite) NSInteger primaryPlotData;
 @property (readwrite) NSInteger secondaryPlotData;
 
+- (NSArray*) xValuesForData:(NSInteger)dataIndex;
+- (NSArray*) yValuesForData:(NSInteger)dataIndex;
+
 @end

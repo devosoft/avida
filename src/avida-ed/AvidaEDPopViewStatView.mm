@@ -657,7 +657,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
     ofile << timeRecorders[0]->DataTime(i);
     
     for (int recorder_idx = 0; recorder_idx < active_export_recorders.GetSize(); recorder_idx++) {
-      ofile << "," << timeRecorders[recorder_idx]->DataPoint(i);
+      ofile << "," << timeRecorders[active_export_recorders[recorder_idx]]->DataPoint(i);
     }
     ofile << std::endl;
   }

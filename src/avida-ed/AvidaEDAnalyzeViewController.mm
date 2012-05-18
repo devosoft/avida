@@ -11,6 +11,8 @@
 #import "AvidaEDAnalyzePopulation.h"
 #import "Freezer.h"
 
+#include <fstream>
+
 
 @interface AvidaEDAnalyzeViewController ()
 - (void) viewDidLoad;
@@ -257,6 +259,9 @@
   [self rescaleGraph];
 }
 
+- (NSInteger) numPops {
+  return [popArray count];
+}
 
 - (void) removePop:(id)pop {
   if ([btnGraphSelectLeft indexOfSelectedItem]) [graph removePlot:[pop primaryPlot]];
@@ -273,6 +278,58 @@
   }
   
   [self rescaleGraph];
+}
+
+
+- (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url {
+  
+  // Set up active recorder mapping
+  Apto::Array<int> active_export_recorders;
+  for (NSUInteger i = 0; i < [dataValues count]; i++) {
+    NSString* dvstr = (NSString*)[dataValues objectAtIndex:i];
+    if ([dvstr isEqualToString:@"core.world.ave_fitness"]) active_export_recorders.Push(0);
+    else if ([dvstr isEqualToString:@"core.world.ave_gestation_time"]) active_export_recorders.Push(1);
+    else if ([dvstr isEqualToString:@"core.world.ave_metabolic_rate"]) active_export_recorders.Push(2);
+    else if ([dvstr isEqualToString:@"core.world.organisms"]) active_export_recorders.Push(3);
+  }
+  
+  // Open file for writing
+  std::ofstream ofile([[url path] cStringUsingEncoding:NSASCIIStringEncoding]);
+  if (!ofile.good()) return;
+  
+  // Print header columns
+  ofile << "Update";
+  for (int pop_idx = 0; pop_idx < [popArray count]; pop_idx++) {
+    for (int i = 0; i < active_export_recorders.GetSize(); i++) {
+      ofile << "," << [[(AvidaEDAnalyzePopulation*)[popArray objectAtIndex:pop_idx] name] UTF8String] << " ";
+      switch (active_export_recorders[i]) {
+        case 0: ofile << "Average Fitness"; break;
+        case 1: ofile << "Average Gestation Time"; break;
+        case 2: ofile << "Average Metabolic Rate"; break;
+        case 3: ofile << "Number of Organism in the Population"; break;
+      }
+    }
+  }
+  ofile << std::endl;
+  
+  // Print data rows
+  NSArray* xValues = [(AvidaEDAnalyzePopulation*)[popArray objectAtIndex:0] xValuesForData:0];
+  for (int i = 0; i < [xValues count]; i++) {
+    ofile << [(NSNumber*)[xValues objectAtIndex:i] intValue];
+    
+    for (int pop_idx = 0; pop_idx < [popArray count]; pop_idx++) {
+      AvidaEDAnalyzePopulation* cur_pop = [popArray objectAtIndex:pop_idx];
+      for (int recorder_idx = 0; recorder_idx < active_export_recorders.GetSize(); recorder_idx++) {
+        NSNumber* y_value = [[cur_pop yValuesForData:active_export_recorders[recorder_idx]] objectAtIndex:i];
+        ofile << "," << [y_value doubleValue];
+      }
+    }
+    ofile << std::endl;
+  }
+  
+  // Close file
+  ofile.close();
+
 }
 
 @end
