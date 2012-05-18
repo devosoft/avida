@@ -585,10 +585,9 @@ private:
   bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetSpecificStored(cAvidaContext& ctx);
 
+  // Groups 
   bool Inst_SetOpinion(cAvidaContext& ctx);
   bool Inst_GetOpinion(cAvidaContext& ctx);
-
-  // Groups 
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_ChangePredGroup(cAvidaContext& ctx); 
   bool Inst_MakePredGroup(cAvidaContext& ctx); 
@@ -634,6 +633,12 @@ private:
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
+  
+  bool Inst_ActivateDisplay(cAvidaContext& ctx);
+  bool Inst_UpdateDisplay(cAvidaContext& ctx);
+  bool Inst_ModifyDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSeenDisplay(cAvidaContext& ctx);
+  bool Inst_KillDisplay(cAvidaContext& ctx);
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);

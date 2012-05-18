@@ -32,6 +32,7 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
+#include "cOrgSensor.h"
 #include "cOrgSinkMessage.h"
 #include "cPopulationCell.h"
 #include "cStateGrid.h"
@@ -60,6 +61,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_lineage_label(-1)
 , m_lineage(NULL)
 , m_org_list_index(-1)
+, m_org_display(NULL)
+, m_queued_display_data(NULL)
+, m_display(false)
 , m_input_pointer(0)
 , m_input_buf(world->GetEnvironment().GetInputSize())
 , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -150,7 +154,9 @@ cOrganism::~cOrganism()
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
   for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
-  if(m_neighborhood) delete m_neighborhood;
+  if (m_neighborhood) delete m_neighborhood;
+  delete m_org_display;
+  delete m_queued_display_data;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
@@ -186,6 +192,14 @@ double cOrganism::GetVitality() const {
   }
   
   return vitality;
+}
+
+void cOrganism::UpdateOrgDisplay() { 
+  if (m_queued_display_data != NULL) {
+    delete m_org_display;
+    m_org_display = m_queued_display_data; 
+    m_queued_display_data = NULL; 
+  }
 }
 
 double cOrganism::GetRBinsTotal()
@@ -717,7 +731,11 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
   if (!m_world->GetConfig().INHERIT_OPINION.Get()) {
     ClearOpinion();
   }
-  
+  delete m_org_display;
+  delete m_queued_display_data;
+  m_org_display = NULL;
+  m_queued_display_data = NULL;
+  m_display = false;
 }
 
 void cOrganism::NotifyDeath(cAvidaContext& ctx)

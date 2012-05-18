@@ -363,6 +363,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
+
+    tInstLibEntry<tMethod>("activate-display", &cHardwareExperimental::Inst_ActivateDisplay, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("update-display", &cHardwareExperimental::Inst_UpdateDisplay, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("modify-display", &cHardwareExperimental::Inst_ModifyDisplay, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("read-last-seen-display", &cHardwareExperimental::Inst_ReadLastSeenDisplay, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("kill-display", &cHardwareExperimental::Inst_KillDisplay, nInstFlag::STALL), 
     
     // Messaging
     tInstLibEntry<tMethod>("send-msg", &cHardwareExperimental::Inst_SendMessage, nInstFlag::STALL),
@@ -469,6 +475,7 @@ void cHardwareExperimental::internalReset()
   
   m_io_expire = m_world->GetConfig().IO_EXPIRE.Get();
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
+  m_sensor.Reset();
 }
 
 
@@ -3371,13 +3378,37 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
     else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
     else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW  
     
+    bool found_org = false;
     int rotates = m_organism->GetNeighborhoodSize();
     if (m_use_avatar == 2) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
     for (int i = 0; i < rotates; i++) {
       m_organism->Rotate(-1);
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
-      else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing) break;
+      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) { 
+        found_org = true; 
+        break; 
+      }
+      else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing)  { 
+        found_org = true; 
+        break; 
+      }
     }
+    // return some data as in look sensor
+    if (found_org) {
+      int dist_reg = FindModifiedNextRegister(id_sought_reg);
+      int dir_reg = FindModifiedNextRegister(dist_reg);
+      int fat_reg = FindModifiedNextRegister(dir_reg);
+      int ft_reg = FindModifiedNextRegister(fat_reg); 
+      int group_reg = FindModifiedNextRegister(ft_reg);
+      
+      setInternalValue(dist_reg, -2, true);
+      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
+      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
+      setInternalValue(ft_reg, target_org->GetForageTarget(), true);  
+      if (target_org->HasOpinion()) {
+        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+      }
+      if (target_org->IsDisplaying() && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
+    }        
     return true;
   }
 }
@@ -3439,13 +3470,37 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
     else if (y_dist == 0 && x_dist < 0) correct_facing = 2; // rotate away from W
     else if (y_dist < 0 && x_dist < 0) correct_facing = 3; // rotate away from NW  
     
+    bool found_org = false;
     int rotates = m_organism->GetNeighborhoodSize();
     if (m_use_avatar == 2) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
     for (int i = 0; i < rotates; i++) {
       m_organism->Rotate(-1);
-      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
-      else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing) break;
+      if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) { 
+        found_org = true;
+        break;
+      }
+      else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing) {
+        found_org = true;
+        break;
+      }
     }
+    // return some data as in look sensor
+    if (found_org) {
+      int dist_reg = FindModifiedNextRegister(id_sought_reg);
+      int dir_reg = FindModifiedNextRegister(dist_reg);
+      int fat_reg = FindModifiedNextRegister(dir_reg);
+      int ft_reg = FindModifiedNextRegister(fat_reg); 
+      int group_reg = FindModifiedNextRegister(ft_reg);
+      
+      setInternalValue(dist_reg, -2, true);
+      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
+      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
+      setInternalValue(ft_reg, target_org->GetForageTarget(), true);  
+      if (target_org->HasOpinion()) {
+        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+      }
+      if (target_org->IsDisplaying() && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
+    }       
     return true;
   }
 }
@@ -4232,7 +4287,7 @@ bool cHardwareExperimental::Inst_CollectSpecific(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
 {
-  int resource_amount = GetRegister(FindModifiedNextRegister(rBX));
+  int resource_amount = abs(GetRegister(FindModifiedNextRegister(rBX)));
   int resource_id = GetRegister(FindModifiedRegister(rBX));
   resource_id %= m_organism->GetRBins().GetSize();
   const double stored_res = m_organism->GetRBins()[resource_id];
@@ -4359,7 +4414,7 @@ bool cHardwareExperimental::Inst_NopDepositSpecific(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_NopDepositResource(cAvidaContext& ctx)
 {
-  int resource_amount = GetRegister(FindModifiedNextRegister(rBX));
+  int resource_amount = abs(GetRegister(FindModifiedNextRegister(rBX)));
   int resource_id = GetRegister(FindModifiedRegister(rBX));
   resource_id %= m_organism->GetRBins().GetSize();
   const double stored_res = m_organism->GetRBins()[resource_id];
@@ -4451,7 +4506,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
 {
-  int resource_id = GetRegister(FindModifiedRegister(rBX));
+  int resource_id = abs(GetRegister(FindModifiedRegister(rBX)));
   tArray<double> bins = m_organism->GetRBins();
   resource_id %= bins.GetSize();
   int out_reg = FindModifiedRegister(rBX);
@@ -5358,6 +5413,87 @@ bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
   setInternalValue(FindModifiedRegister(rBX), gen_dist, true);
   const int out_reg = FindModifiedNextRegister(rBX);   
   setInternalValue(out_reg, (int) is_kin, true);    
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ActivateDisplay(cAvidaContext& ctx)
+{
+  if (m_organism->GetOrgDisplayData() == NULL) return false;
+  m_organism->ActivateDisplay();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_UpdateDisplay(cAvidaContext& ctx)
+{
+  m_organism->UpdateOrgDisplay();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
+{
+  sOrgDisplay* this_display = m_organism->GetOrgDisplayData();
+  if (this_display == NULL) return false;
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  for (int i = 0; i < 5; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) { 
+      int this_nop = m_inst_set->GetNopMod(memory[pos]);
+      switch (this_nop) {
+        case 0:
+          this_display->distance = GetRegister(rAX);
+        case 1:
+          this_display->direction = GetRegister(rBX);
+        case 2:
+          this_display->thing_id = GetRegister(rCX);
+        case 3:
+          this_display->value = GetRegister(rDX);
+        default:
+          this_display->message = GetRegister(this_nop);
+          break;
+      }
+    }
+    else break;
+  } 
+  m_organism->SetOrgDisplay(this_display);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
+{
+  if (!m_sensor.HasSeenDisplay()) return false;
+  sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  for (int i = 0; i < 5; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) { 
+      int this_nop = m_inst_set->GetNopMod(memory[pos]);
+      switch (this_nop) {
+        case 0:
+          setInternalValue(rAX, last_seen.distance, true);
+        case 1:
+          setInternalValue(rBX, last_seen.direction, true);
+        case 2:
+          setInternalValue(rCX, last_seen.thing_id, true);
+        case 3:
+          setInternalValue(rDX, last_seen.value, true);
+        default:
+          setInternalValue(this_nop, last_seen.message, true);
+          break;
+      }
+    }
+    else break;
+  } 
+  return true;
+}
+
+bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
+{
+  if (!m_organism->IsDisplaying()) return false;
+  m_organism->KillDisplay();
   return true;
 }
 

@@ -4524,7 +4524,6 @@ bool cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& c
       {   
         target->AddToRBin (resource, 1);
         
-        bool is_kin = false;
         cBioGroup* bg = m_organism->GetBioGroup("genotype");
         if (bg) {
           cSexualAncestry* sa = bg->GetData<cSexualAncestry>();

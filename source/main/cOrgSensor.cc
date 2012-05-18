@@ -30,8 +30,14 @@
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism)
 {
+  ResetOrgSensor();
+}
+
+void cOrgSensor::ResetOrgSensor()
+{
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   m_return_rel_facing = false;
+  m_has_seen_display = false;
 }
 
 const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft)
@@ -257,9 +263,11 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
       org_search.group = target_org->GetOpinion().first;
     }
     else if (m_return_rel_facing || !target_org->HasOpinion()) {
-      org_search.group = ReturnRelativeFacing(target_org, facing);
+      org_search.group = ReturnRelativeFacing(target_org);
     }
     org_search.forage = target_org->GetForageTarget();  
+    if (target_org->IsDisplaying() && target_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(target_org->GetOrgDisplayData());
+    SetPotentialDisplayData(org_search);   
   }
   return org_search;
 } 
@@ -291,8 +299,8 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
     stuff_seen.count = 1;
     stuff_seen.value = (int) (val + 0.5);
     stuff_seen.group = id_sought;
+    SetPotentialDisplayData(stuff_seen);   
   }
-  
   return stuff_seen;
 }
 
@@ -558,7 +566,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   stuff_seen.search_type = search_type;
   stuff_seen.id_sought = id_sought;
   if (!found) stuff_seen.report_type = 0;
-  else if(found){
+  else if (found){
     stuff_seen.report_type = 1;
     stuff_seen.distance = dist_used;
     stuff_seen.count = count;
@@ -585,10 +593,12 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
         stuff_seen.group = first_org->GetOpinion().first;
       }
       else if (m_return_rel_facing || !first_org->HasOpinion()) {
-        stuff_seen.group = ReturnRelativeFacing(first_org, facing);
+        stuff_seen.group = ReturnRelativeFacing(first_org);
       }
-      stuff_seen.forage = first_org->GetForageTarget();                  
+      stuff_seen.forage = first_org->GetForageTarget();   
+      if (first_org->IsDisplaying() && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
     }
+    SetPotentialDisplayData(stuff_seen);   
   }
   return stuff_seen;
 }
@@ -606,8 +616,8 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
  *    otherwise, returns the number of objects we're looking for that are in target_cell
  *    
  */
-cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx,  const cResourceLib& resource_lib, const int habitat_used, const int search_type,
-                                                                  const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step)
+cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type,
+                                                                const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step)
 {
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   int target_cell_num = target_cell_coords.GetX() + (target_cell_coords.GetY() * worldx);
@@ -660,12 +670,12 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx,  const cResourc
     if (!m_use_avatar) {
       if(target_cell->IsOccupied() && !target_cell->GetOrganism()->IsDead()) {
         int type_seen = target_cell->GetOrganism()->GetForageTarget();
-        if(search_type == 0) {
+        if (search_type == 0) {
           returnInfo.amountFound++;
           returnInfo.has_edible = true;
         }
         else if (search_type > 0){
-          if(type_seen == -2) {
+          if (type_seen == -2) {
             returnInfo.amountFound++;
             returnInfo.has_edible = true;
           }
@@ -849,12 +859,61 @@ tSmartArray<int> cOrgSensor::BuildResArray(const int habitat_used, const int id_
   return val_res;
 }
 
-int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org, const int facing) {
-  const int target_facing = sighted_org->GetFacedDir();
-  const int org_facing = m_organism->GetFacedDir();
+int cOrgSensor::ReturnRelativeFacing(cOrganism* sighted_org) {
+  const int target_facing = sighted_org->GetOrgInterface().GetFacedDir();
+  const int org_facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (m_use_avatar != 0) {
+    sighted_org->GetOrgInterface().GetAVFacing();
+    m_organism->GetOrgInterface().GetAVFacing();
+  }
   int match_heading = target_facing - org_facing;             // to match target's heading, rotate this many times in this direction
   if (match_heading > 4) match_heading -= 8;                  // rotate left x times
   else if (match_heading < -4) match_heading += 8;            // rotate right x times
   else if (abs(match_heading) == 4) match_heading = 4;        // rotating 4 and -4 to look same to org
   return match_heading;
+}
+
+void cOrgSensor::SetPotentialDisplayData(sLookOut& stuff_seen)
+{
+  sOrgDisplay* display_data = m_organism->GetPotentialDisplayData();
+  if (display_data == NULL) display_data = new sOrgDisplay;
+  
+  display_data->distance = FindDistanceFromHome();
+  display_data->direction = FindDirFromHome();
+  if (stuff_seen.habitat == -2) display_data->thing_id = stuff_seen.id_sought;
+  else display_data->thing_id = stuff_seen.group;
+  display_data->value = stuff_seen.value;
+  
+  m_organism->SetPotentialDisplay(display_data);         
+}
+
+void cOrgSensor::SetLastSeenDisplay(sOrgDisplay* seen_display)
+{ 
+  m_last_seen_display = *seen_display; 
+  m_has_seen_display = true; 
+}
+
+int cOrgSensor::FindDirFromHome()
+{
+  // Will return direction from birth cell to current cell (aka direction to get here again) if org never used zero-easterly or zero-northerly. 
+  // Otherwise will return direction to here from the 'marked' spot where those instructions were executed.
+  int easterly = m_organism->GetEasterly();
+  int northerly = m_organism->GetNortherly();
+  int correct_facing = 0;
+  if (northerly > 0 && easterly == 0) correct_facing = 4;     
+  else if (northerly > 0 && easterly < 0) correct_facing = 5; 
+  else if (northerly == 0 && easterly < 0) correct_facing = 6; 
+  else if (northerly < 0 && easterly < 0) correct_facing = 7; 
+  else if (northerly < 0 && easterly == 0) correct_facing = 0; 
+  else if (northerly < 0 && easterly > 0) correct_facing = 1; 
+  else if (northerly == 0 && easterly > 0) correct_facing = 2; 
+  else if (northerly > 0 && easterly > 0) correct_facing = 3;   
+  return correct_facing;
+}
+
+int cOrgSensor::FindDistanceFromHome()
+{
+  // Will return min travel distance from birth cell to current cell if org never used zero-easterly or zero-northerly. 
+  // Otherwise will return distance to here from the 'marked' spot where those instructions were executed.
+  return max(abs(m_organism->GetEasterly()), abs(m_organism->GetNortherly()));
 }
