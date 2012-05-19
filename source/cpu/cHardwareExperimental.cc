@@ -3653,7 +3653,7 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   // otherwise, we sum across all the food resources in the cell
   else {
     for (int i = 0; i < cell_res.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4) {
         if (!m_use_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
         else if (m_use_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i]); 
       }
@@ -4004,7 +4004,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
-  // a little mod help...can't set to -1, that's for juevniles onl...so only exception to mod help is -2
+  // a little mod help...can't set to -1, that's for juevniles only...so only exception to mod help is -2
   if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
     int num_fts = 0;
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
@@ -4253,7 +4253,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (absorb_type == 1) {
     for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && resource_lib.GetResource(i)->GetHabitat() == 0) {
+      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) {
         res_id = i;
         break;
       }
@@ -4261,7 +4261,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   }
   else if (absorb_type == 2) {
     for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && resource_lib.GetResource(i - 1)->GetHabitat() == 0) {
+      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() >4)) {
         res_id = i - 1;
         break;
       }
@@ -4472,7 +4472,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (absorb_type == 1) {
     for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && resource_lib.GetResource(i)->GetHabitat() == 0) {
+      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) {
         res_id = i;
         break;
       }
@@ -4480,7 +4480,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   }
   else if (absorb_type == 2) {
     for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && resource_lib.GetResource(i - 1)->GetHabitat() == 0) {
+      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 4)) {
         res_id = i - 1;
         break;
       }
@@ -5425,8 +5425,7 @@ bool cHardwareExperimental::Inst_ActivateDisplay(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_UpdateDisplay(cAvidaContext& ctx)
 {
-  m_organism->UpdateOrgDisplay();
-  return true;
+  return m_organism->UpdateOrgDisplay();
 }
 
 bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)

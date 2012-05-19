@@ -923,6 +923,8 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
       else if (var_name == "habitat") {
         if (!AssertInputInt(var_value, "habitat", var_type, feedback)) return false;
         new_resource->SetHabitat( var_value.AsInt() );
+        // Add this target id to the list in the instructions file. 
+        AddHabitat(var_value.AsInt());
       } 
       else if (var_name == "min_size") {
         if (!AssertInputInt(var_value, "min_size", var_type, feedback)) return false;
@@ -2050,6 +2052,15 @@ bool cEnvironment::IsTargetID(int test_id)
 {
   bool val = false;
   if (possible_target_ids.find(test_id) != possible_target_ids.end()) {
+    val = true;
+  }
+  return val;
+}
+
+bool cEnvironment::IsHabitat(int test_habitat)
+{
+  bool val = false;
+  if (possible_habitats.find(test_habitat) != possible_habitats.end()) {
     val = true;
   }
   return val;

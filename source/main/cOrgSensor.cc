@@ -81,10 +81,9 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
   
   // default to look for orgs if invalid habitat & predator
-  if (pred_experiment && forage == -2 && 
-      (habitat_used < -2 || habitat_used > 4 || habitat_used == -1)) habitat_used = -2;
+  if (pred_experiment && forage == -2 && !m_world->GetEnvironment().IsHabitat(habitat_used)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
-  else if (habitat_used < -2 || habitat_used > 4 || habitat_used == -1) habitat_used = 0;
+  else if (!m_world->GetEnvironment().IsHabitat(habitat_used)) habitat_used = 0;
   
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high
   int max_dist = 0;
@@ -158,7 +157,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
    */
   
   // habitat is 0 and any of the resources are non-gradient types, are we dealing with global resources and can just use the global val
-  if (habitat_used == 0) {
+  if (habitat_used == 0 || habitat_used > 4) {
     if (id_sought != -1 && resource_lib.GetResource(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
       return GlobalVal(ctx, habitat_used, id_sought, search_type);
     }
@@ -169,7 +168,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
           cOrgSensor::sLookOut globalval = GlobalVal(ctx, habitat_used, i, search_type);
           if (globalval.value >= 1 && search_type == 0) return globalval;
         }
-        else if (resource_lib.GetResource(i)->GetGeometry() != nGeometry::GLOBAL && resource_lib.GetResource(i)->GetHabitat() == 0) { 
+        else if (resource_lib.GetResource(i)->GetGeometry() != nGeometry::GLOBAL && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) { 
           all_global = false; 
           if (search_type == 1) break;
         }
@@ -355,7 +354,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   cCoords first_success_cell(-1, -1);
   int first_whole_resource = -9;
   
-  bool single_bound = ((habitat_used == 0 || habitat_used == 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
+  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
   bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
   
   sSearchInfo cellResultInfo;
@@ -423,7 +422,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   tot_bounds.min_y = worldy;    
   tot_bounds.max_x = -1 * worldx;
   tot_bounds.max_y = -1 * worldy;
-  if (habitat_used == 0 || habitat_used == 4) { 
+  if (habitat_used == 0 || habitat_used >= 4) { 
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
@@ -463,7 +462,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   // START WALKING
   bool first_step = true;
   for (int dist = start_dist; dist <= end_dist; dist++) {
-    if (!TestBounds(center_cell, worldBounds) || ((habitat_used == 0 || habitat_used == 4) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
+    if (!TestBounds(center_cell, worldBounds) || ((habitat_used == 0 || habitat_used >= 4) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
     // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
     if (!diagonal && !count_center) break;
     
@@ -481,7 +480,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       for (int j = num_cells_either_side; j > 0; j--) {
         bool valid_cell = true;
         this_cell = center_cell + direction * j;
-        if(!TestBounds(this_cell, worldBounds) || ((habitat_used == 0 || habitat_used == 4) && !TestBounds(center_cell, tot_bounds))) { 
+        if(!TestBounds(this_cell, worldBounds) || ((habitat_used == 0 || habitat_used >= 4) && !TestBounds(center_cell, tot_bounds))) { 
           // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
           if (diagonal) {
             const int tcx = this_cell.GetX();
@@ -633,7 +632,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
     // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) { 
       int edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
-      if (habitat_used == 0) {
+      if (habitat_used == 0 || habitat_used > 4) {
         if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;

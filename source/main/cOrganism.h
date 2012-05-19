@@ -224,7 +224,7 @@ public:
   inline bool IsDisplaying() { return m_display; }
   inline void SetOrgDisplay(sOrgDisplay* org_display) { m_org_display = org_display; }
   inline void SetPotentialDisplay(sOrgDisplay* new_data) { m_queued_display_data = new_data; }
-  void UpdateOrgDisplay();
+  bool UpdateOrgDisplay();
   inline sOrgDisplay* GetOrgDisplayData() { return m_org_display; }
   inline sOrgDisplay* GetPotentialDisplayData() { return m_queued_display_data; }
   

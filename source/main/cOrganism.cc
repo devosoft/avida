@@ -194,12 +194,14 @@ double cOrganism::GetVitality() const {
   return vitality;
 }
 
-void cOrganism::UpdateOrgDisplay() { 
+bool cOrganism::UpdateOrgDisplay() { 
   if (m_queued_display_data != NULL) {
     delete m_org_display;
     m_org_display = m_queued_display_data; 
     m_queued_display_data = NULL; 
+    return true;
   }
+  else return false;
 }
 
 double cOrganism::GetRBinsTotal()
