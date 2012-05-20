@@ -81,9 +81,10 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
   
   // default to look for orgs if invalid habitat & predator
+  habitat_used = -2;
   if (pred_experiment && forage == -2 && !m_world->GetEnvironment().IsHabitat(habitat_used)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
-  else if (!m_world->GetEnvironment().IsHabitat(habitat_used)) habitat_used = 0;
+  else if (!m_world->GetEnvironment().IsHabitat(habitat_used) && habitat_used != -2) habitat_used = 0;
   
   // second reg gives distance sought--arbitrarily capped at half long axis of world--default to 1 if low invalid number, half-world if high
   int max_dist = 0;
@@ -99,8 +100,8 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   // 0 = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   // if looking for env res, default to closest edible
   if (habitat_used != -2 && (search_type < 0 || search_type > 1)) search_type = 0;
-  // if looking for orgs in predator environment and is prey, default to closest org of any type
-  else if (pred_experiment && habitat_used == -2 && forage != -2 && (search_type < -2 || search_type > 2)) search_type = 0;
+  // if looking for orgs in predator environment and is prey, default to closest predator
+  else if (pred_experiment && habitat_used == -2 && forage != -2 && (search_type < -2 || search_type > 2)) search_type = 1;
   // if looking for orgs in predator environment and is predator, default to look for prey
   else if (pred_experiment && habitat_used == -2 && forage == -2 && (search_type < -2 || search_type > 2)) search_type = -1;
   // if looking for orgs in non-predator environment, default to closest org of any type
