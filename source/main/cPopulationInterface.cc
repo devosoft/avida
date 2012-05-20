@@ -1897,7 +1897,8 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
         if (y == 0) {
           y += 1;
           off_the_edge_facing = true;
-        } else if (y == (y_size - 1)) {
+        } 
+        else if (y == (y_size - 1)) {
           y -= 1;
           off_the_edge_facing = true;
         }
@@ -1906,7 +1907,8 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
         if (x == 0) {
           x += 1;
           off_the_edge_facing = true;
-        } else if (y == (y_size - 1)) {
+        } 
+        else if (y == (y_size - 1)) {
           x -= 1;
           off_the_edge_facing = true;
         }
@@ -1917,20 +1919,33 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
         // West edge..
         if (x == 0) {
           // Northwest corner
-          if (y == 0 && (facing == 0 || facing == 7 || facing == 6)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x += 1;
+          if (y == 0) {
+            if (facing == 0 || facing == 7 || facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+              else y += 1;
               off_the_edge_facing = true;
-            } else {
+            }
+            else if (facing == 5) {
               y += 1;
               off_the_edge_facing = true;
             }
-          // Southwest corner
-          } else if (y == (y_size - 1) && (facing == 4 || facing == 5 || facing == 6)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
+            else if (facing == 1) {
               x += 1;
               off_the_edge_facing = true;
-            } else {
+            }
+          }
+          // Southwest corner
+          else if (y == (y_size - 1)) {
+            if (facing == 4 || facing == 5 || facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 7) {
+              x += 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 3) {
               y -= 1;
               off_the_edge_facing = true;
             }
@@ -1942,39 +1957,50 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
               y -= 1;
               off_the_edge_facing = true;
             // West edge facing west
-            } else if (facing == 6) {
-              if (m_world->GetRandom().GetInt(0, 2)) {
-                y += 1;
-                off_the_edge_facing = true;
-              } else {
-                y -= 1;
-                off_the_edge_facing = true;
-              }
-            // West edge facing northwest
-            } else if (facing == 7) {
+            } 
+            else if (facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) y += 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
+            // West edge facing northwest                                                   
+            else if (facing == 7) {
               y += 1;
               off_the_edge_facing = true;
             }
           }
-
+        }
         // East edge..
-        } else if (x == (x_size - 1)) {
+        else if (x == (x_size - 1)) {
           // Northeast corner
-          if (y == 0 && (facing == 0 || facing == 1 || facing == 2)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x -= 1;
+          if (y == 0) {
+            if (facing == 0 || facing == 1 || facing == 2) {
+              if (m_world->GetRandom().GetInt(0, 2)) x -= 1;
+              else y += 1;
               off_the_edge_facing = true;
-            } else {
+            }
+            if (facing == 3) {
               y += 1;
               off_the_edge_facing = true;
             }
-          // Southeast corner
-          } else if (y == (y_size - 1) && (facing == 2 || facing == 3 || facing == 4)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
+            if (facing == 7) {
               x -= 1;
               off_the_edge_facing = true;
-            } else {
+            }
+          }
+          // Southeast corner
+          else if (y == (y_size - 1)) {
+            if (facing == 2 || facing == 3 || facing == 4) {
+              if (m_world->GetRandom().GetInt(0, 2)) x -= 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 1) {
               y -= 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 5) {
+              x -= 1;
               off_the_edge_facing = true;
             }
           }
@@ -1985,59 +2011,53 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
               y -= 1;
               off_the_edge_facing = true;
             // East edge facing east
-            } else if (facing == 2) {
-              if (m_world->GetRandom().GetInt(0, 2)) {
-                y += 1;
-                off_the_edge_facing = true;
-              } else {
-                y -= 1;
-                off_the_edge_facing = true;
-              }
+            } 
+            else if (facing == 2) {
+              if (m_world->GetRandom().GetInt(0, 2)) y += 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
             // East edge facing southeast
-            } else if (facing == 3) {
+            else if (facing == 3) {
               y += 1;
               off_the_edge_facing = true;
             }
           }
-
+        }
         // North edge..
-        } else if (y == 0) {
+        else if (y == 0) {
           // North edge facing northwest
           if (facing == 7) {
             x -= 1;
             off_the_edge_facing = true;
           // North edge facing north
-          } else if (facing == 0) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x += 1;
-              off_the_edge_facing = true;
-            } else {
-              x -= 1;
-              off_the_edge_facing = true;
-            }
+          } 
+          else if (facing == 0) {
+            if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+            else x -= 1;
+            off_the_edge_facing = true;
+          }
           // North edge facing northeast
-          } else if (facing == 1) {
+          else if (facing == 1) {
             x += 1;
             off_the_edge_facing = true;
           }
-
+        }
         // South edge..
-        } else if (y == (y_size - 1)) {
+        else if (y == (y_size - 1)) {
           // South edge facing southeast
           if (facing == 3) {
             x += 1;
             off_the_edge_facing = true;
           // South edge facing south
-          } else if (facing == 4) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x += 1;
-              off_the_edge_facing = true;
-            } else {
-              x -= 1;
-              off_the_edge_facing = true;
-            }
+          } 
+          else if (facing == 4) {
+            if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+            else x -= 1;
+            off_the_edge_facing = true;
+          }
           // South edge facing southwest
-          } else if (facing == 5) {
+          else if (facing == 5) {
             x -= 1;
             off_the_edge_facing = true;
           }
