@@ -7682,19 +7682,12 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
 int cPopulation::PlaceAvatar(cOrganism* parent)
 {
   int avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
-  const int parent_facing = parent->GetOrgInterface().GetAVFacing();
   const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
   if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(0, world_x * world_y);
-  else if (avatar_birth == 2) {
-    if (parent_facing == 0) avatar_target_cell -= world_x;
-    else if (parent_facing == 1) avatar_target_cell -= world_x + 1;
-    else if (parent_facing == 2) avatar_target_cell += 1;
-    else if (parent_facing == 3) avatar_target_cell += world_x + 1;
-    else if (parent_facing == 4) avatar_target_cell += world_x;
-    else if (parent_facing == 5) avatar_target_cell += world_x - 1;
-    else if (parent_facing == 6) avatar_target_cell -= 1;
-    else if (parent_facing == 7) avatar_target_cell -= world_x - 1;
-  } 
-  else if (avatar_birth == 3) avatar_target_cell += 1;
+  else if (avatar_birth == 2) avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
+  else if (avatar_birth == 3) { 
+    avatar_target_cell += 1;
+    if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
+  }
   return avatar_target_cell;
 }
