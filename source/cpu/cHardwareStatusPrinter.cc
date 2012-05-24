@@ -33,7 +33,7 @@
 void cHardwareStatusPrinter::TraceHardware(cAvidaContext& ctx, cHardwareBase& hardware, bool bonus, bool minitrace, const int exec_success)
 {
   cOrganism* organism = hardware.GetOrganism();
-  if(exec_success == -2) {cString next_name(hardware.GetInstSet().GetName(hardware.IP().GetInst()));
+  if (exec_success == -2) {cString next_name(hardware.GetInstSet().GetName(hardware.IP().GetInst()));
     if (bonus) next_name = cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
     
     if (organism) {

@@ -865,7 +865,6 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
   }
 }
 
-
 bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
 {
   // Make sure required task (if any) has been performed...

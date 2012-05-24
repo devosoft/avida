@@ -4340,3 +4340,26 @@ void cStats::PrintFemaleInstructionData(const cString& filename, const cString& 
   
   df.Endl();  
 }
+
+void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id)
+{
+  int death_update = GetUpdate();
+  cDataFile& df = m_world->GetDataFile("microtraces.dat");
+  
+/*  df.WriteComment("Trace Execution Data");
+  df.WriteTimeStamp();
+  df.Write(death_update,     "DeathUpdate");
+  df.Write(birth_update,     "BirthUpdate");
+  df.Write(org_id,           "OrgID");
+  df.Write(ft,               "ForageTarget");
+  df.Write(gen_id,           "GenotypeID");
+*/  
+  std::ofstream& fp = df.GetOFStream();
+  
+  fp << death_update << "," << birth_update << "," << org_id << "," << ft << "," << gen_id << ",";
+  
+  for (int i = 0; i < exec_trace.GetSize(); i++) {
+    fp << exec_trace[i];
+  }
+  df.Endl();
+}

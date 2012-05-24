@@ -82,6 +82,7 @@ private:
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
+  bool use_micro_traces;
   
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
@@ -239,9 +240,11 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes);
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
   void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes);
   void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  tSmartArray<int> SetRandomTraceQ(int max_samples);
+  tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
@@ -397,7 +400,7 @@ private:
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset=false); 
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset = false); 
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	
