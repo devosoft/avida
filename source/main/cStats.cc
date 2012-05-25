@@ -4346,20 +4346,21 @@ void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, i
   int death_update = GetUpdate();
   cDataFile& df = m_world->GetDataFile("microtraces.dat");
   
-/*  df.WriteComment("Trace Execution Data");
-  df.WriteTimeStamp();
-  df.Write(death_update,     "DeathUpdate");
-  df.Write(birth_update,     "BirthUpdate");
-  df.Write(org_id,           "OrgID");
-  df.Write(ft,               "ForageTarget");
-  df.Write(gen_id,           "GenotypeID");
-*/  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Trace Execution Data");
+    df.WriteTimeStamp();
+    df.WriteComment("DeathUpdate");
+    df.WriteComment("BirthUpdate");
+    df.WriteComment("OrgID");
+    df.WriteComment("GenotypeID");
+    df.WriteComment("ForageTarget");
+    df.Endl();
+  }
+  
   std::ofstream& fp = df.GetOFStream();
-  
-  fp << death_update << "," << birth_update << "," << org_id << "," << ft << "," << gen_id << ",";
-  
-  for (int i = 0; i < exec_trace.GetSize(); i++) {
+  fp << death_update << "," << birth_update << "," << org_id << "," << gen_id << "," << ft << ",";
+  for (int i = exec_trace.GetSize() - 1; i >= 0; i--) {
     fp << exec_trace[i];
   }
-  df.Endl();
+  fp << endl;
 }
