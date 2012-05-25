@@ -5386,7 +5386,8 @@ public:
   void Process(cAvidaContext& ctx)
   {
     tSmartArray<int> target_bgs;
-    if (random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
+    target_bgs.Resize(0);
+    if (m_random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
     else target_bgs = m_world->GetPopulation().SetTraceQ(m_save_dominants, m_save_groups, m_save_foragers, m_orgs_per, m_max_samples);
     m_world->GetPopulation().SetMiniTraceQueue(target_bgs, m_print_genomes);
   }
@@ -5397,6 +5398,8 @@ class cActionPrintMicroTraces : public cAction
 {
 private:
   bool m_random;
+  bool m_rand_prey;
+  bool m_rand_pred;
   bool m_save_dominants;
   bool m_save_groups;
   bool m_save_foragers;
@@ -5406,41 +5409,56 @@ private:
   
 public:
   cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_random(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
+  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
   m_print_genomes(true)
   {
     cArgSchema schema(':','=');
     
     // Entries
     schema.AddEntry("random", 0, 0, 1, 0);
-    schema.AddEntry("save_dominants", 1, 0, 1, 0);
-    schema.AddEntry("save_groups", 2, 0, 1, 0);
-    schema.AddEntry("save_foragers", 3, 0, 1, 0);
-    schema.AddEntry("orgs_per", 4, 1);
-    schema.AddEntry("max_samples", 5, 0); // recommended if using save_groups and restrict to defined is not set
-    schema.AddEntry("print_genomes", 6, 0, 1, 0);
+    schema.AddEntry("rand_prey", 1, 0, 1, 0);
+    schema.AddEntry("rand_pred", 2, 0, 1, 0);
+    schema.AddEntry("save_dominants", 3, 0, 1, 0);
+    schema.AddEntry("save_groups", 4, 0, 1, 0);
+    schema.AddEntry("save_foragers", 5, 0, 1, 0);
+    schema.AddEntry("orgs_per", 6, 1);
+    schema.AddEntry("max_samples", 7, 0); // recommended if using save_groups and restrict to defined is not set
+    schema.AddEntry("print_genomes", 8, 0, 1, 0);
     
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
     if (args) {
       m_random = argc->GetInt(0);
-      m_save_dominants = argc->GetInt(1);
-      m_save_groups = argc->GetInt(2);
-      m_save_foragers = argc->GetInt(3);
-      m_orgs_per = argc->GetInt(4);
-      m_max_samples = argc->GetInt(5);
-      m_print_genomes = argc->GetInt(6);
+      m_rand_prey = argc->GetInt(1);
+      m_rand_pred = argc->GetInt(2);
+      m_save_dominants = argc->GetInt(3);
+      m_save_groups = argc->GetInt(4);
+      m_save_foragers = argc->GetInt(5);
+      m_orgs_per = argc->GetInt(6);
+      m_max_samples = argc->GetInt(7);
+      m_print_genomes = argc->GetInt(8);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]"; }
+  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]"; }
   
   void Process(cAvidaContext& ctx)
   { 
     tSmartArray<int> target_bgs;
-    if (random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
+    target_bgs.Resize(0);
+    if (m_rand_prey || m_rand_pred) {
+      if (m_rand_prey) target_bgs = m_world->GetPopulation().SetRandomPreyTraceQ(m_max_samples);
+      if (m_rand_pred) {
+        if (target_bgs.GetSize() == 0) target_bgs = m_world->GetPopulation().SetRandomPredTraceQ(m_max_samples);
+        else {
+          tSmartArray<int> pred_bgs = m_world->GetPopulation().SetRandomPredTraceQ(m_max_samples);
+          for (int i = 0; i < pred_bgs.GetSize(); i++) target_bgs.Push(pred_bgs[i]); 
+        }
+      }
+    }
+    else if (m_random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
     else target_bgs = m_world->GetPopulation().SetTraceQ(m_save_dominants, m_save_groups, m_save_foragers, m_orgs_per, m_max_samples);
-    m_world->GetPopulation().SetMiniTraceQueue(target_bgs, m_print_genomes, true);
+    m_world->GetPopulation().AppendMiniTraces(target_bgs, m_print_genomes, true);
   }
 };
 

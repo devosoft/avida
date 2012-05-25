@@ -241,9 +241,11 @@ public:
   bool SaveFlameData(const cString& filename);
   
   void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
-  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
   void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
   tSmartArray<int> SetRandomTraceQ(int max_samples);
+  tSmartArray<int> SetRandomPreyTraceQ(int max_samples);
+  tSmartArray<int> SetRandomPredTraceQ(int max_samples);
   tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   

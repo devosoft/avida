@@ -2520,17 +2520,25 @@ a single, complete file for each trigger.
     the SMT hardware because of differences in the way some minitrace variables are tracked by the 
     different hardware types.
     </p>
+    <p> Each call to PrintMiniTraces resets the genotype list, rather than appending to it.
+    </p>
     <p>
     
     </p>
   </li>
   <li><p>
     <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
-    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
+    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
     </p>
-    <p>Same operation behavior as PrintMiniTraces but only saves executed (successfully) instruction symbols along with 
+    <p>Same general operation behavior as PrintMiniTraces but only saves executed (successfully) instruction symbols along with 
     org id, genotype id, forager type, and birth and death updates. Each microtrace is saved on a single line in
     microtrace.dat.
+    </p>
+    <p> rand_pred and rand_prey are compatible with each other, building a single list of genotypes to trace based on
+    current genotypes in the population for each of the two general forager types (will generate a list of 2 X max_samples
+    if both arguements are used).
+    </p>
+    <p> Each call to PrintMicroTraces appends to the genotype list, rather than replacing it (opposite of mini traces).
     </p>
     <p>
     

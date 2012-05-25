@@ -1019,14 +1019,12 @@ void cPopulation::TestForMiniTrace(cOrganism* in_organism)
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
   int org_bg_id = in_organism->GetBioGroup("genotype")->GetID();
-  for (int i = 0; i < minitrace_queue.GetSize(); i++)
-  {
+  for (int i = 0; i < minitrace_queue.GetSize(); i++) {
     if (org_bg_id == minitrace_queue[i]) {
       unsigned int last = minitrace_queue.GetSize() - 1;
       minitrace_queue.Swap(i, last);
       minitrace_queue.Pop();
-      if (!use_micro_traces) SetupMiniTrace(in_organism);
-      else SetupMiniTrace(in_organism);
+      SetupMiniTrace(in_organism);
       break;
     }
   }
@@ -1070,10 +1068,11 @@ void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print
   use_micro_traces = use_micro;
 }
 
-void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes)
+void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes, const bool use_micro)
 {
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
   print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
 }
 
 void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes)
@@ -1140,6 +1139,60 @@ tSmartArray<int> cPopulation::SetRandomTraceQ(int max_samples)
       cOrganism* rand_org = live_orgs[this_rand_sample];
       bg_id_list.Push(rand_org->GetBioGroup("genotype")->GetID());
       used_orgs[this_rand_sample] = true;
+    }
+  } 
+  return bg_id_list;
+}
+
+tSmartArray<int> cPopulation::SetRandomPreyTraceQ(int max_samples)
+{
+  // randomly sample (w/ replacement) bgs in pop
+  tSmartArray<int> bg_id_list;
+  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+
+  int max_bgs = 1;
+  if (max_samples) max_bgs = max_samples;
+  if (max_samples > num_prey_organisms) max_bgs = num_prey_organisms;
+  
+  tArray<bool> used_orgs;
+  used_orgs.Resize(live_orgs.GetSize());
+  used_orgs.SetAll(false);
+  
+  while (bg_id_list.GetSize() < max_bgs) {
+    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    if (!used_orgs[this_rand_sample]) {
+      cOrganism* rand_org = live_orgs[this_rand_sample];
+      if (rand_org->GetForageTarget() > -2) {
+        bg_id_list.Push(rand_org->GetBioGroup("genotype")->GetID());
+        used_orgs[this_rand_sample] = true;
+      }
+    }
+  } 
+  return bg_id_list;
+}
+
+tSmartArray<int> cPopulation::SetRandomPredTraceQ(int max_samples)
+{
+  // randomly sample (w/ replacement) bgs in pop
+  tSmartArray<int> bg_id_list;
+  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+
+  int max_bgs = 1;
+  if (max_samples) max_bgs = max_samples;
+  if (max_samples > num_pred_organisms) max_bgs = num_pred_organisms;
+  
+  tArray<bool> used_orgs;
+  used_orgs.Resize(live_orgs.GetSize());
+  used_orgs.SetAll(false);
+  
+  while (bg_id_list.GetSize() < max_bgs) {
+    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    if (!used_orgs[this_rand_sample]) {
+      cOrganism* rand_org = live_orgs[this_rand_sample];
+      if (rand_org->GetForageTarget() <= -2) {
+        bg_id_list.Push(rand_org->GetBioGroup("genotype")->GetID());
+        used_orgs[this_rand_sample] = true;
+      }
     }
   } 
   return bg_id_list;
