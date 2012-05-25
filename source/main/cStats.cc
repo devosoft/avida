@@ -4344,7 +4344,7 @@ void cStats::PrintFemaleInstructionData(const cString& filename, const cString& 
 void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id)
 {
   int death_update = GetUpdate();
-  cDataFile& df = m_world->GetDataFile("microtraces.dat");
+  cDataFile& df = m_world->GetDataFile("microtrace.dat");
   
   if (!df.HeaderDone()) {
     df.WriteComment("Trace Execution Data");

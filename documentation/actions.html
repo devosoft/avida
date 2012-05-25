@@ -248,6 +248,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintMessageLog">PrintMessageLog</a><br>
       <a href="#PrintMigrationData">PrintMigrationData</a><br>
       <a href="#PrintMiniTraces">PrintMiniTraces</a><br>
+      <a href="#PrintMicroTraces">PrintMicroTraces</a><br>
       <a href="#PrintMultiProcessData">PrintMultiProcessData</a><br>
       <a href="#PrintMutationRateData">PrintMutationRateData</a><br>
       <a href="#PrintNewReactionData">PrintNewReactionData</a><br>
@@ -2497,7 +2498,7 @@ a single, complete file for each trigger.
 </li>
   <li><p>
     <strong><a name="PrintMiniTraces">PrintMiniTraces</a></strong>
-    <i>[boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1] [boolean initial]</i>
+    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
     </p>
     <p>Prints a condensed trace of execution during a lifetime. Who is traced is determined by arguements.
     E.g. with the args <it>save_dominants=1:orgs_per=2</t>, at the specified update(s) a list is
@@ -2510,9 +2511,26 @@ a single, complete file for each trigger.
     two most abundant overall. If max_samples is > 0, this will cap the total number of orgs traced with
     priorities on fullfilling orgs_per quota for: dominants > forager types > group ids.
     </p>
+    <p> Setting random will look at current population, select individuals up to max_samples (without replacement)
+    record the sampled genotypes (one per individual, including genotype duplicates) and then trace the next orgs 
+    born with those genotypes, removing the genotype instance from the 'to-do' list with each new trace. Random option
+    is not currently compatible with (will override) other save_ arguements or orgs_per.
+    </p>
     <p> Minitraces are currently only fully implemented for the experimental hardware and partially for 
     the SMT hardware because of differences in the way some minitrace variables are tracked by the 
     different hardware types.
+    </p>
+    <p>
+    
+    </p>
+  </li>
+  <li><p>
+    <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
+    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
+    </p>
+    <p>Same operation behavior as PrintMiniTraces but only saves executed (successfully) instruction symbols along with 
+    org id, genotype id, forager type, and birth and death updates. Each microtrace is saved on a single line in
+    microtrace.dat.
     </p>
     <p>
     
