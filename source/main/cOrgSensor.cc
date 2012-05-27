@@ -266,7 +266,7 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
       org_search.group = ReturnRelativeFacing(target_org);
     }
     org_search.forage = target_org->GetForageTarget();  
-    if (target_org->IsDisplaying() && target_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(target_org->GetOrgDisplayData());
+    if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(target_org->GetOrgDisplayData());
     SetPotentialDisplayData(org_search);   
   }
   return org_search;
@@ -596,7 +596,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
         stuff_seen.group = ReturnRelativeFacing(first_org);
       }
       stuff_seen.forage = first_org->GetForageTarget();   
-      if (first_org->IsDisplaying() && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
+      if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
     }
     SetPotentialDisplayData(stuff_seen);   
   }

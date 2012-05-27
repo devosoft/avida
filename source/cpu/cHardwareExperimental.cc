@@ -3408,7 +3408,7 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
       if (target_org->HasOpinion()) {
         setInternalValue(group_reg, target_org->GetOpinion().first, true);
       }
-      if (target_org->IsDisplaying() && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
     }        
     return true;
   }
@@ -3500,7 +3500,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
       if (target_org->HasOpinion()) {
         setInternalValue(group_reg, target_org->GetOpinion().first, true);
       }
-      if (target_org->IsDisplaying() && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
+      if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
     }       
     return true;
   }
@@ -4239,7 +4239,6 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
     else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
     return true;
   }
-  
   return false;
 }
 
@@ -5435,6 +5434,7 @@ bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
   if (this_display == NULL) return false;
   cCPUMemory& memory = m_memory;
   int pos = getIP().GetPosition();
+  bool message_used = false;
   for (int i = 0; i < 5; i++) {
     pos += 1;
     if (pos >= memory.GetSize()) pos = 0;
@@ -5450,8 +5450,8 @@ bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
         case 3:
           this_display->value = GetRegister(rDX);
         default:
-          this_display->message = GetRegister(this_nop);
-          break;
+          if (!message_used) this_display->message = GetRegister(this_nop);
+          message_used = true;
       }
     }
     else break;
@@ -5466,6 +5466,7 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
   cCPUMemory& memory = m_memory;
   int pos = getIP().GetPosition();
+  bool message_read = false;
   for (int i = 0; i < 5; i++) {
     pos += 1;
     if (pos >= memory.GetSize()) pos = 0;
@@ -5481,8 +5482,8 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
         case 3:
           setInternalValue(rDX, last_seen.value, true);
         default:
-          setInternalValue(this_nop, last_seen.message, true);
-          break;
+          if (!message_read) setInternalValue(this_nop, last_seen.message, true);
+          message_read = true;
       }
     }
     else break;
