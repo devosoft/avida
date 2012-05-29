@@ -4803,13 +4803,14 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
-  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
+      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
     double injury = m_world->GetConfig().PRED_INJURY.Get();
     if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
-    return false;
+    return false;  
   }
   else {
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
@@ -4900,13 +4901,14 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
-  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
+  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
+      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
     double injury = m_world->GetConfig().PRED_INJURY.Get();
     if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
-    return false;
+    return false;  
   }
   else {
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
@@ -5773,9 +5775,6 @@ bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
   
   if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
-  
-  // return false if prey pop too low
-  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) return false; 
   
   // prevent killing on refuges
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
