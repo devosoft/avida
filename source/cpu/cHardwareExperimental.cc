@@ -4210,7 +4210,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   double total = m_organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
   bool has_max = max > 0 ? true : false;
-  int res_consumed = 0;
+  double res_consumed = 0.0;
   
   // Collect a unit or some ABSORB_RESOURCE_FRACTION
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
@@ -4365,9 +4365,9 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
   // only allow deposits on dens
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 4 && res_count[i] > resource_lib.GetResource(i)->GetThreshold()) {
-      int total_deposit = 0;
+      double total_deposit = 0.0;
       for (int j = 0; j < res_count.GetSize(); j++) {
-        int resource_amount = m_organism->GetRBins()[j];
+        double resource_amount = m_organism->GetRBins()[j];
         m_organism->AddToRBin(j, -1 * resource_amount);
         total_deposit += resource_amount;
       }  
@@ -4447,9 +4447,9 @@ bool cHardwareExperimental::Inst_NopDepositAllAsSpecific(cAvidaContext& ctx)
   // only allow deposits on dens
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 4 && res_count[i] > resource_lib.GetResource(i)->GetThreshold()) {
-      int total_deposit = 0;
+      double total_deposit = 0;
       for (int j = 0; j < res_count.GetSize(); j++) {
-        int resource_amount = m_organism->GetRBins()[j];
+        double resource_amount = m_organism->GetRBins()[j];
         total_deposit += resource_amount;
       }  
       if (total_deposit > 0) {  
@@ -4491,7 +4491,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
     double total = m_organism->GetRBinsTotal();
     double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
     bool has_max = max > 0 ? true : false;
-    int res_consumed = 0;
+    double res_consumed = 0.0;
     
     double threshold = resource_lib.GetResource(res_id)->GetThreshold();
     if (res_count[res_id] >= threshold) res_consumed = threshold;

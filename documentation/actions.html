@@ -2528,7 +2528,7 @@ a single, complete file for each trigger.
   </li>
   <li><p>
     <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
-    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
+    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]</i>
     </p>
     <p>Same general operation behavior as PrintMiniTraces but only saves executed (successfully) instruction symbols along with 
     org id, genotype id, forager type, and birth and death updates. Each microtrace is saved on a single line in
@@ -2540,6 +2540,9 @@ a single, complete file for each trigger.
     </p>
     <p> Each call to PrintMicroTraces appends to the genotype list, rather than replacing it (opposite of mini traces).
     </p>
+    <p> If next_prey or next_pred are used, the organisms born to parents with prey or predator 
+    foraging targets will be traced, regardless of genotype, until the set arg number have been traced (requested number will
+    be replaced, not appended to, by subsequent event calls). </p>
     <p>
     
     </p>

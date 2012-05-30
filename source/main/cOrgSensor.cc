@@ -632,7 +632,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) { 
-      int edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
+      double edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
       if (habitat_used == 0 || habitat_used > 4) {
         if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id

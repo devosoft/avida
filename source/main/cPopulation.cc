@@ -90,6 +90,8 @@ cPopulation::cPopulation(cWorld* world)
 , birth_chamber(world)
 , print_mini_trace_genomes(false)
 , use_micro_traces(false)
+, m_next_prey_q(0)
+, m_next_pred_q(0)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , num_prey_organisms(0)
@@ -1010,8 +1012,18 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       KillOrganism(target_cell, ctx); 
       org_survived = false; 
   }
-  // are there mini traces we need to test for?
-  if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(in_organism);  
+  // are there traces we need to test for?
+  if (org_survived) {
+    if (m_next_prey_q > 0 && in_organism->GetParentFT() > -2) { 
+      SetupMiniTrace(in_organism); 
+      m_next_prey_q--; 
+    }
+    else if (m_next_pred_q > 0 && in_organism->GetParentFT() <= -2) { 
+      SetupMiniTrace(in_organism); 
+      m_next_pred_q--; 
+    }
+    else if (minitrace_queue.GetSize() > 0) TestForMiniTrace(in_organism);  
+  }
   return org_survived;
 }
 
@@ -1196,6 +1208,20 @@ tSmartArray<int> cPopulation::SetRandomPredTraceQ(int max_samples)
     }
   } 
   return bg_id_list;
+}
+
+void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro)
+{
+  m_next_prey_q = num_prey;
+  print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
+}
+
+void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool use_micro)
+{
+  m_next_pred_q = num_pred;
+  print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
 }
 
 tSmartArray<int> cPopulation::SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples)
