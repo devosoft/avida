@@ -37,6 +37,8 @@
 
 @implementation OrganismView
 
+@synthesize dropDelegate;
+
 - (id)initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];

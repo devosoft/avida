@@ -9,7 +9,6 @@
 #import "AvidaEDAnalyzeViewController.h"
 
 #import "AvidaEDAnalyzePopulation.h"
-#import "Freezer.h"
 
 #include <fstream>
 
@@ -280,6 +279,18 @@
   [self rescaleGraph];
 }
 
+- (BOOL) willAcceptPopWithFreezerID:(Avida::Viewer::FreezerID)fid {
+  if ([popArray count] >= 3) return NO;
+  
+  for (int i = 0; i < [popArray count]; i++) {
+    if ([[popArray objectAtIndex:i] freezerIdentifier] == fid.identifier) return NO;
+  }
+  
+  return YES;
+}
+
+
+
 
 - (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url {
   
@@ -330,6 +341,30 @@
   // Close file
   ofile.close();
 
+}
+
+
+- (void) exportGraphic:(ExportGraphicsFileFormat)format toURL:(NSURL*)url {
+  switch (format) {
+    case EXPORT_GRAPHICS_JPEG:
+    case EXPORT_GRAPHICS_PNG:
+      
+      break;
+      
+    case EXPORT_GRAPHICS_PDF:
+    {
+//      NSMutableData* data = [[NSMutableData alloc] init];
+//      NSPrintOperation* po = [NSPrintOperation PDFOperationWithView:self.view insideRect:[self.view bounds] toData:data];
+//      [po runOperation];
+      
+//      NSData* data = [self.view dataWithPDFInsideRect:[self.view bounds]];
+
+      NSData* data = [graphView dataWithPDFInsideRect:[graphView bounds]];
+      
+      [data writeToURL:url atomically:NO];
+    }
+      break;
+  }
 }
 
 @end

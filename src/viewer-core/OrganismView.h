@@ -42,6 +42,7 @@
   Avida::Viewer::GraphicsContext graphics_context;
 }
 
+@property (readwrite) id<DropDelegate> dropDelegate;
 @property (readwrite, nonatomic) const Avida::Viewer::HardwareSnapshot* snapshot;
 
 // NSDraggingDestination

@@ -40,7 +40,7 @@
 @class OrganismView;
 
 
-@interface AvidaEDOrganismViewController : NSViewController <DropDelegate, NSPopoverDelegate> {
+@interface AvidaEDOrganismViewController : NSViewController <NSPopoverDelegate> {
   IBOutlet OrganismView* orgView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet NSTableView* tblTaskCounts;
@@ -75,7 +75,13 @@
   AvidaEDEnvActionsDataSource* envActions;
   
   NSTimer* tmrAnim;
+  
+  id<DropDelegate> dropDelegate;
 }
+
+- (id) initWithWorld:(AvidaRun*)world;
+
+- (void) setDropDelegate:(id<DropDelegate>)delegate;
 
 @property (readonly) NSMutableArray* arrRegisters;
 @property (readonly) NSMutableArray* arrInputBuffer;
@@ -92,11 +98,6 @@
 - (IBAction) showSettings:(id)sender;
 
 
-// DropDelegate
-- (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-- (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
-
+- (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;
 
 @end

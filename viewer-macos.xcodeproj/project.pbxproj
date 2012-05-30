@@ -170,6 +170,7 @@
 		70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDExportAccessoryController.m; sourceTree = "<group>"; };
 		70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismSettingsViewController.h; sourceTree = "<group>"; };
 		70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismSettingsViewController.m; sourceTree = "<group>"; };
+		70B0DA0E156ADFFF00D134AB /* Definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
 		70D0455A13C6351D00E6E5AC /* NSString+Apto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Apto.h"; sourceTree = "<group>"; };
 		70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
@@ -335,6 +336,7 @@
 				703549B51337AD2600D3865C /* AvidaAppDelegate.mm */,
 				7029A49B1361CDBD0031433A /* CenteringClipView.h */,
 				7029A49C1361CDBD0031433A /* CenteringClipView.m */,
+				70B0DA0E156ADFFF00D134AB /* Definitions.h */,
 				7015B89914C87DB50031B60B /* DraggableImageView.h */,
 				7015B89A14C87DB50031B60B /* DraggableImageView.m */,
 				7032D0B8150528C30090C93C /* DropDelegate.h */,

@@ -519,6 +519,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   analyzeCtlr = [[AvidaEDAnalyzeViewController alloc] init];
   [analyzeCtlr setDropDelegate:self];
+  
+  
+  // Create test world for use in the organism viewer
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* runPath = [fileManager createTemporaryDirectory];
+  Avida::Viewer::FreezerID default_world(Avida::Viewer::CONFIG, 0);
+  
+  freezer->InstantiateWorkingDir(default_world, [runPath cStringUsingEncoding:NSASCIIStringEncoding]);
+  AvidaRun* testWorld = [[AvidaRun alloc] initWithDirectory:runPath];
+  
+  orgCtlr = [[AvidaEDOrganismViewController alloc] initWithWorld:testWorld];
+  [orgCtlr setDropDelegate:self];
 }
 
 
@@ -739,7 +751,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Analysis" bundle:nil];
     completionHandler = ^(NSInteger result) {
       if (result == NSOKButton) {
-        printf("exporting analysis graphic\n");
+        [analyzeCtlr exportGraphic:(ExportGraphicsFileFormat)[exportAccessoryViewCtlr selectedFormat] toURL:[saveDlg URL]];
       }
       
       // Cleanup
@@ -1231,13 +1243,21 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (NSDragOperation) draggingEnteredDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
   NSPasteboard* pboard = [sender draggingPasteboard];
   NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
-    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
-    if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzePops count] < 4) {
-      for (int i = 0; i < [analyzePops count]; i++)
-        if ([[analyzePops objectAtIndex:i] freezerIdentifier] == fid.identifier) return NSDragOperationNone;
-      return NSDragOperationGeneric;
+  if (curView == analyzeCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzeCtlr numPops] < 4) {
+        return [analyzeCtlr willAcceptPopWithFreezerID:fid] ? NSDragOperationGeneric : NSDragOperationNone;
+      }
+    }
+  } else if (curView == orgCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
+        return NSDragOperationGeneric;
+      }
     }
   }
   
@@ -1247,13 +1267,21 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (NSDragOperation) draggingUpdatedForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
   NSPasteboard* pboard = [sender draggingPasteboard];
   NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
-    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
-    if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzePops count] < 4) {
-      for (int i = 0; i < [analyzePops count]; i++)
-        if ([[analyzePops objectAtIndex:i] freezerIdentifier] == fid.identifier) return NSDragOperationNone;
-      return NSDragOperationGeneric;
+  if (curView == analyzeCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzeCtlr numPops] < 4) {
+        return [analyzeCtlr willAcceptPopWithFreezerID:fid] ? NSDragOperationGeneric : NSDragOperationNone;
+      }
+    }
+  } else if (curView == orgCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
+        return NSDragOperationGeneric;
+      }
     }
   }
   
@@ -1263,13 +1291,21 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
   NSPasteboard* pboard = [sender draggingPasteboard];
   NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
+  NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
-    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
-    if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzePops count] < 4) {
-      for (int i = 0; i < [analyzePops count]; i++)
-        if ([[analyzePops objectAtIndex:i] freezerIdentifier] == fid.identifier) return NO;
-      return YES;
+  if (curView == analyzeCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzeCtlr numPops] < 4) {
+        return [analyzeCtlr willAcceptPopWithFreezerID:fid] ? YES : NO;
+      }
+    }
+  } else if (curView == orgCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
+        return YES;
+      }
     }
   }
   
@@ -1278,11 +1314,23 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender {
   NSPasteboard* pboard = [sender draggingPasteboard];
+  NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID] && [analyzePops count] < 4) {
-    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
-    AvidaEDAnalyzePopulation* pop = [[AvidaEDAnalyzePopulation alloc] initWithFreezerID:fid fromFreezer:freezer];
-    [analyzeCtlr addPop:pop];
+  if (curView == analyzeCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID] && [analyzePops count] < 4) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      AvidaEDAnalyzePopulation* pop = [[AvidaEDAnalyzePopulation alloc] initWithFreezerID:fid fromFreezer:freezer];
+      [analyzeCtlr addPop:pop];
+    }
+  } else if (curView == orgCtlr.view) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];    
+      
+      // Get genome from freezer
+      Avida::GenomePtr genome = freezer->InstantiateGenome(fid);
+      
+      [orgCtlr setGenome:genome withName:[NSString stringWithAptoString:freezer->NameOf(fid)]];
+    }
   }
   
   return YES;

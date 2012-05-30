@@ -9,7 +9,9 @@
 #import <Cocoa/Cocoa.h>
 #import <CorePlot/CorePlot.h>
 
+#import "Definitions.h"
 #import "DroppableGraphHostingView.h"
+#import "Freezer.h"
 
 @class AvidaEDAnalyzePopulation;
 
@@ -41,7 +43,9 @@
 - (void) addPop:(AvidaEDAnalyzePopulation*)pop;
 - (void) removePop:(id)pop;
 - (NSInteger) numPops;
+- (BOOL) willAcceptPopWithFreezerID:(Avida::Viewer::FreezerID)fid;
 
 - (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url;
+- (void) exportGraphic:(ExportGraphicsFileFormat)format toURL:(NSURL*)url;
 
 @end
