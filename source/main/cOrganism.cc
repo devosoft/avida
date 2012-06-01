@@ -204,6 +204,29 @@ bool cOrganism::UpdateOrgDisplay() {
   else return false;
 }
 
+void cOrganism::SetSimpDisplay(int display_part, int value)
+{
+  if (m_org_display == NULL) {
+    m_org_display = new sOrgDisplay;
+    m_display = true;
+    m_org_display->distance = -99;
+    m_org_display->direction = -99;
+    m_org_display->value = -99;
+    m_org_display->message = -99;
+
+  }
+  switch (display_part) {
+    case 0:
+      m_org_display->distance = value;
+    case 1:
+      m_org_display->direction = value;
+    case 3:
+      m_org_display->value = value;
+    default:
+      m_org_display->message = value;
+  }
+}
+
 double cOrganism::GetRBinsTotal()
 {
 	double total = 0;

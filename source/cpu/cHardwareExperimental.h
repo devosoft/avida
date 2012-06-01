@@ -640,6 +640,9 @@ private:
   bool Inst_ReadLastSeenDisplay(cAvidaContext& ctx);
   bool Inst_KillDisplay(cAvidaContext& ctx);
   
+  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
+
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   

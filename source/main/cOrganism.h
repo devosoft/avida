@@ -227,6 +227,7 @@ public:
   bool UpdateOrgDisplay();
   inline sOrgDisplay* GetOrgDisplayData() { return m_org_display; }
   inline sOrgDisplay* GetPotentialDisplayData() { return m_queued_display_data; }
+  void SetSimpDisplay(int display_part, int value);
   
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }

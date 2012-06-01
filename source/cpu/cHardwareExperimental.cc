@@ -370,6 +370,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("read-last-seen-display", &cHardwareExperimental::Inst_ReadLastSeenDisplay, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("kill-display", &cHardwareExperimental::Inst_KillDisplay, nInstFlag::STALL), 
     
+    tInstLibEntry<tMethod>("modify-simp-display", &cHardwareExperimental::Inst_ModifySimpDisplay, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("read-simp-display", &cHardwareExperimental::Inst_ReadLastSimpDisplay, nInstFlag::STALL), 
+
     // Messaging
     tInstLibEntry<tMethod>("send-msg", &cHardwareExperimental::Inst_SendMessage, nInstFlag::STALL),
     tInstLibEntry<tMethod>("retrieve-msg", &cHardwareExperimental::Inst_RetrieveMessage, nInstFlag::STALL),
@@ -5488,6 +5491,69 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
           message_read = true;
       }
     }
+    else break;
+  } 
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ModifySimpDisplay(cAvidaContext& ctx)
+{
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  bool message_used = false;
+  for (int i = 0; i < 4; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) { 
+      int this_nop = m_inst_set->GetNopMod(memory[pos]);
+      switch (this_nop) {
+        case 0:
+          m_organism->SetSimpDisplay(0, GetRegister(rAX));
+        case 1:
+          m_organism->SetSimpDisplay(1, GetRegister(rBX));
+        case 2:
+          m_organism->SetSimpDisplay(2, GetRegister(rCX));
+        default:
+          if (!message_used) m_organism->SetSimpDisplay(3, GetRegister(this_nop));
+          message_used = true;
+      }
+    }
+    else break;
+  } 
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
+{
+  if (!m_sensor.HasSeenDisplay()) return false;
+  sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
+  cCPUMemory& memory = m_memory;
+  int pos = getIP().GetPosition();
+  bool message_read = false;
+  for (int i = 0; i < 4; i++) {
+    pos += 1;
+    if (pos >= memory.GetSize()) pos = 0;
+    if (m_inst_set->IsNop(memory[pos])) { 
+      int this_nop = m_inst_set->GetNopMod(memory[pos]);
+      switch (this_nop) {
+        case 0:
+          setInternalValue(rAX, last_seen.distance, true);
+        case 1:
+          setInternalValue(rBX, last_seen.direction, true);
+        case 2:
+          setInternalValue(rCX, last_seen.value, true);
+        default:
+          if (!message_read) setInternalValue(this_nop, last_seen.message, true);
+          message_read = true;
+      }
+    }
+    else if (!m_inst_set->IsNop(memory[pos]) && i == 0) { 
+      setInternalValue(rAX, last_seen.distance, true);
+      setInternalValue(rBX, last_seen.direction, true);
+      setInternalValue(rCX, last_seen.value, true);
+      setInternalValue(rDX, last_seen.message, true);
+      break;
+    }    
     else break;
   } 
   return true;

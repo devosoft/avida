@@ -267,7 +267,7 @@ cOrgSensor::sLookOut cOrgSensor::FindOrg(cOrganism* target_org, const int distan
     }
     org_search.forage = target_org->GetForageTarget();  
     if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(target_org->GetOrgDisplayData());
-    SetPotentialDisplayData(org_search);   
+    if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(org_search);   
   }
   return org_search;
 } 
@@ -299,7 +299,7 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
     stuff_seen.count = 1;
     stuff_seen.value = (int) (val + 0.5);
     stuff_seen.group = id_sought;
-    SetPotentialDisplayData(stuff_seen);   
+    if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);   
   }
   return stuff_seen;
 }
@@ -598,7 +598,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       stuff_seen.forage = first_org->GetForageTarget();   
       if ((first_org->IsDisplaying()  || m_world->GetConfig().USE_DISPLAY.Get()) && first_org->GetOrgDisplayData() != NULL) SetLastSeenDisplay(first_org->GetOrgDisplayData());            
     }
-    SetPotentialDisplayData(stuff_seen);   
+    if (m_world->GetConfig().USE_DISPLAY.Get() == 0 || m_world->GetConfig().USE_DISPLAY.Get() == 1) SetPotentialDisplayData(stuff_seen);   
   }
   return stuff_seen;
 }
