@@ -134,6 +134,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) loadRunFromFreezer:(Avida::Viewer::FreezerID)freezerID;
 - (void) loadRunFromFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
 - (void) saveRunToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
+- (void) saveAnyToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
 - (void) clearCurrentRun;
 - (void) freezeCurrentConfig;
 - (void) freezeCurrentRun;
@@ -299,6 +300,26 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
 }
 
+- (void) saveAnyToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo
+{
+  switch (returnCode) {
+    case NSAlertFirstButtonReturn:
+      [self freezeCurrentRun];
+      break;
+      
+    case NSAlertSecondButtonReturn:
+      [self freezeCurrentConfig];
+      break;
+      
+    case NSAlertThirdButtonReturn:
+      [self freezeGenome:[popViewStatView selectedOrgGenome]];
+      break;
+      
+    default:
+      break;
+  }
+}
+
 
 - (void) clearCurrentRun {
   // Clear main listener
@@ -326,7 +347,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   while (![currentRun isPaused]);
   
 
-  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::WORLD, [[txtRun stringValue] UTF8String]);
+  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::WORLD, [[self runName] UTF8String]);
   Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], name);
   if (freezer->IsValid(f)) {
     // Save plot info
@@ -340,7 +361,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (void) freezeCurrentConfig {
-  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::CONFIG, [[txtRun stringValue] UTF8String]);
+  Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::CONFIG, [[self runName] UTF8String]);
   Avida::Viewer::FreezerID f = freezer->SaveConfig([currentRun oldworld], name);
   if (freezer->IsValid(f)) {    
     FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
@@ -534,13 +555,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
+- (NSString*) runName {
+  return [NSString stringWithFormat:@"%@ at update %d", [txtRun stringValue], [currentRun currentUpdate]];
+}
+
+
 - (IBAction) toggleRunState:(id)sender {
   if ([currentRun willPause]) {
     if ([currentRun numOrganisms] == 0 && ![currentRun hasPendingInjects]) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
-      [alert setMessageText:@"Unable to resume experiment, the petri dish has not been inoculated."];
-      [alert setInformativeText:@"Please drag an organisms from the freezer to inoculate the petri dish."];
+      [alert setMessageText:@"Unable to resume experiment; there is no start organism in the petri dish."];
+      [alert setInformativeText:@"Please drag an organism from the freezer into the settings panel or the petri dish."];
       [alert setAlertStyle:NSWarningAlertStyle];
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
       [sender setState:NSOffState];
@@ -601,6 +627,34 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [btnPopView setState:NSOffState];
     [btnOrgView setState:NSOffState];
     [btnAnalyzeView setState:NSOnState];
+  }
+}
+
+- (IBAction) freeze:(id)sender {
+  
+
+
+  if (runActive == NO) {
+    [self freezeCurrentConfig];
+  } else if ([popViewStatView selectedOrgGenome] == nil) {
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"Population"];
+    [alert addButtonWithTitle:@"Configuration"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:@"What would you like to save to the freezer?"];
+    [alert setInformativeText:@"Population saves organisms and experiment history.\nConfiguration saves the experiment settings only."];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+  } else {
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"Population"];
+    [alert addButtonWithTitle:@"Configuration"];
+    [alert addButtonWithTitle:@"Organism"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:@"What would you like to save to the freezer?"];
+    [alert setInformativeText:@"Population saves organisms and experiment history.\nConfiguration saves the experiment settings only.\nOrganism saves teh currently selected organism."];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveAnyToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
   }
 }
 
@@ -1058,10 +1112,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       {
         NSAlert* alert = [[NSAlert alloc] init];
         [alert addButtonWithTitle:@"Population"];
-        [alert addButtonWithTitle:@"Config"];
+        [alert addButtonWithTitle:@"Configation"];
         [alert addButtonWithTitle:@"Cancel"];
         [alert setMessageText:@"What would you like to save to the freezer?"];
-        [alert setInformativeText:@"Population saves organisms and experiment history.\nConfig saves the experiment settings only."];
+        [alert setInformativeText:@"Population saves organisms and experiment history.\nConfigation saves the experiment settings only."];
         [alert setAlertStyle:NSWarningAlertStyle];
         [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
         return YES;

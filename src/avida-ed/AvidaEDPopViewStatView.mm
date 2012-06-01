@@ -646,10 +646,10 @@ static const float PANEL_MIN_WIDTH = 360.0;
   
   // Print header columns
   ofile << "Update";
+  const char* runName = [[ctlr runName] UTF8String];
   Avida::Data::ManagerPtr datamgr = Avida::Data::Manager::Of([run world]);
   for (int i = 0; i < active_export_recorders.GetSize(); i++) {
-    // @TODO - prefix these with the dish name ala analysis mode export
-    ofile << "," << datamgr->Describe(timeRecorders[active_export_recorders[i]]->RecordedDataID());
+    ofile << "," << runName << " " << datamgr->Describe(timeRecorders[active_export_recorders[i]]->RecordedDataID());
   }
   ofile << std::endl;
   

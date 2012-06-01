@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">12A193i</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2488</string>
-		<string key="IBDocument.AppKitVersion">1170</string>
-		<string key="IBDocument.HIToolboxVersion">611.00</string>
+		<string key="IBDocument.SystemVersion">12A206j</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2507</string>
+		<string key="IBDocument.AppKitVersion">1172.1</string>
+		<string key="IBDocument.HIToolboxVersion">613.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2488</string>
+			<string key="NS.object.0">2507</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSCollectionViewItem</string>
@@ -197,7 +197,7 @@
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">New Default Workspace</string>
 									<string key="NSKeyEquiv">n</string>
-									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSKeyEquivModMask">1572864</int>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
@@ -724,14 +724,14 @@
 					</object>
 					<object class="NSMenuItem" id="1023308786">
 						<reference key="NSMenu" ref="649796088"/>
-						<string key="NSTitle">Workspace</string>
+						<string key="NSTitle">Freezer</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSMnemonicLoc">2147483647</int>
 						<reference key="NSOnImage" ref="35465992"/>
 						<reference key="NSMixedImage" ref="502551668"/>
 						<string key="NSAction">submenuAction:</string>
 						<object class="NSMenu" key="NSSubmenu" id="54546985">
-							<string key="NSTitle">Workspace</string>
+							<string key="NSTitle">Freezer</string>
 							<array class="NSMutableArray" key="NSMenuItems">
 								<object class="NSMenuItem" id="406575673">
 									<reference key="NSMenu" ref="54546985"/>
@@ -755,6 +755,47 @@
 									<reference key="NSMenu" ref="54546985"/>
 									<string key="NSTitle">Save Current Population</string>
 									<string key="NSKeyEquiv">s</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+							</array>
+						</object>
+					</object>
+					<object class="NSMenuItem" id="576960498">
+						<reference key="NSMenu" ref="649796088"/>
+						<string key="NSTitle">Control</string>
+						<string key="NSKeyEquiv"/>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="35465992"/>
+						<reference key="NSMixedImage" ref="502551668"/>
+						<string key="NSAction">submenuAction:</string>
+						<object class="NSMenu" key="NSSubmenu" id="703239665">
+							<string key="NSTitle">Control</string>
+							<array class="NSMutableArray" key="NSMenuItems">
+								<object class="NSMenuItem" id="441644391">
+									<reference key="NSMenu" ref="703239665"/>
+									<string key="NSTitle">Run</string>
+									<string type="base64-UTF8" key="NSKeyEquiv">IA</string>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="296274099">
+									<reference key="NSMenu" ref="703239665"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<bool key="NSIsSeparator">YES</bool>
+									<string key="NSTitle"/>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="365771854">
+									<reference key="NSMenu" ref="703239665"/>
+									<string key="NSTitle">Start New Experiment</string>
+									<string key="NSKeyEquiv">n</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -1307,6 +1348,7 @@
 							<reference ref="379814623"/>
 							<reference ref="448692316"/>
 							<reference ref="1023308786"/>
+							<reference ref="576960498"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1911,6 +1953,39 @@
 						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">613</int>
+						<reference key="object" ref="576960498"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="703239665"/>
+						</array>
+						<reference key="parent" ref="649796088"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">614</int>
+						<reference key="object" ref="703239665"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="441644391"/>
+							<reference ref="365771854"/>
+							<reference ref="296274099"/>
+						</array>
+						<reference key="parent" ref="576960498"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">615</int>
+						<reference key="object" ref="441644391"/>
+						<reference key="parent" ref="703239665"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">617</int>
+						<reference key="object" ref="365771854"/>
+						<reference key="parent" ref="703239665"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">618</int>
+						<reference key="object" ref="296274099"/>
+						<reference key="parent" ref="703239665"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -2000,6 +2075,11 @@
 				<string key="592.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="593.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="596.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="613.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="614.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="615.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="617.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="618.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2016,7 +2096,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">612</int>
+			<int key="maxID">618</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2053,11 +2133,52 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">AvidaEDAnalyzeViewController</string>
+					<string key="superclassName">NSViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">changeGraphMode:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">changeGraphMode:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">changeGraphMode:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="btnGraphSelectLeft">NSPopUpButton</string>
+						<string key="btnGraphSelectRight">NSPopUpButton</string>
+						<string key="graphView">DroppableGraphHostingView</string>
+						<string key="popArrayCtlr">NSArrayController</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="btnGraphSelectLeft">
+							<string key="name">btnGraphSelectLeft</string>
+							<string key="candidateClassName">NSPopUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="btnGraphSelectRight">
+							<string key="name">btnGraphSelectRight</string>
+							<string key="candidateClassName">NSPopUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="graphView">
+							<string key="name">graphView</string>
+							<string key="candidateClassName">DroppableGraphHostingView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="popArrayCtlr">
+							<string key="name">popArrayCtlr</string>
+							<string key="candidateClassName">NSArrayController</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/AvidaEDAnalyzeViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">AvidaEDController</string>
 					<string key="superclassName">NSWindowController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="changeAnalyzeGraphMode:">id</string>
-						<string key="changeAnalyzePopulationColor:">id</string>
 						<string key="changeEnvironment:">id</string>
 						<string key="changeMapViewMode:">id</string>
 						<string key="changeMapZoom:">id</string>
@@ -2077,14 +2198,6 @@
 						<string key="toggleRunState:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="changeAnalyzeGraphMode:">
-							<string key="name">changeAnalyzeGraphMode:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="changeAnalyzePopulationColor:">
-							<string key="name">changeAnalyzePopulationColor:</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="changeEnvironment:">
 							<string key="name">changeEnvironment:</string>
 							<string key="candidateClassName">id</string>
@@ -2155,18 +2268,13 @@
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="analyzeView">NSView</string>
-						<string key="arrctlrAnalyze">NSArrayController</string>
-						<string key="btnAnalyzeGraphSelectLeft">NSPopUpButton</string>
-						<string key="btnAnalyzeGraphSelectRight">NSPopUpButton</string>
+						<string key="analyzeCtlr">AvidaEDAnalyzeViewController</string>
 						<string key="btnAnalyzeView">NSButton</string>
 						<string key="btnMapSettingsFlip">NSButton</string>
 						<string key="btnOrgView">NSButton</string>
 						<string key="btnPopView">NSButton</string>
 						<string key="btnRunState">NSButton</string>
 						<string key="btnTogglePopViewStatView">NSButton</string>
-						<string key="exportAccessoryView">NSView</string>
-						<string key="graphViewAnalyze">CPTGraphHostingView</string>
 						<string key="mainSplitView">NSSplitView</string>
 						<string key="mainSplitViewLeft">NSView</string>
 						<string key="mapFlipView">FlipView</string>
@@ -2179,7 +2287,7 @@
 						<string key="matCfgPauseAt">NSMatrix</string>
 						<string key="matCfgPlacement">NSMatrix</string>
 						<string key="matCfgRepeatability">NSMatrix</string>
-						<string key="orgViewCtlr">AvidaEDOrganismViewController</string>
+						<string key="orgCtlr">AvidaEDOrganismViewController</string>
 						<string key="outlineFreezer">NSOutlineView</string>
 						<string key="pathWorkspace">NSPathControl</string>
 						<string key="popSplitView">NSSplitView</string>
@@ -2196,21 +2304,9 @@
 						<string key="txtUpdate">NSTextField</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="analyzeView">
-							<string key="name">analyzeView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="arrctlrAnalyze">
-							<string key="name">arrctlrAnalyze</string>
-							<string key="candidateClassName">NSArrayController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="btnAnalyzeGraphSelectLeft">
-							<string key="name">btnAnalyzeGraphSelectLeft</string>
-							<string key="candidateClassName">NSPopUpButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="btnAnalyzeGraphSelectRight">
-							<string key="name">btnAnalyzeGraphSelectRight</string>
-							<string key="candidateClassName">NSPopUpButton</string>
+						<object class="IBToOneOutletInfo" key="analyzeCtlr">
+							<string key="name">analyzeCtlr</string>
+							<string key="candidateClassName">AvidaEDAnalyzeViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="btnAnalyzeView">
 							<string key="name">btnAnalyzeView</string>
@@ -2235,14 +2331,6 @@
 						<object class="IBToOneOutletInfo" key="btnTogglePopViewStatView">
 							<string key="name">btnTogglePopViewStatView</string>
 							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="exportAccessoryView">
-							<string key="name">exportAccessoryView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="graphViewAnalyze">
-							<string key="name">graphViewAnalyze</string>
-							<string key="candidateClassName">CPTGraphHostingView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="mainSplitView">
 							<string key="name">mainSplitView</string>
@@ -2292,8 +2380,8 @@
 							<string key="name">matCfgRepeatability</string>
 							<string key="candidateClassName">NSMatrix</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="orgViewCtlr">
-							<string key="name">orgViewCtlr</string>
+						<object class="IBToOneOutletInfo" key="orgCtlr">
+							<string key="name">orgCtlr</string>
 							<string key="candidateClassName">AvidaEDOrganismViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="outlineFreezer">
@@ -2629,6 +2717,25 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">DroppableGraphHostingView</string>
+					<string key="superclassName">CPTGraphHostingView</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">dropDelegate</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">dropDelegate</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">dropDelegate</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/DroppableGraphHostingView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">FlipView</string>
 					<string key="superclassName">NSView</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
@@ -2678,6 +2785,47 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/MapScaleView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSDocument</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="printDocument:">id</string>
+						<string key="revertDocumentToSaved:">id</string>
+						<string key="runPageLayout:">id</string>
+						<string key="saveDocument:">id</string>
+						<string key="saveDocumentAs:">id</string>
+						<string key="saveDocumentTo:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="printDocument:">
+							<string key="name">printDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="revertDocumentToSaved:">
+							<string key="name">revertDocumentToSaved:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="runPageLayout:">
+							<string key="name">runPageLayout:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveDocument:">
+							<string key="name">saveDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveDocumentAs:">
+							<string key="name">saveDocumentAs:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveDocumentTo:">
+							<string key="name">saveDocumentTo:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/NSDocument.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

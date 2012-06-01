@@ -93,6 +93,7 @@
   IBOutlet NSButton* btnTogglePopViewStatView;
   CGFloat lastPopViewStatViewWidth;
   BOOL popSplitViewIsAnimating;
+  int curUpdate;
 
   // Config View
   // --------------------------------------------------------------------------------------------------------------  
@@ -168,7 +169,7 @@
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 
-
+@property (readonly) NSString* runName;
 @property (readonly) NSMutableArray* analyzePops;
 
 
