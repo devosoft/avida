@@ -3731,35 +3731,47 @@ void cStats::PrintTargets(const cString& filename)
     has_pred = true;
     offset = 2;
   }
-  
+    
   // ft's may not be sequentially numbered
+  bool dec_prey = false;
+  bool dec_pred = false;
   int num_targets = 0;
   std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
   set <int>::iterator itr;    
-  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_targets++; 
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
+    num_targets++; 
+    if (*itr == -1 && !dec_prey) { 
+      offset--; 
+      dec_prey = true; 
+    }
+    if (*itr == -2 && !dec_pred) {
+      offset--;  
+      dec_pred = true; 
+    }
+  }
 
   tArray<int> raw_target_list;
   raw_target_list.Resize(num_targets);
   raw_target_list.SetAll(0);
   int this_index = 0;
   for (itr = fts_avail.begin(); itr!=fts_avail.end(); itr++) {
-    if (*itr != -1 && *itr != -2) raw_target_list[this_index] = *itr; 
+    raw_target_list[this_index] = *itr; 
     this_index++;
   }
     
-  int tot_targets = num_targets + offset;
   tArray<int> target_list;
+  int tot_targets = num_targets + offset;
   target_list.Resize(tot_targets);
   target_list.SetAll(0);
-  for (int i = 0; i < raw_target_list.GetSize(); i++) {
-    target_list[i + offset] = raw_target_list[i];
-  }
+
+  target_list[0] = -1;
   if (has_pred) {
     target_list[0] = -2;
     target_list[1] = -1;
   }
-  else {
-    target_list[0] = -1;
+      
+  for (int i = 0; i < raw_target_list.GetSize(); i++) {
+    if (raw_target_list[i] >= 0) target_list[i + offset] = raw_target_list[i];
   }
   
   tArray<int> org_targets;
