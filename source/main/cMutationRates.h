@@ -64,6 +64,8 @@ private:
     double divide_slip_prob;          // Max one per divide
     double divide_uniform_prob;
     double parent_mut_prob;
+    double parent_ins_prob;
+    double parent_del_prob;
   };
   sDivideMuts divide;
   
@@ -135,8 +137,6 @@ public:
   }
 
   
-  bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }  
-  
   double DoMetaCopyMut(cAvidaContext& ctx) {
     if (meta.copy_mut_prob == 0.0 || !ctx.GetRandom().P(meta.copy_mut_prob)) return 1.0;
     const double exp = ctx.GetRandom().GetRandNormal() * meta.standard_dev;
@@ -171,6 +171,8 @@ public:
   double GetPointMutProb() const      { return point.mut_prob; }
   
   double GetParentMutProb() const     { return divide.parent_mut_prob; }
+  double GetParentInsProb() const     { return divide.parent_ins_prob; }
+  double GetParentDelProb() const     { return divide.parent_del_prob; }
   
   double GetInjectInsProb() const     { return inject.ins_prob; }
   double GetInjectDelProb() const     { return inject.del_prob; }
@@ -205,6 +207,8 @@ public:
   void SetPointMutProb(double in_prob)      { point.mut_prob        = in_prob; }
   
   void SetParentMutProb(double in_prob)     { divide.parent_mut_prob = in_prob; }
+  void SetParentInsProb(double in_prob)     { divide.parent_ins_prob = in_prob; }
+  void SetParentDelProb(double in_prob)     { divide.parent_del_prob = in_prob; }
   
   void SetInjectInsProb(double in_prob)     { inject.ins_prob        = in_prob; }
   void SetInjectDelProb(double in_prob)     { inject.del_prob        = in_prob; }

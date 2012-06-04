@@ -53,6 +53,8 @@ void cMutationRates::Setup(cWorld* world)
   divide.divide_slip_prob = world->GetConfig().DIVIDE_SLIP_PROB.Get();
   
   divide.parent_mut_prob = world->GetConfig().PARENT_MUT_PROB.Get();  
+  divide.parent_ins_prob = world->GetConfig().PARENT_INS_PROB.Get();
+  divide.parent_del_prob = world->GetConfig().PARENT_DEL_PROB.Get();
   
   point.ins_prob = world->GetConfig().POINT_INS_PROB.Get();
   point.del_prob = world->GetConfig().POINT_DEL_PROB.Get();
@@ -95,6 +97,8 @@ void cMutationRates::Clear()
   divide.divide_slip_prob = 0.0;
   
   divide.parent_mut_prob = 0.0;
+  divide.parent_ins_prob = 0.0;
+  divide.parent_del_prob = 0.0;
 
   point.ins_prob = 0.0;
   point.del_prob = 0.0;

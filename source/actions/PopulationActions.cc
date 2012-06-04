@@ -1929,7 +1929,7 @@ private:
     C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
     DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
     D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-    PARENT, DEATH,
+    P_MUT, P_INS, P_DEL, DEATH, PNT_MUT, PNT_INS, PNT_DEL,
     I_MUT, I_INS, I_DEL
   } m_mut_type;
   
@@ -1970,8 +1970,13 @@ public:
     else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
     else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
     
-    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "PARENT_MUT") m_mut_type = P_MUT;
+    else if (mutstr == "PARENT_INS") m_mut_type = P_INS;
+    else if (mutstr == "PARENT_DEL") m_mut_type = P_DEL;
     else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "POINT_MUT") m_mut_type = PNT_MUT;
+    else if (mutstr == "POINT_INS") m_mut_type = PNT_INS;
+    else if (mutstr == "POINT_DEL") m_mut_type = PNT_DEL;
     else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
     else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
     else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
@@ -2017,8 +2022,13 @@ public:
         case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(m_prob); break;
         case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(m_prob); break;
           
-        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_MUT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_INS: m_world->GetConfig().PARENT_INS_PROB.Set(m_prob); break;
+        case P_DEL: m_world->GetConfig().PARENT_DEL_PROB.Set(m_prob); break;
         case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
+        case PNT_MUT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+        case PNT_INS: m_world->GetConfig().POINT_INS_PROB.Set(m_prob); break;
+        case PNT_DEL: m_world->GetConfig().POINT_DEL_PROB.Set(m_prob); break;
         case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
         case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
         case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
@@ -2047,8 +2057,13 @@ public:
       case D1_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(m_prob); break;
       case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(m_prob); break;
         
-      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case P_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case P_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentInsProb(m_prob); break;
+      case P_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentDelProb(m_prob); break;
       case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(m_prob); break;
+      case PNT_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(m_prob); break;
+      case PNT_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointInsProb(m_prob); break;
+      case PNT_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointDelProb(m_prob); break;
       case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
       case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
       case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
@@ -2066,7 +2081,7 @@ private:
     C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
     DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
     D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-    PARENT, DEATH,
+    P_MUT, P_INS, P_DEL, DEATH, PNT_MUT, PNT_INS, PNT_DEL,
     I_MUT, I_INS, I_DEL
   } m_mut_type;
   
@@ -2106,8 +2121,13 @@ public:
     else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
     else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
     
-    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "PARENT_MUT") m_mut_type = P_MUT;
+    else if (mutstr == "PARENT_INS") m_mut_type = P_INS;
+    else if (mutstr == "PARENT_DEL") m_mut_type = P_DEL;
     else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "POINT_MUT") m_mut_type = PNT_MUT;
+    else if (mutstr == "POINT_INS") m_mut_type = PNT_INS;
+    else if (mutstr == "POINT_DEL") m_mut_type = PNT_DEL;
     else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
     else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
     else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
@@ -2153,8 +2173,13 @@ public:
       case D1_UNIFORM: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
       case D1_SLIP: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
         
-      case PARENT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
+      case P_MUT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
+      case P_INS: prob += m_world->GetConfig().PARENT_INS_PROB.Get(); break;
+      case P_DEL: prob += m_world->GetConfig().PARENT_DEL_PROB.Get(); break;
       case DEATH: prob += m_world->GetConfig().DEATH_PROB.Get(); break;
+      case PNT_MUT: prob += m_world->GetConfig().POINT_MUT_PROB.Get(); break;
+      case PNT_INS: prob += m_world->GetConfig().POINT_INS_PROB.Get(); break;
+      case PNT_DEL: prob += m_world->GetConfig().POINT_DEL_PROB.Get(); break;
       case I_MUT: prob += m_world->GetConfig().INJECT_MUT_PROB.Get(); break;
       case I_INS: prob += m_world->GetConfig().INJECT_INS_PROB.Get(); break;
       case I_DEL: prob += m_world->GetConfig().INJECT_DEL_PROB.Get(); break;
@@ -2184,8 +2209,13 @@ public:
         case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(prob); break;
         case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(prob); break;
           
-        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(prob); break;
-        case DEATH: m_world->GetConfig().DEATH_PROB.Set(prob); break;
+        case P_MUT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_INS: m_world->GetConfig().PARENT_INS_PROB.Set(m_prob); break;
+        case P_DEL: m_world->GetConfig().PARENT_DEL_PROB.Set(m_prob); break;
+        case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
+        case PNT_MUT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+        case PNT_INS: m_world->GetConfig().POINT_INS_PROB.Set(m_prob); break;
+        case PNT_DEL: m_world->GetConfig().POINT_DEL_PROB.Set(m_prob); break;
         case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(prob); break;
         case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(prob); break;
         case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(prob); break;
@@ -2214,8 +2244,13 @@ public:
       case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(prob); break;
         
         
-      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
+      case P_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
+      case P_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentInsProb(prob); break;
+      case P_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentDelProb(prob); break;
       case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(prob); break;
+      case PNT_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(prob); break;
+      case PNT_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointInsProb(prob); break;
+      case PNT_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointDelProb(prob); break;
       case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(prob); break;
       case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(prob); break;
       case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(prob); break;
