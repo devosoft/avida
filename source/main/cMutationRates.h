@@ -68,6 +68,14 @@ private:
   sDivideMuts divide;
   
   // ...at inject...
+  struct sPointMuts {
+    double ins_prob;        // Per site
+    double del_prob;        // Per site
+    double mut_prob;        // Per site
+  };
+  sPointMuts point;
+
+  // ...at inject...
   struct sInjectMuts {
     double ins_prob;        // Per site
     double del_prob;        // Per site
@@ -158,6 +166,10 @@ public:
   double GetDivideUniformProb() const { return divide.divide_uniform_prob; }
   double GetDivideSlipProb() const    { return divide.divide_slip_prob; }
   
+  double GetPointInsProb() const      { return point.ins_prob; }
+  double GetPointDelProb() const      { return point.del_prob; }
+  double GetPointMutProb() const      { return point.mut_prob; }
+  
   double GetParentMutProb() const     { return divide.parent_mut_prob; }
   
   double GetInjectInsProb() const     { return inject.ins_prob; }
@@ -187,6 +199,10 @@ public:
   void SetDivideDelProb(double in_prob)     { divide.divide_del_prob = in_prob; }
   void SetDivideUniformProb(double in_prob) { divide.divide_del_prob = in_prob; }
   void SetDivideSlipProb(double in_prob)    { divide.divide_del_prob = in_prob; }
+  
+  void SetPointInsProb(double in_prob)      { point.ins_prob        = in_prob; }
+  void SetPointDelProb(double in_prob)      { point.del_prob        = in_prob; }
+  void SetPointMutProb(double in_prob)      { point.mut_prob        = in_prob; }
   
   void SetParentMutProb(double in_prob)     { divide.parent_mut_prob = in_prob; }
   

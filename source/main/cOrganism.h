@@ -369,6 +369,10 @@ public:
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
   double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
   double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
+  
+  double GetPointInsProb() const { return m_mut_rates.GetPointInsProb(); }
+  double GetPointDelProb() const { return m_mut_rates.GetPointDelProb(); }
+  double GetPointMutProb() const { return m_mut_rates.GetPointMutProb(); }
 
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
   double GetDeathProb() const { return m_mut_rates.GetDeathProb();}

@@ -842,19 +842,91 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   return (!sterilize) && revert;
 }
 
-int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)
+int cHardwareBase::PointMutate(cAvidaContext& ctx, double override_mut_rate)
 {
-  cCPUMemory& memory = GetMemory();
-  const int num_muts = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);
+  const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+  const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
   
-  for (int i = 0; i < num_muts; i++) {
-    const int pos = ctx.GetRandom().GetUInt(memory.GetSize());
-    memory[pos] = m_inst_set->GetRandomInst(ctx);
-    memory.SetFlagMutated(pos);
-    memory.SetFlagPointMut(pos);
+  cCPUMemory& memory = GetMemory();
+  int totalMutations = 0;
+  
+//  const int num_muts = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);
+//  
+//  for (int i = 0; i < num_muts; i++) {
+//    const int pos = ctx.GetRandom().GetUInt(memory.GetSize());
+//    memory[pos] = m_inst_set->GetRandomInst(ctx);
+//    memory.SetFlagMutated(pos);
+//    memory.SetFlagPointMut(pos);
+//  }
+
+  
+  // Point Substitution Mutations (per site)
+  if (m_organism->GetPointMutProb() > 0.0 || override_mut_rate > 0.0) {
+    double mut_rate = (override_mut_rate > 0.0) ? override_mut_rate : m_organism->GetPointMutProb();
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);
+    
+    // If we have lines to mutate...
+    if (num_mut > 0) {
+      for (int i = 0; i < num_mut; i++) {
+        int site = ctx.GetRandom().GetUInt(memory.GetSize());
+        char before_mutation = memory[site].GetSymbol();
+        memory[site] = m_inst_set->GetRandomInst(ctx);
+        memory.GetMutationSteps().AddSubstitutionMutation(site, before_mutation, memory[site].GetSymbol());
+        totalMutations++;
+      }
+    }
   }
   
-  return num_muts;
+  // Point Insert Mutations (per site)
+  if (m_organism->GetPointInsProb() > 0.0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetPointInsProb());
+    
+    // If would make creature too big, insert up to max_genome_size
+    if (num_mut + memory.GetSize() > max_genome_size) {
+      num_mut = max_genome_size - memory.GetSize();
+    }
+    
+    // If we have lines to insert...
+    if (num_mut > 0) {
+      // Build a sorted list of the sites where mutations occured
+      tArray<int> mut_sites(num_mut);
+      for (int i = 0; i < num_mut; i++) mut_sites[i] = ctx.GetRandom().GetUInt(memory.GetSize() + 1);
+      tArrayUtils::QSort(mut_sites);
+      
+      // Actually do the mutations (in reverse sort order)
+      for (int i = mut_sites.GetSize() - 1; i >= 0; i--) {
+        memory.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
+        memory.GetMutationSteps().AddInsertionMutation(mut_sites[i], memory[mut_sites[i]].GetSymbol());
+      }
+      
+      totalMutations += num_mut;
+    }
+  }
+  
+  
+  // Point Deletion Mutations (per site)
+  if (m_organism->GetPointDelProb() > 0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetPointDelProb());
+    
+    // If would make creature too small, delete down to min_genome_size
+    if (memory.GetSize() - num_mut < min_genome_size) {
+      num_mut = memory.GetSize() - min_genome_size;
+    }
+    
+    // If we have lines to delete...
+    for (int i = 0; i < num_mut; i++) {
+      int site = ctx.GetRandom().GetUInt(memory.GetSize());
+      memory.GetMutationSteps().AddDeletionMutation(site, memory[site].GetSymbol());
+      memory.Remove(site);
+    }
+    
+    totalMutations += num_mut;
+  }
+  
+  
+  
+  
+  return totalMutations;
 }
 
 
