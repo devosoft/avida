@@ -31,12 +31,17 @@
 
 @interface AvidaAppDelegate : NSObject <NSApplicationDelegate> {
   NSMutableSet* windows;
+  
+  IBOutlet NSMenuItem* toggleRunMenuItem;
 }
 
 - (IBAction) newAvida:(id)sender;
 - (IBAction) newAvidaED:(id)sender;
 - (IBAction) openAvidaEDWorkspace:(id)sender;
 - (IBAction) duplicateAvidaEDWorkspace:(id)sender;
+
+
+@property (readonly) NSMenuItem* toggleRunMenuItem;
 
 
 // NSMenuValidation Informal Protocol

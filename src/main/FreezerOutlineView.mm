@@ -39,7 +39,7 @@
   
   imgConfig = [NSImage imageNamed:@"petri128empty.png"];
   imgGenome = [NSImage imageNamed:@"genome65.png"];
-  imgWorld = [NSImage imageNamed:@"petri128.png"];
+  imgWorld = [NSImage imageNamed:@"avida-ed-icon.png"];
 }
 
 

@@ -18,6 +18,7 @@
 		70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70178C7C14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm */; };
 		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
+		701F535C157FBDED00DAE5FA /* avida-ed-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 701F535B157FBDED00DAE5FA /* avida-ed-icon.png */; };
 		7026F1B21534D27F00480C8F /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */; };
 		702837E5155C58B300C733D2 /* AvidaED-ExportData.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */; };
 		702837E7155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */; };
@@ -60,6 +61,9 @@
 		70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */; };
 		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
 		70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */; };
+		70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */; };
+		70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
 		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
@@ -101,6 +105,7 @@
 		701BFFEF13CF305200838CC9 /* OrgColorBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgColorBox.h; sourceTree = "<group>"; };
 		701BFFF013CF305200838CC9 /* OrgColorBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgColorBox.m; sourceTree = "<group>"; };
 		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
+		701F535B157FBDED00DAE5FA /* avida-ed-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "avida-ed-icon.png"; sourceTree = "<group>"; };
 		7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtcmalloc-1.4.a"; path = "../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug/libtcmalloc-1.4.a"; sourceTree = "<group>"; };
 		702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportData.xib"; sourceTree = "<group>"; };
 		702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportGraphics-Population.xib"; sourceTree = "<group>"; };
@@ -171,6 +176,9 @@
 		70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismSettingsViewController.h; sourceTree = "<group>"; };
 		70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismSettingsViewController.m; sourceTree = "<group>"; };
 		70B0DA0E156ADFFF00D134AB /* Definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
+		70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AnaViewerIcon.png; sourceTree = "<group>"; };
+		70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OrgViewerIcon.png; sourceTree = "<group>"; };
+		70C2DB8515824EBA004B2423 /* PopViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PopViewerIcon.png; sourceTree = "<group>"; };
 		70D0455A13C6351D00E6E5AC /* NSString+Apto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Apto.h"; sourceTree = "<group>"; };
 		70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
@@ -278,6 +286,10 @@
 		703549981337A27400D3865C /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */,
+				70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */,
+				70C2DB8515824EBA004B2423 /* PopViewerIcon.png */,
+				701F535B157FBDED00DAE5FA /* avida-ed-icon.png */,
 				7015B89D14C883C60031B60B /* genome65.png */,
 				7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */,
 				7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */,
@@ -506,6 +518,10 @@
 				702837EB155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib in Resources */,
 				70E6073015658B0600E7AA82 /* AvidaED-AnalyzeView.xib in Resources */,
 				70E6073215658B2400E7AA82 /* AvidaED-OrganismView.xib in Resources */,
+				701F535C157FBDED00DAE5FA /* avida-ed-icon.png in Resources */,
+				70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */,
+				70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */,
+				70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -610,6 +626,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
 				WRAPPER_EXTENSION = app;
@@ -631,6 +648,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
 				WRAPPER_EXTENSION = app;

@@ -50,7 +50,6 @@
 
 static const float MAIN_SPLIT_LEFT_MIN = 140.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 710.0;
-static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
 static const float POP_SPLIT_LEFT_MIN = 350.0;
 static const float POP_SPLIT_RIGHT_MIN = 360.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
@@ -236,6 +235,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // update interface
   [txtRun setStringValue:[NSString stringWithAptoString:freezer->NameOf(freezerID)]];
   [btnRunState setTitle:@"Run"];
+  [[app toggleRunMenuItem] setTitle:@"Run"];
   
   double mutrate = [currentRun mutationRate];
   [sldCfgMutRate setFloatValue:(mutrate == 0) ? [sldCfgMutRate minValue] : log10(mutrate)];
@@ -510,6 +510,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) windowDidLoad {
   [mainSplitView replaceSubview:[[mainSplitView subviews] objectAtIndex:1] with:popView];
   [btnRunState setTitle:@"Run"];
+  [[app toggleRunMenuItem] setTitle:@"Run"];
   
   
   // Replace NSClipView of mapView's scrollView with a CenteringClipView
@@ -579,9 +580,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
     [currentRun resume];
     [btnRunState setTitle:@"Pause"];
+    [[app toggleRunMenuItem] setTitle:@"Pause"];
   } else {
     [currentRun pause];
     [btnRunState setTitle:@"Run"];
+    [[app toggleRunMenuItem] setTitle:@"Run"];
   }
 }
 
@@ -730,6 +733,17 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [btnMapSettingsFlip setTitle:@"Map"];
   }
 }
+
+
+- (IBAction) startNewRun:(id)sender {
+  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
+    if (freezer->NameOf(*it.Get()) == "@default") {
+      [self loadRunFromFreezer:(*it.Get())];
+      break;
+    }
+  }
+}
+
 
 
 - (IBAction) saveCurrentRun:(id)sender {
@@ -943,6 +957,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     if (curView == analyzeCtlr.view && [analyzeCtlr numPops] == 0) return NO;
   }
   
+  // @TODO - disable export graphics for now
+  if (item_action == @selector(exportGraphics:)) return NO;
+  
   return YES;
 }
 
@@ -958,14 +975,13 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     int diffWidth = newFrame.size.width - oldSize.width;
     
-    if (leftFrame.size.width <= MAIN_SPLIT_LEFT_MIN) {
+    if (leftFrame.size.width < MAIN_SPLIT_LEFT_MIN) {
       leftFrame.size.width = MAIN_SPLIT_LEFT_MIN;
       rightFrame.size.width = newFrame.size.width - dividerThickness - MAIN_SPLIT_LEFT_MIN;
-    } else if (rightFrame.size.width <= MAIN_SPLIT_RIGHT_MIN) {
+    } else if (rightFrame.size.width < MAIN_SPLIT_RIGHT_MIN) {
       leftFrame.size.width = newFrame.size.width - dividerThickness - MAIN_SPLIT_RIGHT_MIN;
       rightFrame.size.width = MAIN_SPLIT_RIGHT_MIN;
     } else {
-      leftFrame.size.width += diffWidth * MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE;
       rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
     }
     
@@ -1078,6 +1094,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   freezer = Avida::Viewer::FreezerPtr(NULL); // Force freezer cleanup
   [app removeWindow:self];
+}
+
+- (void) windowDidBecomeMain:(NSNotification*)notification {
+  [[app toggleRunMenuItem] setTitle:[btnRunState title]];
 }
 
 
@@ -1371,10 +1391,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
   if (curView == analyzeCtlr.view) {
-    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID] && [analyzePops count] < 4) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
-      AvidaEDAnalyzePopulation* pop = [[AvidaEDAnalyzePopulation alloc] initWithFreezerID:fid fromFreezer:freezer];
-      [analyzeCtlr addPop:pop];
+      if ([analyzeCtlr willAcceptPopWithFreezerID:fid]) {
+        AvidaEDAnalyzePopulation* pop = [[AvidaEDAnalyzePopulation alloc] initWithFreezerID:fid fromFreezer:freezer];
+        [analyzeCtlr addPop:pop];
+      }
     }
   } else if (curView == orgCtlr.view) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
@@ -1392,7 +1414,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 
-@synthesize analyzePops;
 @synthesize listener;
 @synthesize mapView;
 

@@ -122,6 +122,9 @@
 }
 
 
+@synthesize toggleRunMenuItem;
+
+
 - (BOOL) validateMenuItem:(NSMenuItem*)item {
   
   SEL item_action = [item action];

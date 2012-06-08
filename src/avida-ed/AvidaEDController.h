@@ -149,6 +149,8 @@
 - (IBAction) togglePopViewStatView:(id)sender;
 - (IBAction) toggleMapSettingsView:(id)sender;
 
+- (IBAction) startNewRun:(id)sender;
+
 - (IBAction) changeView:(id)sender;
 
 
@@ -186,7 +188,7 @@
 
 // NSWindowDelegate Protocol
 - (void) windowWillClose:(NSNotification*)notification;
-
+- (void) windowDidBecomeMain:(NSNotification*)notification;
 
 // NSOutlineViewDelegate Protocol
 - (BOOL)outlineView:(NSOutlineView*)outlineView shouldEditTableColumn:(NSTableColumn*)tableColumn item:(id)item;

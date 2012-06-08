@@ -83,6 +83,105 @@
 									<reference key="NSNextResponder" ref="845741461"/>
 									<int key="NSvFlags">268</int>
 									<array class="NSMutableArray" key="NSSubviews">
+										<object class="NSImageView" id="298503845">
+											<reference key="NSNextResponder" ref="680271190"/>
+											<int key="NSvFlags">268</int>
+											<set class="NSMutableSet" key="NSDragTypes">
+												<string>Apple PDF pasteboard type</string>
+												<string>Apple PICT pasteboard type</string>
+												<string>Apple PNG pasteboard type</string>
+												<string>NSFilenamesPboardType</string>
+												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+												<string>NeXT TIFF v4.0 pasteboard type</string>
+											</set>
+											<string key="NSFrame">{{8, 481}, {32, 32}}</string>
+											<reference key="NSSuperview" ref="680271190"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="507709569"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSImageCell" key="NSCell" id="396879911">
+												<int key="NSCellFlags">134217728</int>
+												<int key="NSCellFlags2">33554432</int>
+												<object class="NSCustomResource" key="NSContents">
+													<string key="NSClassName">NSImage</string>
+													<string key="NSResourceName">AnaViewerIcon</string>
+												</object>
+												<string key="NSCellIdentifier">_NS:9</string>
+												<int key="NSAlign">0</int>
+												<int key="NSScale">0</int>
+												<int key="NSStyle">0</int>
+												<bool key="NSAnimates">NO</bool>
+											</object>
+											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+											<bool key="NSEditable">YES</bool>
+										</object>
+										<object class="NSImageView" id="97597779">
+											<reference key="NSNextResponder" ref="680271190"/>
+											<int key="NSvFlags">268</int>
+											<set class="NSMutableSet" key="NSDragTypes">
+												<string>Apple PDF pasteboard type</string>
+												<string>Apple PICT pasteboard type</string>
+												<string>Apple PNG pasteboard type</string>
+												<string>NSFilenamesPboardType</string>
+												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+												<string>NeXT TIFF v4.0 pasteboard type</string>
+											</set>
+											<string key="NSFrame">{{8, 521}, {32, 32}}</string>
+											<reference key="NSSuperview" ref="680271190"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="775973520"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSImageCell" key="NSCell" id="114476050">
+												<int key="NSCellFlags">134217728</int>
+												<int key="NSCellFlags2">33554432</int>
+												<object class="NSCustomResource" key="NSContents">
+													<string key="NSClassName">NSImage</string>
+													<string key="NSResourceName">OrgViewerIcon</string>
+												</object>
+												<string key="NSCellIdentifier">_NS:9</string>
+												<int key="NSAlign">0</int>
+												<int key="NSScale">0</int>
+												<int key="NSStyle">0</int>
+												<bool key="NSAnimates">NO</bool>
+											</object>
+											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+											<bool key="NSEditable">YES</bool>
+										</object>
+										<object class="NSImageView" id="1067991234">
+											<reference key="NSNextResponder" ref="680271190"/>
+											<int key="NSvFlags">268</int>
+											<set class="NSMutableSet" key="NSDragTypes">
+												<string>Apple PDF pasteboard type</string>
+												<string>Apple PICT pasteboard type</string>
+												<string>Apple PNG pasteboard type</string>
+												<string>NSFilenamesPboardType</string>
+												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+												<string>NeXT TIFF v4.0 pasteboard type</string>
+											</set>
+											<string key="NSFrame">{{8, 559}, {32, 32}}</string>
+											<reference key="NSSuperview" ref="680271190"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="873070634"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSImageCell" key="NSCell" id="234926545">
+												<int key="NSCellFlags">134217728</int>
+												<int key="NSCellFlags2">33554432</int>
+												<object class="NSCustomResource" key="NSContents">
+													<string key="NSClassName">NSImage</string>
+													<string key="NSResourceName">PopViewerIcon</string>
+												</object>
+												<string key="NSCellIdentifier">_NS:9</string>
+												<int key="NSAlign">0</int>
+												<int key="NSScale">0</int>
+												<int key="NSStyle">0</int>
+												<bool key="NSAnimates">NO</bool>
+											</object>
+											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+											<bool key="NSEditable">YES</bool>
+										</object>
 										<object class="NSPathControl" id="284307147">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">290</int>
@@ -162,7 +261,7 @@
 										<object class="NSButton" id="507709569">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">266</int>
-											<string key="NSFrame">{{20, 496}, {116, 25}}</string>
+											<string key="NSFrame">{{48, 484}, {100, 25}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="87926504"/>
@@ -191,10 +290,10 @@
 										<object class="NSButton" id="775973520">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">266</int>
-											<string key="NSFrame">{{20, 526}, {116, 25}}</string>
+											<string key="NSFrame">{{48, 524}, {100, 25}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView" ref="507709569"/>
+											<reference key="NSNextKeyView" ref="298503845"/>
 											<string key="NSReuseIdentifierKey">_NS:287</string>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="340352431">
@@ -216,10 +315,10 @@
 										<object class="NSButton" id="873070634">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">266</int>
-											<string key="NSFrame">{{20, 556}, {116, 25}}</string>
+											<string key="NSFrame">{{48, 562}, {100, 25}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView" ref="775973520"/>
+											<reference key="NSNextKeyView" ref="97597779"/>
 											<string key="NSReuseIdentifierKey">_NS:287</string>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSButtonCell" key="NSCell" id="1067457234">
@@ -249,7 +348,7 @@
 														<object class="NSOutlineView" id="113176494">
 															<reference key="NSNextResponder" ref="112924072"/>
 															<int key="NSvFlags">4352</int>
-															<string key="NSFrameSize">{154, 435}</string>
+															<string key="NSFrameSize">{154, 428}</string>
 															<reference key="NSSuperview" ref="112924072"/>
 															<reference key="NSWindow"/>
 															<reference key="NSNextKeyView" ref="603438324"/>
@@ -341,7 +440,7 @@
 															<int key="NSTableViewGroupRowStyle">1</int>
 														</object>
 													</array>
-													<string key="NSFrame">{{1, 17}, {154, 435}}</string>
+													<string key="NSFrame">{{1, 17}, {154, 428}}</string>
 													<reference key="NSSuperview" ref="87926504"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="113176494"/>
@@ -390,7 +489,7 @@
 												</object>
 												<reference ref="281601392"/>
 											</array>
-											<string key="NSFrame">{{0, 27}, {156, 453}}</string>
+											<string key="NSFrame">{{0, 27}, {156, 446}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="793145023"/>
@@ -409,7 +508,7 @@
 									<string key="NSFrameSize">{156, 600}</string>
 									<reference key="NSSuperview" ref="845741461"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="873070634"/>
+									<reference key="NSNextKeyView" ref="1067991234"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 								<object class="NSCustomView" id="213448319">
@@ -536,7 +635,7 @@
 											<int key="NSCellFlags2">33554432</int>
 											<object class="NSCustomResource" key="NSContents">
 												<string key="NSClassName">NSImage</string>
-												<string key="NSResourceName">petri128</string>
+												<string key="NSResourceName">avida-ed-icon</string>
 											</object>
 											<int key="NSAlign">0</int>
 											<int key="NSScale">0</int>
@@ -549,7 +648,7 @@
 									<object class="NSTextField" id="549423778">
 										<reference key="NSNextResponder" ref="858432473"/>
 										<int key="NSvFlags">266</int>
-										<string key="NSFrame">{{45, 572}, {155, 17}}</string>
+										<string key="NSFrame">{{45, 572}, {298, 17}}</string>
 										<reference key="NSSuperview" ref="858432473"/>
 										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="862740091"/>
@@ -4014,10 +4113,13 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="object" ref="680271190"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="873070634"/>
-							<reference ref="775973520"/>
-							<reference ref="507709569"/>
 							<reference ref="284307147"/>
 							<reference ref="87926504"/>
+							<reference ref="1067991234"/>
+							<reference ref="97597779"/>
+							<reference ref="298503845"/>
+							<reference ref="507709569"/>
+							<reference ref="775973520"/>
 						</array>
 						<reference key="parent" ref="845741461"/>
 					</object>
@@ -5457,6 +5559,45 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="object" ref="1033223061"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">958</int>
+						<reference key="object" ref="1067991234"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="234926545"/>
+						</array>
+						<reference key="parent" ref="680271190"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">959</int>
+						<reference key="object" ref="234926545"/>
+						<reference key="parent" ref="1067991234"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">960</int>
+						<reference key="object" ref="97597779"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="114476050"/>
+						</array>
+						<reference key="parent" ref="680271190"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">961</int>
+						<reference key="object" ref="114476050"/>
+						<reference key="parent" ref="97597779"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">962</int>
+						<reference key="object" ref="298503845"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="396879911"/>
+						</array>
+						<reference key="parent" ref="680271190"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">963</int>
+						<reference key="object" ref="396879911"/>
+						<reference key="parent" ref="298503845"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5696,12 +5837,18 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="951.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="952.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="953.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="958.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="959.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="960.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="961.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="962.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="963.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">957</int>
+			<int key="maxID">963</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5766,6 +5913,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="saveCurrentConfig:">id</string>
 						<string key="saveCurrentRun:">id</string>
 						<string key="saveSelectedOrganism:">id</string>
+						<string key="startNewRun:">id</string>
 						<string key="toggleMapSettingsView:">id</string>
 						<string key="togglePopViewStatView:">id</string>
 						<string key="toggleRunState:">id</string>
@@ -5825,6 +5973,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 						<object class="IBActionInfo" key="saveSelectedOrganism:">
 							<string key="name">saveSelectedOrganism:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="startNewRun:">
+							<string key="name">startNewRun:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleMapSettingsView:">
@@ -6437,12 +6589,15 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="AnaViewerIcon">{32, 32}</string>
 			<string key="NSAddTemplate">{8, 8}</string>
 			<string key="NSMenuCheckmark">{11, 11}</string>
 			<string key="NSMenuMixedState">{10, 3}</string>
 			<string key="NSRemoveTemplate">{8, 8}</string>
 			<string key="NSSwitch">{15, 15}</string>
-			<string key="petri128">{128, 128}</string>
+			<string key="OrgViewerIcon">{32, 32}</string>
+			<string key="PopViewerIcon">{32, 32}</string>
+			<string key="avida-ed-icon">{150, 133}</string>
 		</dictionary>
 	</data>
 </archive>
