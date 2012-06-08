@@ -102,6 +102,7 @@ namespace Avida {
         
         *fs << "WORLD_X 60" << std::endl;
         *fs << "WORLD_Y 60" << std::endl;
+        *fs << "WORLD_GEOMETRY 1" << std::endl;
         *fs << "COPY_MUT_PROB 0.0075" << std::endl;
         *fs << "BIRTH_METHOD 0" << std::endl;
         *fs << "RANDOM_SEED 0" << std::endl;
@@ -616,6 +617,7 @@ namespace Avida {
         
         *fs << "WORLD_X " << world->GetConfig().WORLD_X.Get() << std::endl;
         *fs << "WORLD_Y " << world->GetConfig().WORLD_Y.Get() << std::endl;
+        *fs << "WORLD_GEOMETRY 1" << std::endl;
         *fs << "COPY_MUT_PROB " << world->GetConfig().COPY_MUT_PROB.Get() << std::endl;
         *fs << "BIRTH_METHOD " << world->GetConfig().BIRTH_METHOD.Get() << std::endl;
         *fs << "RANDOM_SEED " << world->GetConfig().RANDOM_SEED.Get() << std::endl;
