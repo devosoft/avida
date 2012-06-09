@@ -1028,10 +1028,14 @@ public:
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->GetProperty("name").AsString());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
-        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        
-        testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+
+        // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+        cRandom rng(0);
+        cAvidaContext ctx2(m_world, rng);
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+        testcpu->PrintGenome(ctx2, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
+        
         if (bg == it->Next()) break; // no more to check
         else bg = it->Next();
       }
@@ -1092,10 +1096,14 @@ public:
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->GetProperty("name").AsString());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
-        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        
-        testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+
+        // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+        cRandom rng(0);
+        cAvidaContext ctx2(m_world, rng);
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+        testcpu->PrintGenome(ctx2, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
+
         if (bg == it->Next()) break; // no more to check
         else bg = it->Next();
       }

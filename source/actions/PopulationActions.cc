@@ -1112,7 +1112,7 @@ public:
     if (largs.GetSize()) m_units_per = largs.PopWord().AsDouble();
   }
   
-  static const cString GetDescription() { return "Arguments: [double loss=0.0] [int res_id=1] [int units_per_adult=1.0]"; }
+  static const cString GetDescription() { return "Arguments: [double loss=0.0] [int res_id=1] [double units_per_adult=1.0]"; }
   
   void Process(cAvidaContext& ctx)
   {
