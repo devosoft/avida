@@ -307,43 +307,47 @@ public:
   
   // -------- Mutation config options --------
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutation rates");  
-  CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
+  CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Substitution rate (per copy)");
   CONFIG_ADD_VAR(COPY_INS_PROB, double, 0.0, "Insertion rate (per copy)");
   CONFIG_ADD_VAR(COPY_DEL_PROB, double, 0.0, "Deletion rate (per copy)");
-  CONFIG_ADD_VAR(COPY_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per copy)\n- Randomly apply insertion, deletion or point mutation");
+  CONFIG_ADD_VAR(COPY_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per copy)\n- Randomly apply insertion, deletion or substition mutation");
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
   
-  CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
+  CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Point (Cosmic-Ray) substitution rate (per-location per update)");
+  CONFIG_ADD_VAR(POINT_INS_PROB, double, 0.0, "Point (Cosmic-Ray) insertion rate (per-location per update)");
+  CONFIG_ADD_VAR(POINT_DEL_PROB, double, 0.0, "Point (Cosmic-Ray) deletion rate (per-location per update)");
   CONFIG_ADD_VAR(INST_POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per time instruction (point-mut) is executed)");
   CONFIG_ADD_VAR(INST_POINT_MUT_SLOPE, double, 0.0, "Slope for point mutation rate");
   CONFIG_ADD_VAR(INST_POINT_REPAIR_COST, int, 0, "The cost, in cycles, of avoiding mutations when the point-mut instruction is executed");
   CONFIG_ADD_VAR(POINT_MUT_REPAIR_START, int, 0, "The starting condition for repairs (on=1; off=0)");
 
   
-  CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
+  CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Substitution rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_INS_PROB, double, 0.0, "Insertion rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per site, applied on divide)\n- Randomly apply insertion, deletion or point mutation");
   CONFIG_ADD_VAR(DIV_SLIP_PROB, double, 0.0, "Slip rate (per site, applied on divide)");
   
-  CONFIG_ADD_VAR(DIVIDE_MUT_PROB, double, 0.0, "Mutation rate (max one, per divide)");
+  CONFIG_ADD_VAR(DIVIDE_MUT_PROB, double, 0.0, "Substitution rate (max one, per divide)");
   CONFIG_ADD_VAR(DIVIDE_INS_PROB, double, 0.05, "Insertion rate (max one, per divide)");
   CONFIG_ADD_VAR(DIVIDE_DEL_PROB, double, 0.05, "Deletion rate (max one, per divide)");
   CONFIG_ADD_VAR(DIVIDE_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per divide)\n- Randomly apply insertion, deletion or point mutation");
   CONFIG_ADD_VAR(DIVIDE_SLIP_PROB, double, 0.0, "Slip rate (per divide) - creates large deletions/duplications");
   
-  CONFIG_ADD_VAR(DIVIDE_POISSON_MUT_MEAN, double, 0.0, "Mutation rate (Poisson distributed, per divide)");
+  CONFIG_ADD_VAR(DIVIDE_POISSON_MUT_MEAN, double, 0.0, "Substitution rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_INS_MEAN, double, 0.0, "Insertion rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_DEL_MEAN, double, 0.0, "Deletion rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_SLIP_MEAN, double, 0.0, "Slip rate (Poisson distributed, per divide)");
     
+  CONFIG_ADD_VAR(INJECT_MUT_PROB, double, 0.0, "Substitution rate (per site, applied on inject)");
   CONFIG_ADD_VAR(INJECT_INS_PROB, double, 0.0, "Insertion rate (per site, applied on inject)");
   CONFIG_ADD_VAR(INJECT_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on inject)");
-  CONFIG_ADD_VAR(INJECT_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on inject)");
   
   CONFIG_ADD_VAR(SLIP_FILL_MODE, int, 0, "Fill insertions from slip mutations with:\n0 = Duplication\n1 = nop-X\n2 = Random\n3 = scrambled\n4 = nop-C");
   CONFIG_ADD_VAR(SLIP_COPY_MODE, int, 0, "How to handle 'on-copy' slip mutations:\n0 = actual read head slip\n1 = instant large mutation (obeys slip mode)");
-  CONFIG_ADD_VAR(PARENT_MUT_PROB, double, 0.0, "Per-site, in parent, on divide");
+  CONFIG_ADD_VAR(PARENT_MUT_PROB, double, 0.0, "Parent substitution rate (per-site, applied on divide)");
+  CONFIG_ADD_VAR(PARENT_INS_PROB, double, 0.0, "Parent insertion rate (per-site, applied on divide)");
+  CONFIG_ADD_VAR(PARENT_DEL_PROB, double, 0.0, "Parent deletion rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(SPECIAL_MUT_LINE, int, -1, "If this is >= 0, ONLY this line is mutated");
   CONFIG_ADD_VAR(META_COPY_MUT, double, 0.0, "Prob. of copy mutation rate changing (per gen)");
   CONFIG_ADD_VAR(META_STD_DEV, double, 0.0, "Standard deviation of meta mutation size.");

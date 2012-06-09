@@ -53,7 +53,13 @@ void cMutationRates::Setup(cWorld* world)
   divide.divide_slip_prob = world->GetConfig().DIVIDE_SLIP_PROB.Get();
   
   divide.parent_mut_prob = world->GetConfig().PARENT_MUT_PROB.Get();  
+  divide.parent_ins_prob = world->GetConfig().PARENT_INS_PROB.Get();
+  divide.parent_del_prob = world->GetConfig().PARENT_DEL_PROB.Get();
   
+  point.ins_prob = world->GetConfig().POINT_INS_PROB.Get();
+  point.del_prob = world->GetConfig().POINT_DEL_PROB.Get();
+  point.mut_prob = world->GetConfig().POINT_MUT_PROB.Get();
+
   inject.ins_prob = world->GetConfig().INJECT_INS_PROB.Get();
   inject.del_prob = world->GetConfig().INJECT_DEL_PROB.Get();
   inject.mut_prob = world->GetConfig().INJECT_MUT_PROB.Get();
@@ -91,7 +97,13 @@ void cMutationRates::Clear()
   divide.divide_slip_prob = 0.0;
   
   divide.parent_mut_prob = 0.0;
+  divide.parent_ins_prob = 0.0;
+  divide.parent_del_prob = 0.0;
 
+  point.ins_prob = 0.0;
+  point.del_prob = 0.0;
+  point.mut_prob = 0.0;
+  
   inject.ins_prob = 0.0;
   inject.del_prob = 0.0;
   inject.mut_prob = 0.0;
@@ -104,38 +116,10 @@ void cMutationRates::Clear()
 
 void cMutationRates::Copy(const cMutationRates& in_muts)
 {
-  copy.mut_prob = in_muts.copy.mut_prob;
-  copy.ins_prob = in_muts.copy.ins_prob;
-  copy.del_prob = in_muts.copy.del_prob;
-  copy.uniform_prob = in_muts.copy.uniform_prob;
-  copy.slip_prob = in_muts.copy.slip_prob;
-  
-  divide.ins_prob = in_muts.divide.ins_prob;
-  divide.del_prob = in_muts.divide.del_prob;
-  divide.mut_prob = in_muts.divide.mut_prob;
-  divide.uniform_prob = in_muts.divide.uniform_prob;
-  divide.slip_prob = in_muts.divide.slip_prob;
-  
-  divide.divide_mut_prob = in_muts.divide.divide_mut_prob;
-  divide.divide_ins_prob = in_muts.divide.divide_ins_prob;
-  divide.divide_del_prob = in_muts.divide.divide_del_prob;
-  
-  divide.divide_poisson_mut_mean = in_muts.divide.divide_poisson_mut_mean;
-  divide.divide_poisson_ins_mean = in_muts.divide.divide_poisson_ins_mean;
-  divide.divide_poisson_del_mean = in_muts.divide.divide_poisson_del_mean;
-  divide.divide_poisson_slip_mean = in_muts.divide.divide_poisson_slip_mean;
-
-  divide.divide_uniform_prob = in_muts.divide.divide_uniform_prob;
-  divide.divide_slip_prob = in_muts.divide.divide_slip_prob;
-  
-  divide.parent_mut_prob = in_muts.divide.parent_mut_prob;
-  
-  inject.ins_prob = in_muts.inject.ins_prob;
-  inject.del_prob = in_muts.inject.del_prob;
-  inject.mut_prob = in_muts.inject.mut_prob;
-  
-  meta.copy_mut_prob = in_muts.meta.copy_mut_prob;
-  meta.standard_dev = in_muts.meta.standard_dev;
-
-  update.death_prob = in_muts.update.death_prob;
+  copy = in_muts.copy;
+  divide = in_muts.divide;
+  point = in_muts.point;
+  inject = in_muts.inject;
+  meta = in_muts.meta;
+  update = in_muts.update;
 }

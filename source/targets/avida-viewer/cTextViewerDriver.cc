@@ -60,7 +60,9 @@ void cTextViewerDriver::Run()
   cStats& stats = m_world->GetStats();
   
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
-  const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
+  const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get() +
+                                m_world->GetConfig().POINT_INS_PROB.Get() +
+                                m_world->GetConfig().POINT_DEL_PROB.Get();
   
   cAvidaContext ctx(m_world, m_world->GetRandom());
   ctx.EnableOrgFaultReporting();
@@ -139,7 +141,7 @@ void cTextViewerDriver::Run()
     if (point_mut_prob > 0 ) {
       for (int i = 0; i < population.GetSize(); i++) {
         if (population.GetCell(i).IsOccupied()) {
-          population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx, point_mut_prob);
+          population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx);
         }
       }
     }

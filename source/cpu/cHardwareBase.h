@@ -206,7 +206,7 @@ public:
   
     
   // --------  Mutation  --------
-  virtual int PointMutate(cAvidaContext& ctx, const double mut_rate);
+  virtual int PointMutate(cAvidaContext& ctx, double override_mut_rate = 0.0);
 
   
   // --------  Input/Output Buffers  --------

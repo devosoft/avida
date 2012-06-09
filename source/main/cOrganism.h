@@ -352,7 +352,6 @@ public:
   bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
   bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); } 
 
-  bool TestParentMut(cAvidaContext& ctx) const { return m_mut_rates.TestParentMut(ctx); }
   bool TestDeath(cAvidaContext& ctx) const { return m_mut_rates.TestDeath(ctx); }
 
   double GetCopyMutProb() const { return m_mut_rates.GetCopyMutProb(); }
@@ -369,8 +368,15 @@ public:
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
   double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
   double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
+  
+  double GetPointInsProb() const { return m_mut_rates.GetPointInsProb(); }
+  double GetPointDelProb() const { return m_mut_rates.GetPointDelProb(); }
+  double GetPointMutProb() const { return m_mut_rates.GetPointMutProb(); }
 
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
+  double GetParentInsProb() const { return m_mut_rates.GetParentInsProb();}
+  double GetParentDelProb() const { return m_mut_rates.GetParentDelProb();}
+
   double GetDeathProb() const { return m_mut_rates.GetDeathProb();}
 
   double GetInjectInsProb() const { return m_mut_rates.GetInjectInsProb(); }
