@@ -229,6 +229,7 @@ protected:
 };
 
 
+
 void RegisterDriverActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionExit>("Exit");
