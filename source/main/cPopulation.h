@@ -82,6 +82,9 @@ private:
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
+  bool use_micro_traces;
+  int m_next_prey_q;
+  int m_next_pred_q;
   
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
@@ -239,9 +242,15 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes);
-  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes);
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
   void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  tSmartArray<int> SetRandomTraceQ(int max_samples);
+  tSmartArray<int> SetRandomPreyTraceQ(int max_samples);
+  tSmartArray<int> SetRandomPredTraceQ(int max_samples);
+  void SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro);
+  void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
+  tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
@@ -319,8 +328,11 @@ public:
   
   // Let users change Gradient Resource variables during the run JW
   void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientPlatInflow(const cString res_name, const double inflow);
+  void UpdateGradientPlatOutflow(const cString res_name, const double outflow);
+  void UpdateGradientConeInflow(const cString res_name, const double inflow);
+  void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
-  void UpdateGradientOutflow(const cString res_name, const double outflow);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
@@ -394,12 +406,13 @@ private:
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset=false); 
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype = NULL, int lineage_label=0, bool reset = false); 
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  
   void TestForMiniTrace(cOrganism* in_organism);
   void SetupMiniTrace(cOrganism* in_organism);
   void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);

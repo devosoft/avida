@@ -213,6 +213,10 @@ public:
   int GetAVFacedDataOrgID(int av_num = 0) { return -1; }
   int GetAVFacedDataUpdate(int av_num = 0) { return -1; }
   int GetAVFacedDataTerritory(int av_num = 0) { return -1; }
+  int GetAVData(int av_num = 0) { return -1; }
+  int GetAVDataOrgID(int av_num = 0) { return -1; }
+  int GetAVDataUpdate(int av_num = 0) { return -1; }
+  int GetAVDataTerritory(int av_num = 0) { return -1; }
   int FindAV(bool input, bool output, int av_num = 0) { return -1; }
   void SetAVFacing(int av_facing, int av_num = 0) { ; }
   bool SetAVCellID(int av_cell_id, int av_num = 0) { return false; }

@@ -4053,28 +4053,34 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
    */
   if (probabilistic) {
     double success_chance = res_count[bin_used] / double(m_world->GetConfig().COLLECT_PROB_DIVISOR.Get());
-    if (success_chance < ctx.GetRandom().GetDouble())
-    { return false; }  // we define not collecting as failure
+    if (success_chance < ctx.GetRandom().GetDouble()) { 
+      return false; 
+    }  // we define not collecting as failure
   }
   
   // Collect a unit (if possible) or some ABSORB_RESOURCE_FRACTION
   if (unit) {
-    if (res_count[bin_used] >= 1.0) {res_change[bin_used] = -1.0;}
-    else {return false;}  // failure: not enough to collect
+    if (res_count[bin_used] >= 1.0) {
+      res_change[bin_used] = -1.0;
+    }
+    else {
+      return false;
+    }  // failure: not enough to collect
   }
   else {
     res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
   }
 
-  if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
-  { m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]); }
+  if (internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max)) { 
+    m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]); 
+  }
   
-  if(!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max))
-  {res_change[bin_used] = 0.0;}
+  if (!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max)) {
+    res_change[bin_used] = 0.0;
+  }
 
   // Update resource counts to reflect res_change
   m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
-  
   return true;
 }
 
@@ -4518,7 +4524,6 @@ bool cHardwareCPU::Inst_IfFacedBeggarANdNeedsResourceThenDonate(cAvidaContext& c
       {   
         target->AddToRBin (resource, 1);
         
-        bool is_kin = false;
         cBioGroup* bg = m_organism->GetBioGroup("genotype");
         if (bg) {
           cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
@@ -4552,7 +4557,6 @@ bool cHardwareCPU::Inst_FailIfEmpty(cAvidaContext& ctx)
   }
   return false;
 }
-
 
 bool cHardwareCPU::Inst_SetBeggar(cAvidaContext& ctx)
 {

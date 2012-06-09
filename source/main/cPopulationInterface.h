@@ -288,6 +288,10 @@ public:
   int GetAVFacedDataOrgID(int av_num = 0);
   int GetAVFacedDataUpdate(int av_num = 0);
   int GetAVFacedDataTerritory(int av_num = 0);
+  int GetAVData(int av_num = 0);
+  int GetAVDataOrgID(int av_num = 0);
+  int GetAVDataUpdate(int av_num = 0);
+  int GetAVDataTerritory(int av_num = 0);
   int FindAV(bool input, bool output, int av_num = 0);
   void SetAVFacing(int av_facing, int av_num = 0);
   bool SetAVCellID(int av_cell_id, int av_num = 0);

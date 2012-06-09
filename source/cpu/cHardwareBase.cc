@@ -48,7 +48,7 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str), m_microtrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts()) , m_has_energy_costs(m_inst_set->HasEnergyCosts())
 , m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
@@ -71,7 +71,7 @@ cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* in
 void cHardwareBase::Reset(cAvidaContext& ctx)
 {
   m_organism->HardwareReset(ctx);
-  
+  m_microtracer.Resize(0);
   m_inst_cost = 0;
   m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
   m_active_thread_costs.SetAll(0);
@@ -445,17 +445,72 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
       }
     }
   }
+    
   
-  // Mutations in the parent's genome
-  if (m_organism->GetParentMutProb() > 0 && totalMutations < maxmut) {
-    for (int i = 0; i < GetMemory().GetSize(); i++) {
-      if (m_organism->TestParentMut(ctx)) {
-        GetMemory()[i] = m_inst_set->GetRandomInst(ctx);
-        totalMutations++; //Unlike the others we can't be sure this was done only on divide -- AWC 06/29/06
-        
+  cCPUMemory& memory = GetMemory();
+
+  // Parent Substitution Mutations (per site)
+  if (m_organism->GetParentMutProb() > 0.0 && totalMutations < maxmut) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetParentMutProb());
+    
+    // If we have lines to mutate...
+    if (num_mut > 0) {
+      for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
+        int site = ctx.GetRandom().GetUInt(memory.GetSize());
+        char before_mutation = memory[site].GetSymbol();
+        memory[site] = m_inst_set->GetRandomInst(ctx);
+        memory.GetMutationSteps().AddSubstitutionMutation(site, before_mutation, memory[site].GetSymbol());
+        totalMutations++;
       }
     }
   }
+  
+  // Parent Insert Mutations (per site)
+  if (m_organism->GetParentInsProb() > 0.0 && totalMutations < maxmut) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetParentInsProb());
+    
+    // If would make creature too big, insert up to max_genome_size
+    if (num_mut + memory.GetSize() > max_genome_size) {
+      num_mut = max_genome_size - memory.GetSize();
+    }
+    
+    // If we have lines to insert...
+    if (num_mut > 0) {
+      // Build a sorted list of the sites where mutations occured
+      tArray<int> mut_sites(num_mut);
+      for (int i = 0; i < num_mut; i++) mut_sites[i] = ctx.GetRandom().GetUInt(memory.GetSize() + 1);
+      tArrayUtils::QSort(mut_sites);
+      
+      // Actually do the mutations (in reverse sort order)
+      for (int i = mut_sites.GetSize() - 1; i >= 0; i--) {
+        memory.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
+        memory.GetMutationSteps().AddInsertionMutation(mut_sites[i], memory[mut_sites[i]].GetSymbol());
+      }
+      
+      totalMutations += num_mut;
+    }
+  }
+  
+  
+  // Parent Deletion Mutations (per site)
+  if (m_organism->GetParentDelProb() > 0 && totalMutations < maxmut) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetParentDelProb());
+    
+    // If would make creature too small, delete down to min_genome_size
+    if (memory.GetSize() - num_mut < min_genome_size) {
+      num_mut = memory.GetSize() - min_genome_size;
+    }
+    
+    // If we have lines to delete...
+    for (int i = 0; i < num_mut; i++) {
+      int site = ctx.GetRandom().GetUInt(memory.GetSize());
+      memory.GetMutationSteps().AddDeletionMutation(site, memory[site].GetSymbol());
+      memory.Remove(site);
+    }
+    
+    totalMutations += num_mut;
+  }
+
   
   return totalMutations;
 }
@@ -842,19 +897,91 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   return (!sterilize) && revert;
 }
 
-int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)
+int cHardwareBase::PointMutate(cAvidaContext& ctx, double override_mut_rate)
 {
-  cCPUMemory& memory = GetMemory();
-  const int num_muts = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);
+  const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+  const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
   
-  for (int i = 0; i < num_muts; i++) {
-    const int pos = ctx.GetRandom().GetUInt(memory.GetSize());
-    memory[pos] = m_inst_set->GetRandomInst(ctx);
-    memory.SetFlagMutated(pos);
-    memory.SetFlagPointMut(pos);
+  cCPUMemory& memory = GetMemory();
+  int totalMutations = 0;
+  
+//  const int num_muts = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);
+//  
+//  for (int i = 0; i < num_muts; i++) {
+//    const int pos = ctx.GetRandom().GetUInt(memory.GetSize());
+//    memory[pos] = m_inst_set->GetRandomInst(ctx);
+//    memory.SetFlagMutated(pos);
+//    memory.SetFlagPointMut(pos);
+//  }
+
+  
+  // Point Substitution Mutations (per site)
+  if (m_organism->GetPointMutProb() > 0.0 || override_mut_rate > 0.0) {
+    double mut_rate = (override_mut_rate > 0.0) ? override_mut_rate : m_organism->GetPointMutProb();
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), mut_rate);
+    
+    // If we have lines to mutate...
+    if (num_mut > 0) {
+      for (int i = 0; i < num_mut; i++) {
+        int site = ctx.GetRandom().GetUInt(memory.GetSize());
+        char before_mutation = memory[site].GetSymbol();
+        memory[site] = m_inst_set->GetRandomInst(ctx);
+        memory.GetMutationSteps().AddSubstitutionMutation(site, before_mutation, memory[site].GetSymbol());
+        totalMutations++;
+      }
+    }
   }
   
-  return num_muts;
+  // Point Insert Mutations (per site)
+  if (m_organism->GetPointInsProb() > 0.0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetPointInsProb());
+    
+    // If would make creature too big, insert up to max_genome_size
+    if (num_mut + memory.GetSize() > max_genome_size) {
+      num_mut = max_genome_size - memory.GetSize();
+    }
+    
+    // If we have lines to insert...
+    if (num_mut > 0) {
+      // Build a sorted list of the sites where mutations occured
+      tArray<int> mut_sites(num_mut);
+      for (int i = 0; i < num_mut; i++) mut_sites[i] = ctx.GetRandom().GetUInt(memory.GetSize() + 1);
+      tArrayUtils::QSort(mut_sites);
+      
+      // Actually do the mutations (in reverse sort order)
+      for (int i = mut_sites.GetSize() - 1; i >= 0; i--) {
+        memory.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
+        memory.GetMutationSteps().AddInsertionMutation(mut_sites[i], memory[mut_sites[i]].GetSymbol());
+      }
+      
+      totalMutations += num_mut;
+    }
+  }
+  
+  
+  // Point Deletion Mutations (per site)
+  if (m_organism->GetPointDelProb() > 0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetPointDelProb());
+    
+    // If would make creature too small, delete down to min_genome_size
+    if (memory.GetSize() - num_mut < min_genome_size) {
+      num_mut = memory.GetSize() - min_genome_size;
+    }
+    
+    // If we have lines to delete...
+    for (int i = 0; i < num_mut; i++) {
+      int site = ctx.GetRandom().GetUInt(memory.GetSize());
+      memory.GetMutationSteps().AddDeletionMutation(site, memory[site].GetSymbol());
+      memory.Remove(site);
+    }
+    
+    totalMutations += num_mut;
+  }
+  
+  
+  
+  
+  return totalMutations;
 }
 
 
@@ -1158,6 +1285,18 @@ void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, cons
   m_minitracer = minitracer; 
   m_minitrace_file = filename;
   SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id, genotype);
+}
+
+void cHardwareBase::RecordMicroTrace(const cInstruction& cur_inst)
+{
+  m_microtracer.Push(cur_inst.GetSymbol());
+}
+
+void cHardwareBase::PrintMicroTrace(int gen_id)
+{
+  if (m_microtrace) {
+    m_world->GetStats().PrintMicroTraces(m_microtracer, m_organism->GetPhenotype().GetUpdateBorn(), m_organism->GetID(), m_organism->GetForageTarget(), gen_id);
+  }
 }
 
 void cHardwareBase::DeleteMiniTrace()

@@ -58,6 +58,8 @@ class cOrgSinkMessage;
 class cSaleItem;
 class cStateGrid;
 
+struct sOrgDisplay;
+
 using namespace Avida;
 
 
@@ -79,6 +81,10 @@ private:
   int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
 
   int m_org_list_index;
+  
+  sOrgDisplay* m_org_display;
+  sOrgDisplay* m_queued_display_data;
+  bool m_display;
   
   // Other stats
   Genome m_offspring_genome;              // Child genome, while under construction.
@@ -124,7 +130,6 @@ private:
   };
   cNetSupport* m_net;
 
-
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
   cOrganism& operator=(const cOrganism&); // @not_implemented
@@ -156,7 +161,6 @@ public:
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
   void NewTrial();
-
 
   // --------  Accessor Methods  --------
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
@@ -213,6 +217,17 @@ public:
 
   inline void SetOrgIndex(int index) { m_org_list_index = index; }
   inline int GetOrgIndex() { return m_org_list_index; }
+  
+  // Org displaying
+  inline void ActivateDisplay() { m_display = true; }
+  inline void KillDisplay() { m_display = false; } 
+  inline bool IsDisplaying() { return m_display; }
+  inline void SetOrgDisplay(sOrgDisplay* org_display) { m_org_display = org_display; }
+  inline void SetPotentialDisplay(sOrgDisplay* new_data) { m_queued_display_data = new_data; }
+  bool UpdateOrgDisplay();
+  inline sOrgDisplay* GetOrgDisplayData() { return m_org_display; }
+  inline sOrgDisplay* GetPotentialDisplayData() { return m_queued_display_data; }
+  void SetSimpDisplay(int display_part, int value);
   
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
@@ -276,7 +291,6 @@ public:
   void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
   void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 
-
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
   void DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);
@@ -297,11 +311,9 @@ public:
   void ResetInput() {m_input_pointer = 0; m_input_buf.Clear(); };
   void AddOutput(int val) { m_output_buf.Add(val); }
 
-
   // --------  Divide Methods  --------
   bool Divide_CheckViable(cAvidaContext& ctx);
   bool ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype = 0);
-
 
   // --------  Networking Support  --------
   void NetGet(cAvidaContext& ctx, int& value, int& seq);
@@ -313,7 +325,6 @@ public:
   int NetLast() { return m_net->last_seq; }
   bool NetIsValid() { if (m_net) return m_net->valid; else return false; }
   int NetCompleted() { if (m_net) return m_net->completed; else return 0; }
-
 
   // --------  Parasite Interactions  --------
   bool InjectParasite(cBioUnit* parent, const cString& label, const Sequence& genome);
@@ -341,7 +352,6 @@ public:
   bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
   bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); } 
 
-  bool TestParentMut(cAvidaContext& ctx) const { return m_mut_rates.TestParentMut(ctx); }
   bool TestDeath(cAvidaContext& ctx) const { return m_mut_rates.TestDeath(ctx); }
 
   double GetCopyMutProb() const { return m_mut_rates.GetCopyMutProb(); }
@@ -358,14 +368,20 @@ public:
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
   double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
   double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
+  
+  double GetPointInsProb() const { return m_mut_rates.GetPointInsProb(); }
+  double GetPointDelProb() const { return m_mut_rates.GetPointDelProb(); }
+  double GetPointMutProb() const { return m_mut_rates.GetPointMutProb(); }
 
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
+  double GetParentInsProb() const { return m_mut_rates.GetParentInsProb();}
+  double GetParentDelProb() const { return m_mut_rates.GetParentDelProb();}
+
   double GetDeathProb() const { return m_mut_rates.GetDeathProb();}
 
   double GetInjectInsProb() const { return m_mut_rates.GetInjectInsProb(); }
   double GetInjectDelProb() const { return m_mut_rates.GetInjectDelProb(); }
   double GetInjectMutProb() const { return m_mut_rates.GetInjectMutProb(); }
-
 
   // --------  Configuration Convenience Methods  --------
   bool GetTestOnDivide() const;

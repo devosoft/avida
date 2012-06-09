@@ -409,7 +409,7 @@ private:
   cDoubleSum sum_female_creature_age;
   cDoubleSum sum_female_generation;
   cDoubleSum sum_female_size;
-  
+    
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -952,6 +952,8 @@ public:
   void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
   void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
+  void PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
+  
   // deme predicate stats
   void IncEventCount(int x, int y);
   void IncPredSat(int cell_id);

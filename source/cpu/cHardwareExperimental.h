@@ -518,6 +518,7 @@ private:
 
   // Movement and Navigation 
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_JuvMove(cAvidaContext& ctx);
   bool Inst_RangeMove(cAvidaContext& ctx);
   bool Inst_RangePredMove(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
@@ -539,6 +540,7 @@ private:
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
+  bool Inst_RotateDir(cAvidaContext& ctx);
   bool Inst_RotateOrgID(cAvidaContext& ctx);
   bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
@@ -570,13 +572,22 @@ private:
   bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
   bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
+  bool Inst_CollectEdible(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
-
-  bool Inst_SetOpinion(cAvidaContext& ctx);
-  bool Inst_GetOpinion(cAvidaContext& ctx);
+  bool Inst_DepositResource(cAvidaContext& ctx);
+  bool Inst_DepositSpecific(cAvidaContext& ctx);
+  bool Inst_DepositAllAsSpecific(cAvidaContext& ctx);
+  bool Inst_NopDepositResource(cAvidaContext& ctx);
+  bool Inst_NopDepositSpecific(cAvidaContext& ctx);    
+  bool Inst_NopDepositAllAsSpecific(cAvidaContext& ctx);
+  bool Inst_NopCollectEdible(cAvidaContext& ctx);
+  bool Inst_GetResStored(cAvidaContext& ctx);
+  bool Inst_GetSpecificStored(cAvidaContext& ctx);
 
   // Groups 
+  bool Inst_SetOpinion(cAvidaContext& ctx);
+  bool Inst_GetOpinion(cAvidaContext& ctx);
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_ChangePredGroup(cAvidaContext& ctx); 
   bool Inst_MakePredGroup(cAvidaContext& ctx); 
@@ -615,6 +626,7 @@ private:
   bool Inst_KillPred(cAvidaContext& ctx); 
   bool Inst_FightPred(cAvidaContext& ctx); 
   bool Inst_MarkCell(cAvidaContext& ctx); 
+  bool Inst_MarkGroupCell(cAvidaContext& ctx); 
   bool Inst_MarkPredCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedCell(cAvidaContext& ctx); 
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
@@ -622,6 +634,15 @@ private:
   bool Inst_LearnParent(cAvidaContext& ctx);
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
+  bool Inst_ActivateDisplay(cAvidaContext& ctx);
+  bool Inst_UpdateDisplay(cAvidaContext& ctx);
+  bool Inst_ModifyDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSeenDisplay(cAvidaContext& ctx);
+  bool Inst_KillDisplay(cAvidaContext& ctx);
+  
+  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
+  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
+
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   
@@ -632,6 +653,7 @@ public:
   bool Inst_CollectCellData(cAvidaContext& ctx);
   bool Inst_IfCellDataChanged(cAvidaContext& ctx);
   bool Inst_ReadCellData(cAvidaContext& ctx);
+  bool Inst_ReadGroupCell(cAvidaContext& ctx);
 
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {
@@ -648,6 +670,10 @@ public:
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  
+  void InjureOrg(cOrganism* target, double injury);
+  void MakePred();
+  bool TestAttack(cAvidaContext& ctx);
 };
 
 

@@ -32,6 +32,7 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
+#include "cOrgSensor.h"
 #include "cOrgSinkMessage.h"
 #include "cPopulationCell.h"
 #include "cStateGrid.h"
@@ -60,6 +61,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_lineage_label(-1)
 , m_lineage(NULL)
 , m_org_list_index(-1)
+, m_org_display(NULL)
+, m_queued_display_data(NULL)
+, m_display(false)
 , m_input_pointer(0)
 , m_input_buf(world->GetEnvironment().GetInputSize())
 , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -150,7 +154,9 @@ cOrganism::~cOrganism()
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
   for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
-  if(m_neighborhood) delete m_neighborhood;
+  if (m_neighborhood) delete m_neighborhood;
+  delete m_org_display;
+  delete m_queued_display_data;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
@@ -188,12 +194,45 @@ double cOrganism::GetVitality() const {
   return vitality;
 }
 
+bool cOrganism::UpdateOrgDisplay() { 
+  if (m_queued_display_data != NULL) {
+    delete m_org_display;
+    m_org_display = m_queued_display_data; 
+    m_queued_display_data = NULL; 
+    return true;
+  }
+  else return false;
+}
+
+void cOrganism::SetSimpDisplay(int display_part, int value)
+{
+  if (m_org_display == NULL) {
+    m_org_display = new sOrgDisplay;
+    m_display = true;
+    m_org_display->distance = -99;
+    m_org_display->direction = -99;
+    m_org_display->value = -99;
+    m_org_display->message = -99;
+
+  }
+  switch (display_part) {
+    case 0:
+      m_org_display->distance = value;
+    case 1:
+      m_org_display->direction = value;
+    case 3:
+      m_org_display->value = value;
+    default:
+      m_org_display->message = value;
+  }
+}
 
 double cOrganism::GetRBinsTotal()
 {
 	double total = 0;
-	for(int i = 0; i < m_phenotype.GetCurRBinsAvail().GetSize(); i++)
-	{total += m_phenotype.GetCurRBinsAvail()[i];}
+	for(int i = 0; i < m_phenotype.GetCurRBinsAvail().GetSize(); i++) {
+    total += m_phenotype.GetCurRBinsAvail()[i];
+  }
 	
 	return total;
 }
@@ -211,9 +250,9 @@ void cOrganism::SetRBin(const int index, const double value)
 void cOrganism::AddToRBin(const int index, const double value) 
 { 
 	m_phenotype.AddToCurRBinAvail(index, value);
-	
-	if(value > 0)
-	{ m_phenotype.AddToCurRBinTotal(index, value); }
+	if (value > 0) { 
+    m_phenotype.AddToCurRBinTotal(index, value); 
+  }
 }  
 
 void cOrganism::IncCollectSpecCount(const int spec_id)
@@ -221,8 +260,6 @@ void cOrganism::IncCollectSpecCount(const int spec_id)
   int current_count = m_phenotype.GetCurCollectSpecCount(spec_id);
   m_phenotype.SetCurCollectSpecCount(spec_id, current_count + 1);
 }
-
-
 
 int cOrganism::ReceiveValue()
 {
@@ -719,7 +756,11 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
   if (!m_world->GetConfig().INHERIT_OPINION.Get()) {
     ClearOpinion();
   }
-  
+  delete m_org_display;
+  delete m_queued_display_data;
+  m_org_display = NULL;
+  m_queued_display_data = NULL;
+  m_display = false;
 }
 
 void cOrganism::NotifyDeath(cAvidaContext& ctx)
@@ -847,27 +888,29 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
   }
 }
 
-
 bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
 {
   // Make sure required task (if any) has been performed...
   const int required_task = m_world->GetConfig().REQUIRED_TASK.Get();
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
-  
-  if (m_forage_target == -2) {
-    const int habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
+  if (m_world->GetConfig().REQUIRED_PRED_HABITAT.Get() != -1 || m_world->GetConfig().REQUIRED_PREY_HABITAT.Get() != -1) {
+    int habitat_required = -1;
+    double required_value = 0;
+    if (m_forage_target == -2) {
+      habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
+      required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
+    }
+    else {
+      habitat_required = m_world->GetConfig().REQUIRED_PREY_HABITAT.Get();
+      required_value = m_world->GetConfig().REQUIRED_PREY_HABITAT_VALUE.Get();
+    }
     if (habitat_required != -1) {
+      bool has_req_res = false;
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
       tArray<double> resource_count;
       if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
       else resource_count = m_interface->GetAVResources(ctx);
-      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-      const double required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
-      bool has_req_res = false;
       for (int i = 0; i < resource_count.GetSize(); i ++) {
-        // check for refuge, then required habitat
-        if (resource_lib.GetResource(i)->GetRefuge()) {
-          break;
-        }        
         if (resource_lib.GetResource(i)->GetHabitat() == habitat_required && resource_count[i] >= required_value) {
           has_req_res = true;
           break;
@@ -900,7 +943,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     }
   }
   
-  if(single_reaction != 0)
+  if (single_reaction != 0)
   {
     bool toFail = true;
     tArray<int> reactionCounts = m_phenotype.GetCurReactionCount();
@@ -909,7 +952,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
       if (reactionCounts[i] > 0) toFail = false;
     }
     
-    if(toFail)
+    if (toFail)
     {
       const tArray<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
       for (int i = 0; i < stolenReactions.GetSize(); i++)
@@ -918,7 +961,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
       }
     }
     
-    if(toFail)
+    if (toFail)
     {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
             cStringUtil::Stringf("Lacks any reaction required for divide"));
@@ -929,11 +972,10 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   // Test for required resource availability (must be stored in an internal resource bin)
   const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();
   const double required_resource_level = m_world->GetConfig().REQUIRED_RESOURCE_LEVEL.Get();
-  if (required_resource != -1) {
+  if (required_resource != -1 && required_resource_level > 0.0) {
     const double resource_level = m_phenotype.GetCurRBinAvail(required_resource);
-    if ((required_resource_level > 0.0 && resource_level < required_resource_level) ||
-        (required_resource_level == 0.0 && resource_level == 0.0)) 
-      return false;
+    if (resource_level < required_resource_level) return false;
+    else AddToRBin(required_resource, -required_resource_level);
   }
   
   // Make sure the parent is fertile
@@ -955,11 +997,6 @@ bool cOrganism::ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_ph
   // Test tasks one last time before actually dividing, pass true so 
   // know that should only test "divide" tasks here
   DoOutput(ctx, true, context_phenotype);
-  
-  // Handle successful divide consumption of require resource
-  const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();
-  const double required_resource_level = m_world->GetConfig().REQUIRED_RESOURCE_LEVEL.Get();
-  if (required_resource != -1 && required_resource_level > 0.0) AddToRBin(required_resource, -required_resource_level);
   
   // Activate the child!  (Keep Last: may kill this organism!)
   return m_interface->Divide(ctx, this, m_offspring_genome);

@@ -61,6 +61,8 @@
 #include "cTopology.h"
 #include "cWorld.h"
 #include "tArrayUtils.h"
+#include "tAutoRelease.h"
+#include "tIterator.h"
 #include "tKVPair.h"
 #include "tHashMap.h"
 #include "tManagedPointerArray.h"
@@ -86,7 +88,10 @@ cPopulation::cPopulation(cWorld* world)
 , schedule(NULL)
 //, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
 , birth_chamber(world)
-, print_mini_trace_genomes(true)
+, print_mini_trace_genomes(false)
+, use_micro_traces(false)
+, m_next_prey_q(0)
+, m_next_pred_q(0)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , num_prey_organisms(0)
@@ -305,8 +310,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
+                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
@@ -1007,8 +1012,18 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
       KillOrganism(target_cell, ctx); 
       org_survived = false; 
   }
-  // are there mini traces we need to test for?
-  if (minitrace_queue.GetSize() > 0 && org_survived) TestForMiniTrace(in_organism);  
+  // are there traces we need to test for?
+  if (org_survived) {
+    if (m_next_prey_q > 0 && in_organism->GetParentFT() > -2) { 
+      SetupMiniTrace(in_organism); 
+      m_next_prey_q--; 
+    }
+    else if (m_next_pred_q > 0 && in_organism->GetParentFT() <= -2) { 
+      SetupMiniTrace(in_organism); 
+      m_next_pred_q--; 
+    }
+    else if (minitrace_queue.GetSize() > 0) TestForMiniTrace(in_organism);  
+  }
   return org_survived;
 }
 
@@ -1016,8 +1031,7 @@ void cPopulation::TestForMiniTrace(cOrganism* in_organism)
 {
   // if the org's genotype is on our to do list, setup the trace and remove the instance of the genotype from the list
   int org_bg_id = in_organism->GetBioGroup("genotype")->GetID();
-  for (int i = 0; i < minitrace_queue.GetSize(); i++)
-  {
+  for (int i = 0; i < minitrace_queue.GetSize(); i++) {
     if (org_bg_id == minitrace_queue[i]) {
       unsigned int last = minitrace_queue.GetSize() - 1;
       minitrace_queue.Swap(i, last);
@@ -1038,7 +1052,8 @@ void cPopulation::SetupMiniTrace(cOrganism* in_organism)
   
   cString filename = cStringUtil::Stringf("minitraces/org%d-ud%d-grp%d_ft%d-gt%d.trc", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
   
-  in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetID(), in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  if (!use_micro_traces) in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetID(), in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  else in_organism->GetHardware().SetMicroTrace();
   
   if (print_mini_trace_genomes) {
     cString gen_file =  cStringUtil::Stringf("minitraces/trace_genomes/org%d-ud%d-grp%d_ft%d-gt%d.trcgeno", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
@@ -1057,17 +1072,19 @@ void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename
   delete testcpu;
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print_genomes)
+void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print_genomes, const bool use_micro)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
-  if (print_genomes) print_mini_trace_genomes = true;
+  print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
 }
 
-void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes)
+void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes, const bool use_micro)
 {
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
-  if (print_genomes) print_mini_trace_genomes = true;
+  print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
 }
 
 void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes)
@@ -1107,11 +1124,319 @@ void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_gen
   }
   
   if (queue.GetSize() > 0) {
-    m_world->GetPopulation().AppendMiniTraces(bg_id_list, print_genomes);
+    AppendMiniTraces(bg_id_list, print_genomes);
   }
   else {
-    m_world->GetPopulation().SetMiniTraceQueue(bg_id_list, print_genomes);
+    SetMiniTraceQueue(bg_id_list, print_genomes);
   }
+}
+
+tSmartArray<int> cPopulation::SetRandomTraceQ(int max_samples)
+{
+  // randomly sample (w/ replacement) bgs in pop
+  tSmartArray<int> bg_id_list;
+  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+
+  int max_bgs = 1;
+  if (max_samples) max_bgs = max_samples;
+  if (max_samples > live_orgs.GetSize()) max_bgs = live_orgs.GetSize();
+  
+  tArray<bool> used_orgs;
+  used_orgs.Resize(live_orgs.GetSize());
+  used_orgs.SetAll(false);
+  
+  while (bg_id_list.GetSize() < max_bgs) {
+    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    if (!used_orgs[this_rand_sample]) {
+      cOrganism* rand_org = live_orgs[this_rand_sample];
+      bg_id_list.Push(rand_org->GetBioGroup("genotype")->GetID());
+      used_orgs[this_rand_sample] = true;
+    }
+  } 
+  return bg_id_list;
+}
+
+tSmartArray<int> cPopulation::SetRandomPreyTraceQ(int max_samples)
+{
+  // randomly sample (w/ replacement) bgs in pop
+  tSmartArray<int> bg_id_list;
+  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+
+  int max_bgs = 1;
+  if (max_samples) max_bgs = max_samples;
+  if (max_samples > num_prey_organisms) max_bgs = num_prey_organisms;
+  
+  tArray<bool> used_orgs;
+  used_orgs.Resize(live_orgs.GetSize());
+  used_orgs.SetAll(false);
+  
+  while (bg_id_list.GetSize() < max_bgs) {
+    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    if (!used_orgs[this_rand_sample]) {
+      cOrganism* rand_org = live_orgs[this_rand_sample];
+      if (rand_org->GetForageTarget() > -2) {
+        bg_id_list.Push(rand_org->GetBioGroup("genotype")->GetID());
+        used_orgs[this_rand_sample] = true;
+      }
+    }
+  } 
+  return bg_id_list;
+}
+
+tSmartArray<int> cPopulation::SetRandomPredTraceQ(int max_samples)
+{
+  // randomly sample (w/ replacement) bgs in pop
+  tSmartArray<int> bg_id_list;
+  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+
+  int max_bgs = 1;
+  if (max_samples) max_bgs = max_samples;
+  if (max_samples > num_pred_organisms) max_bgs = num_pred_organisms;
+  
+  tArray<bool> used_orgs;
+  used_orgs.Resize(live_orgs.GetSize());
+  used_orgs.SetAll(false);
+  
+  while (bg_id_list.GetSize() < max_bgs) {
+    int this_rand_sample = m_world->GetRandomSample().GetInt(0, live_orgs.GetSize());
+    if (!used_orgs[this_rand_sample]) {
+      cOrganism* rand_org = live_orgs[this_rand_sample];
+      if (rand_org->GetForageTarget() <= -2) {
+        bg_id_list.Push(rand_org->GetBioGroup("genotype")->GetID());
+        used_orgs[this_rand_sample] = true;
+      }
+    }
+  } 
+  return bg_id_list;
+}
+
+void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro)
+{
+  m_next_prey_q = num_prey;
+  print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
+}
+
+void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool use_micro)
+{
+  m_next_pred_q = num_pred;
+  print_mini_trace_genomes = print_genomes;
+  use_micro_traces = use_micro;
+}
+
+tSmartArray<int> cPopulation::SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples)
+{
+  // setup the genotype 'list' which will be checked in activateorg
+  // this should setup a 'list' of genotypes at each event update which should be followed (e.g. if orgs_per = 10, save top 10 prey genotypes + top 10 predator genotypes at this update or one org from top 10 most common genotypes over all)
+  // items should be removed from list once an org of that type is set to be traced
+  // number of items in list should be capped by max_samples, filling the list with the more dominant genotypes first (this is necessary in the case of saving groups because we may not know how many groups there will be at any time during a run and so cannot set orgs_per to function as an absolute cap...should not be neccessary for saving by dominants or saving by foragers)
+  // when we go to check if an org is to be traced, all we need to then do is remove the genotype from the list if the org's genotype is there
+  // in activateorganism we can just check the size of this array, 
+  // if it is 0, there is nothing to check, if it is > 0, there are genotypes waiting
+  // this will allow genotypes to wait until the next event (which will overwrite the array contents)
+  // only tracing for orgs within threshold (unless none are, then just use first bg)
+  
+  tSmartArray<int> bg_id_list;
+  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+  cBioGroup* bg = it->Next();
+  tSmartArray<int> fts_to_use;
+  tSmartArray<int> groups_to_use;
+  int num_doms = 0;
+  int fts_left = 0;
+  int groups_left = 0;
+  
+  if (save_dominants) num_doms = orgs_per;
+  
+  // get forager types in pop
+  tSmartArray<int> ft_check_counts;
+  ft_check_counts.Resize(0);
+  if (save_foragers) {
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) fts_to_use.Push(-2);
+    fts_to_use.Push(-1);  // account for -1 default's
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;    
+    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) fts_to_use.Push(*itr);
+    ft_check_counts.Resize(fts_to_use.GetSize());
+    ft_check_counts.SetAll(orgs_per);
+    fts_left = orgs_per * fts_to_use.GetSize();
+  }
+  
+  // get groups in pop
+  tSmartArray<int> group_check_counts;
+  group_check_counts.Resize(0);
+  if (save_groups) {
+    map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();
+    map <int,int>::iterator itr;    
+    for(itr = groups_formed.begin();itr!=groups_formed.end();itr++) {
+      double cur_size = itr->second;
+      if (cur_size > 0) groups_to_use.Push(itr->first);  
+    }
+    group_check_counts.Resize(groups_to_use.GetSize());
+    group_check_counts.SetAll(orgs_per);
+    groups_left = orgs_per * groups_to_use.GetSize();
+  }
+  
+  // this will add biogroup genotypes up to max_bgs with priority on dominants, then forager types, then group ids, without repeats
+  // priority is non-issue if you don't double up on the settings in one go
+  int max_bgs = 1;
+  if (max_samples) max_bgs = max_samples;
+  else max_bgs = num_doms + (orgs_per * fts_to_use.GetSize()) + (orgs_per * groups_to_use.GetSize());
+  int num_types = 3;
+  bool doms_done = false;
+  bool fts_done = false;
+  bool grps_done = false;
+  if (!save_dominants) doms_done = true;
+  if (!save_foragers) fts_done = true;
+  if (!save_groups) grps_done = true;
+  for (int i = 0; i < num_types; i++) {
+    if (bg_id_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
+      if (i == 0 && save_dominants && num_doms > 0) {
+        for (int j = 0; j < num_doms; j++) {
+          if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
+            bg_id_list.Push(bg->GetID());
+            if (save_foragers) {
+              int ft = bg->GetProperty("last_forager_type").AsInt(); 
+              if (fts_left > 0) {
+                for (int k = 0; k < fts_to_use.GetSize(); k++) {
+                  if (ft == fts_to_use[k]) {
+                    ft_check_counts[k]--;
+                    if (ft_check_counts[k] == 0) {
+                      unsigned int last = fts_to_use.GetSize() - 1;
+                      fts_to_use.Swap(k, last);
+                      fts_to_use.Pop();
+                      ft_check_counts.Swap(k, last);
+                      ft_check_counts.Pop();
+                    }
+                    fts_left--;
+                    break;
+                  }
+                }
+              }
+            }
+            if (save_groups) {
+              int grp = bg->GetProperty("last_group_id").AsInt(); 
+              if (groups_left > 0) {
+                for (int k = 0; k < groups_to_use.GetSize(); k++) {
+                  if (grp == groups_to_use[k]) {
+                    group_check_counts[k]--;
+                    if (group_check_counts[k] == 0) {
+                      unsigned int last = groups_to_use.GetSize() - 1;
+                      groups_to_use.Swap(k, last);
+                      groups_to_use.Pop();
+                      group_check_counts.Swap(k, last);
+                      group_check_counts.Pop();
+                    }
+                    groups_left--;
+                    break;
+                  }
+                }
+              }
+            }                 
+            if (bg == it->Next()) { // no more to check
+              doms_done = true; 
+              break; 
+            }
+            else bg = it->Next();
+          }
+          else if (bg && !bg->GetProperty("threshold").AsBool()) {      // no more above threshold
+            doms_done = true; 
+            break; 
+          }
+        }
+        if (doms_done) continue;
+      } // end of dominants
+      
+      else if (i == 1 && save_foragers && fts_left > 0) {
+        for (int j = 0; j < fts_left; j++) {
+          if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
+            int ft = bg->GetProperty("last_forager_type").AsInt(); 
+            bool found_one = false;
+            for (int k = 0; k < fts_to_use.GetSize(); k++) {
+              if (ft == fts_to_use[k]) {
+                bg_id_list.Push(bg->GetID());
+                ft_check_counts[k]--;
+                if (ft_check_counts[k] == 0) {
+                  unsigned int last = fts_to_use.GetSize() - 1;
+                  fts_to_use.Swap(k, last);
+                  fts_to_use.Pop();
+                  ft_check_counts.Swap(k, last);
+                  ft_check_counts.Pop();
+                }
+                found_one = true;
+                break;
+              }
+            }
+            if (save_groups) {
+              int grp = bg->GetProperty("last_group_id").AsInt(); 
+              if (groups_left > 0) {
+                for (int k = 0; k < groups_to_use.GetSize(); k++) {
+                  if (grp == groups_to_use[k]) {
+                    group_check_counts[k]--;
+                    if (group_check_counts[k] == 0) {
+                      unsigned int last = groups_to_use.GetSize() - 1;
+                      groups_to_use.Swap(k, last);
+                      groups_to_use.Pop();
+                      group_check_counts.Swap(k, last);
+                      group_check_counts.Pop();
+                    }
+                    groups_left--;
+                    break;
+                  }
+                }
+              }
+            }                 
+            if (bg == it->Next()) { // no more to check
+              fts_done = true; 
+              break; 
+            }
+            else bg = it->Next();
+            if (!found_one) j--;
+          }
+          else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
+            fts_done = true; 
+            break; 
+          }
+        }
+        if (fts_done) continue;
+      } // end of forage types
+      
+      else if (i == 2 && save_groups && groups_left > 0) {
+        for (int j = 0; j < groups_left; j++) {
+          if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
+            int grp = bg->GetProperty("last_group_id").AsInt(); 
+            bool found_one = false;
+            for (int k = 0; k < groups_to_use.GetSize(); k++) {
+              if (grp == groups_to_use[k]) {
+                bg_id_list.Push(bg->GetID());
+                group_check_counts[k]--;
+                if (group_check_counts[k] == 0) {
+                  unsigned int last = groups_to_use.GetSize() - 1;
+                  groups_to_use.Swap(k, last);
+                  groups_to_use.Pop();
+                  group_check_counts.Swap(k, last);
+                  group_check_counts.Pop();
+                }
+                found_one = true;
+                break;
+              }
+            }
+            if (bg == it->Next()) { // no more to check
+              grps_done = true; 
+              break; 
+            }
+            else bg = it->Next();
+            if (!found_one) j--;
+          }
+          else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
+            grps_done = true; 
+            break; 
+          }
+        }           
+        if (grps_done) break;     // no more of last type we have
+      } // end of group id types
+    } // end of while < max_bgs  
+  }
+  return bg_id_list;
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
@@ -1310,6 +1635,8 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 
   bool is_prey = true;
   if (organism->GetForageTarget() <= -2) is_prey = false;
+  
+  organism->GetHardware().PrintMicroTrace(organism->GetBioGroup("genotype")->GetID());
   
   RemoveLiveOrg(organism); 
   
@@ -6853,12 +7180,72 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, c
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(),
+                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge()); 
     } 
   }
+}
+
+void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double inflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPlateauInflow(inflow);
+      resource_count.SetGradientPlatInflow(global_res_index, inflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double outflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPlateauOutflow(outflow);
+      resource_count.SetGradientPlatOutflow(global_res_index, outflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientConeInflow(const cString res_name, const double inflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetConeInflow(inflow);
+      resource_count.SetGradientConeInflow(global_res_index, inflow);
+    }
+  } 
+}
+
+void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double outflow)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetConeOutflow(outflow);
+      resource_count.SetGradientConeOutflow(global_res_index, outflow);
+    }
+  } 
 }
 
 void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
@@ -6870,23 +7257,8 @@ void cPopulation::UpdateGradientInflow(const cString res_name, const double infl
     cResource * res = resource_lib.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
-      res->SetPlateauInflow(inflow);
+      res->SetGradientInflow(inflow);
       resource_count.SetGradientInflow(global_res_index, inflow);
-    }
-  } 
-}
-
-void cPopulation::UpdateGradientOutflow(const cString res_name, const double outflow)
-{
-  const cResourceLib & resource_lib = environment.GetResourceLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      res->SetPlateauOutflow(outflow);
-      resource_count.SetGradientOutflow(global_res_index, outflow);
     }
   } 
 }
@@ -6937,8 +7309,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
+                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
                            ); 
@@ -7637,19 +8009,12 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
 int cPopulation::PlaceAvatar(cOrganism* parent)
 {
   int avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
-  const int parent_facing = parent->GetOrgInterface().GetAVFacing();
   const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
   if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(0, world_x * world_y);
-  else if (avatar_birth == 2) {
-    if (parent_facing == 0) avatar_target_cell -= world_x;
-    else if (parent_facing == 1) avatar_target_cell -= world_x + 1;
-    else if (parent_facing == 2) avatar_target_cell += 1;
-    else if (parent_facing == 3) avatar_target_cell += world_x + 1;
-    else if (parent_facing == 4) avatar_target_cell += world_x;
-    else if (parent_facing == 5) avatar_target_cell += world_x - 1;
-    else if (parent_facing == 6) avatar_target_cell -= 1;
-    else if (parent_facing == 7) avatar_target_cell -= world_x - 1;
-  } 
-  else if (avatar_birth == 3) avatar_target_cell += 1;
+  else if (avatar_birth == 2) avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
+  else if (avatar_birth == 3) { 
+    avatar_target_cell += 1;
+    if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
+  }
   return avatar_target_cell;
 }

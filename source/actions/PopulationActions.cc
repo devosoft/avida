@@ -1002,6 +1002,157 @@ public:
   }
 };
 
+/*                                                                                                 
+ Applies a fixed population bottleneck to the current population.                                  
+ Parameters:                                                                                       
+ bottleneck size (int) default: 100                                                                
+ The size of the population bottleneck; kills every organism until the population is of the size specified. 
+ */
+class cActionApplyBottleneck : public cAction
+{
+private:
+  int m_bottleneck_size;                                                                          
+public:
+  cActionApplyBottleneck(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_bottleneck_size(100)
+  {
+    cString largs(args);                                                                        
+    if (largs.GetSize()) m_bottleneck_size = largs.PopWord().AsInt();                           
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int = 0]"; }                        
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();                                                
+    int num_to_kill = pop.GetNumOrganisms() - m_bottleneck_size;
+    
+    while (num_to_kill > 0)
+    {
+      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize() - 1);
+      cPopulationCell& cell = pop.GetCell(target_cell);                                         
+      if (cell.IsOccupied())
+      {
+        pop.KillOrganism(cell, ctx);                                                          
+        num_to_kill--;                                                                        
+      }
+    }
+  }
+};
+
+class cActionAttackDen : public cAction
+{
+private:
+  double m_killprob;
+  int m_juvs_per;
+public:
+  cActionAttackDen(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_killprob(0.0), m_juvs_per(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_juvs_per = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double probability=0.0] [int juvs_per_adult=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().RaiseFatalException(-1, "Den AttackDen requires use of avatars.");
+    int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+    
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      
+      if (!cell.HasAV()) continue;
+      
+      tArray<double> cell_res;
+      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+      
+      for (int j = 0; j < cell_res.GetSize(); j++) {
+        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+          // for every x juvs, we require 1 adult...otherwise use killprob on the rest
+          tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
+          tArray<cOrganism*> juvs;   
+          juvs.Resize(0);
+          int num_juvs = 0;
+          int num_guards = 0;
+          for (int k = 0; k < cell_avs.GetSize(); k++) {
+            if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
+              num_juvs++;
+              juvs.Push(cell_avs[k]);
+            }
+            else num_guards++;
+          }
+          if (num_juvs == 0) break;
+          int guarded_juvs = num_guards * m_juvs_per;
+          int unguarded_juvs = num_juvs - guarded_juvs;
+          for (int k = 0; k < unguarded_juvs; k++) {
+            if (ctx.GetRandom().P(m_killprob)) juvs[k]->Die(ctx); 
+          }
+          break;  // only do this once if two dens overlap
+        }
+      }
+    }
+  }
+};
+
+class cActionRaidDen : public cAction
+{
+private:
+  double m_loss;
+  int m_res_id;
+  double m_units_per;
+public:
+  cActionRaidDen(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_loss(0.0), m_res_id(0), m_units_per(1.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_loss = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_res_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_units_per = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double loss=0.0] [int res_id=1] [double units_per_adult=1.0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().RaiseFatalException(-1, "Den RaidDen requires use of avatars.");
+    int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+    
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      
+      tArray<double> cell_res;
+      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+      
+      for (int j = 0; j < cell_res.GetSize(); j++) {
+        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+          if (cell_res[m_res_id] <= 0) break;
+          
+          // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest
+          int num_guards = 0;
+          tArray<cOrganism*> cell_avs = cell.GetCellAVs();    
+          for (int k = 0; k < cell_avs.GetSize(); k++) {
+            if (cell_avs[k]->GetPhenotype().GetTimeUsed() >= juv_age) num_guards++;
+          }
+          
+          double guarded_res = num_guards * m_units_per;
+          double unguarded_res = cell_res[m_res_id] - guarded_res;
+          
+          tArray<double> res_change(cell_res.GetSize());
+          res_change.SetAll(0.0);
+          res_change[m_res_id] = -1 * unguarded_res * m_loss;          
+          m_world->GetPopulation().UpdateCellResources(ctx, res_change, i);
+          
+          break;  // only do this once if two dens overlap
+        }
+      }
+    }
+  }
+};
+
 /*
  Kills a fraction of organisms in the population in sequence.
  
@@ -1778,7 +1929,7 @@ private:
     C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
     DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
     D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-    PARENT, DEATH,
+    P_MUT, P_INS, P_DEL, DEATH, PNT_MUT, PNT_INS, PNT_DEL,
     I_MUT, I_INS, I_DEL
   } m_mut_type;
   
@@ -1819,8 +1970,13 @@ public:
     else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
     else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
     
-    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "PARENT_MUT") m_mut_type = P_MUT;
+    else if (mutstr == "PARENT_INS") m_mut_type = P_INS;
+    else if (mutstr == "PARENT_DEL") m_mut_type = P_DEL;
     else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "POINT_MUT") m_mut_type = PNT_MUT;
+    else if (mutstr == "POINT_INS") m_mut_type = PNT_INS;
+    else if (mutstr == "POINT_DEL") m_mut_type = PNT_DEL;
     else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
     else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
     else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
@@ -1866,8 +2022,13 @@ public:
         case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(m_prob); break;
         case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(m_prob); break;
           
-        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_MUT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_INS: m_world->GetConfig().PARENT_INS_PROB.Set(m_prob); break;
+        case P_DEL: m_world->GetConfig().PARENT_DEL_PROB.Set(m_prob); break;
         case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
+        case PNT_MUT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+        case PNT_INS: m_world->GetConfig().POINT_INS_PROB.Set(m_prob); break;
+        case PNT_DEL: m_world->GetConfig().POINT_DEL_PROB.Set(m_prob); break;
         case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
         case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
         case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
@@ -1896,8 +2057,13 @@ public:
       case D1_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(m_prob); break;
       case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(m_prob); break;
         
-      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case P_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case P_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentInsProb(m_prob); break;
+      case P_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentDelProb(m_prob); break;
       case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(m_prob); break;
+      case PNT_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(m_prob); break;
+      case PNT_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointInsProb(m_prob); break;
+      case PNT_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointDelProb(m_prob); break;
       case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
       case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
       case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
@@ -1915,7 +2081,7 @@ private:
     C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
     DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
     D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-    PARENT, DEATH,
+    P_MUT, P_INS, P_DEL, DEATH, PNT_MUT, PNT_INS, PNT_DEL,
     I_MUT, I_INS, I_DEL
   } m_mut_type;
   
@@ -1955,8 +2121,13 @@ public:
     else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
     else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
     
-    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "PARENT_MUT") m_mut_type = P_MUT;
+    else if (mutstr == "PARENT_INS") m_mut_type = P_INS;
+    else if (mutstr == "PARENT_DEL") m_mut_type = P_DEL;
     else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "POINT_MUT") m_mut_type = PNT_MUT;
+    else if (mutstr == "POINT_INS") m_mut_type = PNT_INS;
+    else if (mutstr == "POINT_DEL") m_mut_type = PNT_DEL;
     else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
     else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
     else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
@@ -2002,8 +2173,13 @@ public:
       case D1_UNIFORM: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
       case D1_SLIP: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
         
-      case PARENT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
+      case P_MUT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
+      case P_INS: prob += m_world->GetConfig().PARENT_INS_PROB.Get(); break;
+      case P_DEL: prob += m_world->GetConfig().PARENT_DEL_PROB.Get(); break;
       case DEATH: prob += m_world->GetConfig().DEATH_PROB.Get(); break;
+      case PNT_MUT: prob += m_world->GetConfig().POINT_MUT_PROB.Get(); break;
+      case PNT_INS: prob += m_world->GetConfig().POINT_INS_PROB.Get(); break;
+      case PNT_DEL: prob += m_world->GetConfig().POINT_DEL_PROB.Get(); break;
       case I_MUT: prob += m_world->GetConfig().INJECT_MUT_PROB.Get(); break;
       case I_INS: prob += m_world->GetConfig().INJECT_INS_PROB.Get(); break;
       case I_DEL: prob += m_world->GetConfig().INJECT_DEL_PROB.Get(); break;
@@ -2033,8 +2209,13 @@ public:
         case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(prob); break;
         case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(prob); break;
           
-        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(prob); break;
-        case DEATH: m_world->GetConfig().DEATH_PROB.Set(prob); break;
+        case P_MUT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case P_INS: m_world->GetConfig().PARENT_INS_PROB.Set(m_prob); break;
+        case P_DEL: m_world->GetConfig().PARENT_DEL_PROB.Set(m_prob); break;
+        case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
+        case PNT_MUT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+        case PNT_INS: m_world->GetConfig().POINT_INS_PROB.Set(m_prob); break;
+        case PNT_DEL: m_world->GetConfig().POINT_DEL_PROB.Set(m_prob); break;
         case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(prob); break;
         case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(prob); break;
         case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(prob); break;
@@ -2063,8 +2244,13 @@ public:
       case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(prob); break;
         
         
-      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
+      case P_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
+      case P_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentInsProb(prob); break;
+      case P_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentDelProb(prob); break;
       case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(prob); break;
+      case PNT_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(prob); break;
+      case PNT_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointInsProb(prob); break;
+      case PNT_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointDelProb(prob); break;
       case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(prob); break;
       case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(prob); break;
       case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(prob); break;
@@ -5193,6 +5379,7 @@ public:
 class cActionPrintMiniTraces : public cAction
 {
 private:
+  bool m_random;
   bool m_save_dominants;
   bool m_save_groups;
   bool m_save_foragers;
@@ -5202,246 +5389,122 @@ private:
   
 public:
   cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
+  : cAction(world, args), m_random(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
   m_print_genomes(true)
   {
     cArgSchema schema(':','=');
     
     // Entries
-    schema.AddEntry("save_dominants", 0, 0, 1, 0);
-    schema.AddEntry("save_groups", 1, 0, 1, 0);
-    schema.AddEntry("save_foragers", 2, 0, 1, 0);
-    schema.AddEntry("orgs_per", 3, 1);
-    schema.AddEntry("max_samples", 4, 0); // recommended if using save_groups and restrict to defined is not set
-    schema.AddEntry("print_genomes", 5, 0, 1, 1);
+    schema.AddEntry("random", 0, 0, 1, 0);
+    schema.AddEntry("save_dominants", 1, 0, 1, 0);
+    schema.AddEntry("save_groups", 2, 0, 1, 0);
+    schema.AddEntry("save_foragers", 3, 0, 1, 0);
+    schema.AddEntry("orgs_per", 4, 1);
+    schema.AddEntry("max_samples", 5, 0); // recommended if using save_groups and restrict to defined is not set
+    schema.AddEntry("print_genomes", 6, 0, 1, 1);
     
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
     if (args) {
-      m_save_dominants = argc->GetInt(0);
-      m_save_groups = argc->GetInt(1);
-      m_save_foragers = argc->GetInt(2);
-      m_orgs_per = argc->GetInt(3);
-      m_max_samples = argc->GetInt(4);
-      m_print_genomes = argc->GetInt(5);
+      m_random = argc->GetInt(0);
+      m_save_dominants = argc->GetInt(1);
+      m_save_groups = argc->GetInt(2);
+      m_save_foragers = argc->GetInt(3);
+      m_orgs_per = argc->GetInt(4);
+      m_max_samples = argc->GetInt(5);
+      m_print_genomes = argc->GetInt(6);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]"; }
+  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
-    // setup the genotype 'list' which will be checked in activateorg
-    // this should setup a 'list' of genotypes at each event update which should be followed (e.g. if orgs_per = 10, save top 10 prey genotypes + top 10 predator genotypes at this update or one org from top 10 most common genotypes over all)
-    // items should be removed from list once an org of that type is set to be traced
-    // number of items in list should be capped by max_samples, filling the list with the more dominant genotypes first (this is necessary in the case of saving groups because we may not know how many groups there will be at any time during a run and so cannot set orgs_per to function as an absolute cap...should not be neccessary for saving by dominants or saving by foragers)
-    // when we go to check if an org is to be traced, all we need to then do is remove the genotype from the list if the org's genotype is there
-    // in activateorganism we can just check the size of this array, 
-    // if it is 0, there is nothing to check, if it is > 0, there are genotypes waiting
-    // this will allow genotypes to wait until the next event (which will overwrite the array contents)
-    // only tracing for orgs within threshold (unless none are, then just use first bg)
-    
-    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    cBioGroup* bg = it->Next();
-    tSmartArray<int> bg_id_list;
-    tSmartArray<int> fts_to_use;
-    tSmartArray<int> groups_to_use;
-    int num_doms = 0;
-    int fts_left = 0;
-    int groups_left = 0;
-    
-    if (m_save_dominants) num_doms = m_orgs_per;
-    
-    // get forager types in pop
-    tSmartArray<int> ft_check_counts;
-    ft_check_counts.Resize(0);
-    if (m_save_foragers) {
-      if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) fts_to_use.Push(-2);
-      fts_to_use.Push(-1);  // account for -1 default's
-      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
-      set <int>::iterator itr;    
-      for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) fts_to_use.Push(*itr);
-      ft_check_counts.Resize(fts_to_use.GetSize());
-      ft_check_counts.SetAll(m_orgs_per);
-      fts_left = m_orgs_per * fts_to_use.GetSize();
-    }
-    
-    // get groups in pop
-    tSmartArray<int> group_check_counts;
-    group_check_counts.Resize(0);
-    if (m_save_groups) {
-      map<int,int> groups_formed = m_world->GetPopulation().GetFormedGroups();
-      map <int,int>::iterator itr;    
-      for(itr = groups_formed.begin();itr!=groups_formed.end();itr++) {
-        double cur_size = itr->second;
-        if (cur_size > 0) groups_to_use.Push(itr->first);  
-      }
-      group_check_counts.Resize(groups_to_use.GetSize());
-      group_check_counts.SetAll(m_orgs_per);
-      groups_left = m_orgs_per * groups_to_use.GetSize();
-    }
+    tSmartArray<int> target_bgs;
+    target_bgs.Resize(0);
+    if (m_random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
+    else target_bgs = m_world->GetPopulation().SetTraceQ(m_save_dominants, m_save_groups, m_save_foragers, m_orgs_per, m_max_samples);
+    m_world->GetPopulation().SetMiniTraceQueue(target_bgs, m_print_genomes);
+  }
+};
 
-    // this will add biogroup genotypes up to max_bgs with priority on dominants, then forager types, then group ids, without repeats
-    // priority is non-issue if you don't double up on the settings in one go
-    int max_bgs = 1;
-    if (m_max_samples) max_bgs = m_max_samples;
-    else max_bgs = num_doms + (m_orgs_per * fts_to_use.GetSize()) + (m_orgs_per * groups_to_use.GetSize());
-    int num_types = 3;
-    bool doms_done = false;
-    bool fts_done = false;
-    bool grps_done = false;
-    if (!m_save_dominants) doms_done = true;
-    if (!m_save_foragers) fts_done = true;
-    if (!m_save_groups) grps_done = true;
-    for (int i = 0; i < num_types; i++) {
-      if (bg_id_list.GetSize() < max_bgs && (!doms_done || !fts_done || !grps_done)) {
-        if (i == 0 && m_save_dominants && num_doms > 0) {
-          for (int j = 0; j < num_doms; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
-              bg_id_list.Push(bg->GetID());
-              if (m_save_foragers) {
-                int ft = bg->GetProperty("last_forager_type").AsInt(); 
-                if (fts_left > 0) {
-                  for (int k = 0; k < fts_to_use.GetSize(); k++) {
-                    if (ft == fts_to_use[k]) {
-                      ft_check_counts[k]--;
-                      if (ft_check_counts[k] == 0) {
-                        unsigned int last = fts_to_use.GetSize() - 1;
-                        fts_to_use.Swap(k, last);
-                        fts_to_use.Pop();
-                        ft_check_counts.Swap(k, last);
-                        ft_check_counts.Pop();
-                      }
-                      fts_left--;
-                      break;
-                    }
-                  }
-                }
-              }
-              if (m_save_groups) {
-                int grp = bg->GetProperty("last_group_id").AsInt(); 
-                if (groups_left > 0) {
-                  for (int k = 0; k < groups_to_use.GetSize(); k++) {
-                    if (grp == groups_to_use[k]) {
-                      group_check_counts[k]--;
-                      if (group_check_counts[k] == 0) {
-                        unsigned int last = groups_to_use.GetSize() - 1;
-                        groups_to_use.Swap(k, last);
-                        groups_to_use.Pop();
-                        group_check_counts.Swap(k, last);
-                        group_check_counts.Pop();
-                      }
-                      groups_left--;
-                      break;
-                    }
-                  }
-                }
-              }                 
-              if (bg == it->Next()) { // no more to check
-                doms_done = true; 
-                break; 
-              }
-              else bg = it->Next();
-            }
-            else if (bg && !bg->GetProperty("threshold").AsBool()) {      // no more above threshold
-              doms_done = true; 
-              break; 
-            }
-          }
-          if (doms_done) continue;
-        } // end of dominants
-        
-        else if (i == 1 && m_save_foragers && fts_left > 0) {
-          for (int j = 0; j < fts_left; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
-              int ft = bg->GetProperty("last_forager_type").AsInt(); 
-              bool found_one = false;
-              for (int k = 0; k < fts_to_use.GetSize(); k++) {
-                if (ft == fts_to_use[k]) {
-                  bg_id_list.Push(bg->GetID());
-                  ft_check_counts[k]--;
-                  if (ft_check_counts[k] == 0) {
-                    unsigned int last = fts_to_use.GetSize() - 1;
-                    fts_to_use.Swap(k, last);
-                    fts_to_use.Pop();
-                    ft_check_counts.Swap(k, last);
-                    ft_check_counts.Pop();
-                  }
-                  found_one = true;
-                  break;
-                }
-              }
-              if (m_save_groups) {
-                int grp = bg->GetProperty("last_group_id").AsInt(); 
-                if (groups_left > 0) {
-                  for (int k = 0; k < groups_to_use.GetSize(); k++) {
-                    if (grp == groups_to_use[k]) {
-                      group_check_counts[k]--;
-                      if (group_check_counts[k] == 0) {
-                        unsigned int last = groups_to_use.GetSize() - 1;
-                        groups_to_use.Swap(k, last);
-                        groups_to_use.Pop();
-                        group_check_counts.Swap(k, last);
-                        group_check_counts.Pop();
-                      }
-                      groups_left--;
-                      break;
-                    }
-                  }
-                }
-              }                 
-              if (bg == it->Next()) { // no more to check
-                fts_done = true; 
-                break; 
-              }
-              else bg = it->Next();
-              if (!found_one) j--;
-            }
-            else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
-              fts_done = true; 
-              break; 
-            }
-          }
-          if (fts_done) continue;
-        } // end of forage types
-        
-        else if (i == 2 && m_save_groups && groups_left > 0) {
-          for (int j = 0; j < groups_left; j++) {
-            if (bg && (bg->GetProperty("threshold").AsBool() || bg_id_list.GetSize() == 0)) {
-              int grp = bg->GetProperty("last_group_id").AsInt(); 
-              bool found_one = false;
-              for (int k = 0; k < groups_to_use.GetSize(); k++) {
-                if (grp == groups_to_use[k]) {
-                  bg_id_list.Push(bg->GetID());
-                  group_check_counts[k]--;
-                  if (group_check_counts[k] == 0) {
-                    unsigned int last = groups_to_use.GetSize() - 1;
-                    groups_to_use.Swap(k, last);
-                    groups_to_use.Pop();
-                    group_check_counts.Swap(k, last);
-                    group_check_counts.Pop();
-                  }
-                  found_one = true;
-                  break;
-                }
-              }
-              if (bg == it->Next()) { // no more to check
-                grps_done = true; 
-                break; 
-              }
-              else bg = it->Next();
-              if (!found_one) j--;
-            }
-            else if (bg && !bg->GetProperty("threshold").AsBool()) {  // no more above threshold
-              grps_done = true; 
-              break; 
-            }
-          }           
-          if (grps_done) break;     // no more of last type we have
-        } // end of group id types
-      } // end of while < max_bgs  
+/* Record condensed trace files for particular orgs. */
+class cActionPrintMicroTraces : public cAction
+{
+private:
+  bool m_random;
+  bool m_rand_prey;
+  bool m_rand_pred;
+  bool m_next_prey;
+  bool m_next_pred;
+  bool m_save_dominants;
+  bool m_save_groups;
+  bool m_save_foragers;
+  int m_orgs_per;
+  int m_max_samples;
+  bool m_print_genomes;
+  
+public:
+  cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
+  m_print_genomes(true)
+  {
+    cArgSchema schema(':','=');
+    
+    // Entries
+    schema.AddEntry("random", 0, 0, 1, 0);
+    schema.AddEntry("rand_prey", 1, 0, 1, 0);
+    schema.AddEntry("rand_pred", 2, 0, 1, 0);
+    schema.AddEntry("next_prey", 3, 0, 1, 0);
+    schema.AddEntry("next_pred", 4, 0, 1, 0);
+    schema.AddEntry("save_dominants", 5, 0, 1, 0);
+    schema.AddEntry("save_groups", 6, 0, 1, 0);
+    schema.AddEntry("save_foragers", 7, 0, 1, 0);
+    schema.AddEntry("orgs_per", 8, 1);
+    schema.AddEntry("max_samples", 9, 0); // recommended if using save_groups and restrict to defined is not set
+    schema.AddEntry("print_genomes", 10, 0, 1, 0);
+    
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (args) {
+      m_random = argc->GetInt(0);
+      m_rand_prey = argc->GetInt(1);
+      m_rand_pred = argc->GetInt(2);
+      m_next_prey = argc->GetInt(3);
+      m_next_pred = argc->GetInt(4);
+      m_save_dominants = argc->GetInt(5);
+      m_save_groups = argc->GetInt(6);
+      m_save_foragers = argc->GetInt(7);
+      m_orgs_per = argc->GetInt(8);
+      m_max_samples = argc->GetInt(9);
+      m_print_genomes = argc->GetInt(10);
     }
-    m_world->GetPopulation().SetMiniTraceQueue(bg_id_list, m_print_genomes);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  { 
+    tSmartArray<int> target_bgs;
+    target_bgs.Resize(0);
+    if (m_next_prey || m_next_pred) {
+      if (m_next_prey) m_world->GetPopulation().SetNextPreyQ(m_next_prey, m_print_genomes, true);
+      if (m_next_pred) m_world->GetPopulation().SetNextPredQ(m_next_pred, m_print_genomes, true);
+    }
+    if (m_rand_prey || m_rand_pred) {
+      if (m_rand_prey) target_bgs = m_world->GetPopulation().SetRandomPreyTraceQ(m_max_samples);
+      if (m_rand_pred) {
+        if (target_bgs.GetSize() == 0) target_bgs = m_world->GetPopulation().SetRandomPredTraceQ(m_max_samples);
+        else {
+          tSmartArray<int> pred_bgs = m_world->GetPopulation().SetRandomPredTraceQ(m_max_samples);
+          for (int i = 0; i < pred_bgs.GetSize(); i++) target_bgs.Push(pred_bgs[i]); 
+        }
+      }
+    }
+    else if (m_random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
+    else target_bgs = m_world->GetPopulation().SetTraceQ(m_save_dominants, m_save_groups, m_save_foragers, m_orgs_per, m_max_samples);
+    
+    if (target_bgs.GetSize() > 0) m_world->GetPopulation().AppendMiniTraces(target_bgs, m_print_genomes, true);
   }
 };
 
@@ -5541,6 +5604,10 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillInstLimit>("KillInstLimit");
   action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionApplyBottleneck>("ApplyBottleneck");
+  action_lib->Register<cActionAttackDen>("AttackDen");
+  action_lib->Register<cActionRaidDen>("RaidDen");
   action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
   action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
 	
@@ -5630,5 +5697,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
   
   action_lib->Register<cActionPrintMiniTraces>("PrintMiniTraces");
+  action_lib->Register<cActionPrintMicroTraces>("PrintMicroTraces");
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
 }
