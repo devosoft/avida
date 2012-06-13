@@ -278,7 +278,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"den.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
+    //m_world->GetPopulation().UpdateResStats(ctx);
     m_world->GetStats().PrintDenData(m_filename, ctx);
   }
 };
