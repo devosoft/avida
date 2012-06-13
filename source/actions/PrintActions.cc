@@ -177,6 +177,8 @@ STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 STATS_OUT_FILE(PrintMigrationData,          migration.dat);
 STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 STATS_OUT_FILE(PrintIntrinsicTaskSwitchingCostData, intrinsic_task_switching_cost.dat);
+STATS_OUT_FILE(PrintDenData, den_data.dat);
+
 
 
 //mating type/male-female stats data
@@ -265,23 +267,6 @@ public:
   }
 };
 
-class cActionPrintDenData : public cAction
-{
-private:
-  cString m_filename;
-public:
-  cActionPrintDenData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs == "") m_filename = "den.dat"; else m_filename = largs.PopWord();
-  }
-  static const cString GetDescription() { return "Arguments: [string fname=\"den.dat\"]"; }
-  void Process(cAvidaContext& ctx)
-  {
-    //m_world->GetPopulation().UpdateResStats(ctx);
-    m_world->GetStats().PrintDenData(m_filename, ctx);
-  }
-};
 
 class cActionPrintGroupTolerance : public cAction 
 {

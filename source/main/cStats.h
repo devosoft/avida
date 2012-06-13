@@ -1218,7 +1218,7 @@ public:
   void AddTaskSwitchTime(int t1, int t2, int time); 
   
   //! Figure out how many juveniles and guards there are in the den
-  void PrintDenData(const cString& filename, cAvidaContext& ctx); 
+  void PrintDenData(const cString& filename); 
 
 
 protected:

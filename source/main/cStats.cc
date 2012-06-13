@@ -4013,7 +4013,7 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 }
 
 
-void cStats::PrintDenData(const cString& filename, cAvidaContext& ctx) {
+void cStats::PrintDenData(const cString& filename) {
   if (m_world->GetConfig().USE_AVATARS.Get() <= 0) return; 
   
   int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
@@ -4029,7 +4029,7 @@ void cStats::PrintDenData(const cString& filename, cAvidaContext& ctx) {
     if (!cell.HasAV()) continue;
     
     tArray<double> cell_res;
-    cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+    cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
     
     for (int j = 0; j < cell_res.GetSize(); j++) {
       if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
