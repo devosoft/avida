@@ -4013,6 +4013,57 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 }
 
 
+void cStats::PrintDenData(const cString& filename, cAvidaContext& ctx) {
+  if (m_world->GetConfig().USE_AVATARS.Get() <= 0) return; 
+  
+  int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
+  int num_juvs = 0;
+  int num_guards = 0;
+  
+  for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+    
+    if (!cell.HasAV()) continue;
+    
+    tArray<double> cell_res;
+    cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+    
+    for (int j = 0; j < cell_res.GetSize(); j++) {
+      if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+        // for every x juvs, we require 1 adult...otherwise use killprob on the rest
+        tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
+
+        for (int k = 0; k < cell_avs.GetSize(); k++) {
+          if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
+            num_juvs++;
+          }
+          else num_guards++;
+        }
+        
+        break;  // only do this once if two dens overlap
+      }
+    }
+  }
+
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Number of juveniles and adults in dens");
+  df.WriteTimeStamp();
+	df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("Juveniles [juveniles]");
+	df.WriteColumnDesc("Adults [adults]");
+  df.FlushComments();
+	df.Write(m_update,   "Update");
+  df.Write(num_juvs,   "Juveniles");
+	df.Write(num_guards,   "Adults");
+	df.Endl();
+
+  
+}
+
+
 
 
 /*! Print statistics related to the diversity of reactions performed by a deme

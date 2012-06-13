@@ -1216,6 +1216,9 @@ public:
 	int GetNumDemeReplications() { return m_total_deme_num_repls; }
   //! Add a task time tracking event
   void AddTaskSwitchTime(int t1, int t2, int time); 
+  
+  //! Figure out how many juveniles and guards there are in the den
+  void PrintDenData(const cString& filename, cAvidaContext& ctx); 
 
 
 protected:

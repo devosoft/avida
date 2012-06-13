@@ -131,6 +131,7 @@ STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat    
 STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat       );
 STATS_OUT_FILE(PrintDemeTreatableCount,     deme_treatable.dat       );
 
+
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
 STATS_OUT_FILE(PrintDemeNetworkTopology,    deme_network_topology.dat);
@@ -261,6 +262,24 @@ public:
   {
     m_world->GetPopulation().UpdateResStats(ctx);
     m_world->GetStats().PrintResourceLocData(m_filename, ctx);
+  }
+};
+
+class cActionPrintDenData : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintDenData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "den.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"den.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintDenData(m_filename, ctx);
   }
 };
 
@@ -4695,6 +4714,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
+  action_lib->Register<cActionPrintDenData>("PrintDenData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
   action_lib->Register<cActionPrintReactionExeData>("PrintReactionExeData");
   action_lib->Register<cActionPrintCurrentReactionData>("PrintCurrentReactionData");
