@@ -259,7 +259,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect-unit-prob", &cHardwareCPU::Inst_CollectUnitProbabilistic, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
 
-    
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
@@ -696,6 +695,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("dec-tolerance", &cHardwareCPU::Inst_DecTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-tolerance", &cHardwareCPU::Inst_GetTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-group-tolerance", &cHardwareCPU::Inst_GetGroupTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+
     // Network creation instructions
     tInstLibEntry<tMethod>("create-link-facing", &cHardwareCPU::Inst_CreateLinkByFacing, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("create-link-xy", &cHardwareCPU::Inst_CreateLinkByXY, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -709,6 +709,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("varying-point-mut", &cHardwareCPU::Inst_ApplyVaryingPointMutations, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
     tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repair-on", &cHardwareCPU::Inst_RepairPointMutOn, INST_CLASS_LIFECYCLE, nInstFlag::STALL),
@@ -3839,7 +3840,7 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
  * Places the number of resources in the group either +1 or -1 in register BX,
  * wrapping from the top group back to group 1 (skipping 0),
  * +1 group if the nop register has a positive number
- * -1 group if the nop register has a negative number. @JJB
+ * -1 group if the nop register has a negative number. 
  */
 bool cHardwareCPU::Inst_SenseNextResLevel(cAvidaContext& ctx)
 {
@@ -4025,28 +4026,34 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
    */
   if (probabilistic) {
     double success_chance = res_count[bin_used] / double(m_world->GetConfig().COLLECT_PROB_DIVISOR.Get());
-    if (success_chance < ctx.GetRandom().GetDouble())
-    { return false; }  // we define not collecting as failure
+    if (success_chance < ctx.GetRandom().GetDouble()) { 
+      return false; 
+    }  // we define not collecting as failure
   }
   
   // Collect a unit (if possible) or some ABSORB_RESOURCE_FRACTION
   if (unit) {
-    if (res_count[bin_used] >= 1.0) {res_change[bin_used] = -1.0;}
-    else {return false;}  // failure: not enough to collect
+    if (res_count[bin_used] >= 1.0) {
+      res_change[bin_used] = -1.0;
+    }
+    else {
+      return false;
+    }  // failure: not enough to collect
   }
   else {
     res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
   }
+
+  if (internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max)) { 
+    m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]); 
+  }
   
-  if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
-  { m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]); }
-  
-  if(!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max))
-  {res_change[bin_used] = 0.0;}
-  
+  if (!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max)) {
+    res_change[bin_used] = 0.0;
+  }
+
   // Update resource counts to reflect res_change
   m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
-  
   return true;
 }
 
@@ -4103,7 +4110,6 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
   return success;
 }
-
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following
@@ -6171,8 +6177,8 @@ bool cHardwareCPU::Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier)
   bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, mut_multiplier);
   // Re-adjust heads.
   AdjustHeads();
-  
-  // If using tolerance and a successful divide, place in BX register if the offspring was born into parent's group. @JJB
+
+  // If using tolerance and a successful divide, place in BX register if the offspring was born into parent's group. 
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() && ret_val) {
 	  GetRegister(REG_BX) = (int) m_organism->GetPhenotype().BornParentGroup();
   }
@@ -9481,8 +9487,8 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
         return true;
       }
     }
-    
-    // If tolerances are on the org must pass immigration chance @JJB
+
+    // If tolerances are on the org must pass immigration chance 
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
       m_organism->GetOrgInterface().AttemptImmigrateGroup(prop_group_id, m_organism);
       return true;
@@ -9514,7 +9520,7 @@ bool cHardwareCPU::Inst_JoinMTGroup(cAvidaContext& ctx)
 /* Must be nop-modified.
  * Moves organism +1 group if the nop-register has a positive number,
  * moves organism -1 group if the nop-register has a negative number,
- * wraps from the top group back to group 1 (skipping 0). @JJB
+ * wraps from the top group back to group 1 (skipping 0). 
  */
 bool cHardwareCPU::Inst_JoinNextGroup(cAvidaContext& ctx)
 {
@@ -9671,7 +9677,7 @@ bool cHardwareCPU::Inst_NumberMTInGroup(cAvidaContext& ctx)
 /* Must be nop-modified.
  Places the number of orgs in the +1 group in the BX register, if the nop-modifying register is positive,
  places the number of orgs in the -1 group in the BX register, if the nop-modifying register is negative,
- wraps from the top group back to group 1 (skipping 0). @JJB
+ wraps from the top group back to group 1 (skipping 0). 
  */
 bool cHardwareCPU::Inst_NumberNextGroup(cAvidaContext& ctx)
 {
@@ -9771,7 +9777,7 @@ bool cHardwareCPU::Inst_KillGroupMember(cAvidaContext& ctx)
  nop-B: increases tolerance towards own offspring
  nop-C: increases tolerance towards other offspring of the group.
  Removes the record of a previous update when dec-tolerance was executed,
- and places the modified tolerance total in the BX register. @JJB
+ and places the modified tolerance total in the BX register. 
  */
 bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 {
@@ -9808,7 +9814,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
  nop-B: decreases tolerance towards own offspring
  nop-C: decreases tolerance towards other offspring of the group.
  Adds to records the update during which dec-tolerance was executed,
- and places the modified tolerance total in the BX register. @JJB
+ and places the modified tolerance total in the BX register. 
  */
 bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 {
@@ -9841,7 +9847,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 /* Retrieve current tolerance levels, placing each tolerance in a different register.
  Register AX: tolerance towards immigrants
  Register BX: tolerance towards own offspring
- Register CX: tolerance towards other offspring in the group @JJB
+ Register CX: tolerance towards other offspring in the group 
  */
 bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
 {
@@ -9865,7 +9871,7 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
 /* Retrieve group tolerances placing each in a different register.
  Register AX: group tolerance towards immigrants
  Register BX: group tolerance towards own offspring
- Register CX: group tolerance towards offspring @JJB
+ Register CX: group tolerance towards offspring 
  */
 bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 {
@@ -10014,7 +10020,20 @@ bool cHardwareCPU::Inst_ApplyPointMutations(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_JoinGermline(cAvidaContext&) {
+bool cHardwareCPU::Inst_ApplyVaryingPointMutations(cAvidaContext& ctx)
+{
+  int last_task = m_organism->GetPhenotype().GetLastTaskID();
+  // Check that the org performed a task...
+  if (last_task != -1) {
+    // Point mut prob is mutation rate * slope * task last performed
+    double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get() * m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() * last_task;
+    int num_mut = m_organism->GetHardware().PointMutate(ctx, point_mut_prob);
+    m_organism->IncPointMutations(num_mut);
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
   m_organism->JoinGermline();
   return true;
 }

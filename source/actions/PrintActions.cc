@@ -171,6 +171,8 @@ STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 STATS_OUT_FILE(PrintMigrationData,          migration.dat);
 STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
+STATS_OUT_FILE(PrintIntrinsicTaskSwitchingCostData, intrinsic_task_switching_cost.dat);
+
 
 //mating type/male-female stats data
 STATS_OUT_FILE(PrintMaleAverageData,    male_average.dat   );
@@ -900,10 +902,14 @@ public:
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/grp%d_ft%d_%s.org", last_birth_group_id, last_birth_forager_type, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
-        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        
-        testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+
+        // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+        cRandom rng(0);
+        cAvidaContext ctx2(&m_world->GetDriver(), rng);
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+        testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
+        
         if (bg == it->Next()) break; // no more to check
         else bg = it->Next();
       }
@@ -965,10 +971,14 @@ public:
         cString filename(m_filename);
         if (filename == "") filename.Set("archive/ft%d_grp%d_%s.org", last_birth_forager_type, last_birth_group_id, (const char*)bg->Properties().Get("name").StringValue());
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
-        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
-        
-        testcpu->PrintGenome(ctx, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
+
+        // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+        cRandom rng(0);
+        cAvidaContext ctx2(&m_world->GetDriver(), rng);
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+        testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
         delete testcpu;
+
         if (bg == it->Next()) break; // no more to check
         else bg = it->Next();
       }
@@ -4021,8 +4031,8 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     bool use_av = m_world->GetConfig().USE_AVATARS.Get();
-    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_facing" << endl;
-    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_facing,av_cellx,av_celly,av_facing" << endl;
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing" << endl;
+    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing" << endl;
     
     const int worldx = m_world->GetConfig().WORLD_X.Get();
     
@@ -4035,8 +4045,10 @@ public:
       const int locy = loc / worldx;
       const int ft = org->GetForageTarget();
       const int faced_dir = org->GetFacedDir();
+      int opinion = -1;
+      if (org->HasOpinion()) opinion = org->GetOpinion().first;
       
-      fp << id << "," << locx << "," << locy << "," << ft << "," <<  faced_dir;
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
       if (use_av) {
         const int avloc = org->GetOrgInterface().GetAVCellID();
         const int avlocx = avloc % worldx;
@@ -4769,6 +4781,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
+  action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");
   
   
   //Coalescence Clade Actions

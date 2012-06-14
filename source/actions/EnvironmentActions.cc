@@ -284,6 +284,106 @@ public:
   } 
 };
 
+class cActionSetGradientPlatInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow;
+  
+public:
+  cActionSetGradientPlatInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    m_world->GetPopulation().UpdateGradientPlatInflow(m_res_name, m_inflow);        
+  } 
+};
+
+class cActionSetGradientPlatOutflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_outflow;
+  
+public:
+  cActionSetGradientPlatOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateGradientPlatOutflow(m_res_name, m_outflow);        
+  } 
+};
+
+class cActionSetGradientConeInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_inflow;
+  
+public:
+  cActionSetGradientConeInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateGradientConeInflow(m_res_name, m_inflow);        
+  } 
+};
+
+class cActionSetGradientConeOutflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_outflow;
+  
+public:
+  cActionSetGradientConeOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    m_world->GetPopulation().UpdateGradientConeOutflow(m_res_name, m_outflow);        
+  } 
+};
+
 class cActionSetGradientInflow : public cAction
 {
 private:
@@ -303,34 +403,9 @@ public:
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
   
-  void Process(cAvidaContext&)
+  void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().UpdateGradientInflow(m_res_name, m_inflow);        
-  } 
-};
-
-class cActionSetGradientOutflow : public cAction
-{
-private:
-  cString m_res_name;
-  double m_outflow;
-  
-public:
-  cActionSetGradientOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_res_name = largs.PopWord();
-    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
-    
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
-  }
-  
-  static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
-  
-  void Process(cAvidaContext&)
-  {
-    m_world->GetPopulation().UpdateGradientOutflow(m_res_name, m_outflow);        
   } 
 };
 
@@ -1102,7 +1177,8 @@ class cActionSetOptimizeMinMax : public cAction
     }
   };
 
-//@JJB**
+// For deme input/output, an event (SetDemeIOGrid) that sets listed cells deme input/output bool status to true
+// allowing organism's to complete deme-IO in those cells. Does not support and there is not yet an event to turn cells "off". @JJB
 class cActionSetDemeIOGrid: public cAction
 {
 public:
@@ -1110,8 +1186,10 @@ public:
   cString inputOutput;
 
 public:
-  cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback&)
-    : cAction(world, args), cell_list(0), inputOutput("none")
+  cActionSetDemeIOGrid(cWorld* world, const cString& args, Feedback&) :
+    cAction(world, args)
+  , cell_list(0)
+  , inputOutput("none")
   {
     cString largs(args);
     inputOutput = largs.Pop(':');
@@ -1133,8 +1211,7 @@ public:
           m_world->GetPopulation().GetCell(cell_id).SetCanInput(true);
         }
       }
-    }
-    else if (inputOutput == "Output") {
+    } else if (inputOutput == "Output") {
       int cell_id;
       for (int i = 0; i < cell_list.GetSize(); i++) {
         for (int deme_id = 0; deme_id < num_demes; deme_id++) {
@@ -1145,6 +1222,35 @@ public:
     }
   }
 };
+
+//@JJB**
+//class cActionSendOrgInterruptMessage : public cAction
+//{
+//private:
+//  tArray<int> cell_list;
+//public:
+//  cActionSendOrgInterruptMessage(cWorld* world, const cString& args, Feedback&) :
+//    cAction(world, args)
+//  , cell_list(0)
+//  {
+//    cString largs(args);
+//
+//  }
+//};
+
+//@JJB**
+//class cActionSendAvatarsInterruptMessage : public cAction
+//{
+//private:
+//  tArray<int> cell_list;
+//public:
+//  cActionSendAvatarsInterruptMessage(cWorld* world, const cString& args, Feedback&) :
+//    cAction(world, args)
+//  , cell_list(0)
+//  {
+//    cString largs(args);
+//  }
+//};
 
 class cActionDelayedDemeEvent : public cAction
 {
@@ -1365,8 +1471,11 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionMergeResourceAcrossDemes>("MergeResourceAcrossDemes");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
   action_lib->Register<cActionSetGradientResource>("SetGradientResource");
+  action_lib->Register<cActionSetGradientPlatInflow>("SetGradientPlatInflow");
+  action_lib->Register<cActionSetGradientPlatOutflow>("SetGradientPlatOutflow");
+  action_lib->Register<cActionSetGradientConeInflow>("SetGradientConeInflow");
+  action_lib->Register<cActionSetGradientConeOutflow>("SetGradientConeOutflow");
   action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
-  action_lib->Register<cActionSetGradientOutflow>("SetGradientOutflow");
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");
@@ -1394,6 +1503,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
 
   action_lib->Register<cActionSetDemeIOGrid>("SetDemeIOGrid");
+  //action_lib->Register<cActionSendOrgInterruptMessage>("SendOrgInterruptMessage");
+  //action_lib->Register<cActionSendAvatarsInterruptMessage>("SendAvatarsInterruptMessage");
   
   action_lib->Register<cActionSetMigrationMatrix>("SetMigrationMatrix");
   action_lib->Register<cActionAlterMigrationConnection>("AlterMigrationConnection");

@@ -67,7 +67,8 @@ public:
     double prob_fail;         // probability of failing to execute inst
     int addl_time_cost;       // additional time added to age for executing instruction
     int inst_code;            // instruction binary code
-    double res_cost;          // resources (from bins) required to execute inst (this is the 7th column after instname)
+    double res_cost;          // resources (from bins) required to execute inst
+    double fem_res_cost;      
     int female_cost;          // additional cost paid by females to execute the instruction @CHC
     int choosy_female_cost;   // additional cost paid by females to execute the instruction (on top of female_cost) @CHC
     int post_cost;             // cpu cost to be paid AFTER instruction executed the first time (e.g. post-kill handling time in predators)
@@ -82,6 +83,7 @@ public:
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   bool m_has_res_costs;
+  bool m_has_fem_res_costs;
   bool m_has_female_costs;
   bool m_has_choosy_female_costs;
   bool m_has_post_costs;
@@ -91,7 +93,7 @@ public:
 public:
   inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib)
     : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL), 
-      m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false),
+      m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false), m_has_fem_res_costs(false),
       m_has_female_costs(false), m_has_choosy_female_costs(false), m_has_post_costs(false) { ; }
   cInstSet(const cInstSet&); 
   cInstSet& operator=(const cInstSet&); 
@@ -112,6 +114,7 @@ public:
   int GetAddlTimeCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
   int GetInstructionCode(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
   double GetResCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].res_cost; }
+  double GetFemResCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].fem_res_cost; }
   int GetFemaleCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].female_cost; } //@CHC
   int GetChoosyFemaleCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].choosy_female_cost; } //@CHC
   int GetPostCost(const Instruction& inst) const { return m_lib_name_map[inst.GetOp()].post_cost; }
@@ -134,6 +137,7 @@ public:
   bool HasFTCosts() const { return m_has_ft_costs; }
   bool HasEnergyCosts() const { return m_has_energy_costs; }
   bool HasResCosts() const { return m_has_res_costs; }
+  bool HasFemResCosts() const { return m_has_fem_res_costs; }
   bool HasFemaleCosts() const { return m_has_female_costs; }
   bool HasChoosyFemaleCosts() const { return m_has_choosy_female_costs; }
   bool HasPostCosts() const { return m_has_post_costs; }

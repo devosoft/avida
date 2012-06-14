@@ -61,11 +61,11 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
-  Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > group_list;
-  Apto::Map<int, tArray<pair<int,int> > > group_intolerances;
-  Apto::Map<int, tArray<pair<int,int> > > group_intolerances_females;
-  Apto::Map<int, tArray<pair<int,int> > > group_intolerances_males;
-  Apto::Map<int, tArray<pair<int,int> > > group_intolerances_juvs;
+  Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
+  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances;
+  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances_females;
+  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances_males;
+  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances_juvs;
   
   // Keep list of live organisms
   Apto::Array<cOrganism*, Apto::Smart> live_org_list;
@@ -74,11 +74,14 @@ private:
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
-  Apto::Array<Systematics::GroupPtr, Apto::Smart> minitrace_queue;
+  Apto::Array<int, Apto::Smart> minitrace_queue;
   bool print_mini_trace_genomes;
+  bool use_micro_traces;
+  int m_next_prey_q;
+  int m_next_pred_q;
   
   // Default organism setups...
-  cEnvironment & environment;          // Physics & Chemistry description
+  cEnvironment& environment;          // Physics & Chemistry description
 
   // Other data...
   int world_x;                         // Structured population width.
@@ -98,7 +101,6 @@ private:
   std::map<int, int> m_group_males; //<! Maps the group id to the number of males in the group
 
   int m_hgt_resid; //!< HGT resource ID.
-  
 
   cPopulation(); // @not_implemented
   cPopulation(const cPopulation&); // @not_implemented
@@ -123,14 +125,10 @@ public:
   
   Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
 
-  
-  
-  
   // cPopulation
   
   void ResizeCellGrid(int x, int y);
-  
-  
+    
   void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
 
   // Activate the offspring of an organism in the population
@@ -236,6 +234,7 @@ public:
 
   // Calculate the statistics from the most recent update.
   void ProcessPostUpdate(cAvidaContext& ctx);
+  void ProcessPreUpdate();
   void UpdateResStats(cAvidaContext& ctx);
   void ProcessUpdateCellActions(cAvidaContext& ctx);
 
@@ -247,8 +246,16 @@ public:
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(const Apto::Array<Systematics::GroupPtr, Apto::Smart>& new_queue, bool print_genomes);
-  const Apto::Array<Systematics::GroupPtr, Apto::Smart>& GetMiniTraceQueue() const { return minitrace_queue; }
+  void SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool use_micro = false);
+  void AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool use_micro = false);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  Apto::Array<int, Apto::Smart> SetRandomTraceQ(int max_samples);
+  Apto::Array<int, Apto::Smart> SetRandomPreyTraceQ(int max_samples);
+  Apto::Array<int, Apto::Smart> SetRandomPredTraceQ(int max_samples);
+  void SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro);
+  void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
+  Apto::Array<int, Apto::Smart> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
+  const Apto::Array<int, Apto::Smart>& GetMiniTraceQueue() const { return minitrace_queue; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -262,7 +269,7 @@ public:
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   const tArray<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
-  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateGlobalResources(ctx); }
+  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateResources(ctx); }
   const tArray< tArray<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
 
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakX(ctx, res_id); } 
@@ -325,8 +332,11 @@ public:
   
   // Let users change Gradient Resource variables during the run JW
   void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientPlatInflow(const cString res_name, const double inflow);
+  void UpdateGradientPlatOutflow(const cString res_name, const double outflow);
+  void UpdateGradientConeInflow(const cString res_name, const double inflow);
+  void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
-  void UpdateGradientOutflow(const cString res_name, const double outflow);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
@@ -336,7 +346,7 @@ public:
 	
   // Adds an organism to a group  
   void JoinGroup(cOrganism* org, int group_id);
-  void MakeGroup(cOrganism* org); // @JJB
+  void MakeGroup(cOrganism* org);
   // Removes an organism from a group 
   void LeaveGroup(cOrganism* org, int group_id);
 
@@ -408,9 +418,10 @@ private:
 	
   // Must be called to activate *any* organism in the population.
   bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
-  void TestForMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void SetupMiniTrace(cAvidaContext& ctx, cOrganism* in_organism);
-  void PrintMiniTraceGenome(cAvidaContext& ctx, cOrganism* in_organism, cString& filename);
+  
+  void TestForMiniTrace(cOrganism* in_organism);
+  void SetupMiniTrace(cOrganism* in_organism);
+  void PrintMiniTraceGenome(cOrganism* in_organism, cString& filename);
   
   int PlaceAvatar(cOrganism* parent);
   

@@ -150,7 +150,7 @@ public:
 
   double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
   
-// -------- Avatar support -------- @JJB
+// -------- Avatar support -------- 
 private:
   Apto::Array<cOrganism*, Apto::Smart> m_av_inputs;
   Apto::Array<cOrganism*, Apto::Smart> m_av_outputs;
@@ -177,7 +177,7 @@ public:
   tArray<cOrganism*> GetCellOutputAVs();
   tArray<cOrganism*> GetCellAVs();
 
-// -------- Neural support -------- @JJB
+// -------- Neural support -------- 
 private:
   bool m_can_input;
   bool m_can_output;

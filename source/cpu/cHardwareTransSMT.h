@@ -190,7 +190,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
   bool SupportsSpeculative() const { return false; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString&, cOrganism*, const int, const cString&) { ; }
+  void SetupMiniTraceFileHeader(const cString&, cOrganism*, const int, const int, const cString&) { ; }
   void PrintMiniTraceStatus(cAvidaContext&, std::ostream&, const cString&) { ; }
   void PrintMiniTraceSuccess(std::ostream&, const int) { }
 		

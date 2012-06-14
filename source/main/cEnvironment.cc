@@ -900,6 +900,18 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "plateau_outflow", var_type, feedback)) return false;
         new_resource->SetPlateauOutflow( var_value.AsDouble() );
       } 
+      else if (var_name == "cone_inflow") {
+        if (!AssertInputDouble(var_value, "cone_inflow", var_type, feedback)) return false;
+        new_resource->SetConeInflow( var_value.AsDouble() );
+      }      
+      else if (var_name == "cone_outflow") {
+        if (!AssertInputDouble(var_value, "cone_outflow", var_type, feedback)) return false;
+        new_resource->SetConeOutflow( var_value.AsDouble() );
+      } 
+      else if (var_name == "gradient_inflow") {
+        if (!AssertInputDouble(var_value, "gradient_inflow", var_type, feedback)) return false;
+        new_resource->SetGradientInflow( var_value.AsDouble() );
+      } 
       else if (var_name == "initial") {
         if (!AssertInputDouble(var_value, "initial", var_type, feedback)) return false;
         new_resource->SetPlatInitial( var_value.AsDouble() );
@@ -915,6 +927,8 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
       else if (var_name == "habitat") {
         if (!AssertInputInt(var_value, "habitat", var_type, feedback)) return false;
         new_resource->SetHabitat( var_value.AsInt() );
+        // Add this target id to the list in the instructions file. 
+        AddHabitat(var_value.AsInt());
       } 
       else if (var_name == "min_size") {
         if (!AssertInputInt(var_value, "min_size", var_type, feedback)) return false;
@@ -1520,7 +1534,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
                                const int reaction_id, cReactionResult& result, cTaskContext& taskctx) const
 {
   const int num_process = process_list.GetSize();
-
+  
   tLWConstListIterator<cReactionProcess> process_it(process_list);
   for (int i = 0; i < num_process; i++) {
     // See if this requisite batch can be satisfied.
@@ -1918,6 +1932,15 @@ bool cEnvironment::IsTargetID(int test_id)
 {
   bool val = false;
   if (possible_target_ids.find(test_id) != possible_target_ids.end()) {
+    val = true;
+  }
+  return val;
+}
+
+bool cEnvironment::IsHabitat(int test_habitat)
+{
+  bool val = false;
+  if (possible_habitats.find(test_habitat) != possible_habitats.end()) {
     val = true;
   }
   return val;

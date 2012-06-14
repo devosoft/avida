@@ -48,6 +48,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <utility>
 
 class cWorld;
 class cOrganism;
@@ -336,7 +337,7 @@ private:
   cDoubleSum sum_female_creature_age;
   cDoubleSum sum_female_generation;
   cDoubleSum sum_female_size;
-  
+    
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
@@ -780,6 +781,17 @@ public:
   void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
   void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
+  void PrintMicroTraces(Apto::Array<Apto::String, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
+  
+  // deme predicate stats
+  void IncEventCount(int x, int y);
+  void IncPredSat(int cell_id);
+  void PrintPredSatFracDump(const cString& filename);
+
+	void AddDemeResourceThresholdPredicate(cString& name);
+	void IncDemeResourceThresholdPredicate(cString& name);
+	void PrintDemeResourceThresholdPredicate(const cString& filename);
+
   void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
 
@@ -1021,15 +1033,18 @@ public:
     m_percent_reproductives.push_back(per_repro);
 
 	}
-
+	void PrintIntrinsicTaskSwitchingCostData(const cString& filename);
 	void PrintAgePolyethismData(const cString& filename);
 	void AgeTaskEvent(int org_id, int task_id, int org_age);
 	//! Get number of deme replications
 	int GetNumDemeReplications() { return m_total_deme_num_repls; }
+  //! Add a task time tracking event
+  void AddTaskSwitchTime(int t1, int t2, int time); 
 
 
 protected:
 	std::map<int, cDoubleSum> reaction_age_map;
+  std::map<std::pair<int,int>, cDoubleSum> intrinsic_task_switch_time; 
 
 
 // -------- Reputation support ---------

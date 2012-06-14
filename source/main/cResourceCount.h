@@ -52,8 +52,11 @@ private:
   tArray< tArray<int> > cell_lists;	
 
   // Setup the update process to use lazy evaluation...
+  cWorld* m_world;
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
+  mutable int m_last_updated;
+  mutable int m_spatial_update;
 
   void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
 
@@ -92,10 +95,10 @@ public:
      const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
      const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
      const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, 
-     const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
-     const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
-     const int& in_config, const int& in_count, const double& in_resistance, const double& in_init_plat, 
-     const double& in_threshold, const int& in_refuge, const bool& isgradient
+     const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
+     const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
+     const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance, 
+     const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient
 	   ); 
   
   void SetGradientCount(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
@@ -103,12 +106,15 @@ public:
     const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
     const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
     const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
-    const double& plateau_inflow, const double& plateau_outflow, const int& is_plateau_common, 
-    const double& floor, const int& habitat, const int& min_size, const int& max_size,
-    const int& config, const int& count, const double& resistance, const double& plat_val, const double& threshold, 
-    const int& refuge); 
+    const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow, 
+    const double& gradient_inflow, const int& is_plateau_common, const double& floor, const int& habitat, 
+    const int& min_size, const int& max_size, const int& config, const int& count, const double& resistance, 
+    const double& plat_val, const double& threshold, const int& refuge); 
+  void SetGradientPlatInflow(const int& res_id, const double& inflow);
+  void SetGradientPlatOutflow(const int& res_id, const double& outflow);
+  void SetGradientConeInflow(const int& res_id, const double& inflow);
+  void SetGradientConeOutflow(const int& res_id, const double& outflow);
   void SetGradientInflow(const int& res_id, const double& inflow);
-  void SetGradientOutflow(const int& res_id, const double& outflow);
   int GetResourceCountID(const cString& res_name);
   double GetInflow(const cString& name);
   void SetInflow(const cString& name, const double _inflow);
@@ -145,7 +151,9 @@ public:
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const;
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const;
   
+  void SetSpatialUpdate(int update) { m_spatial_update = update; }
   void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }
+  void UpdateResources(cAvidaContext& ctx) { DoUpdates(ctx, false); }
 };
 
 #endif

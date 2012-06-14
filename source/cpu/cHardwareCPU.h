@@ -248,8 +248,8 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
-    { (void)filename, (void)in_organism, (void)org_id, (void)gen_id; }
+  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
+    { (void)filename, (void)in_organism, (void)org_id, (void)gen_id, (void)genotype;; }
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name)
     { (void)ctx, (void)fp, (void)next_name; }
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { (void)fp, (void)exec_success; }
@@ -507,7 +507,7 @@ private:
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
   bool Inst_SenseResourceID(cAvidaContext& ctx);
   // Resources of next group +1 or -1, based on positive or negative value in the nop register,
-  // wrapping from the top group back to group 1 (skipping 0). @JJB
+  // wrapping from the top group back to group 1 (skipping 0). 
   bool Inst_SenseNextResLevel(cAvidaContext& ctx);
   bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx);
   bool Inst_SenseDiffFaced(cAvidaContext& ctx);
@@ -950,7 +950,7 @@ public:
   bool Inst_JoinGroup(cAvidaContext& ctx);
   bool Inst_JoinMTGroup(cAvidaContext& ctx);
   // Organism joins group +1 or -1 wrapping from the top group back to group 1 (skipping 0)
-  // based on whether the nop register is positive or negative. @JJB
+  // based on whether the nop register is positive or negative.
   bool Inst_JoinNextGroup(cAvidaContext& ctx);
   bool Inst_JoinNextMTGroup(cAvidaContext& ctx);
   //! Returns the number of organisms in the current organism's group
@@ -960,7 +960,7 @@ public:
   bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
   bool Inst_NumberMTInGroup(cAvidaContext& ctx);
   // Places in BX register, the number of organisms in the group +1 or -1, wrapping from the top back to group 1
-  // skipping 0, based on whether the nop register is positive or negative. @JJB
+  // skipping 0, based on whether the nop register is positive or negative.
   bool Inst_NumberNextGroup(cAvidaContext& ctx);
   bool Inst_NumberMTNextGroup(cAvidaContext& ctx);
   bool Inst_KillGroupMember(cAvidaContext& ctx);
@@ -997,6 +997,10 @@ public:
   int GetTaskSwitchingCost() { return m_task_switching_cost; }
   // Apply point mutations to a genome.
   bool Inst_ApplyPointMutations(cAvidaContext& ctx);
+  // Apply point mutations to a genome, where the mutation rate
+  // depends on the task last performed
+  bool Inst_ApplyVaryingPointMutations(cAvidaContext& ctx);
+
   bool Inst_JoinGermline(cAvidaContext& ctx);
   bool Inst_ExitGermline(cAvidaContext& ctx);
   bool Inst_RepairPointMutOn(cAvidaContext& ctx);

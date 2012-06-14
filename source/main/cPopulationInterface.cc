@@ -388,11 +388,11 @@ bool cPopulationInterface::TestOnDivide()
  */
 bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) //**
 {
-  bool dropped=false;
-  bool lost=false;
+  bool dropped = false;
+  bool lost = false;
 
   static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
-  if((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
+  if ((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
     // message dropped
     GetDeme()->messageDropped();
     GetDeme()->messageSendFailed();
@@ -402,16 +402,11 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
   if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
     // Not using neural networking avatars..
     // Fail if the cell we're facing is not occupied.
-    if(!rcell.IsOccupied()) {
-      lost = true;
-    }
-  }
-  else {
+    if(!rcell.IsOccupied()) lost = true;
+  } else {
     // If neural networking with avatars check for input avatars in this cell
-    if (!rcell.GetNumAVInputs()) {
-      lost = true;
+    if (!rcell.GetNumAVInputs()) lost = true;
     // If self communication is not allowed, must check for an input avatar for another organism
-    }
     else if (!m_world->GetConfig().SELF_COMMUNICATION.Get()) {
       lost = true;
       cOrganism* sender = GetOrganism();
@@ -420,16 +415,13 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
       }
     }
   }
+
   if (lost) GetDeme()->messageSendFailed();
 
   // record this message, regardless of whether it's actually received.
-  if(m_world->GetConfig().NET_LOG_MESSAGES.Get()) {
-    m_world->GetStats().LogMessage(msg, dropped, lost);
-  }
+  if(m_world->GetConfig().NET_LOG_MESSAGES.Get()) m_world->GetStats().LogMessage(msg, dropped, lost);
 
-  if(dropped || lost) {
-    return false;
-  }
+  if(dropped || lost) return false;
 
   if (!m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetConfig().USE_AVATARS.Get() != 2) {
     // Not using neural networking avatars..
@@ -439,9 +431,9 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
     m_world->GetStats().SentMessage(msg);
     GetDeme()->MessageSuccessfullySent();
   } else {
-    // If using neural networking avatars, message must be sent to all orgs with input avatars in the cell. @JJB**
+    // If using neural networking avatars, message must be sent to all orgs with input avatars in the cell. @JJB
     cOrganism* sender = GetOrganism();
-    for (int i = 0; i < rcell.GetNumAVInputs(); i++) { //**
+    for (int i = 0; i < rcell.GetNumAVInputs(); i++) {
       cOrganism* recvr = rcell.GetCellInputAVs()[i];
       assert(recvr != 0);
       if ((sender != recvr) || m_world->GetConfig().SELF_COMMUNICATION.Get()) {
@@ -834,7 +826,7 @@ bool cPopulationInterface::NetworkSelect(int x) {
 	return true;
 }
 
-// @JJB**
+// If the cell is turned on for deme input, retrieves the deme's next input value. @JJB
 int cPopulationInterface::GetNextDemeInput(cAvidaContext& ctx)
 {
   if (m_world->GetPopulation().GetCell(m_cell_id).GetCanInput()) {
@@ -843,7 +835,7 @@ int cPopulationInterface::GetNextDemeInput(cAvidaContext& ctx)
   return -1;
 }
 
-// @JJB**
+// If the cell is turned on for deme input, adds the value to the deme's input buffer. @JJB
 void cPopulationInterface::DoDemeInput(int value)
 {
   if (m_world->GetPopulation().GetCell(m_cell_id).GetCanInput()) {
@@ -851,7 +843,7 @@ void cPopulationInterface::DoDemeInput(int value)
   }
 }
 
-// @JJB**
+// If the cell is turned on for deme output, adds the value to the deme's output buffer. @JJB
 void cPopulationInterface::DoDemeOutput(cAvidaContext& ctx, int value)
 {
   if (m_world->GetPopulation().GetCell(m_cell_id).GetCanOutput()) {
@@ -1233,11 +1225,11 @@ void cPopulationInterface::ChangeGroupMatingTypes(cOrganism* org, int group_id, 
  * Removes the most recent record of dec-tolerance
  * Returns the modified tolerance total.
  */
-int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &ctx)
+int cPopulationInterface::IncTolerance(const int tolerance_type, cAvidaContext &ctx)
 {
   int group_id = GetOrganism()->GetOpinion().first;
   
-  if (toleranceType == 0) {
+  if (tolerance_type == 0) {
     // Modify tolerance towards immigrants
     PushToleranceInstExe(0, ctx);
     
@@ -1257,7 +1249,7 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
     // Retrieve modified tolerance total for immigrants
     return GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
   }
-  if (toleranceType == 1) {
+  if (tolerance_type == 1) {
     // Modify tolerance towards own offspring
     PushToleranceInstExe(1, ctx);
     
@@ -1271,7 +1263,7 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
     // Retrieve modified tolerance total for own offspring.
     return GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
   }
-  if (toleranceType == 2) {
+  if (tolerance_type == 2) {
     // Modify tolerance towards other offspring of the group
     PushToleranceInstExe(2, ctx);
     
@@ -1297,20 +1289,20 @@ int cPopulationInterface::IncTolerance(const int toleranceType, cAvidaContext &c
  * Records the update during which dec-tolerance was executed
  * Returns the modified tolerance total.
  */
-int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &ctx)
+int cPopulationInterface::DecTolerance(const int tolerance_type, cAvidaContext &ctx)
 {
   const int cur_update = m_world->GetStats().GetUpdate();
   const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
   int group_id = GetOrganism()->GetOpinion().first;
   
-  if (toleranceType == 0) {
+  if (tolerance_type == 0) {
     // Modify tolerance towards immigrants
     PushToleranceInstExe(3, ctx);
     
     // Update tolerance list by inserting new record (at the front)
-    tList<int>& toleranceList = GetOrganism()->GetPhenotype().GetToleranceImmigrants();
-    toleranceList.Push(new int(cur_update));
-    if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
+    tList<int>& tolerance_list = GetOrganism()->GetPhenotype().GetToleranceImmigrants();
+    tolerance_list.Push(new int(cur_update));
+    if (tolerance_list.GetSize() > tolerance_max) delete tolerance_list.PopRear();
     
     // If not at min tolerance, increase the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[0].second != tolerance_max) {
@@ -1326,13 +1318,13 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     // Return modified tolerance total for immigrants.
     return GetOrganism()->GetPhenotype().CalcToleranceImmigrants();
   }
-  if (toleranceType == 1) {
+  if (tolerance_type == 1) {
     PushToleranceInstExe(4, ctx);
     
     // Update tolerance list by inserting new record (at the front)
-    tList<int> &toleranceList = GetOrganism()->GetPhenotype().GetToleranceOffspringOwn();
-    toleranceList.Push(new int(cur_update));
-    if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
+    tList<int>& tolerance_list = GetOrganism()->GetPhenotype().GetToleranceOffspringOwn();
+    tolerance_list.Push(new int(cur_update));
+    if(tolerance_list.GetSize() > tolerance_max) delete tolerance_list.PopRear();
     
     // If not at min tolerance, increase the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[1].second != tolerance_max) {
@@ -1342,13 +1334,13 @@ int cPopulationInterface::DecTolerance(const int toleranceType, cAvidaContext &c
     return GetOrganism()->GetPhenotype().CalcToleranceOffspringOwn();
 
   }
-  if (toleranceType == 2) {
+  if (tolerance_type == 2) {
     PushToleranceInstExe(5, ctx);
     
     // Update tolerance list by inserting new record (at the front)
-    tList<int>& toleranceList = GetOrganism()->GetPhenotype().GetToleranceOffspringOthers();
-    toleranceList.Push(new int(cur_update));
-    if(toleranceList.GetSize() > tolerance_max) delete toleranceList.PopRear();
+    tList<int>& tolerance_list = GetOrganism()->GetPhenotype().GetToleranceOffspringOthers();
+    tolerance_list.Push(new int(cur_update));
+    if(tolerance_list.GetSize() > tolerance_max) delete tolerance_list.PopRear();
     
     // If not at min tolerance, increase the intolerance cache
     if (GetOrganism()->GetPhenotype().GetIntolerances()[2].second != tolerance_max) {
@@ -1468,7 +1460,7 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
  * Each cell contains an array of the organisms with avatars in that cell, linking the cells back to
  * the organisms (in cPopulationCell). This allows both multiple organisms to occupy the same cell
  * and organisms to occupy/interact with multiple cells. Currently only two types of avatars are
- * support input and output, also used as predators and prey. @JJB**
+ * supported: input and output, also used as predators and prey. 
  */
 
 // Check if the avatar has any output avatars sharing the same cell
@@ -1555,9 +1547,8 @@ void cPopulationInterface::AddPredPreyAV(int av_cell_id)
     sIO_avatar predAV(av_cell_id, 0, -1, true, false);
     m_avatars.Push(predAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddInputAV(GetOrganism());
-  }
   // Add prey (saved as output avatar)
-  else {
+  } else {
     sIO_avatar preyAV(av_cell_id, 0, -1, false, true);
     m_avatars.Push(preyAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddOutputAV(GetOrganism());
@@ -1577,9 +1568,8 @@ void cPopulationInterface::SwitchPredPrey(int av_num)
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).AddOutputAV(GetOrganism());
       m_avatars[av_num].av_input = false;
       m_avatars[av_num].av_output = true;
-    }
     // Is prey, switching to a predator (output to intput)
-    else if (m_avatars[av_num].av_output) {
+    } else if (m_avatars[av_num].av_output) {
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).RemoveOutputAV(GetOrganism());
       m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).AddInputAV(GetOrganism());
       m_avatars[av_num].av_input = true;
@@ -1630,7 +1620,7 @@ int cPopulationInterface::GetAVCellID(int av_num)
   return -1;
 }
 
-// Returns cell id faced by avatar, only for torus and bounded worlds @JJB**
+// Returns cell id faced by avatar, only for torus and bounded worlds
 int cPopulationInterface::GetAVFacedCellID(int av_num)//** GetCellXPosition()
 {
   if (av_num < GetNumAV()) {
@@ -1662,17 +1652,12 @@ int cPopulationInterface::GetAVNumNeighbors(int av_num)
 
     // Is the cell on a corner..
     if (x == 0 || x == (x_size - 1)) {
-      if (y == 0 || y == (y_size - 1)) {
-        return 3;
-      }
+      if (y == 0 || y == (y_size - 1)) return 3;
       // Is the cell on a side-edge..
-      else
-        return 5;
+      else return 5;
     }
     // Is the cell on a top or bottom edge..
-    if (y == 0 || y == (y_size - 1)) {
-      return 5;
-    }
+    if (y == 0 || y == (y_size - 1)) return 5;
     // The cell must be on the interior..
     return 8;
   }
@@ -1721,6 +1706,63 @@ int cPopulationInterface::GetAVFacedDataTerritory(int av_num)
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellDataTerritory();
   }
   return -1;
+}
+
+// Returns the avatar's faced cell data
+int cPopulationInterface::GetAVData(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < GetNumAV()) {
+    // Return the avatar's faced cell data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellData();
+  }
+  return -1;
+}
+
+// Returns the avatar's faced cell org id data
+int cPopulationInterface::GetAVDataOrgID(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < GetNumAV()) {
+    // Returns the avatar's faced cell org id data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellDataOrgID();
+  }
+  return -1;
+}
+
+// Returns the avatar's faced cell update data
+int cPopulationInterface::GetAVDataUpdate(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < GetNumAV()) {
+    // Returns the avatar's faced cell update data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellDataUpdate();
+  }
+  return -1;
+}
+
+// Returns the avatar's faced cell territory data
+int cPopulationInterface::GetAVDataTerritory(int av_num)
+{
+  // If the avatar exists..
+  if (av_num < GetNumAV()) {
+    // Returns the avatar's faced cell territory data
+    return m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id).GetCellDataTerritory();
+  }
+  return -1;
+}
+
+// Finds the index of the next avatar which matches input/output specifications
+int cPopulationInterface::FindAV(bool input, bool output, int av_num)
+{
+  assert(GetNumAV() > 0);
+  const int num_AV = GetNumAV();
+  for (int i = 0; i < num_AV; i++) {
+    int index = i + av_num % num_AV;
+    if (m_avatars[index].av_input == input && m_avatars[index].av_output == output) {
+      return index;
+    }
+  }
 }
 
 // Sets the avatar's facing, then sets the faced cell
@@ -1812,7 +1854,8 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
         if (y == 0) {
           y += 1;
           off_the_edge_facing = true;
-        } else if (y == (y_size - 1)) {
+        } 
+        else if (y == (y_size - 1)) {
           y -= 1;
           off_the_edge_facing = true;
         }
@@ -1821,7 +1864,8 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
         if (x == 0) {
           x += 1;
           off_the_edge_facing = true;
-        } else if (y == (y_size - 1)) {
+        } 
+        else if (y == (y_size - 1)) {
           x -= 1;
           off_the_edge_facing = true;
         }
@@ -1832,20 +1876,33 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
         // West edge..
         if (x == 0) {
           // Northwest corner
-          if (y == 0 && (facing == 0 || facing == 7 || facing == 6)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x += 1;
+          if (y == 0) {
+            if (facing == 0 || facing == 7 || facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+              else y += 1;
               off_the_edge_facing = true;
-            } else {
+            }
+            else if (facing == 5) {
               y += 1;
               off_the_edge_facing = true;
             }
-          // Southwest corner
-          } else if (y == (y_size - 1) && (facing == 4 || facing == 5 || facing == 6)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
+            else if (facing == 1) {
               x += 1;
               off_the_edge_facing = true;
-            } else {
+            }
+          }
+          // Southwest corner
+          else if (y == (y_size - 1)) {
+            if (facing == 4 || facing == 5 || facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 7) {
+              x += 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 3) {
               y -= 1;
               off_the_edge_facing = true;
             }
@@ -1857,39 +1914,50 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
               y -= 1;
               off_the_edge_facing = true;
             // West edge facing west
-            } else if (facing == 6) {
-              if (m_world->GetRandom().GetInt(0, 2)) {
-                y += 1;
-                off_the_edge_facing = true;
-              } else {
-                y -= 1;
-                off_the_edge_facing = true;
-              }
-            // West edge facing northwest
-            } else if (facing == 7) {
+            } 
+            else if (facing == 6) {
+              if (m_world->GetRandom().GetInt(0, 2)) y += 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
+            // West edge facing northwest                                                   
+            else if (facing == 7) {
               y += 1;
               off_the_edge_facing = true;
             }
           }
-
+        }
         // East edge..
-        } else if (x == (x_size - 1)) {
+        else if (x == (x_size - 1)) {
           // Northeast corner
-          if (y == 0 && (facing == 0 || facing == 1 || facing == 2)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x -= 1;
+          if (y == 0) {
+            if (facing == 0 || facing == 1 || facing == 2) {
+              if (m_world->GetRandom().GetInt(0, 2)) x -= 1;
+              else y += 1;
               off_the_edge_facing = true;
-            } else {
+            }
+            if (facing == 3) {
               y += 1;
               off_the_edge_facing = true;
             }
-          // Southeast corner
-          } else if (y == (y_size - 1) && (facing == 2 || facing == 3 || facing == 4)) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
+            if (facing == 7) {
               x -= 1;
               off_the_edge_facing = true;
-            } else {
+            }
+          }
+          // Southeast corner
+          else if (y == (y_size - 1)) {
+            if (facing == 2 || facing == 3 || facing == 4) {
+              if (m_world->GetRandom().GetInt(0, 2)) x -= 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 1) {
               y -= 1;
+              off_the_edge_facing = true;
+            }
+            else if (facing == 5) {
+              x -= 1;
               off_the_edge_facing = true;
             }
           }
@@ -1900,59 +1968,53 @@ void cPopulationInterface::SetAVFacedCellID(int av_num)
               y -= 1;
               off_the_edge_facing = true;
             // East edge facing east
-            } else if (facing == 2) {
-              if (m_world->GetRandom().GetInt(0, 2)) {
-                y += 1;
-                off_the_edge_facing = true;
-              } else {
-                y -= 1;
-                off_the_edge_facing = true;
-              }
+            } 
+            else if (facing == 2) {
+              if (m_world->GetRandom().GetInt(0, 2)) y += 1;
+              else y -= 1;
+              off_the_edge_facing = true;
+            }
             // East edge facing southeast
-            } else if (facing == 3) {
+            else if (facing == 3) {
               y += 1;
               off_the_edge_facing = true;
             }
           }
-
+        }
         // North edge..
-        } else if (y == 0) {
+        else if (y == 0) {
           // North edge facing northwest
           if (facing == 7) {
             x -= 1;
             off_the_edge_facing = true;
           // North edge facing north
-          } else if (facing == 0) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x += 1;
-              off_the_edge_facing = true;
-            } else {
-              x -= 1;
-              off_the_edge_facing = true;
-            }
+          } 
+          else if (facing == 0) {
+            if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+            else x -= 1;
+            off_the_edge_facing = true;
+          }
           // North edge facing northeast
-          } else if (facing == 1) {
+          else if (facing == 1) {
             x += 1;
             off_the_edge_facing = true;
           }
-
+        }
         // South edge..
-        } else if (y == (y_size - 1)) {
+        else if (y == (y_size - 1)) {
           // South edge facing southeast
           if (facing == 3) {
             x += 1;
             off_the_edge_facing = true;
           // South edge facing south
-          } else if (facing == 4) {
-            if (m_world->GetRandom().GetInt(0, 2)) {
-              x += 1;
-              off_the_edge_facing = true;
-            } else {
-              x -= 1;
-              off_the_edge_facing = true;
-            }
+          } 
+          else if (facing == 4) {
+            if (m_world->GetRandom().GetInt(0, 2)) x += 1;
+            else x -= 1;
+            off_the_edge_facing = true;
+          }
           // South edge facing southwest
-          } else if (facing == 5) {
+          else if (facing == 5) {
             x -= 1;
             off_the_edge_facing = true;
           }
@@ -2012,7 +2074,7 @@ bool cPopulationInterface::MoveAV(cAvidaContext& ctx, int av_num)
     int dest_id = m_avatars[av_num].av_faced_cell;
     int true_cell = m_cell_id;
     if (m_world->GetConfig().NEURAL_NETWORKING.Get() || m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id, true_cell)) {
-      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num); //**
+      return SetAVCellID(m_avatars[av_num].av_faced_cell, av_num);
     }
   }
   return success;
@@ -2023,9 +2085,9 @@ bool cPopulationInterface::RotateAV(int increment, int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {
-    if (increment >= 0)
+    if (increment >= 0) {
       increment %= 8;
-    else {
+    } else {
       increment = -increment;
       increment %= 8;
       increment = -increment;

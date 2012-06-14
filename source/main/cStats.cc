@@ -1721,7 +1721,8 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
 
 }
 
-/*! Print statistics related to whether or not the demes are sequestering the germline...   Currently prints information for each org in each deme.
+/*! Print statistics related to whether or not the demes are sequestering the germline...   
+ Currently prints information for each org in each deme.
  */
 void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
 {  
@@ -1735,30 +1736,54 @@ void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
   
   for(int i = 0; i < numDemes; ++i) {
     cDeme& deme = pop.GetDeme(i);
+    df.Write(GetUpdate(), "Update [update]");
+    df.Write(deme.GetDemeID(), "Deme ID for cell [demeid]");
+    df.Write(deme.GetTotalResourceAmountConsumed(), "Deme resources consumed [demeres]");
+    
+    tArray<int> react_count = deme.GetReactionCount(); 
+    for (int k=0; k<react_count.GetSize(); ++k){
+      react_count[k] = 0;
+    }
+    
+    int numGerm = 0; 
+    int numMut = 0; 
+    int numPresent = 0;
+    
     for (int j=0; j<deme.GetSize(); ++j) {
-      
+
       cPopulationCell& cell = deme.GetCell(j);
       if (cell.IsOccupied()) {
         cOrganism* o = cell.GetOrganism();
         int isGerm = 0;
         if (o->IsGermline()) isGerm = 1;
-        
-        df.Write(GetUpdate(), "Update [update]");
-        df.Write(o->GetDemeID(), "Deme ID for cell [demeid]");
-        df.Write(j, "Org placement in deme [orgloc]");
-        df.Write(o->GetOrgInterface().GetCellXPosition(), "Org x position [xpos]");
-        df.Write(o->GetOrgInterface().GetCellYPosition(), "Org y position [ypos]");                 
+                      
         df.Write(isGerm, "Org is germ line [isgerm]");
         df.Write(o->GetNumOfPointMutationsApplied(), "Number of point mutations [numPoint]");
+        if (isGerm) numGerm++; 
+        numMut += o->GetNumOfPointMutationsApplied();
+        numPresent++;
         
-        tArray<int> react_count = o->GetPhenotype().GetCumulativeReactionCount();
-        for (int k=0; k<react_count.GetSize(); ++k){
-          df.Write(react_count[k], "reaction");
-        }
-        df.Endl();
-        
+         tArray<int> org_react_count = o->GetPhenotype().GetCumulativeReactionCount();
+         for (int k=0; k<org_react_count.GetSize(); ++k){
+           react_count[k] += org_react_count[k];
+         }
+      }
+        // Cell is not occuppied.
+      else {
+        df.Write(2, "Org is germ line [isgerm]");
+        df.Write(0, "Number of point mutations [numPoint]");
       }
     }
+    for (int k=0; k<react_count.GetSize(); ++k){
+      df.Write(react_count[k], "reaction");
+    }
+    df.Write(numGerm, "numGerm");
+    df.Write(numPresent, "numPresent");
+    df.Write(numMut, "numMut");
+
+    
+    
+    df.Endl();
 	}
 }
 
@@ -2298,7 +2323,6 @@ void cStats::PrintDemesTasksData(const cString& filename)
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
     for (int task_id = 0; task_id < num_tasks; task_id++) {
-      //**
       df.Write(deme.GetTaskCount()[task_id], cStringUtil::Stringf("%i.", deme_id) + task_names[task_id]);
     }
   }
@@ -2318,7 +2342,6 @@ void cStats::PrintDemesReactionsData(const cString& filename)
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cDeme& deme = m_world->GetPopulation().GetDeme(deme_id);
     for (int reaction_id = 0; reaction_id < num_reactions; reaction_id++) {
-      //**
       df.Write(deme.GetReactionCount()[reaction_id], cStringUtil::Stringf("%i.", deme_id) + m_world->GetEnvironment().GetReactionLib().GetReaction(reaction_id)->GetName());
     }
   }
@@ -3354,29 +3377,77 @@ void cStats::PrintTargets(const cString& filename)
 
   df.Write(m_update, "Update");
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  // +2 for predators (-2) and default (-1) targets
-  const int num_targets = resource_lib.GetSize() + 2;
-  
+  bool has_pred = false;
+  int offset = 1;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+    has_pred = true;
+    offset = 2;
+  }
+    
+  // ft's may not be sequentially numbered
+  bool dec_prey = false;
+  bool dec_pred = false;
+  int num_targets = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
+    num_targets++; 
+    if (*itr == -1 && !dec_prey) { 
+      offset--; 
+      dec_prey = true; 
+    }
+    if (*itr == -2 && !dec_pred) {
+      offset--;  
+      dec_pred = true; 
+    }
+  }
+
+  tArray<int> raw_target_list;
+  raw_target_list.Resize(num_targets);
+  raw_target_list.SetAll(0);
+  int this_index = 0;
+  for (itr = fts_avail.begin(); itr!=fts_avail.end(); itr++) {
+    raw_target_list[this_index] = *itr; 
+    this_index++;
+  }
+    
   tArray<int> target_list;
-  target_list.Resize(num_targets);
+  int tot_targets = num_targets + offset;
+  target_list.Resize(tot_targets);
   target_list.SetAll(0);
+
+  target_list[0] = -1;
+  if (has_pred) {
+    target_list[0] = -2;
+    target_list[1] = -1;
+  }
+      
+  for (int i = 0; i < raw_target_list.GetSize(); i++) {
+    if (raw_target_list[i] >= 0) target_list[i + offset] = raw_target_list[i];
+  }
+  
+  tArray<int> org_targets;
+  org_targets.Resize(tot_targets);
+  org_targets.SetAll(0);
   
   const Apto::Array<cOrganism*, Apto::Smart>& live_orgs = m_world->GetPopulation().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
-    target_list[org->GetForageTarget() + 2]++;
-  }
-  
-  for (int target = 0; target < target_list.GetSize(); target++) {
-    // make sure we always have a listing for predators and no-target orgs, but otherwise only print out for possible targets 
-    // (don't count resources having the same target as additional possible targets (no duplicates))
-    if ((m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1 && target == 0) || target == 1 || m_world->GetEnvironment().IsTargetID(target - 2)) {
-      df.Write(target - 2, "Target ID");
-      df.Write(target_list[target], "Num Orgs Targeting ID");
+    int this_target = org->GetForageTarget();
+
+    int this_index = this_target;
+    for (int i = 0; i < target_list.GetSize(); i++) {
+      if (target_list[i] == this_target) {
+        this_index = i;
+        break;
+      }
     }
+    org_targets[this_index]++;
   }
-  
+  for (int target = 0; target < org_targets.GetSize(); target++) {
+      df.Write(target_list[target], "Target ID");
+      df.Write(org_targets[target], "Num Orgs Targeting ID");
+  }
   df.Endl();
 }
 
@@ -3489,6 +3560,39 @@ void cStats::PrintMessageLog(const cString& filename) {
 void cStats::AgeTaskEvent(int, int task_id, int org_age) {
 	reaction_age_map[task_id].Add(org_age);
 }
+
+/* Add the time between two tasks */ 
+void cStats::AddTaskSwitchTime(int t1, int t2, int time) {
+  intrinsic_task_switch_time[make_pair(t1, t2)].Add(time); 
+}
+
+
+/* Track the relationship between the age of the organism and the task that they perform */
+
+void cStats::PrintIntrinsicTaskSwitchingCostData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	const cEnvironment& env = m_world->GetEnvironment();
+  std::map<std::pair<int, int>, cDoubleSum>::iterator iter;
+  
+  df.WriteComment("Number of cyles it takes to change between tasks");
+  df.WriteTimeStamp();
+	df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("Task 1 [t1]");
+  df.WriteColumnDesc("Task 2 [t2]");
+  df.WriteColumnDesc("Mean cycles [mc]");
+
+  
+  for (iter=intrinsic_task_switch_time.begin(); iter!=intrinsic_task_switch_time.end(); ++iter) {
+    df.Write(m_update,   "Update [update]");
+    df.Write(iter->first.first,   "Task 1 [t1]");
+    df.Write(iter->first.second,   "Task 2 [t2]");
+    df.Write(iter->second.Average(),   "Mean cycles [mc]");
+    iter->second.Clear();
+    df.Endl();
+  }
+  intrinsic_task_switch_time.clear();
+}
+
 
 /* Track the relationship between the age of the organism and the task that they perform */
 
@@ -3899,4 +4003,28 @@ void cStats::PrintFemaleInstructionData(const cString& filename, const cString& 
   }
   
   df.Endl();  
+}
+
+void cStats::PrintMicroTraces(Apto::Array<Apto::String, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id)
+{
+  int death_update = GetUpdate();
+  cDataFile& df = m_world->GetDataFile("microtrace.dat");
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Trace Execution Data");
+    df.WriteTimeStamp();
+    df.WriteComment("DeathUpdate");
+    df.WriteComment("BirthUpdate");
+    df.WriteComment("OrgID");
+    df.WriteComment("GenotypeID");
+    df.WriteComment("ForageTarget");
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  fp << death_update << "," << birth_update << "," << org_id << "," << gen_id << "," << ft << ",";
+  for (int i = exec_trace.GetSize() - 1; i >= 0; i--) {
+    fp << exec_trace[i];
+  }
+  fp << endl;
 }

@@ -353,14 +353,15 @@ void cHardwareSMT::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const cString& gen_id)
+void cHardwareSMT::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
   df.WriteComment(org_dat.Set("Org ID: %d", org_id));
-  df.WriteComment(org_dat.Set("Genotype ID: %s", (const char*) gen_id));
+  df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
+  df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
   df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");
@@ -1020,15 +1021,66 @@ void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     }
   }
 	
-  // Mutations in the parent's genome
-  if (m_organism->GetParentMutProb() > 0) {
-    for (int i = 0; i < m_mem_array[0].GetSize(); i++) {
-      if (m_organism->TestParentMut(ctx)) {
-				m_mem_array[0][i] = m_inst_set->GetRandomInst(ctx);
+  int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+  int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
+  cCPUMemory& memory = GetMemory();
+  
+  // Parent Substitution Mutations (per site)
+  if (m_organism->GetParentMutProb() > 0.0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetParentMutProb());
+    
+    // If we have lines to mutate...
+    if (num_mut > 0) {
+      for (int i = 0; i < num_mut; i++) {
+        int site = ctx.GetRandom().GetUInt(memory.GetSize());
+        char before_mutation = memory[site].GetSymbol();
+        memory[site] = m_inst_set->GetRandomInst(ctx);
+        memory.GetMutationSteps().AddSubstitutionMutation(site, before_mutation, memory[site].GetSymbol());
       }
     }
   }
-	
+  
+  // Parent Insert Mutations (per site)
+  if (m_organism->GetParentInsProb() > 0.0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetParentInsProb());
+    
+    // If would make creature too big, insert up to max_genome_size
+    if (num_mut + memory.GetSize() > max_genome_size) {
+      num_mut = max_genome_size - memory.GetSize();
+    }
+    
+    // If we have lines to insert...
+    if (num_mut > 0) {
+      // Build a sorted list of the sites where mutations occured
+      tArray<int> mut_sites(num_mut);
+      for (int i = 0; i < num_mut; i++) mut_sites[i] = ctx.GetRandom().GetUInt(memory.GetSize() + 1);
+      tArrayUtils::QSort(mut_sites);
+      
+      // Actually do the mutations (in reverse sort order)
+      for (int i = mut_sites.GetSize() - 1; i >= 0; i--) {
+        memory.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
+        memory.GetMutationSteps().AddInsertionMutation(mut_sites[i], memory[mut_sites[i]].GetSymbol());
+      }
+    }
+  }
+  
+  
+  // Parent Deletion Mutations (per site)
+  if (m_organism->GetParentDelProb() > 0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(memory.GetSize(), m_organism->GetParentDelProb());
+    
+    // If would make creature too small, delete down to min_genome_size
+    if (memory.GetSize() - num_mut < min_genome_size) {
+      num_mut = memory.GetSize() - min_genome_size;
+    }
+    
+    // If we have lines to delete...
+    for (int i = 0; i < num_mut; i++) {
+      int site = ctx.GetRandom().GetUInt(memory.GetSize());
+      memory.GetMutationSteps().AddDeletionMutation(site, memory[site].GetSymbol());
+      memory.Remove(site);
+    }
+  }
 }
 
 
