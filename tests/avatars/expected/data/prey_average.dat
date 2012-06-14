@@ -1,5 +1,5 @@
 # Prey Average Data
-# Sun May 20 10:54:27 2012
+# Thu Jun 14 15:28:54 2012
 #  1: Update
 #  2: Fitness
 #  3: Gestation Time
@@ -9,5 +9,5 @@
 #  7: Genome Length
 #  8: Total Prey Genotypic Entropy
 
-0 0 0 109 1 0 109 -inf 
-750 0.802116 7190.53 200 235.477 4.97248 108.927 2.58429 
+0 0 0 109 1 0 0 0 
+750 0.802116 7190.53 200 235.477 4.97248 0 0 
