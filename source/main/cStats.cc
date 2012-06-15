@@ -1020,15 +1020,20 @@ void cStats::PrintMinPreyFailedAttacks(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   
-  df.WriteComment("Updates of individual attack that failed due to MIN_PREY config setting");
-  df.WriteTimeStamp();
-  
-  tArray<int> failure_events = m_world->GetPopulation().GetMinPreyFailedAttacks();
-  for (int i = 0; i < failure_events.GetSize(); i++) {
-    df.WriteAnonymous(failure_events[i]);
+  if (!df.HeaderDone()) {
+    df.WriteComment("Updates of individual attack that failed due to MIN_PREY config setting");
+    df.WriteTimeStamp();
     df.Endl();
   }
-  m_world->GetPopulation().ClearMinPreyFailedAttacks();
+  
+  tArray<int> failure_events = m_world->GetPopulation().GetMinPreyFailedAttacks();
+  if (failure_events.GetSize() > 0) {
+    for (int i = 0; i < failure_events.GetSize(); i++) {
+      df.WriteAnonymous(failure_events[i]);
+      df.Endl();
+    }
+    m_world->GetPopulation().ClearMinPreyFailedAttacks();
+  }
 }
 
 void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
