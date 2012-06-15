@@ -114,6 +114,7 @@ STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
 STATS_OUT_FILE(PrintPredatorErrorData,      predator_error.dat   );
 STATS_OUT_FILE(PrintPreyVarianceData,       prey_variance.dat   );
 STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
+STATS_OUT_FILE(PrintMinPreyFailedAttacks,   failed_attacks.dat   );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
@@ -178,8 +179,6 @@ STATS_OUT_FILE(PrintMigrationData,          migration.dat);
 STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 STATS_OUT_FILE(PrintIntrinsicTaskSwitchingCostData, intrinsic_task_switching_cost.dat);
 STATS_OUT_FILE(PrintDenData, den_data.dat);
-
-
 
 //mating type/male-female stats data
 STATS_OUT_FILE(PrintMaleAverageData,    male_average.dat   );
@@ -339,10 +338,10 @@ public:
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
     else {
       if (m_filename == "") m_filename = "instruction.dat";
     }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
     
     if (m_filename == "") m_filename.Set("instruction-%s.dat", (const char*)m_inst_set);
   }
@@ -368,10 +367,10 @@ public:
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
     else {
       if (m_filename == "") m_filename = "prey_instruction.dat";
     }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
     
     if (m_filename == "") m_filename.Set("prey_instruction-%s.dat", (const char*)m_inst_set);
   }
@@ -397,10 +396,10 @@ public:
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
     else {
       if (m_filename == "") m_filename = "predator_instruction.dat";
     }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
     
     if (m_filename == "") m_filename.Set("predator_instruction-%s.dat", (const char*)m_inst_set);
   }
@@ -426,10 +425,10 @@ public:
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
     else {
       if (m_filename == "") m_filename = "male_instruction.dat";
     }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
     
     if (m_filename == "") m_filename.Set("male_instruction-%s.dat", (const char*)m_inst_set);
   }
@@ -455,10 +454,10 @@ public:
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
     else {
       if (m_filename == "") m_filename = "female_instruction.dat";
     }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
     
     if (m_filename == "") m_filename.Set("female_instruction-%s.dat", (const char*)m_inst_set);
   }
@@ -4716,6 +4715,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorErrorData>("PrintPredatorErrorData");
   action_lib->Register<cActionPrintPreyVarianceData>("PrintPreyVarianceData");
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
+  action_lib->Register<cActionPrintMinPreyFailedAttacks>("PrintMinPreyFailedAttacks");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");

@@ -332,7 +332,7 @@ cPopulation::cPopulation(cWorld* world)
   if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
     m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
-  
+  min_prey_failures.Resize(0);
 }
 
 bool cPopulation::InitiatePop(cUserFeedback* feedback)
@@ -5478,8 +5478,6 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   UpdateOrganismStats(ctx);
   m_world->GetClassificationManager().UpdateStats(stats);
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    stats.SetNumPreyCreatures(GetNumPreyOrganisms());
-    stats.SetNumPredCreatures(GetNumPredOrganisms());
     UpdateFTOrgStats(ctx);
   }
   if (m_world->GetConfig().MATING_TYPES.Get()) {

@@ -249,7 +249,7 @@ public:
   void DecNumPredOrganisms();
   void IncNumPreyOrganisms();
   void IncNumPredOrganisms();
-  
+  void RecordMinPreyFailedAttack();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
 // --------Donate Specific support ----
