@@ -71,7 +71,7 @@ namespace Avida {
     
   private:
     LIB_EXPORT virtual bool isEqual(const Property& rhs) const = 0;
-    friend bool operator==(const Property& lhs, const Property& rhs);
+    LIB_EXPORT friend bool operator==(const Property& lhs, const Property& rhs);
   };
     
   LIB_EXPORT inline bool operator==(const Property& lhs, const Property& rhs)
@@ -223,7 +223,7 @@ namespace Avida {
     
   public:
     LIB_EXPORT inline explicit StringProperty(const Property& p) : Property(p), m_value(p.StringValue()) { ; }
-    template <typename T> LIB_EXPORT StringProperty(const Avida::PropertyID& prop_id, const PropertyDescriptionMap& desc, const T& prop_value)
+    template <typename T> StringProperty(const Avida::PropertyID& prop_id, const PropertyDescriptionMap& desc, const T& prop_value)
       : Property(prop_id, PropertyTraits<T>::Type, desc), m_value(Apto::AsStr(prop_value)) { ; }
     LIB_EXPORT inline StringProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const PropertyDescriptionMap& desc, const Apto::String& prop_value)
       : Property(prop_id, type_id, desc), m_value(prop_value) { ; }
@@ -252,7 +252,7 @@ namespace Avida {
     
   public:
     LIB_EXPORT inline explicit IntProperty(const Property& p) : Property(p), m_value(p.IntValue()) { ; }
-    template <typename T> LIB_EXPORT IntProperty(const Avida::PropertyID& prop_id, const PropertyDescriptionMap& desc, const T& prop_value)
+    template <typename T> IntProperty(const Avida::PropertyID& prop_id, const PropertyDescriptionMap& desc, const T& prop_value)
       : Property(prop_id, PropertyTraits<T>::Type, desc), m_value(prop_value) { ; }
     LIB_EXPORT inline IntProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const PropertyDescriptionMap& desc, int prop_value)
       : Property(prop_id, type_id, desc), m_value(prop_value) { ; }
@@ -281,7 +281,7 @@ namespace Avida {
     
   public:
     LIB_EXPORT inline explicit DoubleProperty(const Property& p) : Property(p), m_value(p.DoubleValue()) { ; }
-    template <typename T> LIB_EXPORT DoubleProperty(const Avida::PropertyID& prop_id, const PropertyDescriptionMap& desc, const T& prop_value)
+    template <typename T> DoubleProperty(const Avida::PropertyID& prop_id, const PropertyDescriptionMap& desc, const T& prop_value)
       : Property(prop_id, PropertyTraits<T>::Type, desc), m_value(prop_value) { ; }
     LIB_EXPORT inline DoubleProperty(const Avida::PropertyID& prop_id, const PropertyTypeID& type_id, const PropertyDescriptionMap& desc, double prop_value)
       : Property(prop_id, type_id, desc), m_value(prop_value) { ; }

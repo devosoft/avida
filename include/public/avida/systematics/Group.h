@@ -90,7 +90,7 @@ namespace Avida {
 
       
       // Group Data
-      template <typename T> LIB_EXPORT bool AttachData(Apto::SmartPtr<T> obj)
+      template <typename T> bool AttachData(Apto::SmartPtr<T> obj)
       {
         assert(obj);
         Apto::String type_id_str(typeid(T).name());
@@ -99,7 +99,7 @@ namespace Avida {
         return true;
       }
       
-      template <typename T> LIB_EXPORT Apto::SmartPtr<T> GetData()
+      template <typename T> Apto::SmartPtr<T> GetData()
       {
         Apto::SmartPtr<T> rtn;
         rtn.DynamicCastFrom(m_data.Get(Apto::String(typeid(T).name())));

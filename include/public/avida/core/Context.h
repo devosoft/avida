@@ -44,7 +44,7 @@ namespace Avida {
     cRandom* m_rng;
     
   public:
-    LIB_EXPORT Context(WorldDriver* driver, cRandom* rng) : m_driver(driver), m_rng(rng) { assert(driver); }
+    inline Context(WorldDriver* driver, cRandom* rng) : m_driver(driver), m_rng(rng) { assert(driver); }
     
     LIB_EXPORT inline WorldDriver& Driver() { return *m_driver; }
     LIB_EXPORT inline cRandom& Random() { return *m_rng; }
