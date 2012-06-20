@@ -367,22 +367,32 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     }
   }
   if (m_halo) {
+    const int chooseUpDown = rng.GetUInt(0,2);
+    if (chooseUpDown == 0) {
     int chooseEW = rng.GetUInt(0,2);
-    if (chooseEW == 0) {
-      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
-    } else {
-      m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
-                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
-    }
-    int chooseNS = rng.GetUInt(0,2);
-    if (chooseNS == 0) { 
+      if (chooseEW == 0) {
+        m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
+                              m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
+      } else {
+        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
+                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+      }
       m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
-    } else {
-      m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
                             m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
+    else {
+      int chooseNS = rng.GetUInt(0,2);
+      if (chooseNS == 0) { 
+        m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+                              m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
+      } else {
+        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
+                              m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
+      }
+      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height,
+                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+    }
+    cout << m_peakx << ' ' << m_peaky << endl;
   }
   
   SetModified(false);
