@@ -3080,7 +3080,7 @@ a single, complete file for each trigger.
 </li>
 <li><p>
   <strong><a name="SavePopulation">SavePopulation</a></strong>
-  <i>[string fname=""] [bool save_historic=1] [bool save_groups=0] [bool save_avatars=0]</i>
+  <i>[string fname=""] [bool save_historic=1] [bool save_groups=0] [bool save_avatars=0] [boolean save_rebirth=0]</i>
   </p>
   <p>
     Save the genotypes and lots of statistics about the population to the
@@ -3090,7 +3090,12 @@ a single, complete file for each trigger.
   to collect crossection data about the population.<br>
   <i>save_groups</i> will append data on current group ids, current forage targets 
   and the cell orgs were born into for each occurence of each genotype
-
+  Using <i>save_rebirth</i> will save additional information about the birth of the organism which
+  would be required to 'repeat' the birth of the organism as if it was still in the population (for
+  behavioral trials, etc):
+  parent_ft, parent is teacher, parent merit, parent is multi-threaded
+  Using save_rebirth will save all possible columns (i.e. will save all save_groups + all save_avatars data even if
+  those flags are off).
   </p>
 </li>
   <li><p>

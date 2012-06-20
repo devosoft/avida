@@ -544,6 +544,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
     if (parent_organism->IsTeacher()) offspring_array[i]->SetParentTeacher(true);
     offspring_array[i]->SetParentFT(parent_organism->GetForageTarget());
+    // and some rebirth stuff
+    offspring_array[i]->SetParentMerit(parent_organism->GetPhenotype().GetMerit().GetDouble());
+    offspring_array[i]->SetParentMultiThreaded(parent_organism->GetPhenotype().IsMultiThread());    
   }
   
   // If we're not about to kill the parent, do some extra work on it.
@@ -612,7 +615,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       // only assign an avatar cell if the org lived through birth and it isn't the parent
       if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
         int avatar_target_cell = PlaceAvatar(parent_organism);
-        if (target_cells[i] != parent_cell.GetID()) {
+        offspring_array[i]->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
+        if (offspring_array[i] != parent_organism) {
           offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
         }
       }
@@ -5507,10 +5511,19 @@ struct sOrgInfo {
   int curr_forage;
   int birth_cell;
   int avatar_cell;
+  int av_bcell;
+  // rebirth data
+  int parent_ft;
+  int parent_is_teacher;
+  double parent_merit;
+  int parent_is_multithread;
   
   sOrgInfo() { ; }
-  sOrgInfo(int c, int o, int l, int in_group, int in_forage, int in_bcell, int in_avcell) : cell_id(c), offset(o), lineage_label(l), 
-  curr_group(in_group), curr_forage(in_forage), birth_cell(in_bcell), avatar_cell(in_avcell) { ; }
+  sOrgInfo(int c, int o, int l, int in_group, int in_forage, int in_bcell, int in_avcell, int in_av_bcell, int in_parent_ft, 
+          int in_parent_is_teacher, double in_parent_merit, int in_parent_is_multithread) : 
+          cell_id(c), offset(o), lineage_label(l), curr_group(in_group), curr_forage(in_forage), birth_cell(in_bcell), 
+          avatar_cell(in_avcell), av_bcell(in_av_bcell), parent_ft(in_parent_ft), parent_is_teacher(in_parent_is_teacher),
+          parent_merit(in_parent_merit), parent_is_multithread(in_parent_is_multithread) { ; }
 };
 
 struct sGroupInfo {
@@ -5521,7 +5534,7 @@ struct sGroupInfo {
   sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
 };
 
-bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bool save_groupings, bool save_avatars)
+bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bool save_groupings, bool save_avatars, bool save_rebirth)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.SetFileType("genotype_data");
@@ -5543,10 +5556,10 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         
         sGroupInfo* map_entry = NULL;
         if (genotype_map.Find(pg->GetID(), map_entry)) {
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1, -1, -1, 0, 1, 0));
         } else {
           map_entry = new sGroupInfo(pg, true);
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1, -1, -1, 0, 1, 0));
           genotype_map.Set(pg->GetID(), map_entry);
         }
       }
@@ -5564,18 +5577,29 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         const int curr_forage = org->GetForageTarget();
         const int birth_cell = org->GetPhenotype().GetBirthCell();
         const int avatar_cell = org->GetOrgInterface().GetAVCellID();
-        if (!save_groupings && !save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1));
+        const int av_bcell = org->GetPhenotype().GetAVBirthCell();
+        if (!save_rebirth) {
+          if (!save_groupings && !save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1, -1, -1, 0, 1, 0));
+          }
+          else if (save_groupings && !save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, -1, -1, -1, 0, 1, 0));
+          }
+          else if (save_groupings && save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, -1, 0, 1, 0));          
+          }
+          else if (!save_groupings && save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, avatar_cell, av_bcell, -1, 0, 1, 0));                    
+          }
         }
-        else if (save_groupings && !save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, -1));
+        else if (save_rebirth) {
+          const int p_ft = org->GetParentFT();
+          const int p_teach = (bool) (org->HadParentTeacher());
+          const double p_merit = org->GetParentMerit();
+          const int p_mthread = (int) (org->IsParentMThreaded());
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit, p_mthread));                  
         }
-        else if (save_groupings && save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell));          
-        }
-        else if (!save_groupings && save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, avatar_cell));                    
-        }
+        
       } else {
         map_entry = new sGroupInfo(genotype);
         int curr_group = -1;
@@ -5583,17 +5607,27 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
         const int curr_forage = org->GetForageTarget();
         const int birth_cell = org->GetPhenotype().GetBirthCell();
         const int avatar_cell = org->GetOrgInterface().GetAVCellID();
-        if (!save_groupings && !save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1));
+        const int av_bcell = org->GetPhenotype().GetAVBirthCell();
+        if (!save_rebirth) {
+          if (!save_groupings && !save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1, -1, -1, 0, 1, 0));
+          }
+          else if (save_groupings && !save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, -1, -1, -1, 0, 1, 0));
+          }
+          else if (save_groupings && save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, -1, 0, 1, 0));          
+          }
+          else if (!save_groupings && save_avatars) {
+            map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, avatar_cell, av_bcell, -1, 0, 1, 0));                    
+          }
         }
-        else if (save_groupings && !save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, -1));
-        }
-        else if (save_groupings && save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell));          
-        }
-        else if (!save_groupings && save_avatars) {
-          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, avatar_cell));                    
+        else if (save_rebirth) {
+          const int p_ft = org->GetParentFT();
+          const int p_teach = (bool) (org->HadParentTeacher());
+          const double p_merit = org->GetParentMerit();
+          const int p_mthread = (int) (org->IsParentMThreaded());
+          map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), curr_group, curr_forage, birth_cell, avatar_cell, av_bcell, p_ft, p_teach, p_merit, p_mthread));                  
         }
         genotype_map.Set(genotype->GetID(), map_entry);
       }
@@ -5616,6 +5650,13 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     cString foragestr;
     cString birthstr;
     cString avatarstr;
+    cString avatarbstr;
+    
+    cString pforagestr;
+    cString pteachstr;
+    cString pmeritstr;
+    cString pmthreadstr;
+    
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
     lineagestr.Set("%d", cells[0].lineage_label);
@@ -5623,31 +5664,68 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     foragestr.Set("%d", cells[0].curr_forage);
     birthstr.Set("%d", cells[0].birth_cell);
     avatarstr.Set("%d", cells[0].avatar_cell);
+    avatarbstr.Set("%d", cells[0].av_bcell);
+    
+    pforagestr.Set("%d", cells[0].parent_ft);
+    pteachstr.Set("%d", cells[0].parent_is_teacher);
+    pmeritstr.Set("%.4d", cells[0].parent_merit);
+    pmthreadstr.Set("%d", cells[0].parent_is_multithread);
+    
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
       lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
-      if (save_groupings) {
+      if (!save_rebirth) {
+        if (save_groupings) {
+          groupstr += cStringUtil::Stringf(",%d", cells[cell_i].curr_group);
+          foragestr += cStringUtil::Stringf(",%d", cells[cell_i].curr_forage);
+          birthstr += cStringUtil::Stringf(",%d", cells[cell_i].birth_cell);
+        }
+        if (save_avatars) {
+          avatarstr += cStringUtil::Stringf(",%d",cells[cell_i].avatar_cell);
+          avatarbstr += cStringUtil::Stringf(",%d",cells[cell_i].av_bcell);
+        }
+      }
+      else if (save_rebirth) {
         groupstr += cStringUtil::Stringf(",%d", cells[cell_i].curr_group);
         foragestr += cStringUtil::Stringf(",%d", cells[cell_i].curr_forage);
         birthstr += cStringUtil::Stringf(",%d", cells[cell_i].birth_cell);
-      }
-      if (save_avatars) {
         avatarstr += cStringUtil::Stringf(",%d",cells[cell_i].avatar_cell);
+        avatarbstr += cStringUtil::Stringf(",%d",cells[cell_i].av_bcell);
+        
+        pforagestr += cStringUtil::Stringf(",%d",cells[cell_i].parent_ft);
+        pteachstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_teacher);
+        pmeritstr += cStringUtil::Stringf(",%.4d",cells[cell_i].parent_merit);
+        pmthreadstr += cStringUtil::Stringf(",%d",cells[cell_i].parent_is_multithread);
       }
     }
+
     df.Write(cellstr, "Occupied Cell IDs", "cells");
     if (genotype_entries[i]->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
     else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
     df.Write(lineagestr, "Lineage Label", "lineage");
-    if (save_groupings) {
-      df.Write(groupstr, "Current Group IDs", "group_id");
-      df.Write(foragestr, "Current Forager Types", "forager_type");
-      df.Write(birthstr, "Birth Cells", "birth_cell");
-    }
-    if (save_avatars) {
-      df.Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
-    }
+      if (!save_rebirth) {
+        if (save_groupings) {
+          df.Write(groupstr, "Current Group IDs", "group_id");
+          df.Write(foragestr, "Current Forager Types", "forager_type");
+          df.Write(birthstr, "Birth Cells", "birth_cell");
+        }
+        if (save_avatars) {
+          df.Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
+          df.Write(avatarbstr, "Avatar Birth Cell", "av_bcell");
+        }
+      }
+      else if (save_rebirth) {
+        df.Write(groupstr, "Current Group IDs", "group_id");
+        df.Write(foragestr, "Current Forager Types", "forager_type");
+        df.Write(birthstr, "Birth Cells", "birth_cell");
+        df.Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
+        df.Write(avatarbstr, "Avatar Birth Cell", "av_bcell");
+        df.Write(pforagestr, "Parent forager type", "parent_ft");
+        df.Write(pteachstr, "Was Parent a Teacher", "parent_is_teach");
+        df.Write(pmeritstr, "Parent Merit", "parent_merit");
+        df.Write(pmthreadstr, "Was Parent Multithreaded", "pmthreadstr");
+      }
     df.Endl();
     
     delete genotype_entries[i];
@@ -5681,10 +5759,10 @@ bool cPopulation::SaveFlameData(const cString& filename)
         
         sGroupInfo* map_entry = NULL;
         if (genotype_map.Find(pg->GetID(), map_entry)) {
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1, -1, -1, 0, 1, 0));
         } else {
           map_entry = new sGroupInfo(pg, true);
-          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1, -1, -1, 0, 1, 0));
           genotype_map.Set(pg->GetID(), map_entry);
         }
       }
@@ -5697,10 +5775,10 @@ bool cPopulation::SaveFlameData(const cString& filename)
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
       sGroupInfo* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1));
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1, -1, -1, 0, 1, 0));
       } else {
         map_entry = new sGroupInfo(genotype);
-        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1));
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel(), -1, -1, 0, -1, -1, -1, 0, 1, 0));
         genotype_map.Set(genotype->GetID(), map_entry);
       }
     }

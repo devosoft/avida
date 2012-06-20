@@ -237,7 +237,7 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false);
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false, bool save_rebirth = false);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, 
                       bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
   bool DumpMemorySummary(std::ofstream& fp);

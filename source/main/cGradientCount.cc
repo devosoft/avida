@@ -392,7 +392,6 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
       m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height,
                             m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
-    cout << m_peakx << ' ' << m_peaky << endl;
   }
   
   SetModified(false);

@@ -634,6 +634,11 @@ public:
   void CopyParentFT();
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
+  void SetParentMerit(double parent_merit) { m_p_merit = parent_merit; }
+  double GetParentMerit() { return m_p_merit; }
+  void SetParentMultiThreaded(bool parent_is_mt) { m_p_mthread = parent_is_mt; }
+  bool IsParentMThreaded() { return m_p_mthread; }
+  
   void ChangeBeg() { m_beggar = !m_beggar; }
   bool IsBeggar() { return m_beggar; }
   
@@ -671,6 +676,9 @@ protected:
   bool m_parent_teacher;
   int m_parent_ft;
   int m_parent_group;
+  double m_p_merit;
+  bool m_p_mthread;
+  
   bool m_beggar;
   
   /*! Contains all the different data structures needed to
