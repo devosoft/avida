@@ -409,6 +409,33 @@ public:
   } 
 };
 
+class cActionSetGradPlatVarInflow : public cAction
+{
+private:
+  cString m_res_name;
+  double m_mean;
+  double m_variance;
+  
+public:
+  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_mean = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_variance = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double mean> <double variance>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance);        
+  } 
+};
+
 /* Change Environment settings */
 class cActionChangeEnvironment : public cAction
 {
@@ -1512,6 +1539,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetGradientConeInflow>("SetGradientConeInflow");
   action_lib->Register<cActionSetGradientConeOutflow>("SetGradientConeOutflow");
   action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
+  action_lib->Register<cActionSetGradPlatVarInflow>("SetGradPlatVarInflow");
+
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");

@@ -95,6 +95,9 @@ private:
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
   
+  double m_mean_plat_inflow;
+  double m_var_plat_inflow;
+  
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
@@ -140,6 +143,9 @@ public:
   void SetGradConfig(int config) { m_config = config; }
   void SetGradCount(int count) { m_count = count; }
  
+  void SetGradPlatVarInflow(double mean, double variance);
+  void UpdateGradPlatVarInflow(); // not currently being used...would change inflows every update
+ 
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   
 private:
@@ -147,8 +153,7 @@ private:
   void generatePeak(cAvidaContext& ctx);
   void getCurrentPlatValues();
   void generateBarrier(cAvidaContext& ctx);
-  void generateHills(cAvidaContext& ctx);  
-  
+  void generateHills(cAvidaContext& ctx);    
 };
 
 #endif
