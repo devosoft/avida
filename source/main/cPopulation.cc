@@ -908,9 +908,9 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // If neural networking, add input and output avatars.. @JJB**
   if (m_world->GetConfig().USE_AVATARS.Get() && m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     // Add input avatar
-    in_organism->GetOrgInterface().AddAV(target_cell.GetID(), 2, true, false);
+    in_organism->GetOrgInterface().AddIOAV(target_cell.GetID(), 2, true, false);
     // Add input avatar
-    in_organism->GetOrgInterface().AddAV(target_cell.GetID(), 2, false, true);
+    in_organism->GetOrgInterface().AddIOAV(target_cell.GetID(), 2, false, true);
   }
 
   // Keep track of statistics for organism counts...
