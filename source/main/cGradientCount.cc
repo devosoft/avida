@@ -127,7 +127,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     return;
   }  
   bool has_edible = false;
-
+  if (m_plateau_inflow != 0) cout << m_plateau_inflow << endl;
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
   // to speed things up, we only check cells within the possible spread of the peak
   // and we only need to do this if decay > 1 (if decay == 1, we're going to reset everything regardless of the amount left)
