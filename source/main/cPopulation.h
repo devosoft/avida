@@ -96,6 +96,7 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
+  tArray<int> min_prey_failures;
   
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
@@ -236,7 +237,7 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false);
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false, bool save_rebirth = false);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, 
                       bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
   bool DumpMemorySummary(std::ofstream& fp);
@@ -304,7 +305,10 @@ public:
   void DecNumPredOrganisms() { num_pred_organisms--; }
   void IncNumPreyOrganisms() { num_prey_organisms++; }
   void IncNumPredOrganisms() { num_pred_organisms++; }
-  
+  void RecordMinPreyFailedAttack() { min_prey_failures.Push(m_world->GetStats().GetUpdate()); }
+  void ClearMinPreyFailedAttacks() { min_prey_failures.Resize(0); }
+  tArray<int> GetMinPreyFailedAttacks() { return min_prey_failures; }
+   
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);
@@ -333,6 +337,7 @@ public:
   void UpdateGradientConeInflow(const cString res_name, const double inflow);
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
+  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

@@ -249,7 +249,7 @@ public:
   void DecNumPredOrganisms();
   void IncNumPreyOrganisms();
   void IncNumPredOrganisms();
-  
+  void RecordMinPreyFailedAttack();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
 // --------Donate Specific support ----
@@ -276,7 +276,7 @@ public:
   bool FacedHasAV(int av_num = 0);
   bool FacedHasPredAV(int av_num = 0);
   bool FacedHasPreyAV(int av_num = 0);
-  void AddAV(int av_cell_id, int av_facing, bool input, bool output);
+  void AddIOAV(int av_cell_id, int av_facing, bool input, bool output);
   void AddPredPreyAV(int av_cell_id);
   void SwitchPredPrey(int av_num = 0);
   void RemoveAllAV();

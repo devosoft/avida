@@ -139,9 +139,7 @@ cStats::cStats(cWorld* world)
   , num_migrations(0)
   , m_num_successful_mates(0)
   , prey_entropy(0.0)
-  , num_prey_creatures(0)
   , pred_entropy(0.0)
-  , num_pred_creatures(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -579,8 +577,6 @@ void cStats::CalcFidelity()
 
 void cStats::RecordBirth(bool breed_true)
 {
-
-
 	if (m_world->GetEventsList()->CheckBirthInterruptQueue(tot_organisms) == true)
 		m_world->GetEventsList()->ProcessInterrupt(m_world->GetDefaultContext());
 
@@ -590,7 +586,6 @@ void cStats::RecordBirth(bool breed_true)
   if (breed_true) num_breed_true++;
   else num_breed_in++;
 }
-
 
 void cStats::RemoveGenotype(int id_num, int parent_id,
    int parent_dist, int depth, int max_abundance, int parasite_abundance,
@@ -701,6 +696,15 @@ void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double ge
   }
 }
 
+int cStats::GetNumPreyCreatures() const
+{ 
+  return m_world->GetPopulation().GetNumPreyOrganisms(); 
+}
+
+int cStats::GetNumPredCreatures() const
+{ 
+  return m_world->GetPopulation().GetNumPredOrganisms(); 
+}
 
 void cStats::PrintDataFile(const cString& filename, const cString& format, char sep)
 {
@@ -1012,6 +1016,26 @@ void cStats::PrintPredatorVarianceData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintMinPreyFailedAttacks(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Updates of individual attack that failed due to MIN_PREY config setting");
+    df.WriteTimeStamp();
+    df.Endl();
+  }
+  
+  tArray<int> failure_events = m_world->GetPopulation().GetMinPreyFailedAttacks();
+  if (failure_events.GetSize() > 0) {
+    for (int i = 0; i < failure_events.GetSize(); i++) {
+      df.WriteAnonymous(failure_events[i]);
+      df.Endl();
+    }
+    m_world->GetPopulation().ClearMinPreyFailedAttacks();
+  }
+}
+
 void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
 {
   cDataFile& df = m_world->GetDataFile(filename);
@@ -1024,7 +1048,6 @@ void cStats::PrintPreyInstructionData(const cString& filename, const cString& in
   for (int i = 0; i < m_is_prey_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_prey_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
-  
   df.Endl();
 }
 
@@ -1040,7 +1063,6 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
   for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
-  
   df.Endl();
 }
 

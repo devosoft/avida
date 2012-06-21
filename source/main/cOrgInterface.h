@@ -195,7 +195,7 @@ public:
   virtual void DecNumPredOrganisms() = 0;
   virtual void IncNumPreyOrganisms() = 0;
   virtual void IncNumPredOrganisms() = 0;
-  
+  virtual void RecordMinPreyFailedAttack() = 0;
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;
@@ -203,7 +203,7 @@ public:
   virtual bool FacedHasAV(int av_num = 0) = 0;
   virtual bool FacedHasPredAV(int av_num = 0) = 0;
   virtual bool FacedHasPreyAV(int av_num = 0) = 0;
-  virtual void AddAV(int av_cell_id, int av_facing, bool input, bool output) = 0;
+  virtual void AddIOAV(int av_cell_id, int av_facing, bool input, bool output) = 0;
   virtual void AddPredPreyAV(int av_cell_id) = 0;
   virtual void SwitchPredPrey(int av_num = 0) = 0;
   virtual void RemoveAllAV() = 0;

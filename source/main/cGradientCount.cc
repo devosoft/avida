@@ -100,6 +100,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_common_plat_height(0.0)
   , m_skip_moves(0)
   , m_skip_counter(0)
+  , m_mean_plat_inflow(plateau_inflow)
+  , m_var_plat_inflow(0)
 {
   ResetGradRes(m_world->GetDefaultContext(), worldx, worldy);
 }
@@ -111,11 +113,11 @@ void cGradientCount::StateAll()
   return;
 }
 
-
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
   m_old_peakx = m_peakx;
   m_old_peaky = m_peaky;
+  // UpdateGradPlatVarInflow(); --not currently used...use update triggers instead
   if (m_habitat == 2) {
     generateBarrier(m_world->GetDefaultContext());
     return;
@@ -367,21 +369,30 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     }
   }
   if (m_halo) {
+    const int chooseUpDown = rng.GetUInt(0,2);
+    if (chooseUpDown == 0) {
     int chooseEW = rng.GetUInt(0,2);
-    if (chooseEW == 0) {
-      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
-    } else {
-      m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
-                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
-    }
-    int chooseNS = rng.GetUInt(0,2);
-    if (chooseNS == 0) { 
+      if (chooseEW == 0) {
+        m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
+                              m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
+      } else {
+        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
+                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+      }
       m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
-    } else {
-      m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
                             m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
+    }
+    else {
+      int chooseNS = rng.GetUInt(0,2);
+      if (chooseNS == 0) { 
+        m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+                              m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
+      } else {
+        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
+                              m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
+      }
+      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height,
+                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
   }
   
@@ -775,6 +786,8 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_plateau_cell_IDs.SetAll(0);
   m_current_height = m_height;
   m_common_plat_height = m_plateau;
+  m_mean_plat_inflow = m_plateau_inflow;
+  m_var_plat_inflow = 0;
   m_initial = true;
   ResizeClear(worldx, worldy, m_geometry);
   if (m_habitat == 2) {
@@ -788,4 +801,24 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
     UpdateCount(ctx);
   }
   m_initial = false;
+}
+
+void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
+{
+  if (variance > 0) {
+    m_mean_plat_inflow = mean;
+    m_var_plat_inflow = variance;
+    double cur_inflow = m_world->GetRandom().GetRandNormal(mean, variance);
+    if (cur_inflow < 0) cur_inflow = 0;
+    SetGradPlatInflow(cur_inflow);
+  }
+}
+
+void cGradientCount::UpdateGradPlatVarInflow()
+{
+  if (m_var_plat_inflow > 0) {
+    double cur_inflow = m_world->GetRandom().GetRandNormal(m_mean_plat_inflow, m_var_plat_inflow);
+    if (cur_inflow < 0) cur_inflow = 0;
+    SetGradPlatInflow(cur_inflow);
+  }
 }

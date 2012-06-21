@@ -205,6 +205,7 @@ private:
   double gmu_exec_time_born; //@MRR mutation-rate and gestation time scaled time of birth
   int birth_update;      // @MRR update *organism* born
   int birth_cell_id;
+  int av_birth_cell_id;
   int birth_group_id;
   int birth_forager_type;
   tArray<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
@@ -383,9 +384,11 @@ public:
   int GetUpdateBorn() const {return birth_update;}
   
   int GetBirthCell() const { return birth_cell_id; }
+  int GetAVBirthCell() const { return av_birth_cell_id; }
   int GetBirthGroupID() const { return birth_group_id; }
   int GetBirthForagerType() const { return birth_forager_type; }
   inline void SetBirthCellID(int birth_cell);
+  inline void SetAVBirthCellID(int av_birth_cell);
   inline void SetBirthGroupID(int group_id);
   inline void SetBirthForagerType(int forager_type);
 
@@ -707,6 +710,7 @@ inline void cPhenotype::SetInstSetSize(int inst_set_size)
 }
 
 inline void cPhenotype::SetBirthCellID(int birth_cell) { birth_cell_id = birth_cell; }
+inline void cPhenotype::SetAVBirthCellID(int av_birth_cell) { av_birth_cell_id = av_birth_cell; }
 inline void cPhenotype::SetBirthGroupID(int group_id) { birth_group_id = group_id; }
 inline void cPhenotype::SetBirthForagerType(int forager_type) { birth_forager_type = forager_type; }
 

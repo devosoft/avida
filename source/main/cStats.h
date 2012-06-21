@@ -391,9 +391,7 @@ private:
   cDoubleSum sum_pred_size;
 
   double prey_entropy;
-  int num_prey_creatures;
   double pred_entropy;
-  int num_pred_creatures;
 
   // --------  Mating type (male/female) Stats  ---------
   cDoubleSum sum_male_fitness;
@@ -492,9 +490,6 @@ public:
   inline void SetNumMultiThreadCreatures(int in_num_multi_thread_creatures);
   inline void SetNumThreads(int in_num_threads) { m_num_threads = in_num_threads; }
   inline void SetNumModified(int in_num_modified);
-
-  inline void SetNumPreyCreatures(int new_prey_creatures) { num_prey_creatures = new_prey_creatures; }
-  inline void SetNumPredCreatures(int new_pred_creatures) { num_pred_creatures = new_pred_creatures; }
 
   void SetMaxFitness(double in_max_fitness) { max_fitness = in_max_fitness; }
   void SetMaxMerit(double in_max_merit) { max_merit = in_max_merit; }
@@ -869,9 +864,9 @@ public:
   int GetNumMigrations() const { return num_migrations; }
   
   // Pred-Prey
-  int GetNumPreyCreatures() const { return num_prey_creatures; }
-  int GetNumPredCreatures() const { return num_pred_creatures; }
-
+  int GetNumPreyCreatures() const;
+  int GetNumPredCreatures() const;
+  
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
   // i.e., when the maximum fitness in the population drops, this value will
@@ -895,6 +890,7 @@ public:
   void PrintPredatorErrorData(const cString& filename);
   void PrintPreyVarianceData(const cString& filename);
   void PrintPredatorVarianceData(const cString& filename);
+  void PrintMinPreyFailedAttacks(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
   void PrintStatsData(const cString& filename);

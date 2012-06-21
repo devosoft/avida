@@ -1503,6 +1503,10 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
   m_world->GetPopulation().AttackFacedOrg(ctx, loser);
 }
 
+void cPopulationInterface::RecordMinPreyFailedAttack()
+{
+  m_world->GetPopulation().RecordMinPreyFailedAttack();
+}
 
 // -------- Avatar support --------
 /* Each organism carries an array of avatars linking the organism to any cells it is occupying.
@@ -1568,7 +1572,7 @@ bool cPopulationInterface::FacedHasPreyAV(int av_num)
 }
 
 // Creates a new avatar and adds it to the cell avatar lists
-void cPopulationInterface::AddAV(int av_cell_id, int av_facing, bool input, bool output)
+void cPopulationInterface::AddIOAV(int av_cell_id, int av_facing, bool input, bool output)
 {
   // Add new avatar to m_avatars
   sIO_avatar tmpAV(av_cell_id, av_facing, -1, input, output);

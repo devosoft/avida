@@ -90,10 +90,11 @@ private:
   bool m_save_historic;
   bool m_save_group_info;
   bool m_save_avatars;
+  bool m_save_rebirth;
   
 public:
   cActionSavePopulation(cWorld* world, const cString& args, Feedback& feedback)
-    : cAction(world, args), m_filename(""), m_save_historic(true), m_save_group_info(false), m_save_avatars(false)
+    : cAction(world, args), m_filename(""), m_save_historic(true), m_save_group_info(false), m_save_avatars(false), m_save_rebirth(false)
   {
     cArgSchema schema(':','=');
     
@@ -104,6 +105,7 @@ public:
     schema.AddEntry("save_historic", 0, 0, 1, 1);
     schema.AddEntry("save_groups", 1, 0, 1, 0);
     schema.AddEntry("save_avatars", 2, 0, 1, 0);
+    schema.AddEntry("save_rebirth", 3, 0, 1, 0);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
@@ -112,16 +114,17 @@ public:
       m_save_historic = argc->GetInt(0);
       m_save_group_info = argc->GetInt(1);
       m_save_avatars = argc->GetInt(2);
+      m_save_rebirth = argc->GetInt(3);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1] [boolean save_groups=0] [boolean save_avatars=0]"; }
+  static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1] [boolean save_groups=0] [boolean save_avatars=0] [boolean save_rebirth=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
     int update = m_world->GetStats().GetUpdate();
     cString filename = cStringUtil::Stringf("%s-%d.spop", (const char*)m_filename, update);
-    m_world->GetPopulation().SavePopulation(filename, m_save_historic, m_save_group_info, m_save_avatars);
+    m_world->GetPopulation().SavePopulation(filename, m_save_historic, m_save_group_info, m_save_avatars, m_save_rebirth);
   }
 };
 
