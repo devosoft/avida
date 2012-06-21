@@ -4699,7 +4699,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
-  action_lib->Register<cActionPrintDenData>("PrintDenData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
   action_lib->Register<cActionPrintReactionExeData>("PrintReactionExeData");
   action_lib->Register<cActionPrintCurrentReactionData>("PrintCurrentReactionData");
@@ -4818,7 +4817,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
   action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");
-  
+  action_lib->Register<cActionPrintDenData>("PrintDenData");
+
   
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
