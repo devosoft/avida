@@ -126,7 +126,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     generateHills(m_world->GetDefaultContext());
     return;
   }  
-  bool has_edible = false;
+  bool has_edible = false; 
+  
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
   // to speed things up, we only check cells within the possible spread of the peak
   // and we only need to do this if decay > 1 (if decay == 1, we're going to reset everything regardless of the amount left)
@@ -811,6 +812,7 @@ void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
     if (cur_inflow < 0) cur_inflow = 0;
     SetGradPlatInflow(cur_inflow);
   }
+  else SetGradPlatInflow(mean);
 }
 
 void cGradientCount::UpdateGradPlatVarInflow()
@@ -820,4 +822,5 @@ void cGradientCount::UpdateGradPlatVarInflow()
     if (cur_inflow < 0) cur_inflow = 0;
     SetGradPlatInflow(cur_inflow);
   }
+  else SetGradPlatInflow(m_mean_plat_inflow);
 }
