@@ -602,6 +602,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   
   // Do any statistics on the parent that just gave birth...
   parent_organism->HandleGestation();
+  if (repro_q.GetSize()) {
+    for (int i = 0; i < repro_q.GetSize(); i++) {
+      if (repro_q[i] == parent_organism) {
+        m_world->GetStats().PrintReproData(parent_organism);
+        int last = repro_q.GetSize();
+        repro_q.Swap(i, last);
+        repro_q.Pop();
+        break;
+      }
+    }
+  }
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
@@ -1672,7 +1683,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
       delete market_it.Remove();
     }
   }
-  
   
   // Update count statistics...
   num_organisms--;

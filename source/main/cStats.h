@@ -949,6 +949,7 @@ public:
   void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
   void PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
+  void PrintReproData(cOrganism* org);
   
   // deme predicate stats
   void IncEventCount(int x, int y);

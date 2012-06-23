@@ -219,7 +219,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   num_divides_failed       = in_phen.num_divides_failed;
   generation               = in_phen.generation;        
   cpu_cycles_used          = in_phen.cpu_cycles_used;   
-  time_used                = in_phen.time_used;         
+  time_used                = in_phen.time_used; 
+  num_execs                = in_phen.num_execs;
   age                      = in_phen.age;               
   fault_desc               = in_phen.fault_desc;    
   neutral_metric           = in_phen.neutral_metric; 
@@ -440,6 +441,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
   time_used       = 0;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   neutral_metric  = parent_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
@@ -641,6 +643,7 @@ void cPhenotype::SetupInject(const Sequence& _genome)
   generation      = 0;
   cpu_cycles_used = 0;
   time_used       = 0;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   neutral_metric  = 0;
@@ -856,6 +859,7 @@ void cPhenotype::DivideReset(const Sequence& _genome)
   num_divides++;
   (void) generation;
   (void) time_used;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   (void) neutral_metric;
@@ -1064,6 +1068,7 @@ void cPhenotype::TestDivideReset(const Sequence& _genome)
   num_divides++;
   generation++;
   (void) time_used;
+  (void) num_execs;
   (void) age;
   (void) fault_desc;
   (void) neutral_metric;
@@ -1247,6 +1252,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
   time_used       = 0;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   neutral_metric  = clone_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
@@ -2023,6 +2029,7 @@ void cPhenotype::NewTrial()
   num_divides++;
   (void) generation;
   (void) time_used;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   (void) neutral_metric;
@@ -2137,6 +2144,7 @@ void cPhenotype::TrialDivideReset(const Sequence& _genome)
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
+    num_execs = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
   

@@ -4474,3 +4474,30 @@ void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, i
   }
   fp << endl;
 }
+
+void cStats::PrintReproData(cOrganism* org)
+{
+  int update = GetUpdate();
+  cDataFile& df = m_world->GetDataFile("repro_data.dat");
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Org Data up to First Reproduction");
+    df.WriteTimeStamp();
+    df.WriteComment("ReproUpdate");
+    df.WriteComment("OrgID");
+    df.WriteComment("Age (updates)");
+    df.WriteComment("TimeUsed (cycles)");
+    df.WriteComment("NumExecutions (cycles * threads)");
+    df.WriteComment("ReactionCounts");
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  fp << update << "," << org->GetID() << "," << org->GetPhenotype().GetAge() << "," << org->GetPhenotype().GetTimeUsed() 
+      << "," << org->GetPhenotype().GetNumExecs() << ":";
+  tArray<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  for (int i = 0; i < reaction_count.GetSize(); i++) {
+    fp << reaction_count[i] << ",";
+  }
+  fp << endl;
+}

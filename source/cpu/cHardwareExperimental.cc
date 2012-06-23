@@ -678,6 +678,9 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     // if using mini traces, report success or failure of execution
     if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
     if (exec_success && m_microtrace) RecordMicroTrace(cur_inst);
+    
+    // this will differ from time used for multi threaded orgs
+    phenotype.IncNumExecs();
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed

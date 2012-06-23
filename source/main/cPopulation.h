@@ -86,6 +86,8 @@ private:
   int m_next_prey_q;
   int m_next_pred_q;
   
+  tSmartArray<cOrganism*> repro_q;
+  
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
 
@@ -255,6 +257,8 @@ public:
   tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   
+  void AppendRecordReproQ(cOrganism* new_org) { repro_q.Push(new_org); }
+
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }

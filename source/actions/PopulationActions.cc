@@ -5446,8 +5446,7 @@ private:
   
 public:
   cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
-  m_print_genomes(true)
+  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), m_print_genomes(true)
   {
     cArgSchema schema(':','=');
     
@@ -5541,6 +5540,27 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().LoadMiniTraceQ(m_filename, m_orgs_per, m_print_genomes);
+  }
+};
+
+/* Record and print some data up to first reproduction for every org alive now. */
+// will pring nothing if org dies or run ends prior to first birth
+class cActionPrintReproData : public cAction
+{
+private:
+  
+public:
+  cActionPrintReproData(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  void Process(cAvidaContext& ctx)
+  { 
+    const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {  
+      m_world->GetPopulation().AppendRecordReproQ(live_orgs[i]);
+    }
   }
 };
 

@@ -196,6 +196,7 @@ private:
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
   int time_used;         // Total CPU cycles consumed, including additional time costs of some instructions.
+  int num_execs;        // Total number of instructions executed...unlike, time_used, this accounts for parallel executions in multi-threaded orgs
   int age;               // Number of updates organism has survived for.
   cString fault_desc;    // A description of the most recent error.
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation
@@ -472,6 +473,7 @@ public:
   int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
+  int GetNumExecs() const { assert(initialized == true); return num_execs; }
   int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
   const cString& GetFault() const { assert(initialized == true); return fault_desc; }
@@ -645,6 +647,7 @@ public:
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
   void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; trial_cpu_cycles_used--; }
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
+  void IncNumExecs() { assert(initialized == true); num_execs++; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
