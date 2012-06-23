@@ -3097,7 +3097,7 @@ a single, complete file for each trigger.
 <UL>
 <li><p>
   <strong><a name="LoadPopulation">LoadPopulation</a></strong>
-  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars=0]</i>
+  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars=0] [bool load_rebirth]</i>
   </p>
   <p>
     Sets up a population based on a save file such as written out by
@@ -3111,6 +3111,9 @@ a single, complete file for each trigger.
   would have been collected as the org moved around the world.<br>
   e.g to load a population with birth cells and group ids, but without cell, lineage, or update offsets:<br>
   i LoadPopulation -1 0 0 1 1 0<br>
+  <i>load_rebirth</i> will inject orgs into their saved birth cells, put avatars in their birth cells (if avatars are on),
+  assign parent's merit to org (if inherit merit is on), assign the parent's forage target if the parent was a 'teacher' <br>
+  i LoadPopulation -1 0 0 0 0 0 1<br>
   </p>
 </li>
 <li><p>

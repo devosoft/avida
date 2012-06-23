@@ -444,7 +444,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   tArray<int> target_cells(offspring_array.GetSize());
   
   // Loop through choosing the later placement of each offspring in the population.
-  bool parent_alive = true;  // Will the parent live through this process?
+  bool parent_alive =  m_world->GetConfig().BIRTH_METHOD.Get() == 13 ? false : true;  // Will the parent live through this process?
 
   for (int i = 0; i < offspring_array.GetSize(); i++) {
     /*
@@ -862,7 +862,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   return true;
 }
 
-bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group)
+bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group, bool is_inject)
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
@@ -1012,7 +1012,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     }
   } 
   // don't kill our test org, just it's offspring
-  if (m_world->GetConfig().BIRTH_METHOD.Get() == 12 && in_organism->GetID() > 0) {
+  if ((m_world->GetConfig().BIRTH_METHOD.Get() == 12 || m_world->GetConfig().BIRTH_METHOD.Get() == 13) && !is_inject) {
       KillOrganism(target_cell, ctx); 
       org_survived = false; 
   }
@@ -5819,7 +5819,7 @@ public:
 };
 
 bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset, bool load_groups, 
-                                 bool load_birth_cells, bool load_avatars) 
+                                 bool load_birth_cells, bool load_avatars, bool load_rebirth) 
 {
   // @TODO - build in support for verifying population dimensions
   
@@ -6006,7 +6006,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       
       // Activate the organism in the population...
       bool org_survived = false;
-      if (!load_groups) org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
+      if (!load_groups) org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
       if (load_groups) {
         // Set up group id and forager type (if loaded)
         int group_id = -1;
@@ -6021,7 +6021,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         new_organism->GetPhenotype().SetBirthForagerType(forager_type);
         new_organism->SetParentGroup(group_id);
         new_organism->SetParentFT(forager_type);
-        org_survived = (ActivateOrganism(ctx, new_organism, cell_array[cell_id], false));
+        org_survived = (ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true));
       }
       if (load_avatars && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
@@ -6421,7 +6421,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource s
   }
   
   // Activate the organism in the population...
-  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
+  ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
 }
 
 // This function injects the offspring genome of an organism into the population at cell_id.
@@ -6466,8 +6466,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
   }
   
   // Activate the organism in the population...
-  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
-  
+  ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
 }
 
 
@@ -6519,8 +6518,8 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
   new_organism->SetLineageLabel(lineage_label);
   
   // Activate the organism in the population...
-  if(assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true);
-  else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false);
+  if (assign_group) ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
+  else ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true);
 
   // Log the injection of this organism if LOG_INJECT is set to 1 and
   // the current update number is >= INJECT_LOG_START

@@ -237,9 +237,10 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false, bool save_rebirth = false);
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false, 
+                      bool save_rebirth = false);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, 
-                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
+                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false); 
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
@@ -416,7 +417,7 @@ private:
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
-  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true, bool is_inject = false);
   
   void TestForMiniTrace(cOrganism* in_organism);
   void SetupMiniTrace(cOrganism* in_organism);
