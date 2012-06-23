@@ -3111,8 +3111,9 @@ a single, complete file for each trigger.
   would have been collected as the org moved around the world.<br>
   e.g to load a population with birth cells and group ids, but without cell, lineage, or update offsets:<br>
   i LoadPopulation -1 0 0 1 1 0<br>
-  <i>load_rebirth</i> will inject orgs into their saved birth cells, put avatars in their birth cells (if avatars are on),
-  assign parent's merit to org (if inherit merit is on), assign the parent's forage target if the parent was a 'teacher' <br>
+  <i>load_rebirth</i> will override load_groups, load_birth_cells, load avatars and inject orgs into their saved birth cells, 
+  put avatars in their birth cells (if avatars are on), assign parent's merit to org (if inherit merit is on) and assign the 
+  parent's forage target if the parent was a 'teacher' <br>
   i LoadPopulation -1 0 0 0 0 0 1<br>
   </p>
 </li>

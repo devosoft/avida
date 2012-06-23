@@ -55,9 +55,10 @@ private:
   bool m_load_groups;
   bool m_load_birth_cells;
   bool m_load_avatars;
+  bool m_load_rebirth;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0), m_load_birth_cells(0), m_load_avatars(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0), m_load_groups(0), m_load_birth_cells(0), m_load_avatars(0), m_load_rebirth(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -67,9 +68,10 @@ public:
     if (largs.GetSize()) m_load_groups = largs.PopWord().AsInt();
     if (largs.GetSize()) m_load_birth_cells = largs.PopWord().AsInt();
     if (largs.GetSize()) m_load_avatars = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_load_rebirth = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars] [bool load_rebirth]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -77,7 +79,7 @@ public:
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
     if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset, m_load_groups, 
-                                                 m_load_birth_cells, m_load_avatars)) { 
+                                                 m_load_birth_cells, m_load_avatars, m_load_rebirth)) { 
       m_world->GetDriver().RaiseFatalException(-1, "failed to load population");
     }
   }

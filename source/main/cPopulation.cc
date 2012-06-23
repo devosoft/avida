@@ -5807,7 +5807,10 @@ public:
   tArray<int> forager_types;
   tArray<int> birth_cells;
   tArray<int> avatar_cells;
-  
+  tArray<double> parent_merit;
+  tArray<bool> parent_teacher;
+  tArray<int> parent_ft;
+
   cBioGroup* bg;
   
   
@@ -5866,36 +5869,77 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     }
     
     // Process gestation time offsets
-    cString offsetstr(tmp.props->Get("gest_offset"));
-    if (offsetstr.GetSize()) {
-      while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
-      assert(tmp.offsets.GetSize() == tmp.num_cpus);
+    if (!load_rebirth) {
+      cString offsetstr(tmp.props->Get("gest_offset"));
+      if (offsetstr.GetSize()) {
+        while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
+        assert(tmp.offsets.GetSize() == tmp.num_cpus);
+      }
     }
-    
     // Lineage label (only set if given in file)
     cString lineagestr(tmp.props->Get("lineage"));
     while (lineagestr.GetSize()) tmp.lineage_labels.Push(lineagestr.Pop(',').AsInt());
     // @blw preserve compatability with older .spop files that don't have lineage labels
     assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
     
-    // Group ids and forager types (if given in file)
-    if (load_groups) {
-      cString groupstr(tmp.props->Get("group_id"));
-      while (groupstr.GetSize()) tmp.group_ids.Push(groupstr.Pop(',').AsInt());
-      assert(tmp.group_ids.GetSize() == 0 || tmp.group_ids.GetSize() == tmp.num_cpus);
-      
-      cString foragestr(tmp.props->Get("forager_type"));
-      while (foragestr.GetSize()) tmp.forager_types.Push(foragestr.Pop(',').AsInt());
-      assert(tmp.group_ids.GetSize() == 0 || tmp.forager_types.GetSize() == tmp.num_cpus);
-      
-      cString birthstr(tmp.props->Get("birth_cell"));
-      while (birthstr.GetSize()) tmp.birth_cells.Push(birthstr.Pop(',').AsInt());
-      assert(tmp.group_ids.GetSize() == 0 || tmp.birth_cells.GetSize() == tmp.num_cpus);
+    // Other org specs (if given in file)
+    if (load_rebirth) {
+      if (tmp.props->HasEntry("birth_cell")) {
+        cString birthstr(tmp.props->Get("birth_cell"));
+        while (birthstr.GetSize()) tmp.birth_cells.Push(birthstr.Pop(',').AsInt());
+        assert(tmp.birth_cells.GetSize() == 0 || tmp.birth_cells.GetSize() == tmp.num_cpus);      
+      }
+      if (tmp.props->HasEntry("av_bcell") && m_world->GetConfig().USE_AVATARS.Get()) {
+        cString avatarstr(tmp.props->Get("av_bcell"));
+        while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
+        assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->HasEntry("parent_is_teach")) {
+        cString teachstr(tmp.props->Get("parent_is_teach"));
+        while (teachstr.GetSize()) tmp.parent_teacher.Push((bool)(teachstr.Pop(',').AsInt()));
+        assert(tmp.parent_teacher.GetSize() == 0 || tmp.parent_teacher.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->HasEntry("parent_ft")) {
+        cString parentftstr(tmp.props->Get("parent_ft"));
+        while (parentftstr.GetSize()) tmp.parent_ft.Push(parentftstr.Pop(',').AsInt());
+        assert(tmp.parent_ft.GetSize() == 0 || tmp.parent_ft.GetSize() == tmp.num_cpus);
+      }
+      if (tmp.props->HasEntry("parent_merit")) {
+        cString meritstr(tmp.props->Get("parent_merit"));
+        while (meritstr.GetSize()) tmp.parent_merit.Push(meritstr.Pop(',').AsDouble());
+        assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);      
+      }
     }
-    if (load_avatars) {
-      cString avatarstr(tmp.props->Get("avatar_cell"));
-      while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
-      assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
+    else {
+      if (load_groups) {
+        if (tmp.props->HasEntry("group_id")) {
+          cString groupstr(tmp.props->Get("group_id"));
+          while (groupstr.GetSize()) tmp.group_ids.Push(groupstr.Pop(',').AsInt());
+          assert(tmp.group_ids.GetSize() == 0 || tmp.group_ids.GetSize() == tmp.num_cpus);
+        }
+        if (tmp.props->HasEntry("forager_type")) {
+          cString foragestr(tmp.props->Get("forager_type"));
+          while (foragestr.GetSize()) tmp.forager_types.Push(foragestr.Pop(',').AsInt());
+          assert(tmp.forager_types.GetSize() == 0 || tmp.forager_types.GetSize() == tmp.num_cpus);
+        }
+      }
+      if (load_birth_cells) {   
+        if (tmp.props->HasEntry("birth_cell")) {
+          cString birthstr(tmp.props->Get("birth_cell"));
+          while (birthstr.GetSize()) tmp.birth_cells.Push(birthstr.Pop(',').AsInt());
+          assert(tmp.birth_cells.GetSize() == 0 || tmp.birth_cells.GetSize() == tmp.num_cpus);
+        }
+        if (tmp.props->HasEntry("av_bcell") && m_world->GetConfig().USE_AVATARS.Get()) {
+          cString avatarstr(tmp.props->Get("av_bcell"));
+          while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
+          assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
+        }
+      }
+      else if (!load_birth_cells && load_avatars && tmp.props->HasEntry("avatar_cell")) {
+        cString avatarstr(tmp.props->Get("avatar_cell"));
+        while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
+        assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
+      }
     }
   }
   
@@ -5971,6 +6015,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         // Set the phenotype merit from the save file
         assert(tmp.props->HasEntry("merit"));
         double merit = tmp.props->Get("merit").AsDouble();
+        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->HasEntry("parent_merit")) { 
+          merit = tmp.parent_merit[cell_i]; 
+        }
         
         if (merit > 0) {
           phenotype.SetMerit(cMerit(merit));
@@ -6007,23 +6054,37 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       // Activate the organism in the population...
       bool org_survived = false;
       if (!load_groups) org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
-      if (load_groups) {
-        // Set up group id and forager type (if loaded)
-        int group_id = -1;
-        int forager_type = -1;
-        if (tmp.group_ids.GetSize() != 0) group_id = tmp.group_ids[cell_i];
-        if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
-        new_organism->SetOpinion(group_id);
-        JoinGroup(new_organism, group_id);
-        new_organism->SetForageTarget(forager_type);  
+      if (!load_rebirth) {
+        if (load_groups) {
+          // Set up group id and forager type (if loaded)
+          int group_id = -1;
+          int forager_type = -1;
+          if (tmp.group_ids.GetSize() != 0) group_id = tmp.group_ids[cell_i];
+          if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
+          new_organism->SetOpinion(group_id);
+          JoinGroup(new_organism, group_id);
+          new_organism->SetForageTarget(forager_type);  
+          new_organism->GetPhenotype().SetBirthCellID(cell_id);
+          new_organism->GetPhenotype().SetBirthGroupID(group_id);
+          new_organism->GetPhenotype().SetBirthForagerType(forager_type);
+          new_organism->SetParentGroup(group_id);
+          new_organism->SetParentFT(forager_type);
+          org_survived = (ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true));
+        }
+        if ((load_avatars || load_birth_cells) && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
+          int avatar_cell = -1;
+          if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
+          new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
+        }
+      }
+      else if (load_rebirth) {
+        new_organism->SetParentFT(tmp.parent_ft[cell_i]);
+        new_organism->SetParentTeacher(tmp.parent_teacher[cell_i]);
+
         new_organism->GetPhenotype().SetBirthCellID(cell_id);
-        new_organism->GetPhenotype().SetBirthGroupID(group_id);
-        new_organism->GetPhenotype().SetBirthForagerType(forager_type);
-        new_organism->SetParentGroup(group_id);
-        new_organism->SetParentFT(forager_type);
         org_survived = (ActivateOrganism(ctx, new_organism, cell_array[cell_id], false, true));
       }
-      if (load_avatars && org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
+      if (org_survived && m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) { //**
         int avatar_cell = -1;
         if (tmp.avatar_cells.GetSize() != 0) avatar_cell = tmp.avatar_cells[cell_i];
         new_organism->GetOrgInterface().AddPredPreyAV(avatar_cell);
