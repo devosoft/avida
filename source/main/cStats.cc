@@ -141,7 +141,7 @@ cStats::cStats(cWorld* world)
   , prey_entropy(0.0)
   , pred_entropy(0.0)
   , topreac(-1)
-  , topcycles(-1)
+  , topcycle(-1)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -4489,32 +4489,36 @@ void cStats::UpdateTopNavTrace(cOrganism* org)
       break;
     }
   }
-  int cycles = org->GetPhenotype().GetTimeUsed();
+  int cycle = org->GetPhenotype().GetTimeUsed();
   bool new_winner = false;
   if (best_reac >= topreac) {
-    if (best_reac == topreac && cycles < topcycles) new_winner = true;
+    if (best_reac == topreac && cycle < topcycle) new_winner = true;
     else if (best_reac > topreac) new_winner = true;      
   }
   if (new_winner) {
     topreac = best_reac;
-    topcycles = cycles;
+    topcycle = cycle;
     topid = org->GetID();
 
     tSmartArray<char> trace = org->GetHardware().GetMicroTrace();
     tSmartArray<int> traceloc = org->GetHardware().GetNavTraceLoc();
     tSmartArray<int> tracefacing = org->GetHardware().GetNavTraceFacing();
+    tSmartArray<int> traceupdate = org->GetHardware().GetNavTraceUpdate();
 
     toptrace.Resize(trace.GetSize());
     topnavtraceloc.Resize(traceloc.GetSize());
     topnavtraceloc.SetAll(-1);
     topnavtracefacing.Resize(tracefacing.GetSize());
     topnavtracefacing.SetAll(-1);
+    topnavtraceupdate.Resize(traceupdate.GetSize());
+    topnavtraceupdate.SetAll(-1);
     
-    assert(toptrace.GetSize() == topnavtraceloc.GetSize() == topnavtracefacing.GetSize());
+    assert(toptrace.GetSize() == topnavtraceloc.GetSize() == topnavtracefacing.GetSize() == topnavtraceupdate.GetSize());
     for (int i = 0; i < toptrace.GetSize(); i++) {
       toptrace[i] = trace[i];
       topnavtraceloc[i] = traceloc[i];
       topnavtracefacing[i] = tracefacing[i];
+      topnavtraceupdate[i] = traceupdate[i];
     }
     
     tArray<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
@@ -4544,18 +4548,19 @@ void cStats::PrintTopNavTrace()
   df.WriteComment("Org That Reproduced the Fastest (fewest cycles) Among Orgs with the Highest Reaction ID");
   df.WriteTimeStamp();
   df.WriteComment("OrgID");
-  df.WriteComment("Cycles (parallel multithread execs = 1 cycle)");
-  df.WriteComment("Reaction Counts");
-  df.WriteComment("CPU Cycle of First Trigger of Each Reaction");
-  df.WriteComment("Exec Count at First Trigger (== index into exec trace + nav traces");
+  df.WriteComment("Cycle at First Reproduction (parallel multithread execs = 1 cycle)");
+  df.WriteComment("Reaction Counts at First Reproduction");
+  df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
+  df.WriteComment("Exec Count at First Trigger (== index into exec trace and nav traces");
+  df.WriteComment("Updates for each entry in each following trace (to match with res data)");
+  df.WriteComment("CellIDs to First Reproduction");
+  df.WriteComment("OrgFacings to First Reproduction");
   df.WriteComment("Execution Trace to First Reproduction");
-  df.WriteComment("CellIDs");
-  df.WriteComment("OrgFacings");
   df.Endl();
 
   std::ofstream& fp = df.GetOFStream();
 
-  fp << topid << " " << topcycles << " ";
+  fp << topid << " " << topcycle << " ";
 	for (int i = 0; i < topreactions.GetSize() - 1; i++) {
 		fp << topreactions[i] << ",";
 	}
@@ -4571,10 +4576,11 @@ void cStats::PrintTopNavTrace()
 	}
   fp << topreactionexecs[topreactionexecs.GetSize() - 1] << " ";
 
-	for (int i = 0; i < toptrace.GetSize(); i++) {
-		fp << toptrace[i] << " ";
+  for (int i = 0; i < topnavtraceupdate.GetSize() - 1; i++) {
+		fp << topnavtraceupdate[i] << ",";
 	}
-  
+  fp << topnavtraceloc[topnavtraceupdate.GetSize() - 1] << " ";
+
   for (int i = 0; i < topnavtraceloc.GetSize() - 1; i++) {
 		fp << topnavtraceloc[i] << ",";
 	}
@@ -4583,8 +4589,11 @@ void cStats::PrintTopNavTrace()
   for (int i = 0; i < topnavtracefacing.GetSize() - 1; i++) {
 		fp << topnavtracefacing[i] << ",";
 	}
-  fp << topnavtracefacing[topnavtracefacing.GetSize() - 1];
+  fp << topnavtracefacing[topnavtracefacing.GetSize() - 1] << " ";
 
+	for (int i = 0; i < toptrace.GetSize(); i++) {
+		fp << toptrace[i];
+	}
   fp << endl;
 }
 

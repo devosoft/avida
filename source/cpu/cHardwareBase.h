@@ -67,6 +67,7 @@ protected:
   tSmartArray<char> m_microtracer;
   tSmartArray<int> m_navtraceloc;
   tSmartArray<int> m_navtracefacing;
+  tSmartArray<int> m_navtraceupdate;
   bool m_microtrace;
   bool m_topnavtrace;
   bool m_reprotrace;
@@ -155,6 +156,7 @@ public:
   tSmartArray<char>& GetMicroTrace() { return m_microtracer; }
   tSmartArray<int>& GetNavTraceLoc() { return m_navtraceloc; }
   tSmartArray<int>& GetNavTraceFacing() { return m_navtracefacing; }
+  tSmartArray<int>& GetNavTraceUpdate() { return m_navtraceupdate; }
   void DeleteMiniTrace();
   virtual void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }

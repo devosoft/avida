@@ -410,13 +410,14 @@ private:
   
   // --------  TopNavTrace Stats  ---------
   tArray<char> toptrace;
+  tArray<int> topnavtraceupdate;
   tArray<int> topnavtraceloc;
   tArray<int> topnavtracefacing;
   tArray<int> topreactions;
   tArray<int> topreactioncycles;
   tArray<int> topreactionexecs;
   int topreac;
-  int topcycles;   
+  int topcycle;   
   int topid;
     
 public:

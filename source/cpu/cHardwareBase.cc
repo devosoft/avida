@@ -75,6 +75,7 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   m_microtracer.Resize(0);
   m_navtraceloc.Resize(0);
   m_navtracefacing.Resize(0);
+  m_navtraceupdate.Resize(0);
   m_inst_cost = 0;
   m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
   m_active_thread_costs.SetAll(0);
@@ -1312,6 +1313,7 @@ void cHardwareBase::RecordNavTrace(bool use_avatar)
 
   m_navtraceloc.Push(loc);
   m_navtracefacing.Push(facing);
+  m_navtraceupdate.Push(m_world->GetStats().GetUpdate());
 }
 
 void cHardwareBase::DeleteMiniTrace()
