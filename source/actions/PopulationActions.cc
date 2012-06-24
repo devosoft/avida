@@ -5555,12 +5555,57 @@ public:
   {
   }
   
+  static const cString GetDescription() { return "Arguments: ''"; }
+
   void Process(cAvidaContext& ctx)
   { 
     const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
     for (int i = 0; i < live_orgs.GetSize(); i++) {  
       m_world->GetPopulation().AppendRecordReproQ(live_orgs[i]);
     }
+  }
+};
+
+/*   Record and print some nav data up to first reproduction for best of orgs alive now, including trace execution,
+  locations, and facings. Will print these data for the org among those with the highest reaction achieved by
+  time of reproduction in shortest amount of time (as measured by cycles). Will print nothing if any of the 
+  candidate orgs are still alive when avida exits and no FlushTopNavTrace events were called.
+  Meant for use in behavioral trials where call to this event happens at start of update 0 of orgs lives.
+*/
+class cActionPrintTopNavTrace : public cAction
+{
+private:
+  
+public:
+  cActionPrintTopNavTrace(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    m_world->GetPopulation().SetTopNavQ();
+  }
+};
+
+/* Force Printing of current TopNacTrace even if orgs still being tracked. */
+class cActionFlushTopNavTrace : public cAction
+{
+private:
+  
+public:
+  cActionFlushTopNavTrace(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    m_world->GetStats().PrintTopNavTrace();
   }
 };
 
@@ -5719,4 +5764,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMiniTraces>("PrintMiniTraces");
   action_lib->Register<cActionPrintMicroTraces>("PrintMicroTraces");
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
+  action_lib->Register<cActionPrintReproData>("PrintReproData");
+  action_lib->Register<cActionPrintTopNavTrace>("PrintTopNavTrace");
+  action_lib->Register<cActionFlushTopNavTrace>("PrintFlushNavTrace");
 }

@@ -677,7 +677,10 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     }
     // if using mini traces, report success or failure of execution
     if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
-    if (exec_success && m_microtrace) RecordMicroTrace(cur_inst);
+    if (exec_success && (m_microtrace || m_topnavtrace)) {
+      RecordMicroTrace(cur_inst);
+      if (m_topnavtrace) RecordNavTrace(m_use_avatar);
+    }
     
     // this will differ from time used for multi threaded orgs
     phenotype.IncNumExecs();
@@ -806,16 +809,16 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
+void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
-  df.WriteComment(org_dat.Set("Org ID: %d", org_id));
+  df.WriteComment(org_dat.Set("Org ID: %d", m_organism->GetID()));
   df.WriteComment(org_dat.Set("Genotype ID: %d", gen_id));
   df.WriteComment(org_dat.Set("Genotype: %s", (const char*) genotype));
-  df.WriteComment(org_dat.Set("Genome Length: %d", in_organism->GetGenome().GetSize()));
+  df.WriteComment(org_dat.Set("Genome Length: %d", m_organism->GetGenome().GetSize()));
   df.WriteComment(" ");
   df.WriteComment("Exec Stats Columns:");
   df.WriteComment("CPU Cycle");

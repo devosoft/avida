@@ -93,7 +93,7 @@ private:
 public:
   typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
 
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_hgt(0), can_input(false), can_output(false) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), can_input(false), can_output(false), m_hgt(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; delete m_hgt; }
 

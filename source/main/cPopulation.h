@@ -87,6 +87,7 @@ private:
   int m_next_pred_q;
   
   tSmartArray<cOrganism*> repro_q;
+  tSmartArray<cOrganism*> topnav_q;
   
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
@@ -132,6 +133,8 @@ public:
   
   // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
+  
+  void UpdateQs(cOrganism* parent, bool reproduced = false);
   
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1, int trace = 0); 
@@ -256,9 +259,10 @@ public:
   void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
   tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
+  void AppendRecordReproQ(cOrganism* new_org);
+  void SetTopNavQ();
+  tSmartArray<cOrganism*> GetTopNavQ() { return topnav_q; }
   
-  void AppendRecordReproQ(cOrganism* new_org) { repro_q.Push(new_org); }
-
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }

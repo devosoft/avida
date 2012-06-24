@@ -407,6 +407,17 @@ private:
   cDoubleSum sum_female_creature_age;
   cDoubleSum sum_female_generation;
   cDoubleSum sum_female_size;
+  
+  // --------  TopNavTrace Stats  ---------
+  tArray<char> toptrace;
+  tArray<int> topnavtraceloc;
+  tArray<int> topnavtracefacing;
+  tArray<int> topreactions;
+  tArray<int> topreactioncycles;
+  tArray<int> topreactionexecs;
+  int topreac;
+  int topcycles;   
+  int topid;
     
 public:
   cStats(cWorld* world);
@@ -949,6 +960,8 @@ public:
   void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
   void PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
+  void UpdateTopNavTrace(cOrganism* org);
+  void PrintTopNavTrace();
   void PrintReproData(cOrganism* org);
   
   // deme predicate stats

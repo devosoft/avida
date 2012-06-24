@@ -65,7 +65,11 @@ protected:
   cHardwareTracer* m_minitracer;    // Set this if you want execution traced in a condensed and tractable format.
   cString& m_minitrace_file;
   tSmartArray<char> m_microtracer;
+  tSmartArray<int> m_navtraceloc;
+  tSmartArray<int> m_navtracefacing;
   bool m_microtrace;
+  bool m_topnavtrace;
+  bool m_reprotrace;
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
@@ -139,12 +143,20 @@ public:
   virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) = 0;
   virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
-  void SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype);
+  void SetMiniTrace(const cString& filename, const int gen_id, const cString& genotype);
   void SetMicroTrace() { m_microtrace = true; } 
+  void SetTopNavTrace(bool nav_trace) { m_topnavtrace = nav_trace; }
+  bool IsTopNavTrace() { return m_topnavtrace; }
+  void SetReproTrace(bool repro_trace) { m_reprotrace = repro_trace; }
+  bool IsReproTrace() { return m_reprotrace; }
   void RecordMicroTrace(const cInstruction& cur_inst);
   void PrintMicroTrace(int gen_id);
+  void RecordNavTrace(bool use_avatar);
+  tSmartArray<char>& GetMicroTrace() { return m_microtracer; }
+  tSmartArray<int>& GetNavTraceLoc() { return m_navtraceloc; }
+  tSmartArray<int>& GetNavTraceFacing() { return m_navtracefacing; }
   void DeleteMiniTrace();
-  virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype) = 0;
+  virtual void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
   
   

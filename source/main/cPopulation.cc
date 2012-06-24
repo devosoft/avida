@@ -602,17 +602,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   
   // Do any statistics on the parent that just gave birth...
   parent_organism->HandleGestation();
-  if (repro_q.GetSize()) {
-    for (int i = 0; i < repro_q.GetSize(); i++) {
-      if (repro_q[i] == parent_organism) {
-        m_world->GetStats().PrintReproData(parent_organism);
-        int last = repro_q.GetSize();
-        repro_q.Swap(i, last);
-        repro_q.Pop();
-        break;
-      }
-    }
-  }
+  
+  UpdateQs(parent_organism, true);
 
   // Place all of the offspring...
   for (int i = 0; i < offspring_array.GetSize(); i++) {
@@ -636,6 +627,35 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     }
   }
   return parent_alive;
+}
+
+void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
+{
+  // yank the org out of any current trace queues
+  if (org->GetHardware().IsReproTrace() && repro_q.GetSize()) {
+    for (int i = 0; i < repro_q.GetSize(); i++) {
+      if (repro_q[i] == org) {
+        if (reproduced) m_world->GetStats().PrintReproData(org);
+        int last = repro_q.GetSize();
+        repro_q.Swap(i, last);
+        repro_q.Pop();
+        org->GetHardware().SetReproTrace(false);
+        break;
+      }
+    }
+  }
+  if (org->GetHardware().IsTopNavTrace() && topnav_q.GetSize()) {
+    for (int i = 0; i < topnav_q.GetSize(); i++) {
+      if (topnav_q[i] == org) {
+        if (reproduced) m_world->GetStats().UpdateTopNavTrace(org);
+        int last = topnav_q.GetSize();
+        topnav_q.Swap(i, last);
+        topnav_q.Pop();
+        org->GetHardware().SetTopNavTrace(false);
+        break;
+      }
+    }
+  }
 }
 
 bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host)
@@ -1067,7 +1087,7 @@ void cPopulation::SetupMiniTrace(cOrganism* in_organism)
   
   cString filename = cStringUtil::Stringf("minitraces/org%d-ud%d-grp%d_ft%d-gt%d.trc", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->GetBioGroup("genotype")->GetID());
   
-  if (!use_micro_traces) in_organism->GetHardware().SetMiniTrace(filename, id, in_organism->GetBioGroup("genotype")->GetID(), in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
+  if (!use_micro_traces) in_organism->GetHardware().SetMiniTrace(filename, in_organism->GetBioGroup("genotype")->GetID(), in_organism->GetBioGroup("genotype")->GetProperty("name").AsString());
   else in_organism->GetHardware().SetMicroTrace();
   
   if (print_mini_trace_genomes) {
@@ -1454,6 +1474,21 @@ tSmartArray<int> cPopulation::SetTraceQ(int save_dominants, int save_groups, int
   return bg_id_list;
 }
 
+void cPopulation::SetTopNavQ()
+{
+  topnav_q.Resize(live_org_list.GetSize());
+  for (int i = 0; i < live_org_list.GetSize(); i++) {
+    live_org_list[i]->GetHardware().SetTopNavTrace(true);  
+    topnav_q[i] = live_org_list[i];
+  }
+}
+
+void cPopulation::AppendRecordReproQ(cOrganism* new_org) 
+{ 
+  repro_q.Push(new_org); 
+  new_org->GetHardware().SetReproTrace(true); 
+}
+
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
 // movement that cannot be directly handled in cHardwareCPU.cc
 bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id, int true_cell)
@@ -1654,6 +1689,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   organism->GetHardware().PrintMicroTrace(organism->GetBioGroup("genotype")->GetID());
   
   RemoveLiveOrg(organism); 
+  UpdateQs(organism, false);
   
   int cellID = in_cell.GetID();
   

@@ -48,7 +48,8 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str), m_microtrace(false)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str)
+, m_microtrace(false), m_topnavtrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts()) , m_has_energy_costs(m_inst_set->HasEnergyCosts())
 , m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
@@ -72,6 +73,8 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
 {
   m_organism->HardwareReset(ctx);
   m_microtracer.Resize(0);
+  m_navtraceloc.Resize(0);
+  m_navtracefacing.Resize(0);
   m_inst_cost = 0;
   m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
   m_active_thread_costs.SetAll(0);
@@ -1279,12 +1282,12 @@ void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
 	wh.Adjust();
 }
 
-void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype)
+void cHardwareBase::SetMiniTrace(const cString& filename, const int gen_id, const cString& genotype)
 {
   cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
   m_minitracer = minitracer; 
   m_minitrace_file = filename;
-  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id, genotype);
+  SetupMiniTraceFileHeader(filename, gen_id, genotype);
 }
 
 void cHardwareBase::RecordMicroTrace(const cInstruction& cur_inst)
@@ -1297,6 +1300,18 @@ void cHardwareBase::PrintMicroTrace(int gen_id)
   if (m_microtrace) {
     m_world->GetStats().PrintMicroTraces(m_microtracer, m_organism->GetPhenotype().GetUpdateBorn(), m_organism->GetID(), m_organism->GetForageTarget(), gen_id);
   }
+}
+
+void cHardwareBase::RecordNavTrace(bool use_avatar)
+{
+  int loc = m_organism->GetOrgInterface().GetCellID();
+  if (use_avatar) loc = m_organism->GetOrgInterface().GetAVCellID();
+  
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
+
+  m_navtraceloc.Push(loc);
+  m_navtracefacing.Push(facing);
 }
 
 void cHardwareBase::DeleteMiniTrace()

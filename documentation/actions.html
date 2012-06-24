@@ -111,6 +111,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#ExitDemeReplications">ExitDemeReplications</a><br>
       <a href="#ExitElapsedTime">ExitElapsedTime</a><br>
       <a href="#Flash">Flash</a><br>
+      <a href="#FlushTopNavTrace">FlushTopNavTrace</a><br>
       <a href="#FullLandscape">FullLandscape</a><br>
       <a href="#HillClimb">HillClimb</a><br>
       <a href="#Inject">Inject</a><br>
@@ -294,6 +295,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintTaskSnapshot">PrintTaskSnapshot</a><br>
       <a href="#PrintTasksQualData">PrintTasksQualData</a><br>
       <a href="#PrintTimeData">PrintTimeData</a><br>
+      <a href="#PrintTopNavTrace">PrintTopNavTrace</a><br>
       <a href="#PrintTotalsData">PrintTotalsData</a><br>
       <a href="#PrintVarianceData">PrintVarianceData</a><br>
       <a href="#PrintViableTasksData">PrintViableTasksData</a><br>
@@ -1173,6 +1175,12 @@ change the course of the run.  There are a wide variety of these.
   <p>
   
   </p>
+</li>
+<li><p>
+  <strong><a name="FlushTopNavTrace">FlushTopNavTrace</a></strong>
+  Force printing of nav trace (as set up by PrintTopNavTrace) even if all candidate orgs have not been
+  evaluated / reproduced.
+    </p>
 </li>
 <li><p>
   <strong><a name="Inject">Inject</a></strong>
@@ -2882,7 +2890,6 @@ a single, complete file for each trigger.
     Record and print some data up to first reproduction for every org alive now.
       </p>
 </li>
-
 <li><p>
   <strong><a name="PrintReputationData">PrintReputationData</a></strong>
   <i>[string fname="reputation.dat"]</i>
@@ -3039,6 +3046,14 @@ a single, complete file for each trigger.
   organisms ever).
 
   </p>
+</li>
+<li><p>
+  <strong><a name="PrintTopNavTrace">PrintTopNavTrace</a></strong>
+  Record and print some nav data up to first reproduction for best of orgs alive now, including trace execution,
+  locations, and facings. Will print these data for the org among those with the highest reaction achieved By
+  time of reproduction in shortest amount of time (as measured by cycles). Will print nothing if any of the 
+  candidate orgs are still alive when avida exits and no FlushTopNavTrace events were called.
+    </p>
 </li>
 <li><p>
   <strong><a name="PrintVarianceData">PrintVarianceData</a></strong>
