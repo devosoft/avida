@@ -419,6 +419,7 @@ private:
   int topreac;
   int topcycle;   
   int topid;
+  int topgenid;
     
 public:
   cStats(cWorld* world);

@@ -5766,5 +5766,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
   action_lib->Register<cActionPrintReproData>("PrintReproData");
   action_lib->Register<cActionPrintTopNavTrace>("PrintTopNavTrace");
-  action_lib->Register<cActionFlushTopNavTrace>("PrintFlushNavTrace");
+  action_lib->Register<cActionFlushTopNavTrace>("FlushTopNavTrace");
 }
