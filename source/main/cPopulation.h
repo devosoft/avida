@@ -347,6 +347,7 @@ public:
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
   void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance);
+  void SetGradPlatVarTailInflow(const cString res_name, const double mean, const double variance);
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

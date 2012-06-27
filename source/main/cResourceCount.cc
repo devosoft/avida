@@ -456,6 +456,13 @@ void cResourceCount::SetGradPlatVarInflow(const int& res_id, const double& mean,
   spatial_resource_count[res_id]->SetGradPlatVarInflow(mean, variance);
 }
 
+void cResourceCount::SetGradPlatVarTailInflow(const int& res_id, const double& mean, const double& variance) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetGradPlatVarTailInflow(mean, variance);
+}
+
 /*
  * This is unnecessary now that a resource has an index
  * TODO: 

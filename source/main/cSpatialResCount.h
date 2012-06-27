@@ -133,6 +133,7 @@ public:
   virtual void SetGradConeOutflow(double) { ; }
   virtual void SetGradientInflow(double) { ; }
   virtual void SetGradPlatVarInflow(double, double) { ; }
+  virtual void SetGradPlatVarTailInflow(double, double) { ; }
   virtual void SetGradPlatIsCommon(bool) { ; }
   virtual void SetGradFloor(double) { ; }
   virtual void SetGradHabitat(int) { ; }

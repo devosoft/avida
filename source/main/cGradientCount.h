@@ -144,6 +144,7 @@ public:
   void SetGradCount(int count) { m_count = count; }
  
   void SetGradPlatVarInflow(double mean, double variance);
+  void SetGradPlatVarTailInflow(double mean, double variance);
   void UpdateGradPlatVarInflow(); // not currently being used...would change inflows every update
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
