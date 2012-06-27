@@ -4620,7 +4620,7 @@ void cStats::PrintReproData(cOrganism* org)
     df.WriteComment("OrgID");
     df.WriteComment("Age (updates)");
     df.WriteComment("TimeUsed (cycles)");
-    df.WriteComment("NumExecutions (cycles * threads)");
+    df.WriteComment("NumExecutions (attempted executions)");
     df.WriteComment("ReactionCounts");
     df.Endl();
   }

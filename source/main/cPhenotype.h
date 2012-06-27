@@ -198,7 +198,7 @@ private:
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
   int time_used;         // Total CPU cycles consumed, including additional time costs of some instructions.
-  int num_execs;         // Total number of instructions executed...unlike, time_used, this accounts for parallel executions in multi-threaded orgs
+  int num_execs;         // Total number of instructions executions attempted...accounts for parallel executions in multi-threaded orgs & corrects for cpu-cost 'pauses'
   int age;               // Number of updates organism has survived for.
   cString fault_desc;    // A description of the most recent error.
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation

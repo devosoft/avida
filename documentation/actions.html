@@ -2574,9 +2574,11 @@ a single, complete file for each trigger.
     <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
     <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]</i>
     </p>
-    <p>Same general operation behavior as PrintMiniTraces but only saves executed (successfully) instruction symbols along with 
-    org id, genotype id, forager type, and birth and death updates. Each microtrace is saved on a single line in
-    microtrace.dat.
+    <p>Same general operation behavior as PrintMiniTraces but only saves executed instruction symbols along with 
+    org id, genotype id, forager type, and birth and death updates. Microtraces map executions as 'what the org was trying
+    to do'. So, failed executions are recorded except when CPU costs are being paid. If CPU costs are being paid, we record
+    the execution when the instruction was submitted, not necessarily when it was actually executed. Each microtrace is 
+    saved on a single line in microtrace.dat.
     </p>
     <p> rand_pred and rand_prey are compatible with each other, building a single list of genotypes to trace based on
     current genotypes in the population for each of the two general forager types (will generate a list of 2 X max_samples

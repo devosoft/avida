@@ -1223,6 +1223,12 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   return true;
 }
 
+bool cHardwareBase::IsPayingActiveCost(cAvidaContext& ctx, const int thread_id)
+{
+  if (m_active_thread_post_costs[thread_id] > 1) return true;
+  return false;
+}
+
 void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
   if (m_has_res_costs || m_has_fem_res_costs) {
@@ -1300,6 +1306,7 @@ void cHardwareBase::PrintMicroTrace(int gen_id)
 {
   if (m_microtrace) {
     m_world->GetStats().PrintMicroTraces(m_microtracer, m_organism->GetPhenotype().GetUpdateBorn(), m_organism->GetID(), m_organism->GetForageTarget(), gen_id);
+    m_microtrace = false;
   }
 }
 

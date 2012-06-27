@@ -618,9 +618,13 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
     int exec_success = 0;
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
+    
     // record any failure due to costs being paid
+    // before we try to execute the instruction, is this org currently paying precosts for it
+    bool on_pause = IsPayingActiveCost(ctx, m_cur_thread);
+    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);    
     if (!exec) exec_success = -1;
+
     if (m_promoters_enabled) {
       // Constitutive regulation applied here
       if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
@@ -630,6 +634,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     }
     
     // Now execute the instruction...
+    bool rand_fail = false;
     if (exec == true) {
       // NOTE: This call based on the cur_inst must occur prior to instruction
       //       execution, because this instruction reference may be invalid after
@@ -639,6 +644,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
       if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+        rand_fail = !exec;
       }
       
       //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
@@ -677,13 +683,25 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     }
     // if using mini traces, report success or failure of execution
     if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
-    if (exec_success && (m_microtrace || m_topnavtrace)) {
-      RecordMicroTrace(cur_inst);
-      if (m_topnavtrace) RecordNavTrace(m_use_avatar);
-    }
     
-    // this will differ from time used for multi threaded orgs
-    phenotype.IncNumExecs();
+    bool do_record = false;
+    // record exec failed if the org just now started paying precosts
+    if (exec_success == -1 && !on_pause) do_record = true;
+    // if exec succeeded but was on pause before this execution, we already recorded it
+    // otherwise we record what the org did
+    else if (exec_success == 1 && !on_pause) do_record = true;
+    // if random failure, we record 'what the org was trying to do'
+    else if (rand_fail) do_record = true;
+    // if exec failed because of something inside the instruction itself, record the attempt
+    else if (exec_success == 0) do_record = true;
+    if (do_record) {
+      // this will differ from time used 
+      phenotype.IncNumExecs();
+      if (m_microtrace || m_topnavtrace) {
+        RecordMicroTrace(cur_inst);
+        if (m_topnavtrace) RecordNavTrace(m_use_avatar);      
+      }
+    }    
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed

@@ -630,15 +630,21 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
 
 void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
 {
-  // yank the org out of any current trace queues
+  // yank the org out of any current trace queues, as appropriate (i.e. if dead (==!reproduced) or if reproduced and splitting on divide)
+  bool split = m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT;
+  
+  if (!reproduced || (reproduced && split)) org->GetHardware().PrintMicroTrace(org->GetBioGroup("genotype")->GetID());
+  
   if (org->GetHardware().IsReproTrace() && repro_q.GetSize()) {
     for (int i = 0; i < repro_q.GetSize(); i++) {
       if (repro_q[i] == org) {
         if (reproduced) m_world->GetStats().PrintReproData(org);
-        int last = repro_q.GetSize() - 1;
-        repro_q.Swap(i, last);
-        repro_q.Pop();
-        org->GetHardware().SetReproTrace(false);
+        if (!reproduced || (reproduced && split)) {
+          int last = repro_q.GetSize() - 1;
+          repro_q.Swap(i, last);
+          repro_q.Pop();
+          org->GetHardware().SetReproTrace(false);
+        }
         break;
       }
     }
@@ -647,10 +653,12 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
     for (int i = 0; i < topnav_q.GetSize(); i++) {
       if (topnav_q[i] == org) {
         if (reproduced) m_world->GetStats().UpdateTopNavTrace(org);
-        int last = topnav_q.GetSize() - 1;
-        topnav_q.Swap(i, last);
-        topnav_q.Pop();
-        org->GetHardware().SetTopNavTrace(false);
+        if (!reproduced || (reproduced && split)) {
+          int last = topnav_q.GetSize() - 1;
+          topnav_q.Swap(i, last);
+          topnav_q.Pop();
+          org->GetHardware().SetTopNavTrace(false);
+        }
         break;
       }
     }
@@ -1684,8 +1692,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 
   bool is_prey = true;
   if (organism->GetForageTarget() <= -2) is_prey = false;
-  
-  organism->GetHardware().PrintMicroTrace(organism->GetBioGroup("genotype")->GetID());
   
   RemoveLiveOrg(organism); 
   UpdateQs(organism, false);
