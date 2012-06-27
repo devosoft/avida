@@ -7462,20 +7462,6 @@ void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean
   } 
 }
 
-void cPopulation::SetGradPlatVarTailInflow(const cString res_name, const double mean, const double variance)
-{
-  const cResourceLib & resource_lib = environment.GetResourceLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      resource_count.SetGradPlatVarTailInflow(global_res_index, mean, variance);
-    }
-  } 
-}
-
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
