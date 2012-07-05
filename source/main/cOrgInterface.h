@@ -102,6 +102,8 @@ public:
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
   
+  virtual bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, Sequence& seq) = 0;
+  
   virtual void Breakpoint() = 0;
   
   virtual int GetInputAt(int& input_pointer) = 0;

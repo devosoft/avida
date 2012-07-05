@@ -66,7 +66,8 @@ void cDefaultRunDriver::Run()
   
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get() +
                                 m_world->GetConfig().POINT_INS_PROB.Get() +
-                                m_world->GetConfig().POINT_DEL_PROB.Get();
+                                m_world->GetConfig().POINT_DEL_PROB.Get() +
+                                m_world->GetConfig().DIV_LGT_PROB.Get();
   
   void (cPopulation::*ActiveProcessStep)(cAvidaContext& ctx, double step_size, int cell_id) = &cPopulation::ProcessStep;
   if (m_world->GetConfig().SPECULATIVE.Get() &&

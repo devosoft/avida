@@ -54,15 +54,21 @@ private:
     double mut_prob;                  // Per site
     double uniform_prob;              // Per site
     double slip_prob;                 // Per site
+    double trans_prob;                // Per site
+    double lgt_prob;                  // Per site
     double divide_mut_prob;           // Max one per divide
     double divide_ins_prob;           // Max one per divide
     double divide_del_prob;           // Max one per divide
+    double divide_uniform_prob;       // Max one per divide
+    double divide_slip_prob;          // Max one per divide
+    double divide_trans_prob;         // Max one per divide
+    double divide_lgt_prob;           // Max one per divide
     double divide_poisson_mut_mean;   // Allows multiple with constant genomic rate
     double divide_poisson_ins_mean;   // Allows multiple with constant genomic rate
     double divide_poisson_del_mean;   // Allows multiple with constant genomic rate
     double divide_poisson_slip_mean;  // Allows multiple with constant genomic rate
-    double divide_slip_prob;          // Max one per divide
-    double divide_uniform_prob;
+    double divide_poisson_trans_mean; // Allows multiple with constant genomic rate
+    double divide_poisson_lgt_mean;   // Allows multiple with constant genomic rate
     double parent_mut_prob;
     double parent_ins_prob;
     double parent_del_prob;
@@ -120,6 +126,20 @@ public:
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
+  bool TestDivideUniform(cAvidaContext& ctx) const
+  {
+    return (divide.divide_uniform_prob == 0.0) ? false : ctx.GetRandom().P(divide.divide_uniform_prob);
+  }
+  bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
+  bool TestDivideTrans(cAvidaContext& ctx) const
+  {
+    return (divide.divide_trans_prob == 0.0) ? false : ctx.GetRandom().P(divide.divide_trans_prob);
+  }
+  bool TestDivideLGT(cAvidaContext& ctx) const
+  {
+    return (divide.divide_lgt_prob == 0.0) ? false : ctx.GetRandom().P(divide.divide_lgt_prob);
+  }
+
   
   unsigned int NumDividePoissonMut(cAvidaContext& ctx) const 
     { return (divide.divide_poisson_mut_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_mut_mean); }
@@ -129,12 +149,10 @@ public:
     { return (divide.divide_poisson_del_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_del_mean); }
   unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const 
     { return (divide.divide_poisson_slip_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_slip_mean); }
-
-  bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
-  bool TestDivideUniform(cAvidaContext& ctx) const
-  {
-    return (divide.divide_uniform_prob == 0.0) ? false : ctx.GetRandom().P(divide.divide_uniform_prob);
-  }
+  unsigned int NumDividePoissonTrans(cAvidaContext& ctx) const
+    { return (divide.divide_poisson_trans_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_trans_mean); }
+  unsigned int NumDividePoissonLGT(cAvidaContext& ctx) const
+    { return (divide.divide_poisson_lgt_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_lgt_mean); }
 
   
   double DoMetaCopyMut(cAvidaContext& ctx) {
@@ -159,12 +177,16 @@ public:
   double GetDivMutProb() const        { return divide.mut_prob; }
   double GetDivUniformProb() const    { return divide.uniform_prob; }
   double GetDivSlipProb() const       { return divide.slip_prob; }
+  double GetDivTransProb() const      { return divide.trans_prob; }
+  double GetDivLGTProb() const        { return divide.lgt_prob; }
   
   double GetDivideMutProb() const     { return divide.divide_mut_prob; }
   double GetDivideInsProb() const     { return divide.divide_ins_prob; }
   double GetDivideDelProb() const     { return divide.divide_del_prob; }
   double GetDivideUniformProb() const { return divide.divide_uniform_prob; }
   double GetDivideSlipProb() const    { return divide.divide_slip_prob; }
+  double GetDivideTransProb() const   { return divide.divide_trans_prob; }
+  double GetDivideLGTProb() const     { return divide.divide_lgt_prob; }
   
   double GetPointInsProb() const      { return point.ins_prob; }
   double GetPointDelProb() const      { return point.del_prob; }
@@ -195,12 +217,16 @@ public:
   void SetDivDelProb(double in_prob)        { divide.del_prob = in_prob; }
   void SetDivUniformProb(double in_prob)    { divide.uniform_prob = in_prob; }
   void SetDivSlipProb(double in_prob)       { divide.slip_prob = in_prob; }
+  void SetDivTransProb(double in_prob)      { divide.trans_prob = in_prob; }
+  void SetDivLGTProb(double in_prob)        { divide.lgt_prob = in_prob; }
   
   void SetDivideMutProb(double in_prob)     { divide.divide_mut_prob = in_prob; }
   void SetDivideInsProb(double in_prob)     { divide.divide_ins_prob = in_prob; }
   void SetDivideDelProb(double in_prob)     { divide.divide_del_prob = in_prob; }
-  void SetDivideUniformProb(double in_prob) { divide.divide_del_prob = in_prob; }
-  void SetDivideSlipProb(double in_prob)    { divide.divide_del_prob = in_prob; }
+  void SetDivideUniformProb(double in_prob) { divide.divide_uniform_prob = in_prob; }
+  void SetDivideSlipProb(double in_prob)    { divide.divide_slip_prob = in_prob; }
+  void SetDivideTransProb(double in_prob)   { divide.divide_trans_prob = in_prob; }
+  void SetDivideLGTProb(double in_prob)     { divide.divide_lgt_prob = in_prob; }
   
   void SetPointInsProb(double in_prob)      { point.ins_prob        = in_prob; }
   void SetPointDelProb(double in_prob)      { point.del_prob        = in_prob; }

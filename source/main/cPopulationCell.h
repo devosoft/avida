@@ -23,6 +23,7 @@
 #ifndef cPopulationCell_h
 #define cPopulationCell_h
 
+#include "apto/core.h"
 #include "avida/core/Sequence.h"
 
 #include <fstream>
@@ -115,6 +116,7 @@ public:
   void GetNeighboringCells(std::set<cPopulationCell*>& cell_set, int depth) const;
   //! Recursively build a set of occupied cells that neighbor this one, out to the given depth.
   void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
+  void GetOccupiedNeighboringCells(Apto::Array<cPopulationCell*>& occupied_cells) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
   int GetFacedDir(); // Returns the human interpretable facing of this org.

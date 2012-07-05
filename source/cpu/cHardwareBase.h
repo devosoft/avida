@@ -277,6 +277,8 @@ protected:
   bool doUniformMutation(cAvidaContext& ctx, Sequence& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
   void doSlipMutation(cAvidaContext& ctx, Sequence& genome, int from = -1);
+  void doTransMutation(cAvidaContext& ctx, Sequence& genome, int from = -1);
+  void doLGTMutation(cAvidaContext& ctx, Sequence& genome);
   
 
   // --------  Organism Execution Property Calculation  --------

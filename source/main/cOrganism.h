@@ -343,14 +343,17 @@ public:
   bool TestDivideMut(cAvidaContext& ctx) const { return m_mut_rates.TestDivideMut(ctx); }
   bool TestDivideIns(cAvidaContext& ctx) const { return m_mut_rates.TestDivideIns(ctx); }
   bool TestDivideDel(cAvidaContext& ctx) const { return m_mut_rates.TestDivideDel(ctx); }
-
+  bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
+  bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); }
+  bool TestDivideTrans(cAvidaContext& ctx) const { return m_mut_rates.TestDivideTrans(ctx); }
+  bool TestDivideLGT(cAvidaContext& ctx) const { return m_mut_rates.TestDivideLGT(ctx); }
+  
   unsigned int NumDividePoissonMut(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonMut(ctx); }
   unsigned int NumDividePoissonIns(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonIns(ctx); }
   unsigned int NumDividePoissonDel(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonDel(ctx); }
   unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonSlip(ctx); }
-
-  bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
-  bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); } 
+  unsigned int NumDividePoissonTrans(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonTrans(ctx); }
+  unsigned int NumDividePoissonLGT(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonLGT(ctx); }
 
   bool TestDeath(cAvidaContext& ctx) const { return m_mut_rates.TestDeath(ctx); }
 
@@ -368,6 +371,8 @@ public:
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
   double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
   double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
+  double GetDivTransProb() const { return m_mut_rates.GetDivTransProb(); }
+  double GetDivLGTProb() const { return m_mut_rates.GetDivLGTProb(); }
   
   double GetPointInsProb() const { return m_mut_rates.GetPointInsProb(); }
   double GetPointDelProb() const { return m_mut_rates.GetPointDelProb(); }
