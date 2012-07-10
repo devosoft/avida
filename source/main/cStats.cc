@@ -1972,12 +1972,32 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
     m_deme_density_untreatable.Add(source_deme.GetDensity());
   }
   
+
+  
   /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
-  double n_mut = source_deme.GetAveGermMut();
-  if (n_mut >= 0) {
-    m_ave_germ_mut.push_back(n_mut);
-    m_ave_non_germ_mut.push_back(source_deme.GetAveNonGermMut());
-    m_ave_germ_size.push_back(source_deme.GetGermlinePercent());
+
+  std::pair<double, double> p = source_deme.GetGermlineNumPercent();
+  
+  if (p.first >= 0) {
+    m_ave_germ_size.push_back(p.first);
+    m_ave_germ_percent.push_back(p.second);
+    
+    p = source_deme.GetAveVarGermMut();
+    m_ave_germ_mut.push_back(p.first);
+    m_var_germ_mut.push_back(p.second);
+    
+    p = source_deme.GetAveVarSomaMut();
+    m_ave_soma_mut.push_back(p.first);
+    m_var_soma_mut.push_back(p.second);
+    
+    p = source_deme.GetAveVarGermWorkLoad();
+    m_ave_germ_work.push_back(p.first);
+    m_var_germ_work.push_back(p.second);
+    
+    p = source_deme.GetAveVarSomaWorkLoad();
+    m_ave_soma_work.push_back(p.first);
+    m_var_soma_work.push_back(p.second);
+    
   }
 }
 
@@ -2043,26 +2063,41 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
   df.WriteTimeStamp();
   df.Write(GetUpdate(), "Update [update]");
   
-  while(m_ave_germ_mut.size()>100) {
-		m_ave_germ_mut.pop_front();
-	}
-  while(m_ave_non_germ_mut.size()>100) {
-		m_ave_non_germ_mut.pop_front();
-	}
-  while(m_ave_germ_size.size()>100) {
-		m_ave_germ_size.pop_front();
-	}
-  
+  while(m_ave_germ_mut.size()>100) { m_ave_germ_mut.pop_front(); }
+  while(m_var_germ_mut.size()>100) { m_var_germ_mut.pop_front(); }
+  while(m_ave_soma_mut.size()>100) { m_ave_soma_mut.pop_front(); }
+  while(m_var_soma_mut.size()>100) { m_var_soma_mut.pop_front(); }
+  while(m_ave_germ_size.size()>100) { m_ave_germ_size.pop_front(); }
+  while(m_ave_germ_percent.size()>100) { m_ave_germ_percent.pop_front(); }
+  while(m_ave_germ_work.size()>100) { m_ave_germ_work.pop_front(); }
+  while(m_var_germ_work.size()>100) { m_var_germ_work.pop_front(); }
+  while(m_ave_soma_work.size()>100) { m_ave_soma_work.pop_front(); }
+  while(m_var_soma_work.size()>100) { m_var_soma_work.pop_front(); }
+    
   if(m_ave_germ_mut.empty()) {
-		df.Write(0.0, "Mean number of mutations to germline [meangermmut]"); 
-    df.Write(0.0, "Mean number of mutations to non-germline orgs [meannongermmut]");
-    df.Write(0.0, "Mean size of germ line [meangermsize]");
-
+    df.Write(0.0, "Mean absolute germ size [m_ave_germ_size]"); 
+		df.Write(0.0, "Mean percent of germ size [m_ave_germ_percent]");
+		df.Write(0.0, "Mean number of mutations to germline [m_ave_germ_mut]"); 
+		df.Write(0.0, "Mean variance of mutations to germline [m_var_germ_mut]"); 
+		df.Write(0.0, "Mean number of mutations to soma [m_ave_soma_mut]"); 
+		df.Write(0.0, "Mean variance of mutations to soma [m_var_soma_mut]");     
+		df.Write(0.0, "Mean germ workload [m_ave_germ_work]"); 
+		df.Write(0.0, "Mean variance of germ workload [m_var_germ_work]"); 
+    df.Write(0.0, "Mean soma workload [m_ave_soma_work]"); 
+		df.Write(0.0, "Mean variance of soma workload [m_var_soma_work]"); 
 	} 
   else {
-    df.Write(std::accumulate(m_ave_germ_mut.begin(), m_ave_germ_mut.end(), 0.0)/m_ave_germ_mut.size(), "Mean number of mutations to germline [meangermmut]");
-    df.Write(std::accumulate(m_ave_non_germ_mut.begin(), m_ave_non_germ_mut.end(), 0.0)/m_ave_non_germ_mut.size(), "Mean number of mutations to non-germline orgs [meannongermmut]");	
-    df.Write(std::accumulate(m_ave_germ_size.begin(), m_ave_germ_size.end(), 0.0)/m_ave_germ_size.size(), "Mean size of germ line [meangermsize]");
+    df.Write(std::accumulate(m_ave_germ_size.begin(), m_ave_germ_size.end(), 0.0)/m_ave_germ_size.size(), "Mean absolute germ size [m_ave_germ_size]"); 
+		df.Write(std::accumulate(m_ave_germ_percent.begin(), m_ave_germ_percent.end(), 0.0)/m_ave_germ_percent.size(), "Mean percent of germ size [m_ave_germ_percent]");
+		df.Write(std::accumulate(m_ave_germ_mut.begin(), m_ave_germ_mut.end(), 0.0)/m_ave_germ_mut.size(), "Mean number of mutations to germline [m_ave_germ_mut]"); 
+		df.Write(std::accumulate(m_var_germ_mut.begin(), m_var_germ_mut.end(), 0.0)/m_var_germ_mut.size(), "Mean variance of mutations to germline [m_var_germ_mut]"); 
+		df.Write(std::accumulate(m_ave_soma_mut.begin(), m_ave_soma_mut.end(), 0.0)/m_ave_soma_mut.size(), "Mean number of mutations to soma [m_ave_soma_mut]"); 
+		df.Write(std::accumulate(m_var_soma_mut.begin(), m_var_soma_mut.end(), 0.0)/m_var_soma_mut.size(), "Mean variance of mutations to soma [m_var_soma_mut]");     
+		df.Write(std::accumulate(m_ave_germ_work.begin(), m_ave_germ_work.end(), 0.0)/m_ave_germ_work.size(), "Mean germ workload [m_ave_germ_work]"); 
+		df.Write(std::accumulate(m_var_germ_work.begin(), m_var_germ_work.end(), 0.0)/m_var_germ_work.size(), "Mean variance of germ workload [m_var_germ_work]"); 
+    df.Write(std::accumulate(m_ave_soma_work.begin(), m_ave_soma_work.end(), 0.0)/m_ave_soma_work.size(), "Mean soma workload [m_ave_soma_work]"); 
+		df.Write(std::accumulate(m_var_soma_work.begin(), m_var_soma_work.end(), 0.0)/m_var_soma_work.size(), "Mean variance of soma workload [m_var_soma_work]"); 
+
   }
    
   df.Endl();
@@ -3966,7 +4001,6 @@ void cStats::AddTaskSwitchTime(int t1, int t2, int time) {
 
 void cStats::PrintIntrinsicTaskSwitchingCostData(const cString& filename) {
 	cDataFile& df = m_world->GetDataFile(filename);
-	const cEnvironment& env = m_world->GetEnvironment();
   std::map<std::pair<int, int>, cDoubleSum>::iterator iter;
   
   df.WriteComment("Number of cyles it takes to change between tasks");
