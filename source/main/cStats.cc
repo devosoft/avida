@@ -140,6 +140,8 @@ cStats::cStats(cWorld* world)
   , m_num_successful_mates(0)
   , prey_entropy(0.0)
   , pred_entropy(0.0)
+  , topreac(-1)
+  , topcycle(-1)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -4503,8 +4505,166 @@ void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, i
   
   std::ofstream& fp = df.GetOFStream();
   fp << death_update << "," << birth_update << "," << org_id << "," << gen_id << "," << ft << ",";
-  for (int i = exec_trace.GetSize() - 1; i >= 0; i--) {
+  for (int i = 0; i < exec_trace.GetSize(); i++) {
     fp << exec_trace[i];
   }
   fp << endl;
+}
+
+void cStats::UpdateTopNavTrace(cOrganism* org)
+{
+  // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
+  // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
+  int best_reac = -1;
+  tArray<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  for (int i = reaction_count.GetSize() -1; i >= 0; i--) {
+    if (reaction_count[i] > 0) {
+      best_reac = i;
+      break;
+    }
+  }
+  int cycle = org->GetPhenotype().GetTimeUsed();
+  bool new_winner = false;
+  if (best_reac >= topreac) {
+    if (best_reac == topreac && cycle < topcycle) new_winner = true;
+    else if (best_reac > topreac) new_winner = true;      
+  }
+  if (new_winner) {
+    topreac = best_reac;
+    topcycle = cycle;
+    topgenid = org->GetBioGroup("genotype")->GetID();
+    topid = org->GetID();
+    
+    tSmartArray<char> trace = org->GetHardware().GetMicroTrace();
+    tSmartArray<int> traceloc = org->GetHardware().GetNavTraceLoc();
+    tSmartArray<int> tracefacing = org->GetHardware().GetNavTraceFacing();
+    tSmartArray<int> traceupdate = org->GetHardware().GetNavTraceUpdate();
+
+    toptrace.Resize(trace.GetSize());
+    topnavtraceloc.Resize(traceloc.GetSize());
+    topnavtraceloc.SetAll(-1);
+    topnavtracefacing.Resize(tracefacing.GetSize());
+    topnavtracefacing.SetAll(-1);
+    topnavtraceupdate.Resize(traceupdate.GetSize());
+    topnavtraceupdate.SetAll(-1);
+    
+    assert(toptrace.GetSize() == topnavtraceloc.GetSize()); 
+    assert(topnavtraceloc.GetSize() == topnavtracefacing.GetSize());
+    assert(topnavtracefacing.GetSize() == topnavtraceupdate.GetSize());
+    for (int i = 0; i < toptrace.GetSize(); i++) {
+      toptrace[i] = trace[i];
+      topnavtraceloc[i] = traceloc[i];
+      topnavtracefacing[i] = tracefacing[i];
+      topnavtraceupdate[i] = traceupdate[i];
+    }
+    
+    tArray<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
+    tArray<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
+    
+    topreactioncycles.Resize(reaction_cycles.GetSize());
+    topreactioncycles.SetAll(-1);
+    topreactionexecs.Resize(reaction_execs.GetSize());
+    topreactionexecs.SetAll(-1);
+    topreactions.Resize(reaction_count.GetSize());
+    topreactions.SetAll(0);
+    
+    assert(topreactions.GetSize() == topreactioncycles.GetSize());
+    assert(topreactioncycles.GetSize() == topreactionexecs.GetSize());
+    for (int i = 0; i < topreactions.GetSize(); i++) {
+      topreactions[i] = reaction_count[i];
+      topreactioncycles[i] = reaction_cycles[i];
+      topreactionexecs[i] = reaction_execs[i];
+    }
+  }
+  if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace();
+}
+
+void cStats::PrintTopNavTrace()
+{  
+  cDataFile& df = m_world->GetDataFile("navtrace.dat");
+
+  df.WriteComment("Org That Reproduced the Fastest (fewest cycles) Among Orgs with the Highest Reaction ID");
+  df.WriteTimeStamp();
+  df.WriteComment("GenotypeID");
+  df.WriteComment("OrgID");
+  df.WriteComment("Cycle at First Reproduction (parallel multithread execs = 1 cycle)");
+  df.WriteComment("Reaction Counts at First Reproduction");
+  df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
+  df.WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
+  df.WriteComment("");
+  df.WriteComment("Updates for each entry in each following trace (to match with res data)");
+  df.WriteComment("CellIDs to First Reproduction");
+  df.WriteComment("OrgFacings to First Reproduction");
+  df.WriteComment("Execution Trace to First Reproduction");
+  df.Endl();
+
+  std::ofstream& fp = df.GetOFStream();
+
+  if (topreactions.GetSize()) {
+    fp << topgenid << " " << topid << " " << topcycle << " ";
+    // reaction related
+    for (int i = 0; i < topreactions.GetSize() - 1; i++) {
+      fp << topreactions[i] << ",";
+    }
+    fp << topreactions[topreactions.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topreactioncycles.GetSize() - 1; i++) {
+      fp << topreactioncycles[i] << ",";
+    }
+    fp << topreactioncycles[topreactioncycles.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topreactionexecs.GetSize() - 1; i++) {
+      fp << topreactionexecs[i] << ",";
+    }
+    fp << topreactionexecs[topreactionexecs.GetSize() - 1] << " ";
+    
+    // instruction exec sequence related (printed in reverse order to get firs exec as first printed)
+    for (int i = 0; i < topnavtraceupdate.GetSize() - 1; i++) {
+      fp << topnavtraceupdate[i] << ",";
+    }
+    fp << topnavtraceupdate[topnavtraceupdate.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topnavtraceloc.GetSize() - 1; i++) {
+      fp << topnavtraceloc[i] << ",";
+    }
+    fp << topnavtraceloc[topnavtraceloc.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topnavtracefacing.GetSize() - 1; i++) {
+      fp << topnavtracefacing[i] << ",";
+    }
+    fp << topnavtracefacing[topnavtracefacing.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < toptrace.GetSize(); i++) {
+      fp << toptrace[i];
+    }
+    fp << endl;
+  }
+}
+
+void cStats::PrintReproData(cOrganism* org)
+{
+  int update = GetUpdate();
+  cDataFile& df = m_world->GetDataFile("repro_data.dat");
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Org Data up to First Reproduction");
+    df.WriteTimeStamp();
+    df.WriteComment("ReproUpdate");
+    df.WriteComment("GenotypeID");
+    df.WriteComment("OrgID");
+    df.WriteComment("Age (updates)");
+    df.WriteComment("TimeUsed (cycles)");
+    df.WriteComment("NumExecutions (attempted executions)");
+    df.WriteComment("ReactionCounts");
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  fp << update << " " << org->GetBioGroup("genotype")->GetID()<< " " << org->GetID() << " " << org->GetPhenotype().GetAge() << " " << org->GetPhenotype().GetTimeUsed() 
+      << " " << org->GetPhenotype().GetNumExecs() << " ";
+  tArray<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  for (int i = 0; i < reaction_count.GetSize() - 1; i++) {
+    fp << reaction_count[i] << ",";
+  }
+  fp << reaction_count[reaction_count.GetSize() - 1] << endl;
 }

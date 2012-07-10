@@ -1840,9 +1840,6 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				7073ADEC14609BF600FECC56 /* cBirthEntry.cc */,
-				7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */,
-				7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */,
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
 				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
 				701D51CB09C645F50009B4F8 /* cAvidaContext.h */,
@@ -1851,6 +1848,7 @@
 				70447CA90F83DBC100E1BF72 /* cBirthDemeHandler.h */,
 				70447CAA0F83DBC100E1BF72 /* cBirthDemeHandler.cc */,
 				70447C300F83B7F400E1BF72 /* cBirthEntry.h */,
+				7073ADEC14609BF600FECC56 /* cBirthEntry.cc */,
 				70447CA10F83DB2900E1BF72 /* cBirthGenomeSizeHandler.h */,
 				70447CA20F83DB2900E1BF72 /* cBirthGenomeSizeHandler.cc */,
 				70447C930F83D72600E1BF72 /* cBirthGlobalHandler.h */,
@@ -1859,6 +1857,8 @@
 				70447C870F83D4C500E1BF72 /* cBirthGridLocalHandler.cc */,
 				70447CA50F83DB5600E1BF72 /* cBirthMateSelectHandler.h */,
 				70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */,
+				7073ADEE14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.h */,
+				7073ADED14609BF600FECC56 /* cBirthMatingTypeGlobalHandler.cc */,
 				70447C4C0F83C55300E1BF72 /* cBirthNeighborhoodHandler.h */,
 				70447C4D0F83C55300E1BF72 /* cBirthNeighborhoodHandler.cc */,
 				70447BEA0F83B01000E1BF72 /* cBirthSelectionHandler.h */,

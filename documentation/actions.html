@@ -111,6 +111,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#ExitDemeReplications">ExitDemeReplications</a><br>
       <a href="#ExitElapsedTime">ExitElapsedTime</a><br>
       <a href="#Flash">Flash</a><br>
+      <a href="#FlushTopNavTrace">FlushTopNavTrace</a><br>
       <a href="#FullLandscape">FullLandscape</a><br>
       <a href="#HillClimb">HillClimb</a><br>
       <a href="#Inject">Inject</a><br>
@@ -276,6 +277,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintReactionExeData">PrintReactionExeData</a><br>
       <a href="#PrintReactionRewardData">PrintReactionRewardData</a><br>
       <a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a><br>
+      <a href="#PrintReproData">PrintReproData</a><br>
       <a href="#PrintReputationData">PrintReputationData</a><br>
       <a href="#PrintResourceData">PrintResourceData</a><br>
       <a href="#PrintSenseData">PrintSenseData</a><br>
@@ -293,6 +295,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintTaskSnapshot">PrintTaskSnapshot</a><br>
       <a href="#PrintTasksQualData">PrintTasksQualData</a><br>
       <a href="#PrintTimeData">PrintTimeData</a><br>
+      <a href="#PrintTopNavTrace">PrintTopNavTrace</a><br>
       <a href="#PrintTotalsData">PrintTotalsData</a><br>
       <a href="#PrintVarianceData">PrintVarianceData</a><br>
       <a href="#PrintViableTasksData">PrintViableTasksData</a><br>
@@ -1172,6 +1175,12 @@ change the course of the run.  There are a wide variety of these.
   <p>
   
   </p>
+</li>
+<li><p>
+  <strong><a name="FlushTopNavTrace">FlushTopNavTrace</a></strong>
+  Force printing of nav trace (as set up by PrintTopNavTrace) even if all candidate orgs have not been
+  evaluated / reproduced.
+    </p>
 </li>
 <li><p>
   <strong><a name="Inject">Inject</a></strong>
@@ -2565,9 +2574,11 @@ a single, complete file for each trigger.
     <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
     <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]</i>
     </p>
-    <p>Same general operation behavior as PrintMiniTraces but only saves executed (successfully) instruction symbols along with 
-    org id, genotype id, forager type, and birth and death updates. Each microtrace is saved on a single line in
-    microtrace.dat.
+    <p>Same general operation behavior as PrintMiniTraces but only saves executed instruction symbols along with 
+    org id, genotype id, forager type, and birth and death updates. Microtraces map executions as 'what the org was trying
+    to do'. So, failed executions are recorded except when CPU costs are being paid. If CPU costs are being paid, we record
+    the execution when the instruction was submitted, not necessarily when it was actually executed. Each microtrace is 
+    saved on a single line in microtrace.dat.
     </p>
     <p> rand_pred and rand_prey are compatible with each other, building a single list of genotypes to trace based on
     current genotypes in the population for each of the two general forager types (will generate a list of 2 X max_samples
@@ -2877,6 +2888,11 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintReproData">PrintReproData</a></strong>
+    Record and print some data up to first reproduction for every org alive now.
+      </p>
+</li>
+<li><p>
   <strong><a name="PrintReputationData">PrintReputationData</a></strong>
   <i>[string fname="reputation.dat"]</i>
   </p>
@@ -3034,6 +3050,14 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintTopNavTrace">PrintTopNavTrace</a></strong>
+  Record and print some nav data up to first reproduction for best of orgs alive now, including trace execution,
+  locations, and facings. Will print these data for the org among those with the highest reaction achieved By
+  time of reproduction in shortest amount of time (as measured by cycles). Will print nothing if any of the 
+  candidate orgs are still alive when avida exits and no FlushTopNavTrace events were called.
+    </p>
+</li>
+<li><p>
   <strong><a name="PrintVarianceData">PrintVarianceData</a></strong>
   <i>[string fname="variance.dat"]</i>
   </p>
@@ -3097,7 +3121,7 @@ a single, complete file for each trigger.
 <UL>
 <li><p>
   <strong><a name="LoadPopulation">LoadPopulation</a></strong>
-  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars=0]</i>
+  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0] [bool load_groups=0] [bool load_birth_cells=0] [bool load_avatars=0] [bool load_rebirth]</i>
   </p>
   <p>
     Sets up a population based on a save file such as written out by
@@ -3111,6 +3135,10 @@ a single, complete file for each trigger.
   would have been collected as the org moved around the world.<br>
   e.g to load a population with birth cells and group ids, but without cell, lineage, or update offsets:<br>
   i LoadPopulation -1 0 0 1 1 0<br>
+  <i>load_rebirth</i> will override load_groups, load_birth_cells, load avatars and inject orgs into their saved birth cells, 
+  put avatars in their birth cells (if avatars are on), assign parent's merit to org (if inherit merit is on) and assign the 
+  parent's forage target if the parent was a 'teacher' <br>
+  i LoadPopulation -1 0 0 0 0 0 1<br>
   </p>
 </li>
 <li><p>
@@ -3128,7 +3156,7 @@ a single, complete file for each trigger.
   Using <i>save_rebirth</i> will save additional information about the birth of the organism which
   would be required to 'repeat' the birth of the organism as if it was still in the population (for
   behavioral trials, etc):
-  parent_ft, parent is teacher, parent merit (out to 4 dec places), parent is multi-threaded
+  parent_ft, parent is teacher, parent merit (out to 4 dec places)
   Using save_rebirth will save all possible columns (i.e. will save all save_groups + all save_avatars data even if
   those flags are off).
   </p>

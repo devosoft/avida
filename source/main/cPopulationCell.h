@@ -23,6 +23,7 @@
 #ifndef cPopulationCell_h
 #define cPopulationCell_h
 
+#include "apto/core.h"
 #include "avida/core/Sequence.h"
 
 #include <fstream>
@@ -93,7 +94,7 @@ private:
 public:
   typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
 
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_hgt(0), can_input(false), can_output(false) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), can_input(false), can_output(false), m_hgt(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; delete m_hgt; }
 
@@ -115,6 +116,7 @@ public:
   void GetNeighboringCells(std::set<cPopulationCell*>& cell_set, int depth) const;
   //! Recursively build a set of occupied cells that neighbor this one, out to the given depth.
   void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
+  void GetOccupiedNeighboringCells(Apto::Array<cPopulationCell*>& occupied_cells) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
   int GetFacedDir(); // Returns the human interpretable facing of this org.

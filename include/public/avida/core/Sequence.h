@@ -49,7 +49,7 @@ namespace Avida {
     
     
   public:
-    Sequence() { ; }
+    Sequence() : m_active_size(0) { ; }
     Sequence(const Sequence& seq);
     explicit Sequence(int size) : m_seq(size), m_active_size(size) { ; }
     Sequence(const cString& str);

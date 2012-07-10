@@ -86,6 +86,9 @@ private:
   int m_next_prey_q;
   int m_next_pred_q;
   
+  tSmartArray<cOrganism*> repro_q;
+  tSmartArray<cOrganism*> topnav_q;
+  
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
 
@@ -130,6 +133,8 @@ public:
   
   // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
+  
+  void UpdateQs(cOrganism* parent, bool reproduced = false);
   
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1, int trace = 0); 
@@ -237,9 +242,10 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false, bool save_rebirth = false);
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false, 
+                      bool save_rebirth = false);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, 
-                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
+                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false); 
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
@@ -253,6 +259,9 @@ public:
   void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
   tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
+  void AppendRecordReproQ(cOrganism* new_org);
+  void SetTopNavQ();
+  tSmartArray<cOrganism*> GetTopNavQ() { return topnav_q; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -416,7 +425,7 @@ private:
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
-  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true, bool is_inject = false);
   
   void TestForMiniTrace(cOrganism* in_organism);
   void SetupMiniTrace(cOrganism* in_organism);

@@ -155,6 +155,89 @@ void cPopulationInterface::SetCellData(const int newData) {
   cell.SetCellData(newData, cell.GetOrganism()->GetID());
 }
 
+bool cPopulationInterface::GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, Sequence& seq)
+{
+  const int MAX_POP_SAMPLES = 10;
+  const Sequence* src_seq = NULL;
+  
+  switch (region) {
+      // Local Neighborhood
+    case 0:
+    {
+      Apto::Array<cPopulationCell*> occupied_cells;
+      GetCell()->GetOccupiedNeighboringCells(occupied_cells);
+      
+      int num_cells = occupied_cells.GetSize();
+      for (int i = 0; i < num_cells;) {
+        const Genome* cell_genome = &occupied_cells[i]->GetOrganism()->GetGenome();
+        if (cell_genome->GetHardwareType() != dest_genome.GetHardwareType() ||
+            cell_genome->GetInstSet() != dest_genome.GetInstSet()) {
+          // Organism type mis-match, remove from consideration;
+          num_cells--;
+          occupied_cells[i] = occupied_cells[num_cells];
+        } else {
+          i++;
+        }
+      }
+      
+      if (num_cells == 0) return false;
+      
+      int cell_idx = ctx.GetRandom().GetInt(num_cells);
+      src_seq = &occupied_cells[cell_idx]->GetOrganism()->GetGenome().GetSequence();
+    }
+      break;
+      
+      // Entire Population
+    case 1:
+    {
+      const tSmartArray<cOrganism*>& live_org_list = m_world->GetPopulation().GetLiveOrgList();
+      for (int i = 0; i < MAX_POP_SAMPLES; i++) {
+        int org_idx = ctx.GetRandom().GetInt(live_org_list.GetSize());
+        const Genome* org_genome = &live_org_list[org_idx]->GetGenome();
+        if (org_genome->GetHardwareType() != dest_genome.GetHardwareType() ||
+            org_genome->GetInstSet() != dest_genome.GetInstSet()) {
+          src_seq = &org_genome->GetSequence();
+          break;
+        }
+      }
+      
+      if (!src_seq) return false;
+    }
+      break;
+      
+    default:
+      return false;
+  }
+  
+  assert(src_seq);
+  
+  // Select random start and end point
+  int from = ctx.GetRandom().GetInt(src_seq->GetSize());
+  int to = ctx.GetRandom().GetInt(src_seq->GetSize());
+
+  // Order from and to indices
+  if (from > to) {
+    int tmp = to;
+    to = from;
+    from = tmp;
+  }
+  
+  // Resize outgoing sequence and copy over the fragment
+  int new_size = to - from;
+  if (new_size == 0) {
+    // zero size treated as transfer of the whole genome
+    seq = (*src_seq);
+  } else {
+    seq.Resize(new_size);
+    for (int i = from; i < to; i++) {
+      seq[i - from] = (*src_seq)[i];
+    }
+  }
+  
+  return true;
+}
+
+
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
 {
   assert(parent != NULL);

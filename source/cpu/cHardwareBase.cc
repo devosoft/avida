@@ -48,7 +48,8 @@ using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str), m_microtrace(false)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL), m_minitracer(NULL), m_minitrace_file(null_str)
+, m_microtrace(false), m_topnavtrace(false)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts()) , m_has_energy_costs(m_inst_set->HasEnergyCosts())
 , m_has_res_costs(m_inst_set->HasResCosts()), m_has_fem_res_costs(m_inst_set->HasFemResCosts())
 , m_has_female_costs(m_inst_set->HasFemaleCosts()), m_has_choosy_female_costs(m_inst_set->HasChoosyFemaleCosts())
@@ -72,6 +73,9 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
 {
   m_organism->HardwareReset(ctx);
   m_microtracer.Resize(0);
+  m_navtraceloc.Resize(0);
+  m_navtracefacing.Resize(0);
+  m_navtraceupdate.Resize(0);
   m_inst_cost = 0;
   m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
   m_active_thread_costs.SetAll(0);
@@ -271,8 +275,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
-  // @JEB 
-  // All slip mutations should happen first, so that there is a chance
+  // All slip, translocation, and LGT mutations should happen first, so that there is a chance
   // of getting a point mutation within one copy in the same divide.
   
   // Divide Slip Mutations - NOT COUNTED.
@@ -288,13 +291,45 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
                                                   m_organism->GetDivSlipProb() / mut_multiplier);
     for (int i = 0; i < num_mut; i++) doSlipMutation(ctx, offspring_genome);
   }
+
+  
+  // Divide Translocation Mutations - NOT COUNTED.
+  if (m_organism->TestDivideTrans(ctx)) doTransMutation(ctx, offspring_genome);
+  
+  // Poisson Translocation Mutations - NOT COUNTED
+  unsigned int num_poisson_trans = m_organism->NumDividePoissonTrans(ctx);
+  for (unsigned int i = 0; i < num_poisson_trans; i++) { doTransMutation(ctx, offspring_genome);  }
+  
+  // Translocation Mutations (per site) - NOT COUNTED
+  if (m_organism->GetDivTransProb() > 0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(),
+                                                  m_organism->GetDivTransProb() / mut_multiplier);
+    for (int i = 0; i < num_mut; i++) doTransMutation(ctx, offspring_genome);
+  }
+
+  
+  // Divide Lateral Gene Transfer Mutations - NOT COUNTED.
+  if (m_organism->TestDivideLGT(ctx)) doLGTMutation(ctx, offspring_genome);
+  
+  // Poisson Lateral Gene Transfer Mutations - NOT COUNTED
+  unsigned int num_poisson_lgt = m_organism->NumDividePoissonLGT(ctx);
+  for (unsigned int i = 0; i < num_poisson_lgt; i++) { doLGTMutation(ctx, offspring_genome);  }
+  
+  // Lateral Gene Transfer Mutations (per site) - NOT COUNTED
+  if (m_organism->GetDivLGTProb() > 0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(),
+                                                  m_organism->GetDivLGTProb() / mut_multiplier);
+    for (int i = 0; i < num_mut; i++) doLGTMutation(ctx, offspring_genome);
+  }
+
 	
-	// HGT Mutations - NOT COUNTED
+  // HGT Mutations - NOT COUNTED
 	// HGT is a location-dependent random process; each type is tested over in
 	// cPopulationInterface.
 	if(m_world->GetConfig().ENABLE_HGT.Get()) {
 		m_organism->GetOrgInterface().DoHGTMutation(ctx, m_organism->OffspringGenome());
 	}
+  
   
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
@@ -631,6 +666,126 @@ void cHardwareBase::doSlipMutation(cAvidaContext& ctx, Sequence& genome, int fro
     cout << "Offspring: " << genome.AsString() << endl;
   }
 }
+
+
+
+// Translocation Mutations
+// Similar to slip mutations, described above.  However, insertion location is also chosen randomly.
+void cHardwareBase::doTransMutation(cAvidaContext& ctx, Sequence& genome, int from)
+{
+  Sequence genome_copy(genome);
+  
+  // All combinations except beginning to past end allowed
+  if (from < 0) from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+  int to = (from == 0) ? ctx.GetRandom().GetInt(genome_copy.GetSize()) : ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+  
+  // Resize child genome
+  int insertion_length = (from - to);
+  genome.Resize(genome.GetSize() + insertion_length);
+  
+  // Select insertion location
+  int ins_loc = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+  
+  // Fill insertion
+  if (insertion_length > 0) {
+    switch (m_world->GetConfig().TRANS_FILL_MODE.Get()) {
+        //Duplication
+      case 0:
+        for (int i = 0; i < insertion_length; i++) genome[ins_loc + i] = genome_copy[to + i];
+        break;
+        
+        //Scrambled order
+      case 1:
+      {
+        tArray<bool> copied_so_far(insertion_length);
+        copied_so_far.SetAll(false);
+        for (int i = 0; i < insertion_length; i++) {
+          int copy_index = m_world->GetRandom().GetInt(insertion_length - i);
+          int test = 0;
+          int passed = copy_index;
+          while (passed >= 0) {
+            if (copied_so_far[test]) {
+              copy_index++;
+            } else { //this one hasn't been chosen, so we count it.
+              passed--;
+            }
+            test++;
+          }
+          genome[ins_loc + i] = genome[to + copy_index];
+          copied_so_far[copy_index] = true;
+        }
+      }
+        break;
+        
+      default:
+        m_world->GetDriver().RaiseException("Unknown TRANS_FILL_MODE\n");
+    }
+  }
+  
+  if (insertion_length < 0) {
+    // Deletion
+    for (int i = ins_loc; i < genome.GetSize(); i++) genome[i] = genome_copy[i - insertion_length];
+  } else {
+    // Copy remaining genome
+    for (int i = ins_loc; i < genome_copy.GetSize(); i++) genome[i + insertion_length] = genome_copy[i];
+  }
+}
+
+
+// Lateral Gene Transfer Mutations
+// Similar to Translocation mutations, except that the source fragments come from other organism genomes
+void cHardwareBase::doLGTMutation(cAvidaContext& ctx, Sequence& genome)
+{
+  
+  // All combinations except beginning to past end allowed
+  int from = ctx.GetRandom().GetInt(genome.GetSize() + 1);
+  int to = (from == 0) ? ctx.GetRandom().GetInt(genome.GetSize()) : ctx.GetRandom().GetInt(genome.GetSize() + 1);
+  
+  // Resize child genome
+  int insertion_length = (from - to);
+
+  if (insertion_length > 0) {
+    Sequence ins_seq;
+    if (m_organism->GetOrgInterface().GetLGTFragment(ctx, m_world->GetConfig().LGT_SOURCE_REGION.Get(), m_organism->GetGenome(), ins_seq)) {
+      Sequence genome_copy(genome);
+      genome.Resize(genome.GetSize() + ins_seq.GetSize());
+      int ins_loc = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+      
+      // Insert the transfered fragment
+      switch (m_world->GetConfig().LGT_FILL_MODE.Get()) {
+          // Duplication
+        case 0:
+          for (int i = 0; i < ins_seq.GetSize(); i++) genome[i + ins_loc] = ins_seq[i];
+          break;
+          
+          // Scrambled
+        case 1:
+        {
+          for (int i = 0; i < ins_seq.GetSize(); i++) {
+            int copy_index = m_world->GetRandom().GetInt(ins_seq.GetSize() - i);
+            genome[ins_loc + i] = ins_seq[copy_index];
+            ins_seq[copy_index] = ins_seq[ins_seq.GetSize() - i - 1];
+          }
+        }
+          
+        default:
+          m_world->GetDriver().RaiseException("Unknown LGT_FILL_MODE\n");
+      }
+      
+      // Copy over the rest of the sequence
+      for (int i = ins_loc; i < genome_copy.GetSize(); i++) genome[i + ins_seq.GetSize()] = genome_copy[i];
+    } else {
+      // Fragment selection failed, mutation fallback to translocation
+      doTransMutation(ctx, genome);
+    }
+  } else if (insertion_length < 0) {
+    // Deletion
+    Sequence genome_copy(genome);
+    genome.Resize(genome.GetSize() + insertion_length);
+    for (int i = 0; (to + i) < genome_copy.GetSize() - to; i++) genome[from + i] = genome_copy[to + i];
+  }
+}
+
 
 
 
@@ -1219,6 +1374,12 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   return true;
 }
 
+bool cHardwareBase::IsPayingActiveCost(cAvidaContext& ctx, const int thread_id)
+{
+  if (m_active_thread_post_costs[thread_id] > 1) return true;
+  return false;
+}
+
 void cHardwareBase::SingleProcess_PayPostResCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
   if (m_has_res_costs || m_has_fem_res_costs) {
@@ -1279,12 +1440,12 @@ void cHardwareBase::InsertGenomeFragment(const Sequence& fragment) {
 	wh.Adjust();
 }
 
-void cHardwareBase::SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype)
+void cHardwareBase::SetMiniTrace(const cString& filename, const int gen_id, const cString& genotype)
 {
   cHardwareTracer* minitracer = new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename));
   m_minitracer = minitracer; 
   m_minitrace_file = filename;
-  SetupMiniTraceFileHeader(filename, m_organism, org_id, gen_id, genotype);
+  SetupMiniTraceFileHeader(filename, gen_id, genotype);
 }
 
 void cHardwareBase::RecordMicroTrace(const cInstruction& cur_inst)
@@ -1296,7 +1457,21 @@ void cHardwareBase::PrintMicroTrace(int gen_id)
 {
   if (m_microtrace) {
     m_world->GetStats().PrintMicroTraces(m_microtracer, m_organism->GetPhenotype().GetUpdateBorn(), m_organism->GetID(), m_organism->GetForageTarget(), gen_id);
+    m_microtrace = false;
   }
+}
+
+void cHardwareBase::RecordNavTrace(bool use_avatar)
+{
+  int loc = m_organism->GetOrgInterface().GetCellID();
+  if (use_avatar) loc = m_organism->GetOrgInterface().GetAVCellID();
+  
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
+
+  m_navtraceloc.Push(loc);
+  m_navtracefacing.Push(facing);
+  m_navtraceupdate.Push(m_world->GetStats().GetUpdate());
 }
 
 void cHardwareBase::DeleteMiniTrace()

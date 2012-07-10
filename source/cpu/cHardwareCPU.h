@@ -248,7 +248,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype) { (void)filename, (void)in_organism, (void)org_id, (void)gen_id, (void)genotype; }
+  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) { (void)filename, (void)gen_id, (void)genotype; }
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { (void)ctx, (void)fp, (void)next_name; }
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { (void)fp, (void)exec_success; }
 

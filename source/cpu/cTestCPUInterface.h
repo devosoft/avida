@@ -75,6 +75,8 @@ public:
   void SetPrevSeenCellID(int in_id) { ; }
   void SetPrevTaskCellID(int in_id) { ; }
 
+  bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, Sequence& seq) { return false; }
+
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor() { return NULL; }
   bool IsNeighborCellOccupied() { return false; }

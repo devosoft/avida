@@ -134,6 +134,8 @@ private:
   tArray<double> cur_rbins_avail;             // Amount of internal resources available
   tArray<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
+  tArray<int> first_reaction_cycles;          // CPU cycles of first time reaction was triggered.  
+  tArray<int> first_reaction_execs;            // Execution count at first time reaction was triggered (will be > cycles in parallel exec multithreaded orgs).  
   tArray<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators. 
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
@@ -196,6 +198,7 @@ private:
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
   int time_used;         // Total CPU cycles consumed, including additional time costs of some instructions.
+  int num_execs;         // Total number of instructions executions attempted...accounts for parallel executions in multi-threaded orgs & corrects for cpu-cost 'pauses'
   int age;               // Number of updates organism has survived for.
   cString fault_desc;    // A description of the most recent error.
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation
@@ -416,7 +419,13 @@ public:
   double GetCurRBinTotal(int index) const { assert(initialized == true); return cur_rbins_total[index]; }
   const tArray<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
+  
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
+  const tArray<int>& GetFirstReactionCycles() const { assert(initialized == true); return first_reaction_cycles;}
+  void SetFirstReactionCycle(int idx) { if (first_reaction_cycles[idx] < 0) first_reaction_cycles[idx] = time_used; }
+  const tArray<int>& GetFirstReactionExecs() const { assert(initialized == true); return first_reaction_execs;}
+  void SetFirstReactionExec(int idx) { if (first_reaction_execs[idx] < 0) first_reaction_execs[idx] = num_execs; }
+  
   const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
@@ -472,6 +481,7 @@ public:
   int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
+  int GetNumExecs() const { assert(initialized == true); return num_execs; }
   int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
   const cString& GetFault() const { assert(initialized == true); return fault_desc; }
@@ -645,6 +655,7 @@ public:
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
   void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; trial_cpu_cycles_used--; }
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
+  void IncNumExecs() { assert(initialized == true); num_execs++; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  

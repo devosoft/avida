@@ -45,9 +45,9 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
 , m_deme_id(in_cell.m_deme_id)
 , m_cell_data(in_cell.m_cell_data)
 , m_spec_state(in_cell.m_spec_state)
-, m_hgt(0)
 , can_input(false)
 , can_output(false)
+, m_hgt(0)
 {
   // Copy the mutation rates into a new structure
   m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
@@ -172,6 +172,22 @@ void cPopulationCell::GetOccupiedNeighboringCells(std::set<cPopulationCell*>& oc
 		}
 	}
 }
+
+void cPopulationCell::GetOccupiedNeighboringCells(Apto::Array<cPopulationCell*>& occupied_cells) const
+{
+  occupied_cells.Resize(m_connections.GetSize());
+  int occupied_count = 0;
+
+  tLWConstListIterator<cPopulationCell> i(m_connections);
+  while(!i.AtEnd()) {
+    cPopulationCell* cell = i.Next();
+		assert(cell); // cells should never be null.
+    if (cell->IsOccupied()) occupied_cells[occupied_count++] = cell;
+  }
+  
+  occupied_cells.Resize(occupied_count);
+}
+
 
 /*! These values are chosen so as to make loops on the facing 'easy'.
  111 = NE
