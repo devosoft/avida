@@ -808,8 +808,7 @@ void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
   if (variance > 0) {
     m_mean_plat_inflow = mean;
     m_var_plat_inflow = variance;
-    double cur_inflow = m_world->GetRandom().GetRandNormal(mean, variance);
-    if (cur_inflow < 0) cur_inflow = 0;
+    double cur_inflow = abs(m_world->GetRandom().GetRandNormal(mean, variance));
     SetGradPlatInflow(cur_inflow);
   }
   else SetGradPlatInflow(mean);
@@ -818,8 +817,7 @@ void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
 void cGradientCount::UpdateGradPlatVarInflow()
 {
   if (m_var_plat_inflow > 0) {
-    double cur_inflow = m_world->GetRandom().GetRandNormal(m_mean_plat_inflow, m_var_plat_inflow);
-    if (cur_inflow < 0) cur_inflow = 0;
+    double cur_inflow = abs(m_world->GetRandom().GetRandNormal(m_mean_plat_inflow, m_var_plat_inflow));
     SetGradPlatInflow(cur_inflow);
   }
   else SetGradPlatInflow(m_mean_plat_inflow);
