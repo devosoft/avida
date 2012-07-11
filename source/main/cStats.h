@@ -1118,8 +1118,16 @@ protected:
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
   cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
   std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
-  std::deque<double> m_ave_non_germ_mut; 
+  std::deque<double> m_var_germ_mut;
+  std::deque<double> m_ave_soma_mut; 
+  std::deque<double> m_var_soma_mut;
   std::deque<double> m_ave_germ_size;
+  std::deque<double> m_ave_germ_percent;
+  std::deque<double> m_ave_soma_work; 
+  std::deque<double> m_var_soma_work;
+  std::deque<double> m_ave_germ_work; 
+  std::deque<double> m_var_germ_work;
+
   t_gls_founder_map m_gls_deme_founders; //! Data structure to track the founders of gls demes.
   
 
