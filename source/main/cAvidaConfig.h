@@ -352,8 +352,8 @@ public:
   CONFIG_ADD_VAR(SLIP_FILL_MODE, int, 0, "Fill insertions from slip mutations with:\n0 = Duplication\n1 = nop-X\n2 = Random\n3 = Scrambled\n4 = nop-C");
   CONFIG_ADD_VAR(SLIP_COPY_MODE, int, 0, "How to handle 'on-copy' slip mutations:\n0 = actual read head slip\n1 = instant large mutation (obeys slip mode)");
   CONFIG_ADD_VAR(TRANS_FILL_MODE, int, 0, "Fill insertions from translocation mutations with:\n0 = Duplication\n1 = Scrambled");
-  CONFIG_ADD_VAR(LGT_FILL_MODE, int, 0, "Extract gene for lateral transfer from:\n0 = Local Neighborhood\n1 = Entire Population");
-  CONFIG_ADD_VAR(LGT_SOURCE_REGION, int, 0, "Fill insertions from lateral gene transfer mutations with:\n0 = Duplication\n1 = scrambled");
+  CONFIG_ADD_VAR(LGT_FILL_MODE, int, 0, "Fill insertions from lateral gene transfer mutations with:\n0 = Duplication\n1 = scrambled");
+  CONFIG_ADD_VAR(LGT_SOURCE_REGION, int, 0, "Extract gene for lateral transfer from:\n0 = Local Neighborhood\n1 = Entire Population");
   CONFIG_ADD_VAR(PARENT_MUT_PROB, double, 0.0, "Parent substitution rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(PARENT_INS_PROB, double, 0.0, "Parent insertion rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(PARENT_DEL_PROB, double, 0.0, "Parent deletion rate (per-site, applied on divide)");
