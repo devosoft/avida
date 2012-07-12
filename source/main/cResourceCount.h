@@ -119,6 +119,7 @@ public:
   void SetGradientConeOutflow(const int& res_id, const double& outflow);
   void SetGradientInflow(const int& res_id, const double& inflow);
   void SetGradPlatVarInflow(const int& res_id, const double& mean, const double& variance);
+  void SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper);
 
   int GetResourceCountID(const cString& res_name);
   double GetInflow(const cString& name);

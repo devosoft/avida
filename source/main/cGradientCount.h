@@ -98,6 +98,10 @@ private:
   double m_mean_plat_inflow;
   double m_var_plat_inflow;
   
+  bool m_predator;
+  double m_pred_odds;
+  int m_guarded_juvs_per_adult;
+  
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
@@ -144,7 +148,9 @@ public:
   void SetGradCount(int count) { m_count = count; }
  
   void SetGradPlatVarInflow(double mean, double variance);
-  void UpdateGradPlatVarInflow(); // not currently being used...would change inflows every update
+  
+  void SetPredatoryResource(double odds, int juvsper);
+  void UpdatePredatoryRes(cAvidaContext& ctx); 
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   

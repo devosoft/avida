@@ -26,6 +26,7 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
+#include "cPopulation.h"
 #include "cStats.h"
 #include "cWorld.h"
 
@@ -102,6 +103,9 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_skip_counter(0)
   , m_mean_plat_inflow(plateau_inflow)
   , m_var_plat_inflow(0)
+  , m_predator(false)
+  , m_pred_odds(0.0)
+  , m_guarded_juvs_per_adult(0)
 {
   ResetGradRes(m_world->GetDefaultContext(), worldx, worldy);
 }
@@ -117,7 +121,6 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
   m_old_peakx = m_peakx;
   m_old_peaky = m_peaky;
-  // UpdateGradPlatVarInflow(); --not currently used...use update triggers instead
   if (m_habitat == 2) {
     generateBarrier(m_world->GetDefaultContext());
     return;
@@ -152,8 +155,11 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   if (has_edible && GetModified()) m_counter++;
 
   // only update resource values at declared update timesteps if there is resource left in the cone
-  if (has_edible && m_counter < m_decay && GetModified()) return; 
-                    
+  if (has_edible && m_counter < m_decay && GetModified()) {
+    if (m_predator) UpdatePredatoryRes(ctx);
+    return; 
+  } 
+                   
   // before we move anything, if we have a depletable resource, we need to get the current plateau cell values 
   if (m_decay == 1) getCurrentPlatValues();
 
@@ -339,6 +345,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   || m_gradient_inflow != 0 || (m_move_a_scaler == 1 && m_just_reset)) refreshResourceValues();
 
   m_counter = 0;  // reset decay counter after cone resources updated
+  if (m_predator) UpdatePredatoryRes(ctx);
 }
 
 void cGradientCount::generatePeak(cAvidaContext& ctx)
@@ -814,11 +821,21 @@ void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
   else SetGradPlatInflow(mean);
 }
 
-void cGradientCount::UpdateGradPlatVarInflow()
+void cGradientCount::UpdatePredatoryRes(cAvidaContext& ctx)
 {
-  if (m_var_plat_inflow > 0) {
-    double cur_inflow = abs(m_world->GetRandom().GetRandNormal(m_mean_plat_inflow, m_var_plat_inflow));
-    SetGradPlatInflow(cur_inflow);
+  // kill off up to 1 org per update within the predator radius (plateau area), with prob of death for selected prey = m_pred_odds
+  if (m_predator) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
+        m_world->GetPopulation().ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult);        
+      }
+    }
   }
-  else SetGradPlatInflow(m_mean_plat_inflow);
+}
+
+void cGradientCount::SetPredatoryResource(double odds, int juvsper)
+{
+  m_predator = true;
+  m_pred_odds = odds;
+  m_guarded_juvs_per_adult = juvsper;
 }

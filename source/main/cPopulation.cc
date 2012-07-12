@@ -96,6 +96,7 @@ cPopulation::cPopulation(cWorld* world)
 , num_organisms(0)
 , num_prey_organisms(0)
 , num_pred_organisms(0)
+, m_has_predatory_res(false)
 , sync_events(false)
 , m_hgt_resid(-1)
 {
@@ -1505,15 +1506,15 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   
   const int dest_x = dest_cell_id % m_world->GetConfig().WORLD_X.Get();  
   const int dest_y = dest_cell_id / m_world->GetConfig().WORLD_X.Get();
-  bool faced_is_boundary = false;
-  if (dest_x == 0 || dest_y == 0 || 
-      dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || 
-      dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
   
   // check for boundary effects on movement
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
     // Fail if we're running in the test CPU.
-    if(src_cell_id < 0) return false;
+    if (src_cell_id < 0) return false;
+    bool faced_is_boundary = false;
+    if (dest_x == 0 || dest_y == 0 || 
+        dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || 
+        dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
     if (faced_is_boundary) {
       if (true_cell != -1) GetCell(true_cell).GetOrganism()->Die(ctx);
       else if (true_cell == -1) src_cell.GetOrganism()->Die(ctx);
@@ -1522,11 +1523,24 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }    
   
   // get the resource library
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceLib& resource_lib = environment.GetResourceLib();
   // get the destination cell resource levels
   tArray<double> dest_cell_resources = m_world->GetPopulation().GetCellResources(dest_cell_id, ctx);
   // get the current cell resource levels
   tArray<double> src_cell_resources = m_world->GetPopulation().GetCellResources(src_cell_id, ctx);
+  
+  // test for death by predatory resource
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->IsPredatory() && dest_cell_resources[i] > 0) {
+      // if you step on a predatory resource, we're going to try to kill you regardless of whether there is a den there
+      if (ctx.GetRandom().P(resource_lib.GetResource(i)->GetPredatorResOdds())) {
+        if (true_cell != -1) GetCell(true_cell).GetOrganism()->Die(ctx);
+        else if (true_cell == -1) src_cell.GetOrganism()->Die(ctx);
+        return false;
+      }
+    }
+  }
+  
   // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;
@@ -7460,6 +7474,84 @@ void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean
       resource_count.SetGradPlatVarInflow(global_res_index, mean, variance);
     }
   } 
+}
+
+void cPopulation::SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource* res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      res->SetPredatoryResource(odds, juvsper, detection_prob);
+      res->SetHabitat(5);
+      environment.AddHabitat(5);
+      resource_count.SetPredatoryResource(global_res_index, odds, juvsper);
+    }
+  }
+  m_has_predatory_res = true; 
+}
+
+void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
+{
+  cPopulationCell cell = m_world->GetPopulation().GetCell(cell_id);
+  const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
+  tArray<double> cell_res;
+  cell_res = m_world->GetPopulation().GetCellResources(cell_id, ctx);
+  
+  bool cell_has_den = false;
+  for (int j = 0; j < cell_res.GetSize(); j++) {
+    if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+      cell_has_den = true;
+      break;  
+    }
+  }
+  
+  if (m_world->GetConfig().USE_AVATARS.Get() && cell.HasAV()) {
+    tArray<cOrganism*> cell_avs = cell.GetCellAVs();    
+    
+    // on den, kill juvs only
+    if (cell_has_den) {
+      tArray<cOrganism*> juvs;   
+      juvs.Resize(0);
+      int num_juvs = 0;
+      int num_guards = 0;
+      for (int k = 0; k < cell_avs.GetSize(); k++) {
+        if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
+          num_juvs++;
+          juvs.Push(cell_avs[k]);
+        }
+        else num_guards++;
+      }
+      if (num_juvs > 0) {
+        int guarded_juvs = num_guards * juvs_per;
+        int unguarded_juvs = num_juvs - guarded_juvs;
+        for (int k = 0; k < unguarded_juvs; k++) {
+          if (ctx.GetRandom().P(pred_odds) && !juvs[k]->IsDead()) juvs[k]->Die(ctx); 
+        }
+      }
+    }
+    // away from den, kill anyone
+    else {
+      if (ctx.GetRandom().P(pred_odds)) {
+        cOrganism* target_org = cell_avs[m_world->GetRandom().GetUInt(0, cell_avs.GetSize())];
+        if (!target_org->IsDead()) target_org->Die(ctx);
+      }
+    }
+  }
+  else if (m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) {
+    cOrganism* target_org = cell.GetOrganism();
+    // if not avatars, a juv will be killed regardless of whether it is on a den
+    // an adult would only be targeted off of a den
+    if (target_org->GetPhenotype().GetTimeUsed() < juv_age || !cell_has_den) {
+      if (ctx.GetRandom().P(pred_odds) && !target_org->IsDead()) target_org->Die(ctx);
+    }
+  }
 }
 
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     

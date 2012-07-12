@@ -436,6 +436,35 @@ public:
   } 
 };
 
+class cActionSetPredatoryResource : public cAction
+{
+private:
+  cString m_res_name;
+  double m_odds;
+  int m_juvs_per;
+  double m_detection_prob;
+  
+public:
+  cActionSetPredatoryResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_odds(0.0), m_juvs_per(0), m_detection_prob(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_odds = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_juvs_per = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_detection_prob = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double kill_odds> <int guarded_juvs_per_adult> <double detection_prob>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SetPredatoryResource(m_res_name, m_odds, m_juvs_per, m_detection_prob);        
+  } 
+};
+
 /* Change Environment settings */
 class cActionChangeEnvironment : public cAction
 {
@@ -1540,6 +1569,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetGradientConeOutflow>("SetGradientConeOutflow");
   action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
   action_lib->Register<cActionSetGradPlatVarInflow>("SetGradPlatVarInflow");
+  action_lib->Register<cActionSetPredatoryResource>("SetPredatoryResource");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");

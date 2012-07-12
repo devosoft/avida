@@ -100,6 +100,7 @@ private:
   int num_prey_organisms;
   int num_pred_organisms;
   tArray<int> min_prey_failures;
+  bool m_has_predatory_res;
   
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
@@ -347,6 +348,9 @@ public:
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
   void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance);
+  void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
+  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
+  bool HasPredatoryRes() { return m_has_predatory_res; }
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  

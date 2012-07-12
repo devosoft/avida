@@ -657,6 +657,17 @@ and reaction parameters.
   
   </p>
 </li>
+    <li><p>
+    <strong><a name="SetPredatoryResource">SetPredatoryResource</a></strong>
+    <i>&lt;string res_name&gt; &lt;double kill_odds&gt; &lt;double guarded_juvs_per_adult&gt;double detection_prob&gt;</i>
+  </p>
+    <p>
+    A gradient resource with teeth. If set in motion, will kill with prob kill_odds 1 random org 
+    in each cell of plateau. If it passes over a den resource, will kill unguarded offspring with
+    probability kill_odds. If an org steps on the resource, the org is killed with probability
+    kill_odds. detection_prob sets the probability of orgs detecting the predator via look sensors.
+    </p>
+</li>
 <li><p>
   <strong><a name="SetReactionInst">SetReactionInst</a></strong>
   <i>&lt;string reaction_name&gt; &lt;string inst&gt;</i>

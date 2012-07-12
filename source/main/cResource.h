@@ -136,6 +136,10 @@ private:
   double m_threshold;
   int m_refuge;
   bool isgradient;
+  double m_predator_odds;
+  bool m_predator;
+  double m_guard_juvs_per;
+  double m_prob_detect;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
 	bool hgt_metabolize;
@@ -222,6 +226,10 @@ public:
   double GetInitialPlatVal() { return m_init_plat; }
   double GetThreshold() { return m_threshold; }
   int GetRefuge() { return m_refuge; }
+  bool IsPredatory() { return m_predator; }
+  double GetPredatorResOdds() { return m_predator_odds; }
+  int GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
+  double GetDetectionProb() { return m_prob_detect; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -303,6 +311,8 @@ public:
   void SetThreshold(double _threshold) { m_threshold = _threshold; } 
   void SetRefuge(int _refuge) { m_refuge = _refuge; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
+  void SetPredatoryResource(double _odds, int _juvsper, double _prob) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; m_prob_detect = _prob; } 
+
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,

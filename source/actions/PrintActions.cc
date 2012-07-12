@@ -3516,8 +3516,7 @@ public:
         for (int h = 0; h < res_count.GetSize(); h++) {
           int hab_type = resource_lib.GetResource(h)->GetHabitat();
           if ((res_count[h] > max_resource) && (hab_type != 1) && (hab_type !=2)) max_resource = res_count[h];
-          else if (hab_type == 1 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
-          else if (hab_type == 4 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
+          else if ((hab_type == 1 || hab_type == 4 || hab_type == 5) && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
           // allow walls to trump everything else
           else if (hab_type == 2 && res_count[h] > 0) { 
             topo_height = resource_lib.GetResource(h)->GetPlateau();

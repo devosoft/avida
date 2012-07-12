@@ -3995,6 +3995,13 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
   
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+  // simulated predator ahead
+  for (int i = 0; i < cell_res.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
+      setInternalValue(reg_to_set, 3, true);
+      return true;
+    }    
+  }
   // are there any barrier resources in the faced cell    
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
@@ -4280,7 +4287,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (absorb_type == 1) {
     for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) {
+      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) {
         res_id = i;
         break;
       }
@@ -4288,7 +4295,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   }
   else if (absorb_type == 2) {
     for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() >4)) {
+      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5)) {
         res_id = i - 1;
         break;
       }
@@ -4499,7 +4506,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (absorb_type == 1) {
     for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) {
+      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) {
         res_id = i;
         break;
       }
@@ -4507,7 +4514,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   }
   else if (absorb_type == 2) {
     for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 4)) {
+      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5)) {
         res_id = i - 1;
         break;
       }
