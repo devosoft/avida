@@ -99,6 +99,7 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
+  int pop_enforce;
   tArray<int> min_prey_failures;
   bool m_has_predatory_res;
   
@@ -144,6 +145,8 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
+  
+  void SetPopCapEnforcement(int rate) { pop_enforce = rate; }
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -318,6 +321,8 @@ public:
   void RecordMinPreyFailedAttack() { min_prey_failures.Push(m_world->GetStats().GetUpdate()); }
   void ClearMinPreyFailedAttacks() { min_prey_failures.Resize(0); }
   tArray<int> GetMinPreyFailedAttacks() { return min_prey_failures; }
+  
+  void RemovePredators(cAvidaContext& ctx);
    
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }

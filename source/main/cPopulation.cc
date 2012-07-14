@@ -96,6 +96,7 @@ cPopulation::cPopulation(cWorld* world)
 , num_organisms(0)
 , num_prey_organisms(0)
 , num_pred_organisms(0)
+, pop_enforce(0)
 , m_has_predatory_res(false)
 , sync_events(false)
 , m_hgt_resid(-1)
@@ -1178,7 +1179,7 @@ tSmartArray<int> cPopulation::SetRandomTraceQ(int max_samples)
 {
   // randomly sample (w/ replacement) bgs in pop
   tSmartArray<int> bg_id_list;
-  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = live_org_list;
 
   int max_bgs = 1;
   if (max_samples) max_bgs = max_samples;
@@ -1203,7 +1204,7 @@ tSmartArray<int> cPopulation::SetRandomPreyTraceQ(int max_samples)
 {
   // randomly sample (w/ replacement) bgs in pop
   tSmartArray<int> bg_id_list;
-  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = live_org_list;
 
   int max_bgs = 1;
   if (max_samples) max_bgs = max_samples;
@@ -1230,7 +1231,7 @@ tSmartArray<int> cPopulation::SetRandomPredTraceQ(int max_samples)
 {
   // randomly sample (w/ replacement) bgs in pop
   tSmartArray<int> bg_id_list;
-  const tSmartArray <cOrganism*> live_orgs = GetLiveOrgList();
+  const tSmartArray <cOrganism*> live_orgs = live_org_list;
 
   int max_bgs = 1;
   if (max_samples) max_bgs = max_samples;
@@ -4584,43 +4585,55 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   // Handle Population Cap (if enabled)
   int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
   if (pop_cap > 0 && num_organisms >= pop_cap) {
-    double max_msr = 0.0;
-    int cell_id = 0;
-    for (int i = 0; i < cell_array.GetSize(); i++) {
-      if (cell_array[i].IsOccupied() && cell_array[i].GetID() != parent_cell.GetID()) {
-        double msr = m_world->GetRandom().GetDouble();
-        if (msr > max_msr) {
-          max_msr = msr;
-          cell_id = i;
+    int num_kills = 1;
+    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
+    
+    while (num_kills > 0) {
+      double max_msr = 0.0;
+      int cell_id = 0;
+      for (int i = 0; i < cell_array.GetSize(); i++) {
+        if (cell_array[i].IsOccupied() && cell_array[i].GetID() != parent_cell.GetID()) {
+          double msr = m_world->GetRandom().GetDouble();
+          if (msr > max_msr) {
+            max_msr = msr;
+            cell_id = i;
+          }
         }
       }
+      KillOrganism(cell_array[cell_id], ctx); 
+      num_kills--;
     }
-    KillOrganism(cell_array[cell_id], ctx); 
   }
   
   // Handle Pop Cap Eldest (if enabled)  
   int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
   if (pop_eldest > 0 && num_organisms >= pop_eldest) {
-    double max_age = 0.0;
-    double max_msr = 0.0;
-    int cell_id = 0;
-    for (int i = 0; i < live_org_list.GetSize(); i++) {
-      if (GetCell(live_org_list[i]->GetCellID()).IsOccupied() && live_org_list[i]->GetCellID() != parent_cell.GetID()) {       
-        double age = live_org_list[i]->GetPhenotype().GetAge();
-        if (age > max_age) {
-          max_age = age;
-          cell_id = live_org_list[i]->GetCellID();
-        }
-        else if (age == max_age) {
-          double msr = m_world->GetRandom().GetDouble();
-          if (msr > max_msr) {
-            max_msr = msr;
+    int num_kills = 1;
+    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
+    
+    while (num_kills > 0) {
+      double max_age = 0.0;
+      double max_msr = 0.0;
+      int cell_id = 0;
+      for (int i = 0; i < live_org_list.GetSize(); i++) {
+        if (GetCell(live_org_list[i]->GetCellID()).IsOccupied() && live_org_list[i]->GetCellID() != parent_cell.GetID()) {       
+          double age = live_org_list[i]->GetPhenotype().GetAge();
+          if (age > max_age) {
+            max_age = age;
             cell_id = live_org_list[i]->GetCellID();
+          }
+          else if (age == max_age) {
+            double msr = m_world->GetRandom().GetDouble();
+            if (msr > max_msr) {
+              max_msr = msr;
+              cell_id = live_org_list[i]->GetCellID();
+            }
           }
         }
       }
+      KillOrganism(cell_array[cell_id], ctx);
+      num_kills--;
     }
-    KillOrganism(cell_array[cell_id], ctx);
   }
   
 	// increment the number of births in the **parent deme**.  in the case of a
@@ -6226,7 +6239,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   }
   
   // if the injected org already has a group we will assign it to, do not assign group id in activate organism
-  if(!inject_group) InjectGenome(cell_id, src, genome, ctx, lineage_label, true);
+  if (!inject_group) InjectGenome(cell_id, src, genome, ctx, lineage_label, true);
   else InjectGenome(cell_id, src, genome, ctx, lineage_label, false);
   
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
@@ -6281,7 +6294,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     genotype->RemoveBioUnit(&unit);
   }
   
-  if(inject_group) {
+  if (inject_group) {
     cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
     cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
     cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
@@ -6290,7 +6303,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthForagerType(forager_type);
   }
-  if(m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
+  if (m_world->GetConfig().USE_AVATARS.Get() && !m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     cell_array[cell_id].GetOrganism()->GetOrgInterface().AddPredPreyAV(cell_id);
   }
   if (trace) SetupMiniTrace(cell_array[cell_id].GetOrganism());    
@@ -6703,6 +6716,12 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaCon
   }
 }
 
+void cPopulation::RemovePredators(cAvidaContext& ctx)
+{
+  for (int i = 0; i < live_org_list.GetSize(); i++) {
+    if (live_org_list[i]->GetForageTarget() <= -2) live_org_list[i]->Die(ctx);
+  }
+}
 
 void cPopulation::PrintPhenotypeData(const cString& filename)
 {
