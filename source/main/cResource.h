@@ -228,7 +228,7 @@ public:
   int GetRefuge() { return m_refuge; }
   bool IsPredatory() { return m_predator; }
   double GetPredatorResOdds() { return m_predator_odds; }
-  int GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
+  double GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
   double GetDetectionProb() { return m_prob_detect; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
