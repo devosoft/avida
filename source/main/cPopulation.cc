@@ -7563,7 +7563,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
       }
     }
   }
-  else if (m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) {
+  else if (!m_world->GetConfig().USE_AVATARS.Get() && cell.IsOccupied()) {
     cOrganism* target_org = cell.GetOrganism();
     // if not avatars, a juv will be killed regardless of whether it is on a den
     // an adult would only be targeted off of a den
