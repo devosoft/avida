@@ -1311,7 +1311,7 @@ bool cOrganism::HasOpinion() {
 
 void cOrganism::SetForageTarget(int forage_target) {
   // if using avatars, make sure you swap avatar lists if the org type changes!
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     if (forage_target <= -2 && m_forage_target > -2) {
       m_interface->DecNumPreyOrganisms();
       m_interface->IncNumPredOrganisms();
@@ -1328,7 +1328,7 @@ void cOrganism::CopyParentFT() {
   bool copy_ft = true;
   // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
   // switch ft to pred, and then copy parent to become prey again.
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() <= 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
     if (m_parent_ft != -2 && m_forage_target < -1) {
       copy_ft = false;
     }

@@ -3811,7 +3811,7 @@ void cStats::PrintTargets(const cString& filename)
   
   bool has_pred = false;
   int offset = 1;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
     has_pred = true;
     offset = 2;
   }
@@ -4091,16 +4091,13 @@ void cStats::PrintDenData(const cString& filename) {
     
     for (int j = 0; j < cell_res.GetSize(); j++) {
       if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
-        // for every x juvs, we require 1 adult...otherwise use killprob on the rest
-        tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
-
+        tArray<cOrganism*> cell_avs = cell.GetCellAVs(); 
         for (int k = 0; k < cell_avs.GetSize(); k++) {
           if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
             num_juvs++;
           }
           else num_guards++;
         }
-        
         break;  // only do this once if two dens overlap
       }
     }

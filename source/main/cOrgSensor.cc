@@ -51,7 +51,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
+  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1);
   int forage = m_organism->GetForageTarget();
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() < 5 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {    
