@@ -3383,10 +3383,38 @@ bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
+  // Code being changed to allow for AdjustableHD
   const int reg_used = FindModifiedRegister(REG_AX);
-  double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  /* double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
   if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0, ctx); 
-  return true;
+  return true;*/
+    
+    double percent_prob;
+    int distance;
+    int get_reg_value;
+    int genome_size;
+    if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() == -1) {
+      //Case where Probability is static and hamming distance is adjustable
+      get_reg_value = GetRegister(reg_used);
+      //Anya TODO: Max_genome_size must be set for this to work, change it to something else
+      genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+      percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+      distance = (get_reg_value % genome_size);
+    } else if ((int) m_world->GetConfig().KABOOM_HAMMING.Get() == -1 && (int)m_world->GetConfig().KABOOM_PROB.Get() == -1) {
+      //Anya TODO: Give warning, can't have both adjustable
+      //Possibly? feedback->Warning("Probability and Hamming distance cannot both be adjustable, change one to static");
+    } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() != -1) {
+      //Case where both Probability and Hamming Distance are static
+      percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+      distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
+    } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() != -1) {
+      // Case where Probability is adjustable and Hamming distance isn't
+      percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+      distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
+    }
+    
+    if (ctx.GetRandom().P(percent_prob)) m_organism->Kaboom(distance, ctx);
+    return true;
 }
 
 

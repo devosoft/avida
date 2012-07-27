@@ -267,7 +267,7 @@ public:
   void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
   void KillCellID(int target, cAvidaContext& ctx) { m_interface->KillCellID(target, ctx); } 
   void Kaboom(int dist, cAvidaContext& ctx) { m_interface->Kaboom(dist,ctx);} 
-  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); } 
+  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
