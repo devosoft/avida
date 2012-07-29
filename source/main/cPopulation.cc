@@ -7481,7 +7481,7 @@ void cPopulation::UpdateGradientInflow(const cString res_name, const double infl
   } 
 }
 
-void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean, const double variance)
+void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -7490,7 +7490,7 @@ void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean
     cResource * res = resource_lib.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
-      resource_count.SetGradPlatVarInflow(global_res_index, mean, variance);
+      resource_count.SetGradPlatVarInflow(global_res_index, mean, variance, type);
     }
   } 
 }
@@ -7525,7 +7525,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   
   bool cell_has_den = false;
   for (int j = 0; j < cell_res.GetSize(); j++) {
-    if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+    if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
       cell_has_den = true;
       break;  
     }

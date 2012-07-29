@@ -4090,7 +4090,7 @@ void cStats::PrintDenData(const cString& filename) {
     cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
     
     for (int j = 0; j < cell_res.GetSize(); j++) {
-      if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+      if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
         tArray<cOrganism*> cell_avs = cell.GetCellAVs(); 
         for (int k = 0; k < cell_avs.GetSize(); k++) {
           if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 

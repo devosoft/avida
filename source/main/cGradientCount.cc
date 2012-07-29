@@ -810,13 +810,19 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_initial = false;
 }
 
-void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
+void cGradientCount::SetGradPlatVarInflow(double mean, double variance, int type)
 {
   if (variance > 0) {
     m_mean_plat_inflow = mean;
     m_var_plat_inflow = variance;
-    double cur_inflow = abs(m_world->GetRandom().GetRandNormal(mean, variance));
-    SetGradPlatInflow(cur_inflow);
+    double the_inflow = abs(m_world->GetRandom().GetRandNormal(mean, variance));
+    if (type == 0) SetGradPlatInflow(the_inflow);
+    else if (type < 0) { 
+      double new_inflow = mean - the_inflow;
+      if (new_inflow < 0) new_inflow = 0;
+      SetGradPlatInflow(new_inflow);
+    }
+    else if (type > 0) SetGradPlatInflow(mean + the_inflow);
   }
   else SetGradPlatInflow(mean);
 }

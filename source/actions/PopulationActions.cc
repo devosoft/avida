@@ -1070,7 +1070,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
           // for every x juvs, we require 1 adult...otherwise use killprob on the rest
           tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
           tArray<cOrganism*> juvs;   
@@ -1128,7 +1128,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
           if (cell_res[m_res_id] <= 0) break;
           
           // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest

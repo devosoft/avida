@@ -352,7 +352,7 @@ public:
   void UpdateGradientConeInflow(const cString res_name, const double inflow);
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
-  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance);
+  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
   void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
   void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
   bool HasPredatoryRes() { return m_has_predatory_res; }
