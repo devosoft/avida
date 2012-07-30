@@ -1267,7 +1267,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
   Avida::GenomePtr genome(freezer->InstantiateGenome(fid));
   if (genome) {
-    [currentRun injectGenome:genome atX:x Y:y];
+    [currentRun injectGenome:genome atX:x Y:y withName:freezer->NameOf(fid)];
     [mapView setPendingActionColorAtX:x Y:y];
   }
 }
@@ -1276,7 +1276,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
   Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
   if (genome_ptr) {
-    [currentRun injectGenome:genome_ptr atX:x Y:y];
+    [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome genomeStr] UTF8String]];
     [mapView setPendingActionColorAtX:x Y:y];
   }
 }

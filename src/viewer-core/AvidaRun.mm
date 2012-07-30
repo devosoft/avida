@@ -215,8 +215,8 @@ void handleDriverCallback(Avida::DriverEvent event)
   driver->Finish();
 }
 
-- (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y {
-  driver->InjectGenomeAt(genome, x, y);
+- (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y withName:(Apto::String)name {
+  driver->InjectGenomeAt(genome, x, y, name);
 }
 
 - (bool) hasPendingInjects {

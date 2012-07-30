@@ -72,7 +72,7 @@
 - (void) resume;
 - (void) end;
 
-- (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y;
+- (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y withName:(Apto::String)name;
 - (bool) hasPendingInjects;
 
 
