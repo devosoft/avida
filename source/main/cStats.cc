@@ -110,6 +110,7 @@ cStats::cStats(cWorld* world)
   , num_no_birth_creatures(0)
   , num_single_thread_creatures(0)
   , num_multi_thread_creatures(0)
+  , num_kabooms(0)
   , m_num_threads(0)
   , num_modified(0)
   , num_genotypes_last(1)
@@ -3455,6 +3456,26 @@ void cStats::PrintShadedAltruists(const cString& filename) {
 	df.Write(avg_shade, "avg-shade [avgshade]");
 	df.Endl();
 
+}
+
+/*
+ Print data regarding explosions (kazi) and the hamming distances associated with them.
+ */
+void cStats::PrintKaboom(const cString& filename)
+{
+    cDataFile& df = m_world->GetDataFile(filename);
+    df.WriteComment("The number of kabooms.");
+    
+    df.WriteTimeStamp();
+    df.Write(m_update, "Update [update]");
+    
+    df.Write(num_kabooms, "number of kabooms");
+    df.Write(hd_list, "hamming distances", "");
+    
+    df.Endl();
+    hd_list.ResizeClear(0);
+    num_kabooms = 0;
+    
 }
 
 /*

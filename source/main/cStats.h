@@ -248,6 +248,10 @@ private:
   tArray<int> tasks_host_last;
   tArray<int> tasks_parasite_current;
   tArray<int> tasks_parasite_last;
+    
+  // ------- Kaboom Stats --------------------
+    int num_kabooms;
+    tArray<int> hd_list;
 
 
   // --------  Organism Task Stats  ---------
@@ -965,6 +969,11 @@ public:
   void UpdateTopNavTrace(cOrganism* org);
   void PrintTopNavTrace();
   void PrintReproData(cOrganism* org);
+    
+ // Kaboom stats
+  void IncKaboom() { num_kabooms++; }
+  void AddHamDistance(int distance) { hd_list.Push(distance); }
+  void PrintKaboom(const cString& filename);
   
   // deme predicate stats
   void IncEventCount(int x, int y);

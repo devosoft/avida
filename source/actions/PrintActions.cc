@@ -194,6 +194,9 @@ STATS_OUT_FILE(PrintShadedAltruists,         shadedaltruists.dat);
 STATS_OUT_FILE(PrintDirectReciprocityData,         reciprocity.dat);
 STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
+// kabooms
+STATS_OUT_FILE(PrintKaboom, kabooms.dat);
+
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
@@ -4757,6 +4760,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
   
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
+    
+  // kabooms output file
+  action_lib->Register<cActionPrintKaboom>("PrintKaboom");
   
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
