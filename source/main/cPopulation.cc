@@ -6307,7 +6307,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label, bool assign_group) 
+void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label, bool assign_group, Systematics::RoleClassificationHints* hints)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -6328,7 +6328,7 @@ void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genom
   // Classify this new organism
   Systematics::UnitPtr unit(new_organism);
   new_organism->AddReference(); // creating new smart pointer to new_organism, explicitly add reference
-  Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(unit);
+  Systematics::Manager::Of(m_world->GetNewWorld())->ClassifyNewUnit(unit, hints);
   
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);

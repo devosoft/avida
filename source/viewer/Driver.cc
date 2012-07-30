@@ -25,8 +25,11 @@
 
 #include "avida/core/Context.h"
 #include "avida/data/Manager.h"
+#include "avida/systematics/Manager.h"
 #include "avida/viewer/Map.h"
 #include "avida/viewer/Listener.h"
+
+#include "avida/private/systematics/CladeArbiter.h"
 
 #include "cAvidaContext.h"
 #include "cEnvironment.h"
@@ -110,6 +113,11 @@ Avida::Viewer::Driver* Avida::Viewer::Driver::InitWithDirectory(const Apto::Stri
 
   
   if (!world) return NULL;
+
+  Systematics::ManagerPtr systematics = Systematics::Manager::Of(new_world);
+  systematics->RegisterRole("clade", Systematics::ArbiterPtr(new Systematics::CladeArbiter(new_world)));
+
+  
   return new Avida::Viewer::Driver(world, new_world);
 }
 
@@ -125,10 +133,10 @@ int Avida::Viewer::Driver::NumOrganisms() const
 }
 
 
-void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y)
+void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y, const Apto::String& name)
 {
   m_mutex.Lock();
-  m_inject_queue.Push(new InjectGenomeInfo(genome, x, y));
+  m_inject_queue.Push(new InjectGenomeInfo(genome, x, y, name));
   m_mutex.Unlock();
 }
 
@@ -280,11 +288,15 @@ void Avida::Viewer::Driver::Run()
     m_mutex.Lock();
 
     // Handle initial inject queue requests
-    while (m_inject_queue.GetSize()) {
-      InjectGenomeInfo* info = m_inject_queue.Pop();
-      int cell_id = info->x + population.GetWorldX() * info->y;
-      population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx);          
-      delete info;
+    if (m_inject_queue.GetSize()) {
+      Systematics::RoleClassificationHints hints;
+      while (m_inject_queue.GetSize()) {
+        InjectGenomeInfo* info = m_inject_queue.Pop();
+        int cell_id = info->x + population.GetWorldX() * info->y;
+        hints["clade"]["name"] = info->name;
+        population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx, 0, true, &hints);
+        delete info;
+      }
     }
 
     while (!m_done) {
@@ -331,11 +343,15 @@ void Avida::Viewer::Driver::Run()
       m_mutex.Lock();
       {
         // Handle inject queue requests
-        while (m_inject_queue.GetSize()) {
-          InjectGenomeInfo* info = m_inject_queue.Pop();
-          int cell_id = info->x + info->y * population.GetWorldX();
-          population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx);          
-          delete info;
+        if (m_inject_queue.GetSize()) {
+          Systematics::RoleClassificationHints hints;
+          while (m_inject_queue.GetSize()) {
+            InjectGenomeInfo* info = m_inject_queue.Pop();
+            int cell_id = info->x + population.GetWorldX() * info->y;
+            hints["clade"]["name"] = info->name;
+            population.InjectGenome(cell_id, Systematics::Source(Systematics::DIVISION, "", true), *info->genome, ctx, 0, true, &hints);
+            delete info;
+          }
         }
         
         // Listeners can be attached and detached asynchronously, must be locked while working with them

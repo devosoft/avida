@@ -41,7 +41,7 @@ Avida::Viewer::MapMode::~MapMode() { ; }
 Avida::Viewer::DiscreteScale::~DiscreteScale() { ; }
 
 
-class cFitnessMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
+class DoublePropMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
 {
 private:
   static const int SCALE_MAX = 201;
@@ -50,6 +50,10 @@ private:
   static const double RESCALE_TOLERANCE;
   static const double MAX_RESCALE_FACTOR;
 private:
+  const Apto::String m_prop_id;
+  Apto::String m_prop_desc;
+  Apto::String m_prop_desc_rescale;
+  
   Apto::Array<int> m_color_grid;
   Apto::Array<int> m_color_count;
   Apto::Array<DiscreteScale::Entry> m_scale_labels;
@@ -62,17 +66,22 @@ private:
   double m_rescale_rate_max;
   
 public:
-  cFitnessMapMode(cWorld* world)
-    : m_color_count(SCALE_MAX + Avida::Viewer::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
-    , m_cur_min(0.0), m_cur_max(0.0), m_target_min(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
-  { 
+  DoublePropMapMode(cWorld* world, const Apto::String& prop_id, const Apto::String& prop_desc)
+  : m_prop_id(prop_id), m_prop_desc(prop_desc), m_color_count(SCALE_MAX + Avida::Viewer::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
+  , m_cur_min(0.0), m_cur_max(0.0), m_target_min(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
+  {
     m_color_grid.Resize(world->GetPopulation().GetSize());
     m_color_grid.SetAll(-4);
+    
+    m_prop_desc_rescale = m_prop_desc + " (rescaling)";
   }
-  ~cFitnessMapMode() { ; }
+  ~DoublePropMapMode() { ; }
+  
+  const Apto::String& PropertyID() const { return m_prop_id; }
+  
   
   // MapMode Interface
-  const Apto::String& GetName() const { static const Apto::String name("Fitness"); return name; }
+  const Apto::String& GetName() const { return m_prop_desc; }
   const Apto::Array<int>& GetGridValues() const { return m_color_grid; }
   const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
@@ -80,23 +89,23 @@ public:
   const Apto::String& GetScaleLabel() const;
   
   int GetSupportedTypes() const { return Avida::Viewer::MAP_GRID_VIEW_COLOR; }
-
+  
   bool SetProperty(const Apto::String&, const Apto::String&) { return false; }
   Apto::String GetProperty(const Apto::String&) const { return ""; }
-
+  
   void Update(cPopulation& pop);
   
   
   // DiscreteScale Interface
   int GetScaleRange() const { return m_color_count.GetSize() - Avida::Viewer::MAP_RESERVED_COLORS; }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
-  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }  
+  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }
 };
 
-const double cFitnessMapMode::RESCALE_TOLERANCE = 0.1;
-const double cFitnessMapMode::MAX_RESCALE_FACTOR = 0.03;
+const double DoublePropMapMode::RESCALE_TOLERANCE = 0.1;
+const double DoublePropMapMode::MAX_RESCALE_FACTOR = 0.03;
 
-void cFitnessMapMode::Update(cPopulation& pop)
+void DoublePropMapMode::Update(cPopulation& pop)
 {
   m_color_grid.Resize(pop.GetSize());
   
@@ -110,13 +119,12 @@ void cFitnessMapMode::Update(cPopulation& pop)
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism* org = pop.GetCell(i).GetOrganism();
     if (org == NULL) continue;
-    double fit = org->GetPhenotype().GetFitness();
+    double fit = org->Properties().Get(m_prop_id);
     if (fit == 0.0) continue;
-//    fit = log2(fit);
     if (fit > max_fit) max_fit = fit;
     if (fit < min_fit) min_fit = fit;
   }
-
+  
   if (m_cur_max == 0.0) {
     // Reset range
     m_cur_max = max_fit;
@@ -128,7 +136,7 @@ void cFitnessMapMode::Update(cPopulation& pop)
     for (int i = 0; i < m_scale_labels.GetSize(); i++) {
       m_scale_labels[i].index = (SCALE_MAX / (m_scale_labels.GetSize() - 1)) * i;
       m_scale_labels[i].label =
-        static_cast<const char*>(cStringUtil::Stringf("%f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
+      static_cast<const char*>(cStringUtil::Stringf("%f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
     }
   } else {
     if (max_fit < (1.0 - RESCALE_TOLERANCE) * m_target_max || m_target_max < max_fit) {
@@ -153,7 +161,7 @@ void cFitnessMapMode::Update(cPopulation& pop)
       for (int i = 0; i < m_scale_labels.GetSize(); i++) {
         m_scale_labels[i].index = (SCALE_MAX / (m_scale_labels.GetSize() - 1)) * i;
         m_scale_labels[i].label =
-          static_cast<const char*>(cStringUtil::Stringf("%2.2f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
+        static_cast<const char*>(cStringUtil::Stringf("%2.2f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
       }
     }
   }
@@ -166,15 +174,15 @@ void cFitnessMapMode::Update(cPopulation& pop)
       m_color_count[Avida::Viewer::MAP_RESERVED_COLORS - Avida::Viewer::MAP_RESERVED_COLOR_BLACK]++;
       continue;
     }
-
-    double fit = org->GetPhenotype().GetFitness();
+    
+    double fit = org->Properties().Get(m_prop_id);
     if (fit == 0.0) {
       m_color_grid[i] = Avida::Viewer::MAP_RESERVED_COLOR_DARK_GRAY;
       m_color_count[Avida::Viewer::MAP_RESERVED_COLORS - Avida::Viewer::MAP_RESERVED_COLOR_DARK_GRAY]++;
       continue;
     }
     
-//    fit = log2(fit);
+    //    fit = log2(fit);
     
     fit = (fit - m_cur_min) / (m_cur_max - m_cur_min);
     if (fit > 1.0) {
@@ -188,39 +196,44 @@ void cFitnessMapMode::Update(cPopulation& pop)
   }
 }
 
-const Apto::String& cFitnessMapMode::GetScaleLabel() const
-{
-  static const Apto::String normal("Fitness");
-  static const Apto::String rescale("Fitness (rescaling)");
+const Apto::String& DoublePropMapMode::GetScaleLabel() const
+{  
+  if (m_rescale_rate_max != 0) return m_prop_desc_rescale;
   
-  if (m_rescale_rate_max != 0) return rescale;
-  
-  return normal;
+  return m_prop_desc;
 }
 
 
 
-class cGenotypeMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
+
+
+
+class ClassificationMapMode : public Avida::Viewer::MapMode, public Avida::Viewer::DiscreteScale
 {
 private:
   static const int NUM_COLORS = 10;
 private:
+  const Apto::String m_role_id;
+  const Apto::String m_role_desc;
+  
   Avida::Viewer::ClassificationInfo* m_info;
   Apto::Array<int> m_color_grid;
   Apto::Array<int> m_color_count;
   Apto::Array<DiscreteScale::Entry> m_scale_labels;
   
 public:
-  cGenotypeMapMode(cWorld* world);
-  virtual ~cGenotypeMapMode() { delete m_info; }
+  ClassificationMapMode(cWorld* world, const Apto::String& role_id, const Apto::String& role_desc);
+  virtual ~ClassificationMapMode() { delete m_info; }
+  
+  const Apto::String& RoleID() const { return m_role_id; }
   
   // MapMode Interface
-  const Apto::String& GetName() const { static const Apto::String name("Genotypes"); return name; }
+  const Apto::String& GetName() const { return m_role_desc; }
   const Apto::Array<int>& GetGridValues() const { return m_color_grid; }
   const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
   const DiscreteScale& GetScale() const { return *this; }
-  const Apto::String& GetScaleLabel() const { static const Apto::String name("Most Abundant Genotypes"); return name; }
+  const Apto::String& GetScaleLabel() const { return m_role_desc; }
   
   int GetSupportedTypes() const { return Avida::Viewer::MAP_GRID_VIEW_COLOR; }
   
@@ -237,10 +250,11 @@ public:
   bool IsCategorical() const { return true; }
 };
 
-cGenotypeMapMode::cGenotypeMapMode(cWorld* world)
-  : m_info(new Avida::Viewer::ClassificationInfo(world->GetNewWorld(), "genotype", NUM_COLORS))
-  , m_color_count(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
-  , m_scale_labels(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
+ClassificationMapMode::ClassificationMapMode(cWorld* world, const Apto::String& role_id, const Apto::String& role_desc)
+: m_role_id(role_id), m_role_desc(role_desc)
+, m_info(new Avida::Viewer::ClassificationInfo(world->GetNewWorld(), role_id, NUM_COLORS))
+, m_color_count(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
+, m_scale_labels(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
 {
   m_scale_labels[0].index = -4;
   m_scale_labels[0].label = "Unoccupied";
@@ -255,7 +269,7 @@ cGenotypeMapMode::cGenotypeMapMode(cWorld* world)
   m_color_grid.SetAll(-4);
 }
 
-void cGenotypeMapMode::Update(cPopulation& pop)
+void ClassificationMapMode::Update(cPopulation& pop)
 {
   m_info->Update();
   m_color_grid.Resize(pop.GetSize());
@@ -266,20 +280,23 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       m_color_grid[i] = -4;
       m_color_count[0]++;
     } else {
-      Systematics::GroupPtr bg = org->SystematicsGroup("genotype");
-      Avida::Viewer::ClassificationInfo::MapColorPtr mapcolor = bg->GetData<Avida::Viewer::ClassificationInfo::MapColor>();
-      if (mapcolor) {
-        m_color_grid[i] = mapcolor->color;
-        m_color_count[mapcolor->color + 4]++;
-        m_scale_labels[mapcolor->color + 4].label = bg->Properties().Get("name").StringValue();
-      } else {
-        m_color_grid[i] = -1;
-        m_color_count[3]++;
+      Systematics::GroupPtr bg = org->SystematicsGroup(m_role_id);
+      if (bg) {
+        Avida::Viewer::ClassificationInfo::MapColorPtr mapcolor = bg->GetData<Avida::Viewer::ClassificationInfo::MapColor>();
+        if (mapcolor) {
+          m_color_grid[i] = mapcolor->color;
+          m_color_count[mapcolor->color + 4]++;
+          m_scale_labels[mapcolor->color + 4].label = bg->Properties().Get("name").StringValue();
+          continue;
+        }
       }
+      m_color_grid[i] = -1;
+      m_color_count[3]++;
     }
   }
   for (int i = 0; i < m_color_count.GetSize(); i++) if (m_color_count[i] == 0) m_scale_labels[i].label = "-";
 }
+
 
 
 
@@ -441,13 +458,16 @@ Avida::Viewer::Map::Map(cWorld* world)
   , m_num_viewer_colors(-1)
   , m_color_mode(0)
   , m_symbol_mode(-1)
-  , m_tag_mode(2)
+  , m_tag_mode(4)
 {
   // Setup the available view modes...
-  m_view_modes.Resize(3);
-  m_view_modes[0] = new cFitnessMapMode(world);
-  m_view_modes[1] = new cGenotypeMapMode(world);
-  m_view_modes[2] = new EnvActionMapMode(world);
+  m_view_modes.Resize(5);
+//  m_view_modes[0] = new cGenotypeMapMode(world);
+  m_view_modes[0] = new DoublePropMapMode(world, "last_fitness", "Fitness");
+  m_view_modes[1] = new DoublePropMapMode(world, "last_gestation_time", "Gestation Time");
+  m_view_modes[2] = new DoublePropMapMode(world, "last_metabolic_rate", "Metabolic Rate");
+  m_view_modes[3] = new ClassificationMapMode(world, "clade", "Ancestor Organism");
+  m_view_modes[4] = new EnvActionMapMode(world);
 
   
 //  AddViewMode("Genome Length",  &cViewer_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);

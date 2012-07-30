@@ -14,6 +14,8 @@
 		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
 		4AAF523B153DE7B100C66840 /* cMigrationMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = D86E626F14F6BA6600AE1489 /* cMigrationMatrix.cc */; };
 		4AC3D9F5144E087000CAEA62 /* cOrgSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC3D9F3144E087000CAEA62 /* cOrgSensor.h */; };
+		7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64C15C6E90D00EE3F14 /* Clade.cc */; };
+		7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */; };
 		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
 		700E2996085A1F6000CF158A /* avida in Create work dir */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		701B356011E7744D00FEF49A /* tHashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B355F11E7744D00FEF49A /* tHashMap.h */; };
@@ -298,6 +300,10 @@
 		56F555E00C3B402A00E2E929 /* cDriver_TextViewer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDriver_TextViewer.h; sourceTree = "<group>"; };
 		56F555E30C3B402A00E2E929 /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
 		56F555E40C3B402A00E2E929 /* viewer-text.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-text.cc"; sourceTree = "<group>"; };
+		7000B64915C6E8F900EE3F14 /* Clade.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clade.h; sourceTree = "<group>"; };
+		7000B64A15C6E8F900EE3F14 /* CladeArbiter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CladeArbiter.h; sourceTree = "<group>"; };
+		7000B64C15C6E90D00EE3F14 /* Clade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clade.cc; sourceTree = "<group>"; };
+		7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CladeArbiter.cc; sourceTree = "<group>"; };
 		7005A70109BA0FA90007E16E /* cTestCPUInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cTestCPUInterface.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cTestCPUInterface.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cOrgInterface.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1323,6 +1329,8 @@
 			isa = PBXGroup;
 			children = (
 				709CDEA5149BF69000995644 /* Arbiter.cc */,
+				7000B64C15C6E90D00EE3F14 /* Clade.cc */,
+				7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */,
 				709CDEC7149EE54900995644 /* GenomeTestMetrics.cc */,
 				709CDECB149EFD4A00995644 /* Genotype.cc */,
 				709CDECC149EFD4A00995644 /* GenotypeArbiter.cc */,
@@ -1337,6 +1345,8 @@
 		709CDEC2149EE2C000995644 /* systematics */ = {
 			isa = PBXGroup;
 			children = (
+				7000B64915C6E8F900EE3F14 /* Clade.h */,
+				7000B64A15C6E8F900EE3F14 /* CladeArbiter.h */,
 				709CDEC3149EE2C000995644 /* GenomeTestMetrics.h */,
 				709CDEC4149EE2C000995644 /* Genotype.h */,
 				709CDEC5149EE2C000995644 /* GenotypeArbiter.h */,
@@ -2140,6 +2150,8 @@
 				4A9B676515404DD1005AE9B9 /* Types.cc in Sources */,
 				4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */,
 				707FD8B71541B7890012A090 /* Recorder.cc in Sources */,
+				7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */,
+				7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

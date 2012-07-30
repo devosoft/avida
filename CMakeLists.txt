@@ -266,6 +266,8 @@ LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
 SET(SYSTEMATICS_DIR ${PROJECT_SOURCE_DIR}/source/systematics)
 SET(SYSTEMATICS_SOURCES
   ${SYSTEMATICS_DIR}/Arbiter.cc
+  ${SYSTEMATICS_DIR}/Clade.cc
+  ${SYSTEMATICS_DIR}/CladeArbiter.cc
   ${SYSTEMATICS_DIR}/GenomeTestMetrics.cc
   ${SYSTEMATICS_DIR}/Genotype.cc
   ${SYSTEMATICS_DIR}/GenotypeArbiter.cc

@@ -106,7 +106,7 @@ namespace Avida {
       LIB_EXPORT bool HasFinished() const { return m_done; }
       LIB_EXPORT void Resume();
       
-      LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y);
+      LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y, const Apto::String& name);
       LIB_EXPORT bool HasPendingInjects() const;
 
       LIB_EXPORT void AttachListener(Listener* listener);
@@ -166,8 +166,10 @@ namespace Avida {
         GenomePtr genome;
         int x;
         int y;
+        Apto::String name;
         
-        LIB_LOCAL inline InjectGenomeInfo(GenomePtr in_genome, int in_x, int in_y) : genome(in_genome), x(in_x), y(in_y) { ; }
+        LIB_LOCAL inline InjectGenomeInfo(GenomePtr in_genome, int in_x, int in_y, const Apto::String& in_name)
+          : genome(in_genome), x(in_x), y(in_y), name(in_name) { ; }
       };
       
     };

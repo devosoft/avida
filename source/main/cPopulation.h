@@ -129,7 +129,7 @@ public:
   
   void ResizeCellGrid(int x, int y);
     
-  void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true); 
+  void InjectGenome(int cell_id, Systematics::Source src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0, bool assign_group = true, Systematics::RoleClassificationHints* hints = NULL);
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
