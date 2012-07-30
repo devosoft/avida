@@ -25,6 +25,7 @@
 
 #include <cmath>
 #include <climits>
+#include <limits>
 
 class cDoubleSum {
 private:
