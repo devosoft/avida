@@ -633,12 +633,12 @@ and reaction parameters.
     <p>
     Set existing gradient resource plateau inflow rate to a new value, without redrawing
     the entire resource, based on a random number pull from normal distribution of this
-    mean and variance. If the number pulled is &lt; 0, the absolute value of the pulled
-    number is used. As such, this uses a half normal or folded normal approach with 
+    mean and variance. As such, this uses a half normal or folded normal approach with 
     expected value = sigma * sqrt(2 /pi).
     If type == 0, new inflow will be the random number pulled.
-    If type &gt; 0, new inflow will be mean + the random number pulled.
-    If type &lt; 0, new inflow will be max (0, mean - the random number pulled).
+    If type &gt; 0, new inflow will be mean + abs(the random number pulled).
+    If type == 1, new inflow will be max (0, mean - abs(the random number pulled)).
+    If type == 2, new inflow will be max (0, mean + the random number pulled).
     </p>
 </li>
 <li><p>

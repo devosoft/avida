@@ -2855,7 +2855,6 @@ bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
-  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
   
