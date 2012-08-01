@@ -111,6 +111,7 @@ cStats::cStats(cWorld* world)
   , num_single_thread_creatures(0)
   , num_multi_thread_creatures(0)
   , num_kabooms(0)
+  , juve_killed(0)
   , m_num_threads(0)
   , num_modified(0)
   , num_genotypes_last(1)
@@ -4101,6 +4102,7 @@ void cStats::PrintDenData(const cString& filename) {
   
   int num_juvs = 0;
   int num_guards = 0;
+  int population_size = m_world->GetPopulation().GetSize();
   
   for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
@@ -4126,6 +4128,10 @@ void cStats::PrintDenData(const cString& filename) {
       }
     }
   }
+    
+    double percent_juve_guard = num_juvs/num_guards;
+    double percent_juve_pop = num_juvs/population_size;
+    double percent_guards_pop = num_guards/population_size;
 
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteComment("Number of juveniles and adults in dens");
@@ -4133,10 +4139,19 @@ void cStats::PrintDenData(const cString& filename) {
 	df.WriteColumnDesc("Update [update]");
   df.WriteColumnDesc("Juveniles [juveniles]");
 	df.WriteColumnDesc("Adults [adults]");
+    df.WriteColumnDesc("Juveniles Killed [juveniles killed]");
+    df.WriteColumnDesc("Percent of Juveniles to Guards [percent juvs to guards]");
+    df.WriteColumnDesc("Percent of Juveniles to Population [percent juvs to pop]");
+    df.WriteColumnDesc("Percent of Guards to Population [percent guards to pop]");
+    
   df.FlushComments();
 	df.Write(m_update,   "Update");
   df.Write(num_juvs,   "Juveniles");
 	df.Write(num_guards,   "Adults");
+    df.Write(juve_killed, "Juveniles Killed");
+    df.Write(percent_juve_guard, "Percent of Juveniles to Guards");
+    df.Write(percent_juve_pop, "Percent of Juveniles to Population");
+    df.Write(percent_guards_pop, "Percent of Guards to Population");
 	df.Endl();
 
   
