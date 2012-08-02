@@ -135,6 +135,19 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   // Make sure the organism is okay with dividing now...
   // Moved to end of function @LZ
 
+  const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+  const int parent_age = m_organism->GetPhenotype().GetTimeUsed();
+  if (parent_age < juv_age) {
+    ORG_FAULT(cStringUtil::Stringf("Org is juvenile (%d < %d)", parent_age, juv_age));
+    return false;
+  }
+  
+  const int min_age = m_world->GetConfig().MIN_CYCLES.Get();
+  if (parent_age < min_age) {
+    ORG_FAULT(cStringUtil::Stringf("Org too young (%d < %d)", parent_age, min_age));
+    return false;
+  }
+
   // Make sure that neither parent nor child will be below the minimum size.  
   const int genome_size = m_organism->GetGenome().GetSize();
   const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();

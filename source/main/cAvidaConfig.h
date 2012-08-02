@@ -394,6 +394,7 @@ public:
   CONFIG_ADD_VAR(MIN_EXE_LINES, double, 0.5, "Code fraction that must be executed before divide");
   CONFIG_ADD_VAR(MIN_GENOME_SIZE, int, 0, "Minimum number of instructions allowed in a genome. 0 = OFF");
   CONFIG_ADD_VAR(MAX_GENOME_SIZE, int, 0, "Maximum number of instructions allowed in a genome. 0 = OFF");
+  CONFIG_ADD_VAR(MIN_CYCLES, int, 0, "Min number of CPU cycles (age) required before reproduction.");
   CONFIG_ADD_VAR(REQUIRE_ALLOCATE, int, 1, "(Original CPU Only) Require allocate before divide?");
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task");
@@ -809,7 +810,7 @@ public:
   CONFIG_ADD_VAR(MAX_TOLERANCE, int, 1, "Maximum tolerance level"); 
   CONFIG_ADD_VAR(TOLERANCE_VARIATIONS, int, 0, "0=all tolerance active,\n1=only immigration tolerance active,\n2=immigrants + sex");
   CONFIG_ADD_VAR(TRACK_TOLERANCE, int, 0, "Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)");
-  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed)");
+  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -2: no predators, but track prey stats \n -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) )");
   CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
   CONFIG_ADD_VAR(PRED_ODDS, double, 1.0, "Probability of success for predator 'attack' instructions.");
   CONFIG_ADD_VAR(PRED_INJURY, double, 0.0, "If an attack fails, target's bonus, merit, and internal resources are reduced by this fraction.");

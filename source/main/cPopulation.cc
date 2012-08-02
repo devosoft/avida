@@ -955,7 +955,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
   // Keep track of statistics for organism counts...
   num_organisms++;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
     else num_pred_organisms++;
@@ -1295,7 +1295,7 @@ tSmartArray<int> cPopulation::SetTraceQ(int save_dominants, int save_groups, int
   tSmartArray<int> ft_check_counts;
   ft_check_counts.Resize(0);
   if (save_foragers) {
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) fts_to_use.Push(-2);
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) fts_to_use.Push(-2);
     fts_to_use.Push(-1);  // account for -1 default's
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
@@ -1742,7 +1742,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // Update count statistics...
   num_organisms--;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     if (is_prey) num_prey_organisms--;
     else num_pred_organisms--;
   }
@@ -5561,7 +5561,7 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   UpdateDemeStats(ctx); 
   UpdateOrganismStats(ctx);
   m_world->GetClassificationManager().UpdateStats(stats);
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     UpdateFTOrgStats(ctx);
   }
   if (m_world->GetConfig().MATING_TYPES.Get()) {
@@ -7483,7 +7483,7 @@ void cPopulation::UpdateGradientInflow(const cString res_name, const double infl
   } 
 }
 
-void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean, const double variance)
+void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -7492,7 +7492,7 @@ void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean
     cResource * res = resource_lib.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
-      resource_count.SetGradPlatVarInflow(global_res_index, mean, variance);
+      resource_count.SetGradPlatVarInflow(global_res_index, mean, variance, type);
     }
   } 
 }
@@ -7527,7 +7527,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   
   bool cell_has_den = false;
   for (int j = 0; j < cell_res.GetSize(); j++) {
-    if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+    if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
       cell_has_den = true;
       break;  
     }

@@ -2855,7 +2855,6 @@ bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
-  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
   
@@ -3681,7 +3680,7 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   // otherwise, we sum across all the food resources in the cell
   else {
     for (int i = 0; i < cell_res.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
         if (!m_use_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
         else if (m_use_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i]); 
       }
@@ -4034,7 +4033,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   if (old_target == -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
   
   // return false if trying to become predator and there are none in the experiment
-  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
@@ -5405,7 +5404,7 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
     int prop_target = -1;
     prop_target = m_organism->GetParentFT();
 
-    halt = (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1);
+    halt = (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0);
     if (!halt) {
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 && 
           ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2))) {

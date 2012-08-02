@@ -415,14 +415,16 @@ private:
   cString m_res_name;
   double m_mean;
   double m_variance;
+  int m_type;
   
 public:
-  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0)
+  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0), m_type(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_mean = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_variance = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_type = largs.PopWord().AsInt();
     
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
     assert(res);
@@ -432,7 +434,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance);        
+    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance, m_type);        
   } 
 };
 

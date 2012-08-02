@@ -1067,7 +1067,7 @@ public:
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     int num_fts = 1;
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) num_fts = 2;
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) num_fts = 2;
     else num_fts = 1;  // account for -1's
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    

@@ -331,6 +331,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetOptimizeMinMax">SetOptimizeMinMax</a><br>
       <a href="#SetPopCapEnforcement">SetPopCapEnforcement</a><br>
       <a href="#SetPeriodicResource">SetPeriodicResource</a><br>
+      <a href="#SetPredatoryResource">SetPredatoryResource</a><br>
       <a href="#SetReactionInst">SetReactionInst</a><br>
       <a href="#SetReactionMaxTaskCount">SetReactionMaxTaskCount</a><br>
       <a href="#SetReactionMinTaskCount">SetReactionMinTaskCount</a><br>
@@ -627,12 +628,17 @@ and reaction parameters.
 </li>
     <li><p>
     <strong><a name="SetGradPlatVarInflow">SetGradPlatVarInflow</a></strong>
-    <i>&lt;string res_name&gt; &lt;double mean&gt; &lt;double variance&gt;</i>
+    <i>&lt;string res_name&gt; &lt;double mean&gt; &lt;double variance&gt; &lt;int type&gt;</i>
   </p>
     <p>
-    Set existing gradient resource plateau outflow rate to a new value, without redrawing
+    Set existing gradient resource plateau inflow rate to a new value, without redrawing
     the entire resource, based on a random number pull from normal distribution of this
-    mean and variance.
+    mean and variance. As such, this uses a half normal or folded normal approach with 
+    expected value = sigma * sqrt(2 /pi).
+    If type == 0, new inflow will be the random number pulled.
+    If type &gt; 0, new inflow will be mean + abs(the random number pulled).
+    If type == 1, new inflow will be max (0, mean - abs(the random number pulled)).
+    If type == 2, new inflow will be max (0, mean + the random number pulled).
     </p>
 </li>
 <li><p>

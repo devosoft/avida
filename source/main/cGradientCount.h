@@ -147,7 +147,7 @@ public:
   void SetGradConfig(int config) { m_config = config; }
   void SetGradCount(int count) { m_count = count; }
  
-  void SetGradPlatVarInflow(double mean, double variance);
+  void SetGradPlatVarInflow(double mean, double variance, int type);
   
   void SetPredatoryResource(double odds, int juvsper);
   void UpdatePredatoryRes(cAvidaContext& ctx); 
