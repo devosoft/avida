@@ -4133,13 +4133,13 @@ void cStats::PrintDenData(const cString& filename) {
     double percent_guards_pop;
     
     if (num_guards > 0){
-        percent_juve_guard = num_juvs/num_guards;
+        percent_juve_guard = (double)num_juvs/(double)num_guards;
     } else {
         percent_juve_guard = 0;
     }
     if (population_size > 0){
-        percent_juve_pop = num_juvs/population_size;
-        percent_guards_pop = num_guards/population_size;
+        percent_juve_pop = (double)num_juvs/(double)population_size;
+        percent_guards_pop = (double)num_guards/(double)population_size;
     } else {
         percent_juve_pop = 0;
         percent_guards_pop = 0;
