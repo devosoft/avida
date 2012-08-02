@@ -4128,10 +4128,23 @@ void cStats::PrintDenData(const cString& filename) {
       }
     }
   }
+    double percent_juve_guard;
+    double percent_juve_pop;
+    double percent_guards_pop;
     
-    double percent_juve_guard = num_juvs/num_guards;
-    double percent_juve_pop = num_juvs/population_size;
-    double percent_guards_pop = num_guards/population_size;
+    if (num_guards > 0){
+        percent_juve_guard = num_juvs/num_guards;
+    } else {
+        percent_juve_guard = 0;
+    }
+    if (population_size > 0){
+        percent_juve_pop = num_juvs/population_size;
+        percent_guards_pop = num_guards/population_size;
+    } else {
+        percent_juve_pop = 0;
+        percent_guards_pop = 0;
+    }
+    
 
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteComment("Number of juveniles and adults in dens");
