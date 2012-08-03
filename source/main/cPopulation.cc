@@ -755,14 +755,14 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
     bool parasite_overcomes = false;
     for (int i=start;i<host_task_counts.GetSize();i++)
     {
-      if( host_task_counts[i] > 0 && parasite_task_counts[i] == 0 )
+      if(host_task_counts[i] > 0 && parasite_task_counts[i] == 0 )
       {
         //inject should fail if the host overcomes the parasite.
         interaction_fails = true;
       }
       
       //check if parasite overcomes at least one task
-      if (parasite_task_counts[i] > 0 && host_task_counts[i] == 0)
+      if(parasite_task_counts[i] > 0 && host_task_counts[i] == 0)
         parasite_overcomes = true;
     }
     
@@ -771,11 +771,45 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
       interaction_fails = true;
   }
   
+  // 5: Quantitative Matching Allele -- probability of infection based on phenotype overlap
+  if (infection_mechanism == 5)
+  {
+    //handle skipping of first task
+    int start = 0;
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+      start += 1;
+    
+    //calculate how many tasks have the same binary phenotype (i.e. how much overlap)
+    int num_overlap = 0;
+    for (int i=start; i<host_task_counts.GetSize(); i++)
+    {
+      if( (host_task_counts[i] > 0 && parasite_task_counts[i] > 0) ||
+          (host_task_counts[i] == 0 && parasite_task_counts[i] == 0))
+        num_overlap += 1;
+    }
+    
+    //turn number into proportion of available tasks that match
+    float prop_overlap = float(num_overlap) / (host_task_counts.GetSize() - start);
+    
+    //use config exponent and calculate probability of infection
+    float infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
+    float prob_success = pow(prop_overlap, infection_exponent);
+    
+    //by default, infection succedes
+    interaction_fails = false;
+
+    //check if infection should fail based on probability
+    double rand = m_world->GetRandom().GetDouble();
+    if (rand > prob_success)
+      interaction_fails = true;
+    
+  }
+  
   // TODO: Add other infection mechanisms -LZ
-  // 5: Probabilistic infection based on overlap. (GFG) 
-  // 6: Multiplicative GFG (special case of above?)
-  // 7: Randomization of tasks that match between hosts and parasites? 
-  // 8: ??
+  // : Probabilistic infection based on overlap. (GFG)
+  // : Multiplicative GFG (special case of above?)
+  // : Randomization of tasks that match between hosts and parasites?
+  // : ??
   if(interaction_fails)
   {
     double prob_success = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
