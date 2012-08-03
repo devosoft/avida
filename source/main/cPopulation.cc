@@ -169,6 +169,9 @@ cPopulation::cPopulation(cWorld* world)
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
   empty_cell_id_array.ResizeClear(cell_array.GetSize());
+  for (int i = 0; i < empty_cell_id_array.GetSize(); i++) {
+    empty_cell_id_array[i] = i;
+  }
   market.Resize(MARKET_SIZE);
   
   // Setup the cells.  Do things that are not dependent upon topology here.
@@ -1704,7 +1707,7 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   if (group_list[group_id].GetSize() == 0) return;
   int index;
   while(true) {
-    index = ctx.GetRandom().GetUInt(0, group_list[group_id].GetSize());
+    index = ctx.GetRandom().GetUInt(group_list[group_id].GetSize());
     if (group_list[group_id][index] == org) continue;
     else break;
   }
@@ -4623,7 +4626,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
-      int target = m_world->GetRandom().GetUInt(0,live_org_list.GetSize());
+      int target = m_world->GetRandom().GetUInt(live_org_list.GetSize());
       int cell_id = live_org_list[target]->GetCellID();
       if (cell_id == parent_cell.GetID()) { 
         target++;
@@ -4722,7 +4725,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   if (birth_method == POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
     // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
-      return GetCell(FindRandEmptyCell());
+      int cell_id = FindRandEmptyCell();
+      if (cell_id == -1) return GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize()));
+      else return GetCell(cell_id);
     }
     
     int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
@@ -5072,25 +5077,25 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
 
 int cPopulation::FindRandEmptyCell()
 {
-  const int world_size = cell_array.GetSize();
-  int cell_id = m_world->GetRandom().GetUInt(0, world_size);
-  int check_count = 0;
+  int world_size = cell_array.GetSize();
+  // full world
+  if (num_organisms >= world_size) return -1;
+
+  tArray<int>& cells = GetEmptyCellIDArray();
+  int cell_id = m_world->GetRandom().GetUInt(world_size);
   while (GetCell(cell_id).IsOccupied()) {
-    check_count++;
-    if (cell_id == world_size) cell_id = 0;
-    if (check_count >= world_size) {
-      cell_id = m_world->GetRandom().GetUInt(0, world_size);
-      break;
-    }
-    cell_id++;
+    // no need to pop this cell off the array, just move it and don't check that far anymore
+    cells.Swap(cell_id, --world_size);
+    // if ran out of cells to check (e.g. with birth chamber weirdness)
+    if (world_size == 1) return -1; 
+    cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
   }
   return cell_id;
 }
 
 // This function updates the list of empty cell ids in the population
 // and returns the number of empty cells found. Used by global PREFER_EMPTY
-// PositionOffspring() methods. If deme_id is -1 (the default), then operates
-// on the entire population.
+// PositionOffspring() methods with demes (only). 
 int cPopulation::UpdateEmptyCellIDArray(int deme_id)
 {
   int num_empty_cells = 0;
@@ -7599,7 +7604,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
     // away from den, kill anyone
     else {
       if (ctx.GetRandom().P(pred_odds)) {
-        cOrganism* target_org = cell_avs[m_world->GetRandom().GetUInt(0, cell_avs.GetSize())];
+        cOrganism* target_org = cell_avs[m_world->GetRandom().GetUInt(cell_avs.GetSize())];
         if (!target_org->IsDead()) target_org->Die(ctx);
       }
     }
@@ -8361,7 +8366,7 @@ int cPopulation::PlaceAvatar(cOrganism* parent)
 {
   int avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
   const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
-  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(0, world_x * world_y);
+  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(world_x * world_y);
   else if (avatar_birth == 2) avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
   else if (avatar_birth == 3) { 
     avatar_target_cell += 1;

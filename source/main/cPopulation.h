@@ -417,6 +417,7 @@ private:
   cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
   cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
   int UpdateEmptyCellIDArray(int deme_id = -1);
+  tArray<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
   int FindRandEmptyCell();
   
