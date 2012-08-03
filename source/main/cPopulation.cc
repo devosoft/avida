@@ -4589,16 +4589,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
-      double max_msr = 0.0;
-      int cell_id = 0;
-      for (int i = 0; i < cell_array.GetSize(); i++) {
-        if (cell_array[i].IsOccupied() && cell_array[i].GetID() != parent_cell.GetID()) {
-          double msr = m_world->GetRandom().GetDouble();
-          if (msr > max_msr) {
-            max_msr = msr;
-            cell_id = i;
-          }
-        }
+      int cell_id = parent_cell.GetID();
+      while (cell_id == parent_cell.GetID()) {
+        cell_id = live_org_list[m_world->GetRandom().GetUInt(0,live_org_list.GetSize())]->GetCellID();
       }
       KillOrganism(cell_array[cell_id], ctx); 
       num_kills--;
@@ -4690,14 +4683,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   // the cases. For now, a bunch of if's that return if they handle.
   
   if (birth_method == POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
-    
     // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
-      int num_empty_cells = UpdateEmptyCellIDArray();
-      if (num_empty_cells > 0) {
-        int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
-        return GetCell(empty_cell_id_array[out_pos]);
-      }
+      return GetCell(FindRandEmptyCell());
     }
     
     int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
@@ -5045,6 +5033,22 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
   return GetCell(out_cell_id);
 }
 
+int cPopulation::FindRandEmptyCell()
+{
+  const int world_size = cell_array.GetSize();
+  int cell_id = m_world->GetRandom().GetUInt(0, world_size);
+  int check_count = 0;
+  while (GetCell(cell_id).IsOccupied()) {
+    check_count++;
+    cell_id++;
+    if (cell_id == world_size) cell_id = 0;
+    if (check_count == world_size) {
+      cell_id = m_world->GetRandom().GetUInt(0, world_size);
+      break;
+    }
+  }
+  return cell_id;
+}
 
 // This function updates the list of empty cell ids in the population
 // and returns the number of empty cells found. Used by global PREFER_EMPTY
