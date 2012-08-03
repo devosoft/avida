@@ -4623,9 +4623,12 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
-      int cell_id = parent_cell.GetID();
-      while (cell_id == parent_cell.GetID()) {
-        cell_id = live_org_list[m_world->GetRandom().GetUInt(0,live_org_list.GetSize())]->GetCellID();
+      int target = m_world->GetRandom().GetUInt(0,live_org_list.GetSize());
+      int cell_id = live_org_list[target]->GetCellID();
+      if (cell_id == parent_cell.GetID()) { 
+        target++;
+        if (target >= live_org_list.GetSize()) target = 0;
+        cell_id = live_org_list[target]->GetCellID();
       }
       KillOrganism(cell_array[cell_id], ctx); 
       num_kills--;
@@ -5074,12 +5077,12 @@ int cPopulation::FindRandEmptyCell()
   int check_count = 0;
   while (GetCell(cell_id).IsOccupied()) {
     check_count++;
-    cell_id++;
     if (cell_id == world_size) cell_id = 0;
-    if (check_count == world_size) {
+    if (check_count >= world_size) {
       cell_id = m_world->GetRandom().GetUInt(0, world_size);
       break;
     }
+    cell_id++;
   }
   return cell_id;
 }
