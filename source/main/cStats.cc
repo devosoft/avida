@@ -4079,25 +4079,35 @@ void cStats::PrintDenData(const cString& filename) {
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   int num_juvs = 0;
+  int num_adults = 0;
   int num_guards = 0;
+  int num_loiterers = 0;
+  int active_dens = 0;
   
   for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-    
     if (!cell.HasAV()) continue;
     
     tArray<double> cell_res;
     cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
     
+    bool is_active = false;    
     for (int j = 0; j < cell_res.GetSize(); j++) {
       if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
         tArray<cOrganism*> cell_avs = cell.GetCellAVs(); 
         for (int k = 0; k < cell_avs.GetSize(); k++) {
           if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
             num_juvs++;
+            is_active = true;
           }
-          else num_guards++;
+          else 
+          {
+            num_adults++;
+            if (cell_avs[k]->IsGuard()) num_guards++;
+            else num_loiterers++;
+          }
         }
+        active_dens += (int)is_active;
         break;  // only do this once if two dens overlap
       }
     }
@@ -4107,15 +4117,19 @@ void cStats::PrintDenData(const cString& filename) {
   df.WriteComment("Number of juveniles and adults in dens");
   df.WriteTimeStamp();
 	df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("ActiveDens [active_dens]");
   df.WriteColumnDesc("Juveniles [juveniles]");
 	df.WriteColumnDesc("Adults [adults]");
+	df.WriteColumnDesc("Guards [guards]");
+	df.WriteColumnDesc("Loiterers [loiterers]");
   df.FlushComments();
-	df.Write(m_update,   "Update");
-  df.Write(num_juvs,   "Juveniles");
-	df.Write(num_guards,   "Adults");
-	df.Endl();
-
-  
+	df.Write(m_update,      "Update");
+  df.Write(active_dens,      "ActiveDens");
+  df.Write(num_juvs,      "Juveniles");
+	df.Write(num_adults,    "Adults");
+	df.Write(num_guards,    "Guards");
+	df.Write(num_loiterers, "Loiterers");
+	df.Endl();  
 }
 
 

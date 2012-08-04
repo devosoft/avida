@@ -59,6 +59,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#AnalyzeLandscape">AnalyzeLandscape</a><br>
       <a href="#AnalyzePopulation">AnalyzePopulation</a><br>
       <a href="#AssignRandomCellData">AssignRandomCellData</a><br>
+      <a href="#AttackDen">AttackDen</a><br>
       <a href="#AvidianConjugation">AvidianConjugation</a><br>
       <a href="#CalcConsensus">CalcConsensus</a><br>
       <a href="#ChangeEnvironment">ChangeEnvironment</a><br>
@@ -1001,6 +1002,17 @@ change the course of the run.  There are a wide variety of these.
   </p>
   <p>
   
+  </p>
+</li>
+<li><p>
+  <strong><a name="AttackDen">AttackDen</a></strong>
+  <i>[double probability=0.0] [int juvs_per_adult=1]</i>
+  </p>
+  <p>
+  Kills each unguarded juv in dens (habitat == 3 or 4) with set probability. juvs_per_adult sets
+  the ratio of guarding adults to juvs. E.g. if ratio is set to 5 and there are 2 guards and 12
+  juveniles in a den, two random juveniles will be attacked with their probability of death at
+  the set probability.
   </p>
 </li>
 <li><p>

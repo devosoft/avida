@@ -1082,7 +1082,7 @@ public:
               num_juvs++;
               juvs.Push(cell_avs[k]);
             }
-            else num_guards++;
+            else if (cell_avs[k]->IsGuard()) num_guards++;
           }
           if (num_juvs == 0) break;
           int guarded_juvs = num_guards * m_juvs_per;

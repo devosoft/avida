@@ -7591,7 +7591,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
           num_juvs++;
           juvs.Push(cell_avs[k]);
         }
-        else num_guards++;
+        else if (cell_avs[k]->IsGuard()) num_guards++;
       }
       if (num_juvs > 0) {
         int guarded_juvs = num_guards * juvs_per;
