@@ -1090,7 +1090,7 @@ public:
           for (int k = 0; k < unguarded_juvs; k++) {
               if (ctx.GetRandom().P(m_killprob)){
                   juvs[k]->Die(ctx);
-                  m_world->GetStats().IncJuveKilled();
+                  m_world->GetStats().IncJuvKilled();
               }
           }
           break;  // only do this once if two dens overlap

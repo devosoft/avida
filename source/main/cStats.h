@@ -254,7 +254,7 @@ private:
     tArray<int> hd_list;
   // ------- Division of Labor Stats ---------
     //TODO: Right place for this?
-    int juve_killed;
+    int juv_killed;
 
 
   // --------  Organism Task Stats  ---------
@@ -981,7 +981,7 @@ public:
   void PrintKaboom(const cString& filename);
     
  // Division of Labor Stats
-    void IncJuveKilled(){juve_killed++;}
+    void IncJuvKilled(){juv_killed++;}
 
   
   // deme predicate stats
