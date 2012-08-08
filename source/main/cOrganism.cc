@@ -101,6 +101,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
 , m_beggar(false)
 , m_guard(false)
+, m_num_guard(0)
 , m_num_point_mut(0)
 , m_av_in_index(-1)
 , m_av_out_index(-1)

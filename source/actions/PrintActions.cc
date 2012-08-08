@@ -4176,7 +4176,7 @@ public:
         
         bool use_av = m_world->GetConfig().USE_AVATARS.Get();
         if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing" << endl;
-        else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing" << endl;
+        else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst" << endl;
         
         const int worldx = m_world->GetConfig().WORLD_X.Get();
         
@@ -4200,6 +4200,13 @@ public:
                 const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
                 
                 fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
+                
+                //Guard data:
+                bool is_guard = org->IsGuard();
+                fp << "," << is_guard;
+                int num_guard_inst = org->GetNumGuard();
+                fp << "," << num_guard_inst;
+                
             }
             fp << endl;
         }

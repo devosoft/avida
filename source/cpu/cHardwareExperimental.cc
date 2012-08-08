@@ -5438,7 +5438,10 @@ bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
       if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;;
     }
   }
-  if (set_ok) m_organism->SetGuard();
+    if (set_ok){
+        m_organism->SetGuard();
+        m_organism->IncGuard();
+    }
   setInternalValue(FindModifiedRegister(rBX), (int) m_organism->IsGuard(), true);    
   return set_ok;
 }

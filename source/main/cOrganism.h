@@ -649,6 +649,8 @@ public:
   
   void SetGuard() { m_guard = !m_guard; }
   bool IsGuard() { return m_guard; }
+    void IncGuard() {m_num_guard++;}
+    int GetNumGuard() {return m_num_guard;}
   
 protected:
   // The organism's own raw materials
@@ -690,6 +692,7 @@ protected:
   bool m_beggar;
   
   bool m_guard;
+    int m_num_guard;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
