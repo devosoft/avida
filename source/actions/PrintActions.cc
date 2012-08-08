@@ -4176,7 +4176,7 @@ public:
         
         bool use_av = m_world->GetConfig().USE_AVATARS.Get();
         if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing" << endl;
-        else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst" << endl;
+        else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst, on_den, r_bins_total, tim_used, num_deposits, amount_deposited_total" << endl;
         
         const int worldx = m_world->GetConfig().WORLD_X.Get();
         
@@ -4206,6 +4206,20 @@ public:
                 fp << "," << is_guard;
                 int num_guard_inst = org->GetNumGuard();
                 fp << "," << num_guard_inst;
+                //Find out if the organism is in a den:
+                bool on_den = false;
+                const tArray<double> res_count = m_world->GetPopulation().GetCellResources(avloc, ctx);
+                const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+                for (int i=0; i<res_count.GetSize(); i++) {
+                    int hab_type = resource_lib.GetResource(i)->GetHabitat();
+                    if ((hab_type == 3 || hab_type == 4) && res_count[i]>0) on_den = true;
+                }
+                fp << "," << on_den;
+                fp << "," << org->GetRBinsTotal();
+                fp << "," << org->GetPhenotype().GetTimeUsed();
+                //Counter for number of deposits
+                fp << "," << org->GetNumDeposits();
+                fp << "," << org->GetAmountDeposited();
                 
             }
             fp << endl;

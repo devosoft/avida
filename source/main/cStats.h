@@ -982,6 +982,7 @@ public:
     
  // Division of Labor Stats
     void IncJuveKilled(){juve_killed++;}
+
   
   // deme predicate stats
   void IncEventCount(int x, int y);

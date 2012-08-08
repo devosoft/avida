@@ -4420,6 +4420,8 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
         if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
         else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
         success = true;
+          m_organism->IncNumDeposits();
+          m_organism->IncAmountDeposited(total_deposit);
       }
       break;
     }
