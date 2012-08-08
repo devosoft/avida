@@ -647,6 +647,9 @@ public:
   void ChangeBeg() { m_beggar = !m_beggar; }
   bool IsBeggar() { return m_beggar; }
   
+  void SetGuard() { m_guard = !m_guard; }
+  bool IsGuard() { return m_guard; }
+  
 protected:
   // The organism's own raw materials
   int m_self_raw_materials; 
@@ -685,6 +688,8 @@ protected:
   bool m_p_mthread;
   
   bool m_beggar;
+  
+  bool m_guard;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade

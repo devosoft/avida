@@ -1,5 +1,5 @@
 # Prey Standard Error Data
-# Fri Jun 15 14:30:28 2012
+# Fri Aug  3 12:07:13 2012
 #  1: Update
 #  2: Fitness
 #  3: Gestation Time
@@ -9,4 +9,4 @@
 #  7: Genome Length
 
 0 0 0 0 0 0 109 
-750 0.0755618 709.296 0 0.85835 0.200432 44.5201 
+750 0.0681466 634.73 0 1.42926 0.294341 29.8902 

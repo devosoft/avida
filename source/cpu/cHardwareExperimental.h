@@ -632,6 +632,10 @@ private:
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
+  
+  bool Inst_SetGuard(cAvidaContext& ctx);
+  bool Inst_SetGuardOnce(cAvidaContext& ctx);
+  
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
   bool Inst_ActivateDisplay(cAvidaContext& ctx);

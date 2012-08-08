@@ -4155,6 +4155,58 @@ public:
   }
 };
 
+class cActionPrintOrgGuardData : public cAction
+{
+private:
+    cString m_filename;
+    
+public:
+    cActionPrintOrgGuardData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+    {
+        /*Print organism locations + other org data (for movies). */
+        cString largs(args);
+        if (largs.GetSize()) m_filename = largs.PopWord();
+    }
+    static const cString GetDescription() { return "Arguments: [string fname='']"; }
+    void Process(cAvidaContext& ctx)
+    {
+        cString filename(m_filename);
+        if (filename == "") filename.Set("grid_dumps/org_loc.%d.dat", m_world->GetStats().GetUpdate());
+        ofstream& fp = m_world->GetDataFileOFStream(filename);
+        
+        bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+        if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing" << endl;
+        else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing" << endl;
+        
+        const int worldx = m_world->GetConfig().WORLD_X.Get();
+        
+        const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+        for (int i = 0; i < live_orgs.GetSize(); i++) {
+            cOrganism* org = live_orgs[i];
+            const int id = org->GetID();
+            const int loc = org->GetCellID();
+            const int locx = loc % worldx;
+            const int locy = loc / worldx;
+            const int ft = org->GetForageTarget();
+            const int faced_dir = org->GetFacedDir();
+            int opinion = -1;
+            if (org->HasOpinion()) opinion = org->GetOpinion().first;
+            
+            fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
+            if (use_av) {
+                const int avloc = org->GetOrgInterface().GetAVCellID();
+                const int avlocx = avloc % worldx;
+                const int avlocy = avloc / worldx;
+                const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
+                
+                fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
+            }
+            fp << endl;
+        }
+        m_world->GetDataFileManager().Remove(filename);
+    }
+};
+
 class cActionPrintDonationStats : public cAction
 {
 public:
@@ -4820,6 +4872,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
+  action_lib->Register<cActionPrintOrgGuardData>("PrintOrgGuardData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
   action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");
   action_lib->Register<cActionPrintDenData>("PrintDenData");

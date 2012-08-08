@@ -1,4 +1,4 @@
-# Fri Jun 15 14:30:30 2012
+# Fri Aug  3 12:07:17 2012
 # Filename........: archive/ft1_grp-1_109-aaaaa.org
 # Update Output...: 750
 # Is Viable.......: 0
@@ -15,7 +15,7 @@
 # Executed Size...: 109
 # Last Birth Group ID........: -1
 # Last Birth Forager Type....: 1
-# Last Birth Cell............: 2369
+# Last Birth Cell............: 505
 # Offspring.......: NONE
 # 
 # Tasks Performed:

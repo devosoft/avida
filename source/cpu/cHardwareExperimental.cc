@@ -362,6 +362,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
+
+    tInstLibEntry<tMethod>("set-guard", &cHardwareExperimental::Inst_SetGuard, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, nInstFlag::STALL), 
+
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
     tInstLibEntry<tMethod>("activate-display", &cHardwareExperimental::Inst_ActivateDisplay, nInstFlag::STALL), 
@@ -3026,6 +3030,8 @@ bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
   
   if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
   
+  if (m_organism->IsGuard()) return false;
+  
   bool move_success = false;
   if (!m_use_avatar) move_success = m_organism->Move(ctx);
   else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
@@ -4044,11 +4050,14 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
     for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-    // ft's may not be sequentially numbered
-    int ft_num = abs(prop_target) % num_fts;
-    itr = fts_avail.begin();
-    for (int i = 0; i < ft_num; i++) itr++;
-    prop_target = *itr;
+    if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
+    else {
+      // ft's may not be sequentially numbered
+      int ft_num = abs(prop_target) % num_fts;
+      itr = fts_avail.begin();
+      for (int i = 0; i < ft_num; i++) itr++;
+      prop_target = *itr;
+    }
   }
 
   // make sure we use a valid (resource) target
@@ -5415,6 +5424,31 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
     }
   }
   return !halt;
+}
+
+bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
+{
+  bool set_ok = false;
+  if (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().JUV_PERIOD.Get()) {
+    tArray<double> cell_res;
+    if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
+    else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i = 0; i < cell_res.GetSize(); i++) {
+      if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;;
+    }
+  }
+  if (set_ok) m_organism->SetGuard();
+  setInternalValue(FindModifiedRegister(rBX), (int) m_organism->IsGuard(), true);    
+  return set_ok;
+}
+
+bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
+{
+  bool set_ok = false;
+  if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
+  setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
+  return set_ok;  
 }
 
 bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)

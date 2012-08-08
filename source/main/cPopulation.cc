@@ -169,6 +169,9 @@ cPopulation::cPopulation(cWorld* world)
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
   empty_cell_id_array.ResizeClear(cell_array.GetSize());
+  for (int i = 0; i < empty_cell_id_array.GetSize(); i++) {
+    empty_cell_id_array[i] = i;
+  }
   market.Resize(MARKET_SIZE);
   
   // Setup the cells.  Do things that are not dependent upon topology here.
@@ -755,14 +758,14 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
     bool parasite_overcomes = false;
     for (int i=start;i<host_task_counts.GetSize();i++)
     {
-      if( host_task_counts[i] > 0 && parasite_task_counts[i] == 0 )
+      if(host_task_counts[i] > 0 && parasite_task_counts[i] == 0 )
       {
         //inject should fail if the host overcomes the parasite.
         interaction_fails = true;
       }
       
       //check if parasite overcomes at least one task
-      if (parasite_task_counts[i] > 0 && host_task_counts[i] == 0)
+      if(parasite_task_counts[i] > 0 && host_task_counts[i] == 0)
         parasite_overcomes = true;
     }
     
@@ -771,11 +774,45 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
       interaction_fails = true;
   }
   
+  // 5: Quantitative Matching Allele -- probability of infection based on phenotype overlap
+  if (infection_mechanism == 5)
+  {
+    //handle skipping of first task
+    int start = 0;
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+      start += 1;
+    
+    //calculate how many tasks have the same binary phenotype (i.e. how much overlap)
+    int num_overlap = 0;
+    for (int i=start; i<host_task_counts.GetSize(); i++)
+    {
+      if( (host_task_counts[i] > 0 && parasite_task_counts[i] > 0) ||
+          (host_task_counts[i] == 0 && parasite_task_counts[i] == 0))
+        num_overlap += 1;
+    }
+    
+    //turn number into proportion of available tasks that match
+    float prop_overlap = float(num_overlap) / (host_task_counts.GetSize() - start);
+    
+    //use config exponent and calculate probability of infection
+    float infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
+    float prob_success = pow(prop_overlap, infection_exponent);
+    
+    //by default, infection succedes
+    interaction_fails = false;
+
+    //check if infection should fail based on probability
+    double rand = m_world->GetRandom().GetDouble();
+    if (rand > prob_success)
+      interaction_fails = true;
+    
+  }
+  
   // TODO: Add other infection mechanisms -LZ
-  // 5: Probabilistic infection based on overlap. (GFG) 
-  // 6: Multiplicative GFG (special case of above?)
-  // 7: Randomization of tasks that match between hosts and parasites? 
-  // 8: ??
+  // : Probabilistic infection based on overlap. (GFG)
+  // : Multiplicative GFG (special case of above?)
+  // : Randomization of tasks that match between hosts and parasites?
+  // : ??
   if(interaction_fails)
   {
     double prob_success = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
@@ -1670,7 +1707,7 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   if (group_list[group_id].GetSize() == 0) return;
   int index;
   while(true) {
-    index = ctx.GetRandom().GetUInt(0, group_list[group_id].GetSize());
+    index = ctx.GetRandom().GetUInt(group_list[group_id].GetSize());
     if (group_list[group_id][index] == org) continue;
     else break;
   }
@@ -4591,16 +4628,12 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
-      double max_msr = 0.0;
-      int cell_id = 0;
-      for (int i = 0; i < cell_array.GetSize(); i++) {
-        if (cell_array[i].IsOccupied() && cell_array[i].GetID() != parent_cell.GetID()) {
-          double msr = m_world->GetRandom().GetDouble();
-          if (msr > max_msr) {
-            max_msr = msr;
-            cell_id = i;
-          }
-        }
+      int target = m_world->GetRandom().GetUInt(live_org_list.GetSize());
+      int cell_id = live_org_list[target]->GetCellID();
+      if (cell_id == parent_cell.GetID()) { 
+        target++;
+        if (target >= live_org_list.GetSize()) target = 0;
+        cell_id = live_org_list[target]->GetCellID();
       }
       KillOrganism(cell_array[cell_id], ctx); 
       num_kills--;
@@ -4692,14 +4725,11 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   // the cases. For now, a bunch of if's that return if they handle.
   
   if (birth_method == POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
-    
     // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
-      int num_empty_cells = UpdateEmptyCellIDArray();
-      if (num_empty_cells > 0) {
-        int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
-        return GetCell(empty_cell_id_array[out_pos]);
-      }
+      int cell_id = FindRandEmptyCell();
+      if (cell_id == -1) return GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize()));
+      else return GetCell(cell_id);
     }
     
     int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
@@ -5047,11 +5077,27 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
   return GetCell(out_cell_id);
 }
 
+int cPopulation::FindRandEmptyCell()
+{
+  int world_size = cell_array.GetSize();
+  // full world
+  if (num_organisms >= world_size) return -1;
+
+  tArray<int>& cells = GetEmptyCellIDArray();
+  int cell_id = m_world->GetRandom().GetUInt(world_size);
+  while (GetCell(cell_id).IsOccupied()) {
+    // no need to pop this cell off the array, just move it and don't check that far anymore
+    cells.Swap(cell_id, --world_size);
+    // if ran out of cells to check (e.g. with birth chamber weirdness)
+    if (world_size == 1) return -1; 
+    cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
+  }
+  return cell_id;
+}
 
 // This function updates the list of empty cell ids in the population
 // and returns the number of empty cells found. Used by global PREFER_EMPTY
-// PositionOffspring() methods. If deme_id is -1 (the default), then operates
-// on the entire population.
+// PositionOffspring() methods with demes (only). 
 int cPopulation::UpdateEmptyCellIDArray(int deme_id)
 {
   int num_empty_cells = 0;
@@ -7547,7 +7593,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
           num_juvs++;
           juvs.Push(cell_avs[k]);
         }
-        else num_guards++;
+        else if (cell_avs[k]->IsGuard()) num_guards++;
       }
       if (num_juvs > 0) {
         int guarded_juvs = num_guards * juvs_per;
@@ -7560,7 +7606,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
     // away from den, kill anyone
     else {
       if (ctx.GetRandom().P(pred_odds)) {
-        cOrganism* target_org = cell_avs[m_world->GetRandom().GetUInt(0, cell_avs.GetSize())];
+        cOrganism* target_org = cell_avs[m_world->GetRandom().GetUInt(cell_avs.GetSize())];
         if (!target_org->IsDead()) target_org->Die(ctx);
       }
     }
@@ -8322,7 +8368,7 @@ int cPopulation::PlaceAvatar(cOrganism* parent)
 {
   int avatar_target_cell = parent->GetOrgInterface().GetAVCellID();
   const int avatar_birth = m_world->GetConfig().AVATAR_BIRTH.Get();
-  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(0, world_x * world_y);
+  if (avatar_birth == 1) avatar_target_cell = m_world->GetRandom().GetUInt(world_x * world_y);
   else if (avatar_birth == 2) avatar_target_cell = parent->GetOrgInterface().GetAVFacedCellID();
   else if (avatar_birth == 3) { 
     avatar_target_cell += 1;

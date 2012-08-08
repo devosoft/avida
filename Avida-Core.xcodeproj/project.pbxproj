@@ -42,7 +42,6 @@
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
 		3EEF67C1158766A4006B5612 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEF67C0158766A4006B5612 /* libapto.a */; };
-		3EEF67C4158766AE006B5612 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEF67C3158766AE006B5612 /* libtcmalloc-1.4.a */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		4A587EEC1332B6590037A393 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EE81332B6590037A393 /* cDynamicCount.cc */; };
@@ -1155,7 +1154,6 @@
 			files = (
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
 				3EEF67C1158766A4006B5612 /* libapto.a in Frameworks */,
-				3EEF67C4158766AE006B5612 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
