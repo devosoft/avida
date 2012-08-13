@@ -1828,6 +1828,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
       //do we actually have something to kill?
       if (death_cell.IsOccupied() == false) continue;
       
+        m_world->GetStats().IncKaboomKills();
       cOrganism* org_temp = death_cell.GetOrganism();
       
       if (distance == 0) {
