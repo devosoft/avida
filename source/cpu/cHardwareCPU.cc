@@ -779,6 +779,21 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   internalReset();
 }
 
+bool cHardwareCPU::checkNoMutList(cHeadCPU to)
+{
+    //Anya's code for head to head experiments
+    //Tests to see if the given cHeadCPU has an instruction that is on the no mutation list, returns false if it is not and true if it is
+    bool in_list = false;
+    char test_inst = to.GetInst().GetSymbol();
+    cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
+    for (int i=0; i<(int)strlen(no_mut_list); i++) {
+        if ((char) no_mut_list[i] == test_inst) {
+            in_list = true;
+        }
+    }
+    return in_list;
+}
+
 
 void cHardwareCPU::internalReset()
 {
@@ -3028,7 +3043,8 @@ bool cHardwareCPU::Inst_Copy(cAvidaContext& ctx)
   const cHeadCPU from(this, GetRegister(op1));
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   
-  if (m_organism->TestCopyMut(ctx)) {
+  //checkNoMutList is for head to head kaboom experiments
+  if (m_organism->TestCopyMut(ctx) && !(checkNoMutList(from))) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();  // Mark this instruction as mutated...
     to.SetFlagCopyMut();  // Mark this instruction as copy mut...
@@ -3065,8 +3081,9 @@ bool cHardwareCPU::Inst_WriteInst(cAvidaContext& ctx)
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   const int value = Mod(GetRegister(src), m_inst_set->GetSize());
   
-  // Change value on a mutation...
-  if (m_organism->TestCopyMut(ctx)) {
+  // Change value on a mutation... checkNoMutList is for head to head
+    //kaboom experiments
+  if (m_organism->TestCopyMut(ctx) && !(checkNoMutList(to))) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
@@ -3095,8 +3112,8 @@ bool cHardwareCPU::Inst_StackWriteInst(cAvidaContext& ctx)
   cHeadCPU to(this, GetRegister(op1) + GetRegister(dst));
   const int value = Mod(StackPop(), m_inst_set->GetSize());
   
-  // Change value on a mutation...
-  if (m_organism->TestCopyMut(ctx)) {
+  // Change value on a mutation... checkNoMutList is for head to head kaboom experiments
+  if (m_organism->TestCopyMut(ctx) && !(checkNoMutList(to))) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
@@ -3120,7 +3137,8 @@ bool cHardwareCPU::Inst_Compare(cAvidaContext& ctx)
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   
   // Compare is dangerous -- it can cause mutations!
-  if (m_organism->TestCopyMut(ctx)) {
+    //checkNoMutList is for head to head kaboom experiments
+  if (m_organism->TestCopyMut(ctx) && !(checkNoMutList(from))) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
@@ -3283,8 +3301,16 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
 //    for (int i = 0; i < m_memory.GetSize(); i++) {
-    for (int i = 0; i < child_genome.GetSize(); i++) {    
-      if (m_organism->TestCopyMut(ctx)) {
+    for (int i = 0; i < child_genome.GetSize(); i++) {
+      //Need to check no_mut_insts for head to head kaboom experiments
+        bool in_list = false;
+        char test_inst = child_genome[i].GetSymbol();
+        cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
+        for(int i =0; i<(int)strlen(no_mut_list); i++) {
+            if ((char) no_mut_list[i] == test_inst) in_list = true;
+        }
+        
+      if (m_organism->TestCopyMut(ctx) && !(in_list)) {
         child_genome[i] = m_inst_set->GetRandomInst(ctx);
       }
     }
@@ -3383,12 +3409,66 @@ bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
+  // Code changed to allow for AdjustableHD
   const int reg_used = FindModifiedRegister(REG_AX);
-  double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0, ctx); 
+    
+  double percent_prob;
+  int distance;
+  int get_reg_value;
+  int genome_size;
+  if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() == -1) {
+    //Case where Probability is static and hamming distance is adjustable
+    get_reg_value = GetRegister(reg_used);
+    //Anya TODO: Max_genome_size must be set for this to work, change it to something else
+    genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (get_reg_value % genome_size);
+    } else if ((int) m_world->GetConfig().KABOOM_HAMMING.Get() == -1 && (int)m_world->GetConfig().KABOOM_PROB.Get() == -1) {
+    //Anya TODO: Give warning, can't have both adjustable
+    //Possibly? feedback->Warning("Probability and Hamming distance cannot both be adjustable, change one to static");
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() != -1) {
+    //Case where both Probability and Hamming Distance are static
+    percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+    distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
+  } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() != -1) {
+    // Case where Probability is adjustable and Hamming distance isn't
+    percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+    distance = (int) m_world->GetConfig().KABOOM_HAMMING.Get();
+    }
+    
+  if (ctx.GetRandom().P(percent_prob)) m_organism->Kaboom(distance, ctx);
   return true;
 }
 
+bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
+{
+    const int reg_used = FindModifiedRegister(REG_AX);
+    int distance;
+    double percent_prob;
+    int get_reg_value;
+    int genome_size;
+    if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM5_HAMMING.Get() == -1) {
+        //Case where Probability is static and hamming distance is adjustable
+        get_reg_value = GetRegister(reg_used);
+        //Anya TODO: Max_genome_size must be set for this to work, change it
+        genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+        percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+        distance = (get_reg_value % genome_size);
+    } else if ((int) m_world->GetConfig().KABOOM5_HAMMING.Get() == -1 && (int) m_world->GetConfig().KABOOM_PROB.Get() == -1) {
+        //Anya TODO: Give warning, can't have both adjustable
+    } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM5_HAMMING.Get() != -1) {
+        //Case where both Probability and Hamming Distance are static
+        percent_prob = (double) m_world->GetConfig().KABOOM_PROB.Get();
+        distance = (int) m_world->GetConfig().KABOOM5_HAMMING.Get();
+    } else if ((int) m_world->GetConfig().KABOOM_PROB.Get() == -1 && (int) m_world->GetConfig().KABOOM5_HAMMING.Get() != -1) {
+        //Case where Probability is adjustable and Hamming distance isn't
+        percent_prob = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+        distance = (int) m_world->GetConfig().KABOOM5_HAMMING.Get();
+    }
+    
+    if ( ctx.GetRandom().P(percent_prob) ) m_organism->Kaboom(distance, ctx);
+    return true;
+}
 
 
 bool cHardwareCPU::Inst_Sterilize(cAvidaContext& ctx)
@@ -3397,13 +3477,7 @@ bool cHardwareCPU::Inst_Sterilize(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(REG_AX);
-  double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5, ctx); 
-  return true;
-}
+
 
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
@@ -6779,7 +6853,8 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
   cInstruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
   
-  if (m_organism->TestCopyMut(ctx)) {
+  //checkNoMutList is for head to head kaboom experiments
+  if (m_organism->TestCopyMut(ctx) && !(checkNoMutList(read_head))) {
     read_inst = m_inst_set->GetRandomInst(ctx);
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
@@ -6816,7 +6891,8 @@ bool cHardwareCPU::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
-  if ( ctx.GetRandom().P(m_organism->GetCopyMutProb() / reduction) ) {
+  //checkNoMutList for head to head kaboom experiments
+  if ( ctx.GetRandom().P(m_organism->GetCopyMutProb() / reduction) && !(checkNoMutList(read_head))) {
     read_inst = m_inst_set->GetRandomInst(ctx);
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();

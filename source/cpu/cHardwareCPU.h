@@ -301,6 +301,9 @@ public:
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu) { return false; }
+    
+  // -------- Kaboom Stuff ------------
+  bool checkNoMutList(cHeadCPU to);
 
 
   // Non-Standard Methods

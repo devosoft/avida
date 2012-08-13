@@ -1088,7 +1088,10 @@ public:
           int guarded_juvs = num_guards * m_juvs_per;
           int unguarded_juvs = num_juvs - guarded_juvs;
           for (int k = 0; k < unguarded_juvs; k++) {
-            if (ctx.GetRandom().P(m_killprob)) juvs[k]->Die(ctx); 
+              if (ctx.GetRandom().P(m_killprob)){
+                  juvs[k]->Die(ctx);
+                  m_world->GetStats().IncJuvKilled();
+              }
           }
           break;  // only do this once if two dens overlap
         }

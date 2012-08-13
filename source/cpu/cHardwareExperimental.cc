@@ -4420,6 +4420,8 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
         if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
         else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
         success = true;
+          m_organism->IncNumDeposits();
+          m_organism->IncAmountDeposited(total_deposit);
       }
       break;
     }
@@ -5438,7 +5440,10 @@ bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
       if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;;
     }
   }
-  if (set_ok) m_organism->SetGuard();
+    if (set_ok){
+        m_organism->SetGuard();
+        m_organism->IncGuard();
+    }
   setInternalValue(FindModifiedRegister(rBX), (int) m_organism->IsGuard(), true);    
   return set_ok;
 }

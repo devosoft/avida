@@ -592,10 +592,19 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, Sequence& genome)
 void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 {
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
-  
-  if (mut < m_inst_set->GetSize()) head.SetInst(cInstruction(mut));
-  else if (mut == m_inst_set->GetSize()) head.RemoveInst();
-  else head.InsertInst(cInstruction(mut - m_inst_set->GetSize() - 1));
+  //Anya added code for Head to Head kazi experiment
+  bool in_List = false;
+  char test_inst = head.GetInst().GetSymbol();
+  cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
+  for(int i=0; i<(int)strlen(no_mut_list); i++) {
+    if ((char) no_mut_list[i] == test_inst) in_List = true;
+  }
+  if (!in_List) {
+    if (mut < m_inst_set->GetSize()) head.SetInst(cInstruction(mut));
+    else if (mut == m_inst_set->GetSize()) head.RemoveInst();
+    else head.InsertInst(cInstruction(mut - m_inst_set->GetSize() - 1));
+  }
+ 
 }
 
 

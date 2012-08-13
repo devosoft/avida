@@ -248,6 +248,13 @@ private:
   tArray<int> tasks_host_last;
   tArray<int> tasks_parasite_current;
   tArray<int> tasks_parasite_last;
+    
+  // ------- Kaboom Stats --------------------
+    int num_kabooms;
+    tArray<int> hd_list;
+  // ------- Division of Labor Stats ---------
+    //TODO: Right place for this?
+    int juv_killed;
 
 
   // --------  Organism Task Stats  ---------
@@ -420,6 +427,8 @@ private:
   int topcycle;   
   int topid;
   int topgenid;
+    
+
     
 public:
   cStats(cWorld* world);
@@ -965,6 +974,15 @@ public:
   void UpdateTopNavTrace(cOrganism* org);
   void PrintTopNavTrace();
   void PrintReproData(cOrganism* org);
+    
+ // Kaboom stats
+  void IncKaboom() { num_kabooms++; }
+  void AddHamDistance(int distance) { hd_list.Push(distance); }
+  void PrintKaboom(const cString& filename);
+    
+ // Division of Labor Stats
+    void IncJuvKilled(){juv_killed++;}
+
   
   // deme predicate stats
   void IncEventCount(int x, int y);
@@ -1238,8 +1256,10 @@ public:
   void AddTaskSwitchTime(int t1, int t2, int time); 
   
   //! Figure out how many juveniles and guards there are in the den
-  void PrintDenData(const cString& filename); 
+  void PrintDenData(const cString& filename);
+    
 
+    
 
 protected:
 	std::map<int, cDoubleSum> reaction_age_map;
