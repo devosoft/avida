@@ -5082,7 +5082,7 @@ int cPopulation::FindRandEmptyCell()
   if (num_organisms >= world_size) return -1;
 
   tArray<int>& cells = GetEmptyCellIDArray();
-  int cell_id = m_world->GetRandom().GetUInt(world_size);
+  int cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
   while (GetCell(cell_id).IsOccupied()) {
     // no need to pop this cell off the array, just move it and don't check that far anymore
     cells.Swap(cell_id, --world_size);
