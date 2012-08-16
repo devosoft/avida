@@ -55,9 +55,9 @@
   graph.paddingTop = 0.0;
   graph.paddingRight = 0.0;
   graph.paddingBottom = 0.0;
-  graph.plotAreaFrame.paddingLeft = 50.0;
-  graph.plotAreaFrame.paddingTop = 10.0;
-  graph.plotAreaFrame.paddingRight = 50.0;
+  graph.plotAreaFrame.paddingLeft = 65.0;
+  graph.plotAreaFrame.paddingTop = 15.0;
+  graph.plotAreaFrame.paddingRight = 65.0;
   graph.plotAreaFrame.paddingBottom = 45.0;
   
   
@@ -115,8 +115,11 @@
   y.labelOffset = 5.0;
   y.labelTextStyle = textStyle;
   
-	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
+  y.title = @"Average Fitness";
+  y.titleOffset = 50.0;
   
+	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
+  primaryYAxis = y;
   
   
   secondaryPlotSpace = [[CPTXYPlotSpace alloc] init];
@@ -130,10 +133,13 @@
   y2.preferredNumberOfMajorTicks = 8;
   y2.labelOffset = -50.0;
   y2.labelTextStyle = textStyle;
-  //	y2.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
+  
+  y2.titleOffset = -65.0;
+  
+  // y2.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   secondaryYAxis = y2;
   
-  [graph addPlotSpace:secondaryPlotSpace];
+  // [graph addPlotSpace:secondaryPlotSpace];
   
   
   // Set axes
@@ -160,6 +166,7 @@
 - (IBAction) changeGraphMode:(id)sender {
   NSInteger mode = [sender indexOfSelectedItem];
   bool primary = (sender == btnGraphSelectLeft);
+  if (!primary && mode && ![[graph allPlotSpaces] containsObject:secondaryPlotSpace]) [graph addPlotSpace:secondaryPlotSpace];
   for (int i = 0; i < [popArray count]; i++) {
     if (primary) {
       if (mode) {
@@ -177,6 +184,17 @@
       }
     }
   }
+  if (!primary && !mode) [graph removePlotSpace:secondaryPlotSpace];
+  
+  CPTXYAxis* axis = (primary) ? primaryYAxis : secondaryYAxis;
+  switch (mode) {
+    case 1: axis.title = @"Average Fitness"; break;
+    case 2: axis.title = @"Average Gestation Time"; break;
+    case 3: axis.title = @"Average Metabolic Rate"; break;
+    case 4: axis.title = @"Number of Organism in the Population"; break;
+    default: axis.title = @""; break;
+  }
+
   
   [self rescaleGraph];
 }

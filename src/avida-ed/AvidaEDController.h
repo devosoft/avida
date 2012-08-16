@@ -50,7 +50,8 @@
 
 @interface AvidaEDController : NSWindowController <DraggableImageViewDelegate, DropDelegate, MapDragDelegate, ViewerListener,
                                                    NSDraggingSource, NSSplitViewDelegate, NSWindowDelegate,
-                                                   NSOutlineViewDelegate, NSOutlineViewDataSource>
+                                                   NSOutlineViewDelegate, NSOutlineViewDataSource,
+                                                   NSCollectionViewDelegate>
 {
   
   IBOutlet NSSplitView* mainSplitView;
@@ -96,7 +97,11 @@
   int curUpdate;
 
   // Config View
-  // --------------------------------------------------------------------------------------------------------------  
+  // --------------------------------------------------------------------------------------------------------------
+  NSMutableArray* ancestorArray;
+  
+  IBOutlet NSArrayController* ancestorArrayCtlr;
+
   IBOutlet NSSlider* sldCfgMutRate;
   IBOutlet NSTextField* txtCfgMutRate;
   IBOutlet NSTextField* txtCfgWorldX;
@@ -107,6 +112,7 @@
   IBOutlet NSMatrix* matCfgPauseAt;
   IBOutlet NSTextField* txtCfgPauseAt;
   IBOutlet NSStepper* stpCfgPauseAt;
+  IBOutlet NSCollectionView* cvAncestors;
 
   
   // Analyze View
@@ -172,7 +178,6 @@
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 
 @property (readonly) NSString* runName;
-@property (readonly) NSMutableArray* analyzePops;
 
 
 // NSMenuValidation Informal Protocol
@@ -230,6 +235,11 @@
 - (BOOL) prepareForDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
 - (BOOL) performDragOperationForDestination:(id<NSDraggingDestination>)destination sender:(id<NSDraggingInfo>)sender;
 
+
+// NSCollectionViewDelegate
+- (BOOL) collectionView:(NSCollectionView*)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation;
+- (NSDragOperation) collectionView:(NSCollectionView*)collectionView validateDrop:(id<NSDraggingInfo>)draggingInfo proposedIndex:(NSInteger*)proposedDropIndex dropOperation:(NSCollectionViewDropOperation*)proposedDropOperation;
+- (BOOL) collectionView:(NSCollectionView*)collectionView writeItemsAtIndexes:(NSIndexSet*)indexes toPasteboard:(NSPasteboard*)pasteboard;
 
 // Listener Methods
 @property (readonly) Avida::Viewer::Listener* listener;

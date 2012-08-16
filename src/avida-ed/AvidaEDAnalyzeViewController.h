@@ -28,6 +28,7 @@
   
   CPTXYGraph* graph;
   CPTXYPlotSpace* primaryPlotSpace;
+  CPTXYAxis* primaryYAxis;
   CPTXYPlotSpace* secondaryPlotSpace;
   CPTXYAxis* secondaryYAxis;
   

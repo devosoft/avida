@@ -152,6 +152,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   listener = NULL;
   map = NULL;
   popSplitViewIsAnimating = NO;  
+  ancestorArray = [[NSMutableArray alloc] init];
 }
 
 
@@ -527,6 +528,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer expandItem:freezerGenomes];
   [outlineFreezer expandItem:freezerWorlds];
   [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, AvidaPasteboardTypeGenome, nil]];
+
+  [cvAncestors registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
 
   [pathWorkspace setURL:freezerURL];
   
@@ -973,7 +976,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     float dividerThickness = [splitView dividerThickness];
     
-    int diffWidth = newFrame.size.width - oldSize.width;
+    //int diffWidth = newFrame.size.width - oldSize.width;
     
     if (leftFrame.size.width < MAIN_SPLIT_LEFT_MIN) {
       leftFrame.size.width = MAIN_SPLIT_LEFT_MIN;
@@ -1412,6 +1415,48 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   return YES;
 }
 
+
+- (BOOL) collectionView:(NSCollectionView*)collectionView acceptDrop:(id<NSDraggingInfo>)info index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation {
+  if (runActive) return NO;
+  
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+    [ancestorArrayCtlr insertObject:[Genome genomeFromPasteboard:[info draggingPasteboard]] atArrangedObjectIndex:index];
+    return YES;
+  }
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeFreezerID]] != nil) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:[info draggingPasteboard]];
+    if (fid.type == Avida::Viewer::GENOME) {
+      // Get genome from freezer
+      Avida::GenomePtr genome = freezer->InstantiateGenome(fid);
+      Genome* objc_genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome->AsString()] name:[NSString stringWithAptoString:freezer->NameOf(fid)]];
+      [ancestorArrayCtlr insertObject:objc_genome atArrangedObjectIndex:index];
+      return YES;
+    }
+  }
+  
+  return NO;
+}
+
+
+- (NSDragOperation) collectionView:(NSCollectionView*)collectionView validateDrop:(id<NSDraggingInfo>)info proposedIndex:(NSInteger*)proposedDropIndex dropOperation:(NSCollectionViewDropOperation*)proposedDropOperation {
+  if (runActive) return NSDragOperationNone;
+  
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
+    return NSDragOperationCopy;
+  }
+  if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeFreezerID]] != nil) {
+    Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:[info draggingPasteboard]];
+    if (fid.type == Avida::Viewer::GENOME) return NSDragOperationCopy;
+  }
+  return NSDragOperationNone;
+}
+
+- (BOOL) collectionView:(NSCollectionView*)collectionView writeItemsAtIndexes:(NSIndexSet*)indexes toPasteboard:(NSPasteboard*)pasteboard {
+  for (NSUInteger currentIndex = [indexes firstIndex]; currentIndex != NSNotFound; currentIndex = [indexes indexGreaterThanIndex: currentIndex]) {
+    [Genome writeGenome:[ancestorArray objectAtIndex:currentIndex] toPasteboard:pasteboard];
+  }
+  return YES;
+}
 
 
 @synthesize listener;

@@ -74,9 +74,9 @@
   
   CPTMutableLineStyle* secondaryPlotLineStyle = [[secondaryPlot.dataLineStyle mutableCopy] autorelease];
 	secondaryPlotLineStyle.miterLimit = 1.0;
-	secondaryPlotLineStyle.lineWidth = 3.0;
+	secondaryPlotLineStyle.lineWidth = 1.0;
 	secondaryPlotLineStyle.lineColor = [CPTColor redColor];
-	secondaryPlotLineStyle.dashPattern = [NSArray arrayWithObjects:[NSNumber numberWithFloat:5.0f], [NSNumber numberWithFloat:5.0f], nil];
+  secondaryPlotLineStyle.dashPattern = [NSArray arrayWithObjects:[NSNumber numberWithFloat:5.0f], [NSNumber numberWithFloat:5.0f], nil];
   secondaryPlot.dataLineStyle = secondaryPlotLineStyle;
   secondaryPlot.dataSource = self;
   
