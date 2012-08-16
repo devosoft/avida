@@ -83,6 +83,8 @@ Avida::Systematics::ArbiterPtr Avida::Systematics::Clade::Arbiter() const
 
 Avida::Systematics::GroupPtr Avida::Systematics::Clade::ClassifyNewUnit(UnitPtr u, ConstGroupMembershipPtr parents)
 {
+  (void)u;
+  (void)parents;
   
   m_total_organisms++;
   m_num_organisms++;
@@ -97,6 +99,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::Clade::ClassifyNewUnit(UnitPtr 
 
 void Avida::Systematics::Clade::HandleUnitGestation(UnitPtr u)
 {
+  (void)u;
 }
 
 
@@ -147,6 +150,8 @@ void Avida::Systematics::Clade::RemoveActiveReference()
 
 void Avida::Systematics::Clade::NotifyNewUnit(UnitPtr u)
 {
+  (void)u;
+  
   m_total_organisms++;
   m_num_organisms++;
   

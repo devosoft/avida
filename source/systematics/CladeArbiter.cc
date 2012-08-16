@@ -39,6 +39,7 @@ Avida::Systematics::CladeArbiter::CladeArbiter(World* world)
 , m_dom_time(0)
 , m_cur_update(-1)
 {
+  (void)world;
 }
 
 Avida::Systematics::CladeArbiter::~CladeArbiter()
@@ -141,6 +142,8 @@ Avida::Data::ConstDataSetPtr Avida::Systematics::CladeArbiter::Provides() const
 
 void Avida::Systematics::CladeArbiter::UpdateProvidedValues(Update current_update)
 {
+  (void)current_update;
+  
   cDoubleSum sum_abundance;
   
   // Pre-calculate the total number of units that are currently active (used in entropy calculation)

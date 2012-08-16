@@ -3571,7 +3571,6 @@ void cStats::AddTaskSwitchTime(int t1, int t2, int time) {
 
 void cStats::PrintIntrinsicTaskSwitchingCostData(const cString& filename) {
 	cDataFile& df = m_world->GetDataFile(filename);
-	const cEnvironment& env = m_world->GetEnvironment();
   std::map<std::pair<int, int>, cDoubleSum>::iterator iter;
   
   df.WriteComment("Number of cyles it takes to change between tasks");
