@@ -786,20 +786,15 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
     }
     
     //turn number into proportion of available tasks that match
-    float prop_overlap = float(num_overlap) / (host_task_counts.GetSize() - start);
+    double prop_overlap = double(num_overlap) / (host_task_counts.GetSize() - start);
     
     //use config exponent and calculate probability of infection
-    float infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
-    float prob_success = pow(prop_overlap, infection_exponent);
+    double infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
+    double prob_success = pow(prop_overlap, infection_exponent);
     
-    //by default, infection succedes
-    interaction_fails = false;
-
     //check if infection should fail based on probability
     double rand = m_world->GetRandom().GetDouble();
-    if (rand > prob_success) {
-      interaction_fails = true;
-    }
+    interaction_fails = rand > prob_success;
   }
   
   // TODO: Add other infection mechanisms -LZ
