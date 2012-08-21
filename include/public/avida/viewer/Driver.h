@@ -58,7 +58,7 @@ namespace Avida {
     
     class Driver : public Apto::Thread, public Avida::WorldDriver
     {
-    private:
+    public:
       struct InjectGenomeInfo;
       
     private:
@@ -108,6 +108,8 @@ namespace Avida {
       
       LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y, const Apto::String& name);
       LIB_EXPORT bool HasPendingInjects() const;
+      LIB_EXPORT inline int PendingInjectCount() const { return m_inject_queue.GetSize(); }
+      LIB_EXPORT const InjectGenomeInfo PendingInject(int idx) const;
 
       LIB_EXPORT void AttachListener(Listener* listener);
       LIB_EXPORT void DetachListener(Listener* listener);
@@ -160,7 +162,7 @@ namespace Avida {
       // Private Implementation Details
       // ------------------------------------------------------------------------------------------------------------  
       
-    private:
+    public:
       struct InjectGenomeInfo
       {
         GenomePtr genome;
@@ -168,8 +170,10 @@ namespace Avida {
         int y;
         Apto::String name;
         
+        LIB_LOCAL inline InjectGenomeInfo() : x(0), y(0) { ; }
         LIB_LOCAL inline InjectGenomeInfo(GenomePtr in_genome, int in_x, int in_y, const Apto::String& in_name)
           : genome(in_genome), x(in_x), y(in_y), name(in_name) { ; }
+
       };
       
     };

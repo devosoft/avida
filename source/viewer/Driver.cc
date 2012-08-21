@@ -142,10 +142,19 @@ void Avida::Viewer::Driver::InjectGenomeAt(GenomePtr genome, int x, int y, const
 
 bool Avida::Viewer::Driver::HasPendingInjects() const
 {
-  m_mutex.Lock();
-  bool has_pending = m_inject_queue.GetSize();
-  m_mutex.Unlock();
-  return has_pending;
+  Apto::MutexAutoLock lock(m_mutex);
+  return m_inject_queue.GetSize();
+}
+
+const Avida::Viewer::Driver::InjectGenomeInfo Avida::Viewer::Driver::PendingInject(int idx) const
+{
+  
+  Apto::MutexAutoLock lock(m_mutex);
+  Apto::List<InjectGenomeInfo*, Apto::DL>::ConstIterator it = m_inject_queue.Begin();
+  it.Next();
+  for (int i = 0; i < idx && it.Get(); i++, it.Next());
+  if (it.Get()) return *(*it.Get());
+  return InjectGenomeInfo();
 }
 
 int Avida::Viewer::Driver::WorldX()
