@@ -217,6 +217,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_height = state->GetHeight();
   
   map_colors = state->GetColors();
+  pending_colors.Resize(map_colors.GetSize());
   pending_colors.SetAll(0);
   num_colors = state->GetColorScale().GetScaleRange();
   
