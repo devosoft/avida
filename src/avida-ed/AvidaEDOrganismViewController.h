@@ -67,6 +67,8 @@
   IBOutlet NSArrayController* arrctlrOutputBuffer;
   IBOutlet NSArrayController* arrctlrCurStack;
 
+  IBOutlet NSTextView* txtJustExec;
+  IBOutlet NSTextView* txtWillExec;
   
   AvidaRun* testWorld;
   Avida::Viewer::OrganismTracePtr trace;

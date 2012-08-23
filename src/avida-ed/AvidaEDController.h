@@ -81,6 +81,8 @@
   IBOutlet NSButton* btnOrgView;
   IBOutlet NSButton* btnAnalyzeView;
 
+  IBOutlet DraggableImageView* imgOrg;
+  IBOutlet DraggableImageView* imgTrash;
   
   IBOutlet NSView* popViewDishView;
   IBOutlet NSScrollView* mapScrollView;

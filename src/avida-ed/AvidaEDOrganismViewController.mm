@@ -60,6 +60,7 @@
 - (void) nextAnimationFrame:(id)sender;
 
 - (void) createSettingsPopover;
+- (NSString*) descriptionOfInst:(Avida::Instruction)inst;
 @end
 
 
@@ -83,6 +84,8 @@
     [btnGo setEnabled:YES];
     [btnForward setEnabled:YES];
     [btnEnd setEnabled:YES];
+    [[[txtJustExec textStorage] mutableString] setString:@"(none)"];
+    [[[txtWillExec textStorage] mutableString] setString:[self descriptionOfInst:trace->Snapshot(curSnapshotIndex).NextInstruction()]];
   } else if (curSnapshotIndex == (trace->SnapshotCount() - 1)) {
     [self stopAnimation];
     [btnBegin setEnabled:YES];
@@ -90,12 +93,16 @@
     [btnGo setEnabled:NO];
     [btnForward setEnabled:NO];
     [btnEnd setEnabled:NO];
+    [[[txtJustExec textStorage] mutableString] setString:[self descriptionOfInst:trace->Snapshot(curSnapshotIndex - 1).NextInstruction()]];
+    [[[txtWillExec textStorage] mutableString] setString:@"(none)"];
   } else {
     [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
     [btnGo setEnabled:YES];
     [btnForward setEnabled:YES];
     [btnEnd setEnabled:YES];
+    [[[txtJustExec textStorage] mutableString] setString:[self descriptionOfInst:trace->Snapshot(curSnapshotIndex - 1).NextInstruction()]];
+    [[[txtWillExec textStorage] mutableString] setString:[self descriptionOfInst:trace->Snapshot(curSnapshotIndex).NextInstruction()]];
   }
 }
 
@@ -215,6 +222,41 @@
   }
 }
 
+- (NSString*) descriptionOfInst:(Avida::Instruction)inst {
+  switch (inst.GetOp()) {
+    case 0: return @"a: nop-A is a no-operation instruction, and will not do anything when executed. It can, however, modify the behavior of the instruction preceding it (by changing the CPU component that it affects; see also nop-register notation and nop-head notation) or act as part of a template to denote positions in the genome.";
+    case 1: return @"b: nop-B is a no-operation instruction, and will not do anything when executed. It can, however, modify the behavior of the instruction preceding it (by changing the CPU component that it affects; see also nop-register notation and nop-head notation) or act as part of a template to denote positions in the genome.";
+    case 2: return @"c: nop-C is a no-operation instruction, and will not do anything when executed. It can, however, modify the behavior of the instruction preceding it (by changing the CPU component that it affects; see also nop-register notation and nop-head notation) or act as part of a template to denote positions in the genome.";
+    case 3: return @"d: if-n-equ: This instruction compares the BX register to its complement. If they are not equal, the next instruction (after a modifying no-operation instruction, if one is present) is executed. If they are equal, that next instruction is skipped.";
+    case 4: return @"e: if-less: This instruction compares the BX register to its complement. If BX is the lesser of the pair, the next instruction (after a modifying no-operation instruction, if one is present) is executed. If it is greater or equal, then that next instruction is skipped.";
+    case 5: return @"f: if-label: This instruction reads in the template that follows it, and tests if its complement template was the most recent series of instructions copied. If so, it executed the next instruction, otherwise it skips it. This instruction is commonly used for an organism to determine when it has finished producing its offspring.";
+    case 6: return @"g: mov-head: This instruction will cause the IP to jump to the position in memory of the flow-head.";
+    case 7: return @"h: jmp-head: This instruction will read in the value of the CX register, and the move the IP by that fixed amount through the organism's memory.";
+    case 8: return @"i: get-head: This instruction will copy the position of the IP into the CX register.";
+    case 9: return @"j: set-flow: This instruction moves the flow-head to the memory position denoted in the CX register.";
+    case 10: return @"k: shift-r: This instruction reads in the contents of the BX register, and shifts all of the bits in that register to the right by one. In effect, it divides the value stored in the register by two, rounding down.";
+    case 11: return @"l: shift-l: This instruction reads in the contents of the BX register, and shifts all of the bits in that register to the left by one, placing a zero as the new rightmost bit, and truncating any bits beyond the 32 maximum. For values that require fewer than 32 bits, it effectively multiplies that value by two.";
+    case 12: return @"m: inc: This instruction reads in the content of the BX register and increments it by one.";
+    case 13: return @"n: dec: This instruction reads in the content of the BX register and decrements it by one.";
+    case 14: return @"o: pop: This instruction removes the top element from the active stack, and places it into the BX register.";
+    case 15: return @"p: push: This instruction reads in the contents of the BX register, and places it as a new entry at the top of the active stack. The BX register itself remains unchanged.";
+    case 16: return @"q: swap-stk: This instruction toggles the active stack in the CPU. All other instructions that use a stack will always use the active one.";
+    case 17: return @"r: swap: This instruction swaps the contents of the BX register with its complement.";
+    case 18: return @"s: add: This instruction reads in the contents of the BX and CX registers and sums them together. The result of this operation is then placed in the BX register.";
+    case 19: return @"t: sub: This instruction reads in the contents of the BX and CX registers and subtracts CX from BX (respectively). The result of this operation is then placed in the BX register.";
+    case 20: return @"u: nand: This instruction reads in the contents of the BX and CX registers (each of which are 32-bit numbers) and performs a bitwise nand operation on them. The result of this operation is placed in the BX register. Note that this is the only logic operation provided in the basic avida instruction set.";
+    case 21: return @"v: h-copy: This instruction reads the contents of the organism's memory at the position of the read-head, and copy that to the position of the write-head. If a non-zero copy mutation rate is set, a test will be made based on this probability to determine if a mutation occurs. If so, a random instruction (chosen from the full set with equal probability) will be placed at the write-head instead.";
+    case 22: return @"w: h-alloc: This instruction allocates additional memory for the organism up to the maximum it is allowed to use for its offspring.";
+    case 23: return @"x: h-divide: This instruction is used for an organism to divide off a finished offspring. The original organism keeps the state of its memory up until the read-head. The offspring's memory is initialized to everything between the read-head and the write-head. All memory past the write-head is removed entirely.";
+    case 24: return @"y: IO: This is the input/output instruction. It takes the contents of the BX register and outputs it, checking it for any tasks that may have been performed. It will then place a new input into BX.";
+    case 25: return @"z: h-search: This instruction will read in the template the follows it, and find the location of a complement template in the code. The BX register will be set to the distance to the complement from the current position of the instruction-pointer, and the CX register will be set to the size of the template. The flow-head will also be placed at the beginning of the complement template. If no template follows, both BX and CX will be set to zero, and the flow-head will be placed on the instruction immediately following the h-search.";
+      
+    default:
+      return @"(unknown)";
+  }
+}
+
+
 @end
 
 
@@ -255,7 +297,10 @@
   [sldStatus setEnabled:NO];
   [txtOrgName setStringValue:@"(none)"];
   [txtOrgName setEnabled:NO];
-  
+
+  [[[txtJustExec textStorage] mutableString] setString:@"(none)"];
+  [[[txtWillExec textStorage] mutableString] setString:@"(none)"];
+
   [orgView registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, nil]];
   
   envActions = [[AvidaEDEnvActionsDataSource alloc] init];
@@ -358,7 +403,10 @@
     [btnGo setTitle:@"Run"];
     [btnForward setEnabled:NO];
     [btnEnd setEnabled:NO];
-    
+
+    [[[txtJustExec textStorage] mutableString] setString:@"(none)"];
+    [[[txtWillExec textStorage] mutableString] setString:@"(none)"];
+
     [orgView setSnapshot:NULL];
   }
 }

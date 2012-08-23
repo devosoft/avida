@@ -94,25 +94,25 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   }
   
   NSRect bounds = [self bounds];
-  NSFont* font = [NSFont fontWithName:@"Lucida Grande" size:9.0];
+  NSFont* font = [NSFont fontWithName:@"Lucida Grande" size:12.0];
   NSDictionary* str_attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
 
   if (is_categorical) {
     int colors_per_row = (num_colors / 2) + (num_colors % 2);
     CGFloat color_width = round((bounds.size.width - 20.0) / colors_per_row);
-    CGFloat color_height = round((bounds.size.height - 40.0) / 2.0);
+    CGFloat color_height = round((bounds.size.height - 30.0) / 2.0);
     
     NSRect colorRect;
     colorRect.size.width = 20.0;
     colorRect.size.height = color_height;
     colorRect.origin.x = 10.0;
-    colorRect.origin.y = 30.0 + color_height;
+    colorRect.origin.y = 20.0 + color_height;
     
     int activeCount = 0;
     for (int i = 0; i < num_colors; i++) {
       if (activeCount == colors_per_row) {
         colorRect.origin.x = 10.0;
-        colorRect.origin.y = 22.0;
+        colorRect.origin.y = 10.0;
       }
       
       if (color_count[i + Avida::Viewer::MAP_RESERVED_COLORS] != 0) {
@@ -147,7 +147,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
 
-  if (scale_label != nil) {
+  if (scale_label != nil && !is_categorical) {
     CGFloat offset = -[scale_label sizeWithAttributes:str_attributes].width / 2.0;
     NSPoint lbl_location = NSMakePoint(bounds.size.width / 2.0 + bounds.origin.x + offset, 6.0);
     [scale_label drawAtPoint:lbl_location withAttributes:str_attributes];

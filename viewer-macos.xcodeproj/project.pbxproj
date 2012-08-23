@@ -59,6 +59,7 @@
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
 		709D24C714CF500400AB0425 /* Genome.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709D24C414CF4B8100AB0425 /* Genome.mm */; };
 		70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */; };
+		70A420CA15E6B97E002B2218 /* trash_can.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A420C915E6B97E002B2218 /* trash_can.png */; };
 		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
 		70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
 		70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */; };
@@ -173,6 +174,7 @@
 		709D24C414CF4B8100AB0425 /* Genome.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Genome.mm; sourceTree = "<group>"; };
 		70A2A6E0156423000086456A /* AvidaEDExportAccessoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDExportAccessoryController.h; sourceTree = "<group>"; };
 		70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDExportAccessoryController.m; sourceTree = "<group>"; };
+		70A420C915E6B97E002B2218 /* trash_can.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash_can.png; sourceTree = "<group>"; };
 		70A523A715139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDOrganismSettingsViewController.h; sourceTree = "<group>"; };
 		70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDOrganismSettingsViewController.m; sourceTree = "<group>"; };
 		70B0DA0E156ADFFF00D134AB /* Definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 		703549981337A27400D3865C /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				70A420C915E6B97E002B2218 /* trash_can.png */,
 				70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */,
 				70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */,
 				70C2DB8515824EBA004B2423 /* PopViewerIcon.png */,
@@ -522,6 +525,7 @@
 				70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */,
 				70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */,
 				70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */,
+				70A420CA15E6B97E002B2218 /* trash_can.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

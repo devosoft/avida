@@ -29,6 +29,8 @@
 
 #import <AppKit/AppKit.h>
 
+#import "DropDelegate.h"
+
 @class DraggableImageView;
 
 @protocol DraggableImageViewDelegate
@@ -41,6 +43,7 @@
 {
   NSEvent* downEvent;
   IBOutlet id<DraggableImageViewDelegate> delegate;
+  IBOutlet id<DropDelegate> dropDelegate;
 }
 
 - (void) startDrag:(NSEvent*)event;
@@ -53,6 +56,16 @@
 - (NSEvent*) downEvent;
 - (void)setDownEvent:(NSEvent*)event;
 
+
+// NSDraggingDestination
+- (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;
+- (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender;
+- (BOOL) prepareForDragOperation:(id<NSDraggingInfo>)sender;
+- (BOOL) performDragOperation:(id<NSDraggingInfo>)sender;
+- (BOOL) wantsPeriodicDraggingUpdates;
+
+
 @property (readwrite) id<DraggableImageViewDelegate> delegate;
+@property (readwrite) id<DropDelegate> dropDelegate;
 
 @end

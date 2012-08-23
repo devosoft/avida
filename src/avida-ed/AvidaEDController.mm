@@ -410,24 +410,33 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID {
   if (freezerID.identifier == 0) return;
-
-  freezer->Remove(freezerID);
   
-  NSMutableArray* freezer_array = freezerConfigs;
-  switch (freezerID.type) {
-    case Avida::Viewer::CONFIG: break;
-    case Avida::Viewer::GENOME: freezer_array = freezerGenomes; break;
-    case Avida::Viewer::WORLD:  freezer_array = freezerWorlds;  break;
-  }
+  NSAlert* alert = [[NSAlert alloc] init];
+  [alert addButtonWithTitle:@"Discard"];
+  [alert addButtonWithTitle:@"Cancel"];
+  [alert setMessageText:@"Are you sure you would like to discard the item from the freezer?"];
+  [alert setInformativeText:@"The selected freezer item will be permanently removed."];
+  [alert setAlertStyle:NSWarningAlertStyle];
+  if ([alert runModal] == NSAlertFirstButtonReturn) {
 
-  for (int i = 0; i < [freezer_array count]; i++) {
-    if ([[freezer_array objectAtIndex:i] freezerID].identifier == freezerID.identifier) {
-      [freezer_array removeObjectAtIndex:i];
-      break;
+    freezer->Remove(freezerID);
+    
+    NSMutableArray* freezer_array = freezerConfigs;
+    switch (freezerID.type) {
+      case Avida::Viewer::CONFIG: break;
+      case Avida::Viewer::GENOME: freezer_array = freezerGenomes; break;
+      case Avida::Viewer::WORLD:  freezer_array = freezerWorlds;  break;
     }
+
+    for (int i = 0; i < [freezer_array count]; i++) {
+      if ([[freezer_array objectAtIndex:i] freezerID].identifier == freezerID.identifier) {
+        [freezer_array removeObjectAtIndex:i];
+        break;
+      }
+    }
+    
+    [outlineFreezer reloadData];
   }
-  
-  [outlineFreezer reloadData];
 }
 
 - (void) saveAncestorsToFreezerID:(Avida::Viewer::FreezerID)freezerID
@@ -626,6 +635,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypePopulation, AvidaPasteboardTypeGenome, nil]];
 
   [cvAncestors registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
+
+  [imgOrg registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
+  [imgTrash registerForDraggedTypes:[NSArray arrayWithObject:AvidaPasteboardTypeFreezerID]];
 
   NSString* workspaceName = [[freezerURL lastPathComponent] stringByDeletingPathExtension];
   [self.window setTitle:[NSString stringWithFormat:@"Avida-ED : %@ Workspace", workspaceName]];
@@ -1422,7 +1434,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
   NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if (curView == analyzeCtlr.view) {
+  if (destination == imgOrg) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
+        return NSDragOperationGeneric;
+      }
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome] && (sourceDragMask & NSDragOperationGeneric)) {
+      return NSDragOperationGeneric;
+    }
+  } else if (destination == imgTrash) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) return NSDragOperationDelete;
+  } else if (curView == analyzeCtlr.view) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
       if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzeCtlr numPops] < 4) {
@@ -1446,7 +1469,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
   NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if (curView == analyzeCtlr.view) {
+  if (destination == imgOrg) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
+        return NSDragOperationGeneric;
+      }
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome] && (sourceDragMask & NSDragOperationGeneric)) {
+      return NSDragOperationGeneric;
+    }
+  } else if (destination == imgTrash) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) return NSDragOperationDelete;
+  } else if (curView == analyzeCtlr.view) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
       if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzeCtlr numPops] < 4) {
@@ -1470,7 +1504,19 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSDragOperation sourceDragMask = [sender draggingSourceOperationMask];
   NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if (curView == analyzeCtlr.view) {
+  if (destination == imgOrg) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
+        return YES;
+      }
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome] && (sourceDragMask & NSDragOperationGeneric)) {
+      return YES;
+    }
+    
+  } else if (destination == imgTrash) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) return YES;
+  } else if (curView == analyzeCtlr.view) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
       if (fid.type == Avida::Viewer::WORLD && (sourceDragMask & NSDragOperationGeneric) && [analyzeCtlr numPops] < 4) {
@@ -1493,7 +1539,30 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSPasteboard* pboard = [sender draggingPasteboard];
   NSView* curView = [[mainSplitView subviews] objectAtIndex:1];
   
-  if (curView == analyzeCtlr.view) {
+  if (destination == imgOrg) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      
+      // Get genome from freezer
+      Avida::GenomePtr genome = freezer->InstantiateGenome(fid);
+      
+      [self changeView:btnOrgView];
+      [orgCtlr setGenome:genome withName:[NSString stringWithAptoString:freezer->NameOf(fid)]];
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+      Genome* genome = [Genome genomeFromPasteboard:pboard];
+      
+      // Get genome from freezer
+      Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
+      
+      [self changeView:btnOrgView];
+      [orgCtlr setGenome:genome_ptr withName:[genome name]];
+    }
+  } else if (destination == imgTrash) {
+    if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
+      Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
+      [self removeFromFreezer:fid];
+    }
+  } else if (curView == analyzeCtlr.view) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
       if ([analyzeCtlr willAcceptPopWithFreezerID:fid]) {

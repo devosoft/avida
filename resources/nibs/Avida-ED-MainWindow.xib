@@ -65,13 +65,13 @@
 			<object class="NSWindowTemplate" id="1005">
 				<int key="NSWindowStyleMask">15</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{500, 280}, {985, 600}}</string>
+				<string key="NSWindowRect">{{500, 280}, {985, 630}}</string>
 				<int key="NSWTFlags">544735232</int>
 				<string key="NSWindowTitle">Avida-ED</string>
 				<string key="NSWindowClass">NSWindow</string>
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
-				<string key="NSWindowContentMinSize">{880, 500}</string>
+				<string key="NSWindowContentMinSize">{880, 630}</string>
 				<object class="NSView" key="NSWindowView" id="1006">
 					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
@@ -84,6 +84,39 @@
 									<reference key="NSNextResponder" ref="845741461"/>
 									<int key="NSvFlags">268</int>
 									<array class="NSMutableArray" key="NSSubviews">
+										<object class="NSImageView" id="739193197">
+											<reference key="NSNextResponder" ref="680271190"/>
+											<int key="NSvFlags">292</int>
+											<set class="NSMutableSet" key="NSDragTypes">
+												<string>Apple PDF pasteboard type</string>
+												<string>Apple PICT pasteboard type</string>
+												<string>Apple PNG pasteboard type</string>
+												<string>NSFilenamesPboardType</string>
+												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+												<string>NeXT TIFF v4.0 pasteboard type</string>
+											</set>
+											<string key="NSFrame">{{8, 4}, {19, 34}}</string>
+											<reference key="NSSuperview" ref="680271190"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="213448319"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSImageCell" key="NSCell" id="371977729">
+												<int key="NSCellFlags">134217728</int>
+												<int key="NSCellFlags2">33554432</int>
+												<object class="NSCustomResource" key="NSContents">
+													<string key="NSClassName">NSImage</string>
+													<string key="NSResourceName">trash_can</string>
+												</object>
+												<string key="NSCellIdentifier">_NS:9</string>
+												<int key="NSAlign">0</int>
+												<int key="NSScale">2</int>
+												<int key="NSStyle">0</int>
+												<bool key="NSAnimates">NO</bool>
+											</object>
+											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+											<bool key="NSEditable">YES</bool>
+										</object>
 										<object class="NSImageView" id="298503845">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">268</int>
@@ -95,7 +128,7 @@
 												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
 												<string>NeXT TIFF v4.0 pasteboard type</string>
 											</set>
-											<string key="NSFrame">{{8, 481}, {32, 32}}</string>
+											<string key="NSFrame">{{8, 511}, {32, 32}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="507709569"/>
@@ -128,7 +161,7 @@
 												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
 												<string>NeXT TIFF v4.0 pasteboard type</string>
 											</set>
-											<string key="NSFrame">{{8, 521}, {32, 32}}</string>
+											<string key="NSFrame">{{8, 551}, {32, 32}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="775973520"/>
@@ -161,7 +194,7 @@
 												<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
 												<string>NeXT TIFF v4.0 pasteboard type</string>
 											</set>
-											<string key="NSFrame">{{8, 559}, {32, 32}}</string>
+											<string key="NSFrame">{{8, 589}, {32, 32}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="873070634"/>
@@ -186,7 +219,7 @@
 										<object class="NSButton" id="507709569">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">266</int>
-											<string key="NSFrame">{{48, 484}, {100, 25}}</string>
+											<string key="NSFrame">{{48, 514}, {100, 25}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="87926504"/>
@@ -215,7 +248,7 @@
 										<object class="NSButton" id="775973520">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">266</int>
-											<string key="NSFrame">{{48, 524}, {100, 25}}</string>
+											<string key="NSFrame">{{48, 554}, {100, 25}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="298503845"/>
@@ -240,7 +273,7 @@
 										<object class="NSButton" id="873070634">
 											<reference key="NSNextResponder" ref="680271190"/>
 											<int key="NSvFlags">266</int>
-											<string key="NSFrame">{{48, 562}, {100, 25}}</string>
+											<string key="NSFrame">{{48, 592}, {100, 25}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="97597779"/>
@@ -273,7 +306,7 @@
 														<object class="NSOutlineView" id="113176494">
 															<reference key="NSNextResponder" ref="112924072"/>
 															<int key="NSvFlags">4352</int>
-															<string key="NSFrameSize">{154, 456}</string>
+															<string key="NSFrameSize">{154, 443}</string>
 															<reference key="NSSuperview" ref="112924072"/>
 															<reference key="NSWindow"/>
 															<reference key="NSNextKeyView" ref="603438324"/>
@@ -380,7 +413,7 @@
 															<int key="NSTableViewGroupRowStyle">1</int>
 														</object>
 													</array>
-													<string key="NSFrame">{{1, 17}, {154, 456}}</string>
+													<string key="NSFrame">{{1, 17}, {154, 443}}</string>
 													<reference key="NSSuperview" ref="87926504"/>
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="113176494"/>
@@ -406,7 +439,7 @@
 													<string key="NSFrame">{{1, 119}, {162, 15}}</string>
 													<reference key="NSSuperview" ref="87926504"/>
 													<reference key="NSWindow"/>
-													<reference key="NSNextKeyView" ref="213448319"/>
+													<reference key="NSNextKeyView" ref="739193197"/>
 													<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 													<int key="NSsFlags">1</int>
 													<reference key="NSTarget" ref="87926504"/>
@@ -429,7 +462,7 @@
 												</object>
 												<reference ref="281601392"/>
 											</array>
-											<string key="NSFrame">{{0, -1}, {156, 474}}</string>
+											<string key="NSFrame">{{0, 42}, {156, 461}}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="793145023"/>
@@ -445,7 +478,7 @@
 											<double key="NSMagnification">1</double>
 										</object>
 									</array>
-									<string key="NSFrameSize">{156, 600}</string>
+									<string key="NSFrameSize">{156, 630}</string>
 									<reference key="NSSuperview" ref="845741461"/>
 									<reference key="NSWindow"/>
 									<reference key="NSNextKeyView" ref="1067991234"/>
@@ -454,14 +487,14 @@
 								<object class="NSCustomView" id="213448319">
 									<reference key="NSNextResponder" ref="845741461"/>
 									<int key="NSvFlags">268</int>
-									<string key="NSFrame">{{157, 0}, {828, 600}}</string>
+									<string key="NSFrame">{{157, 0}, {828, 630}}</string>
 									<reference key="NSSuperview" ref="845741461"/>
 									<reference key="NSWindow"/>
 									<reference key="NSNextKeyView"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 							</array>
-							<string key="NSFrameSize">{985, 600}</string>
+							<string key="NSFrameSize">{985, 630}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="680271190"/>
@@ -469,13 +502,13 @@
 							<int key="NSDividerStyle">2</int>
 						</object>
 					</array>
-					<string key="NSFrameSize">{985, 600}</string>
+					<string key="NSFrameSize">{985, 630}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="845741461"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
-				<string key="NSMinSize">{880, 522}</string>
+				<string key="NSMinSize">{880, 652}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">NO</bool>
 			</object>
@@ -3977,6 +4010,22 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">imgOrg</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="97597779"/>
+					</object>
+					<int key="connectionID">1001</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">imgTrash</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="739193197"/>
+					</object>
+					<int key="connectionID">1005</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="1005"/>
 						<reference key="destination" ref="1001"/>
@@ -4225,6 +4274,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">dropDelegate</string>
+						<reference key="source" ref="97597779"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">1000</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">itemPrototype</string>
 						<reference key="source" ref="285347333"/>
 						<reference key="destination" ref="423802188"/>
@@ -4299,6 +4356,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 					<int key="connectionID">991</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">dropDelegate</string>
+						<reference key="source" ref="739193197"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">1004</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -4363,6 +4428,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<reference ref="298503845"/>
 							<reference ref="507709569"/>
 							<reference ref="775973520"/>
+							<reference ref="739193197"/>
 						</array>
 						<reference key="parent" ref="845741461"/>
 					</object>
@@ -5924,6 +5990,19 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Ancestral Organism Array Controller</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">1002</int>
+						<reference key="object" ref="739193197"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="371977729"/>
+						</array>
+						<reference key="parent" ref="680271190"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">1003</int>
+						<reference key="object" ref="371977729"/>
+						<reference key="parent" ref="739193197"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5937,6 +6016,9 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<boolean value="YES" key="1.NSWindowTemplate.visibleAtLaunch"/>
 				<string key="10.CustomClassName">SubtleSplitView</string>
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="1002.CustomClassName">DraggableImageView</string>
+				<string key="1002.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="1003.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="105.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="106.CustomClassName">SubtleSplitView</string>
 				<string key="106.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -6163,6 +6245,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="953.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="958.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="959.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="960.CustomClassName">DraggableImageView</string>
 				<string key="960.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="961.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="962.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -6186,7 +6269,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">999</int>
+			<int key="maxID">1005</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6340,6 +6423,8 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="btnRunState">NSButton</string>
 						<string key="btnTogglePopViewStatView">NSButton</string>
 						<string key="cvAncestors">NSCollectionView</string>
+						<string key="imgOrg">DraggableImageView</string>
+						<string key="imgTrash">DraggableImageView</string>
 						<string key="mainSplitView">NSSplitView</string>
 						<string key="mainSplitViewLeft">NSView</string>
 						<string key="mapFlipView">FlipView</string>
@@ -6403,6 +6488,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="IBToOneOutletInfo" key="cvAncestors">
 							<string key="name">cvAncestors</string>
 							<string key="candidateClassName">NSCollectionView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="imgOrg">
+							<string key="name">imgOrg</string>
+							<string key="candidateClassName">DraggableImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="imgTrash">
+							<string key="name">imgTrash</string>
+							<string key="candidateClassName">DraggableImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="mainSplitView">
 							<string key="name">mainSplitView</string>
@@ -6580,7 +6673,9 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="panelSettings">NSPanel</string>
 						<string key="sldStatus">NSSlider</string>
 						<string key="tblTaskCounts">NSTableView</string>
+						<string key="txtJustExec">NSTextField</string>
 						<string key="txtOrgName">NSTextField</string>
+						<string key="txtWillExec">NSTextField</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="arrctlrCurStack">
@@ -6643,8 +6738,16 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">tblTaskCounts</string>
 							<string key="candidateClassName">NSTableView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="txtJustExec">
+							<string key="name">txtJustExec</string>
+							<string key="candidateClassName">NSTextField</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="txtOrgName">
 							<string key="name">txtOrgName</string>
+							<string key="candidateClassName">NSTextField</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="txtWillExec">
+							<string key="name">txtWillExec</string>
 							<string key="candidateClassName">NSTextField</string>
 						</object>
 					</dictionary>
@@ -6787,17 +6890,20 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<object class="IBPartialClassDescription">
 					<string key="className">DraggableImageView</string>
 					<string key="superclassName">NSImageView</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">delegate</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">delegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="delegate">id</string>
+						<string key="dropDelegate">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="delegate">
 							<string key="name">delegate</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</object>
+						<object class="IBToOneOutletInfo" key="dropDelegate">
+							<string key="name">dropDelegate</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/DraggableImageView.h</string>
@@ -6942,6 +7048,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<string key="PopViewerIcon">{32, 32}</string>
 			<string key="avida-ed-icon">{150, 133}</string>
 			<string key="genome65">{42, 65}</string>
+			<string key="trash_can">{200, 30}</string>
 		</dictionary>
 	</data>
 </archive>
