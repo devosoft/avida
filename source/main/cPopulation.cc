@@ -1543,8 +1543,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
         dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || 
         dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) faced_is_boundary = true;
     if (faced_is_boundary) {
-      if (true_cell != -1) GetCell(true_cell).GetOrganism()->Die(ctx);
-      else if (true_cell == -1) src_cell.GetOrganism()->Die(ctx);
+      if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
+      else if (true_cell == -1) KillOrganism(src_cell, ctx);
       return false;
     }
   }    
@@ -1561,8 +1561,8 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     if (resource_lib.GetResource(i)->IsPredatory() && dest_cell_resources[i] > 0) {
       // if you step on a predatory resource, we're going to try to kill you regardless of whether there is a den there
       if (ctx.GetRandom().P(resource_lib.GetResource(i)->GetPredatorResOdds())) {
-        if (true_cell != -1) GetCell(true_cell).GetOrganism()->Die(ctx);
-        else if (true_cell == -1) src_cell.GetOrganism()->Die(ctx);
+        if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
+        else if (true_cell == -1) KillOrganism(src_cell, ctx);
         return false;
       }
     }
@@ -7589,7 +7589,10 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
         int guarded_juvs = num_guards * juvs_per;
         int unguarded_juvs = num_juvs - guarded_juvs;
         for (int k = 0; k < unguarded_juvs; k++) {
-          if (ctx.GetRandom().P(pred_odds) && !juvs[k]->IsDead()) juvs[k]->Die(ctx); 
+          if (ctx.GetRandom().P(pred_odds) && !juvs[k]->IsDead()) {
+            if (!juvs[k]->IsRunning()) KillOrganism(GetCell(juvs[k]->GetCellID()), ctx); 
+            else juvs[k]->GetPhenotype().SetToDie();
+          }
         }
       }
     }
@@ -7597,7 +7600,10 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
     else {
       if (ctx.GetRandom().P(pred_odds)) {
         cOrganism* target_org = cell_avs[m_world->GetRandom().GetUInt(cell_avs.GetSize())];
-        if (!target_org->IsDead()) target_org->Die(ctx);
+        if (!target_org->IsDead()) {
+          if (!target_org->IsRunning()) KillOrganism(GetCell(target_org->GetCellID()), ctx);
+          else target_org->GetPhenotype().SetToDie();
+        }
       }
     }
   }
@@ -7606,7 +7612,10 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
     // if not avatars, a juv will be killed regardless of whether it is on a den
     // an adult would only be targeted off of a den
     if (target_org->GetPhenotype().GetTimeUsed() < juv_age || !cell_has_den) {
-      if (ctx.GetRandom().P(pred_odds) && !target_org->IsDead()) target_org->Die(ctx);
+      if (ctx.GetRandom().P(pred_odds) && !target_org->IsDead()) {
+          if (!target_org->IsRunning()) KillOrganism(GetCell(target_org->GetCellID()), ctx);
+          else target_org->GetPhenotype().SetToDie();
+      }
     }
   }
 }
