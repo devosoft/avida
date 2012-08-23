@@ -108,25 +108,25 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     colorRect.origin.x = 10.0;
     colorRect.origin.y = 30.0 + color_height;
     
+    int activeCount = 0;
     for (int i = 0; i < num_colors; i++) {
-      if (i == colors_per_row) {
+      if (activeCount == colors_per_row) {
         colorRect.origin.x = 10.0;
         colorRect.origin.y = 22.0;
       }
       
-      if (color_count[i + Avida::Viewer::MAP_RESERVED_COLORS] == 0) {
-        [[[color_cache objectAtIndex:i] colorWithAlphaComponent:0.3] set];
-      } else {
+      if (color_count[i + Avida::Viewer::MAP_RESERVED_COLORS] != 0) {
         [(NSColor*)[color_cache objectAtIndex:i] set];
+        [NSBezierPath fillRect:colorRect];
+        NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].label];
+        CGFloat offset = -[lbl sizeWithAttributes:str_attributes].height / 2.0;
+        NSPoint lbl_location = NSMakePoint(colorRect.origin.x + 22.0, colorRect.origin.y + (colorRect.size.height / 2.0) + offset);
+        [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
+
+        colorRect.origin.x += color_width;
+        activeCount++;
       }
-      [NSBezierPath fillRect:colorRect];
 
-      NSString* lbl = [NSString stringWithUTF8String:(const char*)scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].label];
-      CGFloat offset = -[lbl sizeWithAttributes:str_attributes].height / 2.0;
-      NSPoint lbl_location = NSMakePoint(colorRect.origin.x + 22.0, colorRect.origin.y + (colorRect.size.height / 2.0) + offset);
-      [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
-
-      colorRect.origin.x += color_width;
     }
   } else {
     NSRect scaleRect;

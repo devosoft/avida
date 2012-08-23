@@ -57,6 +57,7 @@ return self;
 - (void) addNewEntry:(NSString*)name withDescription:(NSString*)desc withOrder:(int)order {
   NSMutableDictionary* entry = [[NSMutableDictionary alloc] init];
   [entry setValue:name forKey:@"Action"];
+  [entry setValue:[NSString stringWithFormat:@"%@-", name] forKey:@"AttributedAction"];
   [entry setValue:[NSNumber numberWithInt:NSOffState] forKey:@"State"];
   [entry setValue:desc forKey:@"Description"];
   [entry setValue:[NSNumber numberWithInt:0] forKey:@"Orgs Performing"];
@@ -73,7 +74,10 @@ return self;
 
 
 - (void) updateEntry:(NSString*)name withValue:(NSNumber*)value {
-  [[entries objectAtIndex:[[entrymap valueForKey:name] unsignedIntValue]] setValue:value forKey:@"Orgs Performing"];
+  NSMutableDictionary* entry = [entries objectAtIndex:[[entrymap valueForKey:name] unsignedIntValue]];
+  [entry setValue:value forKey:@"Orgs Performing"];
+  char attr = [value intValue] > 0 ? '+' : '-';
+  [entry setValue:[NSString stringWithFormat:@"%@%c", name, attr] forKey:@"AttributedAction"];
 }
 
 

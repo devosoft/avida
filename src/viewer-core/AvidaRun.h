@@ -74,6 +74,8 @@
 
 - (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y withName:(Apto::String)name;
 - (bool) hasPendingInjects;
+- (int) pendingInjectCount;
+- (NSPoint) locationOfPendingInjectAtIndex:(int)index;
 
 
 - (void) attachListener:(id<ViewerListener>)listener;

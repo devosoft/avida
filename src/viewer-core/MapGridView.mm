@@ -157,7 +157,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   for (int i = 0; i < map_width; i++) {
     for (int j = 0; j < map_height; j++) {
       gridCellRect.origin = NSMakePoint(mapRect.origin.x + block_size * i, mapRect.origin.y + block_size * j);
-      int color = map_colors[i + j * map_width];
+      int color = (pending_colors[i + j * map_width] != 0) ? pending_colors[i + j * map_width] : map_colors[i + j * map_width];
       switch (color) {
         case -4:  break;
         case -3:  [[NSColor darkGrayColor] set]; [NSBezierPath fillRect:gridCellRect]; break;
@@ -202,6 +202,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_height = size.height;
   map_colors.Resize(map_width * map_height);
   map_colors.SetAll(-4);
+  pending_colors.Resize(map_width * map_height);
+  pending_colors.SetAll(0);
   map_tags.Resize(map_width * map_height);
   map_tags.SetAll(-4);
   [self adjustZoom];
@@ -215,6 +217,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_height = state->GetHeight();
   
   map_colors = state->GetColors();
+  pending_colors.SetAll(0);
   num_colors = state->GetColorScale().GetScaleRange();
   
   map_tags = state->GetTags();
@@ -230,6 +233,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   num_colors = 0;
   [color_cache removeAllObjects];
   map_colors.ResizeClear(0);
+  pending_colors.ResizeClear(0);
   map_tags.ResizeClear(0);
   zoom = -1;
   selected_x = -1;
@@ -238,12 +242,16 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 
-- (void) setPendingActionColorAtX:(int)x Y:(int)y {
+- (void) setPendingActionAtX:(int)x Y:(int)y withColor:(int)color {
   assert(x < map_width);
   assert(y < map_height);
   
-  map_colors[x + y * map_width] = -2;
+  pending_colors[x + y * map_width] = color;
   [self setNeedsDisplay:YES];
+}
+
+- (void) clearPendingActions {
+  pending_colors.SetAll(0);
 }
 
 - (void) mouseDown:(NSEvent*)event {

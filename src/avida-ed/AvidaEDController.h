@@ -64,7 +64,6 @@
   NSMutableArray* freezerConfigs;
   NSMutableArray* freezerGenomes;
   NSMutableArray* freezerWorlds;
-  IBOutlet NSPathControl* pathWorkspace;
   IBOutlet NSOutlineView* outlineFreezer;
   
   // Population View

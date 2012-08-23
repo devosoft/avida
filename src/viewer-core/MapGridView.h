@@ -59,6 +59,7 @@
   double zoom;
   
   Apto::Array<int> map_colors;
+  Apto::Array<int> pending_colors;
   Apto::Array<int> map_tags;
   NSMutableArray* color_cache;
   
@@ -78,8 +79,8 @@
 - (void) updateState:(Avida::Viewer::Map*)state;
 - (void) clearMap;
 
-- (void) setPendingActionColorAtX:(int)x Y:(int)y;
-
+- (void) setPendingActionAtX:(int)x Y:(int)y withColor:(int)color;
+- (void) clearPendingActions;
 
 - (void) mouseDown:(NSEvent*)event;
 - (void) mouseDragged:(NSEvent*)event;

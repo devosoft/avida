@@ -223,6 +223,15 @@ void handleDriverCallback(Avida::DriverEvent event)
   return driver->HasPendingInjects();
 }
 
+- (int) pendingInjectCount {
+  return driver->PendingInjectCount();
+}
+
+- (NSPoint) locationOfPendingInjectAtIndex:(int)index {
+  const Avida::Viewer::Driver::InjectGenomeInfo info = driver->PendingInject(index);
+  return NSMakePoint(info.x, info.y);
+}
+
 
 - (void) attachListener:(id<ViewerListener>)listener {
   if (driver) driver->AttachListener([listener listener]);

@@ -52,7 +52,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-  [[NSColor darkGrayColor] set];
+//  [[NSColor darkGrayColor] set];
+  [[NSColor whiteColor] set];
   [NSBezierPath fillRect:dirtyRect];
   
   if (snapshot) {

@@ -139,10 +139,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) freezeCurrentRun;
 - (void) freezeGenome:(Genome*)genome;
 - (void) removeFromFreezer:(Avida::Viewer::FreezerID)freezerID;
+- (void) saveAncestorsToFreezerID:(Avida::Viewer::FreezerID)freezerID;
 - (void) activateRun;
 - (void) activateRunWithID:(Avida::Viewer::FreezerID)freezerID;
-
-
+- (NSPoint) locationOfOrg:(NSUInteger)orgIndex withOrgCount:(NSUInteger)count;
+- (void) updatePendingInjectColors;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -257,6 +258,22 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [[matCfgEnv cellWithTag:7] setState:([currentRun reactionValueOf:"XOR"]  > 0.0) ? NSOnState : NSOffState];
   [[matCfgEnv cellWithTag:8] setState:([currentRun reactionValueOf:"EQU"]  > 0.0) ? NSOnState : NSOffState];
 
+  // Clear ancestors
+  NSRange range = NSMakeRange(0, [[ancestorArrayCtlr arrangedObjects] count]);
+  [ancestorArrayCtlr removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+  
+  // Load ancestors
+  Apto::String ancestor_str(freezer->LoadAttachment(freezerID, "ancestors"));
+  Apto::String ancestor_name = ancestor_str.Pop('\n');
+  while (ancestor_name.GetSize()) {
+    Apto::String genome_str = ancestor_str.Pop('\n');
+    Genome* genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome_str] name:[NSString stringWithAptoString:ancestor_name]];
+    [ancestorArrayCtlr addObject:genome];
+    ancestor_name = ancestor_str.Pop('\n');
+  }
+  
+  [self updatePendingInjectColors];
+
 
   listener = new MainThreadListener(self);
   [currentRun attachListener:self];
@@ -351,6 +368,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::WORLD, [[self runName] UTF8String]);
   Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], name);
   if (freezer->IsValid(f)) {
+    // Save ancestor info
+    [self saveAncestorsToFreezerID:f];
+    
     // Save plot info
     [popViewStatView saveRunToFreezer:freezer withID:f];
     
@@ -364,7 +384,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) freezeCurrentConfig {
   Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::CONFIG, [[self runName] UTF8String]);
   Avida::Viewer::FreezerID f = freezer->SaveConfig([currentRun oldworld], name);
-  if (freezer->IsValid(f)) {    
+  if (freezer->IsValid(f)) {
+    // Save ancestor info
+    [self saveAncestorsToFreezerID:f];    
+    
     FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
     [freezerConfigs addObject:fi];
     [outlineFreezer reloadData];
@@ -407,6 +430,23 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [outlineFreezer reloadData];
 }
 
+- (void) saveAncestorsToFreezerID:(Avida::Viewer::FreezerID)freezerID
+{
+  Apto::String ancestors;
+
+  for (NSUInteger idx = 0; idx < [ancestorArray count]; idx++) {
+    Genome* genome = [ancestorArray objectAtIndex:idx];
+    ancestors += [[genome name] UTF8String];
+    ancestors += "\n";
+    ancestors += [[genome genomeStr] UTF8String];
+    ancestors += "\n";
+  }
+  
+  freezer->SaveAttachment(freezerID, "ancestors", ancestors);
+}
+
+
+
 - (void) activateRun {
   [self activateRunWithID:Avida::Viewer::FreezerID()];
 }
@@ -419,8 +459,64 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [txtCfgWorldY setEnabled:NO];
   [txtUpdate setTextColor:[NSColor controlTextColor]];
 
+  
+  // Setup inject queue based on ancestors box
+  for (NSUInteger idx = 0; idx < [ancestorArray count]; idx++) {
+    Genome* genome = [ancestorArray objectAtIndex:idx];
+    Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
+    
+    NSPoint coord = [self locationOfOrg:idx withOrgCount:[ancestorArray count]];
+    [currentRun injectGenome:genome_ptr atX:coord.x Y:coord.y withName:[[genome name] UTF8String]];
+  }
 }
 
+- (NSPoint) locationOfOrg:(NSUInteger)orgIndex withOrgCount:(NSUInteger)count {
+  assert(orgIndex < count);
+  
+  NSSize worldSize = [currentRun worldSize];
+  
+  if (count == 1) {
+    return NSMakePoint(round(worldSize.width / 2.0), round(worldSize.height / 2.0));
+  }
+  
+  if (count == 2) {
+    return NSMakePoint(round(worldSize.width / 2.0), round(worldSize.height / 3.0) * (1 + orgIndex));
+  }
+  
+  if (count == 3) {
+    if (orgIndex == 0) return NSMakePoint(round(worldSize.width / 2.0), round(worldSize.height / 3.0));
+    return NSMakePoint(round(worldSize.width / 3.0) * orgIndex, round(worldSize.height / 3.0) * 2.0);
+  }
+
+  if (count == 4) {
+    if ((orgIndex % 2) == 0)
+      return NSMakePoint(round(worldSize.width / 3.0) * orgIndex, round(worldSize.height / 3.0));
+    else
+      return NSMakePoint(round(worldSize.width / 3.0) * (orgIndex - 1), round(worldSize.height / 3.0) * 2.0);
+  }
+  
+  NSUInteger spacing = round((worldSize.width * worldSize.height) / (count + 1));
+  NSUInteger cellID = spacing * (orgIndex + 1);
+
+  return NSMakePoint(cellID / (NSUInteger)worldSize.width, cellID % (NSUInteger)worldSize.width);
+}
+
+- (void) updatePendingInjectColors
+{
+  [mapView clearPendingActions];
+
+  // Pending Queued Injects (these are already queued, thus should be colored first
+  for (int i = 0; i < [currentRun pendingInjectCount]; i++) {
+    NSPoint coord = [currentRun locationOfPendingInjectAtIndex:i];
+    [mapView setPendingActionAtX:coord.x Y:coord.y withColor:-2];
+  }
+  
+  // Pending Ancestor Injects
+  for (NSUInteger idx = 0; idx < [ancestorArray count]; idx++) {
+    NSPoint coord = [self locationOfOrg:idx withOrgCount:[ancestorArray count]];
+    [mapView setPendingActionAtX:coord.x Y:coord.y withColor:-2];
+  }
+}
 
 @end
 
@@ -531,7 +627,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
   [cvAncestors registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, AvidaPasteboardTypeGenome, nil]];
 
-  [pathWorkspace setURL:freezerURL];
+  NSString* workspaceName = [[freezerURL lastPathComponent] stringByDeletingPathExtension];
+  [self.window setTitle:[NSString stringWithFormat:@"Avida-ED : %@ Workspace", workspaceName]];
   
   for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
     if (freezer->NameOf(*it.Get()) == "@default") {
@@ -566,7 +663,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (IBAction) toggleRunState:(id)sender {
   if ([currentRun willPause]) {
-    if ([currentRun numOrganisms] == 0 && ![currentRun hasPendingInjects]) {
+    if ([currentRun numOrganisms] == 0 && ![currentRun hasPendingInjects] && [ancestorArray count] == 0) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
       [alert setMessageText:@"Unable to resume experiment; there is no start organism in the petri dish."];
@@ -732,6 +829,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [mapFlipView flip:sender withDuration:flipDuration];
   if ([mapFlipView isCurrentView:[mapFlipView view1]]) {
     [btnMapSettingsFlip setTitle:@"Setup"];
+    
+    // Workaround for not correctly recentering clip view.  It blinks, but works for now.
+    [mapView.superview setFrame:[mapView.superview frame]];
   } else {
     [btnMapSettingsFlip setTitle:@"Map"];
   }
@@ -1271,7 +1371,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   Avida::GenomePtr genome(freezer->InstantiateGenome(fid));
   if (genome) {
     [currentRun injectGenome:genome atX:x Y:y withName:freezer->NameOf(fid)];
-    [mapView setPendingActionColorAtX:x Y:y];
+    [mapView setPendingActionAtX:x Y:y withColor:-2];
   }
 }
 
@@ -1280,7 +1380,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
   if (genome_ptr) {
     [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome genomeStr] UTF8String]];
-    [mapView setPendingActionColorAtX:x Y:y];
+    [mapView setPendingActionAtX:x Y:y withColor:-2];
   }
 }
 
@@ -1421,6 +1521,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
     [ancestorArrayCtlr insertObject:[Genome genomeFromPasteboard:[info draggingPasteboard]] atArrangedObjectIndex:index];
+    [self updatePendingInjectColors];
     return YES;
   }
   if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeFreezerID]] != nil) {
@@ -1430,6 +1531,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       Avida::GenomePtr genome = freezer->InstantiateGenome(fid);
       Genome* objc_genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome->AsString()] name:[NSString stringWithAptoString:freezer->NameOf(fid)]];
       [ancestorArrayCtlr insertObject:objc_genome atArrangedObjectIndex:index];
+      [self updatePendingInjectColors];
       return YES;
     }
   }
