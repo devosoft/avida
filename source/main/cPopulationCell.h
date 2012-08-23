@@ -159,18 +159,18 @@ private:
 public:
   inline int GetNumAVInputs() const { return m_av_inputs.GetSize(); }
   inline int GetNumAVOutputs() const { return m_av_outputs.GetSize(); }
-  inline int GetNumAV() const { return m_av_inputs.GetSize() + m_av_outputs.GetSize(); }
-  inline int GetNumPredAV() const { return m_av_inputs.GetSize(); }
-  inline int GetNumPreyAV() const { return m_av_outputs.GetSize(); }
+  inline int GetNumAV() const { return GetNumAVInputs() + GetNumAVOutputs(); }
+  inline int GetNumPredAV() const { return GetNumAVInputs(); }
+  inline int GetNumPreyAV() const { return GetNumAVOutputs(); }
   void AddInputAV(cOrganism* org);
   void AddOutputAV(cOrganism* org);
   void RemoveInputAV(cOrganism* org);
   void RemoveOutputAV(cOrganism* org);
-  inline bool HasInputAV() const { return m_av_inputs.GetSize() > 0; }
-  inline bool HasOutputAV() const { return m_av_outputs.GetSize() > 0; }
-  inline bool HasAV() const { return (m_av_inputs.GetSize() > 0 || m_av_outputs.GetSize() > 0); }
-  inline bool HasPredAV() const { return m_av_inputs.GetSize() > 0; }
-  inline bool HasPreyAV() const { return m_av_outputs.GetSize() > 0; }
+  inline bool HasInputAV() const { return GetNumAVInputs() > 0; }
+  inline bool HasOutputAV() const { return GetNumAVOutputs() > 0; }
+  inline bool HasAV() const { return (GetNumAVOutputs() > 0 || GetNumAVInputs() > 0); }
+  inline bool HasPredAV() const { return GetNumAVInputs() > 0; }
+  inline bool HasPreyAV() const { return GetNumAVOutputs() > 0; }
   bool HasOutputAV(cOrganism* org);
   cOrganism* GetRandAV() const;
   cOrganism* GetRandPredAV() const;

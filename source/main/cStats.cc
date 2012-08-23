@@ -4120,6 +4120,10 @@ void cStats::PrintDenData(const cString& filename) {
     for (int j = 0; j < cell_res.GetSize(); j++) {
       if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
         tArray<cOrganism*> cell_avs = cell.GetCellAVs(); 
+        if (cell.HasAV()) 
+        {
+        cout << " den cell: " << cell.GetID() << endl;
+        }
         for (int k = 0; k < cell_avs.GetSize(); k++) {
           if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
             num_juvs++;

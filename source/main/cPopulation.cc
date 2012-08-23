@@ -7563,7 +7563,7 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
 
 void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
 {
-  cPopulationCell cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
   const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
