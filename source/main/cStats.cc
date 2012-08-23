@@ -114,6 +114,7 @@ cStats::cStats(cWorld* world)
   , num_modified(0)
   , num_genotypes_last(1)
   , num_kabooms(0)
+  , num_kaboom_kills(0)
   , tot_organisms(0)
   , tot_genotypes(0)
   , tot_threshold(0)
@@ -3470,11 +3471,13 @@ void cStats::PrintKaboom(const cString& filename)
     df.Write(m_update, "Update [update]");
     
     df.Write(num_kabooms, "number of kabooms");
+    df.Write(num_kaboom_kills, "number of orgs killed by kabooms");
     df.Write(hd_list, "hamming distances", "");
     
     df.Endl();
     hd_list.ResizeClear(0);
     num_kabooms = 0;
+    num_kaboom_kills=0;
     
 }
 

@@ -682,23 +682,21 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   tArray<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
   
   
-  if(infection_mechanism == 0) {
+  if (infection_mechanism == 0) {
     interaction_fails = false;
   }
   
   // 1: Parasite must match at least 1 task the host does (Overlap)
-  if(infection_mechanism == 1)
-  {
+  if (infection_mechanism == 1) {
     //handle skipping of first task
     int start = 0;
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
       start += 1;
+    }
     
     //find if there is a matching task
-    for (int i=start;i<host_task_counts.GetSize();i++)
-    {
-      if(host_task_counts[i] > 0 && parasite_task_counts[i] > 0)
-      {
+    for (int i = start; i < host_task_counts.GetSize(); i++) {
+      if (host_task_counts[i] > 0 && parasite_task_counts[i] > 0) {
         //inject should succeed if there is a matching task
         interaction_fails = false;
       }
@@ -706,39 +704,35 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   }
   
   // 2: Parasite must perform at least one task the host does not (Inverse Overlap)
-  if(infection_mechanism == 2)
-  {
+  if (infection_mechanism == 2) {
     //handle skipping of first task
     int start = 0;
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
       start += 1;
+    }
     
     //find if there is a parasite task that the host isn't doing
-    for (int i=start;i<host_task_counts.GetSize();i++)
-    {
-      if(host_task_counts[i] == 0 && parasite_task_counts[i] > 0)
-      {
+    for (int i = start; i < host_task_counts.GetSize(); i++) {
+      if (host_task_counts[i] == 0 && parasite_task_counts[i] > 0) {
         //inject should succeed if there is a matching task
         interaction_fails = false;
       }
     }
-    
   }
   
   // 3: Parasite tasks must match host tasks exactly. (Matching Alleles) 
-  if(infection_mechanism == 3)
-  {
+  if (infection_mechanism == 3) {
     //handle skipping of first task
     int start = 0;
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
       start += 1;
+    }
     
     //This time if we trigger the if statments we DO fail. 
     interaction_fails = false;
-    for (int i=start;i<host_task_counts.GetSize();i++)
-    {
-      if( (host_task_counts[i] == 0 && parasite_task_counts[i] > 0) || (host_task_counts[i] > 0 && parasite_task_counts[i] == 0) )
-      {
+    for (int i = start; i < host_task_counts.GetSize(); i++) {
+      if ((host_task_counts[i] == 0 && parasite_task_counts[i] > 0) || 
+          (host_task_counts[i] > 0 && parasite_task_counts[i] == 0)) {
         //inject should fail if either the host or parasite is doing a task the other isn't.
         interaction_fails = true;
       }
@@ -746,66 +740,61 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   }
   
   // 4: Parasite tasks must overcome hosts. (GFG) 
-  if(infection_mechanism == 4)
-  {
+  if (infection_mechanism == 4) {
     //handle skipping of first task
     int start = 0;
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+    if (m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
       start += 1;
+    }
     
     //This time if we trigger the if statments we DO fail. 
     interaction_fails = false;
     bool parasite_overcomes = false;
-    for (int i=start;i<host_task_counts.GetSize();i++)
-    {
-      if(host_task_counts[i] > 0 && parasite_task_counts[i] == 0 )
-      {
+    for (int i = start; i < host_task_counts.GetSize(); i++) {
+      if (host_task_counts[i] > 0 && parasite_task_counts[i] == 0 ) {
         //inject should fail if the host overcomes the parasite.
         interaction_fails = true;
       }
       
       //check if parasite overcomes at least one task
-      if(parasite_task_counts[i] > 0 && host_task_counts[i] == 0)
+      if (parasite_task_counts[i] > 0 && host_task_counts[i] == 0) {
         parasite_overcomes = true;
+      }
     }
     
     //if host doesn't overcome, infection may still fail if the parasite doesn't overcome the host
-    if(interaction_fails == false && parasite_overcomes == false)
+    if (interaction_fails == false && parasite_overcomes == false) {
       interaction_fails = true;
+    }
   }
   
   // 5: Quantitative Matching Allele -- probability of infection based on phenotype overlap
-  if (infection_mechanism == 5)
-  {
+  if (infection_mechanism == 5) {
     //handle skipping of first task
     int start = 0;
-    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get())
+    if(m_world->GetConfig().INJECT_SKIP_FIRST_TASK.Get()) {
       start += 1;
+    }
     
     //calculate how many tasks have the same binary phenotype (i.e. how much overlap)
     int num_overlap = 0;
-    for (int i=start; i<host_task_counts.GetSize(); i++)
-    {
-      if( (host_task_counts[i] > 0 && parasite_task_counts[i] > 0) ||
-          (host_task_counts[i] == 0 && parasite_task_counts[i] == 0))
+    for (int i = start; i < host_task_counts.GetSize(); i++) {
+      if ((host_task_counts[i] > 0 && parasite_task_counts[i] > 0) ||
+          (host_task_counts[i] == 0 && parasite_task_counts[i] == 0)) {
         num_overlap += 1;
+      }
     }
     
     //turn number into proportion of available tasks that match
-    float prop_overlap = float(num_overlap) / (host_task_counts.GetSize() - start);
+    double prop_overlap = double(num_overlap) / (host_task_counts.GetSize() - start);
     
     //use config exponent and calculate probability of infection
-    float infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
-    float prob_success = pow(prop_overlap, infection_exponent);
+    double infection_exponent = m_world->GetConfig().INJECT_QMA_EXPONENT.Get();
+    double prob_success = pow(prop_overlap, infection_exponent);
     
-    //by default, infection succedes
-    interaction_fails = false;
-
     //check if infection should fail based on probability
     double rand = m_world->GetRandom().GetDouble();
-    if (rand > prob_success)
-      interaction_fails = true;
-    
+    interaction_fails = rand > prob_success;
   }
   
   // TODO: Add other infection mechanisms -LZ
@@ -813,15 +802,15 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   // : Multiplicative GFG (special case of above?)
   // : Randomization of tasks that match between hosts and parasites?
   // : ??
-  if(interaction_fails)
-  {
+  if (interaction_fails) {
     double prob_success = m_world->GetConfig().INJECT_DEFAULT_SUCCESS.Get();
     double rand = m_world->GetRandom().GetDouble();
     
-    if (rand > prob_success)
+    if (rand > prob_success) {
       return false;
+    }
   }
-  
+
   return true;
 }
 
@@ -1828,6 +1817,7 @@ void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int dista
       //do we actually have something to kill?
       if (death_cell.IsOccupied() == false) continue;
       
+        m_world->GetStats().IncKaboomKills();
       cOrganism* org_temp = death_cell.GetOrganism();
       
       if (distance == 0) {

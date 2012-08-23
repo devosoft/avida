@@ -251,6 +251,7 @@ private:
     
   // ------- Kaboom Stats --------------------
     int num_kabooms;
+    int num_kaboom_kills;
     tArray<int> hd_list;
   // ------- Division of Labor Stats ---------
     //TODO: Right place for this?
@@ -977,6 +978,7 @@ public:
     
  // Kaboom stats
   void IncKaboom() { num_kabooms++; }
+    void IncKaboomKills() {num_kaboom_kills++;}
   void AddHamDistance(int distance) { hd_list.Push(distance); }
   void PrintKaboom(const cString& filename);
     
