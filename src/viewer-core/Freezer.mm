@@ -1,6 +1,6 @@
 //
 //  Freezer.m
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 1/11/12.
 //  Copyright 2012 Michigan State University. All rights reserved.

@@ -1,8 +1,8 @@
 //
-//  AvidaEDGraphicalValueDisplay.h
+//  TaskTimelineView.h
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 3/22/12.
+//  Created by David M. Bryson on 8/27/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -29,10 +29,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AvidaEDGraphicalValueDisplay : NSView {
-  int displayValue;
-}
-
-@property (readwrite, nonatomic) int displayValue;
+@interface TaskTimelineView : NSView
 
 @end

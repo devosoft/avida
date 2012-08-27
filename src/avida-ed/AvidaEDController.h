@@ -31,6 +31,7 @@
 #import <CorePlot/CorePlot.h>
 
 #import "AvidaEDAnalyzePopulation.h"
+#import "Definitions.h"
 #import "DraggableImageView.h"
 #import "DroppableGraphHostingView.h"
 #import "MapGridView.h"
@@ -177,6 +178,10 @@
 
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
+
+
+- (void) exportGraphic:(ExportGraphicsFileFormat)format withOption:(NSInteger)selectedOpt toURL:(NSURL*)url;
+
 
 @property (readonly) NSString* runName;
 

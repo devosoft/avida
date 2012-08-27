@@ -1,6 +1,6 @@
 //
 //  NSString+Apto.mm
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 7/7/11.
 //  Copyright 2011-2012 Michigan State University. All rights reserved.

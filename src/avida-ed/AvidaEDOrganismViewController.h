@@ -1,6 +1,6 @@
 //
 //  AvidaEDOrgansimViewController.h
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 3/5/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
@@ -29,6 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "Definitions.h"
 #import "DropDelegate.h"
 
 #include "avida/viewer/OrganismTrace.h"
@@ -38,10 +39,12 @@
 @class AvidaEDOrganismSettingsViewController;
 @class AvidaRun;
 @class OrganismView;
+@class TaskTimelineView;
 
 
 @interface AvidaEDOrganismViewController : NSViewController <NSPopoverDelegate> {
   IBOutlet OrganismView* orgView;
+  IBOutlet TaskTimelineView* timelineView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet NSTableView* tblTaskCounts;
   IBOutlet NSSlider* sldStatus;
@@ -101,5 +104,8 @@
 
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;
+- (NSString*) getOrganismName;
+
+- (void) exportGraphic:(ExportGraphicsFileFormat)format withOptions:(NSMatrix*)optMat toURL:(NSURL*)url;
 
 @end

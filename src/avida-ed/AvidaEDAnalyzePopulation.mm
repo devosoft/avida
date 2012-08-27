@@ -1,6 +1,6 @@
 //
 //  AvidaEDAnalyzePopulation.mm
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 1/31/12.
 //  Copyright 2012 Michigan State University. All rights reserved.

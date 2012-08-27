@@ -1,6 +1,6 @@
 //
 //  AvidaEDOrganismViewController.mm
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David Michael Bryson on 3/5/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
@@ -38,6 +38,7 @@
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
 #import "OrganismView.h"
+#import "TaskTimelineView.h"
 
 #include "avida/environment/ActionTrigger.h"
 #include "avida/environment/Manager.h"
@@ -412,8 +413,14 @@
 }
 
 
+- (NSString*) getOrganismName {
+  return [txtOrgName stringValue];
+}
 
-
+- (void) exportGraphic:(ExportGraphicsFileFormat)format withOptions:(NSMatrix*)optMat toURL:(NSURL*)url
+{
+  // @TODO - export organism graphics
+}
 
 
 

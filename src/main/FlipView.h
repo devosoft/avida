@@ -1,6 +1,6 @@
 //
 //  FlipView.h
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 1/5/12.
 //  Copyright 2012 Michigan State University. All rights reserved.

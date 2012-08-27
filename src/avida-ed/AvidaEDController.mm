@@ -925,9 +925,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   id curView = [[mainSplitView subviews] objectAtIndex:1];
   if (curView == popView) {
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Population" bundle:nil];
+    [saveDlg setTitle:@"Export Image(s)"];
+    [saveDlg setNameFieldStringValue:[txtRun stringValue]];
     completionHandler = ^(NSInteger result) {
       if (result == NSOKButton) {
-        printf("exporting population graphic\n");
+        [self exportGraphic:(ExportGraphicsFileFormat)[exportAccessoryViewCtlr selectedFormat] withOption:[exportAccessoryViewCtlr selectedOption] toURL:[saveDlg URL]];
       }
       
       // Cleanup
@@ -937,6 +939,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   } else if (curView == analyzeCtlr.view) {
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Analysis" bundle:nil];
     [exportAccessoryViewCtlr setSaveDlg:saveDlg];
+    [saveDlg setTitle:@"Export Image"];
     completionHandler = ^(NSInteger result) {
       if (result == NSOKButton) {
         [analyzeCtlr exportGraphic:(ExportGraphicsFileFormat)[exportAccessoryViewCtlr selectedFormat] toURL:[saveDlg URL]];
@@ -948,9 +951,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
   } else if (curView == orgCtlr.view) {
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Organism" bundle:nil];
+    [saveDlg setTitle:@"Export Image(s)"];
+    [saveDlg setNameFieldStringValue:[orgCtlr getOrganismName]];
     completionHandler = ^(NSInteger result) {
       if (result == NSOKButton) {
-        printf("exporting organism graphic\n");
+        [orgCtlr exportGraphic:(ExportGraphicsFileFormat)[exportAccessoryViewCtlr selectedFormat] withOptions:[exportAccessoryViewCtlr optionMatrix] toURL:[saveDlg URL]];
       }
       
       // Cleanup
@@ -966,6 +971,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
   // Display the dialog
   [saveDlg beginSheetModalForWindow:self.window completionHandler:completionHandler];
+}
+
+
+- (void) exportGraphic:(ExportGraphicsFileFormat)format withOption:(NSInteger)selectedOpt toURL:(NSURL*)url {
+  // @TODO - export population graphic
+  
 }
 
 
@@ -1076,9 +1087,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     if (curView == popView && runActive == NO) return NO;
     if (curView == analyzeCtlr.view && [analyzeCtlr numPops] == 0) return NO;
   }
-  
-  // @TODO - disable export graphics for now
-  //if (item_action == @selector(exportGraphics:)) return NO;
   
   return YES;
 }
@@ -1371,7 +1379,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 //  if (fid.type == Avida::Viewer::CONFIG || fid.type == Avida::Viewer::WORLD) {
 //    [self loadRunFromFreezer:fid];
 //  } else {
-//    // @TODO handle genome
+//    // handle genome
 //  }
 }
 

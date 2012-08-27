@@ -1,8 +1,8 @@
 //
-//  AvidaEDGraphicalValueDisplay.h
+//  TaskTimelineView.m
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 3/22/12.
+//  Created by David M. Bryson on 8/27/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,12 +27,23 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Cocoa/Cocoa.h>
+#import "TaskTimelineView.h"
 
-@interface AvidaEDGraphicalValueDisplay : NSView {
-  int displayValue;
+@implementation TaskTimelineView
+
+- (id) initWithFrame:(NSRect)frame
+{
+  self = [super initWithFrame:frame];
+  if (self) {
+    // Initialization code here.
+  }
+  
+  return self;
 }
 
-@property (readwrite, nonatomic) int displayValue;
+- (void) drawRect:(NSRect)dirtyRect {
+  [[NSColor whiteColor] set];
+  [NSBezierPath fillRect:dirtyRect];
+}
 
 @end

@@ -1,6 +1,6 @@
 //
 //  AvidaEDEnvActionsDataSource.m
-//  viewer-macos
+//  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 3/6/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
