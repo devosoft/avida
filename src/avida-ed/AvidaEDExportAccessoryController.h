@@ -12,11 +12,16 @@
   IBOutlet NSMatrix* matOptions;
   IBOutlet NSPopUpButton* btnOptions;
   IBOutlet NSPopUpButton* btnFormat;
+  
+  NSSavePanel* saveDlg;
 }
 
 - (NSMatrix*) optionMatrix;
 - (NSInteger) selectedOption;
 - (NSInteger) selectedFormat;
 
+- (IBAction) changeFormat:(id)sender;
+
+@property (readwrite) NSSavePanel* saveDlg;
 
 @end

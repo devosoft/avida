@@ -721,6 +721,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   if (sender == btnPopView) {
     if (curView != popView) {
       [mainSplitView replaceSubview:curView with:popView];
+      
+      // Workaround for not correctly recentering clip view.
+      [mapView.superview setFrame:[mapView.superview frame]];
+
       curView = popView;
     }
     [btnPopView setState:NSOnState];
@@ -916,7 +920,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSSavePanel* saveDlg = [NSSavePanel savePanel];
 
   [saveDlg setCanCreateDirectories:YES];
-  [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-workspace"]];
+  [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"public.jpeg"]];
 
   id curView = [[mainSplitView subviews] objectAtIndex:1];
   if (curView == popView) {
@@ -932,6 +936,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
   } else if (curView == analyzeCtlr.view) {
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Analysis" bundle:nil];
+    [exportAccessoryViewCtlr setSaveDlg:saveDlg];
     completionHandler = ^(NSInteger result) {
       if (result == NSOKButton) {
         [analyzeCtlr exportGraphic:(ExportGraphicsFileFormat)[exportAccessoryViewCtlr selectedFormat] toURL:[saveDlg URL]];
@@ -1073,7 +1078,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   
   // @TODO - disable export graphics for now
-  if (item_action == @selector(exportGraphics:)) return NO;
+  //if (item_action == @selector(exportGraphics:)) return NO;
   
   return YES;
 }

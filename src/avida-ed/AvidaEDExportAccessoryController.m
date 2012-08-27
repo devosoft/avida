@@ -8,8 +8,12 @@
 
 #import "AvidaEDExportAccessoryController.h"
 
+#import "Definitions.h"
+
 
 @implementation AvidaEDExportAccessoryController
+
+@synthesize saveDlg;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -39,6 +43,23 @@
   }
   
   return -1;
+}
+
+- (IBAction) changeFormat:(id)sender {
+  switch ([btnFormat indexOfSelectedItem]) {
+    case EXPORT_GRAPHICS_JPEG:
+      [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"public.jpeg"]];
+      break;
+    case EXPORT_GRAPHICS_PNG:
+      [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"public.png"]];
+      break;
+    case EXPORT_GRAPHICS_PDF:
+      [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"com.adobe.pdf"]];
+      break;
+    default:
+      [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"public.jpeg"]];
+      break;
+  }
 }
 
 @end

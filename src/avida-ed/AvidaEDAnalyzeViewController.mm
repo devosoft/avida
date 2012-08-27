@@ -363,23 +363,88 @@
 
 
 - (void) exportGraphic:(ExportGraphicsFileFormat)format toURL:(NSURL*)url {
+  
   switch (format) {
     case EXPORT_GRAPHICS_JPEG:
     case EXPORT_GRAPHICS_PNG:
+    {
+      // Create imgContext
+      NSRect exportRect = [self.view bounds];
+      int bitmapBytesPerRow = 4 * exportRect.size.width;
+      CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+      CGContextRef imgContext = CGBitmapContextCreate(NULL, exportRect.size.width, exportRect.size.height, 8, bitmapBytesPerRow, colorSpace, kCGImageAlphaPremultipliedLast);
+      CGColorSpaceRelease(colorSpace);
       
+      // Draw view into graphics imgContext
+      NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:imgContext flipped:NO];
+      [self.view displayRectIgnoringOpacity:[self.view bounds] inContext:gc];
+      
+      // Create image ref to imgContext
+      CGImageRef imgRef = CGBitmapContextCreateImage(imgContext);
+
+      
+      // Write the appropriate file type
+      if (format == EXPORT_GRAPHICS_JPEG) {
+        CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
+        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, [NSNumber numberWithFloat:1.0]);	// set the compression quality here
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
+        CGImageDestinationAddImage(dr, imgRef, mSaveMetaAndOpts);
+        CGImageDestinationFinalize(dr);
+      } else {
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
+        CGImageDestinationAddImage(dr, imgRef, NULL);
+        CGImageDestinationFinalize(dr);
+      }
+      
+      // Clean up
+      CFRelease(imgRef);
+      CFRelease(imgContext);
+    }
       break;
       
     case EXPORT_GRAPHICS_PDF:
     {
-//      NSMutableData* data = [[NSMutableData alloc] init];
-//      NSPrintOperation* po = [NSPrintOperation PDFOperationWithView:self.view insideRect:[self.view bounds] toData:data];
-//      [po runOperation];
+      // Create pdfContext
+      NSMutableData *pdfData = [[NSMutableData alloc] init];
+      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((CFMutableDataRef)pdfData);
+      const CGRect pdfMediaBox = [self.view bounds];
+      CGContextRef pdfContext = CGPDFContextCreate(dataConsumer, &pdfMediaBox, NULL);
+      CGContextBeginPage(pdfContext, &pdfMediaBox);
       
-//      NSData* data = [self.view dataWithPDFInsideRect:[self.view bounds]];
-
-      NSData* data = [graphView dataWithPDFInsideRect:[graphView bounds]];
       
-      [data writeToURL:url atomically:NO];
+      // Draw view into graphics pdfContext
+      NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:pdfContext flipped:NO];
+      [self.view displayRectIgnoringOpacity:[self.view bounds] inContext:gc];
+      
+      
+      // The following will draw it into the PDF in vector format, but it isn't centered right and draws on top of the
+      // bitmapped copy drawn above.  Needs work.
+      
+      // Draw graph into pdfContext
+//      NSRect graphRect = [graph bounds];
+//      
+//      CGContextSaveGState(pdfContext);
+//      
+//      CGContextTranslateCTM(pdfContext, 0, pdfMediaBox.size.height - graphRect.size.height );
+//      [graph layoutAndRenderInContext:pdfContext];
+//      
+//      CGContextRestoreGState(pdfContext);
+      
+      
+      // Close up pdfContext
+      CGContextEndPage(pdfContext);
+      CGPDFContextClose(pdfContext);
+      
+      
+      // Write pdfContext to file
+      [pdfData writeToURL:url atomically:NO];
+      
+      
+      // Clean up
+      CGContextRelease(pdfContext);
+      CGDataConsumerRelease(dataConsumer);
+      
+      [pdfData release];
     }
       break;
   }
