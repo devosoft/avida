@@ -107,6 +107,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
 
 - (Genome*) selectedOrgGenome;
 
+@property (readonly) CPTGraphHostingView* graphView;
 
 - (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url;
 

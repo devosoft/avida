@@ -39,6 +39,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 @implementation MapScaleView
 
+@synthesize willExport;
+
 - (id) initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];
@@ -93,7 +95,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   
-  NSRect bounds = [self bounds];
+  NSRect bounds = (willExport) ? dirtyRect : [self bounds];
   NSFont* font = [NSFont fontWithName:@"Lucida Grande" size:12.0];
   NSDictionary* str_attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
 

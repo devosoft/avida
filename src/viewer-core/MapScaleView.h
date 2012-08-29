@@ -41,12 +41,12 @@
   Apto::Array<int> color_count;
   NSMutableArray* color_cache;
   NSString* scale_label;
+  
+  BOOL willExport;
 }
 
-- (id) initWithFrame:(NSRect)frame;
-
-- (void) drawRect:(NSRect)rect;
-
 - (void) updateState:(Avida::Viewer::Map*)state;
+
+@property (readwrite) BOOL willExport;
 
 @end

@@ -29,6 +29,29 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface TaskTimelineView : NSView
+@interface TaskTimelineViewEntry : NSObject {
+  int location;
+  NSString* label;
+}
+
+- (TaskTimelineViewEntry*) initWithLabel:(NSString*)label atLocation:(int)location;
+
+@property (readonly) int location;
+@property (readonly) NSString* label;
+
+@end
+
+
+@interface TaskTimelineView : NSView {
+  int length;
+  NSMutableSet* entries;
+  int currentPoint;
+}
+
+- (void) addEntryWithLabel:(NSString*)label atLocation:(int)location;
+- (void) clearEntries;
+
+@property (readwrite) int length;
+@property (readwrite) int currentPoint;
 
 @end

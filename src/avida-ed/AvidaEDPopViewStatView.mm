@@ -305,6 +305,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
 
 @implementation AvidaEDPopViewStatView
 
+@synthesize graphView;
+
 - (id)initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];

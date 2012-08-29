@@ -62,6 +62,8 @@
 
 - (void) createSettingsPopover;
 - (NSString*) descriptionOfInst:(Avida::Instruction)inst;
+
+- (void) drawOrgWithTimelineInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc;
 @end
 
 
@@ -75,6 +77,7 @@
     [self setTaskCountsWithSnapshot:trace->Snapshot(snapshot)];
     [self setStateDisplayWithSnapshot:trace->Snapshot(snapshot)];
     [orgView setSnapshot:&trace->Snapshot(snapshot)];
+    [timelineView setCurrentPoint:snapshot];
   }
   
   [sldStatus setIntValue:curSnapshotIndex];
@@ -258,6 +261,30 @@
 }
 
 
+- (void) drawOrgWithTimelineInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc {
+  NSRect timelineRect = rect;
+  timelineRect.size.height = timelineView.bounds.size.height;
+  [timelineView displayRectIgnoringOpacity:timelineRect inContext:gc];
+  
+  NSRect orgRect = rect;
+  orgRect.size.height -= timelineRect.size.height;
+  
+  // Set current context to the supplied graphics context
+  NSGraphicsContext* currentContext = [NSGraphicsContext currentContext];
+  [NSGraphicsContext setCurrentContext:gc];
+  
+  // Translate X coordinate, drawn, and restore coordinates
+  NSAffineTransform* transform = [NSAffineTransform transform];
+  [transform translateXBy:0 yBy:timelineRect.size.height];
+  [transform concat];
+  [orgView displayRectIgnoringOpacity:orgRect inContext:gc];
+  [transform invert];
+  [transform concat];
+  
+  // Restore previous graphics context
+  [NSGraphicsContext setCurrentContext:currentContext];
+}
+
 @end
 
 
@@ -390,6 +417,32 @@
     [sldStatus setIntValue:0];
     [sldStatus setEnabled:YES];
     
+    // update timeline view
+    [timelineView clearEntries];
+    [timelineView setLength:trace->SnapshotCount() - 1];
+    
+    NSMutableSet* nameset = [[NSMutableSet alloc] initWithCapacity:[envActions entryCount]];
+    for (NSUInteger i = 0; i < [envActions entryCount]; i++) {
+      [nameset addObject:[envActions entryAtIndex:i]];
+    }
+    
+    for (int i = 0; i < trace->SnapshotCount(); i++) {
+      NSMutableSet* foundset = [[NSMutableSet alloc] init];
+      for (NSString* entry_name in nameset) {
+        if (trace->Snapshot(i).FunctionCount([entry_name UTF8String]) > 0) {
+          [timelineView addEntryWithLabel:entry_name atLocation:i];
+          [foundset addObject:entry_name];
+        }
+      }
+      
+      // Remove found entries from the search list
+      for (NSString* entry_name in foundset) [nameset removeObject:entry_name];
+      
+      // If nothing left to search for, then quit
+      if ([nameset count] == 0) break;
+    }
+    
+    
     [btnGo setEnabled:YES];
     [btnGo setTitle:@"Run"];
     
@@ -397,6 +450,9 @@
   } else {
     [sldStatus setIntValue:0];
     [sldStatus setEnabled:NO];
+    
+    [timelineView setLength:0];
+    [timelineView setCurrentPoint:-1];
     
     [btnBegin setEnabled:NO];
     [btnBack setEnabled:NO];
@@ -417,9 +473,124 @@
   return [txtOrgName stringValue];
 }
 
-- (void) exportGraphic:(ExportGraphicsFileFormat)format withOptions:(NSMatrix*)optMat toURL:(NSURL*)url
-{
-  // @TODO - export organism graphics
+- (void) exportGraphic:(ExportGraphicsFileFormat)format withOptions:(NSMatrix*)optMat toURL:(NSURL*)url {
+  
+  unsigned int selected = 0;
+  if ([[optMat cellWithTag:0] state] == NSOnState) selected |= 0x1;
+  if ([[optMat cellWithTag:1] state] == NSOnState) selected |= 0x2;
+  if ([[optMat cellWithTag:2] state] == NSOnState) selected |= 0x7;
+  
+  if (selected == 0) selected = 0x7;
+  
+  NSRect exportRect;
+  switch (selected) {
+    case 0x1: // Org View
+      exportRect = orgView.bounds;
+      break;
+    case 0x2: // Timeline View
+      exportRect = timelineView.bounds;
+      break;
+    case 0x3: // Both Org and Timeline
+      exportRect = orgView.bounds;
+      exportRect.size.height += timelineView.bounds.size.height;
+      break;
+    case 0x7: // Full View
+      exportRect = fullView.bounds;
+      break;
+  }
+  
+  switch (format) {
+    case EXPORT_GRAPHICS_JPEG:
+    case EXPORT_GRAPHICS_PNG:
+    {
+      // Create imgContext
+      int bitmapBytesPerRow = 4 * exportRect.size.width;
+      CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+      CGContextRef imgContext = CGBitmapContextCreate(NULL, exportRect.size.width, exportRect.size.height, 8, bitmapBytesPerRow, colorSpace, kCGImageAlphaPremultipliedLast);
+      CGColorSpaceRelease(colorSpace);
+      
+      // Draw view into graphics imgContext
+      NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:imgContext flipped:NO];
+      switch (selected) {
+        case 0x1:
+          [orgView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+        case 0x2:
+          [timelineView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+        case 0x3:
+          [self drawOrgWithTimelineInRect:exportRect inContext:gc];
+          break;
+        case 0x7:
+          [fullView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+      }
+      
+      // Create image ref to imgContext
+      CGImageRef imgRef = CGBitmapContextCreateImage(imgContext);
+      
+      
+      // Write the appropriate file type
+      if (format == EXPORT_GRAPHICS_JPEG) {
+        CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
+        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, [NSNumber numberWithFloat:1.0]);	// set the compression quality here
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
+        CGImageDestinationAddImage(dr, imgRef, mSaveMetaAndOpts);
+        CGImageDestinationFinalize(dr);
+      } else {
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
+        CGImageDestinationAddImage(dr, imgRef, NULL);
+        CGImageDestinationFinalize(dr);
+      }
+      
+      // Clean up
+      CFRelease(imgRef);
+      CFRelease(imgContext);
+    }
+      break;
+    case EXPORT_GRAPHICS_PDF:
+    {
+      // Create pdfContext
+      NSMutableData *pdfData = [[NSMutableData alloc] init];
+      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((CFMutableDataRef)pdfData);
+      CGContextRef pdfContext = CGPDFContextCreate(dataConsumer, &exportRect, NULL);
+      CGContextBeginPage(pdfContext, &exportRect);
+      
+      NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:pdfContext flipped:NO];
+      switch (selected) {
+        case 0x1:
+          [orgView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+        case 0x2:
+          [timelineView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+        case 0x3:
+          [self drawOrgWithTimelineInRect:exportRect inContext:gc];
+          break;
+        case 0x7:
+          [fullView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+      }
+      
+      // Close up pdfContext
+      CGContextEndPage(pdfContext);
+      CGPDFContextClose(pdfContext);
+      
+      
+      // Write pdfContext to file
+      [pdfData writeToURL:url atomically:NO];
+      
+      
+      // Clean up
+      CGContextRelease(pdfContext);
+      CGDataConsumerRelease(dataConsumer);
+      
+      [pdfData release];
+    }
+      break;
+    default:
+      break;
+  }
 }
 
 

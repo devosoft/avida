@@ -38,6 +38,7 @@
 #import "Freezer.h"
 #import "Genome.h"
 #import "MapGridView.h"
+#import "MapScaleView.h"
 #import "NSFileManager+TemporaryDirectory.h"
 #import "NSString+Apto.h"
 
@@ -144,6 +145,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) activateRunWithID:(Avida::Viewer::FreezerID)freezerID;
 - (NSPoint) locationOfOrg:(NSUInteger)orgIndex withOrgCount:(NSUInteger)count;
 - (void) updatePendingInjectColors;
+
+- (void) drawMapWithScaleInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -527,6 +530,33 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
 }
 
+
+- (void) drawMapWithScaleInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc {
+  NSRect scaleRect = rect;
+  scaleRect.size.height = mapScaleView.bounds.size.height;
+  mapScaleView.willExport = YES;
+  [mapScaleView displayRectIgnoringOpacity:scaleRect inContext:gc];
+  mapScaleView.willExport = NO;
+  
+  NSRect mapRect = rect;
+  mapRect.size.height -= scaleRect.size.height;
+  
+  // Set current context to the supplied graphics context
+  NSGraphicsContext* currentContext = [NSGraphicsContext currentContext];
+  [NSGraphicsContext setCurrentContext:gc];
+  
+  // Translate X coordinate, drawn, and restore coordinates
+  NSAffineTransform* transform = [NSAffineTransform transform];
+  [transform translateXBy:0 yBy:scaleRect.size.height];
+  [transform concat];
+  [mapView displayRectIgnoringOpacity:mapRect inContext:gc];
+  [transform invert];
+  [transform concat];
+
+  // Restore previous graphics context
+  [NSGraphicsContext setCurrentContext:currentContext];
+}
+
 @end
 
 @implementation AvidaEDController
@@ -681,7 +711,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       [alert setMessageText:@"Unable to resume experiment; there is no start organism in the petri dish."];
       [alert setInformativeText:@"Please drag an organism from the freezer into the settings panel or the petri dish."];
       [alert setAlertStyle:NSWarningAlertStyle];
-      [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
+      [alert beginSheetModalForWindow:[self window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
       [sender setState:NSOffState];
       return;
     }
@@ -925,6 +955,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   id curView = [[mainSplitView subviews] objectAtIndex:1];
   if (curView == popView) {
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Population" bundle:nil];
+    [exportAccessoryViewCtlr setSaveDlg:saveDlg];
     [saveDlg setTitle:@"Export Image(s)"];
     [saveDlg setNameFieldStringValue:[txtRun stringValue]];
     completionHandler = ^(NSInteger result) {
@@ -951,6 +982,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
   } else if (curView == orgCtlr.view) {
     exportAccessoryViewCtlr = [[AvidaEDExportAccessoryController alloc] initWithNibName:@"AvidaED-ExportGraphics-Organism" bundle:nil];
+    [exportAccessoryViewCtlr setSaveDlg:saveDlg];
     [saveDlg setTitle:@"Export Image(s)"];
     [saveDlg setNameFieldStringValue:[orgCtlr getOrganismName]];
     completionHandler = ^(NSInteger result) {
@@ -975,7 +1007,114 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (void) exportGraphic:(ExportGraphicsFileFormat)format withOption:(NSInteger)selectedOpt toURL:(NSURL*)url {
-  // @TODO - export population graphic
+  NSRect exportRect;
+  switch (selectedOpt) {
+    case 0:
+      exportRect = mapView.bounds;
+      exportRect.size.height += mapScaleView.bounds.size.height;
+      break;
+    case 1:
+      exportRect = popViewStatView.graphView.bounds;
+      break;
+    case 2:
+      exportRect = popView.bounds;
+      break;
+  }
+  
+  switch (format) {
+    case EXPORT_GRAPHICS_JPEG:
+    case EXPORT_GRAPHICS_PNG:
+    {
+      // Create imgContext
+      int bitmapBytesPerRow = 4 * exportRect.size.width;
+      CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+      CGContextRef imgContext = CGBitmapContextCreate(NULL, exportRect.size.width, exportRect.size.height, 8, bitmapBytesPerRow, colorSpace, kCGImageAlphaPremultipliedLast);
+      CGColorSpaceRelease(colorSpace);
+      
+      // Draw view into graphics imgContext
+      NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:imgContext flipped:NO];
+      switch (selectedOpt) {
+        case 0:
+          [self drawMapWithScaleInRect:exportRect inContext:gc];
+          break;
+        case 1:
+          [popViewStatView.graphView displayRectIgnoringOpacity:exportRect inContext:gc];
+          break;
+        case 2:
+          [popView displayRectIgnoringOpacity:exportRect inContext:gc];
+      }
+      
+      // Create image ref to imgContext
+      CGImageRef imgRef = CGBitmapContextCreateImage(imgContext);
+      
+      
+      // Write the appropriate file type
+      if (format == EXPORT_GRAPHICS_JPEG) {
+        CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
+        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, [NSNumber numberWithFloat:1.0]);	// set the compression quality here
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
+        CGImageDestinationAddImage(dr, imgRef, mSaveMetaAndOpts);
+        CGImageDestinationFinalize(dr);
+      } else {
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
+        CGImageDestinationAddImage(dr, imgRef, NULL);
+        CGImageDestinationFinalize(dr);
+      }
+      
+      // Clean up
+      CFRelease(imgRef);
+      CFRelease(imgContext);
+    }
+      break;
+    case EXPORT_GRAPHICS_PDF:
+    {
+      // Create pdfContext
+      NSMutableData *pdfData = [[NSMutableData alloc] init];
+      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((CFMutableDataRef)pdfData);
+      CGContextRef pdfContext = CGPDFContextCreate(dataConsumer, &exportRect, NULL);
+      CGContextBeginPage(pdfContext, &exportRect);
+      
+      switch (selectedOpt) {
+        case 0:
+        {
+          // Draw view into graphics pdfContext
+          NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:pdfContext flipped:NO];
+          [self drawMapWithScaleInRect:exportRect inContext:gc];
+        }
+          break;
+        case 1:
+          // The following will draw the graph into the PDF in vector format
+          [popViewStatView.graphView.hostedGraph layoutAndRenderInContext:pdfContext];
+          break;
+          
+        case 2:
+        {
+          // Draw view into graphics pdfContext
+          NSGraphicsContext* gc = [NSGraphicsContext graphicsContextWithGraphicsPort:pdfContext flipped:NO];
+          [popView displayRectIgnoringOpacity:exportRect inContext:gc];
+        }
+          break;
+      }
+      
+      // Close up pdfContext
+      CGContextEndPage(pdfContext);
+      CGPDFContextClose(pdfContext);
+      
+      
+      // Write pdfContext to file
+      [pdfData writeToURL:url atomically:NO];
+      
+      
+      // Clean up
+      CGContextRelease(pdfContext);
+      CGDataConsumerRelease(dataConsumer);
+      
+      [pdfData release];
+    }
+      break;
+    default:
+      break;
+  }
   
 }
 

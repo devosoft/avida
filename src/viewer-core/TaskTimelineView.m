@@ -29,13 +29,30 @@
 
 #import "TaskTimelineView.h"
 
+
+@implementation TaskTimelineViewEntry
+
+@synthesize location, label;
+
+- (TaskTimelineViewEntry*) initWithLabel:(NSString*)in_label atLocation:(int)in_location {
+  
+  label = in_label;
+  location = in_location;
+  
+  return self;
+}
+
+@end
+
+
 @implementation TaskTimelineView
 
 - (id) initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];
   if (self) {
-    // Initialization code here.
+    length = 0;
+    entries = [[NSMutableSet alloc] init];
   }
   
   return self;
@@ -44,6 +61,136 @@
 - (void) drawRect:(NSRect)dirtyRect {
   [[NSColor whiteColor] set];
   [NSBezierPath fillRect:dirtyRect];
+  
+  if (length > 0) {
+    NSBezierPath* path = [NSBezierPath bezierPath];
+    
+    CGFloat lr_padding = 10.0f;
+    CGFloat axis_height = 20.0f;
+    CGFloat tick_length = 5.0f;
+    CGFloat cur_point_width = 6.0;
+    CGFloat bounds_width = self.bounds.size.width;
+    
+    // Set up axis line
+    NSPoint point = NSMakePoint(lr_padding, axis_height);
+    [path moveToPoint:point];
+    point.x = bounds_width - lr_padding;
+    [path lineToPoint:point];
+    
+    // start tick mark
+    point.x = lr_padding;
+    [path moveToPoint:point];
+    point.y = axis_height - tick_length;
+    [path lineToPoint:point];
+    
+    // 1/3 tick mark
+    point.x = round((bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding;
+    [path moveToPoint:point];
+    point.y = axis_height;
+    [path lineToPoint:point];
+    
+    // 2/3 tick mark
+    point.x = round(2.0f * (bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding;
+    [path moveToPoint:point];
+    point.y = axis_height - tick_length;
+    [path lineToPoint:point];
+
+    // end tick mark
+    point.x = bounds_width - lr_padding;
+    [path moveToPoint:point];
+    point.y = axis_height;
+    [path lineToPoint:point];
+    
+    // Draw axis path
+    [[NSColor blackColor] set];
+    [path stroke];
+    
+    
+    NSFont* font = [NSFont fontWithName:@"Lucida Grande" size:12.0];
+    NSDictionary* str_attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+    NSString* lbl_str;
+    CGFloat offset;
+    
+
+    // Draw start label
+    lbl_str = @"0";
+    offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
+    point.y = axis_height - tick_length - 1.0f - [lbl_str sizeWithAttributes:str_attributes].height;
+    point.x = lr_padding + offset;
+    [lbl_str drawAtPoint:point withAttributes:str_attributes];
+    
+    // Draw third label 1
+    lbl_str = [NSString stringWithFormat:@"%d", (int)(length / 3)];
+    offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
+    point.x = round((bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding + offset;
+    [lbl_str drawAtPoint:point withAttributes:str_attributes];
+    
+    // Draw third label 2
+    lbl_str = [NSString stringWithFormat:@"%d", (int)(2 * length / 3)];
+    offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
+    point.x = round(2.0f * (bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding + offset;
+    [lbl_str drawAtPoint:point withAttributes:str_attributes];
+    
+    // Draw end label
+    lbl_str = [NSString stringWithFormat:@"%d", length];
+    offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
+    point.x = bounds_width - lr_padding + offset;
+    [lbl_str drawAtPoint:point withAttributes:str_attributes];
+    
+    // Draw labeled locations
+    path = [NSBezierPath bezierPath];
+    for (TaskTimelineViewEntry* entry in entries) {
+      // Set up tick path
+      point.y = axis_height;
+      point.x = round(entry.location * (bounds_width - lr_padding - lr_padding) / length) + lr_padding;
+      [path moveToPoint:point];
+      point.y += tick_length;
+      [path lineToPoint:point];
+
+      // Draw label
+      offset = -[entry.label sizeWithAttributes:str_attributes].width / 2.0f;
+      point.y += 1.0f;
+      point.x += offset;
+      [entry.label drawAtPoint:point withAttributes:str_attributes];
+    }
+    [path stroke]; // draw actual tick marks
+    
+    if (currentPoint >= 0) {
+      NSRect currentPointRect = NSMakeRect(round(currentPoint * (bounds_width - lr_padding - lr_padding) / length) + lr_padding - (cur_point_width / 2.0f), axis_height - (cur_point_width / 2.0f), cur_point_width, cur_point_width);
+      path = [NSBezierPath bezierPathWithOvalInRect:currentPointRect];
+      [[NSColor redColor] set];
+      [path fill];
+    }
+  }
+}
+
+
+- (void) addEntryWithLabel:(NSString*)label atLocation:(int)location {
+  [entries addObject:[[TaskTimelineViewEntry alloc] initWithLabel:label atLocation:location]];
+}
+
+
+- (void) clearEntries {
+  [entries removeAllObjects];
+}
+
+
+- (int) length {
+  return length;
+}
+
+- (void) setLength:(int)in_length {
+  length = in_length;
+  [self setNeedsDisplay:YES];
+}
+
+- (int) currentPoint {
+  return currentPoint;
+}
+
+- (void) setCurrentPoint:(int)in_point {
+  currentPoint = in_point;
+  [self setNeedsDisplay:YES];
 }
 
 @end

@@ -45,6 +45,7 @@
 @interface AvidaEDOrganismViewController : NSViewController <NSPopoverDelegate> {
   IBOutlet OrganismView* orgView;
   IBOutlet TaskTimelineView* timelineView;
+  IBOutlet NSView* fullView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet NSTableView* tblTaskCounts;
   IBOutlet NSSlider* sldStatus;
@@ -58,8 +59,6 @@
   IBOutlet AvidaEDOrganismSettingsViewController* ctlrSettings;
   IBOutlet NSPanel* panelSettings;
   NSPopover* popoverSettings;
-
-  IBOutlet AvidaEDController* ctlr;
   
   NSMutableArray* arrRegisters;
   NSMutableArray* arrInputBuffer;

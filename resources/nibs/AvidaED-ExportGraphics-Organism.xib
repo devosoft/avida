@@ -50,6 +50,7 @@
 						<string key="NSFrame">{{462, 16}, {100, 26}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSPopUpButtonCell" key="NSCell" id="643239477">
@@ -216,7 +217,7 @@
 							<object class="NSButtonCell" id="464836905">
 								<int key="NSCellFlags">-2080374784</int>
 								<int key="NSCellFlags2">268435456</int>
-								<string key="NSContents">CPU State</string>
+								<string key="NSContents">Timeline</string>
 								<reference key="NSSupport" ref="598350493"/>
 								<string key="NSCellIdentifier">_NS:9</string>
 								<reference key="NSControlView" ref="613285841"/>
@@ -233,9 +234,10 @@
 							<object class="NSButtonCell" id="972793620">
 								<int key="NSCellFlags">-2080374784</int>
 								<int key="NSCellFlags2">268435456</int>
-								<string key="NSContents">Timeline</string>
+								<string key="NSContents">CPU State</string>
 								<reference key="NSSupport" ref="598350493"/>
 								<reference key="NSControlView" ref="613285841"/>
+								<int key="NSTag">2</int>
 								<int key="NSButtonFlags">1211912448</int>
 								<int key="NSButtonFlags2">2</int>
 								<reference key="NSAlternateImage" ref="813470463"/>

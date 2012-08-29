@@ -67,28 +67,28 @@
 							<string key="NSKeyEquivalent"/>
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
-							<object class="NSMenuItem" key="NSMenuItem" id="153038443">
-								<reference key="NSMenu" ref="197517417"/>
-								<string key="NSTitle">Petri Dish</string>
-								<string key="NSKeyEquiv"/>
-								<int key="NSMnemonicLoc">2147483647</int>
-								<int key="NSState">1</int>
-								<object class="NSCustomResource" key="NSOnImage" id="85142759">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">NSMenuCheckmark</string>
-								</object>
-								<object class="NSCustomResource" key="NSMixedImage" id="588433441">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">NSMenuMixedState</string>
-								</object>
-								<string key="NSAction">_popUpItemAction:</string>
-								<reference key="NSTarget" ref="553980601"/>
-							</object>
+							<nil key="NSMenuItem"/>
 							<bool key="NSMenuItemRespectAlignment">YES</bool>
 							<object class="NSMenu" key="NSMenu" id="197517417">
 								<string key="NSTitle">OtherViews</string>
 								<array class="NSMutableArray" key="NSMenuItems">
-									<reference ref="153038443"/>
+									<object class="NSMenuItem" id="153038443">
+										<reference key="NSMenu" ref="197517417"/>
+										<string key="NSTitle">Petri Dish</string>
+										<string key="NSKeyEquiv"/>
+										<int key="NSMnemonicLoc">2147483647</int>
+										<int key="NSState">1</int>
+										<object class="NSCustomResource" key="NSOnImage" id="85142759">
+											<string key="NSClassName">NSImage</string>
+											<string key="NSResourceName">NSMenuCheckmark</string>
+										</object>
+										<object class="NSCustomResource" key="NSMixedImage" id="588433441">
+											<string key="NSClassName">NSImage</string>
+											<string key="NSResourceName">NSMenuMixedState</string>
+										</object>
+										<string key="NSAction">_popUpItemAction:</string>
+										<reference key="NSTarget" ref="553980601"/>
+									</object>
 									<object class="NSMenuItem" id="572366624">
 										<reference key="NSMenu" ref="197517417"/>
 										<string key="NSTitle">Graph</string>
@@ -100,9 +100,20 @@
 										<int key="NSTag">1</int>
 										<reference key="NSTarget" ref="553980601"/>
 									</object>
+									<object class="NSMenuItem" id="195553969">
+										<reference key="NSMenu" ref="197517417"/>
+										<string key="NSTitle">All Details</string>
+										<string key="NSKeyEquiv"/>
+										<int key="NSMnemonicLoc">2147483647</int>
+										<reference key="NSOnImage" ref="85142759"/>
+										<reference key="NSMixedImage" ref="588433441"/>
+										<string key="NSAction">_popUpItemAction:</string>
+										<reference key="NSTarget" ref="553980601"/>
+									</object>
 								</array>
 								<reference key="NSMenuFont" ref="415877181"/>
 							</object>
+							<int key="NSSelectedIndex">-1</int>
 							<int key="NSPreferredEdge">1</int>
 							<bool key="NSUsesItemFromMenu">YES</bool>
 							<bool key="NSAltersState">YES</bool>
@@ -116,6 +127,7 @@
 						<string key="NSFrame">{{276, 14}, {100, 26}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSPopUpButtonCell" key="NSCell" id="385356564">
@@ -276,7 +288,7 @@
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="366680030"/>
 					</object>
-					<int key="connectionID">233</int>
+					<int key="connectionID">234</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -570,6 +582,7 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="572366624"/>
 							<reference ref="153038443"/>
+							<reference ref="195553969"/>
 						</array>
 						<reference key="parent" ref="553980601"/>
 					</object>
@@ -587,11 +600,6 @@
 						<int key="objectID">213</int>
 						<reference key="object" ref="531200685"/>
 						<reference key="parent" ref="1005"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">216</int>
-						<reference key="object" ref="938997932"/>
-						<reference key="parent" ref="53524543"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">220</int>
@@ -627,6 +635,17 @@
 						<int key="objectID">228</int>
 						<reference key="object" ref="721833895"/>
 						<reference key="parent" ref="1005"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">235</int>
+						<reference key="object" ref="195553969"/>
+						<reference key="parent" ref="197517417"/>
+						<string key="objectName">Menu Item - All Details</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">216</int>
+						<reference key="object" ref="938997932"/>
+						<reference key="parent" ref="53524543"/>
 					</object>
 				</array>
 			</object>
@@ -669,6 +688,7 @@
 				<string key="228.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="NO" key="23.IBNSViewMetadataTranslatesAutoresizingMaskIntoConstraints"/>
 				<string key="23.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="235.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="24.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<array class="NSMutableArray" key="38.IBNSViewMetadataConstraints">
 					<reference ref="622518428"/>
@@ -685,7 +705,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">233</int>
+			<int key="maxID">235</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
