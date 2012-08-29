@@ -650,13 +650,13 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           // choose a direction for next block with fixed 90% probability of not changing direction (~1 of 20 blocks will be in new direction)
           if(ctx.GetRandom().GetUInt(0, 21) == 20) direction = ctx.GetRandom().GetUInt(0, 8);
         }
-        // if config == 1, build vertical walls
+        // if config == 1, build randomly placed vertical walls
         else if (m_config == 1) {
           // choose up/down build direction
           if (direction == 0) randy = randy - 1;
           else randy = randy + 1;
         }
-        // if config == 2, build horizontal walls
+        // if config == 2, build randonly placed horizontal walls
         else if (m_config == 2) {
           // choose left/right build direction
           if (direction == 0) randx = randx - 1;
@@ -699,7 +699,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         else if (m_config == 1 || m_config == 2) {
           randx = start_randx; 
           randy = start_randy; 
-          direction = direction * -1;
+          direction = abs(direction - 1);
           num_blocks --;
         }
         // if a random build and we went off the world edge, backup a block and try again
@@ -708,7 +708,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           randy = prev_blocky;
           num_blocks --;
         }
-      }      
+      }  
     }
   }
   else m_topo_counter++; 
