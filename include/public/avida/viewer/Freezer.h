@@ -120,7 +120,8 @@ namespace Avida {
       }
       
       LIB_EXPORT void DuplicateFreezerAt(Apto::String destination);
-      
+      LIB_EXPORT void ExportItem(FreezerID entry_id, Apto::String destination);
+      LIB_EXPORT FreezerID ImportItem(Apto::String src);
       
     public:
       class Iterator

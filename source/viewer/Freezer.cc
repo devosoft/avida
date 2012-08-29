@@ -1019,3 +1019,71 @@ void Avida::Viewer::Freezer::DuplicateFreezerAt(Apto::String destination)
     }
   }
 }
+
+void Avida::Viewer::Freezer::ExportItem(FreezerID entry_id, Apto::String destination)
+{
+  Apto::FileSystem::CpDir(Apto::FileSystem::PathAppend(m_dir, m_entries[entry_id.type][entry_id.identifier].path), destination);
+  
+  // Write out entry type file
+  cFile file;
+  destination = Apto::FileSystem::PathAppend(destination, "entrytype.txt");
+  if (!file.Open((const char*)destination, std::ios::out)) return;
+  
+  std::fstream& nfs = *file.GetFileStream();
+  switch (entry_id.type) {
+    case CONFIG: nfs << "c" << std::endl; break;
+    case GENOME: nfs << "g" << std::endl; break;
+    case WORLD:  nfs << "w" << std::endl; break;
+  }
+  
+  file.Close();
+}
+
+Avida::Viewer::FreezerID Avida::Viewer::Freezer::ImportItem(Apto::String src)
+{
+  // Attempt to read name file
+  Apto::String type_path = Apto::FileSystem::PathAppend(src, "entrytype.txt");
+  if (!Apto::FileSystem::IsFile(type_path)) return FreezerID(WORLD, -1);
+  
+  // Open name file and read contents
+  cFile file;
+  file.Open((const char*)type_path, std::ios::in);
+  cString line;
+  file.ReadLine(line);
+  file.Close();
+  
+  if (line.GetSize() == 0) return FreezerID(WORLD, -1);
+
+  Apto::String entry_path;
+  switch (line[0]) {
+    case 'c': entry_path = Apto::FormatStr("c%d", m_next_id[CONFIG]++); break;
+    case 'g': entry_path = Apto::FormatStr("g%d", m_next_id[GENOME]++); break;
+    case 'w': entry_path = Apto::FormatStr("w%d", m_next_id[WORLD]++); break;
+  }
+  
+  Apto::String full_path = Apto::FileSystem::PathAppend(m_dir, entry_path);
+  Apto::FileSystem::CpDir(src, full_path);
+  
+  Apto::String name = entry_path;
+  Apto::String name_path = Apto::FileSystem::PathAppend(full_path, "entryname.txt");
+  if (Apto::FileSystem::IsFile(name_path)) {
+    // Open name file and read contents
+    cFile file;
+    file.Open((const char*)name_path, std::ios::in);
+    cString line;
+    file.ReadLine(line);
+    file.Close();
+    
+    line.Trim();
+    name = line;
+  }
+  
+  
+  switch (line[0]) {
+    case 'c': m_entries[CONFIG].Push(Entry(name, entry_path)); return FreezerID(CONFIG, m_entries[CONFIG].GetSize() - 1);
+    case 'g': m_entries[GENOME].Push(Entry(name, entry_path)); return FreezerID(GENOME, m_entries[GENOME].GetSize() - 1);
+    case 'w': m_entries[WORLD].Push(Entry(name, entry_path)); return FreezerID(WORLD, m_entries[WORLD].GetSize() - 1);
+  }
+  
+  return FreezerID(WORLD, -1);
+}
