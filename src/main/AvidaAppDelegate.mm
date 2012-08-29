@@ -80,7 +80,7 @@
 
 - (IBAction) openAvidaEDWorkspace:(id)sender {
 
-  NSOpenPanel* openDlg = [NSOpenPanel openPanel];  
+  NSOpenPanel* openDlg = [NSOpenPanel openPanel];
   [openDlg setCanChooseFiles:YES];
   [openDlg setAllowedFileTypes:[NSArray arrayWithObjects:@"org.devosoft.avida.avida-ed-workspace", @"avidaedworkspace", nil]];
   

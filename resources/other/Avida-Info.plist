@@ -20,6 +20,22 @@
 			<key>CFBundleTypeName</key>
 			<string>Avida-ED Workspace</string>
 			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>avidaedfreezeritem</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>org.devosoft.avida.avida-ed-freezer-item</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Avida-ED Freezer Item</string>
+			<key>CFBundleTypeRole</key>
 			<string>None</string>
 			<key>LSTypeIsPackage</key>
 			<true/>
@@ -65,6 +81,19 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>avidaedworkspace</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>Avida-ED Freezer Item</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.devosoft.avida.avida-ed-freezer-item</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>avidaedfreezeritem</string>
 				</array>
 			</dict>
 		</dict>

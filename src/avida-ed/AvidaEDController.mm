@@ -1006,6 +1006,53 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
+- (IBAction) exportFreezerItem:(id)sender {
+  NSSavePanel* saveDlg = [NSSavePanel savePanel];
+  [saveDlg setCanCreateDirectories:YES];
+  [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-freezer-item"]];
+  
+  void (^completionHandler)(NSInteger) = ^(NSInteger result) {
+    if (result == NSOKButton) {
+      Avida::Viewer::FreezerID fid = [[outlineFreezer itemAtRow:[outlineFreezer selectedRow]] freezerID];
+      freezer->ExportItem(fid, [[[saveDlg URL] path] UTF8String]);
+    }
+  };
+  
+  // Display the dialog.  If the OK button was pressed, process the files.
+  [saveDlg beginSheetModalForWindow:self.window completionHandler:completionHandler];
+}
+
+
+- (IBAction) importFreezerItem:(id)sender {
+  NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+  [openDlg setCanChooseFiles:YES];
+  [openDlg setAllowedFileTypes:[NSArray arrayWithObjects:@"org.devosoft.avida.avida-ed-freezer-item", @"avidaedfreezeritem", nil]];
+  
+  void (^completionHandler)(NSInteger) = ^(NSInteger result) {
+    if (result == NSOKButton) {
+      NSArray* files = [openDlg URLs];
+      NSURL* fileURL = [files objectAtIndex:0];
+      Avida::Viewer::FreezerID f = freezer->ImportItem([[fileURL path] UTF8String]);
+      
+      if (freezer->IsValid(f)) {
+        FreezerItem* fi = [[FreezerItem alloc] initWithFreezerID:f];
+        switch (f.type) {
+          case Avida::Viewer::CONFIG: [freezerConfigs addObject:fi]; break;
+          case Avida::Viewer::GENOME: [freezerGenomes addObject:fi]; break;
+          case Avida::Viewer::WORLD:  [freezerWorlds addObject:fi]; break;
+        }
+        [outlineFreezer reloadData];
+        [outlineFreezer editColumn:0 row:[outlineFreezer rowForItem:fi] withEvent:nil select:YES];
+      }
+
+    }
+  };
+  
+  // Display the dialog.  If the OK button was pressed, process the files.
+  [openDlg beginSheetModalForWindow:self.window completionHandler:completionHandler];
+}
+
+
 - (void) exportGraphic:(ExportGraphicsFileFormat)format withOption:(NSInteger)selectedOpt toURL:(NSURL*)url {
   NSRect exportRect;
   switch (selectedOpt) {
@@ -1225,6 +1272,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     if (curView == orgCtlr.view) return NO;
     if (curView == popView && runActive == NO) return NO;
     if (curView == analyzeCtlr.view && [analyzeCtlr numPops] == 0) return NO;
+  }
+  
+  if (item_action == @selector(exportFreezerItem:)) {
+    if ([outlineFreezer numberOfSelectedRows] == 0) return NO;
   }
   
   return YES;

@@ -169,6 +169,9 @@
 - (IBAction) exportData:(id)sender;
 - (IBAction) exportGraphics:(id)sender;
 
+- (IBAction) exportFreezerItem:(id)sender;
+- (IBAction) importFreezerItem:(id)sender;
+
 - (IBAction) changeMutationRate:(id)sender;
 - (IBAction) changeWorldSize:(id)sender;
 - (IBAction) changePlacement:(id)sender;
