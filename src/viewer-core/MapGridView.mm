@@ -256,8 +256,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 - (void) mouseDown:(NSEvent*)event {
-  
-  if (selectionDelegate != nil) {
+  if (selectionDelegate != nil && map_width > 0 && map_height > 0) {
     // convert the mouse-down location into the view coords
     NSPoint clickLocation = [self convertPoint:[event locationInWindow] fromView:nil];
     
@@ -282,6 +281,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 
 - (void) mouseDragged:(NSEvent*)event {
+  if (selected_x < 0 || selected_y < 0) return;
   if (selectionDelegate != nil && [selectionDelegate respondsToSelector:@selector(mapView:writeSelectionToPasteboard:)]) {
     NSImage* image = [[NSImage alloc] initWithSize:NSMakeSize(40.0, 40.0)];
     [image lockFocus];
