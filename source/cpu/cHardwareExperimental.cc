@@ -350,6 +350,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-group-cell", &cHardwareExperimental::Inst_MarkGroupCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, nInstFlag::STALL),
@@ -5034,6 +5035,66 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
   const double attacker_win_odds = ((attacker_merit) / (attacker_merit + target_merit));
   const double target_win_odds = ((target_merit) / (attacker_merit + target_merit)); 
+  
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
+  const double decider = ctx.GetRandom().GetDouble(1);
+  
+  if (decider < (1 - odds_someone_dies)) return true;
+  else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  
+  if (kill_attacker) {
+    m_organism->Die(ctx);
+    return true;
+  }
+  
+  const int target_cell = target->GetOrgInterface().GetCellID();  
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
+  
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
+  
+  return true;
+} 	
+
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  
+  cOrganism* target = NULL;
+  if (!m_use_avatar) { 
+    if (!m_organism->IsNeighborCellOccupied()) return false;
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    // allow only for predator vs predator or prey vs prey
+    if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
+        (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+      return false;
+    }
+  }
+  else if (m_use_avatar == 2) {
+    if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
+    if (m_organism->GetForageTarget() != -2) { 
+      if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
+      else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+    }
+    else if (m_organism->GetForageTarget() == -2) { 
+      if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
+      else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
+    }
+  }
+  if (target->IsDead()) return false;  
+  
+  
+  //Use current bonus to decide who wins this battle.
+  bool kill_attacker = true;
+  
+  const double attacker_bonus = m_organism->GetPhenotype().GetCurBonus();
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  const double attacker_win_odds = ((attacker_bonus) / (attacker_bonus + target_bonus));
+  const double target_win_odds = ((target_bonus) / (attacker_bonus + target_bonus)); 
   
   const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
   const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;

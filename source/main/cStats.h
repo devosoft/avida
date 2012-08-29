@@ -983,7 +983,7 @@ public:
   void PrintKaboom(const cString& filename);
     
  // Division of Labor Stats
-    void IncJuvKilled(){juv_killed++;}
+    void IncJuvKilled() { juv_killed++; }
 
   
   // deme predicate stats
