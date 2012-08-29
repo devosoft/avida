@@ -7591,7 +7591,10 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
         for (int k = 0; k < unguarded_juvs; k++) {
           if (ctx.GetRandom().P(pred_odds) && !juvs[k]->IsDead()) {
             if (!juvs[k]->IsRunning()) KillOrganism(GetCell(juvs[k]->GetCellID()), ctx); 
-            else juvs[k]->GetPhenotype().SetToDie();
+            else {
+                juvs[k]->GetPhenotype().SetToDie();
+                m_world->GetStats().IncJuvKilled();
+            }
           }
         }
       }

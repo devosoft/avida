@@ -652,9 +652,9 @@ public:
     void IncGuard() {m_num_guard++;}
     int GetNumGuard() {return m_num_guard;}
     void IncNumDeposits() {m_num_deposits++;}
-    void IncAmountDeposited(int amount) {m_amount_deposited = m_amount_deposited + amount;}
+    void IncAmountDeposited(double amount) {m_amount_deposited = m_amount_deposited + amount;}
     int GetNumDeposits() {return m_num_deposits;}
-    int GetAmountDeposited() {return m_amount_deposited;}
+    double GetAmountDeposited() {return m_amount_deposited;}
   
 protected:
   // The organism's own raw materials
@@ -698,7 +698,7 @@ protected:
   bool m_guard;
     int m_num_guard;
     int m_num_deposits;
-    int m_amount_deposited;
+    double m_amount_deposited;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
