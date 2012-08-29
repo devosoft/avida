@@ -3933,7 +3933,7 @@ cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLoo
   reg_init.distance = m_threads[m_cur_thread].reg[distance_reg].value;
   reg_init.search_type = m_threads[m_cur_thread].reg[search_reg].value;
   reg_init.id_sought = m_threads[m_cur_thread].reg[id_reg].value;
-  
+
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
 

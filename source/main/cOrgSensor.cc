@@ -82,7 +82,6 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
   
   // default to look for orgs if invalid habitat & predator
-  habitat_used = -2;
   if (pred_experiment && forage == -2 && !m_world->GetEnvironment().IsHabitat(habitat_used)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (!m_world->GetEnvironment().IsHabitat(habitat_used) && habitat_used != -2) habitat_used = 0;
@@ -148,7 +147,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
     // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
     if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought, facing);
   }
-  
+
   /*  APW TODO
    // add ability to specify minimum distances
    // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
