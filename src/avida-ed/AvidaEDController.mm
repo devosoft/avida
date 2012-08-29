@@ -1641,10 +1641,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
       if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
-        return NSDragOperationGeneric;
+        return NSDragOperationCopy;
       }
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome] && (sourceDragMask & NSDragOperationGeneric)) {
-      return NSDragOperationGeneric;
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+      return NSDragOperationCopy;
     }
   } else if (destination == imgTrash) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) return NSDragOperationDelete;
@@ -1676,10 +1676,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) {
       Avida::Viewer::FreezerID fid = [Freezer freezerIDFromPasteboard:pboard];
       if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
-        return NSDragOperationGeneric;
+        return NSDragOperationCopy;
       }
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome] && (sourceDragMask & NSDragOperationGeneric)) {
-      return NSDragOperationGeneric;
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
+      return NSDragOperationCopy;
     }
   } else if (destination == imgTrash) {
     if ([[pboard types] containsObject:AvidaPasteboardTypeFreezerID]) return NSDragOperationDelete;
@@ -1713,7 +1713,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       if (fid.type == Avida::Viewer::GENOME && (sourceDragMask & NSDragOperationGeneric)) {
         return YES;
       }
-    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome] && (sourceDragMask & NSDragOperationGeneric)) {
+    } else if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
       return YES;
     }
     
