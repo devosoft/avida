@@ -62,6 +62,8 @@
   IBOutlet NSTextField* txtInstDetailsLabel;
   IBOutlet NSTextField* txtJustExecLabel;
   IBOutlet NSTextField* txtWillExecLabel;
+  IBOutlet NSView* viewJustExec;
+  IBOutlet NSView* viewWillExec;
   IBOutlet NSLayoutConstraint* layoutOrgViewTop;
   IBOutlet NSLayoutConstraint* layoutTxtJustExecHeight;
   

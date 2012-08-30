@@ -86,6 +86,17 @@
 						<reference key="NSNextResponder" ref="674011866"/>
 						<int key="NSvFlags">292</int>
 						<array class="NSMutableArray" key="NSSubviews">
+							<object class="NSCustomView" id="189636841">
+								<reference key="NSNextResponder" ref="772025054"/>
+								<int key="NSvFlags">274</int>
+								<array class="NSMutableArray" key="NSSubviews"/>
+								<string key="NSFrame">{{20, 73}, {642, 414}}</string>
+								<reference key="NSSuperview" ref="772025054"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="361349154"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<string key="NSClassName">OrganismView</string>
+							</object>
 							<object class="NSTextField" id="873932481">
 								<reference key="NSNextResponder" ref="772025054"/>
 								<int key="NSvFlags">268</int>
@@ -495,17 +506,6 @@
 								<double key="NSMinMagnification">0.25</double>
 								<double key="NSMaxMagnification">4</double>
 								<double key="NSMagnification">1</double>
-							</object>
-							<object class="NSCustomView" id="189636841">
-								<reference key="NSNextResponder" ref="772025054"/>
-								<int key="NSvFlags">274</int>
-								<array class="NSMutableArray" key="NSSubviews"/>
-								<string key="NSFrame">{{20, 73}, {642, 414}}</string>
-								<reference key="NSSuperview" ref="772025054"/>
-								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="361349154"/>
-								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<string key="NSClassName">OrganismView</string>
 							</object>
 							<object class="NSTextField" id="839635477">
 								<reference key="NSNextResponder" ref="772025054"/>
@@ -963,6 +963,7 @@
 												<reference key="NSSuperview" ref="526819053"/>
 												<reference key="NSWindow"/>
 												<reference key="NSNextKeyView" ref="45255673"/>
+												<bool key="NSViewIsLayerTreeHost">YES</bool>
 												<string key="NSReuseIdentifierKey">_NS:13</string>
 												<object class="NSTextContainer" key="NSTextContainer" id="279352497">
 													<object class="NSLayoutManager" key="NSLayoutManager">
@@ -1022,7 +1023,7 @@
 												</object>
 												<int key="NSTVFlags">6</int>
 												<string key="NSMaxSize">{463, 10000000}</string>
-												<string key="NSMinize">{298, 65}</string>
+												<string key="NSMinize">{315, 67}</string>
 												<nil key="NSDelegate"/>
 											</object>
 										</array>
@@ -1268,6 +1269,7 @@ wGw</bytes>
 												<reference key="NSSuperview" ref="882520236"/>
 												<reference key="NSWindow"/>
 												<reference key="NSNextKeyView" ref="985890478"/>
+												<bool key="NSViewIsLayerTreeHost">YES</bool>
 												<string key="NSReuseIdentifierKey">_NS:13</string>
 												<object class="NSTextContainer" key="NSTextContainer" id="447194483">
 													<object class="NSLayoutManager" key="NSLayoutManager">
@@ -1308,7 +1310,7 @@ wGw</bytes>
 												</object>
 												<int key="NSTVFlags">6</int>
 												<string key="NSMaxSize">{463, 10000000}</string>
-												<string key="NSMinize">{298, 65}</string>
+												<string key="NSMinize">{315, 67}</string>
 												<nil key="NSDelegate"/>
 											</object>
 										</array>
@@ -2314,6 +2316,22 @@ wGw</bytes>
 						<reference key="destination" ref="90090792"/>
 					</object>
 					<int key="connectionID">882</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">viewJustExec</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="891675537"/>
+					</object>
+					<int key="connectionID">890</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">viewWillExec</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="985890478"/>
+					</object>
+					<int key="connectionID">891</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -5660,7 +5678,7 @@ wGw</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">889</int>
+			<int key="maxID">891</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5790,8 +5808,10 @@ wGw</bytes>
 						<string key="viewCurStack">NSView</string>
 						<string key="viewFunctions">NSView</string>
 						<string key="viewInputBuffer">NSView</string>
+						<string key="viewJustExec">NSView</string>
 						<string key="viewOutputBuffer">NSView</string>
 						<string key="viewRegisters">NSView</string>
+						<string key="viewWillExec">NSView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="arrctlrCurStack">
@@ -5942,12 +5962,20 @@ wGw</bytes>
 							<string key="name">viewInputBuffer</string>
 							<string key="candidateClassName">NSView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="viewJustExec">
+							<string key="name">viewJustExec</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="viewOutputBuffer">
 							<string key="name">viewOutputBuffer</string>
 							<string key="candidateClassName">NSView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="viewRegisters">
 							<string key="name">viewRegisters</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="viewWillExec">
+							<string key="name">viewWillExec</string>
 							<string key="candidateClassName">NSView</string>
 						</object>
 					</dictionary>

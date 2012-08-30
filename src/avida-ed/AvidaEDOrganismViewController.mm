@@ -415,6 +415,10 @@
     
     [layoutTxtJustExecHeight setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
     [layoutTxtJustExecHeight.animator setConstant:10.0f];
+    [viewJustExec setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewJustExec.animator setAlphaValue:0.0f];
+    [viewWillExec setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewWillExec.animator setAlphaValue:0.0f];
     
     [txtJustExecLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
     [txtJustExecLabel.animator setAlphaValue:0.0f];
@@ -431,6 +435,10 @@
     
     [layoutTxtJustExecHeight setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
     [layoutTxtJustExecHeight.animator setConstant:69.0f];
+    [viewJustExec setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewJustExec.animator setAlphaValue:1.0f];
+    [viewWillExec setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewWillExec.animator setAlphaValue:1.0f];
 
     [txtJustExecLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
     [txtJustExecLabel.animator setAlphaValue:1.0f];
