@@ -1,4 +1,5 @@
 #import "CPTTheme.h"
+
 #import "CPTExceptions.h"
 #import "CPTGraph.h"
 
@@ -7,9 +8,13 @@
 // Registered themes
 static NSMutableSet *themes = nil;
 
-/** @brief Creates a CPTGraph instance formatted with predefined themes.
+/** @brief Creates a CPTGraph instance formatted with a predefined style.
  *
- *	@todo More documentation needed 
+ *	Themes apply a predefined combination of line styles, text styles, and fills to
+ *	the graph. The styles are applied to the axes, the plot area, and the graph itself.
+ *	Using a theme to format the graph does not prevent any of the style properties
+ *	from being changed later. Therefore, it is possible to apply initial formatting to
+ *	a graph using a theme and then customize the styles to suit the application later.
  **/
 @implementation CPTTheme
 
@@ -48,11 +53,11 @@ static NSMutableSet *themes = nil;
 {
 	[self release];
 	self = [[CPTTheme themeNamed:[coder decodeObjectForKey:@"CPTTheme.name"]] retain];
-	
-    if ( self ) {
+
+	if ( self ) {
 		self.graphClass = NSClassFromString([coder decodeObjectForKey:@"CPTTheme.graphClass"]);
 	}
-    return self;
+	return self;
 }
 
 #pragma mark -
@@ -61,27 +66,29 @@ static NSMutableSet *themes = nil;
 /**	@brief List of the available theme classes, sorted by name.
  *	@return An NSArray containing all available theme classes, sorted by name.
  **/
-+(NSArray *)themeClasses {
++(NSArray *)themeClasses
+{
 	NSSortDescriptor *nameSort = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(caseInsensitiveCompare:)];
-	
+
 	return [themes sortedArrayUsingDescriptors:[NSArray arrayWithObject:nameSort]];
 }
 
 /**	@brief Gets a named theme.
  *	@param themeName The name of the desired theme.
- *	@return A CPTTheme instance with name matching themeName or nil if no themes with a matching name were found.
+ *	@return A CPTTheme instance with name matching @a themeName or nil if no themes with a matching name were found.
+ *	@see See @ref themeNames "Theme Names" for a list of named themes provided by Core Plot.
  **/
 +(CPTTheme *)themeNamed:(NSString *)themeName
 {
 	CPTTheme *newTheme = nil;
-	
+
 	for ( Class themeClass in themes ) {
 		if ( [themeName isEqualToString:[themeClass name]] ) {
 			newTheme = [[themeClass alloc] init];
 			break;
 		}
 	}
-	
+
 	return [newTheme autorelease];
 }
 
@@ -90,7 +97,8 @@ static NSMutableSet *themes = nil;
  **/
 +(void)registerTheme:(Class)themeClass
 {
-	@synchronized(self) {
+	@synchronized(self)
+	{
 		if ( !themes ) {
 			themes = [[NSMutableSet alloc] init];
 		}
@@ -107,13 +115,15 @@ static NSMutableSet *themes = nil;
 /**	@brief The name used for this theme class.
  *	@return The name.
  **/
-+(NSString *)name 
++(NSString *)name
 {
 	return NSStringFromClass(self);
 }
 
 #pragma mark -
 #pragma mark Accessors
+
+///	@cond
 
 -(void)setGraphClass:(Class)newGraphClass
 {
@@ -131,6 +141,8 @@ static NSMutableSet *themes = nil;
 	}
 }
 
+///	@endcond
+
 #pragma mark -
 #pragma mark Apply the theme
 
@@ -141,7 +153,7 @@ static NSMutableSet *themes = nil;
 {
 	[self applyThemeToBackground:graph];
 	[self applyThemeToPlotArea:graph.plotAreaFrame];
-	[self applyThemeToAxisSet:graph.axisSet];    
+	[self applyThemeToAxisSet:graph.axisSet];
 }
 
 @end
@@ -153,7 +165,7 @@ static NSMutableSet *themes = nil;
 /**	@brief Creates a new graph styled with the theme.
  *	@return The new graph.
  **/
--(id)newGraph 
+-(id)newGraph
 {
 	return nil;
 }
@@ -161,7 +173,7 @@ static NSMutableSet *themes = nil;
 /**	@brief Applies the background theme to the provided graph.
  *	@param graph The graph to style.
  **/
--(void)applyThemeToBackground:(CPTGraph *)graph 
+-(void)applyThemeToBackground:(CPTGraph *)graph
 {
 }
 

@@ -1,21 +1,27 @@
 #import "CPTPlotAreaFrame.h"
+
 #import "CPTAxisSet.h"
-#import "CPTPlotGroup.h"
 #import "CPTDefinitions.h"
 #import "CPTLineStyle.h"
 #import "CPTPlotArea.h"
+#import "CPTPlotGroup.h"
 
-/**	@cond */
+///	@cond
 @interface CPTPlotAreaFrame()
 
 @property (nonatomic, readwrite, retain) CPTPlotArea *plotArea;
 
 @end
-/**	@endcond */
+
+///	@endcond
 
 #pragma mark -
 
-/** @brief A layer drawn on top of the graph layer and behind all plot elements.
+/**
+ *	@brief A layer drawn on top of the graph layer and behind all plot elements.
+ *
+ *	All graph elements, except for titles, legends, and other annotations
+ *	attached directly to the graph itself are clipped to the plot area frame.
  **/
 @implementation CPTPlotAreaFrame
 
@@ -37,25 +43,39 @@
 #pragma mark -
 #pragma mark Init/Dealloc
 
+/// @name Initialization
+/// @{
+
+/** @brief Initializes a newly allocated CPTPlotAreaFrame object with the provided frame rectangle.
+ *
+ *	This is the designated initializer. The initialized layer will have the following properties:
+ *	- @link CPTPlotAreaFrame::plotArea plotArea @endlink = a new CPTPlotArea with the same frame rectangle
+ *	- <code>needsDisplayOnBoundsChange</code> = <code>YES</code>
+ *
+ *	@param newFrame The frame rectangle.
+ *  @return The initialized CPTPlotAreaFrame object.
+ **/
 -(id)initWithFrame:(CGRect)newFrame
 {
 	if ( (self = [super initWithFrame:newFrame]) ) {
 		plotArea = nil;
-		
+
 		CPTPlotArea *newPlotArea = [(CPTPlotArea *)[CPTPlotArea alloc] initWithFrame:newFrame];
 		self.plotArea = newPlotArea;
 		[newPlotArea release];
 
 		self.needsDisplayOnBoundsChange = YES;
-}
+	}
 	return self;
 }
+
+///	@}
 
 -(id)initWithLayer:(id)layer
 {
 	if ( (self = [super initWithLayer:layer]) ) {
 		CPTPlotAreaFrame *theLayer = (CPTPlotAreaFrame *)layer;
-		
+
 		plotArea = [theLayer->plotArea retain];
 	}
 	return self;
@@ -73,20 +93,22 @@
 -(void)encodeWithCoder:(NSCoder *)coder
 {
 	[super encodeWithCoder:coder];
-	
+
 	[coder encodeObject:self.plotArea forKey:@"CPTPlotAreaFrame.plotArea"];
 }
 
 -(id)initWithCoder:(NSCoder *)coder
 {
-    if ( (self = [super initWithCoder:coder]) ) {
+	if ( (self = [super initWithCoder:coder]) ) {
 		plotArea = [[coder decodeObjectForKey:@"CPTPlotAreaFrame.plotArea"] retain];
 	}
-    return self;
+	return self;
 }
 
 #pragma mark -
 #pragma mark Accessors
+
+///	@cond
 
 -(void)setPlotArea:(CPTPlotArea *)newPlotArea
 {
@@ -97,8 +119,8 @@
 		if ( plotArea ) {
 			[self insertSublayer:plotArea atIndex:0];
 		}
-        [self setNeedsLayout];
-	}	
+		[self setNeedsLayout];
+	}
 }
 
 -(CPTAxisSet *)axisSet
@@ -120,5 +142,7 @@
 {
 	self.plotArea.plotGroup = newPlotGroup;
 }
+
+///	@endcond
 
 @end

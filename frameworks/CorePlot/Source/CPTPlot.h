@@ -1,8 +1,8 @@
-#import "CPTDefinitions.h"
-#import "CPTPlotRange.h"
-#import "CPTNumericDataType.h"
 #import "CPTAnnotationHostLayer.h"
+#import "CPTDefinitions.h"
 #import "CPTMutableTextStyle.h"
+#import "CPTNumericDataType.h"
+#import "CPTPlotRange.h"
 
 @class CPTLegend;
 @class CPTMutableNumericData;
@@ -15,31 +15,36 @@
 
 ///	@file
 
-/**	@brief Enumeration of cache precisions.
+/**
+ *	@brief Enumeration of cache precisions.
  **/
 typedef enum _CPTPlotCachePrecision {
-    CPTPlotCachePrecisionAuto,		///< Cache precision is determined automatically from the data. All cached data will be converted to match the last data loaded.
-    CPTPlotCachePrecisionDouble,		///< All cached data will be converted to double precision.
-    CPTPlotCachePrecisionDecimal		///< All cached data will be converted to NSDecimal.
-} CPTPlotCachePrecision;
+	CPTPlotCachePrecisionAuto,   ///< Cache precision is determined automatically from the data. All cached data will be converted to match the last data loaded.
+	CPTPlotCachePrecisionDouble, ///< All cached data will be converted to double precision.
+	CPTPlotCachePrecisionDecimal ///< All cached data will be converted to NSDecimal.
+}
+CPTPlotCachePrecision;
 
 #pragma mark -
 
-/**	@brief A plot data source.
+/**
+ *	@brief A plot data source.
  **/
-@protocol CPTPlotDataSource <NSObject>
-/**	@brief The number of data points for the plot.
+@protocol CPTPlotDataSource<NSObject>
+
+/// @name Data Values
+/// @{
+
+/**	@brief (Required) The number of data points for the plot.
  *	@param plot The plot.
  *	@return The number of data points for the plot.
  **/
--(NSUInteger)numberOfRecordsForPlot:(CPTPlot *)plot; 
+-(NSUInteger)numberOfRecordsForPlot:(CPTPlot *)plot;
 
 @optional
 
-/// @name Implement one of the following
-/// @{
-
-/**	@brief Gets a range of plot data for the given plot and field.
+/**	@brief (Optional) Gets a range of plot data for the given plot and field.
+ *	Implement one and only one of the optional methods in this section.
  *	@param plot The plot.
  *	@param fieldEnum The field index.
  *	@param indexRange The range of the data indexes of interest.
@@ -47,7 +52,8 @@ typedef enum _CPTPlotCachePrecision {
  **/
 -(NSArray *)numbersForPlot:(CPTPlot *)plot field:(NSUInteger)fieldEnum recordIndexRange:(NSRange)indexRange;
 
-/**	@brief Gets a plot data value for the given plot and field.
+/**	@brief (Optional) Gets a plot data value for the given plot and field.
+ *	Implement one and only one of the optional methods in this section.
  *	@param plot The plot.
  *	@param fieldEnum The field index.
  *	@param index The data index of interest.
@@ -55,7 +61,8 @@ typedef enum _CPTPlotCachePrecision {
  **/
 -(NSNumber *)numberForPlot:(CPTPlot *)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index;
 
-/**	@brief Gets a range of plot data for the given plot and field.
+/**	@brief (Optional) Gets a range of plot data for the given plot and field.
+ *	Implement one and only one of the optional methods in this section.
  *	@param plot The plot.
  *	@param fieldEnum The field index.
  *	@param indexRange The range of the data indexes of interest.
@@ -63,7 +70,8 @@ typedef enum _CPTPlotCachePrecision {
  **/
 -(double *)doublesForPlot:(CPTPlot *)plot field:(NSUInteger)fieldEnum recordIndexRange:(NSRange)indexRange;
 
-/**	@brief Gets a plot data value for the given plot and field.
+/**	@brief (Optional) Gets a plot data value for the given plot and field.
+ *	Implement one and only one of the optional methods in this section.
  *	@param plot The plot.
  *	@param fieldEnum The field index.
  *	@param index The data index of interest.
@@ -71,7 +79,8 @@ typedef enum _CPTPlotCachePrecision {
  **/
 -(double)doubleForPlot:(CPTPlot *)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index;
 
-/**	@brief Gets a range of plot data for the given plot and field.
+/**	@brief (Optional) Gets a range of plot data for the given plot and field.
+ *	Implement one and only one of the optional methods in this section.
  *	@param plot The plot.
  *	@param fieldEnum The field index.
  *	@param indexRange The range of the data indexes of interest.
@@ -84,7 +93,7 @@ typedef enum _CPTPlotCachePrecision {
 /// @name Data Labels
 /// @{
 
-/** @brief Gets a data label for the given plot. This method is optional.
+/** @brief (Optional) Gets a data label for the given plot.
  *	@param plot The plot.
  *	@param index The data index of interest.
  *	@return The data label for the point with the given index.
@@ -95,27 +104,25 @@ typedef enum _CPTPlotCachePrecision {
 
 ///	@}
 
-@end 
+@end
 
 #pragma mark -
 
 @interface CPTPlot : CPTAnnotationHostLayer {
 	@private
-    id <CPTPlotDataSource> dataSource;
-    id <NSCopying, NSCoding, NSObject> identifier;
+	__cpt_weak id<CPTPlotDataSource> dataSource;
 	NSString *title;
-    CPTPlotSpace *plotSpace;
-    BOOL dataNeedsReloading;
-    NSMutableDictionary *cachedData;
-    NSUInteger cachedDataCount;
-    CPTPlotCachePrecision cachePrecision;
+	CPTPlotSpace *plotSpace;
+	BOOL dataNeedsReloading;
+	NSMutableDictionary *cachedData;
+	NSUInteger cachedDataCount;
+	CPTPlotCachePrecision cachePrecision;
 	BOOL needsRelabel;
 	CGFloat labelOffset;
-    CGFloat labelRotation;
+	CGFloat labelRotation;
 	NSUInteger labelField;
 	CPTTextStyle *labelTextStyle;
 	NSNumberFormatter *labelFormatter;
-	BOOL labelFormatterChanged;
 	NSRange labelIndexRange;
 	NSMutableArray *labelAnnotations;
 	CPTShadow *labelShadow;
@@ -124,12 +131,11 @@ typedef enum _CPTPlotCachePrecision {
 
 /// @name Data Source
 /// @{
-@property (nonatomic, readwrite, assign) id <CPTPlotDataSource> dataSource;
+@property (nonatomic, readwrite, cpt_weak_property) __cpt_weak id<CPTPlotDataSource> dataSource;
 ///	@}
 
 /// @name Identification
 /// @{
-@property (nonatomic, readwrite, copy) id <NSCopying, NSCoding, NSObject> identifier;
 @property (nonatomic, readwrite, copy) NSString *title;
 ///	@}
 
@@ -241,4 +247,3 @@ typedef enum _CPTPlotCachePrecision {
 ///	@}
 
 @end
-

@@ -1,3 +1,4 @@
+#import "CPTDefinitions.h"
 #import <UIKit/UIKit.h>
 
 @class CPTGraph;
@@ -6,8 +7,8 @@
 	@protected
 	CPTGraph *hostedGraph;
 	BOOL collapsesLayers;
-    BOOL allowPinchScaling;
-    __weak id pinchGestureRecognizer;
+	BOOL allowPinchScaling;
+	__cpt_weak id pinchGestureRecognizer;
 }
 
 @property (nonatomic, readwrite, retain) CPTGraph *hostedGraph;

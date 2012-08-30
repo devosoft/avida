@@ -77,6 +77,8 @@
 		07B69A5E12B6215000F4C16C /* CPTTextStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 07B69A5C12B6215000F4C16C /* CPTTextStyle.m */; };
 		07B69B1712B62ABB00F4C16C /* CPTMutableLineStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 07B69B1512B62ABB00F4C16C /* CPTMutableLineStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		07B69B1812B62ABB00F4C16C /* CPTMutableLineStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 07B69B1612B62ABB00F4C16C /* CPTMutableLineStyle.m */; };
+		07BF0D640F2B70B8002FCEA7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07BF0D610F2B70B8002FCEA7 /* CoreData.framework */; };
+		07BF0D660F2B70B8002FCEA7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07BF0D630F2B70B8002FCEA7 /* QuartzCore.framework */; };
 		07BF0D720F2B718F002FCEA7 /* CPTGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 07BF0D700F2B718F002FCEA7 /* CPTGraph.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		07BF0D730F2B718F002FCEA7 /* CPTGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 07BF0D710F2B718F002FCEA7 /* CPTGraph.m */; };
 		07BF0D780F2B723A002FCEA7 /* CPTPlotAreaFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 07BF0D760F2B723A002FCEA7 /* CPTPlotAreaFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -114,17 +116,12 @@
 		4C97EF04104D80C400B554F9 /* CPTNumericDataType.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C97EEFD104D80C400B554F9 /* CPTNumericDataType.m */; };
 		4C97EF12104D819100B554F9 /* CPTMutableNumericData.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C97EF10104D819100B554F9 /* CPTMutableNumericData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C97EF13104D819100B554F9 /* CPTMutableNumericData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C97EF11104D819100B554F9 /* CPTMutableNumericData.m */; };
-		4C97EF16104D81D200B554F9 /* NSExceptionExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C97EF14104D81D200B554F9 /* NSExceptionExtensions.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		4C97EF17104D81D200B554F9 /* NSExceptionExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C97EF15104D81D200B554F9 /* NSExceptionExtensions.m */; };
-		4C97EF4D104D843E00B554F9 /* license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4C97EF4C104D843E00B554F9 /* license.txt */; };
 		4CD7E7E70F4B4F8200F9BCBB /* CPTTextLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CD7E7E50F4B4F8200F9BCBB /* CPTTextLayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4CD7E7E80F4B4F8200F9BCBB /* CPTTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7E7E60F4B4F8200F9BCBB /* CPTTextLayer.m */; };
 		4CD7E7EC0F4B4F9600F9BCBB /* CPTLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CD7E7EA0F4B4F9600F9BCBB /* CPTLayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4CD7E7ED0F4B4F9600F9BCBB /* CPTLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7E7EB0F4B4F9600F9BCBB /* CPTLayer.m */; };
 		4CD7E7F00F4B4FA700F9BCBB /* NSDecimalNumberExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CD7E7EE0F4B4FA700F9BCBB /* NSDecimalNumberExtensions.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		4CD7E7F10F4B4FA700F9BCBB /* NSDecimalNumberExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7E7EF0F4B4FA700F9BCBB /* NSDecimalNumberExtensions.m */; };
-		70D5B50814F403B000D15FFD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07BF0D630F2B70B8002FCEA7 /* QuartzCore.framework */; };
-		70D5B50914F403B400D15FFD /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07BF0D610F2B70B8002FCEA7 /* CoreData.framework */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		906156BE0F375598001B75FC /* CPTLineStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 906156BC0F375598001B75FC /* CPTLineStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -179,6 +176,8 @@
 		C3920AC51395B6500045F3BB /* CPTLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = C3920AC31395B6500045F3BB /* CPTLegend.m */; };
 		C3978E0613CE653C00A420D9 /* NSCoderExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = C3978E0413CE653B00A420D9 /* NSCoderExtensions.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		C3978E0713CE653C00A420D9 /* NSCoderExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C3978E0513CE653B00A420D9 /* NSCoderExtensions.m */; };
+		C3A695E5146A19BC00AF5653 /* CPTMutablePlotRange.h in Headers */ = {isa = PBXBuildFile; fileRef = C3A695E3146A19BC00AF5653 /* CPTMutablePlotRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C3A695E6146A19BC00AF5653 /* CPTMutablePlotRange.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A695E4146A19BC00AF5653 /* CPTMutablePlotRange.m */; };
 		C3AFC9D10FB62969005DFFDC /* CPTImage.h in Headers */ = {isa = PBXBuildFile; fileRef = C3AFC9CF0FB62969005DFFDC /* CPTImage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3BFFD1112274CB500DE22AC /* CPTNumericDataTypeConversionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C97EF08104D80D400B554F9 /* CPTNumericDataTypeConversionTests.m */; };
 		C3CAFB261229E41F00F5C989 /* CPTMutableNumericData+TypeConversion.h in Headers */ = {isa = PBXBuildFile; fileRef = C3CAFB241229E41F00F5C989 /* CPTMutableNumericData+TypeConversion.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -192,7 +191,6 @@
 		C3D3AD2E13DF8DCE0004EA73 /* CPTLineCap.m in Sources */ = {isa = PBXBuildFile; fileRef = C3D3AD2C13DF8DCE0004EA73 /* CPTLineCap.m */; };
 		C3D68A5B1220B27D00EB4863 /* CPTUtilitiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7E9630F4B625900F9BCBB /* CPTUtilitiesTests.m */; };
 		C3D68A5C1220B29100EB4863 /* CPTTextStyleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C36468A90FE5533F0064B186 /* CPTTextStyleTests.m */; };
-		C3D68A5D1220B29F00EB4863 /* NSExceptionExtensionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C97EF1B104D824900B554F9 /* NSExceptionExtensionsTests.m */; };
 		C3D68A5E1220B2AC00EB4863 /* CPTXYPlotSpaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C422A630FB1FCD5000CAA43 /* CPTXYPlotSpaceTests.m */; };
 		C3D68A5F1220B2B400EB4863 /* CPTScatterPlotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 07FEBD61110B7E8B00E44D37 /* CPTScatterPlotTests.m */; };
 		C3D68A601220B2BE00EB4863 /* CPTAxisLabelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD23FFB0FFBE78400ADD2E2 /* CPTAxisLabelTests.m */; };
@@ -339,10 +337,6 @@
 		4C97EF08104D80D400B554F9 /* CPTNumericDataTypeConversionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTNumericDataTypeConversionTests.m; sourceTree = "<group>"; };
 		4C97EF10104D819100B554F9 /* CPTMutableNumericData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTMutableNumericData.h; sourceTree = "<group>"; };
 		4C97EF11104D819100B554F9 /* CPTMutableNumericData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTMutableNumericData.m; sourceTree = "<group>"; };
-		4C97EF14104D81D200B554F9 /* NSExceptionExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSExceptionExtensions.h; sourceTree = "<group>"; };
-		4C97EF15104D81D200B554F9 /* NSExceptionExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSExceptionExtensions.m; sourceTree = "<group>"; };
-		4C97EF1A104D824900B554F9 /* NSExceptionExtensionsTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSExceptionExtensionsTests.h; sourceTree = "<group>"; };
-		4C97EF1B104D824900B554F9 /* NSExceptionExtensionsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSExceptionExtensionsTests.m; sourceTree = "<group>"; };
 		4C97EF4C104D843E00B554F9 /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		4C993FF00F45EE1600DC824F /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4C9A745D0FB24C7200918464 /* CPTDataSourceTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTDataSourceTestCase.h; sourceTree = "<group>"; };
@@ -359,7 +353,7 @@
 		4CD7E9630F4B625900F9BCBB /* CPTUtilitiesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTUtilitiesTests.m; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* CorePlot.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9021E5690FC69B2900443472 /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = doxygen.config; path = ../documentation/doxygen.config; sourceTree = SOURCE_ROOT; };
+		9021E5690FC69B2900443472 /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = doxygen.config; path = ../documentation/doxygen/doxygen.config; sourceTree = SOURCE_ROOT; };
 		906156BC0F375598001B75FC /* CPTLineStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTLineStyle.h; sourceTree = "<group>"; };
 		906156BD0F375598001B75FC /* CPTLineStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTLineStyle.m; sourceTree = "<group>"; };
 		90AF4FB90F36D39700753D26 /* CPTXYPlotSpace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTXYPlotSpace.m; sourceTree = "<group>"; };
@@ -378,6 +372,10 @@
 		BCFC7C3610921FDB00DAECAA /* CPTAxisTitle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTAxisTitle.m; sourceTree = "<group>"; };
 		C30550EB1399BE5400E0151F /* CPTLegendEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTLegendEntry.h; sourceTree = "<group>"; };
 		C30550EC1399BE5400E0151F /* CPTLegendEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTLegendEntry.m; sourceTree = "<group>"; };
+		C30889FE149C28C600EABCE6 /* customdoxygen.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = customdoxygen.css; path = ../documentation/doxygen/customdoxygen.css; sourceTree = "<group>"; };
+		C30889FF149C28C600EABCE6 /* footer.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; name = footer.html; path = ../documentation/doxygen/footer.html; sourceTree = "<group>"; };
+		C3088A00149C28C600EABCE6 /* header.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; name = header.html; path = ../documentation/doxygen/header.html; sourceTree = "<group>"; };
+		C30E979F14B290520012204A /* DoxygenLayout.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = DoxygenLayout.xml; path = ../documentation/doxygen/DoxygenLayout.xml; sourceTree = "<group>"; };
 		C318F4AB11EA188700595FF9 /* CPTLimitBand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTLimitBand.h; sourceTree = "<group>"; };
 		C318F4AC11EA188700595FF9 /* CPTLimitBand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTLimitBand.m; sourceTree = "<group>"; };
 		C32B391610AA4C78000470D4 /* CPTGridLines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTGridLines.h; sourceTree = "<group>"; };
@@ -409,9 +407,11 @@
 		C3920AC31395B6500045F3BB /* CPTLegend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTLegend.m; sourceTree = "<group>"; };
 		C3978E0413CE653B00A420D9 /* NSCoderExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSCoderExtensions.h; sourceTree = "<group>"; };
 		C3978E0513CE653B00A420D9 /* NSCoderExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSCoderExtensions.m; sourceTree = "<group>"; };
+		C3A695E3146A19BC00AF5653 /* CPTMutablePlotRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTMutablePlotRange.h; sourceTree = "<group>"; };
+		C3A695E4146A19BC00AF5653 /* CPTMutablePlotRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTMutablePlotRange.m; sourceTree = "<group>"; };
 		C3AFC9CF0FB62969005DFFDC /* CPTImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTImage.h; sourceTree = "<group>"; };
 		C3AFC9D00FB62969005DFFDC /* CPTImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTImage.m; sourceTree = "<group>"; };
-		C3B235631009931400970270 /* doxygen-cocoa-tags.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "doxygen-cocoa-tags.xml"; path = "../documentation/doxygen-cocoa-tags.xml"; sourceTree = "<group>"; };
+		C3B235631009931400970270 /* doxygen-cocoa-tags.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "doxygen-cocoa-tags.xml"; path = "../documentation/doxygen/doxygen-cocoa-tags.xml"; sourceTree = "<group>"; };
 		C3C032C710B8DEDC003A11B6 /* CPTAxisLabelGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTAxisLabelGroup.h; sourceTree = "<group>"; };
 		C3C032C810B8DEDC003A11B6 /* CPTAxisLabelGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPTAxisLabelGroup.m; sourceTree = "<group>"; };
 		C3CADDC511B167AD00D36017 /* CPTMutableNumericDataTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPTMutableNumericDataTests.h; sourceTree = "<group>"; };
@@ -474,8 +474,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */,
-				70D5B50914F403B400D15FFD /* CoreData.framework in Frameworks */,
-				70D5B50814F403B000D15FFD /* QuartzCore.framework in Frameworks */,
+				07BF0D640F2B70B8002FCEA7 /* CoreData.framework in Frameworks */,
+				07BF0D660F2B70B8002FCEA7 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -595,9 +595,6 @@
 				4CD7E7EF0F4B4FA700F9BCBB /* NSDecimalNumberExtensions.m */,
 				078F42D90FACC075006E670B /* NSNumberExtensions.h */,
 				078F42DA0FACC075006E670B /* NSNumberExtensions.m */,
-				4C97EF14104D81D200B554F9 /* NSExceptionExtensions.h */,
-				4C97EF15104D81D200B554F9 /* NSExceptionExtensions.m */,
-				4C97EF18104D822700B554F9 /* Tests */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -741,6 +738,8 @@
 				07321BC50F37382D00F423D8 /* CPTUtilities.m */,
 				32484B3F0F530E8B002151AD /* CPTPlotRange.h */,
 				32484B400F530E8B002151AD /* CPTPlotRange.m */,
+				C3A695E3146A19BC00AF5653 /* CPTMutablePlotRange.h */,
+				C3A695E4146A19BC00AF5653 /* CPTMutablePlotRange.m */,
 				076A775F0FBF0BFE003F6D97 /* Tests */,
 			);
 			name = "Types and Functions";
@@ -874,15 +873,6 @@
 			name = "Numeric Data";
 			sourceTree = "<group>";
 		};
-		4C97EF18104D822700B554F9 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4C97EF1A104D824900B554F9 /* NSExceptionExtensionsTests.h */,
-				4C97EF1B104D824900B554F9 /* NSExceptionExtensionsTests.m */,
-			);
-			name = Tests;
-			sourceTree = "<group>";
-		};
 		4C97EF19104D822D00B554F9 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -936,6 +926,10 @@
 				9021E5690FC69B2900443472 /* doxygen.config */,
 				C3FF6EF00FFFA51D00AF0496 /* mainpage.h */,
 				C3B235631009931400970270 /* doxygen-cocoa-tags.xml */,
+				C30E979F14B290520012204A /* DoxygenLayout.xml */,
+				C3088A00149C28C600EABCE6 /* header.html */,
+				C30889FF149C28C600EABCE6 /* footer.html */,
+				C30889FE149C28C600EABCE6 /* customdoxygen.css */,
 			);
 			name = Documentation;
 			sourceTree = "<group>";
@@ -1142,7 +1136,6 @@
 				4C97EF01104D80C400B554F9 /* CPTNumericData.h in Headers */,
 				4C97EF03104D80C400B554F9 /* CPTNumericDataType.h in Headers */,
 				4C97EF12104D819100B554F9 /* CPTMutableNumericData.h in Headers */,
-				4C97EF16104D81D200B554F9 /* NSExceptionExtensions.h in Headers */,
 				C3F31DEA1045EB470058520A /* CPTPlotGroup.h in Headers */,
 				C3DA34CD107AD7710051DA02 /* _CPTXYTheme.h in Headers */,
 				07AEF24910BBED050012BEFF /* CPTResponder.h in Headers */,
@@ -1171,6 +1164,7 @@
 				C3D3AD2D13DF8DCE0004EA73 /* CPTLineCap.h in Headers */,
 				C32EE1B613EC4AA800038266 /* CPTShadow.h in Headers */,
 				C32EE1C113EC4BE700038266 /* CPTMutableShadow.h in Headers */,
+				C3A695E5146A19BC00AF5653 /* CPTMutablePlotRange.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1222,7 +1216,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0420;
 			};
 			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "CorePlot" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1259,7 +1253,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */,
-				4C97EF4D104D843E00B554F9 /* license.txt in Resources */,
 				071F3CB910FBAB5900D0A7B6 /* License.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1291,7 +1284,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#  Build the doxygen documentation for the project and load the docset into Xcode.\n\n#  Use the following to adjust the value of the $DOXYGEN_PATH User-Defined Setting:\n#    Binary install location: /Applications/Doxygen.app/Contents/Resources/doxygen\n#    Source build install location: /usr/local/bin/doxygen\n\n#  Graphical class diagrams require Graphviz.\n#  Graphviz.app is available free online\n# http://www.graphviz.org/Download_macos.php\n\n#  If the config file doesn't exist, run 'doxygen -g $SOURCE_ROOT/doxygen.config' to \n#   a get default file.\n\nif ! [ -f \"${SOURCE_ROOT}/../documentation/doxygen.config\" ] \nthen \n  echo doxygen config file does not exist\n  ${DOXYGEN_PATH} -g \"${SOURCE_ROOT}/../documentation/doxygen.config\"\nfi\n\n#  Run doxygen on the updated config file.\n#  Note: doxygen creates a Makefile that does most of the heavy lifting.\n\n${DOXYGEN_PATH} \"${SOURCE_ROOT}/../documentation/doxygen.config\"\n\n#  make will invoke docsetutil. Take a look at the Makefile to see how this is done.\n\nmake -C \"${SOURCE_ROOT}/CorePlotDocs.docset/html\" install\n\n#  add publisher info to the docset\n\nfind \"/Users/${USER}/Library/Developer/Shared/Documentation/DocSets/com.CorePlot.Framework.docset/Contents/\" -type f -name Info.plist | xargs perl -pi -e 's/\\<\\/dict\\>/\\t\\<key\\>DocSetPublisherIdentifier\\<\\/key\\>\\n\\t\\<string\\>com.CorePlot.documentation\\<\\/string\\>\\n\\t\\<key\\>DocSetPublisherName\\<\\/key\\>\\n\\t\\<string\\>Core Plot\\<\\/string\\>\\n\\t\\<key\\>NSHumanReadableCopyright\\<\\/key\\>\\n\\t\\<string\\>Copyright © 2011 Core Plot. All rights reserved.\\<\\/string\\>\\n\\<\\/dict\\>\\n/g'\n\n#  Construct a temporary applescript file to tell Xcode to load a docset.\n\nrm -f \"${TEMP_DIR}/loadDocSet.scpt\"\n\necho \"tell application \\\"Xcode\\\"\" >> \"${TEMP_DIR}/loadDocSet.scpt\"\necho \"load documentation set with path \\\"/Users/${USER}/Library/Developer/Shared/Documentation/DocSets/\\\"\" >> \"${TEMP_DIR}/loadDocSet.scpt\"\necho \"end tell\" >> \"${TEMP_DIR}/loadDocSet.scpt\"\n\n#  Run the load-docset applescript command.\n\nosascript \"${TEMP_DIR}/loadDocSet.scpt\"\n\nexit 0";
+			shellScript = "#  Build the doxygen documentation for the project and load the docset into Xcode.\n\n#  Use the following to adjust the value of the $DOXYGEN_PATH User-Defined Setting:\n#    Binary install location: /Applications/Doxygen.app/Contents/Resources/doxygen\n#    Source build install location: /usr/local/bin/doxygen\n\n#  Graphical class diagrams require Graphviz.\n#  Graphviz.app is available free online\n# http://www.graphviz.org/Download_macos.php\n\n#  If the config file doesn't exist, run 'doxygen -g \"${SOURCE_ROOT}/../documentation/doxygen/doxygen.config\"' to \n#   a get default file.\n\nif ! [ -f \"${SOURCE_ROOT}/../documentation/doxygen/doxygen.config\" ] \nthen \n  echo doxygen config file does not exist\n  ${DOXYGEN_PATH} -g \"${SOURCE_ROOT}/../documentation/doxygen/doxygen.config\"\nfi\n\n#  Run doxygen on the updated config file.\n#  Note: doxygen creates a Makefile that does most of the heavy lifting.\n\n${DOXYGEN_PATH} \"${SOURCE_ROOT}/../documentation/doxygen/doxygen.config\"\n\n#  make a copy of the html docs\nmkdir -p \"${SOURCE_ROOT}/../documentation/html/MacOS\"\ncp -R \"${SOURCE_ROOT}/CorePlotDocs.docset/html/\" \"${SOURCE_ROOT}/../documentation/html/MacOS\"\n\n#  make will invoke docsetutil. Take a look at the Makefile to see how this is done.\n\nmake -C \"${SOURCE_ROOT}/CorePlotDocs.docset/html\" install\n\n#  add publisher info to the docset\n\nfind \"/Users/${USER}/Library/Developer/Shared/Documentation/DocSets/com.CorePlot.Framework.docset/Contents/\" -type f -name Info.plist | xargs perl -pi -e 's/\\<\\/dict\\>/\\t\\<key\\>DocSetPublisherIdentifier\\<\\/key\\>\\n\\t\\<string\\>com.CorePlot.documentation\\<\\/string\\>\\n\\t\\<key\\>DocSetPublisherName\\<\\/key\\>\\n\\t\\<string\\>Core Plot\\<\\/string\\>\\n\\t\\<key\\>NSHumanReadableCopyright\\<\\/key\\>\\n\\t\\<string\\>Copyright © 2011 Core Plot. All rights reserved.\\<\\/string\\>\\n\\<\\/dict\\>\\n/g'\n\n#  Construct a temporary applescript file to tell Xcode to load a docset.\n\nrm -f \"${TEMP_DIR}/loadDocSet.scpt\"\n\necho \"tell application \\\"Xcode\\\"\" >> \"${TEMP_DIR}/loadDocSet.scpt\"\necho \"load documentation set with path \\\"/Users/${USER}/Library/Developer/Shared/Documentation/DocSets/\\\"\" >> \"${TEMP_DIR}/loadDocSet.scpt\"\necho \"end tell\" >> \"${TEMP_DIR}/loadDocSet.scpt\"\n\n#  Run the load-docset applescript command.\n\nosascript \"${TEMP_DIR}/loadDocSet.scpt\"\n\nexit 0";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1305,7 +1298,6 @@
 				C34F0D59121CB3F00020FDD3 /* CPTDataSourceTestCase.m in Sources */,
 				C3D68A5B1220B27D00EB4863 /* CPTUtilitiesTests.m in Sources */,
 				C3D68A5C1220B29100EB4863 /* CPTTextStyleTests.m in Sources */,
-				C3D68A5D1220B29F00EB4863 /* NSExceptionExtensionsTests.m in Sources */,
 				C3D68A5E1220B2AC00EB4863 /* CPTXYPlotSpaceTests.m in Sources */,
 				C3D68A5F1220B2B400EB4863 /* CPTScatterPlotTests.m in Sources */,
 				C3D68A601220B2BE00EB4863 /* CPTAxisLabelTests.m in Sources */,
@@ -1380,7 +1372,6 @@
 				4C97EF02104D80C400B554F9 /* CPTNumericData.m in Sources */,
 				4C97EF04104D80C400B554F9 /* CPTNumericDataType.m in Sources */,
 				4C97EF13104D819100B554F9 /* CPTMutableNumericData.m in Sources */,
-				4C97EF17104D81D200B554F9 /* NSExceptionExtensions.m in Sources */,
 				C3F31DE91045EB470058520A /* CPTPlotGroup.m in Sources */,
 				C3DA34CC107AD7710051DA02 /* _CPTXYTheme.m in Sources */,
 				BCFC7C3810921FDB00DAECAA /* CPTAxisTitle.m in Sources */,
@@ -1411,6 +1402,7 @@
 				C3CCA04013E8D85900CE6DB1 /* _CPTConstraintsRelative.m in Sources */,
 				C32EE1B713EC4AA800038266 /* CPTShadow.m in Sources */,
 				C32EE1C213EC4BE700038266 /* CPTMutableShadow.m in Sources */,
+				C3A695E6146A19BC00AF5653 /* CPTMutablePlotRange.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1448,7 +1440,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1475,7 +1466,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
@@ -1502,18 +1492,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "";
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CorePlot_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@loader_path/../Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = CorePlot;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1523,18 +1515,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = "";
 				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CorePlot_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@loader_path/../Frameworks";
 				PRODUCT_NAME = CorePlot;
+				"VALID_ARCHS[sdk=*]" = "i386 x86_64";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -1542,7 +1537,7 @@
 		1DEB91B208733DA50010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1581,7 +1576,7 @@
 		1DEB91B308733DA50010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1613,13 +1608,13 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = debugging;
 				SYMROOT = "$(PROJECT_DIR)/../build";
+				"VALID_ARCHS[sdk=*]" = "";
 			};
 			name = Release;
 		};
 		9021E49F0FC5C9DD00443472 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DOXYGEN_PATH = /Applications/Doxygen.app/Contents/Resources/doxygen;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1632,7 +1627,6 @@
 		9021E4A00FC5C9DD00443472 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DOXYGEN_PATH = /Applications/Doxygen.app/Contents/Resources/doxygen;

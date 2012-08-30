@@ -1,6 +1,6 @@
-#import <Foundation/Foundation.h>
-#import "CPTPlot.h"
 #import "CPTDefinitions.h"
+#import "CPTPlot.h"
+#import <Foundation/Foundation.h>
 
 ///	@file
 
@@ -16,56 +16,76 @@
 
 ///	@ingroup plotBindingsBarPlot
 /// @{
-extern NSString * const CPTBarPlotBindingBarLocations;
-extern NSString * const CPTBarPlotBindingBarTips;
-extern NSString * const CPTBarPlotBindingBarBases;
+extern NSString *const CPTBarPlotBindingBarLocations;
+extern NSString *const CPTBarPlotBindingBarTips;
+extern NSString *const CPTBarPlotBindingBarBases;
 ///	@}
 
-/**	@brief Enumeration of bar plot data source field types
+/**
+ *	@brief Enumeration of bar plot data source field types
  **/
 typedef enum _CPTBarPlotField {
-    CPTBarPlotFieldBarLocation = 2,  ///< Bar location on independent coordinate axis.
-    CPTBarPlotFieldBarTip   	  = 3,	///< Bar tip value.
-    CPTBarPlotFieldBarBase     = 4	///< Bar base (used only if barBasesVary is YES).
-} CPTBarPlotField;
+	CPTBarPlotFieldBarLocation, ///< Bar location on independent coordinate axis.
+	CPTBarPlotFieldBarTip,      ///< Bar tip value.
+	CPTBarPlotFieldBarBase      ///< Bar base (used only if @link CPTBarPlot::barBasesVary barBasesVary @endlink is YES).
+}
+CPTBarPlotField;
 
 #pragma mark -
 
-/**	@brief A bar plot data source.
+/**
+ *	@brief A bar plot data source.
  **/
-@protocol CPTBarPlotDataSource <CPTPlotDataSource> 
-@optional 
+@protocol CPTBarPlotDataSource<CPTPlotDataSource>
+@optional
 
-/**	@brief Gets a bar fill for the given bar plot. This method is optional.
+///	@name Bar Style
+/// @{
+
+/**	@brief (Optional) Gets a bar fill for the given bar plot.
  *	@param barPlot The bar plot.
  *	@param index The data index of interest.
  *	@return The bar fill for the bar with the given index. If the data source returns nil, the default fill is used.
  *	If the data source returns an NSNull object, no fill is drawn.
  **/
--(CPTFill *)barFillForBarPlot:(CPTBarPlot *)barPlot recordIndex:(NSUInteger)index; 
+-(CPTFill *)barFillForBarPlot:(CPTBarPlot *)barPlot recordIndex:(NSUInteger)index;
 
-/**	@brief Gets a bar line style for the given bar plot. This method is optional.
+/**	@brief (Optional) Gets a bar line style for the given bar plot.
  *	@param barPlot The bar plot.
  *	@param index The data index of interest.
  *	@return The bar line style for the bar with the given index. If the data source returns nil, the default line style is used.
  *	If the data source returns an NSNull object, no line is drawn.
  **/
--(CPTLineStyle *)barLineStyleForBarPlot:(CPTBarPlot *)barPlot recordIndex:(NSUInteger)index; 
+-(CPTLineStyle *)barLineStyleForBarPlot:(CPTBarPlot *)barPlot recordIndex:(NSUInteger)index;
 
-@end 
+///	@}
+
+/// @name Legends
+/// @{
+
+/** @brief (Optional) Gets the legend title for the given bar plot bar.
+ *	@param barPlot The bar plot.
+ *	@param index The data index of interest.
+ *	@return The title text for the legend entry for the point with the given index.
+ **/
+-(NSString *)legendTitleForBarPlot:(CPTBarPlot *)barPlot recordIndex:(NSUInteger)index;
+
+///	@}
+@end
 
 #pragma mark -
 
-/**	@brief Bar plot delegate.
+/**
+ *	@brief Bar plot delegate.
  **/
-@protocol CPTBarPlotDelegate <NSObject>
+@protocol CPTBarPlotDelegate<NSObject>
 
 @optional
 
-// @name Point selection
+///	@name Point Selection
 /// @{
 
-/**	@brief Informs delegate that a point was touched.
+/**	@brief (Optional) Informs delegate that a point was touched.
  *	@param plot The scatter plot.
  *	@param index Index of touched point
  **/
@@ -79,19 +99,19 @@ typedef enum _CPTBarPlotField {
 
 @interface CPTBarPlot : CPTPlot {
 	@private
-    CPTLineStyle *lineStyle;
-    CPTFill *fill;
-    NSDecimal barWidth;
+	CPTLineStyle *lineStyle;
+	CPTFill *fill;
+	NSDecimal barWidth;
 	CGFloat barWidthScale;
-    NSDecimal barOffset;
-    CGFloat barOffsetScale;
-    CGFloat barCornerRadius;
-    NSDecimal baseValue;	
-    BOOL barsAreHorizontal;
-    BOOL barBasesVary;
-    BOOL barWidthsAreInViewCoordinates;
-    CPTPlotRange *plotRange;
-} 
+	NSDecimal barOffset;
+	CGFloat barOffsetScale;
+	CGFloat barCornerRadius;
+	NSDecimal baseValue;
+	BOOL barsAreHorizontal;
+	BOOL barBasesVary;
+	BOOL barWidthsAreInViewCoordinates;
+	CPTPlotRange *plotRange;
+}
 
 @property (nonatomic, readwrite, assign) BOOL barWidthsAreInViewCoordinates;
 @property (nonatomic, readwrite, assign) NSDecimal barWidth;

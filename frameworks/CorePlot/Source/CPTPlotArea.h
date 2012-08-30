@@ -1,7 +1,7 @@
-#import <Foundation/Foundation.h>
-#import "CPTLayer.h"
-#import "CPTGraph.h"
 #import "CPTAnnotationHostLayer.h"
+#import "CPTGraph.h"
+#import "CPTLayer.h"
+#import <Foundation/Foundation.h>
 
 @class CPTAxis;
 @class CPTAxisLabelGroup;
@@ -12,7 +12,7 @@
 @class CPTFill;
 
 @interface CPTPlotArea : CPTAnnotationHostLayer {
-@private
+	@private
 	CPTGridLineGroup *minorGridLineGroup;
 	CPTGridLineGroup *majorGridLineGroup;
 	CPTAxisSet *axisSet;
@@ -35,7 +35,7 @@
 @property (nonatomic, readwrite, retain) CPTAxisLabelGroup *axisTitleGroup;
 ///	@}
 
-/// @name Layer ordering
+/// @name Layer Ordering
 /// @{
 @property (nonatomic, readwrite, retain) NSArray *topDownLayerOrder;
 ///	@}
@@ -46,7 +46,7 @@
 @property (nonatomic, readwrite, copy) CPTFill *fill;
 ///	@}
 
-/// @name Axis set layer management
+/// @name Axis Set Layer Management
 /// @{
 -(void)updateAxisSetLayersForType:(CPTGraphLayerType)layerType;
 -(void)setAxisSetLayersForType:(CPTGraphLayerType)layerType;

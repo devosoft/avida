@@ -2,19 +2,23 @@
 
 #import "CPTPlot.h"
 #import "CPTTextStyle.h"
+#import "CPTUtilities.h"
 #import "NSCoderExtensions.h"
+#import <tgmath.h>
 
-/**	@cond */
+///	@cond
 @interface CPTLegendEntry()
 
 @property (nonatomic, readonly, retain) NSString *title;
 
 @end
-/**	@endcond */
+
+///	@endcond
 
 #pragma mark -
 
-/**	@brief A graph legend entry.
+/**
+ *	@brief A graph legend entry.
  **/
 @implementation CPTLegendEntry
 
@@ -38,10 +42,14 @@
  **/
 @synthesize column;
 
+///	@cond
+
 /**	@property title
  *	@brief The legend entry title.
  **/
 @dynamic title;
+
+///	@endcond
 
 /**	@property textStyle
  *	@brief The text style used to draw the legend entry title.
@@ -49,7 +57,7 @@
 @synthesize textStyle;
 
 /**	@property titleSize
- *	@brief The size of the legend entry title when drawn using the textStyle.
+ *	@brief The size of the legend entry title when drawn using the @link CPTLegendEntry::textStyle textStyle @endlink.
  **/
 @dynamic titleSize;
 
@@ -59,10 +67,10 @@
 -(id)init
 {
 	if ( (self = [super init]) ) {
-		plot = nil;
-		index = 0;
-		row = 0;
-		column = 0;
+		plot	  = nil;
+		index	  = 0;
+		row		  = 0;
+		column	  = 0;
 		textStyle = nil;
 	}
 	return self;
@@ -71,7 +79,7 @@
 -(void)dealloc
 {
 	[textStyle release];
-	
+
 	[super dealloc];
 }
 
@@ -89,14 +97,14 @@
 
 -(id)initWithCoder:(NSCoder *)coder
 {
-    if ( (self = [super init]) ) {
-		plot = [coder decodeObjectForKey:@"CPTLegendEntry.plot"];
-		index = [coder decodeIntegerForKey:@"CPTLegendEntry.index"];
-		row = [coder decodeIntegerForKey:@"CPTLegendEntry.row"];
-		column = [coder decodeIntegerForKey:@"CPTLegendEntry.column"];
+	if ( (self = [super init]) ) {
+		plot	  = [coder decodeObjectForKey:@"CPTLegendEntry.plot"];
+		index	  = [coder decodeIntegerForKey:@"CPTLegendEntry.index"];
+		row		  = [coder decodeIntegerForKey:@"CPTLegendEntry.row"];
+		column	  = [coder decodeIntegerForKey:@"CPTLegendEntry.column"];
 		textStyle = [[coder decodeObjectForKey:@"CPTLegendEntry.textStyle"] retain];
 	}
-    return self;
+	return self;
 }
 
 #pragma mark -
@@ -105,21 +113,30 @@
 /**	@brief Draws the legend title centered vertically in the given rectangle.
  *	@param rect The bounding rectangle where the title should be drawn.
  *	@param context The graphics context to draw into.
+ *  @param scale The drawing scale factor. Must be greater than zero (0).
  **/
--(void)drawTitleInRect:(CGRect)rect inContext:(CGContextRef)context;
+-(void)drawTitleInRect:(CGRect)rect inContext:(CGContextRef)context scale:(CGFloat)scale;
 {
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 	CGContextSaveGState(context);
 	CGContextTranslateCTM(context, 0.0, rect.origin.y);
 	CGContextScaleCTM(context, 1.0, -1.0);
-	CGContextTranslateCTM(context, 0.0, -CGRectGetMaxY(rect));
+	CGContextTranslateCTM( context, 0.0, -CGRectGetMaxY(rect) );
 #endif
 	// center the title vertically
-	CGRect textRect = rect;
+	CGRect textRect		= rect;
 	CGSize theTitleSize = self.titleSize;
 	if ( theTitleSize.height < textRect.size.height ) {
-		textRect = CGRectInset(textRect, 0.0, (textRect.size.height - theTitleSize.height) / (CGFloat)2.0);
+		CGFloat offset = (textRect.size.height - theTitleSize.height) / (CGFloat)2.0;
+		if ( scale == 1.0 ) {
+			offset = round(offset);
+		}
+		else {
+			offset = round(offset * scale) / scale;
+		}
+		textRect = CGRectInset(textRect, 0.0, offset);
 	}
+	CPTAlignRectToUserSpace(context, textRect);
 	[self.title drawInRect:textRect withTextStyle:self.textStyle inContext:context];
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 	CGContextRestoreGState(context);
@@ -128,6 +145,8 @@
 
 #pragma mark -
 #pragma mark Accessors
+
+///	@cond
 
 -(void)setTextStyle:(CPTTextStyle *)newTextStyle
 {
@@ -145,15 +164,17 @@
 -(CGSize)titleSize
 {
 	CGSize theTitleSize = CGSizeZero;
-	
-	NSString *theTitle = self.title;
+
+	NSString *theTitle		   = self.title;
 	CPTTextStyle *theTextStyle = self.textStyle;
-	
+
 	if ( theTitle && theTextStyle ) {
 		theTitleSize = [theTitle sizeWithTextStyle:theTextStyle];
 	}
-	
+
 	return theTitleSize;
 }
+
+///	@endcond
 
 @end
