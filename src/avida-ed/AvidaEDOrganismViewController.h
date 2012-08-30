@@ -56,6 +56,32 @@
   IBOutlet NSButton* btnForward;
   IBOutlet NSButton* btnEnd;
   
+
+  // Show/hide instruction details
+  IBOutlet NSButton* btnToggleInstInfo;
+  IBOutlet NSTextField* txtInstDetailsLabel;
+  IBOutlet NSTextField* txtJustExecLabel;
+  IBOutlet NSTextField* txtWillExecLabel;
+  IBOutlet NSLayoutConstraint* layoutOrgViewTop;
+  IBOutlet NSLayoutConstraint* layoutTxtJustExecHeight;
+  
+  // Show/hide various hardware components
+  IBOutlet NSButton* btnToggleFunctions;
+  IBOutlet NSView* viewFunctions;
+  IBOutlet NSLayoutConstraint* layoutFunctionSpacing;
+  IBOutlet NSButton* btnToggleRegisters;
+  IBOutlet NSView* viewRegisters;
+  IBOutlet NSLayoutConstraint* layoutRegisterSpacing;
+  IBOutlet NSButton* btnToggleInputBuffer;
+  IBOutlet NSView* viewInputBuffer;
+  IBOutlet NSLayoutConstraint* layoutInputBufferSpacing;
+  IBOutlet NSButton* btnToggleOutputBuffer;
+  IBOutlet NSView* viewOutputBuffer;
+  IBOutlet NSLayoutConstraint* layoutOutputBufferSpacing;
+  IBOutlet NSButton* btnToggleCurStack;
+  IBOutlet NSView* viewCurStack;
+  
+  
   IBOutlet AvidaEDOrganismSettingsViewController* ctlrSettings;
   IBOutlet NSPanel* panelSettings;
   NSPopover* popoverSettings;
@@ -100,6 +126,13 @@
 - (IBAction) lastSnapshot:(id)sender;
 - (IBAction) toggleAnimation:(id)sender;
 - (IBAction) showSettings:(id)sender;
+
+- (IBAction) toggleInstInfo:(id)sender;
+- (IBAction) toggleFunctions:(id)sender;
+- (IBAction) toggleRegisters:(id)sender;
+- (IBAction) toggleInputBuffer:(id)sender;
+- (IBAction) toggleOutputBuffer:(id)sender;
+- (IBAction) toggleCurStack:(id)sender;
 
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;

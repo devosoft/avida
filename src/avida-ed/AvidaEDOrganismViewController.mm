@@ -328,8 +328,10 @@
 
   [[[txtJustExec textStorage] mutableString] setString:@"(none)"];
   [[[txtWillExec textStorage] mutableString] setString:@"(none)"];
+  [txtInstDetailsLabel setAlphaValue:0.0f];
 
   [orgView registerForDraggedTypes:[NSArray arrayWithObjects:AvidaPasteboardTypeFreezerID, nil]];
+  orgView.layer.anchorPoint = CGPointMake(0,0);
   
   envActions = [[AvidaEDEnvActionsDataSource alloc] init];
   
@@ -402,6 +404,148 @@
   
   [popoverSettings showRelativeToRect:[targetButton bounds] ofView:sender preferredEdge:NSMinYEdge];
 }
+
+
+- (IBAction) toggleInstInfo:(id)sender {
+  if (btnToggleInstInfo.state == NSOffState) {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutOrgViewTop setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutOrgViewTop.animator setConstant:48.0f];
+    
+    [layoutTxtJustExecHeight setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutTxtJustExecHeight.animator setConstant:10.0f];
+    
+    [txtJustExecLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [txtJustExecLabel.animator setAlphaValue:0.0f];
+    [txtInstDetailsLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [txtInstDetailsLabel.animator setAlphaValue:1.0f];
+    
+    [txtWillExecLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [txtWillExecLabel.animator setAlphaValue:0.0f];
+  } else {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutOrgViewTop setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutOrgViewTop.animator setConstant:125.0f];
+    
+    [layoutTxtJustExecHeight setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutTxtJustExecHeight.animator setConstant:69.0f];
+
+    [txtJustExecLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [txtJustExecLabel.animator setAlphaValue:1.0f];
+    [txtInstDetailsLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [txtInstDetailsLabel.animator setAlphaValue:0.0f];
+
+    [txtWillExecLabel setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [txtWillExecLabel.animator setAlphaValue:1.0f];
+  }
+}
+
+
+- (IBAction) toggleFunctions:(id)sender {
+  if (btnToggleFunctions.state == NSOffState) {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutFunctionSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutFunctionSpacing.animator setConstant:5.0f];
+    
+    [viewFunctions setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewFunctions.animator setAlphaValue:0.0f];
+  } else {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutFunctionSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutFunctionSpacing.animator setConstant:197.0f];
+    
+    [viewFunctions setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewFunctions.animator setAlphaValue:1.0f];
+  }
+}
+
+
+- (IBAction) toggleRegisters:(id)sender {
+  if (btnToggleRegisters.state == NSOffState) {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutRegisterSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutRegisterSpacing.animator setConstant:5.0f];
+    
+    [viewRegisters setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewRegisters.animator setAlphaValue:0.0f];
+  } else {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutRegisterSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutRegisterSpacing.animator setConstant:61.0f];
+    
+    [viewRegisters setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewRegisters.animator setAlphaValue:1.0f];
+  }
+}
+
+
+- (IBAction) toggleInputBuffer:(id)sender {
+  if (btnToggleInputBuffer.state == NSOffState) {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutInputBufferSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutInputBufferSpacing.animator setConstant:5.0f];
+    
+    [viewInputBuffer setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewInputBuffer.animator setAlphaValue:0.0f];
+  } else {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutInputBufferSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutInputBufferSpacing.animator setConstant:61.0f];
+    
+    [viewInputBuffer setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewInputBuffer.animator setAlphaValue:1.0f];
+  }  
+}
+
+
+- (IBAction) toggleOutputBuffer:(id)sender {
+  if (btnToggleOutputBuffer.state == NSOffState) {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutOutputBufferSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutOutputBufferSpacing.animator setConstant:5.0f];
+    
+    [viewOutputBuffer setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewOutputBuffer.animator setAlphaValue:0.0f];
+  } else {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [layoutOutputBufferSpacing setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"constant"]];
+    [layoutOutputBufferSpacing.animator setConstant:25.0f];
+    
+    [viewOutputBuffer setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewOutputBuffer.animator setAlphaValue:1.0f];
+  }
+}
+
+
+- (IBAction) toggleCurStack:(id)sender {
+  if (btnToggleCurStack.state == NSOffState) {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [viewCurStack setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewCurStack.animator setAlphaValue:0.0f];
+  } else {
+    CABasicAnimation *animation = [CABasicAnimation animation];
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [viewCurStack setAnimations:[NSDictionary dictionaryWithObject:animation forKey:@"alphaValue"]];
+    [viewCurStack.animator setAlphaValue:1.0f];
+  }
+  
+}
+
+
+
+
+
 
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name {
