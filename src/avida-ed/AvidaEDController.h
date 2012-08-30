@@ -135,7 +135,6 @@
 }
 
 // Init and Dealloc Methods
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate;
 - (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir;
 
 - (void) dealloc;
@@ -187,6 +186,7 @@
 
 
 @property (readonly) NSString* runName;
+@property (readonly) NSURL* freezerURL;
 
 
 // NSMenuValidation Informal Protocol

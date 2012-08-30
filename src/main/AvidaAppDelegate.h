@@ -44,6 +44,8 @@
 @property (readonly) NSMenuItem* toggleRunMenuItem;
 
 
+- (BOOL) isWorkspaceOpenForURL:(NSURL*)url;
+
 // NSMenuValidation Informal Protocol
 - (BOOL) validateMenuItem:(NSMenuItem*)item;
 

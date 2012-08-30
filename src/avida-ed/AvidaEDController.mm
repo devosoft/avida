@@ -561,37 +561,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 @implementation AvidaEDController
 
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate {
-  self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
-  
-  if (self != nil) {
-    app = delegate;
-    
-    [self setup];
-
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
-    
-    if ([urls count] == 0) return nil;
-    
-    NSURL* userDocumentsURL = [urls objectAtIndex:0];
-    freezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
-    
-    Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
-    freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
-    [self setupFreezer];
-
-    // Hide freezer extension
-    NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
-    [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
-    
-    
-    [self showWindow:self];
-  }
-  
-  return self;
-}
-
 - (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir {
   self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
   
@@ -1835,6 +1804,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 @synthesize listener;
 @synthesize mapView;
+@synthesize freezerURL;
 
 
 - (void) handleMap:(ViewerMap*)pkg {

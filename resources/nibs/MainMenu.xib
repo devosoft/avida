@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">12A269</string>
+		<string key="IBDocument.SystemVersion">12B19</string>
 		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
 		<string key="IBDocument.AppKitVersion">1187</string>
 		<string key="IBDocument.HIToolboxVersion">624.00</string>
@@ -195,7 +195,7 @@
 								</object>
 								<object class="NSMenuItem" id="747704969">
 									<reference key="NSMenu" ref="720053764"/>
-									<string key="NSTitle">New Default Workspace</string>
+									<string key="NSTitle">Open Default Workspace</string>
 									<string key="NSKeyEquiv">n</string>
 									<int key="NSKeyEquivModMask">1572864</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -315,7 +315,7 @@
 								<object class="NSMenuItem" id="117038363">
 									<reference key="NSMenu" ref="720053764"/>
 									<bool key="NSIsDisabled">YES</bool>
-									<string key="NSTitle">Duplicate Workspace</string>
+									<string key="NSTitle">Save Workspace As...</string>
 									<string key="NSKeyEquiv">S</string>
 									<int key="NSKeyEquivModMask">1179648</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -2291,6 +2291,7 @@
 						<string key="exportData:">id</string>
 						<string key="exportFreezerItem:">id</string>
 						<string key="exportGraphics:">id</string>
+						<string key="freeze:">id</string>
 						<string key="importFreezerItem:">id</string>
 						<string key="saveCurrentConfig:">id</string>
 						<string key="saveCurrentRun:">id</string>
@@ -2347,6 +2348,10 @@
 						</object>
 						<object class="IBActionInfo" key="exportGraphics:">
 							<string key="name">exportGraphics:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="freeze:">
+							<string key="name">freeze:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="importFreezerItem:">

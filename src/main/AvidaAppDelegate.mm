@@ -36,11 +36,9 @@
 @implementation AvidaAppDelegate
 
 - (void) applicationDidFinishLaunching:(NSNotification*)aNotification {
-  if ([windows count] == 0) {
-    // @TODO Should pop up welcome window instead of default workspace
-    
-    [self newAvidaED:self]; 
-  }
+  windows = [[NSMutableSet alloc] init];
+  
+  [self newAvidaED:self];
 }
 
 - (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename {
@@ -69,11 +67,22 @@
 
 
 - (IBAction) newAvidaED:(id)sender {
-  AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self];
-  if (ctrl == nil) {
-    NSLog(@"Error loading Avida-ED-MainWindow NIB");
-  } else {
-    [windows addObject:ctrl];
+  
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+  
+  if ([urls count] == 0) return;
+  
+  NSURL* userDocumentsURL = [urls objectAtIndex:0];
+  NSURL* freezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+
+  if (![self isWorkspaceOpenForURL:freezerURL]) {
+    AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:freezerURL];
+    if (ctrl == nil) {
+      NSLog(@"Error loading Avida-ED-MainWindow NIB");
+    } else {
+      [windows addObject:ctrl];
+    }
   }
 }
 
@@ -86,14 +95,16 @@
   
   // Display the dialog.  If the OK button was pressed, process the files.
   if ([openDlg runModal] == NSOKButton) {
-    NSArray* files = [openDlg URLs];    
-    NSURL* fileURL = [files objectAtIndex:0];
+    NSArray* files = [openDlg URLs];
+    NSURL* freezerURL = [files objectAtIndex:0];
     
-    AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
-    if (ctrl == nil) {
-      NSLog(@"Error loading Avida-ED-MainWindow NIB");
-    } else {
-      [windows addObject:ctrl];
+    if (![self isWorkspaceOpenForURL:freezerURL]) {
+      AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:freezerURL];
+      if (ctrl == nil) {
+        NSLog(@"Error loading Avida-ED-MainWindow NIB");
+      } else {
+        [windows addObject:ctrl];
+      }
     }
   }
 }
@@ -120,6 +131,19 @@
     }
   }  
 }
+
+
+- (BOOL) isWorkspaceOpenForURL:(NSURL*)url {
+  for (AvidaEDController* ctlr in windows) {
+    if ([[url absoluteURL] isEqual:[ctlr.freezerURL absoluteURL]] ||
+        ([url isFileURL] && [ctlr.freezerURL isFileURL] && [[url path] isEqual:[ctlr.freezerURL path]])) {
+      [ctlr.window makeKeyAndOrderFront:self];
+      return YES;
+    }
+  }
+  return NO;
+}
+
 
 
 @synthesize toggleRunMenuItem;
