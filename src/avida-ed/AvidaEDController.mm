@@ -1563,7 +1563,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
   Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
   if (genome_ptr) {
-    [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome genomeStr] UTF8String]];
+    [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome name] UTF8String]];
     [mapView setPendingActionAtX:x Y:y withColor:-2];
   }
 }
