@@ -50,6 +50,7 @@
 		7046CFBD14D9C55B0030F1DF /* graph-preview-solid.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBB14D9C55B0030F1DF /* graph-preview-solid.png */; };
 		7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7047394714B65F19009D285C /* QuartzCore.framework */; };
 		705DE43D15EBFD2300B9D838 /* TaskTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 705DE43C15EBFD2300B9D838 /* TaskTimelineView.m */; };
+		705E042E15F112FE005F0361 /* CAAnimationBlockDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EA14B6A6E50051B354 /* ImageFlipperView.m */; };
 		708308EF14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */; };
@@ -159,6 +160,8 @@
 		7047394714B65F19009D285C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		705DE43B15EBFD2300B9D838 /* TaskTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskTimelineView.h; sourceTree = "<group>"; };
 		705DE43C15EBFD2300B9D838 /* TaskTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskTimelineView.m; sourceTree = "<group>"; };
+		705E042C15F112FE005F0361 /* CAAnimationBlockDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAAnimationBlockDelegate.h; sourceTree = "<group>"; };
+		705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CAAnimationBlockDelegate.m; sourceTree = "<group>"; };
 		7061AB4E13588B0E0000B036 /* AvidaEDPopViewStatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDPopViewStatView.h; sourceTree = "<group>"; };
 		7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDPopViewStatView.mm; sourceTree = "<group>"; };
 		708308E914B6A6E50051B354 /* ImageFlipperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFlipperView.h; sourceTree = "<group>"; };
@@ -377,6 +380,8 @@
 				708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */,
 				708308F014B6A7650051B354 /* NSFileManager+TemporaryDirectory.h */,
 				708308F114B6A7650051B354 /* NSFileManager+TemporaryDirectory.m */,
+				705E042C15F112FE005F0361 /* CAAnimationBlockDelegate.h */,
+				705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */,
 			);
 			name = Main;
 			path = main;
@@ -575,6 +580,7 @@
 				70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */,
 				70E6072D15658A6000E7AA82 /* AvidaEDAnalyzeViewController.mm in Sources */,
 				705DE43D15EBFD2300B9D838 /* TaskTimelineView.m in Sources */,
+				705E042E15F112FE005F0361 /* CAAnimationBlockDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

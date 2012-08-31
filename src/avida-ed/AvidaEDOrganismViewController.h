@@ -59,30 +59,8 @@
 
   // Show/hide instruction details
   IBOutlet NSButton* btnToggleInstInfo;
-  IBOutlet NSTextField* txtInstDetailsLabel;
-  IBOutlet NSTextField* txtJustExecLabel;
-  IBOutlet NSTextField* txtWillExecLabel;
-  IBOutlet NSView* viewJustExec;
-  IBOutlet NSView* viewWillExec;
-  IBOutlet NSLayoutConstraint* layoutOrgViewTop;
-  IBOutlet NSLayoutConstraint* layoutTxtJustExecHeight;
-  
-  // Show/hide various hardware components
-  IBOutlet NSButton* btnToggleFunctions;
-  IBOutlet NSView* viewFunctions;
-  IBOutlet NSLayoutConstraint* layoutFunctionSpacing;
-  IBOutlet NSButton* btnToggleRegisters;
-  IBOutlet NSView* viewRegisters;
-  IBOutlet NSLayoutConstraint* layoutRegisterSpacing;
-  IBOutlet NSButton* btnToggleInputBuffer;
-  IBOutlet NSView* viewInputBuffer;
-  IBOutlet NSLayoutConstraint* layoutInputBufferSpacing;
-  IBOutlet NSButton* btnToggleOutputBuffer;
-  IBOutlet NSView* viewOutputBuffer;
-  IBOutlet NSLayoutConstraint* layoutOutputBufferSpacing;
-  IBOutlet NSButton* btnToggleCurStack;
-  IBOutlet NSView* viewCurStack;
-  
+  IBOutlet NSView* viewInstInfo;
+  IBOutlet NSView* viewInstInfoContainer;
   
   IBOutlet AvidaEDOrganismSettingsViewController* ctlrSettings;
   IBOutlet NSPanel* panelSettings;
@@ -92,10 +70,12 @@
   NSMutableArray* arrInputBuffer;
   NSMutableArray* arrOutputBuffer;
   NSMutableArray* arrCurStack;
+  NSMutableArray* arrStackB;
   IBOutlet NSArrayController* arrctlrRegisters;
   IBOutlet NSArrayController* arrctlrInputBuffer;
   IBOutlet NSArrayController* arrctlrOutputBuffer;
   IBOutlet NSArrayController* arrctlrCurStack;
+  IBOutlet NSArrayController* arrctlrStackB;
 
   IBOutlet NSTextView* txtJustExec;
   IBOutlet NSTextView* txtWillExec;
@@ -119,6 +99,7 @@
 @property (readonly) NSMutableArray* arrInputBuffer;
 @property (readonly) NSMutableArray* arrOutputBuffer;
 @property (readonly) NSMutableArray* arrCurStack;
+@property (readonly) NSMutableArray* arrStackB;
 
 
 - (IBAction) selectSnapshot:(id)sender;
@@ -130,11 +111,6 @@
 - (IBAction) showSettings:(id)sender;
 
 - (IBAction) toggleInstInfo:(id)sender;
-- (IBAction) toggleFunctions:(id)sender;
-- (IBAction) toggleRegisters:(id)sender;
-- (IBAction) toggleInputBuffer:(id)sender;
-- (IBAction) toggleOutputBuffer:(id)sender;
-- (IBAction) toggleCurStack:(id)sender;
 
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;
