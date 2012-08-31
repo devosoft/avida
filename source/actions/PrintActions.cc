@@ -926,7 +926,7 @@ public:
     
     //for each lineage label, output the counts
     //@LZ - handle dead lineages appropriately
-    for(int i=0;i<lineage_labels.GetSize();i++)
+    for(int i=0; i < lineage_labels.GetSize(); i++)
     {
       //default to 0 in case this lineage is dead
       int count = 0;
@@ -934,7 +934,7 @@ public:
       if (lineage_label_counts.HasEntry(lineage_labels[i]))
         lineage_label_counts.Find(lineage_labels[i], count);
       
-      df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
+      df.Write(count, cStringUtil::Stringf("Lineage Label %d", lineage_labels[i]));
     }
     
     df.Endl();
