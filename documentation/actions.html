@@ -2589,7 +2589,7 @@ a single, complete file for each trigger.
 </li>
   <li><p>
     <strong><a name="PrintMiniTraces">PrintMiniTraces</a></strong>
-    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
+    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean print_reacs=0]</i>
     </p>
     <p>Prints a condensed trace of execution during a lifetime. Who is traced is determined by arguements.
     E.g. with the args <it>save_dominants=1:orgs_per=2</t>, at the specified update(s) a list is
@@ -2619,7 +2619,7 @@ a single, complete file for each trigger.
   </li>
   <li><p>
     <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
-    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]</i>
+    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean print_reacs=0]</i>
     </p>
     <p>Same general operation behavior as PrintMiniTraces but only saves executed instruction symbols along with 
     org id, genotype id, forager type, and birth and death updates. Microtraces map executions as 'what the org was trying

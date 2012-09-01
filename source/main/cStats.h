@@ -971,6 +971,7 @@ public:
   void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
   void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
+  void PrintMiniTraceReactions(cOrganism* org);
   void PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
   void UpdateTopNavTrace(cOrganism* org);
   void PrintTopNavTrace();

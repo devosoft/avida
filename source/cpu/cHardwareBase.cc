@@ -1496,9 +1496,10 @@ void cHardwareBase::RecordNavTrace(bool use_avatar)
   m_navtraceupdate.Push(m_world->GetStats().GetUpdate());
 }
 
-void cHardwareBase::DeleteMiniTrace()
+void cHardwareBase::DeleteMiniTrace(bool print_reacs)
 {
   if (m_minitracer != NULL) {
+    if (print_reacs) m_world->GetStats().PrintMiniTraceReactions(m_organism);    
     delete m_minitracer;
     bool success = m_world->GetDataFileManager().Remove(m_minitrace_file);
     assert(success);

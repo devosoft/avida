@@ -82,6 +82,7 @@ private:
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
+  bool print_mini_trace_reacs;
   bool use_micro_traces;
   int m_next_prey_q;
   int m_next_pred_q;
@@ -253,14 +254,14 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
-  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
-  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool print_reacs, bool use_micro = false);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes, bool print_reacs, bool use_micro = false);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs);
   tSmartArray<int> SetRandomTraceQ(int max_samples);
   tSmartArray<int> SetRandomPreyTraceQ(int max_samples);
   tSmartArray<int> SetRandomPredTraceQ(int max_samples);
-  void SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro);
-  void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
+  void SetNextPreyQ(int num_prey, bool print_genomes, bool print_reacs, bool use_micro);
+  void SetNextPredQ(int num_pred, bool print_genomes, bool print_reacs, bool use_micro);
   tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   void AppendRecordReproQ(cOrganism* new_org);

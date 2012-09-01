@@ -4558,6 +4558,54 @@ void cStats::PrintFemaleInstructionData(const cString& filename, const cString& 
   df.Endl();  
 }
 
+void cStats::PrintMiniTraceReactions(cOrganism* org)
+{
+  int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
+  if (org->HasOpinion()) group_id = org->GetOpinion().first;
+  cString filename("");
+  filename.Set("minitraces/trace_reactions/org%d-ud%d-grp%d_ft%d-gt%d.trcreac", org->GetID(), org->GetPhenotype().GetUpdateBorn(), group_id, org->GetForageTarget(), org->GetBioGroup("genotype")->GetID());
+  
+  // Open the file...
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteTimeStamp();  
+    df.WriteComment("Reaction Data for Traced Org to Date (death or end)");
+    df.WriteComment("OrgID");
+    df.WriteComment("Update");
+    df.WriteComment("Reaction Counts");
+    df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
+    df.WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
+    df.FlushComments();
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  
+  tArray<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  tArray<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
+  tArray<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
+  
+  fp << org->GetID() << " ";
+  for (int i = 0; i < reaction_count.GetSize() - 1; i++) {
+    fp << reaction_count[i] << ",";
+  }
+  fp << reaction_count[reaction_count.GetSize() - 1] << " ";
+  
+  for (int i = 0; i < reaction_cycles.GetSize() - 1; i++) {
+    fp << reaction_cycles[i] << ",";
+  }
+  fp << reaction_cycles[reaction_cycles.GetSize() - 1] << " ";
+  
+  for (int i = 0; i < reaction_execs.GetSize() - 1; i++) {
+    fp << reaction_execs[i] << ",";
+  }
+  fp << reaction_execs[reaction_execs.GetSize() - 1];
+  fp << endl;
+  
+  m_world->GetDataFileManager().Remove(filename);
+}
+
 void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id)
 {
   int death_update = GetUpdate();

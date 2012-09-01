@@ -1142,22 +1142,24 @@ void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename
   delete testcpu;
 }
 
-void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print_genomes, const bool use_micro)
+void cPopulation::SetMiniTraceQueue(tSmartArray<int> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro)
 {
   minitrace_queue.Resize(0);
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]);
   print_mini_trace_genomes = print_genomes;
+  print_mini_trace_reacs = print_reacs;
   use_micro_traces = use_micro;
 }
 
-void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes, const bool use_micro)
+void cPopulation::AppendMiniTraces(tSmartArray<int> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro)
 {
   for (int i = 0; i < new_queue.GetSize(); i++) minitrace_queue.Push(new_queue[i]); 
   print_mini_trace_genomes = print_genomes;
+  print_mini_trace_reacs = print_reacs;
   use_micro_traces = use_micro;
 }
 
-void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes)
+void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs)
 {
   cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
@@ -1194,10 +1196,10 @@ void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_gen
   }
   
   if (queue.GetSize() > 0) {
-    AppendMiniTraces(bg_id_list, print_genomes);
+    AppendMiniTraces(bg_id_list, print_genomes, print_reacs);
   }
   else {
-    SetMiniTraceQueue(bg_id_list, print_genomes);
+    SetMiniTraceQueue(bg_id_list, print_genomes, print_reacs);
   }
 }
 
@@ -1280,17 +1282,19 @@ tSmartArray<int> cPopulation::SetRandomPredTraceQ(int max_samples)
   return bg_id_list;
 }
 
-void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro)
+void cPopulation::SetNextPreyQ(int num_prey, bool print_genomes, bool print_reacs, bool use_micro)
 {
   m_next_prey_q = num_prey;
   print_mini_trace_genomes = print_genomes;
+  print_mini_trace_reacs = print_reacs;
   use_micro_traces = use_micro;
 }
 
-void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool use_micro)
+void cPopulation::SetNextPredQ(int num_pred, bool print_genomes, bool print_reacs, bool use_micro)
 {
   m_next_pred_q = num_pred;
   print_mini_trace_genomes = print_genomes;
+  print_mini_trace_reacs = print_reacs;
   use_micro_traces = use_micro;
 }
 
@@ -1791,7 +1795,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // And clear it!
   in_cell.RemoveOrganism(ctx); 
   if (!organism->IsRunning()) {
-    organism->GetHardware().DeleteMiniTrace();
+    organism->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
     delete organism;
   }
   else organism->GetPhenotype().SetToDelete();
@@ -5134,7 +5138,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   
   double merit = cur_org->GetPhenotype().GetMerit().GetDouble();
   if (cur_org->GetPhenotype().GetToDelete() == true) {
-    cur_org->GetHardware().DeleteMiniTrace();
+    cur_org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
     delete cur_org;
   }
   
@@ -5196,7 +5200,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
   }
   
   if (cur_org->GetPhenotype().GetToDelete() == true) {
-    cur_org->GetHardware().DeleteMiniTrace();
+    cur_org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
     delete cur_org;
     cur_org = NULL;
   }
