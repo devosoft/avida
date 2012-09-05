@@ -134,7 +134,7 @@ public:
   virtual void SetGradientInflow(double) { ; }
   virtual void SetGradPlatVarInflow(double, double, int) { ; }
   virtual void SetPredatoryResource(double, int) { ; }
-  virtual void SetProbabilisticResource(cAvidaContext& ctx, double, double, double, double) { ; }
+  virtual void SetProbabilisticResource(cAvidaContext& ctx, double, double, double, double, double, int, int) { ; }
   virtual void SetGradPlatIsCommon(bool) { ; }
   virtual void SetGradFloor(double) { ; }
   virtual void SetGradHabitat(int) { ; }

@@ -475,10 +475,13 @@ private:
   double m_inflow;
   double m_outflow;
   double m_lamda;
+  double m_theta;
+  int m_x;
+  int m_y;
   
 public:
   cActionSetProbabilisticResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), 
-                                  m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lamda(0.0)
+                                  m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lamda(1.0), m_theta(0.0), m_x(-1), m_y(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -486,16 +489,19 @@ public:
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lamda = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_theta = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y = largs.PopWord().AsInt();
     
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
     assert(res);
   }
   
-  static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lamda>"; }
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lamda> <double theta> <int x> <int y>"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lamda);        
+    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lamda, m_theta, m_x, m_y);        
   } 
 };
 

@@ -870,33 +870,36 @@ void cGradientCount::SetPredatoryResource(double odds, int juvsper)
   m_guarded_juvs_per_adult = juvsper;
 }
 
-void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda)
+void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda, double theta, int x, int y)
 {
   m_probabilistic = true;
   m_initial_plat = initial;
   m_plateau_inflow = inflow;
   m_plateau_outflow = outflow;
   
-  BuildProbabilisticRes(ctx, lamda);
+  BuildProbabilisticRes(ctx, lamda, theta, x , y);
 }
 
-void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda)
+void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y)
 {
   const int worldx = GetX();
   const int worldy = GetY();
-  m_peakx = ctx.GetRandom().GetUInt(0, worldx);
-  m_peaky = ctx.GetRandom().GetUInt(0, worldy); 
+  
+  if (x == -1) m_peakx = ctx.GetRandom().GetUInt(0, worldx);
+  else m_peakx = x;
+  if (y == -1) m_peaky = ctx.GetRandom().GetUInt(0, worldy); 
+  else m_peaky = y;
   
   for (int i = 0; i < worldx; i++) {
     for (int j = 0; j < worldy; j++) {
-      if (i == m_peakx && j== m_peaky) {
+      // only if theta == 1 do want want a 'hill' with resource for certain in the center
+      if (i == m_peakx && j== m_peaky && theta == 0) {
         Element(j * worldx + i).SetAmount(m_initial_plat);
         if (m_plateau_outflow > 0 || m_plateau_inflow > 0) m_prob_res_cells.Push(j * worldx + i);
       }
       else {
         int cell_dist = sqrt((double) (m_peakx - i) * (m_peakx - i) + (m_peaky - j) * (m_peaky - j));
-        // use a half normal with theta 0 and lamda (aka scale) of 1
-        double theta = 1;
+        // use a half normal
         double this_prob = (1/lamda) * (sqrt(2/3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lamda), 2));
 
         if (ctx.GetRandom().P(this_prob)) {

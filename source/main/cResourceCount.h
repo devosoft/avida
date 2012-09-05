@@ -121,7 +121,7 @@ public:
   void SetGradPlatVarInflow(const int& res_id, const double& mean, const double& variance, const int& type);
   void SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper);
   void SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
-                                const double& outflow, const double& lamda);
+                                const double& outflow, const double& lamda, const double& theta, const int& x, const int& y);
 
   int GetResourceCountID(const cString& res_name);
   double GetInflow(const cString& name);

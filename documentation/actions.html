@@ -691,13 +691,14 @@ and reaction parameters.
 </li>
 <li><p>
     <strong><a name="SetPredatoryResource">SetProbabilisticResource</a></strong>
-    <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt;double outflow&gt;;double lamda&gt;</i>
+    <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt; &lt;double outflow&gt; &lt;double lamda&gt; &lt;double theta&gt; &lt;int x&gt; &lt;int y&gt;</i>
   </p>
     <p>
-    A gradient resource with probabilistically distributed cells. A random 'seed' cell
+    A gradient resource with probabilistically distributed cells. If x and y are not specified, a random 'seed' cell
     is chosen. That cell is given the initial value. Then, we look at all of the other cells in
     the world and add resource with prob = PDF from half normal distribution given lamda and the 
-    current distance from the center cell. Theta for the PDF is fixed at 0.
+    current distance from the center cell. Normally you'd leave theta for the PDF alone at the fixed value 
+    of 0. However, you can do things like set lamda = 1 and theta to 10 to get 'rings' (larger theta == larger rings).
     </p>
 </li>
 <li><p>
