@@ -694,6 +694,11 @@ int cResourceCount::GetFrozenPeakY(cAvidaContext& ctx, int res_id) const
   return spatial_resource_count[res_id]->GetCurrPeakY();
 }
 
+tArray<int>* cResourceCount::GetWallCells(int res_id)
+{
+  return spatial_resource_count[res_id]->GetWallCells();
+}
+
 ///// Private Methods /////////
 void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 { 

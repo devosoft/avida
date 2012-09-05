@@ -156,6 +156,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) const;
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const;
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const;
+  tArray<int>* GetWallCells(int res_id);
   
   void SetSpatialUpdate(int update) { m_spatial_update = update; }
   void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }

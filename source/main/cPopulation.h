@@ -287,6 +287,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakX(ctx, res_id); } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakY(ctx, res_id); } 
+  tArray<int>* GetWallCells(int res_id) { return resource_count.GetWallCells(res_id); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 

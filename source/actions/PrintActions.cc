@@ -270,6 +270,24 @@ public:
 };
 
 
+class cActionPrintResWallLocData : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintResWallLocData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "reswallloc.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"reswallloc.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintResWallLocData(m_filename, ctx);
+  }
+};
+
 class cActionPrintGroupTolerance : public cAction 
 {
 private:
@@ -4773,6 +4791,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
+  action_lib->Register<cActionPrintResWallLocData>("PrintResWallLocData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
   action_lib->Register<cActionPrintReactionExeData>("PrintReactionExeData");
   action_lib->Register<cActionPrintCurrentReactionData>("PrintCurrentReactionData");

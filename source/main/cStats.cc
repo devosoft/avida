@@ -1541,6 +1541,33 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
   df.Endl();
 }
 
+void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Avida wall resource filled cells data");
+    df.WriteTimeStamp();
+    df.WriteComment("First column gives the current update, all further columns give filled cell ids for each wall res");
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  fp << m_update << " ";
+
+  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  for (int i = 0; i < resLib.GetSize(); i++) {
+    if (resLib.GetResource(i)->GetGradient() && resLib.GetResource(i)->GetHabitat() == 2) {
+      tArray<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
+      for (int i = 0; i < cells.GetSize() - 1; i++) {
+        fp << cells[i] << ",";
+      }
+      fp << cells[cells.GetSize() - 1] << " ";
+    }
+  }
+  fp << endl;
+}
+
 void cStats::PrintSpatialResData(const cString& filename, int i)
 {
 

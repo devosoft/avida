@@ -94,6 +94,7 @@ private:
   int m_skip_counter;
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
+  tArray<int> m_wall_cells;
   
   double m_mean_plat_inflow;
   double m_var_plat_inflow;
@@ -153,6 +154,8 @@ public:
   void UpdatePredatoryRes(cAvidaContext& ctx); 
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
+  
+  tArray<int>* GetWallCells() { return &m_wall_cells; }
   
 private:
   void refreshResourceValues();

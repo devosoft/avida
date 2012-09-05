@@ -152,6 +152,8 @@ public:
   int GetCurrPeakX() { return curr_peakx; } 
   int GetCurrPeakY() { return curr_peaky; }
   
+  virtual tArray<int>* GetWallCells() { return NULL; };
+  
 };
 
 #endif

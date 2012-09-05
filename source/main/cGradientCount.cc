@@ -573,6 +573,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         Element(jj * GetX() + ii).SetAmount(0);
       }
     }
+    m_wall_cells.Resize(0);
     // generate number barriers equal to count 
     for (int i = 0; i < m_count; i++) {
       // drop the anchor/first block for current barrier
@@ -587,6 +588,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         start_randy = ctx.GetRandom().GetUInt(0, GetY());  
       }
       Element(start_randy * GetX() + start_randx).SetAmount(m_plateau);
+      m_wall_cells.Push(start_randy * GetX() + start_randx);
 
       int randx = start_randx;
       int randy = start_randy;
@@ -683,6 +685,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           }
           if (count_block) {
             Element(randy * GetX() + randx).SetAmount(m_plateau);
+            m_wall_cells.Push(randy * GetX() + randx);
             if (place_corner) {
               if (cornery < GetY() && cornery >= 0 && cornerx < GetX() && cornerx >= 0) {
                 if ( ! ((cornerx < (m_halo_anchor_x + m_halo_inner_radius) && 
@@ -690,6 +693,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
                      cornerx > (m_halo_anchor_x - m_halo_inner_radius) && 
                      cornery > (m_halo_anchor_y - m_halo_inner_radius))) ){
                   Element(cornery * GetX() + cornerx).SetAmount(m_plateau);
+                  m_wall_cells.Push(randy * GetX() + randx);
                 }
               }
             }
