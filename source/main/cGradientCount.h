@@ -103,6 +103,9 @@ private:
   double m_pred_odds;
   int m_guarded_juvs_per_adult;
   
+  bool m_probabilistic;
+  tArray<int> m_prob_res_cells;
+  
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
@@ -152,6 +155,10 @@ public:
   
   void SetPredatoryResource(double odds, int juvsper);
   void UpdatePredatoryRes(cAvidaContext& ctx); 
+  
+  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda);
+  void BuildProbabilisticRes(cAvidaContext& ctx, double lamda);
+  void UpdateProbabilisticRes();
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   

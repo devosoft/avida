@@ -463,6 +463,14 @@ void cResourceCount::SetPredatoryResource(const int& res_id, const double& odds,
   spatial_resource_count[res_id]->SetPredatoryResource(odds, juvsper);
 }
 
+void cResourceCount::SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
+                                              const double& outflow, const double& lamda) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetProbabilisticResource(ctx, initial, inflow, outflow, lamda);
+}
+
 /*
  * This is unnecessary now that a resource has an index
  * TODO: 

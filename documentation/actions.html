@@ -281,6 +281,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintReproData">PrintReproData</a><br>
       <a href="#PrintReputationData">PrintReputationData</a><br>
       <a href="#PrintResourceData">PrintResourceData</a><br>
+      <a href="#PrintResourceLocData">PrintResourceLocData</a><br>
+      <a href="#PrintResWallLocData">PrintResWallLocData</a><br>
       <a href="#PrintSenseData">PrintSenseData</a><br>
       <a href="#PrintSenseExeData">PrintSenseExeData</a><br>
       <a href="#PrintShadedAltruists">PrintShadedAltruists</a><br>
@@ -333,6 +335,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetPopCapEnforcement">SetPopCapEnforcement</a><br>
       <a href="#SetPeriodicResource">SetPeriodicResource</a><br>
       <a href="#SetPredatoryResource">SetPredatoryResource</a><br>
+      <a href="#SetProbabilisticResource">SetProbabilisticResource</a><br>
       <a href="#SetReactionInst">SetReactionInst</a><br>
       <a href="#SetReactionMaxTaskCount">SetReactionMaxTaskCount</a><br>
       <a href="#SetReactionMinTaskCount">SetReactionMinTaskCount</a><br>
@@ -677,13 +680,24 @@ and reaction parameters.
 </li>
 <li><p>
     <strong><a name="SetPredatoryResource">SetPredatoryResource</a></strong>
-    <i>&lt;string res_name&gt; &lt;double kill_odds&gt; &lt;double guarded_juvs_per_adult&gt;double detection_prob&gt;</i>
+    <i>&lt;string res_name&gt; &lt;double kill_odds&gt; &lt;int guarded_juvs_per_adult&gt;double detection_prob&gt;</i>
   </p>
     <p>
     A gradient resource with teeth. If set in motion, will kill with prob kill_odds 1 random org 
     in each cell of plateau. If it passes over a den resource, will kill unguarded offspring with
     probability kill_odds. If an org steps on the resource, the org is killed with probability
     kill_odds. detection_prob sets the probability of orgs detecting the predator via look sensors.
+    </p>
+</li>
+<li><p>
+    <strong><a name="SetPredatoryResource">SetProbabilisticResource</a></strong>
+    <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt;double outflow&gt;;double lamda&gt;</i>
+  </p>
+    <p>
+    A gradient resource with probabilistically distributed cells. A random 'seed' cell
+    is chosen. That cell is given the initial value. Then, we look at all of the other cells in
+    the world and add resource with prob = PDF from half normal distribution given lamda and the 
+    current distance from the center cell. Theta for the PDF is fixed at 0.
     </p>
 </li>
 <li><p>
@@ -2957,6 +2971,20 @@ a single, complete file for each trigger.
   seperate files <kbd>resource_<em>resource_name</em>.m</kbd> (in a format that is
   designed to be read into Matlab) for each spatial resource.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintResourceLocData">PrintResourceLocData</a></strong>
+  <i>[string fname="resourceloc.dat"]</i>
+  </p>
+  <p>
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintResWallLocData">PrintResWallLocData</a></strong>
+  <i>[string fname="reswallloc.dat"]</i>
+  </p>
+  <p>
   </p>
 </li>
 <li><p>

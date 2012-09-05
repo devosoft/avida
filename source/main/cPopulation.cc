@@ -7555,6 +7555,22 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
   m_has_predatory_res = true; 
 }
 
+void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
+  const double outflow, const double lamda)
+{
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource* res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) global_res_index++;
+    if (res->GetName() == res_name) {
+      resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lamda);
+      break;
+    }
+  }
+}
+
 void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);

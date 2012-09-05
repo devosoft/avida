@@ -467,6 +467,38 @@ public:
   } 
 };
 
+class cActionSetProbabilisticResource : public cAction
+{
+private:
+  cString m_res_name;
+  double m_initial;
+  double m_inflow;
+  double m_outflow;
+  double m_lamda;
+  
+public:
+  cActionSetProbabilisticResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), 
+                                  m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lamda(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_initial = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lamda = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lamda>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lamda);        
+  } 
+};
+
 /* Change Environment settings */
 class cActionChangeEnvironment : public cAction
 {
@@ -1572,6 +1604,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
   action_lib->Register<cActionSetGradPlatVarInflow>("SetGradPlatVarInflow");
   action_lib->Register<cActionSetPredatoryResource>("SetPredatoryResource");
+  action_lib->Register<cActionSetProbabilisticResource>("SetProbabilisticResource");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
