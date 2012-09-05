@@ -302,7 +302,7 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   if (max_head_pos >= m_genome_length) {
     // truncate the offspring part of the memory to the position of the last head
     memory.Resize(max_head_pos - m_genome_length + 1);
-    snapshot->AddMemSpace("offsping", memory);
+    snapshot->AddMemSpace("offspring", memory);
     
     // handle all heads that are in the second part of the memory space
     for (int i = 0; i < hw.GetNumHeads(); i++) {
@@ -334,40 +334,75 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
   
   // Trace finished, cleanup...
 
-  // Create snapshot based on current hardware state
-  m_snapshot_count++;
-  
-  // Make sure snapshot array is big enough (just in case bonus cycles or threads are in use)
-  if (m_snapshots->GetSize() < m_snapshot_count) m_snapshots->Resize(m_snapshots->GetSize() * 2);
-  
-  HardwareSnapshot* snapshot = new HardwareSnapshot(0);
-  (*m_snapshots)[m_snapshot_count - 1] = snapshot;
-  
-  snapshot->SetInstSet(organism.GetHardware().GetInstSet());
-  snapshot->SetPostDivide();
-  
-  
-  // Handle memory spaces
-  Apto::Array<Instruction> memory;
-  ConstInstructionSequencePtr seq;
-  
-  // - handle the genome part of the memory
-  seq.DynamicCastFrom(m_genome->Representation());
-  memory.Resize(seq->GetSize());
-  for (int i = 0; i < m_genome_length && i < seq->GetSize(); i++) {
-    memory[i] = (*seq)[i];
-  }
-  snapshot->AddMemSpace("genome", memory);
+  // Did the organism successfully reproduce before running out of time?
+  if (time_used != time_allocated) {
+    // Create snapshot based on current hardware state
+    m_snapshot_count++;
     
-  // - handle the offspring part of the memory
-  seq.DynamicCastFrom(organism.GetGenome().Representation());
-  memory.Resize(seq->GetSize());
-  for (int i = m_genome_length; i < seq->GetSize(); i++) {
-    memory[i - m_genome_length] = (*seq)[i];
+    // Make sure snapshot array is big enough (just in case bonus cycles or threads are in use)
+    if (m_snapshots->GetSize() < m_snapshot_count) m_snapshots->Resize(m_snapshots->GetSize() * 2);
+    
+    cHardwareBase& hw = const_cast<cHardwareBase&>(organism.GetHardware());
+    
+    HardwareSnapshot* prev_snapshot = (m_snapshot_count > 1) ? (*m_snapshots)[m_snapshot_count - 2] : NULL;
+    HardwareSnapshot* snapshot = new HardwareSnapshot(hw.GetNumRegisters(), prev_snapshot);
+    (*m_snapshots)[m_snapshot_count - 1] = snapshot;
+    
+    snapshot->SetInstSet(organism.GetHardware().GetInstSet());
+    snapshot->SetPostDivide();
+    
+    // Store register states
+    for (int reg = 0; reg < hw.GetNumRegisters(); reg++) snapshot->SetRegister(reg, hw.GetRegister(reg));
+    
+    Apto::Array<int> buffer_values;
+    
+    // Handle Input Buffer
+    buffer_values.Resize(hw.GetInputBuf().GetCapacity());
+    for (int i = 0; i < hw.GetInputBuf().GetCapacity(); i++) buffer_values[i] = hw.GetInputBuf()[i];
+    snapshot->AddBuffer("input", buffer_values);
+    
+    // Handle Output Buffer
+    buffer_values.Resize(hw.GetOutputBuf().GetCapacity());
+    for (int i = 0; i < hw.GetOutputBuf().GetCapacity(); i++) buffer_values[i] = hw.GetOutputBuf()[i];
+    snapshot->AddBuffer("output", buffer_values);
+    
+    // Handle Stacks
+    buffer_values.Resize(nHardware::STACK_SIZE);
+    for (int stk = 0; stk < hw.GetNumStacks(); stk++) {
+      for (int i = 0; i < nHardware::STACK_SIZE; i++) buffer_values[i] = hw.GetStack(i, stk);
+      snapshot->AddBuffer(Apto::FormatStr("stack %c", 'A' + stk), buffer_values);
+    }
+    snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));
+    
+    // Handle function counts
+    const tArray<int>& task_counts = organism.GetPhenotype().GetCurTaskCount();
+    for (int i = 0; i < task_counts.GetSize(); i++) {
+      snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetName(), task_counts[i]);
+    }
+
+    
+    
+    
+    // Handle memory spaces
+    Apto::Array<Instruction> memory;
+    ConstInstructionSequencePtr seq;
+    
+    // - handle the genome part of the memory
+    seq.DynamicCastFrom(m_genome->Representation());
+    memory.Resize(seq->GetSize());
+    for (int i = 0; i < m_genome_length && i < seq->GetSize(); i++) {
+      memory[i] = (*seq)[i];
+    }
+    snapshot->AddMemSpace("genome", memory);
+    
+    // - handle the offspring part of the memory
+    seq.DynamicCastFrom(organism.GetGenome().Representation());
+    memory.Resize(seq->GetSize());
+    for (int i = m_genome_length; i < seq->GetSize(); i++) {
+      memory[i - m_genome_length] = (*seq)[i];
+    }
+    snapshot->AddMemSpace("offspring", memory);
   }
-  snapshot->AddMemSpace("offsping", memory);
-  
-  
   
   // Resize the snapshot array to the actual number of snapshots
   m_snapshots->Resize(m_snapshot_count);

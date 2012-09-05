@@ -104,6 +104,9 @@ namespace Avida {
         *fs << "WORLD_Y 60" << std::endl;
         *fs << "WORLD_GEOMETRY 1" << std::endl;
         *fs << "COPY_MUT_PROB 0.0075" << std::endl;
+        *fs << "DIVIDE_INS_PROB 0.0" << std::endl;
+        *fs << "DIVIDE_DEL_PROB 0.0" << std::endl;
+        *fs << "OFFSPRING_SIZE_RANGE 1.0" << std::endl;
         *fs << "BIRTH_METHOD 0" << std::endl;
         *fs << "RANDOM_SEED 0" << std::endl;
         *fs << "#include instset.cfg" << std::endl;
@@ -619,6 +622,9 @@ namespace Avida {
         *fs << "WORLD_Y " << world->GetConfig().WORLD_Y.Get() << std::endl;
         *fs << "WORLD_GEOMETRY 1" << std::endl;
         *fs << "COPY_MUT_PROB " << world->GetConfig().COPY_MUT_PROB.Get() << std::endl;
+        *fs << "DIVIDE_INS_PROB 0.0" << std::endl;
+        *fs << "DIVIDE_DEL_PROB 0.0" << std::endl;
+        *fs << "OFFSPRING_SIZE_RANGE 1.0" << std::endl;
         *fs << "BIRTH_METHOD " << world->GetConfig().BIRTH_METHOD.Get() << std::endl;
         *fs << "RANDOM_SEED " << world->GetConfig().RANDOM_SEED.Get() << std::endl;
         *fs << "#include instset.cfg" << std::endl;
