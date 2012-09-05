@@ -67,7 +67,15 @@ public:
   int GetNumRows() const { return num_rows; }
   int GetNumCols() const { return data[0].GetSize(); }
 
-  void ResizeClear(const int _rows, const int _cols){
+  void ResizeClear(const int _rows, const int _cols)
+  {
+    if (_rows == 0 || _cols == 0) {
+      num_rows = 0;
+      delete [] data;
+      data = NULL;
+      return;
+    }
+
     if (_rows != GetNumRows()) {
       num_rows = _rows;
       assert(_rows > 0); // Invalid size specified for matrix resize
@@ -78,9 +86,14 @@ public:
     for (int i = 0; i < GetNumRows(); i++) data[i].ResizeClear(_cols);
   }
 
-  void Resize(int _rows, int _cols) {
-    // Rows and cols must be > 0
-    assert(_rows > 0 && _cols > 0); // Invalid size specified for matrix resize
+  void Resize(int _rows, int _cols)
+  {
+    if (_rows == 0 || _cols == 0) {
+      num_rows = 0;
+      delete [] data;
+      data = NULL;
+      return;
+    }
 
     if( data != NULL )  {
       tArray<T> * new_data = new tArray<T>[_rows];
