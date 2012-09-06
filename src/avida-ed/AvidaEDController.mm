@@ -692,10 +692,24 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [currentRun resume];
     [btnRunState setTitle:@"Pause"];
     [[app toggleRunMenuItem] setTitle:@"Pause"];
+    [sldCfgMutRate setEnabled:NO];
+    [txtCfgMutRate setEnabled:NO];
+    [matCfgPlacement setEnabled:NO];
+    [matCfgEnv setEnabled:NO];
+    [matCfgPauseAt setEnabled:NO];
+    [txtCfgPauseAt setEnabled:NO];
+    [stpCfgPauseAt setEnabled:NO];
   } else {
     [currentRun pause];
     [btnRunState setTitle:@"Run"];
     [[app toggleRunMenuItem] setTitle:@"Run"];
+    [sldCfgMutRate setEnabled:YES];
+    [txtCfgMutRate setEnabled:YES];
+    [matCfgPlacement setEnabled:YES];
+    [matCfgEnv setEnabled:YES];
+    [matCfgPauseAt setEnabled:YES];
+    [txtCfgPauseAt setEnabled:YES];
+    [stpCfgPauseAt setEnabled:YES];
   }
 }
 
@@ -979,6 +993,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   NSSavePanel* saveDlg = [NSSavePanel savePanel];
   [saveDlg setCanCreateDirectories:YES];
   [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-freezer-item"]];
+  [saveDlg setNameFieldStringValue:[NSString stringWithAptoString:freezer->NameOf([[outlineFreezer itemAtRow:[outlineFreezer selectedRow]] freezerID])]];
   
   void (^completionHandler)(NSInteger) = ^(NSInteger result) {
     if (result == NSOKButton) {
@@ -1552,10 +1567,16 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (void) mapView:(MapGridView*)map handleDraggedFreezerGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y
 {
-  Avida::GenomePtr genome(freezer->InstantiateGenome(fid));
-  if (genome) {
-    [currentRun injectGenome:genome atX:x Y:y withName:freezer->NameOf(fid)];
-    [mapView setPendingActionAtX:x Y:y withColor:-2];
+  Avida::GenomePtr genome_ptr(freezer->InstantiateGenome(fid));
+  if (genome_ptr) {
+    if (runActive) {
+      [currentRun injectGenome:genome_ptr atX:x Y:y withName:freezer->NameOf(fid)];
+      [mapView setPendingActionAtX:x Y:y withColor:-2];
+    } else {
+      Genome* genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome_ptr->AsString()] name:[NSString stringWithAptoString:freezer->NameOf(fid)]];
+      [ancestorArrayCtlr addObject:genome];
+      [self updatePendingInjectColors];
+    }
   }
 }
 
@@ -1563,8 +1584,13 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
   Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
   if (genome_ptr) {
-    [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome name] UTF8String]];
-    [mapView setPendingActionAtX:x Y:y withColor:-2];
+    if (runActive) {
+      [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome name] UTF8String]];
+      [mapView setPendingActionAtX:x Y:y withColor:-2];
+    } else {
+      [ancestorArrayCtlr addObject:genome];
+      [self updatePendingInjectColors];
+    }
   }
 }
 

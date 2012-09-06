@@ -374,16 +374,17 @@ static const float PANEL_MIN_WIDTH = 360.0;
   if (bounds.size.width != oldBoundsSize.width || bounds.size.height != oldBoundsSize.height) {
     NSRect panel_bounds;
     
+    CGFloat graph_height = floor(bounds.size.height - 322.0 - (2 * spacing) - 32.0);
     panel_bounds.size = [btnGraphSelect bounds].size;
     panel_bounds.origin.x = floor((bounds.size.width - panel_bounds.size.width) / 2.0);
-    panel_bounds.origin.y = 322 + spacing;
+    panel_bounds.origin.y = 322 + spacing + graph_height;
     [btnGraphSelect setFrame:panel_bounds];
     [btnGraphSelect setNeedsDisplay:YES];
     
     panel_bounds.size.width = floor(bounds.size.width - 2 * spacing);
-    panel_bounds.size.height = floor(bounds.size.height - 322.0 - (2 * spacing) - 32.0);
+    panel_bounds.size.height = graph_height;
     panel_bounds.origin.x = spacing;
-    panel_bounds.origin.y = 322.0 + spacing + 32.0;
+    panel_bounds.origin.y = 322.0 + spacing;
     [graphView setFrame:panel_bounds];
     [graphView setNeedsDisplay:YES];
   }
@@ -540,7 +541,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
 
 - (void) handleData:(AvidaEDPopViewStatViewValues*)values {
   [txtPopSize setIntegerValue:values->organisms];
-  [txtFitness setDoubleValue:values->ave_fitness];
+  [txtFitness setStringValue:[NSString stringWithFormat:@"%0.2f", values->ave_fitness]];
   [txtMetabolicRate setDoubleValue:values->ave_metabolic_rate];
   [txtGestation setDoubleValue:values->ave_gestation_time];
   [txtAge setDoubleValue:values->ave_age];
@@ -572,7 +573,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   }
   
   [txtOrgName setStringValue:[NSString stringWithAptoString:genotype->Properties().Get("name")]];
-  [txtOrgFitness setDoubleValue:genotype->Properties().Get("ave_fitness")];
+  [txtOrgFitness setStringValue:[NSString stringWithFormat:@"%0.2f",(double)genotype->Properties().Get("ave_fitness")]];
   [txtOrgMetabolicRate setDoubleValue:genotype->Properties().Get("ave_metabolic_rate")];
   [txtOrgGestation setDoubleValue:genotype->Properties().Get("ave_gestation_time")];
   [txtOrgAge setIntValue:(values->update - genotype->Properties().Get("update_born").IntValue())];
