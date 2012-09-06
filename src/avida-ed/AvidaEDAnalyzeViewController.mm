@@ -122,6 +122,7 @@
   
 	x.title = @"Updates";
 	x.titleOffset = 25.0;
+  [x.labelFormatter setMaximumFractionDigits:0];
   
   x.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
@@ -138,6 +139,8 @@
   
   y.title = @"Average Fitness";
   y.titleOffset = 50.0;
+  [y.labelFormatter setMaximumFractionDigits:2];
+  [y.labelFormatter setMinimumSignificantDigits:2];
   
 	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   primaryYAxis = y;
@@ -156,6 +159,8 @@
   y2.labelTextStyle = textStyle;
   
   y2.titleOffset = -65.0;
+  [y2.labelFormatter setMaximumFractionDigits:2];
+  [y2.labelFormatter setMinimumSignificantDigits:2];
   
   // y2.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   secondaryYAxis = y2;

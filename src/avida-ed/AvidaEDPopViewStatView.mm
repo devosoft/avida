@@ -228,6 +228,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
     
 	x.title = @"Updates";
 	x.titleOffset = 35.0;
+  [x.labelFormatter setMaximumFractionDigits:0];
   
   x.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
@@ -241,6 +242,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
   y.preferredNumberOfMajorTicks = 8;
   y.labelOffset = 5.0;
   y.labelTextStyle = textStyle;
+  [y.labelFormatter setMaximumFractionDigits:2];
+  [y.labelFormatter setMinimumSignificantDigits:2];
 
 	y.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
   
