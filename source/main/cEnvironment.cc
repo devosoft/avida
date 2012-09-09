@@ -923,7 +923,6 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
       else if (var_name == "habitat") {
         if (!AssertInputInt(var_value, "habitat", var_type, feedback)) return false;
         new_resource->SetHabitat( var_value.AsInt() );
-        // Add this target id to the list in the instructions file. 
         AddHabitat(var_value.AsInt());
       } 
       else if (var_name == "min_size") {

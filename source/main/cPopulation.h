@@ -82,6 +82,7 @@ private:
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   tSmartArray<int> minitrace_queue;
   bool print_mini_trace_genomes;
+  bool print_mini_trace_reacs;
   bool use_micro_traces;
   int m_next_prey_q;
   int m_next_pred_q;
@@ -99,7 +100,9 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
+  int pop_enforce;
   tArray<int> min_prey_failures;
+  bool m_has_predatory_res;
   
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
@@ -143,6 +146,8 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
+  
+  void SetPopCapEnforcement(int rate) { pop_enforce = rate; }
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -249,14 +254,14 @@ public:
   bool DumpMemorySummary(std::ofstream& fp);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
-  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes, bool use_micro = false);
-  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  void SetMiniTraceQueue(tSmartArray<int> new_queue, bool print_genomes, bool print_reacs, bool use_micro = false);
+  void AppendMiniTraces(tSmartArray<int> new_queue, bool print_genomes, bool print_reacs, bool use_micro = false);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs);
   tSmartArray<int> SetRandomTraceQ(int max_samples);
   tSmartArray<int> SetRandomPreyTraceQ(int max_samples);
   tSmartArray<int> SetRandomPredTraceQ(int max_samples);
-  void SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro);
-  void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
+  void SetNextPreyQ(int num_prey, bool print_genomes, bool print_reacs, bool use_micro);
+  void SetNextPredQ(int num_pred, bool print_genomes, bool print_reacs, bool use_micro);
   tSmartArray<int> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   tSmartArray<int> GetMiniTraceQueue() const { return minitrace_queue; }
   void AppendRecordReproQ(cOrganism* new_org);
@@ -282,6 +287,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakX(ctx, res_id); } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakY(ctx, res_id); } 
+  tArray<int>* GetWallCells(int res_id) { return resource_count.GetWallCells(res_id); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
@@ -317,6 +323,8 @@ public:
   void RecordMinPreyFailedAttack() { min_prey_failures.Push(m_world->GetStats().GetUpdate()); }
   void ClearMinPreyFailedAttacks() { min_prey_failures.Resize(0); }
   tArray<int> GetMinPreyFailedAttacks() { return min_prey_failures; }
+  
+  void RemovePredators(cAvidaContext& ctx);
    
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
@@ -346,7 +354,12 @@ public:
   void UpdateGradientConeInflow(const cString res_name, const double inflow);
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
-  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance);
+  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
+  void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
+  void SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
+                                const double outflow, const double lamda, const double theta, const int x, const int y);
+  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
+  bool HasPredatoryRes() { return m_has_predatory_res; }
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
@@ -408,7 +421,9 @@ private:
   cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
   cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
   int UpdateEmptyCellIDArray(int deme_id = -1);
+  tArray<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
+  int FindRandEmptyCell();
   
   // Update statistics collecting...
   void UpdateDemeStats(cAvidaContext& ctx); 

@@ -352,8 +352,8 @@ public:
   CONFIG_ADD_VAR(SLIP_FILL_MODE, int, 0, "Fill insertions from slip mutations with:\n0 = Duplication\n1 = nop-X\n2 = Random\n3 = Scrambled\n4 = nop-C");
   CONFIG_ADD_VAR(SLIP_COPY_MODE, int, 0, "How to handle 'on-copy' slip mutations:\n0 = actual read head slip\n1 = instant large mutation (obeys slip mode)");
   CONFIG_ADD_VAR(TRANS_FILL_MODE, int, 0, "Fill insertions from translocation mutations with:\n0 = Duplication\n1 = Scrambled");
-  CONFIG_ADD_VAR(LGT_FILL_MODE, int, 0, "Extract gene for lateral transfer from:\n0 = Local Neighborhood\n1 = Entire Population");
-  CONFIG_ADD_VAR(LGT_SOURCE_REGION, int, 0, "Fill insertions from lateral gene transfer mutations with:\n0 = Duplication\n1 = scrambled");
+  CONFIG_ADD_VAR(LGT_FILL_MODE, int, 0, "Fill insertions from lateral gene transfer mutations with:\n0 = Duplication\n1 = scrambled");
+  CONFIG_ADD_VAR(LGT_SOURCE_REGION, int, 0, "Extract gene for lateral transfer from:\n0 = Local Neighborhood\n1 = Entire Population");
   CONFIG_ADD_VAR(PARENT_MUT_PROB, double, 0.0, "Parent substitution rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(PARENT_INS_PROB, double, 0.0, "Parent insertion rate (per-site, applied on divide)");
   CONFIG_ADD_VAR(PARENT_DEL_PROB, double, 0.0, "Parent deletion rate (per-site, applied on divide)");
@@ -394,6 +394,7 @@ public:
   CONFIG_ADD_VAR(MIN_EXE_LINES, double, 0.5, "Code fraction that must be executed before divide");
   CONFIG_ADD_VAR(MIN_GENOME_SIZE, int, 0, "Minimum number of instructions allowed in a genome. 0 = OFF");
   CONFIG_ADD_VAR(MAX_GENOME_SIZE, int, 0, "Maximum number of instructions allowed in a genome. 0 = OFF");
+  CONFIG_ADD_VAR(MIN_CYCLES, int, 0, "Min number of CPU cycles (age) required before reproduction.");
   CONFIG_ADD_VAR(REQUIRE_ALLOCATE, int, 1, "(Original CPU Only) Require allocate before divide?");
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task");
@@ -441,6 +442,7 @@ public:
   CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread (for SMT parasites, this must be 1)");
   CONFIG_ADD_VAR(INFECTION_MECHANISM, int, 1, "0: Infection always succeeds. \n1: Infection succeeds if parasite matches at least one host task.\n2: Infection succeeds if parasite does NOT match at least one task.\n3: Parasite tasks must match host tasks exactly (Matching Alleles).");
   CONFIG_ADD_ALIAS(INJECT_IS_TASK_SPECIFIC);
+  CONFIG_ADD_VAR(INJECT_QMA_EXPONENT, double, 0.2, "The exponent of the equation proportion_overlap^x that determines the probability of infection succeding given the amount a host and parasite phenotype match.");
   
   CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
   CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence)");
@@ -571,6 +573,14 @@ public:
   CONFIG_ADD_VAR(DONATE_THRESH_QUANTA, int, 10, "The size of steps between quanta donate thresholds");
   CONFIG_ADD_VAR(MAX_DONATES, int, 1000000, "Limit on number of donates organisms are allowed.");
   CONFIG_ADD_VAR(TRACK_DONATES, int, 0, "Track execution circumstances around donate-specific.");
+    
+  // -------- Kaboom config options -----------
+  CONFIG_ADD_GROUP(KABOOM_GROUP, "Kaboom");
+  CONFIG_ADD_VAR(KABOOM_PROB, double, -1, "The probability (in decimal) that an explosion will occur when the instruction is encountered. -1 is default probability and allows the organism to change the probability.");
+  CONFIG_ADD_VAR(KABOOM_RADIUS, int, 2, "Radius of all explosions (kaboom and kaboom5)");
+  CONFIG_ADD_VAR(KABOOM_HAMMING, int, 0, "Hamming distance of kaboom's threshold, set to -1 to have adjustable, default is 0 for cheaters.");
+  CONFIG_ADD_VAR(KABOOM5_HAMMING, int, 5, "Hamming distance of kaboom5's threshold, set to -1 to have adjustable, default is 5 for altruists.");
+  CONFIG_ADD_VAR(NO_MUT_INSTS, cString, "", "A list of the instruction symbols that should not be able to be mutated out.");
 
   // -------- Geneology config options --------
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
@@ -801,7 +811,7 @@ public:
   CONFIG_ADD_VAR(MAX_TOLERANCE, int, 1, "Maximum tolerance level"); 
   CONFIG_ADD_VAR(TOLERANCE_VARIATIONS, int, 0, "0=all tolerance active,\n1=only immigration tolerance active,\n2=immigrants + sex");
   CONFIG_ADD_VAR(TRACK_TOLERANCE, int, 0, "Turn on/off detailed recording of tolerance change circumstances (Warning: can be slow)");
-  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed)");
+  CONFIG_ADD_VAR(PRED_PREY_SWITCH, int, -1, " -2: no predators, but track prey stats \n -1: no predators in experiment \n 0: don't allow a predator to switch to being a prey (prey to pred always allowed) \n 1: allow predators to switch to being prey \n 2: don't allow a predator to switch to being a prey & don't allow prey to switch via set-forage-target (via attack allowed) )");
   CONFIG_ADD_VAR(PRED_EFFICIENCY, double, 1.0, "Multiply the current bonus, merit, and resource bin amounts of the consumed prey by this value\n and add to current predator values (for bonus, merit, and bin consumption instructions).");
   CONFIG_ADD_VAR(PRED_ODDS, double, 1.0, "Probability of success for predator 'attack' instructions.");
   CONFIG_ADD_VAR(PRED_INJURY, double, 0.0, "If an attack fails, target's bonus, merit, and internal resources are reduced by this fraction.");

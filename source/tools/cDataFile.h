@@ -26,9 +26,16 @@
 #include <fstream>
 #include <sstream>
 
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
+
 #ifndef cString_h
 #include "cString.h"
 #endif
+
+
 
 // This class encapsulates output file handling for the class cDataFileManager.
 
@@ -78,6 +85,8 @@ public:
   void Write(long i, const char* descr, const char* format = "");
 	void Write(unsigned int i, const char* descr, const char* format = "");
   void Write(const char* data_str, const char* descr, const char* format = "");
+    
+  void Write(tArray<int> list, const char* descr, const char* format);
   
   
   // The following methods output a value into the data file anonymously (no column descriptor).

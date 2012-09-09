@@ -415,14 +415,16 @@ private:
   cString m_res_name;
   double m_mean;
   double m_variance;
+  int m_type;
   
 public:
-  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0)
+  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0), m_type(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_mean = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_variance = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_type = largs.PopWord().AsInt();
     
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
     assert(res);
@@ -432,7 +434,74 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance);        
+    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance, m_type);        
+  } 
+};
+
+class cActionSetPredatoryResource : public cAction
+{
+private:
+  cString m_res_name;
+  double m_odds;
+  int m_juvs_per;
+  double m_detection_prob;
+  
+public:
+  cActionSetPredatoryResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_odds(0.0), m_juvs_per(0), m_detection_prob(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_odds = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_juvs_per = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_detection_prob = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double kill_odds> <int guarded_juvs_per_adult> <double detection_prob>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SetPredatoryResource(m_res_name, m_odds, m_juvs_per, m_detection_prob);        
+  } 
+};
+
+class cActionSetProbabilisticResource : public cAction
+{
+private:
+  cString m_res_name;
+  double m_initial;
+  double m_inflow;
+  double m_outflow;
+  double m_lamda;
+  double m_theta;
+  int m_x;
+  int m_y;
+  
+public:
+  cActionSetProbabilisticResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), 
+                                  m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lamda(1.0), m_theta(0.0), m_x(-1), m_y(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_initial = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lamda = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_theta = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y = largs.PopWord().AsInt();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lamda> <double theta> <int x> <int y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lamda, m_theta, m_x, m_y);        
   } 
 };
 
@@ -1540,6 +1609,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetGradientConeOutflow>("SetGradientConeOutflow");
   action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
   action_lib->Register<cActionSetGradPlatVarInflow>("SetGradPlatVarInflow");
+  action_lib->Register<cActionSetPredatoryResource>("SetPredatoryResource");
+  action_lib->Register<cActionSetProbabilisticResource>("SetProbabilisticResource");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");

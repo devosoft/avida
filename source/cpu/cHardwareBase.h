@@ -157,7 +157,7 @@ public:
   tSmartArray<int>& GetNavTraceLoc() { return m_navtraceloc; }
   tSmartArray<int>& GetNavTraceFacing() { return m_navtracefacing; }
   tSmartArray<int>& GetNavTraceUpdate() { return m_navtraceupdate; }
-  void DeleteMiniTrace();
+  void DeleteMiniTrace(bool print_reacs);
   virtual void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
   

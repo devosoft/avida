@@ -620,6 +620,7 @@ private:
   bool Inst_AttackPrey(cAvidaContext& ctx); 
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
+  bool Inst_FightBonusOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
   bool Inst_AttackPred(cAvidaContext& ctx); 
@@ -632,6 +633,10 @@ private:
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
+  
+  bool Inst_SetGuard(cAvidaContext& ctx);
+  bool Inst_SetGuardOnce(cAvidaContext& ctx);
+  
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
   bool Inst_ActivateDisplay(cAvidaContext& ctx);

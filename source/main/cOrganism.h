@@ -267,7 +267,7 @@ public:
   void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
   void KillCellID(int target, cAvidaContext& ctx) { m_interface->KillCellID(target, ctx); } 
   void Kaboom(int dist, cAvidaContext& ctx) { m_interface->Kaboom(dist,ctx);} 
-  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); } 
+  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -647,6 +647,15 @@ public:
   void ChangeBeg() { m_beggar = !m_beggar; }
   bool IsBeggar() { return m_beggar; }
   
+  void SetGuard() { m_guard = !m_guard; }
+  bool IsGuard() { return m_guard; }
+  void IncGuard() { m_num_guard++; }
+  int GetNumGuard() { return m_num_guard; }
+  void IncNumDeposits() { m_num_deposits++; }
+  void IncAmountDeposited(double amount) { m_amount_deposited = m_amount_deposited + amount; } 
+  int GetNumDeposits() { return m_num_deposits; }
+  double GetAmountDeposited() { return m_amount_deposited; }
+  
 protected:
   // The organism's own raw materials
   int m_self_raw_materials; 
@@ -685,6 +694,11 @@ protected:
   bool m_p_mthread;
   
   bool m_beggar;
+  
+  bool m_guard;
+    int m_num_guard;
+    int m_num_deposits;
+    double m_amount_deposited;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade

@@ -94,9 +94,17 @@ private:
   int m_skip_counter;
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
+  tArray<int> m_wall_cells;
   
   double m_mean_plat_inflow;
   double m_var_plat_inflow;
+  
+  bool m_predator;
+  double m_pred_odds;
+  int m_guarded_juvs_per_adult;
+  
+  bool m_probabilistic;
+  tArray<int> m_prob_res_cells;
   
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
@@ -143,10 +151,18 @@ public:
   void SetGradConfig(int config) { m_config = config; }
   void SetGradCount(int count) { m_count = count; }
  
-  void SetGradPlatVarInflow(double mean, double variance);
-  void UpdateGradPlatVarInflow(); // not currently being used...would change inflows every update
+  void SetGradPlatVarInflow(double mean, double variance, int type);
+  
+  void SetPredatoryResource(double odds, int juvsper);
+  void UpdatePredatoryRes(cAvidaContext& ctx); 
+  
+  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda, double theta, int x, int y);
+  void BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y);
+  void UpdateProbabilisticRes();
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
+  
+  tArray<int>* GetWallCells() { return &m_wall_cells; }
   
 private:
   void refreshResourceValues();

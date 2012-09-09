@@ -51,7 +51,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1);
+  bool pred_experiment = (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1);
   int forage = m_organism->GetForageTarget();
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() < 5 && m_world->GetConfig().LOOK_DISABLE.Get() > 0) {    
@@ -78,10 +78,10 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   // if sensing objects, habitat = 2 (walls)  
   // habitat 4 = unhidden den resource
   // habitat -2 = organisms
+  // habitat 5 = simulated predator
   // invalid: habitat 3 (res hidden from distance, caught in inst_lookahead), habitat -1 (unassigned)
   
   // default to look for orgs if invalid habitat & predator
-  habitat_used = -2;
   if (pred_experiment && forage == -2 && !m_world->GetEnvironment().IsHabitat(habitat_used)) habitat_used = -2;
   // default to look for env res if invalid habitat & forager
   else if (!m_world->GetEnvironment().IsHabitat(habitat_used) && habitat_used != -2) habitat_used = 0;
@@ -95,7 +95,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   
   // third register gives type of search used for food resources (habitat 0) and org hunting (habitat -2)
   // env res search_types (habitat 0): 0 or 1
-  // 0 = look for closest edible res (>=1), closest hill/wall, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
+  // 0 = look for closest edible res (>=1), closest hill/wall, closest simulated predator, or closest den, 1 = count # edible cells/walls/hills & total food res in cells
   // org hunting search types (habitat -2): -2 -1 0 1 2
   // 0 = closest any org, 1 = closest predator, 2 = count predators, -1 = closest prey, -2 = count prey
   // if looking for env res, default to closest edible
@@ -147,7 +147,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
     // if sought org was is in live org list, we jump to FindOrg, skipping WalkCells (search_type ignored for this case)
     if (done_setting_org && id_sought != -1) return FindOrg(target_org, distance_sought, facing);
   }
-  
+
   /*  APW TODO
    // add ability to specify minimum distances
    // fifth register modifies search type = look for resource cells with requested food res height value (default = 'off')
@@ -158,7 +158,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
    */
   
   // habitat is 0 and any of the resources are non-gradient types, are we dealing with global resources and can just use the global val
-  if (habitat_used == 0 || habitat_used > 4) {
+  if (habitat_used == 0 || habitat_used > 5) {
     if (id_sought != -1 && resource_lib.GetResource(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
       return GlobalVal(ctx, habitat_used, id_sought, search_type);
     }
@@ -169,7 +169,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
           cOrgSensor::sLookOut globalval = GlobalVal(ctx, habitat_used, i, search_type);
           if (globalval.value >= 1 && search_type == 0) return globalval;
         }
-        else if (resource_lib.GetResource(i)->GetGeometry() != nGeometry::GLOBAL && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) { 
+        else if (resource_lib.GetResource(i)->GetGeometry() != nGeometry::GLOBAL && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) { 
           all_global = false; 
           if (search_type == 1) break;
         }
@@ -633,7 +633,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
     // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) { 
       double edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
-      if (habitat_used == 0 || habitat_used > 4) {
+      if (habitat_used == 0 || habitat_used > 5) {
         if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
@@ -652,8 +652,15 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
         returnInfo.has_edible = true;
         returnInfo.amountFound += cell_res[val_res[k]];
       }
+      else if (habitat_used == 5 && cell_res[val_res[k]] > 0) {                                                   // simulated predators work with any vals > 0 and have chance of detection failing
+        if (ctx.GetRandom().P(resource_lib.GetResource(val_res[k])->GetDetectionProb())) {
+          if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
+          returnInfo.has_edible = true;
+          returnInfo.amountFound += cell_res[val_res[k]];
+        }
+      }
       else if (habitat_used == 4) { 
-        if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {                                         // dens only work above a config set level, but threshold will override this for OrgSensor
+        if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {                                       // dens only work above a config set level, but threshold will override this for OrgSensor
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
           returnInfo.amountFound += floor(cell_res[val_res[k]] / edible_threshold);        

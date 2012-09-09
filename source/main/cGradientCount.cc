@@ -26,6 +26,7 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
+#include "cPopulation.h"
 #include "cStats.h"
 #include "cWorld.h"
 
@@ -102,6 +103,10 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_skip_counter(0)
   , m_mean_plat_inflow(plateau_inflow)
   , m_var_plat_inflow(0)
+  , m_predator(false)
+  , m_pred_odds(0.0)
+  , m_guarded_juvs_per_adult(0)
+  , m_probabilistic(false)
 {
   ResetGradRes(m_world->GetDefaultContext(), worldx, worldy);
 }
@@ -117,7 +122,6 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
   m_old_peakx = m_peakx;
   m_old_peaky = m_peaky;
-  // UpdateGradPlatVarInflow(); --not currently used...use update triggers instead
   if (m_habitat == 2) {
     generateBarrier(m_world->GetDefaultContext());
     return;
@@ -126,6 +130,11 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     generateHills(m_world->GetDefaultContext());
     return;
   }  
+  else if (m_probabilistic) {
+    UpdateProbabilisticRes();
+    return;
+  }
+  
   bool has_edible = false; 
   
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
@@ -152,8 +161,11 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   if (has_edible && GetModified()) m_counter++;
 
   // only update resource values at declared update timesteps if there is resource left in the cone
-  if (has_edible && m_counter < m_decay && GetModified()) return; 
-                    
+  if (has_edible && m_counter < m_decay && GetModified()) {
+    if (m_predator) UpdatePredatoryRes(ctx);
+    return; 
+  } 
+                   
   // before we move anything, if we have a depletable resource, we need to get the current plateau cell values 
   if (m_decay == 1) getCurrentPlatValues();
 
@@ -339,6 +351,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   || m_gradient_inflow != 0 || (m_move_a_scaler == 1 && m_just_reset)) refreshResourceValues();
 
   m_counter = 0;  // reset decay counter after cone resources updated
+  if (m_predator) UpdatePredatoryRes(ctx);
 }
 
 void cGradientCount::generatePeak(cAvidaContext& ctx)
@@ -459,7 +472,7 @@ void cGradientCount::refreshResourceValues()
         // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
         bool is_plat_cell = ((m_height / (thisdist + 1)) >= 1);
         // apply plateau inflow(s) and outflow 
-        if ((is_plat_cell && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) { 
+        if ((is_plat_cell && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0 && m_plateau_array.GetSize())) { 
           if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
             m_past_height = m_height;
             if (m_plateau >= 0.0) {
@@ -539,7 +552,7 @@ void cGradientCount::getCurrentPlatValues()
     for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) { 
       double thisdist = sqrt((double) (m_peakx - ii) * (double) (m_peakx - ii) + (double) (m_peaky - jj) * (double) (m_peaky - jj));
       double find_plat_dist = temp_height / (thisdist + 1);
-      if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {
+      if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0 && m_plateau_array.GetSize() > 0)) {
         double past_cell_height = m_plateau_array[plateau_cell];
         double pre_move_height = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();  
         if (pre_move_height < past_cell_height) {
@@ -566,6 +579,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         Element(jj * GetX() + ii).SetAmount(0);
       }
     }
+    m_wall_cells.Resize(0);
     // generate number barriers equal to count 
     for (int i = 0; i < m_count; i++) {
       // drop the anchor/first block for current barrier
@@ -580,6 +594,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         start_randy = ctx.GetRandom().GetUInt(0, GetY());  
       }
       Element(start_randy * GetX() + start_randx).SetAmount(m_plateau);
+      m_wall_cells.Push(start_randy * GetX() + start_randx);
 
       int randx = start_randx;
       int randy = start_randy;
@@ -643,13 +658,13 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           // choose a direction for next block with fixed 90% probability of not changing direction (~1 of 20 blocks will be in new direction)
           if(ctx.GetRandom().GetUInt(0, 21) == 20) direction = ctx.GetRandom().GetUInt(0, 8);
         }
-        // if config == 1, build vertical walls
+        // if config == 1, build randomly placed vertical walls
         else if (m_config == 1) {
           // choose up/down build direction
           if (direction == 0) randy = randy - 1;
           else randy = randy + 1;
         }
-        // if config == 2, build horizontal walls
+        // if config == 2, build randonly placed horizontal walls
         else if (m_config == 2) {
           // choose left/right build direction
           if (direction == 0) randx = randx - 1;
@@ -676,6 +691,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           }
           if (count_block) {
             Element(randy * GetX() + randx).SetAmount(m_plateau);
+            m_wall_cells.Push(randy * GetX() + randx);
             if (place_corner) {
               if (cornery < GetY() && cornery >= 0 && cornerx < GetX() && cornerx >= 0) {
                 if ( ! ((cornerx < (m_halo_anchor_x + m_halo_inner_radius) && 
@@ -683,6 +699,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
                      cornerx > (m_halo_anchor_x - m_halo_inner_radius) && 
                      cornery > (m_halo_anchor_y - m_halo_inner_radius))) ){
                   Element(cornery * GetX() + cornerx).SetAmount(m_plateau);
+                  m_wall_cells.Push(randy * GetX() + randx);
                 }
               }
             }
@@ -692,7 +709,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
         else if (m_config == 1 || m_config == 2) {
           randx = start_randx; 
           randy = start_randy; 
-          direction = direction * -1;
+          direction = abs(direction - 1);
           num_blocks --;
         }
         // if a random build and we went off the world edge, backup a block and try again
@@ -701,7 +718,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
           randy = prev_blocky;
           num_blocks --;
         }
-      }      
+      }  
     }
   }
   else m_topo_counter++; 
@@ -784,6 +801,8 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_plateau_array.SetAll(0);
   m_plateau_cell_IDs.Resize(int(4 * m_height * m_height + 0.5));
   m_plateau_cell_IDs.SetAll(0);
+  m_prob_res_cells.Resize(0);
+  m_wall_cells.Resize(0);
   m_current_height = m_height;
   m_common_plat_height = m_plateau;
   m_mean_plat_inflow = m_plateau_inflow;
@@ -800,27 +819,105 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
     generatePeak(ctx);
     UpdateCount(ctx);
   }
+  // set m_initial to false now that we have reset the resource
   m_initial = false;
 }
 
-void cGradientCount::SetGradPlatVarInflow(double mean, double variance)
+void cGradientCount::SetGradPlatVarInflow(double mean, double variance, int type)
 {
   if (variance > 0) {
     m_mean_plat_inflow = mean;
     m_var_plat_inflow = variance;
-    double cur_inflow = m_world->GetRandom().GetRandNormal(mean, variance);
-    if (cur_inflow < 0) cur_inflow = 0;
-    SetGradPlatInflow(cur_inflow);
+    double the_inflow = 0;
+    if (type == 0) {
+      the_inflow = abs(m_world->GetRandom().GetRandNormal(mean, variance));
+      SetGradPlatInflow(the_inflow);
+    }
+    else if (type < 0) { 
+      the_inflow = abs(m_world->GetRandom().GetRandNormal(0, variance));
+      if (mean - the_inflow < 0) the_inflow = mean;
+      SetGradPlatInflow(mean - the_inflow);
+    }
+    else if (type == 1) {
+      the_inflow = abs(m_world->GetRandom().GetRandNormal(0, variance));
+      SetGradPlatInflow(mean + the_inflow);
+    }
+    else if (type == 2) {
+      the_inflow = m_world->GetRandom().GetRandNormal(0, variance);
+      if (mean + the_inflow < 0) the_inflow = mean;
+      SetGradPlatInflow(mean + the_inflow);
+    }
   }
   else SetGradPlatInflow(mean);
 }
 
-void cGradientCount::UpdateGradPlatVarInflow()
+void cGradientCount::UpdatePredatoryRes(cAvidaContext& ctx)
 {
-  if (m_var_plat_inflow > 0) {
-    double cur_inflow = m_world->GetRandom().GetRandNormal(m_mean_plat_inflow, m_var_plat_inflow);
-    if (cur_inflow < 0) cur_inflow = 0;
-    SetGradPlatInflow(cur_inflow);
+  // kill off up to 1 org per update within the predator radius (plateau area), with prob of death for selected prey = m_pred_odds
+  if (m_predator) {
+    for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
+      if (Element(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
+        m_world->GetPopulation().ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_pred_odds, m_guarded_juvs_per_adult);        
+      }
+    }
   }
-  else SetGradPlatInflow(m_mean_plat_inflow);
+}
+
+void cGradientCount::SetPredatoryResource(double odds, int juvsper)
+{
+  m_predator = true;
+  m_pred_odds = odds;
+  m_guarded_juvs_per_adult = juvsper;
+}
+
+void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda, double theta, int x, int y)
+{
+  m_probabilistic = true;
+  m_initial_plat = initial;
+  m_plateau_inflow = inflow;
+  m_plateau_outflow = outflow;
+  
+  BuildProbabilisticRes(ctx, lamda, theta, x , y);
+}
+
+void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y)
+{
+  const int worldx = GetX();
+  const int worldy = GetY();
+  
+  if (x == -1) m_peakx = ctx.GetRandom().GetUInt(0, worldx);
+  else m_peakx = x;
+  if (y == -1) m_peaky = ctx.GetRandom().GetUInt(0, worldy); 
+  else m_peaky = y;
+  
+  for (int i = 0; i < worldx; i++) {
+    for (int j = 0; j < worldy; j++) {
+      // only if theta == 1 do want want a 'hill' with resource for certain in the center
+      if (i == m_peakx && j== m_peaky && theta == 0) {
+        Element(j * worldx + i).SetAmount(m_initial_plat);
+        if (m_plateau_outflow > 0 || m_plateau_inflow > 0) m_prob_res_cells.Push(j * worldx + i);
+      }
+      else {
+        int cell_dist = sqrt((double) (m_peakx - i) * (m_peakx - i) + (m_peaky - j) * (m_peaky - j));
+        // use a half normal
+        double this_prob = (1/lamda) * (sqrt(2/3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lamda), 2));
+
+        if (ctx.GetRandom().P(this_prob)) {
+          Element(j * worldx + i).SetAmount(m_initial_plat);
+          if (m_plateau_outflow > 0 || m_plateau_inflow > 0) m_prob_res_cells.Push(j * worldx + i);
+        }
+        else Element(j * worldx + i).SetAmount(0);
+      }
+    }
+  }
+}
+
+void cGradientCount::UpdateProbabilisticRes()
+{
+  if (m_plateau_outflow > 0 || m_plateau_inflow > 0) {
+    for (int i = 0; i < m_prob_res_cells.GetSize(); i++) {
+      double curr_val = Element(m_prob_res_cells[i]).GetAmount();
+      Element(m_prob_res_cells[i]).SetAmount(curr_val + m_plateau_inflow - (curr_val * m_plateau_outflow)); 
+    }
+  }
 }

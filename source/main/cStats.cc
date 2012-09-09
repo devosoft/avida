@@ -113,6 +113,8 @@ cStats::cStats(cWorld* world)
   , m_num_threads(0)
   , num_modified(0)
   , num_genotypes_last(1)
+  , num_kabooms(0)
+  , num_kaboom_kills(0)
   , tot_organisms(0)
   , tot_genotypes(0)
   , tot_threshold(0)
@@ -1537,6 +1539,33 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
     }
   }
   df.Endl();
+}
+
+void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Avida wall resource filled cells data");
+    df.WriteTimeStamp();
+    df.WriteComment("First column gives the current update, all further columns give filled cell ids for each wall res");
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  fp << m_update << " ";
+
+  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  for (int i = 0; i < resLib.GetSize(); i++) {
+    if (resLib.GetResource(i)->GetGradient() && resLib.GetResource(i)->GetHabitat() == 2) {
+      tArray<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
+      for (int i = 0; i < cells.GetSize() - 1; i++) {
+        fp << cells[i] << ",";
+      }
+      fp << cells[cells.GetSize() - 1] << " ";
+    }
+  }
+  fp << endl;
 }
 
 void cStats::PrintSpatialResData(const cString& filename, int i)
@@ -3458,6 +3487,28 @@ void cStats::PrintShadedAltruists(const cString& filename) {
 }
 
 /*
+ Print data regarding explosions (kazi) and the hamming distances associated with them.
+ */
+void cStats::PrintKaboom(const cString& filename)
+{
+    cDataFile& df = m_world->GetDataFile(filename);
+    df.WriteComment("The number of kabooms.");
+    
+    df.WriteTimeStamp();
+    df.Write(m_update, "Update [update]");
+    
+    df.Write(num_kabooms, "number of kabooms");
+    df.Write(num_kaboom_kills, "number of orgs killed by kabooms");
+    df.Write(hd_list, "hamming distances", "");
+    
+    df.Endl();
+    hd_list.ResizeClear(0);
+    num_kabooms = 0;
+    num_kaboom_kills=0;
+    
+}
+
+/*
  Print data regarding group formation.
  */
 void cStats::PrintGroupsFormedData(const cString& filename)
@@ -3811,7 +3862,7 @@ void cStats::PrintTargets(const cString& filename)
   
   bool has_pred = false;
   int offset = 1;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
     has_pred = true;
     offset = 2;
   }
@@ -4079,45 +4130,93 @@ void cStats::PrintDenData(const cString& filename) {
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   int num_juvs = 0;
+  int num_adults = 0;
   int num_guards = 0;
+
+  int population_size = m_world->GetPopulation().GetSize();
+
+  int num_loiterers = 0;
+  int active_dens = 0;
+
   
   for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-    
     if (!cell.HasAV()) continue;
     
     tArray<double> cell_res;
     cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
     
+    bool is_active = false;    
     for (int j = 0; j < cell_res.GetSize(); j++) {
-      if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
-        tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
-
+      if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+        tArray<cOrganism*> cell_avs = cell.GetCellAVs(); 
         for (int k = 0; k < cell_avs.GetSize(); k++) {
           if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
             num_juvs++;
+            is_active = true;
           }
-          else num_guards++;
+          else 
+          {
+            num_adults++;
+            if (cell_avs[k]->IsGuard()) num_guards++;
+            else num_loiterers++;
+          }
         }
-        
+        active_dens += (int)is_active;
         break;  // only do this once if two dens overlap
       }
     }
   }
+    double percent_juv_guard;
+    double percent_juv_pop;
+    double percent_guards_pop;
+    
+    if (num_guards > 0){
+        percent_juv_guard = (double)num_juvs/(double)num_guards;
+    } else {
+        percent_juv_guard = 0;
+    }
+    if (population_size > 0){
+        percent_juv_pop = (double)num_juvs/(double)population_size;
+        percent_guards_pop = (double)num_guards/(double)population_size;
+    } else {
+        percent_juv_pop = 0;
+        percent_guards_pop = 0;
+    }
+    
 
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteComment("Number of juveniles and adults in dens");
   df.WriteTimeStamp();
 	df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("ActiveDens [active_dens]");
   df.WriteColumnDesc("Juveniles [juveniles]");
 	df.WriteColumnDesc("Adults [adults]");
-  df.FlushComments();
-	df.Write(m_update,   "Update");
-  df.Write(num_juvs,   "Juveniles");
-	df.Write(num_guards,   "Adults");
-	df.Endl();
+    df.WriteColumnDesc("Guards [guards]");
+	df.WriteColumnDesc("Loiterers [loiterers]");
 
-  
+    df.WriteColumnDesc("Juveniles Killed [juveniles killed]");
+    df.WriteColumnDesc("Ratio of Juveniles to Guards [percent juvs to guards]");
+    df.WriteColumnDesc("Ratio of Juveniles to Population [percent juvs to pop]");
+    df.WriteColumnDesc("Ratio of Guards to Population [percent guards to pop]");
+
+	
+  df.FlushComments();
+    
+    df.Write(m_update,   "Update");
+      df.Write(active_dens,      "ActiveDens");
+    df.Write(num_juvs,      "Juveniles");
+	df.Write(num_adults,    "Adults");
+	df.Write(num_guards,    "Guards");
+	df.Write(num_loiterers, "Loiterers");
+    df.Write(juv_killed, "Juveniles Killed");
+    df.Write(percent_juv_guard, "Ratio of Juveniles to Guards");
+    df.Write(percent_juv_pop, "Ratio of Juveniles to Population");
+    df.Write(percent_guards_pop, "Ratio of Guards to Population");
+
+
+	df.Endl();  
+
 }
 
 
@@ -4484,6 +4583,54 @@ void cStats::PrintFemaleInstructionData(const cString& filename, const cString& 
   }
   
   df.Endl();  
+}
+
+void cStats::PrintMiniTraceReactions(cOrganism* org)
+{
+  int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
+  if (org->HasOpinion()) group_id = org->GetOpinion().first;
+  cString filename("");
+  filename.Set("minitraces/trace_reactions/org%d-ud%d-grp%d_ft%d-gt%d.trcreac", org->GetID(), org->GetPhenotype().GetUpdateBorn(), group_id, org->GetForageTarget(), org->GetBioGroup("genotype")->GetID());
+  
+  // Open the file...
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteTimeStamp();  
+    df.WriteComment("Reaction Data for Traced Org to Date (death or end)");
+    df.WriteComment("OrgID");
+    df.WriteComment("Update");
+    df.WriteComment("Reaction Counts");
+    df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
+    df.WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
+    df.FlushComments();
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  
+  tArray<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  tArray<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
+  tArray<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
+  
+  fp << org->GetID() << " ";
+  for (int i = 0; i < reaction_count.GetSize() - 1; i++) {
+    fp << reaction_count[i] << ",";
+  }
+  fp << reaction_count[reaction_count.GetSize() - 1] << " ";
+  
+  for (int i = 0; i < reaction_cycles.GetSize() - 1; i++) {
+    fp << reaction_cycles[i] << ",";
+  }
+  fp << reaction_cycles[reaction_cycles.GetSize() - 1] << " ";
+  
+  for (int i = 0; i < reaction_execs.GetSize() - 1; i++) {
+    fp << reaction_execs[i] << ",";
+  }
+  fp << reaction_execs[reaction_execs.GetSize() - 1];
+  fp << endl;
+  
+  m_world->GetDataFileManager().Remove(filename);
 }
 
 void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id)

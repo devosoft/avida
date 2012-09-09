@@ -47,7 +47,7 @@ Currently moving gradient resources are only supported for bounded grid environm
 Habitats:<br>
 The habitat a resource represents controls both the specifications of the resource (i.e. moving or stationary,
 orbiting or bounded within a defined area) and any effect of the resource on the organisms (i.e. blocking or
-slowing movement). Currently there are 4 habitats implemented: gradient, hills, barriers, and nests.
+slowing movement). Currently there are 5 habitats implemented: gradient, hills, barriers, nests, and simulated predators.
 </p>
 <p>
 Gradient Resources: Standard and Halo  <br>
@@ -98,6 +98,9 @@ from long-distance sensing instructions such as look-ahead.
 Dens <br>
 Dens are unhidden nests that are visible to instructions like look-ahead.
 </p>  
+Predatory Resources <br>
+Predatory resources are gradient resources with teeth. See SetPredatoryResource in the events list of actions.
+</p>  
 <div align="center">
 <p>&nbsp;</p>
 <h3>Table 1: <span>Gradient Resource Options</span></h3>
@@ -121,7 +124,7 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
   <td>
     Type of gradient resource. This determines most of the behaviors and effects of the resource. 
   </br>
-    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests(hidden), 4 = dens(visible). 
+    0 = gradient (standard or halo), 1 = hills, 2 = barriers, 3 = nests(hidden), 4 = dens(visible), 5 = predatory. 
   </td>
   <td>0</td>
 </tr>
@@ -433,7 +436,7 @@ Dens are unhidden nests that are visible to instructions like look-ahead.
   <td class="resbarrier"><font color="#9c1c01">config</font></td>
   <td>
     The orientation of the wall. 0 = random (all blocks placed randomly, but neighboring, relative to previous block), 
-    1 = vertical (rand N or S from seed block), 2 = horizontal (rand E or W from seed block), 3 = vertical from seed 
+    1 = vertical (rand N or S from rand seed block), 2 = horizontal (rand E or W from rand seed block), 3 = vertical from seed 
     (peakx, peaky) to S, 4 = horizontal from seed (peakx, peaky) to W.
     </br>
     For hills, if config == 1, generate 1 hill at the peakx X peaky coordinates.

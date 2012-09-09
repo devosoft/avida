@@ -320,7 +320,7 @@ void cPopulationInterface::Rotate(int direction)
 int cPopulationInterface::GetInputAt(int& input_pointer)
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
+  //assert(cell.IsOccupied());
   return cell.GetInputAt(input_pointer);
 }
 

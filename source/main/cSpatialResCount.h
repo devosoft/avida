@@ -132,7 +132,9 @@ public:
   virtual void SetGradConeInflow(double) { ; }
   virtual void SetGradConeOutflow(double) { ; }
   virtual void SetGradientInflow(double) { ; }
-  virtual void SetGradPlatVarInflow(double, double) { ; }
+  virtual void SetGradPlatVarInflow(double, double, int) { ; }
+  virtual void SetPredatoryResource(double, int) { ; }
+  virtual void SetProbabilisticResource(cAvidaContext& ctx, double, double, double, double, double, int, int) { ; }
   virtual void SetGradPlatIsCommon(bool) { ; }
   virtual void SetGradFloor(double) { ; }
   virtual void SetGradHabitat(int) { ; }
@@ -150,6 +152,8 @@ public:
   void SetCurrPeakY(int in_curr_y) { curr_peaky = in_curr_y; }
   int GetCurrPeakX() { return curr_peakx; } 
   int GetCurrPeakY() { return curr_peaky; }
+  
+  virtual tArray<int>* GetWallCells() { return NULL; };
   
 };
 

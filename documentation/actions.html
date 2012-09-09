@@ -59,6 +59,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#AnalyzeLandscape">AnalyzeLandscape</a><br>
       <a href="#AnalyzePopulation">AnalyzePopulation</a><br>
       <a href="#AssignRandomCellData">AssignRandomCellData</a><br>
+      <a href="#AttackDen">AttackDen</a><br>
       <a href="#AvidianConjugation">AvidianConjugation</a><br>
       <a href="#CalcConsensus">CalcConsensus</a><br>
       <a href="#ChangeEnvironment">ChangeEnvironment</a><br>
@@ -280,6 +281,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintReproData">PrintReproData</a><br>
       <a href="#PrintReputationData">PrintReputationData</a><br>
       <a href="#PrintResourceData">PrintResourceData</a><br>
+      <a href="#PrintResourceLocData">PrintResourceLocData</a><br>
+      <a href="#PrintResWallLocData">PrintResWallLocData</a><br>
       <a href="#PrintSenseData">PrintSenseData</a><br>
       <a href="#PrintSenseExeData">PrintSenseExeData</a><br>
       <a href="#PrintShadedAltruists">PrintShadedAltruists</a><br>
@@ -300,6 +303,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintVarianceData">PrintVarianceData</a><br>
       <a href="#PrintViableTasksData">PrintViableTasksData</a><br>
       <a href="#RandomLandscape">RandomLandscape</a><br>
+      <a href="#RemovePredators">RemovePredators</a><br>
       <a href="#ReplaceFromGermline">ReplaceFromGermline</a><br>
       <a href="#ReplicateDemes">ReplicateDemes</a><br>
       <a href="#ResetDemes">ResetDemes</a><br>
@@ -328,7 +332,10 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetMutProb">SetMutProb</a><br>
       <a href="#SetNumInstBefore0Energy">SetNumInstBefore0Energy</a><br>
       <a href="#SetOptimizeMinMax">SetOptimizeMinMax</a><br>
+      <a href="#SetPopCapEnforcement">SetPopCapEnforcement</a><br>
       <a href="#SetPeriodicResource">SetPeriodicResource</a><br>
+      <a href="#SetPredatoryResource">SetPredatoryResource</a><br>
+      <a href="#SetProbabilisticResource">SetProbabilisticResource</a><br>
       <a href="#SetReactionInst">SetReactionInst</a><br>
       <a href="#SetReactionMaxTaskCount">SetReactionMaxTaskCount</a><br>
       <a href="#SetReactionMinTaskCount">SetReactionMinTaskCount</a><br>
@@ -625,12 +632,17 @@ and reaction parameters.
 </li>
     <li><p>
     <strong><a name="SetGradPlatVarInflow">SetGradPlatVarInflow</a></strong>
-    <i>&lt;string res_name&gt; &lt;double mean&gt; &lt;double variance&gt;</i>
+    <i>&lt;string res_name&gt; &lt;double mean&gt; &lt;double variance&gt; &lt;int type&gt;</i>
   </p>
     <p>
-    Set existing gradient resource plateau outflow rate to a new value, without redrawing
+    Set existing gradient resource plateau inflow rate to a new value, without redrawing
     the entire resource, based on a random number pull from normal distribution of this
-    mean and variance.
+    mean and variance. As such, this uses a half normal or folded normal approach with 
+    expected value = sigma * sqrt(2 /pi).
+    If type == 0, new inflow will be the random number pulled.
+    If type &gt; 0, new inflow will be mean + abs(the random number pulled).
+    If type == 1, new inflow will be max (0, mean - abs(the random number pulled)).
+    If type == 2, new inflow will be max (0, mean + the random number pulled).
     </p>
 </li>
 <li><p>
@@ -656,6 +668,38 @@ and reaction parameters.
   <p>
   
   </p>
+</li>
+<li><p>
+  <strong><a name="SetPopCapEnforcement">SetPopCapEnforcement</a></strong>
+  <i>[int cap=0] [int rate=1]</i>
+  </p>
+  <p>
+  Will set POPULATION_CAP to cap and begin killing orgs off at rate rate by killing rate # orgs + 1 every time a new org is born.
+  Accepts string args (e.g. SetPopCapEnforcement cap=0:rate=1).
+  </p>
+</li>
+<li><p>
+    <strong><a name="SetPredatoryResource">SetPredatoryResource</a></strong>
+    <i>&lt;string res_name&gt; &lt;double kill_odds&gt; &lt;int guarded_juvs_per_adult&gt;double detection_prob&gt;</i>
+  </p>
+    <p>
+    A gradient resource with teeth. If set in motion, will kill with prob kill_odds 1 random org 
+    in each cell of plateau. If it passes over a den resource, will kill unguarded offspring with
+    probability kill_odds. If an org steps on the resource, the org is killed with probability
+    kill_odds. detection_prob sets the probability of orgs detecting the predator via look sensors.
+    </p>
+</li>
+<li><p>
+    <strong><a name="SetPredatoryResource">SetProbabilisticResource</a></strong>
+    <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt; &lt;double outflow&gt; &lt;double lamda&gt; &lt;double theta&gt; &lt;int x&gt; &lt;int y&gt;</i>
+  </p>
+    <p>
+    A gradient resource with probabilistically distributed cells. If x and y are not specified, a random 'seed' cell
+    is chosen. That cell is given the initial value. Then, we look at all of the other cells in
+    the world and add resource with prob = PDF from half normal distribution given lamda and the 
+    current distance from the center cell. Normally you'd leave theta for the PDF alone at the fixed value 
+    of 0. However, you can do things like set lamda = 1 and theta to 10 to get 'rings' (larger theta == larger rings).
+    </p>
 </li>
 <li><p>
   <strong><a name="SetReactionInst">SetReactionInst</a></strong>
@@ -973,6 +1017,17 @@ change the course of the run.  There are a wide variety of these.
   </p>
   <p>
   
+  </p>
+</li>
+<li><p>
+  <strong><a name="AttackDen">AttackDen</a></strong>
+  <i>[double probability=0.0] [int juvs_per_adult=1]</i>
+  </p>
+  <p>
+  Kills each unguarded juv in dens (habitat == 3 or 4) with set probability. juvs_per_adult sets
+  the ratio of guarding adults to juvs. E.g. if ratio is set to 5 and there are 2 guards and 12
+  juveniles in a den, two random juveniles will be attacked with their probability of death at
+  the set probability.
   </p>
 </li>
 <li><p>
@@ -1487,6 +1542,13 @@ change the course of the run.  There are a wide variety of these.
 <li><p>
   <strong><a name="Pred_DemeEventNUniqueIndividualsMovedIntoTarget">Pred_DemeEventNUniqueIndividualsMovedIntoTarget</a></strong>
   <i>[int numorgs=1]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="RemovePredators">RemovePredators</a></strong>
   </p>
   <p>
   
@@ -2542,7 +2604,7 @@ a single, complete file for each trigger.
 </li>
   <li><p>
     <strong><a name="PrintMiniTraces">PrintMiniTraces</a></strong>
-    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean initial]</i>
+    <i>[boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean print_reacs=0]</i>
     </p>
     <p>Prints a condensed trace of execution during a lifetime. Who is traced is determined by arguements.
     E.g. with the args <it>save_dominants=1:orgs_per=2</t>, at the specified update(s) a list is
@@ -2572,7 +2634,7 @@ a single, complete file for each trigger.
   </li>
   <li><p>
     <strong><a name="PrintMicroTraces">PrintMicroTraces</a></strong>
-    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]</i>
+    <i>[boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean print_reacs=0]</i>
     </p>
     <p>Same general operation behavior as PrintMiniTraces but only saves executed instruction symbols along with 
     org id, genotype id, forager type, and birth and death updates. Microtraces map executions as 'what the org was trying
@@ -2910,6 +2972,20 @@ a single, complete file for each trigger.
   seperate files <kbd>resource_<em>resource_name</em>.m</kbd> (in a format that is
   designed to be read into Matlab) for each spatial resource.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintResourceLocData">PrintResourceLocData</a></strong>
+  <i>[string fname="resourceloc.dat"]</i>
+  </p>
+  <p>
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintResWallLocData">PrintResWallLocData</a></strong>
+  <i>[string fname="reswallloc.dat"]</i>
+  </p>
+  <p>
   </p>
 </li>
 <li><p>

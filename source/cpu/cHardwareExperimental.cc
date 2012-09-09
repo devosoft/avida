@@ -350,6 +350,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-group-cell", &cHardwareExperimental::Inst_MarkGroupCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, nInstFlag::STALL),
@@ -362,6 +363,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
+
+    tInstLibEntry<tMethod>("set-guard", &cHardwareExperimental::Inst_SetGuard, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, nInstFlag::STALL), 
+
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
     tInstLibEntry<tMethod>("activate-display", &cHardwareExperimental::Inst_ActivateDisplay, nInstFlag::STALL), 
@@ -561,7 +566,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000);
+//  assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
@@ -2855,7 +2860,6 @@ bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 {
-  if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
   
@@ -3026,6 +3030,8 @@ bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
   
   if (m_organism->GetPhenotype().GetTimeUsed() < m_world->GetConfig().JUV_PERIOD.Get()) return false;
+  
+  if (m_organism->IsGuard()) return false;
   
   bool move_success = false;
   if (!m_use_avatar) move_success = m_organism->Move(ctx);
@@ -3681,7 +3687,7 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   // otherwise, we sum across all the food resources in the cell
   else {
     for (int i = 0; i < cell_res.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
         if (!m_use_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
         else if (m_use_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i]); 
       }
@@ -3927,7 +3933,7 @@ cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLoo
   reg_init.distance = m_threads[m_cur_thread].reg[distance_reg].value;
   reg_init.search_type = m_threads[m_cur_thread].reg[search_reg].value;
   reg_init.id_sought = m_threads[m_cur_thread].reg[id_reg].value;
-  
+
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
 
@@ -3995,6 +4001,13 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
   
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+  // simulated predator ahead
+  for (int i = 0; i < cell_res.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 5 && cell_res[i] > 0) {
+      setInternalValue(reg_to_set, 3, true);
+      return true;
+    }    
+  }
   // are there any barrier resources in the faced cell    
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (resource_lib.GetResource(i)->GetHabitat() == 2 && cell_res[i] > 0) {
@@ -4027,7 +4040,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   if (old_target == -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
   
   // return false if trying to become predator and there are none in the experiment
-  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1) return false;
+  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   // return false if trying to become predator this has been disallowed via setforagetarget
   if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
@@ -4038,11 +4051,14 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
     for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
-    // ft's may not be sequentially numbered
-    int ft_num = abs(prop_target) % num_fts;
-    itr = fts_avail.begin();
-    for (int i = 0; i < ft_num; i++) itr++;
-    prop_target = *itr;
+    if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
+    else {
+      // ft's may not be sequentially numbered
+      int ft_num = abs(prop_target) % num_fts;
+      itr = fts_avail.begin();
+      for (int i = 0; i < ft_num; i++) itr++;
+      prop_target = *itr;
+    }
   }
 
   // make sure we use a valid (resource) target
@@ -4280,7 +4296,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (absorb_type == 1) {
     for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) {
+      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) {
         res_id = i;
         break;
       }
@@ -4288,7 +4304,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   }
   else if (absorb_type == 2) {
     for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() >4)) {
+      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5)) {
         res_id = i - 1;
         break;
       }
@@ -4405,6 +4421,8 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
         if (!m_use_avatar) m_organism->GetOrgInterface().UpdateResources(ctx, res_change);
         else if (m_use_avatar) m_organism->GetOrgInterface().UpdateAVResources(ctx, res_change);
         success = true;
+          m_organism->IncNumDeposits();
+          m_organism->IncAmountDeposited(total_deposit);
       }
       break;
     }
@@ -4499,7 +4517,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   if (absorb_type == 1) {
     for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 4)) {
+      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) {
         res_id = i;
         break;
       }
@@ -4507,7 +4525,7 @@ bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
   }
   else if (absorb_type == 2) {
     for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 4)) {
+      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5)) {
         res_id = i - 1;
         break;
       }
@@ -5040,6 +5058,66 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
   return true;
 } 	
 
+//Attack organism faced by this one if you are both predators or both prey. 
+bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  
+  cOrganism* target = NULL;
+  if (!m_use_avatar) { 
+    if (!m_organism->IsNeighborCellOccupied()) return false;
+    target = m_organism->GetOrgInterface().GetNeighbor();
+    // allow only for predator vs predator or prey vs prey
+    if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
+        (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+      return false;
+    }
+  }
+  else if (m_use_avatar == 2) {
+    if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
+    if (m_organism->GetForageTarget() != -2) { 
+      if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
+      else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+    }
+    else if (m_organism->GetForageTarget() == -2) { 
+      if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
+      else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
+    }
+  }
+  if (target->IsDead()) return false;  
+  
+  
+  //Use current bonus to decide who wins this battle.
+  bool kill_attacker = true;
+  
+  const double attacker_bonus = m_organism->GetPhenotype().GetCurBonus();
+  const double target_bonus = target->GetPhenotype().GetCurBonus();
+  const double attacker_win_odds = ((attacker_bonus) / (attacker_bonus + target_bonus));
+  const double target_win_odds = ((target_bonus) / (attacker_bonus + target_bonus)); 
+  
+  const double odds_someone_dies = max(attacker_win_odds, target_win_odds);
+  const double odds_target_dies = (1 - target_win_odds) * odds_someone_dies;
+  const double decider = ctx.GetRandom().GetDouble(1);
+  
+  if (decider < (1 - odds_someone_dies)) return true;
+  else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  
+  if (kill_attacker) {
+    m_organism->Die(ctx);
+    return true;
+  }
+  
+  const int target_cell = target->GetOrgInterface().GetCellID();  
+  m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
+  
+  bool attack_success = true;  
+  const int out_reg = FindModifiedRegister(rBX);   
+  setInternalValue(out_reg, attack_success, true);   
+  
+  return true;
+} 	
+
 //Get odds of winning or tieing in a fight.
 bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext& ctx)
 {
@@ -5398,7 +5476,7 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
     int prop_target = -1;
     prop_target = m_organism->GetParentFT();
 
-    halt = (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == -1);
+    halt = (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0);
     if (!halt) {
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 && 
           ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2))) {
@@ -5409,6 +5487,34 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
     }
   }
   return !halt;
+}
+
+bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
+{
+  bool set_ok = false;
+  if (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().JUV_PERIOD.Get()) {
+    tArray<double> cell_res;
+    if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
+    else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i = 0; i < cell_res.GetSize(); i++) {
+      if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;;
+    }
+  }
+    if (set_ok){
+        m_organism->SetGuard();
+        m_organism->IncGuard();
+    }
+  setInternalValue(FindModifiedRegister(rBX), (int) m_organism->IsGuard(), true);    
+  return set_ok;
+}
+
+bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
+{
+  bool set_ok = false;
+  if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
+  setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
+  return set_ok;  
 }
 
 bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)

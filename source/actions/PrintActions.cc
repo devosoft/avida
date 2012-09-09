@@ -194,6 +194,9 @@ STATS_OUT_FILE(PrintShadedAltruists,         shadedaltruists.dat);
 STATS_OUT_FILE(PrintDirectReciprocityData,         reciprocity.dat);
 STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
+// kabooms
+STATS_OUT_FILE(PrintKaboom, kabooms.dat);
+
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
@@ -266,6 +269,24 @@ public:
   }
 };
 
+
+class cActionPrintResWallLocData : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintResWallLocData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "reswallloc.dat"; else m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname=\"reswallloc.dat\"]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetStats().PrintResWallLocData(m_filename, ctx);
+  }
+};
 
 class cActionPrintGroupTolerance : public cAction 
 {
@@ -923,7 +944,7 @@ public:
     
     //for each lineage label, output the counts
     //@LZ - handle dead lineages appropriately
-    for(int i=0;i<lineage_labels.GetSize();i++)
+    for(int i=0; i < lineage_labels.GetSize(); i++)
     {
       //default to 0 in case this lineage is dead
       int count = 0;
@@ -931,7 +952,7 @@ public:
       if (lineage_label_counts.HasEntry(lineage_labels[i]))
         lineage_label_counts.Find(lineage_labels[i], count);
       
-      df.Write(count, cStringUtil::Stringf("Lineage Label %d", i));
+      df.Write(count, cStringUtil::Stringf("Lineage Label %d", lineage_labels[i]));
     }
     
     df.Endl();
@@ -1064,7 +1085,7 @@ public:
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     int num_fts = 1;
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() != -1) num_fts = 2;
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) num_fts = 2;
     else num_fts = 1;  // account for -1's
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
@@ -3516,8 +3537,7 @@ public:
         for (int h = 0; h < res_count.GetSize(); h++) {
           int hab_type = resource_lib.GetResource(h)->GetHabitat();
           if ((res_count[h] > max_resource) && (hab_type != 1) && (hab_type !=2)) max_resource = res_count[h];
-          else if (hab_type == 1 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
-          else if (hab_type == 4 && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
+          else if ((hab_type == 1 || hab_type == 4 || hab_type == 5) && res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
           // allow walls to trump everything else
           else if (hab_type == 2 && res_count[h] > 0) { 
             topo_height = resource_lib.GetResource(h)->GetPlateau();
@@ -4153,6 +4173,80 @@ public:
   }
 };
 
+class cActionPrintOrgGuardData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintOrgGuardData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    /*Print organism locations + other org data (for movies). */
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_dumps/org_loc_guard.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,is_guard,num_guard_inst,on_den,r_bins_total,time_used,num_deposits,amount_deposited_total" << endl;
+    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst,on_den,r_bins_total,time_used,num_deposits,amount_deposited_total" << endl;
+    
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    
+    const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      cOrganism* org = live_orgs[i];
+      const int id = org->GetID();
+      const int loc = org->GetCellID();
+      const int locx = loc % worldx;
+      const int locy = loc / worldx;
+      const int ft = org->GetForageTarget();
+      const int faced_dir = org->GetFacedDir();
+      int opinion = -1;
+      if (org->HasOpinion()) opinion = org->GetOpinion().first;
+      
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
+      if (use_av) {
+        const int avloc = org->GetOrgInterface().GetAVCellID();
+        const int avlocx = avloc % worldx;
+        const int avlocy = avloc / worldx;
+        const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
+        
+        fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
+      }    
+      //Guard data:
+      bool is_guard = org->IsGuard();
+      fp << "," << is_guard;
+      int num_guard_inst = org->GetNumGuard();
+      fp << "," << num_guard_inst;
+      
+      //Find out if the organism is in a den:
+      bool on_den = false;
+      tArray<double> res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
+      if (use_av) res_count = m_world->GetPopulation().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      for (int i = 0; i < res_count.GetSize(); i++) {
+        int hab_type = resource_lib.GetResource(i)->GetHabitat();
+        if ((hab_type == 3 || hab_type == 4) && res_count[i] > 0) on_den = true;
+      }
+      
+      fp << "," << on_den;
+      fp << "," << org->GetRBinsTotal();
+      fp << "," << org->GetPhenotype().GetTimeUsed();
+      //Counter for number of deposits
+      fp << "," << org->GetNumDeposits();
+      fp << "," << org->GetAmountDeposited();
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 class cActionPrintDonationStats : public cAction
 {
 public:
@@ -4698,6 +4792,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintResourceLocData>("PrintResourceLocData");
+  action_lib->Register<cActionPrintResWallLocData>("PrintResWallLocData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
   action_lib->Register<cActionPrintReactionExeData>("PrintReactionExeData");
   action_lib->Register<cActionPrintCurrentReactionData>("PrintCurrentReactionData");
@@ -4758,6 +4853,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
   
   action_lib->Register<cActionPrintDonationStats>("PrintDonationStats");
+    
+  // kabooms output file
+  action_lib->Register<cActionPrintKaboom>("PrintKaboom");
   
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
@@ -4815,6 +4913,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
+  action_lib->Register<cActionPrintOrgGuardData>("PrintOrgGuardData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
   action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");
   action_lib->Register<cActionPrintDenData>("PrintDenData");
