@@ -4091,7 +4091,6 @@ void cStats::PrintDenData(const cString& filename) {
     
     for (int j = 0; j < cell_res.GetSize(); j++) {
       if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
-        // for every x juvs, we require 1 adult...otherwise use killprob on the rest
         tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
 
         for (int k = 0; k < cell_avs.GetSize(); k++) {
