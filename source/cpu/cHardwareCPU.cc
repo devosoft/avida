@@ -10531,8 +10531,12 @@ bool cHardwareCPU::Inst_ApplyPointMutationsGroupRandom(cAvidaContext& ctx)
 {
   double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
     
+  // Check for test CPU
+  if (m_organism->GetOrgInterface().GetDeme() == NULL) return false;
+
   // Grab a random member of the deme.
-  // Pick a random starting location... 
+  // Pick a random starting location...
+  
   int deme_size = m_organism->GetDeme()->GetSize(); 
   int start_pos = ctx.GetRandom().GetInt(0,deme_size); 
     
@@ -10552,6 +10556,9 @@ bool cHardwareCPU::Inst_ApplyPointMutationsGroupRandom(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_ApplyPointMutationsGroupGS(cAvidaContext& ctx)
 {
   double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+  
+  // Check for test CPU
+  if (m_organism->GetOrgInterface().GetDeme() == NULL) return false;
   
   // Grab a random member of the deme.
   // Pick a random starting location... 
