@@ -4176,74 +4176,75 @@ public:
 class cActionPrintOrgGuardData : public cAction
 {
 private:
-    cString m_filename;
-    
+  cString m_filename;
+  
 public:
-    cActionPrintOrgGuardData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
-    {
-        /*Print organism locations + other org data (for movies). */
-        cString largs(args);
-        if (largs.GetSize()) m_filename = largs.PopWord();
+  cActionPrintOrgGuardData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    /*Print organism locations + other org data (for movies). */
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_dumps/org_loc_guard.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,is_guard,num_guard_inst,on_den,r_bins_total,time_used,num_deposits,amount_deposited_total" << endl;
+    else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst,on_den,r_bins_total,time_used,num_deposits,amount_deposited_total" << endl;
+    
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    
+    const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      cOrganism* org = live_orgs[i];
+      const int id = org->GetID();
+      const int loc = org->GetCellID();
+      const int locx = loc % worldx;
+      const int locy = loc / worldx;
+      const int ft = org->GetForageTarget();
+      const int faced_dir = org->GetFacedDir();
+      int opinion = -1;
+      if (org->HasOpinion()) opinion = org->GetOpinion().first;
+      
+      fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
+      if (use_av) {
+        const int avloc = org->GetOrgInterface().GetAVCellID();
+        const int avlocx = avloc % worldx;
+        const int avlocy = avloc / worldx;
+        const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
+        
+        fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
+      }    
+      //Guard data:
+      bool is_guard = org->IsGuard();
+      fp << "," << is_guard;
+      int num_guard_inst = org->GetNumGuard();
+      fp << "," << num_guard_inst;
+      
+      //Find out if the organism is in a den:
+      bool on_den = false;
+      tArray<double> res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
+      if (use_av) res_count = m_world->GetPopulation().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      for (int i = 0; i < res_count.GetSize(); i++) {
+        int hab_type = resource_lib.GetResource(i)->GetHabitat();
+        if ((hab_type == 3 || hab_type == 4) && res_count[i] > 0) on_den = true;
+      }
+      
+      fp << "," << on_den;
+      fp << "," << org->GetRBinsTotal();
+      fp << "," << org->GetPhenotype().GetTimeUsed();
+      //Counter for number of deposits
+      fp << "," << org->GetNumDeposits();
+      fp << "," << org->GetAmountDeposited();
+      fp << endl;
     }
-    static const cString GetDescription() { return "Arguments: [string fname='']"; }
-    void Process(cAvidaContext& ctx)
-    {
-        cString filename(m_filename);
-        if (filename == "") filename.Set("grid_dumps/org_loc.%d.dat", m_world->GetStats().GetUpdate());
-        ofstream& fp = m_world->GetDataFileOFStream(filename);
-        
-        bool use_av = m_world->GetConfig().USE_AVATARS.Get();
-        if (!use_av) fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing" << endl;
-        else fp << "# org_id,org_cellx,org_celly,org_forage_target,org_group_id,org_facing,av_cellx,av_celly,av_facing,is_guard,num_guard_inst, on_den, r_bins_total, tim_used, num_deposits, amount_deposited_total" << endl;
-        
-        const int worldx = m_world->GetConfig().WORLD_X.Get();
-        
-        const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
-        for (int i = 0; i < live_orgs.GetSize(); i++) {
-            cOrganism* org = live_orgs[i];
-            const int id = org->GetID();
-            const int loc = org->GetCellID();
-            const int locx = loc % worldx;
-            const int locy = loc / worldx;
-            const int ft = org->GetForageTarget();
-            const int faced_dir = org->GetFacedDir();
-            int opinion = -1;
-            if (org->HasOpinion()) opinion = org->GetOpinion().first;
-            
-            fp << id << "," << locx << "," << locy << "," << ft << "," <<  opinion << "," <<  faced_dir;
-            if (use_av) {
-                const int avloc = org->GetOrgInterface().GetAVCellID();
-                const int avlocx = avloc % worldx;
-                const int avlocy = avloc / worldx;
-                const int avfaced_dir = org->GetOrgInterface().GetAVFacing();
-                
-                fp << "," << avlocx << "," << avlocy << "," << avfaced_dir;
-                
-                //Guard data:
-                bool is_guard = org->IsGuard();
-                fp << "," << is_guard;
-                int num_guard_inst = org->GetNumGuard();
-                fp << "," << num_guard_inst;
-                //Find out if the organism is in a den:
-                bool on_den = false;
-                const tArray<double> res_count = m_world->GetPopulation().GetCellResources(avloc, ctx);
-                const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-                for (int i=0; i<res_count.GetSize(); i++) {
-                    int hab_type = resource_lib.GetResource(i)->GetHabitat();
-                    if ((hab_type == 3 || hab_type == 4) && res_count[i]>0) on_den = true;
-                }
-                fp << "," << on_den;
-                fp << "," << org->GetRBinsTotal();
-                fp << "," << org->GetPhenotype().GetTimeUsed();
-                //Counter for number of deposits
-                fp << "," << org->GetNumDeposits();
-                fp << "," << org->GetAmountDeposited();
-                
-            }
-            fp << endl;
-        }
-        m_world->GetDataFileManager().Remove(filename);
-    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
 };
 
 class cActionPrintDonationStats : public cAction

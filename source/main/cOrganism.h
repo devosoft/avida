@@ -649,12 +649,12 @@ public:
   
   void SetGuard() { m_guard = !m_guard; }
   bool IsGuard() { return m_guard; }
-    void IncGuard() {m_num_guard++;}
-    int GetNumGuard() {return m_num_guard;}
-    void IncNumDeposits() {m_num_deposits++;}
-    void IncAmountDeposited(double amount) {m_amount_deposited = m_amount_deposited + amount;}
-    int GetNumDeposits() {return m_num_deposits;}
-    double GetAmountDeposited() {return m_amount_deposited;}
+  void IncGuard() { m_num_guard++; }
+  int GetNumGuard() { return m_num_guard; }
+  void IncNumDeposits() { m_num_deposits++; }
+  void IncAmountDeposited(double amount) { m_amount_deposited = m_amount_deposited + amount; } 
+  int GetNumDeposits() { return m_num_deposits; }
+  double GetAmountDeposited() { return m_amount_deposited; }
   
 protected:
   // The organism's own raw materials

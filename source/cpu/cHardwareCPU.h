@@ -1014,6 +1014,11 @@ public:
   // Apply point mutations to a genome, where the mutation rate
   // depends on the task last performed
   bool Inst_ApplyVaryingPointMutations(cAvidaContext& ctx);
+  // Apply point mutations to a genome in the deme with the same 
+  // germ/soma status
+  bool Inst_ApplyPointMutationsGroupGS(cAvidaContext& ctx);
+  // Apply point mutations to a genome in the deme at random
+  bool Inst_ApplyPointMutationsGroupRandom(cAvidaContext& ctx);
 
   bool Inst_JoinGermline(cAvidaContext& ctx);
   bool Inst_ExitGermline(cAvidaContext& ctx);

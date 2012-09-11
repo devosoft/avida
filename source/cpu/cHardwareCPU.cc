@@ -729,6 +729,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("point-mut", &cHardwareCPU::Inst_ApplyPointMutations, nInstFlag::STALL),
     tInstLibEntry<tMethod>("varying-point-mut", &cHardwareCPU::Inst_ApplyVaryingPointMutations, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("point-mut-gs", &cHardwareCPU::Inst_ApplyPointMutationsGroupGS, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("point-mut-rand", &cHardwareCPU::Inst_ApplyPointMutationsGroupRandom, nInstFlag::STALL),
     tInstLibEntry<tMethod>("join-germline", &cHardwareCPU::Inst_JoinGermline, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exit-germline", &cHardwareCPU::Inst_ExitGermline, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repair-on", &cHardwareCPU::Inst_RepairPointMutOn, nInstFlag::STALL),
@@ -10523,6 +10525,61 @@ bool cHardwareCPU::Inst_ApplyVaryingPointMutations(cAvidaContext& ctx)
   }
   return true;
 }
+
+bool cHardwareCPU::Inst_ApplyPointMutationsGroupRandom(cAvidaContext& ctx)
+{
+  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+    
+  // Check for test CPU
+  if (m_organism->GetOrgInterface().GetDeme() == NULL) return false;
+
+  // Grab a random member of the deme.
+  // Pick a random starting location...
+  
+  int deme_size = m_organism->GetDeme()->GetSize(); 
+  int start_pos = ctx.GetRandom().GetInt(0,deme_size); 
+    
+  for (int i=0; i<deme_size; ++i) {
+    int pos = (i + start_pos) % deme_size; 
+    cPopulationCell& cell = m_organism->GetDeme()->GetCell(pos);
+    if (cell.IsOccupied()) {
+      cOrganism* sl = cell.GetOrganism();
+      int num_mut = sl->GetHardware().PointMutate(ctx, point_mut_prob);
+      sl->IncPointMutations(num_mut);
+      return true;
+    }
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_ApplyPointMutationsGroupGS(cAvidaContext& ctx)
+{
+  double point_mut_prob = m_world->GetConfig().INST_POINT_MUT_PROB.Get();
+  
+  // Check for test CPU
+  if (m_organism->GetOrgInterface().GetDeme() == NULL) return false;
+  
+  // Grab a random member of the deme.
+  // Pick a random starting location... 
+  int deme_size = m_organism->GetDeme()->GetSize(); 
+  int start_pos = ctx.GetRandom().GetInt(0,deme_size); 
+  bool gs = m_organism->IsGermline();
+  
+  for (int i=0; i<deme_size; ++i) {
+    int pos = (i + start_pos) % deme_size; 
+    cPopulationCell& cell = m_organism->GetDeme()->GetCell(pos);
+    if (cell.IsOccupied()) {
+      cOrganism* sl = cell.GetOrganism();
+      if (gs == sl->IsGermline()) {
+        int num_mut = sl->GetHardware().PointMutate(ctx, point_mut_prob);
+        sl->IncPointMutations(num_mut);
+        return true;
+      }
+    }
+  }
+  return true;
+}
+
 
 bool cHardwareCPU::Inst_JoinGermline(cAvidaContext& ctx) {
   m_organism->JoinGermline();
