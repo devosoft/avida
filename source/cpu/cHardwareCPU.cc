@@ -3416,8 +3416,8 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_AX);
 
     
-  double percent_prob;
-  int distance;
+    double percent_prob = 1.0;
+    int distance = -1;
   if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() == -1) {
     //Case where Probability is static and hamming distance is adjustable
     int get_reg_value = GetRegister(reg_used);
@@ -3443,8 +3443,9 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 {
     assert(m_world->GetConfig().KABOOM_PROB.Get() != -1 || m_world->GetConfig().KABOOM5_HAMMING.Get() != -1);
     const int reg_used = FindModifiedRegister(REG_AX);
-    int distance;
-    double percent_prob;
+    //These must always be set in the if, they can't both be adjustable, so don't do it
+    int distance = -1;
+    double percent_prob = 1.0;
     if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM5_HAMMING.Get() == -1) {
         //Case where Probability is static and hamming distance is adjustable
         int get_reg_value = GetRegister(reg_used);
