@@ -929,7 +929,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
   else m_peaky = y;
   
   if (num_cells != -1) m_prob_res_cells.ResizeClear(num_cells);
-  
+
   // only if theta == 1 do want want a 'hill' with resource for certain in the center
   if (theta == 0) {
     Element(y * worldx + x).SetAmount(m_initial_plat);
@@ -965,23 +965,26 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
     int this_y = cell_id / worldx;  
     int cell_dist = sqrt((double) (m_peakx - this_x) * (m_peakx - this_x) + (m_peaky - this_y) * (m_peaky - this_y));
     // use a half normal
-    double this_prob = (1/lamda) * (sqrt(2/3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lamda), 2));
+    double this_prob = (1/lamda) * (sqrt(2 / 3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lamda), 2));
     
     if (ctx.GetRandom().P(this_prob)) {
       Element(cell_id).SetAmount(m_initial_plat);
       if (m_initial_plat > 0) UpdateBounds(this_x, this_y);
       if (m_plateau_outflow > 0 || m_plateau_inflow > 0) {
-        if (num_cells == -1) m_prob_res_cells.Push(cell_id);
+        if (loop_once) m_prob_res_cells.Push(cell_id);
         else m_prob_res_cells[cells_used] = cell_id;
       }              
-      cells_used++;
-      cell_id_array.Swap(cell_id, --max_idx);
+      if (!loop_once) { 
+        cells_used++;
+        cell_id_array.Swap(cell_id, --max_idx);
+      }
     }
     // just push this cell out of the way for this loop, but keep it around for next time
     else { 
       Element(cell_id).SetAmount(0); 
-      cell_id_array.Swap(cell_id, --max_unused_idx);
-    } 
+      if (!loop_once) cell_id_array.Swap(cell_id, --max_unused_idx);
+    }
+    if (loop_once) max_idx--;
   }
 }
 
