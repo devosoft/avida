@@ -963,7 +963,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
     int cell_id = cell_id_array[m_world->GetRandom().GetUInt(max_unused_idx + 1)];
     int this_x = cell_id % worldx;
     int this_y = cell_id / worldx;  
-    int cell_dist = sqrt((double) (m_peakx - this_x) * (m_peakx - this_x) + (m_peaky - this_y) * (m_peaky - this_y));
+    double cell_dist = sqrt((double) (m_peakx - this_x) * (m_peakx - this_x) + (m_peaky - this_y) * (m_peaky - this_y));
     // use a half normal
     double this_prob = (1/lamda) * (sqrt(2 / 3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lamda), 2));
     
