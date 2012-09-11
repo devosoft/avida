@@ -3308,7 +3308,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
       bool in_list = false;
       char test_inst = child_genome[i].GetSymbol();
       cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
-      for (int j = 0; i < (int)strlen(no_mut_list); j++) {
+      for (int j = 0; j < (int)strlen(no_mut_list); j++) {
         if ((char) no_mut_list[j] == test_inst) in_list = true;
       }
       if (m_organism->TestCopyMut(ctx) && !(in_list)) {
