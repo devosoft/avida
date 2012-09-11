@@ -121,7 +121,7 @@ public:
   void SetGradPlatVarInflow(const int& res_id, const double& mean, const double& variance, const int& type);
   void SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper);
   void SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
-                                const double& outflow, const double& lamda, const double& theta, const int& x, const int& y);
+                                const double& outflow, const double& lamda, const double& theta, const int& x, const int& y, const int& count);
 
   int GetResourceCountID(const cString& res_name);
   double GetInflow(const cString& name);
@@ -159,6 +159,10 @@ public:
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const;
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const;
   tArray<int>* GetWallCells(int res_id);
+  int GetMinUsedX(int res_id);
+  int GetMinUsedY(int res_id);
+  int GetMaxUsedX(int res_id);
+  int GetMaxUsedY(int res_id);
   
   void SetSpatialUpdate(int update) { m_spatial_update = update; }
   void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }

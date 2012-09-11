@@ -464,11 +464,11 @@ void cResourceCount::SetPredatoryResource(const int& res_id, const double& odds,
 }
 
 void cResourceCount::SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
-                                              const double& outflow, const double& lamda, const double& theta, const int& x, const int& y) 
+                                              const double& outflow, const double& lamda, const double& theta, const int& x, const int& y, const int& count) 
 {
   assert(res_id >= 0 && res_id < resource_count.GetSize());
   assert(spatial_resource_count[res_id]->GetSize() > 0);
-  spatial_resource_count[res_id]->SetProbabilisticResource(ctx, initial, inflow, outflow, lamda, theta, x, y);
+  spatial_resource_count[res_id]->SetProbabilisticResource(ctx, initial, inflow, outflow, lamda, theta, x, y, count);
 }
 
 /*
@@ -705,6 +705,26 @@ int cResourceCount::GetFrozenPeakY(cAvidaContext& ctx, int res_id) const
 tArray<int>* cResourceCount::GetWallCells(int res_id)
 {
   return spatial_resource_count[res_id]->GetWallCells();
+}
+
+int cResourceCount::GetMinUsedX(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMinUsedX();
+}
+
+int cResourceCount::GetMinUsedY(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMinUsedY();
+}
+
+int cResourceCount::GetMaxUsedX(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMaxUsedX();
+}
+
+int cResourceCount::GetMaxUsedY(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMaxUsedY();
 }
 
 ///// Private Methods /////////

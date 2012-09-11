@@ -354,6 +354,11 @@ const tArray<double>& cPopulationInterface::GetFrozenResources(cAvidaContext& ct
   return m_world->GetPopulation().GetFrozenResources(ctx, cell_id); 
 }
 
+cResourceCount* cPopulationInterface::GetResourceCount()
+{
+  return &m_world->GetPopulation().GetResourceCount();
+}
+
 const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 

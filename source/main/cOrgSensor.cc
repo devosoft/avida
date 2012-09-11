@@ -24,8 +24,9 @@
 #include "cOrgSensor.h"
 
 #include "cEnvironment.h"
-#include "cResource.h"
 #include "cPopulationCell.h"  
+#include "cResource.h"
+#include "cResourceCount.h"
 
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism)
@@ -417,13 +418,13 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   
   if (habitat_used != -2) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound); 
   
-  // set geometric bounds, and fast-forward, if possible (doesn't work for hills and walls as they can have multiple instances)
+  // set geometric bounds, and fast-forward, if possible
   sBounds tot_bounds;
   tot_bounds.min_x = worldx;
   tot_bounds.min_y = worldy;    
   tot_bounds.max_x = -1 * worldx;
   tot_bounds.max_y = -1 * worldy;
-  if (habitat_used == 0 || habitat_used >= 4) { 
+  if (habitat_used != -2) { 
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
@@ -830,17 +831,18 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const cResourceLib
                                                                const int res_id, const int search_type)
 {
   sBounds res_bounds;
-  const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
-  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
-  
-  // width of the area of the food curve that can be >= 1 or 0, depending on search type
-  int width = resource_lib.GetResource(res_id)->GetHeight() - 1;                          // width beyond center peak cell
-  if (search_type == 1 || resource_lib.GetResource(res_id)->GetFloor() >= 1) width = resource_lib.GetResource(res_id)->GetSpread(); 
-  
-  res_bounds.min_x = peakx - width;
-  res_bounds.min_y = peaky - width;
-  res_bounds.max_x = peakx + width;
-  res_bounds.max_y = peaky + width;   
+  res_bounds.min_x = 0;
+  res_bounds.min_y = 0;
+  res_bounds.max_x = m_world->GetConfig().WORLD_X.Get() - 1;
+  res_bounds.max_y = m_world->GetConfig().WORLD_Y.Get() - 1;
+
+  cResourceCount* res_count = m_organism->GetOrgInterface().GetResourceCount();
+  if (res_count != NULL) {
+    res_bounds.min_x = res_count->GetMinUsedX(res_id);
+    res_bounds.min_y = res_count->GetMinUsedY(res_id);
+    res_bounds.max_x = res_count->GetMaxUsedX(res_id);
+    res_bounds.max_y = res_count->GetMaxUsedY(res_id);
+  }
   return res_bounds;
 }
 

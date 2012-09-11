@@ -3300,16 +3300,15 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-//    for (int i = 0; i < m_memory.GetSize(); i++) {
+    //    for (int i = 0; i < m_memory.GetSize(); i++) {
     for (int i = 0; i < child_genome.GetSize(); i++) {
       //Need to check no_mut_insts for head to head kaboom experiments
-        bool in_list = false;
-        char test_inst = child_genome[i].GetSymbol();
-        cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
-        for(int i =0; i<(int)strlen(no_mut_list); i++) {
-            if ((char) no_mut_list[i] == test_inst) in_list = true;
-        }
-        
+      bool in_list = false;
+      char test_inst = child_genome[i].GetSymbol();
+      cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
+      for (int j = 0; i < (int)strlen(no_mut_list); j++) {
+        if ((char) no_mut_list[j] == test_inst) in_list = true;
+      }
       if (m_organism->TestCopyMut(ctx) && !(in_list)) {
         child_genome[i] = m_inst_set->GetRandomInst(ctx);
       }

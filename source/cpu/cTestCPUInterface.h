@@ -98,6 +98,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
+  cResourceCount* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext& ctx) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) {;}
