@@ -231,6 +231,7 @@ public:
   cOrganism* GetRandFacedPredAV(int av_num = 0) { return NULL; }
   cOrganism* GetRandFacedPreyAV(int av_num = 0) { return NULL; }
   tArray<cOrganism*> GetFacedAVs(int av_num = 0);
+    tArray<cOrganism*> GetCellAVs(int cell_id, int av_num = 0);
   tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0);
   const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
   const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);

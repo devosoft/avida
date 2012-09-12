@@ -365,7 +365,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, nInstFlag::STALL), 
 
     tInstLibEntry<tMethod>("set-guard", &cHardwareExperimental::Inst_SetGuard, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-num-guards", &cHardwareExperimental::Inst_GetNumGuards, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-num-juvs", &cHardwareExperimental::Inst_GetNumJuvs, nInstFlag::STALL),
+      
 
     tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, nInstFlag::STALL), 
 
@@ -5509,6 +5512,63 @@ bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
   return set_ok;
 }
 
+bool cHardwareExperimental::Inst_GetNumGuards(cAvidaContext& ctx)
+{
+    int num_guards = 0;
+    bool set_ok = false;
+    tArray<double> cell_res;
+    if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
+    else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i = 0; i < cell_res.GetSize(); i++) {
+        if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;
+    }
+    
+    if (set_ok){
+        if (m_use_avatar) {
+            int cell_id = m_organism->GetOrgInterface().GetAVCellID();
+            tArray<cOrganism*> cell_avs = m_organism->GetOrgInterface().GetCellAVs(cell_id);
+            for (int k = 0; k < cell_avs.GetSize(); k++) {
+                if(cell_avs[k]->IsGuard()) num_guards++;
+            }
+        } else if (!m_use_avatar){
+            if (m_organism->IsGuard()) num_guards ++;
+        }
+    }
+    setInternalValue(FindModifiedRegister(rBX), num_guards, true);
+    return set_ok;
+
+}
+
+bool cHardwareExperimental::Inst_GetNumJuvs(cAvidaContext& ctx)
+{
+    int num_juvs = 0;
+    int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+    bool set_ok = false;
+    tArray<double> cell_res;
+    if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
+    else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i = 0; i < cell_res.GetSize(); i++) {
+        if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;
+    }
+    
+    if (set_ok){
+        if (m_use_avatar) {
+            int cell_id = m_organism->GetOrgInterface().GetAVCellID();
+            tArray<cOrganism*> cell_avs = m_organism->GetOrgInterface().GetCellAVs(cell_id);
+    
+            for (int k = 0; k < cell_avs.GetSize(); k++) {
+                if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) num_juvs++;
+            }
+        } else if (!m_use_avatar){
+            if (m_organism->GetPhenotype().GetTimeUsed() < juv_age) num_juvs++;
+        }
+    }
+    setInternalValue(FindModifiedRegister(rBX), num_juvs, true);
+    return set_ok;
+}
+
 bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
 {
   bool set_ok = false;
@@ -5516,6 +5576,8 @@ bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
   setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
   return set_ok;  
 }
+
+
 
 bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
 {

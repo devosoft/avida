@@ -2275,6 +2275,17 @@ tArray<cOrganism*> cPopulationInterface::GetFacedAVs(int av_num)
   return null_array;
 }
 
+//Returns an array of all avatars in the organism's avatar's cell
+tArray<cOrganism*> cPopulationInterface::GetCellAVs(int cell_id, int av_num)
+{
+    //If the avatar exists...
+    if (av_num <getNumAV()) {
+        return m_world->GetPopulation().GetCell(cell_id).GetCellAVs();
+    }
+    tArray<cOrganism*> null_array(0, NULL);
+    return null_array;
+}
+
 // Returns an array of all prey avatars in the organism's avatar's faced cell
 tArray<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
 {
