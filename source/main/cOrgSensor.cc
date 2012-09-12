@@ -838,10 +838,15 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const cResourceLib
 
   cResourceCount* res_count = m_organism->GetOrgInterface().GetResourceCount();
   if (res_count != NULL) {
-    res_bounds.min_x = res_count->GetMinUsedX(res_id);
-    res_bounds.min_y = res_count->GetMinUsedY(res_id);
-    res_bounds.max_x = res_count->GetMaxUsedX(res_id);
-    res_bounds.max_y = res_count->GetMaxUsedY(res_id);
+    int min_x = res_count->GetMinUsedX(res_id);
+    int min_y = res_count->GetMinUsedY(res_id);
+    int max_x = res_count->GetMaxUsedX(res_id);
+    int max_y = res_count->GetMaxUsedY(res_id);
+    
+    if (min_x >= 0 && min_x < m_world->GetConfig().WORLD_X.Get()) res_bounds.min_x = min_x;
+    if (min_y >= 0 && min_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.min_y = min_y;
+    if (max_x >= 0 && max_x < m_world->GetConfig().WORLD_X.Get()) res_bounds.max_x = max_x;
+    if (max_y >= 0 && max_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.max_y = max_y;
   }
   return res_bounds;
 }

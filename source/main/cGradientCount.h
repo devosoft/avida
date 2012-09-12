@@ -179,7 +179,8 @@ private:
   void getCurrentPlatValues();
   void generateBarrier(cAvidaContext& ctx);
   void generateHills(cAvidaContext& ctx);    
-  void UpdateBounds(int x, int y);
+  void updateBounds(int x, int y);
+  void resetUsedBounds();
 };
 
 #endif
