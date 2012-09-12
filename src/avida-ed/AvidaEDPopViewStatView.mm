@@ -124,6 +124,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
 @interface AvidaEDPopViewStatView (hidden) <NSTableViewDelegate>
 - (void) setup;
 
+- (void) rescalePlot;
+
 - (void) tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 
@@ -197,7 +199,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   // Grid line styles
   CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
   majorGridLineStyle.lineWidth = 0.75;
-  majorGridLineStyle.lineColor = [[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75];
+  majorGridLineStyle.lineColor = [[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.65];
   
   CPTMutableLineStyle *minorGridLineStyle = [CPTMutableLineStyle lineStyle];
   minorGridLineStyle.lineWidth = 0.25;
@@ -223,7 +225,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   x.preferredNumberOfMajorTicks = 5;
   x.labelOffset = 5.0;
   x.labelTextStyle = textStyle;
-//  x.majorGridLineStyle = majorGridLineStyle;
+  x.majorGridLineStyle = majorGridLineStyle;
 //  x.minorGridLineStyle = minorGridLineStyle;
     
 	x.title = @"Time (updates)";
@@ -239,6 +241,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   y.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
   y.orthogonalCoordinateDecimal = CPTDecimalFromUnsignedInteger(0);
   y.minorTicksPerInterval = 2;
+  y.majorGridLineStyle = majorGridLineStyle;
   y.preferredNumberOfMajorTicks = 8;
   y.labelOffset = 5.0;
   y.labelTextStyle = textStyle;
@@ -279,13 +282,47 @@ static const float PANEL_MIN_WIDTH = 360.0;
   dataSourceLinePlot.areaBaseValue = CPTDecimalFromString(@"0");
 	
   
-  // Auto scale the plot space to fit the plot data
-  [plotSpace scaleToFitPlots:[NSArray arrayWithObjects:dataSourceLinePlot, nil]];
-  
+  [self rescalePlot];
   
   [btnGraphSelect removeAllItems];
   [btnGraphSelect setEnabled:NO];
   [btnGraphSelect addItemWithTitle:@"Data Unavailable"];
+}
+
+
+- (void) rescalePlot {
+  
+  Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> curRecorder = graphData.recorder;
+  
+  CPTMutablePlotRange* xrange = [[(CPTXYPlotSpace*)graph.defaultPlotSpace xRange] mutableCopy];
+  Avida::Update max_x = 700;
+  if (curRecorder && curRecorder->NumPoints() > 0) {
+    max_x = curRecorder->DataTime(timeRecorders[0]->NumPoints() - 1);
+  }
+  NSDecimalNumber* xlen = [NSDecimalNumber decimalNumberWithDecimal:[xrange length]];
+  if (max_x > [xlen intValue]) {
+    int new_length = (max_x / 700);
+    if ((max_x % 700) != 0) new_length++;
+    new_length *= 700;
+    
+    xlen = [[NSDecimalNumber alloc] initWithInt:new_length];
+    [xrange setLength:[xlen decimalValue]];
+    [graph.defaultPlotSpace setPlotRange:xrange forCoordinate:CPTCoordinateX];
+  }
+  
+  CPTMutablePlotRange* yrange = [[(CPTXYPlotSpace*)graph.defaultPlotSpace yRange] mutableCopy];
+  double max_y = 1.0;
+  if (curRecorder) {
+    for (int i = 0; i < curRecorder->NumPoints(); i++) {
+      if (max_y < curRecorder->DataPoint(i)) {
+        while (max_y < curRecorder->DataPoint(i)) max_y *= 2.0;
+      }
+    }
+  }
+  [yrange setLength:[[[NSDecimalNumber alloc] initWithDouble:max_y] decimalValue]];
+  [graph.defaultPlotSpace setPlotRange:yrange forCoordinate:CPTCoordinateY];
+  
+  //[graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];  
 }
 
 - (void) envActionStateChange:(NSMutableDictionary*)newState {
@@ -431,7 +468,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
   timeRecorders[0]->SetActive();
   CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
   [plot reloadData];
-  [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
+  
+  [self rescalePlot];
 
   [btnGraphSelect removeAllItems];
   [btnGraphSelect setEnabled:YES];
@@ -616,13 +654,13 @@ static const float PANEL_MIN_WIDTH = 360.0;
   
   CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
   [plot reloadData];
-  [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
+  [self rescalePlot];
 }
 
 - (void) handleNewGraphData {
   CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
   [plot reloadData];
-  [graph.defaultPlotSpace scaleToFitPlots:[NSArray arrayWithObjects:plot, nil]];
+  [self rescalePlot];
 }
 
 

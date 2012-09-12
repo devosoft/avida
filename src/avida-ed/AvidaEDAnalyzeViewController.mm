@@ -89,7 +89,7 @@
   // Grid line styles
   CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
   majorGridLineStyle.lineWidth = 0.75;
-  majorGridLineStyle.lineColor = [[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75];
+  majorGridLineStyle.lineColor = [[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.65];
   
   CPTMutableLineStyle *minorGridLineStyle = [CPTMutableLineStyle lineStyle];
   minorGridLineStyle.lineWidth = 0.25;
@@ -117,7 +117,7 @@
   x.preferredNumberOfMajorTicks = 5;
   x.labelOffset = 5.0;
   x.labelTextStyle = textStyle;
-  //  x.majorGridLineStyle = majorGridLineStyle;
+  x.majorGridLineStyle = majorGridLineStyle;
   //  x.minorGridLineStyle = minorGridLineStyle;
   
 	x.title = @"Time (updates)";
@@ -136,6 +136,8 @@
   y.preferredNumberOfMajorTicks = 8;
   y.labelOffset = 5.0;
   y.labelTextStyle = textStyle;
+  y.majorGridLineStyle = majorGridLineStyle;
+
   
   y.title = @"Average Fitness";
   y.titleOffset = 50.0;
