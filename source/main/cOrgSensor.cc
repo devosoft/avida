@@ -424,14 +424,13 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   tot_bounds.min_y = worldy;    
   tot_bounds.max_x = -1 * worldx;
   tot_bounds.max_y = -1 * worldy;
-  if (habitat_used == 0 || habitat_used >= 4) { 
-
-//  if (habitat_used != -2) { 
+  
+  if (habitat_used != -2 && habitat_used != 3) { 
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
         int this_start_dist = 0;
-        sBounds res_bounds = GetBounds(ctx, resource_lib, val_res[i], search_type);          
+        sBounds res_bounds = GetBounds(ctx, val_res[i], search_type);          
         this_start_dist = GetMinDist(ctx, worldx, res_bounds, cell, distance_sought, facing);
         // drop any out of range...
         if (this_start_dist == -1) {
@@ -466,7 +465,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   // START WALKING
   bool first_step = true;
   for (int dist = start_dist; dist <= end_dist; dist++) {
-    if (!TestBounds(center_cell, worldBounds) || ((habitat_used == 0 || habitat_used >= 4) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
+    if (!TestBounds(center_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) count_center = false;        
     // if looking l,r,u,d and center_cell is outside of the world -- we're done with both sides and center
     if (!diagonal && !count_center) break;
     
@@ -484,7 +483,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       for (int j = num_cells_either_side; j > 0; j--) {
         bool valid_cell = true;
         this_cell = center_cell + direction * j;
-        if(!TestBounds(this_cell, worldBounds) || ((habitat_used == 0 || habitat_used >= 4) && !TestBounds(center_cell, tot_bounds))) { 
+        if(!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) { 
           // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
           if (diagonal) {
             const int tcx = this_cell.GetX();
@@ -829,8 +828,7 @@ int cOrgSensor::GetMaxDist(const int worldx, const int cell_id, const int distan
   return min(max_dist, distance_sought);
 }
 
-cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, 
-                                                               const int res_id, const int search_type)
+cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const int res_id, const int search_type)
 {
   sBounds res_bounds;
   res_bounds.min_x = 0;
@@ -849,31 +847,18 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const cResourceLib
     if (min_y >= 0 && min_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.min_y = min_y;
     if (max_x >= 0 && max_x < m_world->GetConfig().WORLD_X.Get()) res_bounds.max_x = max_x;
     if (max_y >= 0 && max_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.max_y = max_y;
-  }
-  
-    const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
-  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
-  
-  // width of the area of the food curve that can be >= 1 or 0, depending on search type
-  int width = resource_lib.GetResource(res_id)->GetHeight() - 1;                          // width beyond center peak cell
-  if (search_type == 1 || resource_lib.GetResource(res_id)->GetFloor() >= 1) width = resource_lib.GetResource(res_id)->GetSpread(); 
-  
-  res_bounds.min_x = peakx - width;
-  res_bounds.min_y = peaky - width;
-  res_bounds.max_x = peakx + width;
-  res_bounds.max_y = peaky + width;  
-  
-  
+  }  
   return res_bounds;
 }
 
 bool cOrgSensor::TestBounds(const cCoords cell_id, sBounds& bounds)
 {
+  bool in_bounds = true;
   const int curr_x = cell_id.GetX();
   const int curr_y = cell_id.GetY();
   
-  if ((curr_x < bounds.min_x || curr_y < bounds.min_y || curr_x > bounds.max_x || curr_y > bounds.max_y)) return false; 
-  return true;  
+  if ((curr_x < bounds.min_x || curr_y < bounds.min_y || curr_x > bounds.max_x || curr_y > bounds.max_y)) in_bounds = false; 
+  return in_bounds;  
 }
 
 tSmartArray<int> cOrgSensor::BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound)

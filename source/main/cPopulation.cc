@@ -7579,7 +7579,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   tArray<double> cell_res;
-  cell_res = m_world->GetPopulation().GetCellResources(cell_id, ctx);
+  cell_res = GetCellResources(cell_id, ctx);
   
   bool cell_has_den = false;
   for (int j = 0; j < cell_res.GetSize(); j++) {
