@@ -181,6 +181,7 @@ private:
   void generateHills(cAvidaContext& ctx);    
   void updateBounds(int x, int y);
   void resetUsedBounds();
+  void clearExistingProbRes();
 };
 
 #endif

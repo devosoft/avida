@@ -897,6 +897,7 @@ void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial
 
 void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y, int num_cells)
 {
+  if (m_min_usedx != -1) clearExistingProbRes();
   resetUsedBounds();
   int cells_used = 0;
   const int worldx = GetX();
@@ -905,7 +906,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
   int max_idx = world_size - 1;
   
   tArray <int> cell_id_array;
-  cell_id_array.ResizeClear(max_idx);
+  cell_id_array.ResizeClear(world_size);
   for (int i = 0; i < cell_id_array.GetSize(); i++) cell_id_array[i] = i;
   
   if (x == -1) m_peakx = ctx.GetRandom().GetUInt(0, worldx);
@@ -917,15 +918,15 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
 
   // only if theta == 1 do want want a 'hill' with resource for certain in the center
   if (theta == 0) {
-    Element(y * worldx + x).SetAmount(m_initial_plat);
-    if (m_initial_plat > 0) updateBounds(x, y);
+    Element(m_peaky * worldx + m_peakx).SetAmount(m_initial_plat);
+    if (m_initial_plat > 0) updateBounds(m_peakx, m_peaky);
     if (m_plateau_outflow > 0 || m_plateau_inflow > 0) { 
-      if (num_cells == -1) m_prob_res_cells.Push(y * worldx + x);
-      else m_prob_res_cells[cells_used] = y * worldx + x;
+      if (num_cells == -1) m_prob_res_cells.Push(m_peaky * worldx + m_peakx);
+      else m_prob_res_cells[cells_used] = m_peaky * worldx + m_peakx;
     }  
     cells_used++;
     // no need to pop this cell off the array, just move it and don't check that far anymore
-    cell_id_array.Swap(y * worldx + x, --max_idx);
+    cell_id_array.Swap(m_peaky * worldx + m_peakx, max_idx--);
   }
   
   // prevent looping when num_cells not specified
@@ -935,17 +936,17 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
     num_cells = cells_used + 1;
   }
   
-  int max_unused_idx = max_idx - 1;
-  int num_checks = 0;
-  while (cells_used < num_cells && max_idx > 0) {
+  int max_unused_idx = max_idx;
+  int num_passes = 1;
+  while (num_passes < world_size) {   // emergency exit
     // allow looping through multiple times until num_cells quota is filled
-    if (max_unused_idx == 0 && !loop_once) {
-      max_unused_idx = max_idx - 1;
-      num_checks++;
+    if (max_unused_idx == 0) {
+      num_passes++;
+      if (!loop_once) max_unused_idx = max_idx;
     }
-    if (num_checks > world_size) break;   // emergency exit
     
-    int cell_id = cell_id_array[m_world->GetRandom().GetUInt(max_unused_idx + 1)];
+    int cell_idx = m_world->GetRandom().GetUInt(max_unused_idx + 1);
+    int cell_id = cell_id_array[cell_idx];
     int this_x = cell_id % worldx;
     int this_y = cell_id / worldx;  
     double cell_dist = sqrt((double) (m_peakx - this_x) * (m_peakx - this_x) + (m_peaky - this_y) * (m_peaky - this_y));
@@ -959,17 +960,17 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
         if (loop_once) m_prob_res_cells.Push(cell_id);
         else m_prob_res_cells[cells_used] = cell_id;
       }              
-      if (!loop_once) { 
-        cells_used++;
-        cell_id_array.Swap(cell_id, --max_idx);
-      }
+      cells_used++;
+      cell_id_array.Swap(cell_idx, max_idx--);
     }
     // just push this cell out of the way for this loop, but keep it around for next time
     else { 
       Element(cell_id).SetAmount(0); 
-      if (!loop_once) cell_id_array.Swap(cell_id, --max_unused_idx);
+      cell_id_array.Swap(cell_idx, max_unused_idx--);
     }
-    if (loop_once) max_idx--;
+    if (cells_used >= num_cells && !loop_once) break;
+    if (max_unused_idx <= 0 && loop_once) break;
+    if (max_idx <= 0) break;
   }
 }
 
@@ -981,6 +982,15 @@ void cGradientCount::UpdateProbabilisticRes()
       double amount = curr_val + m_plateau_inflow - (curr_val * m_plateau_outflow);
       Element(m_prob_res_cells[i]).SetAmount(amount); 
       if (amount > 0) updateBounds(m_prob_res_cells[i] % GetX(), m_prob_res_cells[i] / GetX());
+    }
+  }
+}
+
+void cGradientCount::clearExistingProbRes()
+{
+  for (int x = m_min_usedx; x < m_max_usedx + 1; x ++) {
+    for (int y = m_min_usedy; y < m_max_usedy + 1; y ++) {
+      Element(y * GetX() + x).SetAmount(0);
     }
   }
 }

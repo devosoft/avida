@@ -5078,13 +5078,15 @@ int cPopulation::FindRandEmptyCell()
   if (num_organisms >= world_size) return -1;
 
   tArray<int>& cells = GetEmptyCellIDArray();
-  int cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
+  int cell_idx = m_world->GetRandom().GetUInt(world_size);
+  int cell_id = cells[cell_idx];
   while (GetCell(cell_id).IsOccupied()) {
     // no need to pop this cell off the array, just move it and don't check that far anymore
-    cells.Swap(cell_id, --world_size);
+    cells.Swap(cell_idx, --world_size);
     // if ran out of cells to check (e.g. with birth chamber weirdness)
-    if (world_size == 1) return -1; 
-    cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
+    if (world_size == 1) return -1;
+    cell_idx = m_world->GetRandom().GetUInt(world_size); 
+    cell_id = cells[cell_idx];
   }
   return cell_id;
 }
