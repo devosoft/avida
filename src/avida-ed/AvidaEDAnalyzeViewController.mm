@@ -120,7 +120,7 @@
   //  x.majorGridLineStyle = majorGridLineStyle;
   //  x.minorGridLineStyle = minorGridLineStyle;
   
-	x.title = @"Updates";
+	x.title = @"Time (updates)";
 	x.titleOffset = 25.0;
   [x.labelFormatter setMaximumFractionDigits:0];
   
@@ -169,7 +169,7 @@
   
   
   // Set axes
-  graph.axisSet.axes = [NSArray arrayWithObjects:x, y, y2, nil];
+  //graph.axisSet.axes = [NSArray arrayWithObjects:x, y, y2, nil];
   
   
   [btnGraphSelectLeft removeAllItems];
@@ -203,10 +203,12 @@
       }
     } else {
       if (mode) {
+        graph.axisSet.axes = [NSArray arrayWithObjects:[(CPTXYAxisSet*)graph.axisSet xAxis], [(CPTXYAxisSet*)graph.axisSet yAxis], secondaryYAxis, nil];
         [graph addPlot:[[popArray objectAtIndex:i] secondaryPlot] toPlotSpace:secondaryPlotSpace];
         [[popArray objectAtIndex:i] setSecondaryPlotData:mode - 1];
       } else {
         [graph removePlot:[[popArray objectAtIndex:i] secondaryPlot]];
+        graph.axisSet.axes = [NSArray arrayWithObjects:[(CPTXYAxisSet*)graph.axisSet xAxis], [(CPTXYAxisSet*)graph.axisSet yAxis], nil];
       }
     }
   }

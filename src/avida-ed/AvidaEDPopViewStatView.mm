@@ -187,7 +187,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   graph.plotAreaFrame.paddingLeft = 50.0;
   graph.plotAreaFrame.paddingTop = 5.0;
   graph.plotAreaFrame.paddingRight = 5.0;
-  graph.plotAreaFrame.paddingBottom = 55.0;
+  graph.plotAreaFrame.paddingBottom = 45.0;
 
   
   // Setup scatter plot space
@@ -226,8 +226,8 @@ static const float PANEL_MIN_WIDTH = 360.0;
 //  x.majorGridLineStyle = majorGridLineStyle;
 //  x.minorGridLineStyle = minorGridLineStyle;
     
-	x.title = @"Updates";
-	x.titleOffset = 35.0;
+	x.title = @"Time (updates)";
+	x.titleOffset = 25.0;
   [x.labelFormatter setMaximumFractionDigits:0];
   
   x.axisConstraints = [CPTConstraints constraintWithLowerOffset:0.0];
@@ -377,7 +377,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   if (bounds.size.width != oldBoundsSize.width || bounds.size.height != oldBoundsSize.height) {
     NSRect panel_bounds;
     
-    CGFloat graph_height = floor(bounds.size.height - 322.0 - (2 * spacing) - 32.0);
+    CGFloat graph_height = floor(bounds.size.height - 322.0 - (2 * spacing) - 22.0);
     panel_bounds.size = [btnGraphSelect bounds].size;
     panel_bounds.origin.x = floor((bounds.size.width - panel_bounds.size.width) / 2.0);
     panel_bounds.origin.y = 322 + spacing + graph_height;

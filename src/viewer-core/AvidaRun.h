@@ -63,6 +63,7 @@
 - (void) setReactionValueOf:(const Apto::String&)reaction_name to:(double)value;
 
 - (bool) hasStarted;
+- (bool) willPauseNow;
 - (bool) willPause;
 - (bool) isPaused;
 - (bool) hasFinished;

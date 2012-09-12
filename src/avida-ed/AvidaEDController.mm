@@ -146,6 +146,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (NSPoint) locationOfOrg:(NSUInteger)orgIndex withOrgCount:(NSUInteger)count;
 - (void) updatePendingInjectColors;
 
+- (void) setInterfacePaused;
+- (void) setInterfaceRunning;
+
 - (void) drawMapWithScaleInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc;
 @end
 
@@ -228,7 +231,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
     [txtUpdate setStringValue:@"(not started)"];
     [txtUpdate setTextColor:[NSColor disabledControlTextColor]];
-    [mapView setDimensions:[currentRun worldSize]];
   } else {
     currentRun = [[AvidaRun alloc] initWithDirectory:runPath];
     [self activateRunWithID:freezerID];
@@ -236,11 +238,13 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [currentRun pauseAt:[currentRun currentUpdate] + 1];
     [currentRun resume];
   }
-  
+
+  [mapView setDimensions:[currentRun worldSize]];
+  [mapZoom setDoubleValue:[mapView zoom]];
+
   // update interface
   [txtRun setStringValue:[NSString stringWithAptoString:freezer->NameOf(freezerID)]];
-  [btnRunState setTitle:@"Run"];
-  [[app toggleRunMenuItem] setTitle:@"Run"];
+  [self setInterfacePaused];
   
   double mutrate = [currentRun mutationRate];
   [sldCfgMutRate setFloatValue:(mutrate == 0) ? [sldCfgMutRate minValue] : log10(mutrate)];
@@ -275,7 +279,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     ancestor_name = ancestor_str.Pop('\n');
   }
   
-  [self updatePendingInjectColors];
+  if (freezerID.type == Avida::Viewer::CONFIG) [self updatePendingInjectColors];
 
 
   listener = new MainThreadListener(self);
@@ -557,6 +561,29 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [NSGraphicsContext setCurrentContext:currentContext];
 }
 
+
+- (void) setInterfacePaused {
+  [btnRunState setTitle:@"Run"];
+  [[app toggleRunMenuItem] setTitle:@"Run"];
+  if (!runActive) {
+    [sldCfgMutRate setEnabled:YES];
+    [txtCfgMutRate setEnabled:YES];
+    [matCfgPlacement setEnabled:YES];
+    [matCfgEnv setEnabled:YES];
+  }
+
+  if (![currentRun willPause]) [matCfgPauseAt selectCellWithTag:2];
+}
+
+- (void) setInterfaceRunning {
+  [btnRunState setTitle:@"Pause"];
+  [[app toggleRunMenuItem] setTitle:@"Pause"];
+  [sldCfgMutRate setEnabled:NO];
+  [txtCfgMutRate setEnabled:NO];
+  [matCfgPlacement setEnabled:NO];
+  [matCfgEnv setEnabled:NO];
+}
+
 @end
 
 @implementation AvidaEDController
@@ -673,7 +700,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) toggleRunState:(id)sender {
-  if ([currentRun willPause]) {
+  if ([currentRun willPauseNow]) {
     if ([currentRun numOrganisms] == 0 && ![currentRun hasPendingInjects] && [ancestorArray count] == 0) {
       NSAlert* alert = [[NSAlert alloc] init];
       [alert addButtonWithTitle:@"OK"];
@@ -690,26 +717,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     }
 
     [currentRun resume];
-    [btnRunState setTitle:@"Pause"];
-    [[app toggleRunMenuItem] setTitle:@"Pause"];
-    [sldCfgMutRate setEnabled:NO];
-    [txtCfgMutRate setEnabled:NO];
-    [matCfgPlacement setEnabled:NO];
-    [matCfgEnv setEnabled:NO];
-    [matCfgPauseAt setEnabled:NO];
-    [txtCfgPauseAt setEnabled:NO];
-    [stpCfgPauseAt setEnabled:NO];
+    [self setInterfaceRunning];
   } else {
     [currentRun pause];
-    [btnRunState setTitle:@"Run"];
-    [[app toggleRunMenuItem] setTitle:@"Run"];
-    [sldCfgMutRate setEnabled:YES];
-    [txtCfgMutRate setEnabled:YES];
-    [matCfgPlacement setEnabled:YES];
-    [matCfgEnv setEnabled:YES];
-    [matCfgPauseAt setEnabled:YES];
-    [txtCfgPauseAt setEnabled:YES];
-    [stpCfgPauseAt setEnabled:YES];
+    [self setInterfacePaused];
   }
 }
 
@@ -723,9 +734,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (IBAction) changeMapZoom:(id)sender {
-  if (map) {
-    [mapView setZoom:[mapZoom doubleValue]];
-  }
+  [mapView setZoom:[mapZoom doubleValue]];
 }
 
 - (IBAction) changeView:(id)sender {
@@ -1172,6 +1181,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (IBAction) changeWorldSize:(id)sender {
   [currentRun setWorldSize:NSMakeSize([txtCfgWorldX intValue], [txtCfgWorldY intValue])];
   [mapView setDimensions:[currentRun worldSize]];
+  [mapZoom setDoubleValue:[mapView zoom]];
+
 }
 
 
@@ -1846,7 +1857,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     }
     [mapViewMode selectItemAtIndex:map->GetColorMode()];
     [mapViewMode setEnabled:TRUE];
-    [mapZoom setEnabled:TRUE];
   } else {
     map = [pkg map];
   }
@@ -1864,6 +1874,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     NSString* str = [NSString stringWithFormat:@"%d updates", update];
     [txtUpdate setStringValue:str]; 
   }
+}
+
+- (void) handleRunPaused:(id)unused {
+  if (runActive) [self setInterfacePaused];
 }
 
 

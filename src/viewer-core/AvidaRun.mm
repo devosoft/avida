@@ -184,8 +184,12 @@ void handleDriverCallback(Avida::DriverEvent event)
   return driver->HasStarted();
 }
 
-- (bool) willPause {
+- (bool) willPauseNow {
   return (driver->GetPauseState() == Avida::Viewer::DRIVER_PAUSED);
+}
+
+- (bool) willPause {
+  return (driver->GetPauseAt() >= 0);
 }
 
 - (bool) isPaused {

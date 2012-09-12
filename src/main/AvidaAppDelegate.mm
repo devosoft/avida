@@ -30,6 +30,7 @@
 #import "AvidaAppDelegate.h"
 
 #import "AvidaMainWindowController.h"
+#import "AvidaEDAboutController.h"
 #import "AvidaEDController.h"
 
 
@@ -142,6 +143,11 @@
     }
   }
   return NO;
+}
+
+
+- (void) orderFrontCustomAboutPanel:(id)sender {
+  [[AvidaEDAboutController sharedInstance] showWindow:sender];
 }
 
 

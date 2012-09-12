@@ -68,8 +68,10 @@ public:
   MainThreadListener(id <ViewerListener> target) : m_target(target) { ; }
   
   bool WantsMap() { return true; }
+  bool WantsState() { return true; }
   bool WantsUpdate() { return true; }
   
   void NotifyMap(Avida::Viewer::Map* map);
+  void NotifyState(Avida::Viewer::DriverPauseState state);
   void NotifyUpdate(int update);
 };

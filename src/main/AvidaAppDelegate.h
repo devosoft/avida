@@ -39,12 +39,14 @@
 - (IBAction) newAvidaED:(id)sender;
 - (IBAction) openAvidaEDWorkspace:(id)sender;
 - (IBAction) duplicateAvidaEDWorkspace:(id)sender;
+- (IBAction) orderFrontCustomAboutPanel:(id)sender;
 
 
 @property (readonly) NSMenuItem* toggleRunMenuItem;
 
 
 - (BOOL) isWorkspaceOpenForURL:(NSURL*)url;
+
 
 // NSMenuValidation Informal Protocol
 - (BOOL) validateMenuItem:(NSMenuItem*)item;

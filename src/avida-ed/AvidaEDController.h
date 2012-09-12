@@ -257,6 +257,6 @@
 
 - (void) handleMap:(ViewerMap*)object;
 - (void) handleUpdate:(ViewerUpdate*)object;
-
+- (void) handleRunPaused:(id)unused;
 
 @end

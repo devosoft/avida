@@ -1,8 +1,8 @@
 //
-//  CAAnimationBlockDelegate.h
+//  AvidaEDAboutController.h
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 8/31/12.
+//  Created by David M. Bryson on 9/11/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,20 +27,16 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <QuartzCore/QuartzCore.h>
+#import <Cocoa/Cocoa.h>
 
-@interface CAAnimationBlockDelegate : NSObject
+@interface AvidaEDAboutController : NSWindowController
+{
+  IBOutlet NSWindow* window;
+  IBOutlet NSTextField* lblVersion;
+  IBOutlet NSTextView* txtCredits;
+}
 
-// Block to call when animation is started
-@property (nonatomic, copy) void(^blockOnAnimationStarted)(void);
 
-// Block to call when animation is successful
-@property (nonatomic, copy) void(^blockOnAnimationSucceeded)(void);
-
-// Block to call when animation fails
-@property (nonatomic, copy) void(^blockOnAnimationFailed)(void);
-
-- (void)animationDidStart:(CAAnimation *)theAnimation;
-- (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag;
++ (AvidaEDAboutController*) sharedInstance;
 
 @end

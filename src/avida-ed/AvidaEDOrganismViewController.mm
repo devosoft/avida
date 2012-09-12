@@ -170,33 +170,33 @@
       [(OrgExecStateValue*)[arrOutputBuffer objectAtIndex:i] setValue:output_buf[i]];
   }
   
-  // handle current stack
+  // handle stack a
   const Apto::Array<int>& stack_a = snapshot.Buffer("stack A");
-  if ([arrCurStack count] != stack_a.GetSize()) {
+  if ([arrCurStack count] != ((stack_a.GetSize() > 2) ? 2 : stack_a.GetSize())) {
     NSRange range = NSMakeRange(0, [[arrctlrCurStack arrangedObjects] count]);
     [arrctlrCurStack removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
-    for (int i = 0; i < stack_a.GetSize(); i++) {
+    for (int i = 0; i < stack_a.GetSize() && i < 2; i++) { // capped at two for now
       OrgExecStateValue* sv = [[OrgExecStateValue alloc] initWithPrefix:@""];
       [sv setValue:stack_a[i]];
       [arrctlrCurStack addObject:sv];
     }
   } else {
-    for (int i = 0; i < stack_a.GetSize(); i++)
+    for (int i = 0; i < stack_a.GetSize() && i < 2; i++) // capped at two for now
       [(OrgExecStateValue*)[arrCurStack objectAtIndex:i] setValue:stack_a[i]];
   }
 
-  // handle current stack
+  // handle stack b
   const Apto::Array<int>& stack_b = snapshot.Buffer("stack B");
-  if ([arrStackB count] != stack_b.GetSize()) {
+  if ([arrStackB count] != ((stack_b.GetSize() > 2) ? 2 : stack_b.GetSize())) {
     NSRange range = NSMakeRange(0, [[arrctlrStackB arrangedObjects] count]);
     [arrctlrStackB removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
-    for (int i = 0; i < stack_b.GetSize(); i++) {
+    for (int i = 0; i < stack_b.GetSize() && i < 2; i++) { // capped at two for now
       OrgExecStateValue* sv = [[OrgExecStateValue alloc] initWithPrefix:@""];
       [sv setValue:stack_b[i]];
       [arrctlrStackB addObject:sv];
     }
   } else {
-    for (int i = 0; i < stack_b.GetSize(); i++)
+    for (int i = 0; i < stack_b.GetSize() && i < 2; i++) // capped at two for now
       [(OrgExecStateValue*)[arrStackB objectAtIndex:i] setValue:stack_b[i]];
   }
 

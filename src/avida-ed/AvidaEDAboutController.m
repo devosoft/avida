@@ -1,8 +1,8 @@
 //
-//  CAAnimationBlockDelegate.h
+//  AvidaEDAboutController.m
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 8/31/12.
+//  Created by David M. Bryson on 9/11/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,20 +27,53 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <QuartzCore/QuartzCore.h>
+#import "AvidaEDAboutController.h"
 
-@interface CAAnimationBlockDelegate : NSObject
+@interface AvidaEDAboutController ()
 
-// Block to call when animation is started
-@property (nonatomic, copy) void(^blockOnAnimationStarted)(void);
+@end
 
-// Block to call when animation is successful
-@property (nonatomic, copy) void(^blockOnAnimationSucceeded)(void);
+@implementation AvidaEDAboutController
 
-// Block to call when animation fails
-@property (nonatomic, copy) void(^blockOnAnimationFailed)(void);
+- (id) init
+{
+    self = [super initWithWindowNibName:@"AvidaED-AboutPanel"];
+    if (self) {
+        // Initialization code here.
+    }
+    
+    return self;
+}
 
-- (void)animationDidStart:(CAAnimation *)theAnimation;
-- (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag;
+- (void)windowDidLoad
+{
+  [super windowDidLoad];
+  
+  NSBundle* mainBundle = [NSBundle mainBundle];
+  NSDictionary* infoDict = [mainBundle infoDictionary];
+  
+  [txtCredits readRTFDFromFile:[mainBundle pathForResource:@"AvidaED-credits" ofType:@"rtf"]];
+  [txtCredits setNeedsDisplay:YES];
+  
+  NSString* versionString = [infoDict objectForKey:@"CFBundleShortVersionString"];
+  assert(versionString != nil);
+  NSString* buildString = [infoDict objectForKey:@"CFBundleVersion"];
+  assert(buildString != nil);
+
+  [lblVersion setStringValue:[NSString stringWithFormat:@"Avida-ED v%@ (build %@)", versionString, buildString]];
+}
+
+
++ (AvidaEDAboutController*)sharedInstance
+{
+  static AvidaEDAboutController* sharedInstance = nil;
+  
+  if (sharedInstance == nil) {
+    sharedInstance = [[self alloc] init];
+  }
+  
+  return sharedInstance;
+}
+
 
 @end
