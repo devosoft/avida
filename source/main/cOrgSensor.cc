@@ -424,7 +424,9 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   tot_bounds.min_y = worldy;    
   tot_bounds.max_x = -1 * worldx;
   tot_bounds.max_y = -1 * worldy;
-  if (habitat_used != -2) { 
+  if (habitat_used == 0 || habitat_used >= 4) { 
+
+//  if (habitat_used != -2) { 
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
@@ -848,6 +850,20 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const cResourceLib
     if (max_x >= 0 && max_x < m_world->GetConfig().WORLD_X.Get()) res_bounds.max_x = max_x;
     if (max_y >= 0 && max_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.max_y = max_y;
   }
+  
+    const int peakx = m_organism->GetOrgInterface().GetFrozenPeakX(ctx, res_id);
+  const int peaky = m_organism->GetOrgInterface().GetFrozenPeakY(ctx, res_id);
+  
+  // width of the area of the food curve that can be >= 1 or 0, depending on search type
+  int width = resource_lib.GetResource(res_id)->GetHeight() - 1;                          // width beyond center peak cell
+  if (search_type == 1 || resource_lib.GetResource(res_id)->GetFloor() >= 1) width = resource_lib.GetResource(res_id)->GetSpread(); 
+  
+  res_bounds.min_x = peakx - width;
+  res_bounds.min_y = peaky - width;
+  res_bounds.max_x = peakx + width;
+  res_bounds.max_y = peaky + width;  
+  
+  
   return res_bounds;
 }
 
