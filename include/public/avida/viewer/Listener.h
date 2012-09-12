@@ -38,9 +38,11 @@ namespace Avida {
       LIB_EXPORT virtual ~Listener() = 0;
       
       LIB_EXPORT virtual bool WantsMap() = 0;
+      LIB_EXPORT virtual bool WantsState() = 0;
       LIB_EXPORT virtual bool WantsUpdate() = 0;
       
       LIB_EXPORT virtual void NotifyMap(Map* map);
+      LIB_EXPORT virtual void NotifyState(DriverPauseState state);
       LIB_EXPORT virtual void NotifyUpdate(int update);
     };
     

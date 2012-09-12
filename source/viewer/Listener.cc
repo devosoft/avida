@@ -28,4 +28,5 @@
 Avida::Viewer::Listener::~Listener() { ; }
 
 void Avida::Viewer::Listener::NotifyMap(Map*) { ; }
+void Avida::Viewer::Listener::NotifyState(DriverPauseState) { ; }
 void Avida::Viewer::Listener::NotifyUpdate(int) { ; }

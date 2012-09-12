@@ -124,12 +124,14 @@ namespace Avida {
     private:
       GenomePtr m_genome;
       Apto::Array<HardwareSnapshot*> m_snapshots;
+      GenomePtr m_offspring_genome;
       
     public:
       LIB_EXPORT OrganismTrace(cWorld* world, GenomePtr genome);
       LIB_EXPORT ~OrganismTrace();
       
       LIB_EXPORT inline ConstGenomePtr OrganismGenome() const { return m_genome; }
+      LIB_EXPORT inline ConstGenomePtr OffspringGenome() const { return m_offspring_genome; }
       
       LIB_EXPORT inline int SnapshotCount() const { return m_snapshots.GetSize(); }
       LIB_EXPORT inline const HardwareSnapshot& Snapshot(int idx) const { return *m_snapshots[idx]; }      

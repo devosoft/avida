@@ -149,12 +149,15 @@ private:
   int m_last_mem_space;
   int m_last_idx;
   GenomePtr m_genome;
+  GenomePtr m_offspring_genome;
   
 
 public:
   LIB_LOCAL inline SnapshotTracer(cWorld* world) : m_world(world), m_snapshots(NULL) { ; }
   
   LIB_LOCAL void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots);
+  
+  LIB_LOCAL GenomePtr OffspringGenome() { return m_offspring_genome; }
   
   // cHardwareTracer
   LIB_LOCAL void TraceHardware(cAvidaContext& ctx, cHardwareBase&, bool bonus = false, bool mini = false, int exec_success = -2);
@@ -375,7 +378,7 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
     snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));
     
     // Handle function counts
-    const tArray<int>& task_counts = organism.GetPhenotype().GetCurTaskCount();
+    const tArray<int>& task_counts = organism.GetPhenotype().GetLastTaskCount();
     for (int i = 0; i < task_counts.GetSize(); i++) {
       snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetName(), task_counts[i]);
     }
@@ -396,7 +399,8 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
     snapshot->AddMemSpace("genome", memory);
     
     // - handle the offspring part of the memory
-    seq.DynamicCastFrom(organism.GetGenome().Representation());
+    m_offspring_genome = GenomePtr(new Genome(organism.OffspringGenome()));
+    seq.DynamicCastFrom(organism.OffspringGenome().Representation());
     memory.Resize(seq->GetSize());
     for (int i = m_genome_length; i < seq->GetSize(); i++) {
       memory[i - m_genome_length] = (*seq)[i];
@@ -655,6 +659,7 @@ OrganismTrace::OrganismTrace(cWorld* world, GenomePtr genome)
 {
   Private::SnapshotTracer tracer(world);
   tracer.TraceGenome(genome, m_snapshots);
+  m_offspring_genome = tracer.OffspringGenome();
 }
 
 

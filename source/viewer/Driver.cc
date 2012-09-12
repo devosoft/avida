@@ -392,6 +392,13 @@ void Avida::Viewer::Driver::Run()
         m_pause_state = DRIVER_PAUSED;
         m_pause_at = -2;
       }
+      m_mutex.Unlock();
+      
+      for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+        if ((*it.Get())->WantsState()) (*it.Get())->NotifyState(m_pause_state);
+      }
+      
+      m_mutex.Lock();
       while (!m_done && m_pause_state == DRIVER_PAUSED) {
         m_paused = true;
         m_pause_cv.Wait(m_mutex);

@@ -30,6 +30,7 @@
 #include "avida/core/Genome.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Recorder.h"
+#include "avida/viewer/Types.h"
 
 class cWorld;
 
@@ -37,22 +38,6 @@ class cWorld;
 namespace Avida {
   namespace Viewer {
 
-    // Class Declarations
-    // --------------------------------------------------------------------------------------------------------------  
-    
-    class Map;
-    class Listener;
-
-
-    // Enumerations
-    // --------------------------------------------------------------------------------------------------------------  
-    
-    enum DriverPauseState {
-      DRIVER_PAUSED,
-      DRIVER_UNPAUSED
-    };
-
-    
     // Driver Definition
     // --------------------------------------------------------------------------------------------------------------  
     
@@ -99,8 +84,9 @@ namespace Avida {
       LIB_EXPORT inline World* GetWorld() { return m_new_world; }
       LIB_EXPORT inline cWorld* GetOldWorld() { return m_world; }
       
-      LIB_EXPORT bool HasStarted() const { return m_started; }
-      LIB_EXPORT void PauseAt(Update update) { m_pause_at = update; }
+      LIB_EXPORT inline bool HasStarted() const { return m_started; }
+      LIB_EXPORT inline void PauseAt(Update update) { m_pause_at = update; }
+      LIB_EXPORT inline Update GetPauseAt() { return m_pause_at; }
       LIB_EXPORT DriverPauseState GetPauseState() const { return m_pause_state; }
       LIB_EXPORT bool IsPaused() const { return m_paused; }
       LIB_EXPORT bool HasFinished() const { return m_done; }

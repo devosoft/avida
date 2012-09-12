@@ -178,6 +178,7 @@ public:
   int GetMaxExecuted() const { return m_max_executed; }
 
   Genome& OffspringGenome() { return m_offspring_genome; }
+  const Genome& OffspringGenome() const { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }

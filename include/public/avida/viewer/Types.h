@@ -56,6 +56,14 @@ namespace Avida {
     typedef Apto::SmartPtr<OrganismTrace> OrganismTracePtr;
     
 
+    // Enumerations
+    // --------------------------------------------------------------------------------------------------------------
+    
+    enum DriverPauseState {
+      DRIVER_PAUSED,
+      DRIVER_UNPAUSED
+    };    
+    
     enum GraphicShape { SHAPE_NONE, SHAPE_OVAL, SHAPE_RECT, SHAPE_CURVE };
     
   };
