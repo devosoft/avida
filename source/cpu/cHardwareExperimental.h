@@ -636,6 +636,8 @@ private:
   
   bool Inst_SetGuard(cAvidaContext& ctx);
   bool Inst_SetGuardOnce(cAvidaContext& ctx);
+  bool Inst_GetNumGuards(cAvidaContext& ctx);
+  bool Inst_GetNumJuvs(cAvidaContext& ctx);
   
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
