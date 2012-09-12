@@ -160,6 +160,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   map = NULL;
   popSplitViewIsAnimating = NO;  
   ancestorArray = [[NSMutableArray alloc] init];
+  autoAncestorArray = [[NSMutableArray alloc] init];
+  manualAncestorArray = [[NSMutableArray alloc] init];
 }
 
 
@@ -268,6 +270,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // Clear ancestors
   NSRange range = NSMakeRange(0, [[ancestorArrayCtlr arrangedObjects] count]);
   [ancestorArrayCtlr removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+  autoAncestorArray = [[NSMutableArray alloc] init];
+  manualAncestorArray = [[NSMutableArray alloc] init];
   
   // Load ancestors
   Apto::String ancestor_str(freezer->LoadAttachment(freezerID, "ancestors"));
@@ -276,9 +280,24 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     Apto::String genome_str = ancestor_str.Pop('\n');
     Genome* genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome_str] name:[NSString stringWithAptoString:ancestor_name]];
     [ancestorArrayCtlr addObject:genome];
+    [autoAncestorArray addObject:genome];
     ancestor_name = ancestor_str.Pop('\n');
   }
-  
+
+  ancestor_str = freezer->LoadAttachment(freezerID, "ancestors_manual");
+  ancestor_name = ancestor_str.Pop('\n');
+  while (ancestor_name.GetSize()) {
+    Apto::String genome_str = ancestor_str.Pop('\n');
+    Apto::String location = ancestor_str.Pop('\n');
+    Genome* genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome_str] name:[NSString stringWithAptoString:ancestor_name]];
+    [ancestorArrayCtlr addObject:genome];
+    int x = Apto::StrAs(location.Pop(','));
+    int y = Apto::StrAs(location);
+    genome.location = NSMakePoint(x, y);
+    [manualAncestorArray addObject:genome];
+    ancestor_name = ancestor_str.Pop('\n');
+  }
+
   if (freezerID.type == Avida::Viewer::CONFIG) [self updatePendingInjectColors];
 
 
@@ -450,8 +469,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 {
   Apto::String ancestors;
 
-  for (NSUInteger idx = 0; idx < [ancestorArray count]; idx++) {
-    Genome* genome = [ancestorArray objectAtIndex:idx];
+  for (NSUInteger idx = 0; idx < [autoAncestorArray count]; idx++) {
+    Genome* genome = [autoAncestorArray objectAtIndex:idx];
     ancestors += [[genome name] UTF8String];
     ancestors += "\n";
     ancestors += [[genome genomeStr] UTF8String];
@@ -459,6 +478,23 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   
   freezer->SaveAttachment(freezerID, "ancestors", ancestors);
+
+  
+  ancestors = "";
+  
+  for (NSUInteger idx = 0; idx < [manualAncestorArray count]; idx++) {
+    Genome* genome = [manualAncestorArray objectAtIndex:idx];
+    ancestors += [[genome name] UTF8String];
+    ancestors += "\n";
+    ancestors += [[genome genomeStr] UTF8String];
+    ancestors += "\n";
+    ancestors += Apto::AsStr((int)genome.location.x);
+    ancestors += ",";
+    ancestors += Apto::AsStr((int)genome.location.y);
+    ancestors += "\n";
+  }
+  
+  freezer->SaveAttachment(freezerID, "ancestors_manual", ancestors);
 }
 
 
@@ -477,11 +513,19 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
   
   // Setup inject queue based on ancestors box
-  for (NSUInteger idx = 0; idx < [ancestorArray count]; idx++) {
-    Genome* genome = [ancestorArray objectAtIndex:idx];
+  for (NSUInteger idx = 0; idx < [manualAncestorArray count]; idx++) {
+    Genome* genome = [manualAncestorArray objectAtIndex:idx];
     Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
     
-    NSPoint coord = [self locationOfOrg:idx withOrgCount:[ancestorArray count]];
+    NSPoint coord = genome.location;
+    [currentRun injectGenome:genome_ptr atX:coord.x Y:coord.y withName:[[genome name] UTF8String]];
+  }
+
+  for (NSUInteger idx = 0; idx < [autoAncestorArray count]; idx++) {
+    Genome* genome = [autoAncestorArray objectAtIndex:idx];
+    Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
+    
+    NSPoint coord = [self locationOfOrg:idx withOrgCount:[autoAncestorArray count]];
     [currentRun injectGenome:genome_ptr atX:coord.x Y:coord.y withName:[[genome name] UTF8String]];
   }
 }
@@ -528,8 +572,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
   
   // Pending Ancestor Injects
-  for (NSUInteger idx = 0; idx < [ancestorArray count]; idx++) {
-    NSPoint coord = [self locationOfOrg:idx withOrgCount:[ancestorArray count]];
+  for (NSUInteger idx = 0; idx < [manualAncestorArray count]; idx++) {
+    NSPoint coord = [(Genome*)[manualAncestorArray objectAtIndex:idx] location];
+    [mapView setPendingActionAtX:coord.x Y:coord.y withColor:-2];
+  }
+  for (NSUInteger idx = 0; idx < [autoAncestorArray count]; idx++) {
+    NSPoint coord = [self locationOfOrg:idx withOrgCount:[autoAncestorArray count]];
     [mapView setPendingActionAtX:coord.x Y:coord.y withColor:-2];
   }
 }
@@ -1585,7 +1633,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       [mapView setPendingActionAtX:x Y:y withColor:-2];
     } else {
       Genome* genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome_ptr->AsString()] name:[NSString stringWithAptoString:freezer->NameOf(fid)]];
+      genome.location = NSMakePoint(x, y);
+      
       [ancestorArrayCtlr addObject:genome];
+      [manualAncestorArray addObject:genome];
       [self updatePendingInjectColors];
     }
   }
@@ -1599,7 +1650,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome name] UTF8String]];
       [mapView setPendingActionAtX:x Y:y withColor:-2];
     } else {
+      genome.location = NSMakePoint(x,y);
       [ancestorArrayCtlr addObject:genome];
+      [manualAncestorArray addObject:genome];
       [self updatePendingInjectColors];
     }
   }
@@ -1798,7 +1851,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   if (runActive) return NO;
   
   if ([[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject:AvidaPasteboardTypeGenome]] != nil) {
-    [ancestorArrayCtlr insertObject:[Genome genomeFromPasteboard:[info draggingPasteboard]] atArrangedObjectIndex:index];
+    Genome* genome = [Genome genomeFromPasteboard:[info draggingPasteboard]];
+    [ancestorArrayCtlr insertObject:genome atArrangedObjectIndex:index];
+    [autoAncestorArray addObject:genome];
     [self updatePendingInjectColors];
     return YES;
   }
@@ -1809,6 +1864,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       Avida::GenomePtr genome = freezer->InstantiateGenome(fid);
       Genome* objc_genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome->AsString()] name:[NSString stringWithAptoString:freezer->NameOf(fid)]];
       [ancestorArrayCtlr insertObject:objc_genome atArrangedObjectIndex:index];
+      [autoAncestorArray addObject:objc_genome];
       [self updatePendingInjectColors];
       return YES;
     }

@@ -43,6 +43,7 @@ NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
 
 @synthesize genomeStr;
 @synthesize name;
+@synthesize location;
 
 + (Genome*) genomeFromPasteboard:(NSPasteboard*)pboard {
   NSArray* classes = [[NSArray alloc] initWithObjects:[Genome class], nil];

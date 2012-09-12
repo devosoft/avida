@@ -101,6 +101,8 @@
   // Config View
   // --------------------------------------------------------------------------------------------------------------
   NSMutableArray* ancestorArray;
+  NSMutableArray* manualAncestorArray;
+  NSMutableArray* autoAncestorArray;
   
   IBOutlet NSArrayController* ancestorArrayCtlr;
 
