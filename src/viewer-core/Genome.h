@@ -43,7 +43,7 @@ extern NSString* const AvidaPasteboardTypeGenome;
 - (Genome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName;
 
 @property (readonly, nonatomic) NSString* genomeStr;
-@property (readonly, nonatomic) NSString* name;
+@property (readwrite, copy, nonatomic) NSString* name;
 @property (readwrite, nonatomic) NSPoint location;
 
 + (Genome*) genomeFromPasteboard:(NSPasteboard*)pboard;
