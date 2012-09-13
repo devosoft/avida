@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Authors: David M. Bryson <david@programerror.com>
+ *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <charles.ofria@gmail.com>
  *
  */
 
@@ -155,7 +155,7 @@ private:
 public:
   LIB_LOCAL inline SnapshotTracer(cWorld* world) : m_world(world), m_snapshots(NULL) { ; }
   
-  LIB_LOCAL void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots);
+  LIB_LOCAL void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots, double mut_rate);
   
   LIB_LOCAL GenomePtr OffspringGenome() { return m_offspring_genome; }
   
@@ -180,7 +180,7 @@ public:
 // Private::SnapshotTracer Implementation
 // --------------------------------------------------------------------------------------------------------------  
 
-void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots)
+void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots, double mut_rate)
 {
   // Create internal reference to the snapshot array so that the tracing methods can create snapshots
   m_snapshots = &snapshots;
@@ -208,7 +208,8 @@ void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<Hardware
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
   // Setup test info to trace into this tracer
-  cCPUTestInfo test_info;  
+  cCPUTestInfo test_info;
+  test_info.MutationRates().SetCopyMutProb(mut_rate);
   test_info.SetTraceExecution(this);
   
   // Test the actual genome
@@ -271,13 +272,16 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   
   // Handle memory spaces
   Apto::Array<Instruction> memory;
+  Apto::Array<bool> mutated;
   
   // - handle the genome part of the memory
   memory.Resize((m_genome_length < hw.GetMemory().GetSize()) ? m_genome_length : hw.GetMemory().GetSize());
+  mutated.Resize(memory.GetSize());
   for (int i = 0; i < m_genome_length && i < hw.GetMemory().GetSize(); i++) {
     memory[i] = hw.GetMemory()[i];
+    mutated[i] = hw.GetMemory().FlagMutated(i);
   }
-  snapshot->AddMemSpace("genome", memory);
+  snapshot->AddMemSpace("genome", memory, mutated);
   
   // - handle all heads that are in the first part of the memory space
   for (int i = 0; i < hw.GetNumHeads(); i++) {
@@ -290,8 +294,10 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   
   // - handle the offspring part of the memory
   memory.Resize(hw.GetMemory().GetSize() - memory.GetSize());
+  mutated.Resize(memory.GetSize());
   for (int i = m_genome_length; i < hw.GetMemory().GetSize(); i++) {
     memory[i - m_genome_length] = hw.GetMemory()[i];
+    mutated[i - m_genome_length] = hw.GetMemory().FlagMutated(i);
   }
   
   // - determine the maximum position of any head
@@ -305,7 +311,8 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   if (max_head_pos >= m_genome_length) {
     // truncate the offspring part of the memory to the position of the last head
     memory.Resize(max_head_pos - m_genome_length + 1);
-    snapshot->AddMemSpace("offspring", memory);
+    mutated.Resize(memory.GetSize());
+    snapshot->AddMemSpace("offspring", memory, mutated);
     
     // handle all heads that are in the second part of the memory space
     for (int i = 0; i < hw.GetNumHeads(); i++) {
@@ -388,24 +395,34 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
     
     // Handle memory spaces
     Apto::Array<Instruction> memory;
+    Apto::Array<bool> mutated;
     ConstInstructionSequencePtr seq;
     
     // - handle the genome part of the memory
     seq.DynamicCastFrom(m_genome->Representation());
     memory.Resize(seq->GetSize());
+    mutated.Resize(memory.GetSize());
+    mutated.SetAll(false);
     for (int i = 0; i < m_genome_length && i < seq->GetSize(); i++) {
       memory[i] = (*seq)[i];
     }
-    snapshot->AddMemSpace("genome", memory);
+    snapshot->AddMemSpace("genome", memory, mutated);
     
     // - handle the offspring part of the memory
     m_offspring_genome = GenomePtr(new Genome(organism.OffspringGenome()));
     seq.DynamicCastFrom(organism.OffspringGenome().Representation());
     memory.Resize(seq->GetSize());
+    mutated.Resize(memory.GetSize());
     for (int i = m_genome_length; i < seq->GetSize(); i++) {
       memory[i - m_genome_length] = (*seq)[i];
     }
-    snapshot->AddMemSpace("offspring", memory);
+    
+    // Hack to get mutated state into the final state... potential for offset, etc.
+    const Apto::Array<bool>& prev_mutated = prev_snapshot->MutatedStateOfMemSpace(1);
+    for (int i = 0; i < mutated.GetSize() && i < prev_mutated.GetSize(); i++) {
+      mutated[i] = prev_mutated[i];
+    }
+    snapshot->AddMemSpace("offspring", memory, mutated);
   }
   
   // Resize the snapshot array to the actual number of snapshots
@@ -442,12 +459,13 @@ void HardwareSnapshot::SetFunctionCount(const Apto::String& function, int count)
 }
 
 
-int HardwareSnapshot::AddMemSpace(const Apto::String& label, const Apto::Array<Instruction>& memory)
+int HardwareSnapshot::AddMemSpace(const Apto::String& label, const Apto::Array<Instruction>& memory, const Apto::Array<bool>& mutated)
 {
   int idx = m_mem_spaces.GetSize();
   m_mem_spaces.Resize(idx + 1);
   m_mem_spaces[idx].label = label;
   m_mem_spaces[idx].memory = memory;
+  m_mem_spaces[idx].mutated = mutated;
   
   return idx;
 }
@@ -577,6 +595,10 @@ Avida::Viewer::ConstGraphicPtr Avida::Viewer::HardwareSnapshot::GraphicForContex
     double center_x = 0.0;
     double center_y = 0.0;
     if (cur_mem_id == 0) center_x -= genome_offset; else center_x += genome_offset;
+    
+    GraphicObject* mem_center = new GraphicObject(center_x, center_y, 0, 0, SHAPE_OVAL);
+    mem_center->active_region_id = cur_mem_id;
+    graphic->AddObject(mem_center);
 
     // Step through the genome, placing each instruction on the screen;
     for (int cur_inst_idx = 0; cur_inst_idx < cur_length; cur_inst_idx++) {
@@ -638,6 +660,12 @@ Avida::Viewer::ConstGraphicPtr Avida::Viewer::HardwareSnapshot::GraphicForContex
         }
       }
       
+      // if mutated, highlight border as such
+      if (cur_memspace.mutated[cur_inst_idx]) {
+        line_color = Color::GREEN();
+        inst_go->line_width = 3.0;
+      }
+      
       graphic->AddObject(inst_go);
     }
   }
@@ -648,17 +676,21 @@ Avida::Viewer::ConstGraphicPtr Avida::Viewer::HardwareSnapshot::GraphicForContex
   return graphic;
 }
 
+const Apto::Array<bool>& Avida::Viewer::HardwareSnapshot::MutatedStateOfMemSpace(int idx) const
+{
+  return m_mem_spaces[idx].mutated;
+}
 
 
 
 // OrganismTrace Implementation
 // --------------------------------------------------------------------------------------------------------------  
 
-OrganismTrace::OrganismTrace(cWorld* world, GenomePtr genome)
+OrganismTrace::OrganismTrace(cWorld* world, GenomePtr genome, double mut_rate)
   : m_genome(genome)
 {
   Private::SnapshotTracer tracer(world);
-  tracer.TraceGenome(genome, m_snapshots);
+  tracer.TraceGenome(genome, m_snapshots, mut_rate);
   m_offspring_genome = tracer.OffspringGenome();
 }
 

@@ -55,6 +55,7 @@ namespace Avida {
       {
         Apto::String label;
         Apto::Array<Instruction> memory;
+        Apto::Array<bool> mutated;
         Apto::Map<Apto::String, int> heads;
       };
       Apto::Array<MemSpace, Apto::ManagedPointer> m_mem_spaces;
@@ -89,7 +90,7 @@ namespace Avida {
       LIB_LOCAL inline void SetRegister(int idx, int value) { m_registers[idx] = value; }
       LIB_LOCAL void AddBuffer(const Apto::String& description, const Apto::Array<int>& values);
       LIB_LOCAL void SetFunctionCount(const Apto::String& function, int count);
-      LIB_LOCAL int AddMemSpace(const Apto::String& label, const Apto::Array<Instruction>& memory);
+      LIB_LOCAL int AddMemSpace(const Apto::String& label, const Apto::Array<Instruction>& memory, const Apto::Array<bool>& mutated);
       LIB_LOCAL void AddHead(const Apto::String& label, int mem_space, int index);
       LIB_LOCAL void AddJump(int from_mem_space, int from_idx, int to_mem_space, int to_idx);
       LIB_LOCAL inline void SetNextInst(Instruction inst) { m_next_inst = inst; }
@@ -113,6 +114,10 @@ namespace Avida {
       
       
       LIB_EXPORT ConstGraphicPtr GraphicForContext(GraphicsContext& gctx) const;
+      
+      
+      // Internal Access Methods
+      LIB_LOCAL const Apto::Array<bool>& MutatedStateOfMemSpace(int idx) const;
     };
     
 
@@ -127,7 +132,7 @@ namespace Avida {
       GenomePtr m_offspring_genome;
       
     public:
-      LIB_EXPORT OrganismTrace(cWorld* world, GenomePtr genome);
+      LIB_EXPORT OrganismTrace(cWorld* world, GenomePtr genome, double mut_rate = 0.0);
       LIB_EXPORT ~OrganismTrace();
       
       LIB_EXPORT inline ConstGenomePtr OrganismGenome() const { return m_genome; }

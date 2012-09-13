@@ -95,7 +95,7 @@ namespace Avida {
         : shape(_shape), x(_x), y(_y), width(_width), height(_height)
         , ctrl_x(0.0), ctrl_y(0.0), ctrl_x2(0.0), ctrl_y2(0.0)
         , fill_color(Color::NONE()), line_width(1.0), line_color(Color::NONE())
-        , font_size(1.0), label_color(Color::BLACK())
+        , font_size(1.0), label_color(Color::BLACK()), active_region_id(-1)
       { ; }
       LIB_EXPORT inline ~GraphicObject() { ; }
     };
