@@ -174,7 +174,13 @@ public:
   int GetMaxUsedY() { return m_max_usedy; }
   
 private:
-  void refreshResourceValues();
+  void fillinResourceValues();
+  void updatePeakRes(cAvidaContext& ctx);
+  void moveRes(cAvidaContext& ctx);
+  int setHaloPeakMovement(cAvidaContext& ctx, int current_orbit);
+  void setPeakMoveMovement(cAvidaContext& ctx);
+  void moveHaloPeak(int current_orbit);
+  void movePeak();
   void generatePeak(cAvidaContext& ctx);
   void getCurrentPlatValues();
   void generateBarrier(cAvidaContext& ctx);
