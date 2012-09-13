@@ -19,7 +19,6 @@
 		701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 701BFFF013CF305200838CC9 /* OrgColorBox.m */; };
 		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		701F535C157FBDED00DAE5FA /* avida-ed-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 701F535B157FBDED00DAE5FA /* avida-ed-icon.png */; };
-		7026F1B21534D27F00480C8F /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7026F1B11534D27F00480C8F /* libtcmalloc-1.4.a */; };
 		702837E5155C58B300C733D2 /* AvidaED-ExportData.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E4155C58B300C733D2 /* AvidaED-ExportData.xib */; };
 		702837E7155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E6155C5AB100C733D2 /* AvidaED-ExportGraphics-Population.xib */; };
 		702837E9155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702837E8155C5AE000C733D2 /* AvidaED-ExportGraphics-Organism.xib */; };
@@ -221,7 +220,6 @@
 				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
 				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
 				703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */,
-				7026F1B21534D27F00480C8F /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

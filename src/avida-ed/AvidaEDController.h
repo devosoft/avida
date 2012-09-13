@@ -61,6 +61,7 @@
   // Freezer
   // --------------------------------------------------------------------------------------------------------------  
   NSURL* freezerURL;
+  bool isDefaultFreezer;
   Avida::Viewer::FreezerPtr freezer;
   NSMutableArray* freezerConfigs;
   NSMutableArray* freezerGenomes;

@@ -135,6 +135,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) loadRunFromFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
 - (void) saveRunToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
 - (void) saveAnyToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
+- (void) nonDefaultFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo;
 - (void) clearCurrentRun;
 - (void) freezeCurrentConfig;
 - (void) freezeCurrentRun;
@@ -152,6 +153,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) drawMapWithScaleInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc;
 
 - (NSString*) uniqueNameForAncestorWithName:(NSString*)genome_name;
+
+- (BOOL) createNonDefaultFreezer;
 @end
 
 @implementation AvidaEDController (hidden)
@@ -392,6 +395,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // @TODO - fix this ugly busy wait
   while (![currentRun isPaused]);
   
+  if (isDefaultFreezer && ![self createNonDefaultFreezer]) return;
 
   Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::WORLD, [[self runName] UTF8String]);
   Avida::Viewer::FreezerID f = freezer->SaveWorld([currentRun oldworld], name);
@@ -410,6 +414,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (void) freezeCurrentConfig {
+  if (isDefaultFreezer && ![self createNonDefaultFreezer]) return;
+
   Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::CONFIG, [[self runName] UTF8String]);
   Avida::Viewer::FreezerID f = freezer->SaveConfig([currentRun oldworld], name);
   if (freezer->IsValid(f)) {
@@ -424,6 +430,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 - (void) freezeGenome:(Genome*)genome {
+  if (isDefaultFreezer && ![self createNonDefaultFreezer]) return;
+
   Apto::String name = freezer->NewUniqueNameForType(Avida::Viewer::GENOME, [[genome name] UTF8String]);
   Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
   Avida::Viewer::FreezerID f = freezer->SaveGenome(genome_ptr, name);
@@ -665,6 +673,114 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   return genome_name;
 }
 
+
+- (BOOL) createNonDefaultFreezer {
+  
+  
+  NSAlert* alert = [[NSAlert alloc] init];
+  [alert addButtonWithTitle:@"Save Workspace"];
+  [alert addButtonWithTitle:@"Open Workspace"];
+  [alert addButtonWithTitle:@"Cancel"];
+  [alert setMessageText:@"Before you can save items to the freezer you must choose a workspace to work with."];
+  [alert setInformativeText:@"Would you like to save the default workspace or open an existing one?"];
+  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(nonDefaultFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+  
+  return (!isDefaultFreezer);
+}
+  
+- (void) nonDefaultFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo {
+  
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSURL* fileURL = nil;
+  
+  NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+  
+  assert([urls count] != 0);
+  
+  NSURL* userDocumentsURL = [urls objectAtIndex:0];
+  NSURL* defaultFreezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+
+  
+  switch (returnCode) {
+    case NSAlertFirstButtonReturn:
+    {
+      NSSavePanel* saveDlg = [NSSavePanel savePanel];
+      [saveDlg setCanCreateDirectories:YES];
+      [saveDlg setAllowedFileTypes:[NSArray arrayWithObject:@"org.devosoft.avida.avida-ed-workspace"]];
+      [saveDlg setTitle:@"Save Workspace As..."];
+      [saveDlg setPrompt:@"Save Workspace"];
+      
+      // Display the dialog.  If the OK button was pressed, process the files.
+      if ([saveDlg runModal] == NSFileHandlingPanelOKButton) {
+        fileURL = [saveDlg URL];
+        
+        if ([[defaultFreezerURL absoluteURL] isEqual:[fileURL absoluteURL]] ||
+            ([defaultFreezerURL isFileURL] && [fileURL isFileURL] && [[defaultFreezerURL path] isEqual:[fileURL path]])) {
+          // cannot duplicate to the default freezer
+          return;
+        }
+
+        if ([app isWorkspaceOpenForURL:fileURL]) {
+          // cannot open already open workspace
+          return;
+        }
+
+        [self duplicateFreezerAtURL:fileURL];
+      }
+    }
+      break;
+      
+    case NSAlertSecondButtonReturn:
+    {
+      NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+      [openDlg setCanChooseFiles:YES];
+      [openDlg setAllowedFileTypes:[NSArray arrayWithObjects:@"org.devosoft.avida.avida-ed-workspace", @"avidaedworkspace", nil]];
+      
+      // Display the dialog.  If the OK button was pressed, process the files.
+      if ([openDlg runModal] == NSFileHandlingPanelOKButton) {
+        NSArray* files = [openDlg URLs];
+        fileURL = [files objectAtIndex:0];
+        
+        if ([[defaultFreezerURL absoluteURL] isEqual:[fileURL absoluteURL]] ||
+            ([defaultFreezerURL isFileURL] && [fileURL isFileURL] && [[defaultFreezerURL path] isEqual:[fileURL path]])) {
+          // cannot duplicate to the default freezer
+          return;
+        }
+        
+        if ([app isWorkspaceOpenForURL:fileURL]) {
+          // cannot open already open workspace
+          return;
+        }
+      }
+    }
+      break;
+      
+    case NSAlertThirdButtonReturn:
+    default:
+      return;
+  }
+  
+  freezerURL = fileURL;
+  Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
+  freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+  [self setupFreezer];
+  [outlineFreezer reloadData];
+  [outlineFreezer expandItem:freezerConfigs];
+  [outlineFreezer expandItem:freezerGenomes];
+  [outlineFreezer expandItem:freezerWorlds];
+
+  NSString* workspaceName = [[freezerURL lastPathComponent] stringByDeletingPathExtension];
+  [self.window setTitle:[NSString stringWithFormat:@"Avida-ED : %@ Workspace", workspaceName]];
+
+  
+  // Hide freezer extension
+  NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
+  [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
+  
+  isDefaultFreezer = false;
+}
+
 @end
 
 @implementation AvidaEDController
@@ -678,6 +794,17 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [self setup];
     
     freezerURL = dir;
+    
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
+    
+    assert([urls count] != 0);
+    
+    NSURL* userDocumentsURL = [urls objectAtIndex:0];
+    NSURL* defaultFreezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
+
+    isDefaultFreezer = ([[defaultFreezerURL absoluteURL] isEqual:[freezerURL absoluteURL]] ||
+                        ([defaultFreezerURL isFileURL] && [freezerURL isFileURL] && [[defaultFreezerURL path] isEqual:[freezerURL path]]));
 
     Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
     freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
@@ -685,7 +812,6 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     // Hide freezer extension
     NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
-    NSFileManager* fileManager = [NSFileManager defaultManager];
     [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
 
     [self showWindow:self];
