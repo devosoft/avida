@@ -379,6 +379,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // Clear map view
   [mapView clearMap];
   map = NULL;
+  [mapScaleView setTempState:nil];
 
   // Clear stats panel
   [popViewStatView clearAvidaRun];
@@ -589,6 +590,19 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   for (NSUInteger idx = 0; idx < [autoAncestorArray count]; idx++) {
     NSPoint coord = [self locationOfOrg:idx withOrgCount:[autoAncestorArray count]];
     [mapView setPendingActionAtX:coord.x Y:coord.y withColor:-2];
+  }
+
+  if (!runActive && [mapViewMode indexOfSelectedItem] == 3) {
+    NSMutableArray* tempAncestors = [[NSMutableArray alloc] init];
+    for (Genome* genome in autoAncestorArray) {
+      [tempAncestors addObject:genome.name];
+      if (tempAncestors.count == 10) break;
+    }
+    for (Genome* genome in manualAncestorArray) {
+      if (tempAncestors.count == 10) break;
+      [tempAncestors addObject:genome.name];
+    }
+    [mapScaleView setTempState:tempAncestors];
   }
 }
 
@@ -936,6 +950,21 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     map->SetMode(map_mode_to_color[[mapViewMode indexOfSelectedItem]]);
     [mapView updateState:map];
     [mapScaleView updateState:map];
+  } else {
+    if ([mapViewMode indexOfSelectedItem] == 3) {
+      NSMutableArray* tempAncestors = [[NSMutableArray alloc] init];
+      for (Genome* genome in autoAncestorArray) {
+        [tempAncestors addObject:genome.name];
+        if (tempAncestors.count == 10) break;
+      }
+      for (Genome* genome in manualAncestorArray) {
+        if (tempAncestors.count == 10) break;
+        [tempAncestors addObject:genome.name];
+      }
+      [mapScaleView setTempState:tempAncestors];
+    } else {
+      [mapScaleView setTempState:nil];
+    }
   }
   
 }
@@ -2066,6 +2095,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 - (void) handleMap:(ViewerMap*)pkg {
   if (!map) {
     map = [pkg map];
+    NSUInteger selectedMode = [mapViewMode indexOfSelectedItem];
     [mapViewMode removeAllItems];
     map_mode_to_color.Clear();
     int idx = 0;
@@ -2074,8 +2104,12 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
       map_mode_to_color[idx++] = i;
     }
-    [mapViewMode selectItemAtIndex:map->GetColorMode()];
-    [mapViewMode setEnabled:TRUE];
+    if (selectedMode < mapViewMode.numberOfItems) {
+      [mapViewMode selectItemAtIndex:selectedMode];
+      [self changeMapViewMode:mapViewMode];
+    } else {
+      [mapViewMode selectItemAtIndex:map->GetColorMode()];
+    }
   } else {
     map = [pkg map];
   }

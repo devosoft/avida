@@ -160,7 +160,6 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 - (void) updateState:(Avida::Viewer::Map*)state {
   state->Retain();
   
-  map_colors = state->GetColors();
   num_colors = state->GetColorScale().GetScaleRange();
   is_categorical = state->GetColorScale().IsCategorical();
   
@@ -175,6 +174,32 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   state->Release();
   
+  [self setNeedsDisplay:YES];
+}
+
+- (void) setTempState:(NSArray*)entries {
+  if (entries != nil) {
+    num_colors = 10;
+    scale_entries.Resize(num_colors + Avida::Viewer::MAP_RESERVED_COLORS);
+    
+    for (int i = 0; i < entries.count; i++) {
+      scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].index = i + 1;
+      scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].label = [(NSString*)[entries objectAtIndex:(entries.count - i - 1)] UTF8String];
+    }
+    
+    color_count.Resize(num_colors + Avida::Viewer::MAP_RESERVED_COLORS);
+    for (int i = 0; i < color_count.GetSize(); i++)
+      color_count[i] = (i >= Avida::Viewer::MAP_RESERVED_COLORS && (i - Avida::Viewer::MAP_RESERVED_COLORS) < entries.count) ? 1 : 0;
+    
+    is_categorical = true;
+    scale_label = @"";
+  } else {
+    num_colors = 0;
+    scale_entries.Resize(Avida::Viewer::MAP_RESERVED_COLORS);
+    color_count.Resize(Avida::Viewer::MAP_RESERVED_COLORS);
+    is_categorical = true;
+    scale_label = @"";
+  }
   [self setNeedsDisplay:YES];
 }
 

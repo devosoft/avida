@@ -36,7 +36,6 @@
   int num_colors;
   bool is_categorical;
   
-  Apto::Array<int> map_colors;
   Apto::Array<Avida::Viewer::DiscreteScale::Entry> scale_entries;
   Apto::Array<int> color_count;
   NSMutableArray* color_cache;
@@ -46,6 +45,7 @@
 }
 
 - (void) updateState:(Avida::Viewer::Map*)state;
+- (void) setTempState:(NSArray*)entries;
 
 @property (readwrite) BOOL willExport;
 
