@@ -132,6 +132,36 @@
 }
 
 
+- (void) resizeSubviewsWithOldSize:(NSSize)oldBoundsSize {
+  
+  switch (self.subviews.count) {
+    case 0:
+      break;
+      
+    case 1:
+    {
+      NSView* view = [self.subviews objectAtIndex:0];
+      Avida::Viewer::ConstGraphicPtr graphic = snapshot->GraphicForContext(graphics_context);
+      
+      [view setFrameOrigin:NSMakePoint(-view.frame.size.width, -view.frame.size.height)];
+      
+      for (int object_idx = 0; object_idx < graphic->NumObjects(); object_idx++) {
+        const Avida::Viewer::GraphicObject& obj = graphic->Object(object_idx);
+        if (obj.active_region_id == 1) {
+          NSPoint centerPoint = NSMakePoint(NSMidX(self.bounds), NSMidY(self.bounds));
+          NSPoint objOrigin = NSMakePoint(centerPoint.x + (obj.x * 72.0) - (view.bounds.size.width / 2), centerPoint.y + (obj.y * 72.0) - (view.bounds.size.height / 2));
+          [view setFrameOrigin:objOrigin];
+          return;
+        }
+      }
+    }
+      break;
+    default:
+      assert(false); // Wha??  only expect one subview for now
+  }
+}
+
+
 
 - (const Avida::Viewer::HardwareSnapshot*) snapshot {
   return snapshot;

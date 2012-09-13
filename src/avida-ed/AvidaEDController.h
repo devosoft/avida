@@ -181,7 +181,6 @@
 - (IBAction) changeRepeatability:(id)sender;
 - (IBAction) changePauseAt:(id)sender;
 
-
 - (void) envActionStateChange:(NSMutableDictionary*)newState;
 
 

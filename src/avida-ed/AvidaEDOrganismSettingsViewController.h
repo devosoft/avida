@@ -30,7 +30,18 @@
 #import <Cocoa/Cocoa.h>
 
 @interface AvidaEDOrganismSettingsViewController : NSViewController {
+  IBOutlet NSSlider* sldMutRate;
+  IBOutlet NSTextField* txtMutRate;
+  double mutRate;
   
+  IBOutlet id delegate;
 }
+
+- (void) awakeFromNib;
+
+- (IBAction) changeMutRate:(id)sender;
+
+@property (readonly, nonatomic) double mutRate;
+@property (readwrite) id delegate;
 
 @end

@@ -35,4 +35,38 @@
 
 @implementation AvidaEDOrganismSettingsViewController
 
+- (void) awakeFromNib {  
+  mutRate = 0.0;
+  [sldMutRate setFloatValue:sldMutRate.minValue];
+  [txtMutRate setFloatValue:mutRate];
+}
+
+- (IBAction) changeMutRate:(id)sender {
+  double rate;
+  if (sender == sldMutRate) {
+    rate = [sldMutRate floatValue];
+    if (rate < round([sldMutRate minValue])) {
+      rate = 0;
+    } else {
+      rate = pow(10, rate);
+    }
+  } else {
+    rate = [txtMutRate floatValue];
+  }
+  [sldMutRate setFloatValue:(rate == 0) ? [sldMutRate minValue] : log10(rate)];
+  [txtMutRate setFloatValue:rate];
+  
+  // do something with rate
+  mutRate = rate;
+  
+  if (delegate != nil && [delegate respondsToSelector:@selector(changeMutRate:)]) {
+    [delegate changeMutRate:self];
+  }
+}
+
+
+
+@synthesize mutRate;
+@synthesize delegate;
+
 @end

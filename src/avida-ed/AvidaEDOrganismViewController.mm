@@ -84,6 +84,7 @@
   [sldStatus setIntValue:curSnapshotIndex];
   
   if (curSnapshotIndex == 0) {
+    [viewOffspringDrag removeFromSuperview];
     [btnBegin setEnabled:NO];
     [btnBack setEnabled:NO];
     [btnGo setEnabled:YES];
@@ -92,6 +93,7 @@
     [[[txtJustExec textStorage] mutableString] setString:@"(none)"];
     [[[txtWillExec textStorage] mutableString] setString:[self descriptionOfInst:trace->Snapshot(curSnapshotIndex).NextInstruction()]];
   } else if (curSnapshotIndex == (trace->SnapshotCount() - 1)) {
+    if (trace->Snapshot(snapshot).IsPostDivide()) [orgView addSubview:viewOffspringDrag];
     [self stopAnimation];
     [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
@@ -101,6 +103,7 @@
     [[[txtJustExec textStorage] mutableString] setString:[self descriptionOfInst:trace->Snapshot(curSnapshotIndex - 1).NextInstruction()]];
     [[[txtWillExec textStorage] mutableString] setString:@"(none)"];
   } else {
+    [viewOffspringDrag removeFromSuperview];
     [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
     [btnGo setEnabled:YES];
@@ -418,7 +421,7 @@
   
   [self createSettingsPopover];
   
-  [popoverSettings showRelativeToRect:[targetButton bounds] ofView:sender preferredEdge:NSMinYEdge];
+  [popoverSettings showRelativeToRect:[targetButton bounds] ofView:sender preferredEdge:NSMaxYEdge];
 }
 
 
@@ -450,17 +453,38 @@
 }
 
 
+- (IBAction) changeMutRate:(id)sender {
+  // mut rate has changed, reanalyze current genome (if appropriate)
+  if (trace) {
+    Avida::GenomePtr genome(new Avida::Genome(*trace->OrganismGenome()));
+    [self setGenome:genome withName:[self getOrganismName]];
+  }
+}
 
 
-
-
+- (void) draggableImageView:(DraggableImageView*)imageView writeToPasteboard:(NSPasteboard*)pboard {
+  
+  if (!trace) return;
+  
+  Genome* genome = nil;
+  
+  if (imageView == imgOffspring) {
+    genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:trace->OffspringGenome()->AsString()]
+                                       name:[NSString stringWithFormat:@"%@ offspring",[txtOrgName stringValue]]];
+  } else {
+    genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:trace->OrganismGenome()->AsString()]
+                                       name:[txtOrgName stringValue]];
+  }
+  
+  [pboard writeObjects:[[NSArray alloc] initWithObjects:genome, nil]];
+}
 
 
 
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name {
   // Trace genome
-  trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([testWorld oldworld], genome));
+  trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([testWorld oldworld], genome, ctlrSettings.mutRate));
   
   [txtOrgName setStringValue:name];
   [txtOrgName setEnabled:YES];

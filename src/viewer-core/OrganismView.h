@@ -45,6 +45,8 @@
 @property (readwrite) id<DropDelegate> dropDelegate;
 @property (readwrite, nonatomic) const Avida::Viewer::HardwareSnapshot* snapshot;
 
+- (void) resizeSubviewsWithOldSize:(NSSize)oldBoundsSize;
+
 // NSDraggingDestination
 - (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender;
 - (NSDragOperation) draggingUpdated:(id<NSDraggingInfo>)sender;

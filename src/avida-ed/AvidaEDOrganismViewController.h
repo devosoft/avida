@@ -30,6 +30,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "Definitions.h"
+#import "DraggableImageView.h"
 #import "DropDelegate.h"
 
 #include "avida/viewer/OrganismTrace.h"
@@ -42,13 +43,14 @@
 @class TaskTimelineView;
 
 
-@interface AvidaEDOrganismViewController : NSViewController <NSPopoverDelegate> {
+@interface AvidaEDOrganismViewController : NSViewController <DraggableImageViewDelegate, NSPopoverDelegate> {
   IBOutlet OrganismView* orgView;
   IBOutlet TaskTimelineView* timelineView;
   IBOutlet NSView* fullView;
   IBOutlet NSTextField* txtOrgName;
   IBOutlet NSTableView* tblTaskCounts;
   IBOutlet NSSlider* sldStatus;
+  IBOutlet DraggableImageView* imgOrg;
   
   IBOutlet NSButton* btnBegin;
   IBOutlet NSButton* btnBack;
@@ -79,6 +81,9 @@
 
   IBOutlet NSTextView* txtJustExec;
   IBOutlet NSTextView* txtWillExec;
+  
+  IBOutlet NSView* viewOffspringDrag;
+  IBOutlet DraggableImageView* imgOffspring;
   
   AvidaRun* testWorld;
   Avida::Viewer::OrganismTracePtr trace;
@@ -112,6 +117,9 @@
 
 - (IBAction) toggleInstInfo:(id)sender;
 
+- (IBAction) changeMutRate:(id)sender;
+
+- (void) draggableImageView:(DraggableImageView*)imageView writeToPasteboard:(NSPasteboard*)pboard;
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name;
 - (NSString*) getOrganismName;

@@ -37,11 +37,13 @@
   NSPasteboard* pboard = [NSPasteboard pasteboardWithName:(NSString*)NSDragPboard];
   [pboard clearContents];
   
-  if (delegate != nil) {
-    [delegate draggableImageView:self writeToPasteboard:pboard];
-  } else {
-    [pboard writeObjects:[[NSArray alloc] initWithObjects:[self image], nil]];
-  }
+  // if no delegate, then no drag can begin
+  if (delegate == nil) return;
+  
+  [delegate draggableImageView:self writeToPasteboard:pboard];
+
+  // Don't drag empty pasteboards
+  if (pboard.pasteboardItems.count == 0) return;
   
   location.x = ([self bounds].size.width - size.width) / 2;
   location.y = ([self bounds].size.height - size.height) / 2;
