@@ -59,6 +59,9 @@
 }
 
 - (void) drawRect:(NSRect)dirtyRect {
+  
+  const int TICK_MARKS = 6;
+  
   [[NSColor whiteColor] set];
   [NSBezierPath fillRect:dirtyRect];
   
@@ -83,20 +86,28 @@
     point.y = axis_height - tick_length;
     [path lineToPoint:point];
     
-    // 1/3 tick mark
-    point.x = round((bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding;
-    [path moveToPoint:point];
-    point.y = axis_height;
-    [path lineToPoint:point];
+    for (int i = 1; i < TICK_MARKS; i++) {
+      // middle major tick mark(s)
+      point.x = round(i * (bounds_width - lr_padding - lr_padding) / TICK_MARKS) + lr_padding;
+      point.y = axis_height - tick_length;
+      [path moveToPoint:point];
+      point.y = axis_height;
+      [path lineToPoint:point];
+    }
     
-    // 2/3 tick mark
-    point.x = round(2.0f * (bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding;
-    [path moveToPoint:point];
-    point.y = axis_height - tick_length;
-    [path lineToPoint:point];
+    for (int i = 1; i <= TICK_MARKS; i++) {
+      // minor tick mark(s)
+      point.x = round(((CGFloat)i - 0.5f) * (bounds_width - lr_padding - lr_padding) / TICK_MARKS) + lr_padding;
+      point.y = axis_height - tick_length;
+      [path moveToPoint:point];
+      point.y = axis_height;
+      [path lineToPoint:point];
+    }
 
+    
     // end tick mark
     point.x = bounds_width - lr_padding;
+    point.y = axis_height - tick_length;
     [path moveToPoint:point];
     point.y = axis_height;
     [path lineToPoint:point];
@@ -119,17 +130,13 @@
     point.x = lr_padding + offset;
     [lbl_str drawAtPoint:point withAttributes:str_attributes];
     
-    // Draw third label 1
-    lbl_str = [NSString stringWithFormat:@"%d", (int)(length / 3)];
-    offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
-    point.x = round((bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding + offset;
-    [lbl_str drawAtPoint:point withAttributes:str_attributes];
-    
-    // Draw third label 2
-    lbl_str = [NSString stringWithFormat:@"%d", (int)(2 * length / 3)];
-    offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
-    point.x = round(2.0f * (bounds_width - lr_padding - lr_padding) / 3.0f) + lr_padding + offset;
-    [lbl_str drawAtPoint:point withAttributes:str_attributes];
+    for (int i = 1; i < TICK_MARKS; i++) {
+      // Draw middle label(s)
+      lbl_str = [NSString stringWithFormat:@"%d", (int)(i * length / TICK_MARKS)];
+      offset = -[lbl_str sizeWithAttributes:str_attributes].width / 2.0f;
+      point.x = round(i * (bounds_width - lr_padding - lr_padding) / TICK_MARKS) + lr_padding + offset;
+      [lbl_str drawAtPoint:point withAttributes:str_attributes];
+    }
     
     // Draw end label
     lbl_str = [NSString stringWithFormat:@"%d", length];
