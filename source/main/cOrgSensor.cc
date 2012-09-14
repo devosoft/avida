@@ -430,9 +430,9 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
         int this_start_dist = 0;
-        sBounds res_bounds = GetBounds(ctx, val_res[i], search_type);          
+        sBounds res_bounds = GetBounds(ctx, val_res[i], search_type);  
         this_start_dist = GetMinDist(ctx, worldx, res_bounds, cell, distance_sought, facing);
-        // drop any out of range...
+        // drop any out of range or behind you...
         if (this_start_dist == -1) {
           val_res.Swap(i, val_res.GetSize() - 1);
           val_res.Pop();
@@ -446,7 +446,8 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
           if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
         }
       }
-      else {                                      // if any is not gradient type resource, use world bounds and break
+      else {                                      
+        // if any is not gradient type resource, use world bounds and break
         tot_bounds = worldBounds;
         temp_start_dist = 0;
         break;

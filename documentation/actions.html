@@ -701,7 +701,7 @@ and reaction parameters.
     of 0. However, you can do things like set lamda = 1 and theta to 10 to get 'rings' (larger theta == larger rings). 
     If num is specified, we will randomly select and test each cell in the world, looping through unused cells over and
     over until the num quota is reached. If num is not specified, we walk through and test each cell in the world only
-    once.
+    once. When looping, we give up when we have looped either 1000 times or world_size number of times, whichever is less.
     Arguements are specified in the form theta=4.0:num=7, etc not as unlabeled column arguements.
     </p>
     <p>
