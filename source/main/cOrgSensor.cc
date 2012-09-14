@@ -356,7 +356,6 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   cCoords first_success_cell(-1, -1);
   int first_whole_resource = -9;
   
-  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
   bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
   
   sSearchInfo cellResultInfo;
@@ -416,6 +415,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   val_res.Resize(0);
   // END definitions
   
+  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
   if (habitat_used != -2) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound); 
   
   // set geometric bounds, and fast-forward, if possible
@@ -483,7 +483,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       for (int j = num_cells_either_side; j > 0; j--) {
         bool valid_cell = true;
         this_cell = center_cell + direction * j;
-        if(!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) { 
+        if (!TestBounds(this_cell, worldBounds) || ((habitat_used != -2 && habitat_used != 3) && !TestBounds(center_cell, tot_bounds))) { 
           // on diagonals...if any side cell is beyond specific parts of world bounds, we can exclude this side for this and any larger distances
           if (diagonal) {
             const int tcx = this_cell.GetX();
@@ -863,6 +863,7 @@ bool cOrgSensor::TestBounds(const cCoords cell_id, sBounds& bounds)
 
 tSmartArray<int> cOrgSensor::BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound)
 {
+  // for hills and walls, we treat them all as generic and don't allow orgs to select individuals instances of that sort of resource
   tSmartArray<int> val_res;
   val_res.Resize(0);
   if (single_bound) val_res.Push(id_sought);

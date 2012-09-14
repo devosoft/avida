@@ -919,6 +919,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
   const int worldy = GetY();
   int world_size = worldx * worldy;
   int max_idx = world_size - 1;
+  int max_tries = min(1000, world_size);
   
   tArray <int> cell_id_array;
   cell_id_array.ResizeClear(world_size);
@@ -952,11 +953,10 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
   }
   
   int max_unused_idx = max_idx;
-  int num_passes = 1;
-  while (num_passes < world_size) {   // emergency exit
+  while (max_tries) {   // emergency exit
     // allow looping through multiple times until num_cells quota is filled
     if (max_unused_idx == 0) {
-      num_passes++;
+      max_tries--;
       if (!loop_once) max_unused_idx = max_idx;
     }
     
@@ -983,6 +983,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
       Element(cell_id).SetAmount(0); 
       cell_id_array.Swap(cell_idx, max_unused_idx--);
     }
+
     if (cells_used >= num_cells && !loop_once) break;
     if (max_unused_idx <= 0 && loop_once) break;
     if (max_idx <= 0) break;
