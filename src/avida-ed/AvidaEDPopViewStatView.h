@@ -157,12 +157,16 @@ class AvidaEDPopViewStatViewTimeRecorder : public Avida::Data::TimeSeriesRecorde
 private:
   AvidaEDPopViewStatView* m_view;
   bool m_active;
+  Apto::Mutex m_mutex;
   
 public:
   AvidaEDPopViewStatViewTimeRecorder(AvidaEDPopViewStatView* view, const Avida::Data::DataID& data_id, const Apto::String& loaded_data);
   
   inline void SetActive() { m_active = true; }
   inline void SetInactive() { m_active = false; }
+  
+  inline void LockForDisplay() { m_mutex.Lock(); }
+  inline void Unlock() { m_mutex.Unlock(); }
 
 protected:
   bool shouldRecordValue(Avida::Update update);

@@ -658,8 +658,10 @@ static const float PANEL_MIN_WIDTH = 360.0;
 }
 
 - (void) handleNewGraphData {
+  graphData.recorder->LockForDisplay();
   CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
   [plot reloadData];
+  graphData.recorder->Unlock();
   [self rescalePlot];
 }
 
@@ -817,10 +819,12 @@ bool AvidaEDPopViewStatViewTimeRecorder::shouldRecordValue(Avida::Update update)
 {
 //  return ((update % 10) == 0);
   (void)update;
+  m_mutex.Lock(); // need to acquire object lock in order to allow update
   return true;
 }
 
 void AvidaEDPopViewStatViewTimeRecorder::didRecordValue()
 {
+  m_mutex.Unlock(); // release object lock for use on main thread
   if (m_active) [m_view performSelectorOnMainThread:@selector(handleNewGraphData) withObject:nil waitUntilDone:NO];
 }

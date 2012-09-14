@@ -508,7 +508,7 @@
       NSMutableSet* foundset = [[NSMutableSet alloc] init];
       for (NSString* entry_name in nameset) {
         if (trace->Snapshot(i).FunctionCount([entry_name UTF8String]) > 0) {
-          [timelineView addEntryWithLabel:entry_name atLocation:i];
+          [timelineView addEntryWithLabel:[[envActions valueOfEntry:entry_name forKey:@"Order"] stringValue] atLocation:i];
           [foundset addObject:entry_name];
         }
       }

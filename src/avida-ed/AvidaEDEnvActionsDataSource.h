@@ -39,6 +39,7 @@
 - (void) clearEntries;
 - (NSString*) entryAtIndex:(NSUInteger)idx;
 - (NSUInteger) entryCount;
+- (id) valueOfEntry:(NSString*)entry forKey:(NSString*)key;
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView;
 - (id) tableView:(NSTableView*)tableView objectValueForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex;

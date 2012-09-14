@@ -93,6 +93,11 @@ return self;
   return [entries count];
 }
 
+- (id) valueOfEntry:(NSString*)entry forKey:(NSString*)key {
+  return [[entries objectAtIndex:[[entrymap valueForKey:entry] unsignedIntValue]] valueForKey:key];
+}
+
+
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView*)tableView {
   return [entries count];
