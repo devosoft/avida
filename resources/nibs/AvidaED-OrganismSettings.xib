@@ -144,7 +144,7 @@
 								<string key="NSReuseIdentifierKey">_NS:779</string>
 								<bool key="NSEnabled">YES</bool>
 								<object class="NSSliderCell" key="NSCell" id="800526006">
-									<int key="NSCellFlags">67108864</int>
+									<int key="NSCellFlags">67371264</int>
 									<int key="NSCellFlags2">0</int>
 									<string key="NSContents"/>
 									<string key="NSCellIdentifier">_NS:779</string>
@@ -700,10 +700,15 @@
 						</object>
 					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="delegate">id</string>
 						<string key="sldMutRate">NSSlider</string>
 						<string key="txtMutRate">NSTextField</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="delegate">
+							<string key="name">delegate</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="sldMutRate">
 							<string key="name">sldMutRate</string>
 							<string key="candidateClassName">NSSlider</string>

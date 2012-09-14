@@ -188,7 +188,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   graph.paddingBottom = 0.0;
   graph.plotAreaFrame.paddingLeft = 50.0;
   graph.plotAreaFrame.paddingTop = 5.0;
-  graph.plotAreaFrame.paddingRight = 5.0;
+  graph.plotAreaFrame.paddingRight = 15.0;
   graph.plotAreaFrame.paddingBottom = 45.0;
 
   
@@ -222,7 +222,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   x.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
   x.orthogonalCoordinateDecimal = CPTDecimalFromUnsignedInteger(0);
   x.minorTicksPerInterval = 5;
-  x.preferredNumberOfMajorTicks = 5;
+  x.preferredNumberOfMajorTicks = 6;
   x.labelOffset = 5.0;
   x.labelTextStyle = textStyle;
   x.majorGridLineStyle = majorGridLineStyle;
@@ -285,8 +285,11 @@ static const float PANEL_MIN_WIDTH = 360.0;
   [self rescalePlot];
   
   [btnGraphSelect removeAllItems];
-  [btnGraphSelect setEnabled:NO];
-  [btnGraphSelect addItemWithTitle:@"Data Unavailable"];
+  [btnGraphSelect setEnabled:YES];
+  [btnGraphSelect addItemWithTitle:@"Average Fitness"];
+  [btnGraphSelect addItemWithTitle:@"Average Gestation Time"];
+  [btnGraphSelect addItemWithTitle:@"Average Metabolic Rate"];
+  [btnGraphSelect addItemWithTitle:@"Number of Organisms"];
 }
 
 
@@ -294,21 +297,20 @@ static const float PANEL_MIN_WIDTH = 360.0;
   
   Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> curRecorder = graphData.recorder;
   
+  const Avida::Update x_scale_constant = 50;
+  
   CPTMutablePlotRange* xrange = [[(CPTXYPlotSpace*)graph.defaultPlotSpace xRange] mutableCopy];
-  Avida::Update max_x = 700;
+  Avida::Update max_x = x_scale_constant;
   if (curRecorder && curRecorder->NumPoints() > 0) {
     max_x = curRecorder->DataTime(timeRecorders[0]->NumPoints() - 1);
   }
-  NSDecimalNumber* xlen = [NSDecimalNumber decimalNumberWithDecimal:[xrange length]];
-  if (max_x > [xlen intValue]) {
-    int new_length = (max_x / 700);
-    if ((max_x % 700) != 0) new_length++;
-    new_length *= 700;
-    
-    xlen = [[NSDecimalNumber alloc] initWithInt:new_length];
-    [xrange setLength:[xlen decimalValue]];
-    [graph.defaultPlotSpace setPlotRange:xrange forCoordinate:CPTCoordinateX];
-  }
+  int new_length = (max_x / x_scale_constant);
+  if ((max_x % x_scale_constant) != 0) new_length++;
+  new_length *= x_scale_constant;
+  
+  NSDecimalNumber* xlen = [[NSDecimalNumber alloc] initWithInt:new_length];
+  [xrange setLength:[xlen decimalValue]];
+  [graph.defaultPlotSpace setPlotRange:xrange forCoordinate:CPTCoordinateX];
   
   CPTMutablePlotRange* yrange = [[(CPTXYPlotSpace*)graph.defaultPlotSpace yRange] mutableCopy];
   double max_y = 1.0;
@@ -416,7 +418,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
     
     CGFloat graph_height = floor(bounds.size.height - 322.0 - (2 * spacing) - 22.0);
     panel_bounds.size = [btnGraphSelect bounds].size;
-    panel_bounds.origin.x = floor((bounds.size.width - panel_bounds.size.width) / 2.0);
+    panel_bounds.origin.x = floor((bounds.size.width - panel_bounds.size.width) / 2.0) + 17.0;
     panel_bounds.origin.y = 322 + spacing + graph_height;
     [btnGraphSelect setFrame:panel_bounds];
     [btnGraphSelect setNeedsDisplay:YES];
@@ -464,19 +466,7 @@ static const float PANEL_MIN_WIDTH = 360.0;
   
   for (int i = 0; i < timeRecorders.GetSize(); i++) [run attachRecorder:timeRecorders[i]];
   
-  [graphData setRecorder:timeRecorders[0]];
-  timeRecorders[0]->SetActive();
-  CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
-  [plot reloadData];
-  
-  [self rescalePlot];
-
-  [btnGraphSelect removeAllItems];
-  [btnGraphSelect setEnabled:YES];
-  [btnGraphSelect addItemWithTitle:@"Average Fitness"];
-  [btnGraphSelect addItemWithTitle:@"Average Gestation Time"];
-  [btnGraphSelect addItemWithTitle:@"Average Metabolic Rate"];
-  [btnGraphSelect addItemWithTitle:@"Number of Organisms"];
+  [self changeGraph:self];
 }
 
 
@@ -515,10 +505,6 @@ static const float PANEL_MIN_WIDTH = 360.0;
   
   [graphData setRecorder:Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(NULL)];
   [[graph plotWithIdentifier:@"graph"] reloadData];
-
-  [btnGraphSelect removeAllItems];
-  [btnGraphSelect setEnabled:NO];
-  [btnGraphSelect addItemWithTitle:@"Data Unavailable"];
 }
 
 - (void) clearSelectedOrg {
@@ -613,18 +599,22 @@ static const float PANEL_MIN_WIDTH = 360.0;
     return;
   }
   
-  [txtOrgName setStringValue:[NSString stringWithAptoString:genotype->Properties().Get("name")]];
+  [txtOrgName setStringValue:[NSString stringWithAptoString:((Apto::String)genotype->Properties().Get("name")).Substring(4)]];
   [txtOrgFitness setStringValue:[NSString stringWithFormat:@"%0.2f",(double)genotype->Properties().Get("ave_fitness")]];
   [txtOrgMetabolicRate setDoubleValue:genotype->Properties().Get("ave_metabolic_rate")];
   [txtOrgGestation setDoubleValue:genotype->Properties().Get("ave_gestation_time")];
-  [txtOrgAge setIntValue:(values->update - genotype->Properties().Get("update_born").IntValue())];
+  Avida::Update cur_update = values->update;
+  if (cur_update == Avida::UPDATE_CONCURRENT) {
+    cur_update = ctlr.curUpdate;
+  }
+  [txtOrgAge setIntValue:(cur_update - genotype->Properties().Get("update_born").IntValue())];
   
   // Set the name of the parent genotype
   Apto::String parents(genotype->Properties().Get("parents").StringValue());
   parents = parents.Pop(','); // extracts the first parent only
   if (parents.GetSize()) {
     Avida::Systematics::GroupPtr parent_genotype = g_arb->Group(Apto::StrAs(parents));
-    [txtOrgAncestor setStringValue:[NSString stringWithAptoString:parent_genotype->Properties().Get("name")]];
+    [txtOrgAncestor setStringValue:[NSString stringWithAptoString:((Apto::String)parent_genotype->Properties().Get("name")).Substring(4)]];
   } else {
     [txtOrgAncestor setStringValue:@"-"];
   }
@@ -648,13 +638,15 @@ static const float PANEL_MIN_WIDTH = 360.0;
 
 
 - (IBAction) changeGraph:(id)sender {
-  graphData.recorder->SetInactive();
-  [graphData setRecorder:timeRecorders[static_cast<int>([btnGraphSelect indexOfSelectedItem])]];
-  graphData.recorder->SetActive();
-  
-  CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
-  [plot reloadData];
-  [self rescalePlot];
+  if (graphData.recorder) graphData.recorder->SetInactive();
+  if (timeRecorders.GetSize()) {
+    [graphData setRecorder:timeRecorders[static_cast<int>([btnGraphSelect indexOfSelectedItem])]];
+    graphData.recorder->SetActive();
+    
+    CPTPlot* plot = [graph plotWithIdentifier:@"graph"];
+    [plot reloadData];
+    [self rescalePlot];
+  }
 }
 
 - (void) handleNewGraphData {

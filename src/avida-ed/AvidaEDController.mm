@@ -387,6 +387,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   // End run
   [currentRun end];
   currentRun = nil;
+  curUpdate = -1;
 }
 
 
@@ -868,7 +869,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   
   // Replace NSClipView of mapView's scrollView with a CenteringClipView
   NSClipView* clipView = [[CenteringClipView alloc] initWithFrame:[mapScrollView frame]];
-  [clipView setBackgroundColor:[NSColor darkGrayColor]];
+  [clipView setBackgroundColor:[NSColor lightGrayColor]];
   [mapScrollView setContentView:clipView];
   [mapScrollView setDocumentView:mapView];
   [mapScrollView setScrollsDynamically:YES];
@@ -1113,10 +1114,21 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) startNewRun:(id)sender {
-  for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
-    if (freezer->NameOf(*it.Get()) == "@default") {
-      [self loadRunFromFreezer:(*it.Get())];
-      break;
+  if ((!runActive ||[[txtRun stringValue] isEqualToString:@"@default"]) && ![currentRun hasPendingInjects] && [ancestorArray count] == 0) {
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"Drag an organism to begin."];
+    [alert setInformativeText:@"Please drag an organism from the freezer into the settings panel or the petri dish."];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    [alert beginSheetModalForWindow:[self window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    [sender setState:NSOffState];
+    return;
+  } else {
+    for (Avida::Viewer::Freezer::Iterator it = freezer->EntriesOfType(Avida::Viewer::CONFIG); it.Next();) {
+      if (freezer->NameOf(*it.Get()) == "@default") {
+        [self loadRunFromFreezer:(*it.Get())];
+        break;
+      }
     }
   }
 }
@@ -2090,6 +2102,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 @synthesize listener;
 @synthesize mapView;
 @synthesize freezerURL;
+@synthesize curUpdate;
 
 
 - (void) handleMap:(ViewerMap*)pkg {
@@ -2120,11 +2133,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (void) handleUpdate:(ViewerUpdate*)pkg {
-  int update = [pkg update];
-  if (update == 1) {
+  curUpdate = [pkg update];
+  if (curUpdate == 1) {
     [txtUpdate setStringValue:@"1 update"];
   } else {
-    NSString* str = [NSString stringWithFormat:@"%d updates", update];
+    NSString* str = [NSString stringWithFormat:@"%d updates", curUpdate];
     [txtUpdate setStringValue:str]; 
   }
 }

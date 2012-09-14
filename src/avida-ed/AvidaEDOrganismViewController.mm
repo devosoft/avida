@@ -454,11 +454,11 @@
 
 
 - (IBAction) changeMutRate:(id)sender {
-  // mut rate has changed, reanalyze current genome (if appropriate)
-  if (trace) {
-    Avida::GenomePtr genome(new Avida::Genome(*trace->OrganismGenome()));
-    [self setGenome:genome withName:[self getOrganismName]];
-  }
+//  // mut rate has changed, reanalyze current genome (if appropriate)
+//  if (trace) {
+//    Avida::GenomePtr genome(new Avida::Genome(*trace->OrganismGenome()));
+//    [self setGenome:genome withName:[self getOrganismName]];
+//  }
 }
 
 
@@ -704,14 +704,13 @@
 - (void)popoverDidClose:(NSNotification *)notification
 {
   NSString *closeReason = [[notification userInfo] valueForKey:NSPopoverCloseReasonKey];
-  if (closeReason)
+  if (closeReason == NSPopoverCloseReasonStandard)
   {
-    // closeReason can be:
-    //      NSPopoverCloseReasonStandard
-    //      NSPopoverCloseReasonDetachToWindow
-    //
-    // add new code here if you want to respond "after" the popover closes
-    //
+    // mut rate has changed, reanalyze current genome (if appropriate)
+    if (trace) {
+      Avida::GenomePtr genome(new Avida::Genome(*trace->OrganismGenome()));
+      [self setGenome:genome withName:[self getOrganismName]];
+    }    
   }
   
   [popoverSettings release];

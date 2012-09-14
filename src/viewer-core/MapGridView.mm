@@ -110,7 +110,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 
 - (void) drawRect:(NSRect)dirtyRect {
-  [[NSColor darkGrayColor] set];
+  [[NSColor lightGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
   
   if (num_colors != [color_cache count]) {

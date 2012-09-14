@@ -189,7 +189,7 @@
 
 @property (readonly) NSString* runName;
 @property (readonly) NSURL* freezerURL;
-
+@property (readonly) int curUpdate;
 
 // NSMenuValidation Informal Protocol
 - (BOOL) validateMenuItem:(NSMenuItem*)item;
