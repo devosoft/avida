@@ -7558,7 +7558,7 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
 }
 
 void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
-  const double outflow, const double lamda, const double theta, const int x, const int y, const int count)
+  const double outflow, const double lambda, const double theta, const int x, const int y, const int count)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -7567,7 +7567,7 @@ void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res
     cResource* res = resource_lib.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
-      resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lamda, theta, x, y, count);
+      resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lambda, theta, x, y, count);
       break;
     }
   }

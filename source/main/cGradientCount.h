@@ -161,8 +161,8 @@ public:
   void SetPredatoryResource(double odds, int juvsper);
   void UpdatePredatoryRes(cAvidaContext& ctx); 
   
-  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda, double theta, int x, int y, int num_cells);
-  void BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y, int num_cells);
+  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
+  void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
   void UpdateProbabilisticRes();
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
