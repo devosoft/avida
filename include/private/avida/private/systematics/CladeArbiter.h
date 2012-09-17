@@ -45,27 +45,16 @@ namespace Avida {
     private:
       
       // Internal Data Structures
-      Apto::Array<Apto::List<CladePtr, Apto::SparseVector>, Apto::ManagedPointer> m_active_sz;
       Apto::Map<Apto::String, CladePtr> m_clades;
-      int m_best;
       int m_next_id;
-      int m_dom_prev;
-      int m_dom_time;
-      Apto::Array<int> m_sz_count;
-      
       Update m_cur_update;
       
       // Stats
       int m_tot_clades;
-      
-      int m_num_clades;
-      
+            
       double m_ave_abundance;
       double m_stderr_abundance;
       double m_var_abundance;
-      
-      int m_dom_id;
-      Apto::String m_dom_name;
       
       struct ProvidedData
       {
@@ -114,21 +103,17 @@ namespace Avida {
       
       void removeClade(CladePtr genotype);
       
-      inline void resizeActiveList(int size);
-      inline CladePtr getBest();
-      
       inline CladeArbiterPtr thisPtr();
       
       class CladeIterator : public Iterator
       {
       private:
         CladeArbiterPtr m_bgm;
-        int m_sz_i;
-        Apto::List<CladePtr, Apto::SparseVector>::Iterator m_it;
+        Apto::Map<Apto::String, CladePtr>::ValueIterator m_it;
         
       public:
         CladeIterator(CladeArbiterPtr bgm)
-        : m_bgm(bgm), m_sz_i(bgm->m_best), m_it(m_bgm->m_active_sz[m_sz_i].Begin()) { ; }
+        : m_bgm(bgm), m_it(m_bgm->m_clades.Values()) { ; }
         ~CladeIterator() { ; }
         
         GroupPtr Get();
@@ -136,16 +121,6 @@ namespace Avida {
       };
     };
     
-    
-    inline void CladeArbiter::resizeActiveList(int size)
-    {
-      if (m_active_sz.GetSize() <= size) m_active_sz.Resize(size + 1);
-    }
-    
-    inline CladePtr CladeArbiter::getBest()
-    {
-      return (m_best) ? m_active_sz[m_best].GetFirst() : CladePtr(NULL);
-    }
     
   };
 };

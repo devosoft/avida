@@ -32,11 +32,7 @@
 
 
 Avida::Systematics::CladeArbiter::CladeArbiter(World* world)
-: m_active_sz(1)
-, m_best(0)
-, m_next_id(1)
-, m_dom_prev(-1)
-, m_dom_time(0)
+: m_next_id(1)
 , m_cur_update(-1)
 {
   (void)world;
@@ -45,13 +41,12 @@ Avida::Systematics::CladeArbiter::CladeArbiter(World* world)
 Avida::Systematics::CladeArbiter::~CladeArbiter()
 {
   // @TODO make sure this gets cleaned up last
-  Apto::List<CladePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[0].Begin());
+  Apto::Map<Apto::String, CladePtr>::ValueIterator list_it(m_clades.Values());
   while (list_it.Next() != NULL) {
     assert((*list_it.Get())->ActiveReferenceCount() == 0);
     removeClade(*list_it.Get());
   }
   
-  assert(m_best == 0);
 }
 
 
@@ -70,12 +65,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::ClassifyNewUnit(U
       grp = CladePtr(new Clade(thisPtr(), m_next_id++, group_name));
       m_clades.Set(group_name, grp);
       
-      resizeActiveList(grp->NumUnits());
-      m_active_sz[grp->NumUnits()].PushRear(grp, &grp->m_handle);
       m_tot_clades++;
-      if (grp->NumUnits() > m_best) {
-        m_best = grp->NumUnits();
-      }
     }
   }
   
@@ -87,10 +77,8 @@ void Avida::Systematics::CladeArbiter::PerformUpdate(Context&, Update current_up
 {
   m_cur_update = current_update + 1; // +1 since PerformUpdate happens at end of updates, but m_cur_update is used during
   
-  for (int i = 0; i < m_active_sz.GetSize(); i++) {
-    Apto::List<CladePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
-    while (list_it.Next() != NULL) (*list_it.Get())->UpdateReset();
-  }
+  Apto::Map<Apto::String, CladePtr>::ValueIterator list_it(m_clades.Values());
+  while (list_it.Next() != NULL) (*list_it.Get())->UpdateReset();
 }
 
 
@@ -110,10 +98,8 @@ Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::GroupWithName(con
 
 Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::Group(GroupID g_id)
 {
-  for (int i = m_best; i >= 0; i--) {
-    Apto::List<CladePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
-    while (list_it.Next() != NULL) if ((*list_it.Get())->ID() == g_id) return *list_it.Get();
-  }
+  Apto::Map<Apto::String, CladePtr>::ValueIterator list_it(m_clades.Values());
+  while (list_it.Next() != NULL) if ((*list_it.Get())->ID() == g_id) return *list_it.Get();
   
   return GroupPtr(NULL);
 }
@@ -147,32 +133,15 @@ void Avida::Systematics::CladeArbiter::UpdateProvidedValues(Update current_updat
   cDoubleSum sum_abundance;
   
   // Pre-calculate the total number of units that are currently active (used in entropy calculation)
-  int tot_units = 0;
-  for (int i = 1; i < m_active_sz.GetSize(); i++) {
-    Apto::List<CladePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
-    while (list_it.Next()) tot_units += (*list_it.Get())->NumUnits();
+  Apto::Map<Apto::String, CladePtr>::ValueIterator list_it(m_clades.Values());
+  while (list_it.Next() != NULL) {
+    sum_abundance.Add((*list_it.Get())->NumUnits());
   }
-  
-  // Loop through all genotypes collecting statistics
-  int active_count = 0;
-  for (int i = 1; i < m_active_sz.GetSize(); i++) {
-    active_count += m_active_sz[i].GetSize();
-    Apto::List<CladePtr, Apto::SparseVector>::Iterator list_it(m_active_sz[i].Begin());
-    while (list_it.Next()) {
-      CladePtr bg = *list_it.Get();
-      const int abundance = bg->NumUnits();
-      
-      sum_abundance.Add(abundance);
-    }
-  }
-  
+    
   // Stash all stats so that the can be retrieved using the provider mechanisms
   m_ave_abundance = sum_abundance.Average();
   m_stderr_abundance = sum_abundance.StdError();
   m_var_abundance = sum_abundance.Variance();
-  
-  m_dom_id = (getBest()) ? getBest()->ID() : -1;
-  m_dom_name = (getBest()) ? getBest()->Name() : "";
 }
 
 
@@ -205,29 +174,10 @@ Apto::String Avida::Systematics::CladeArbiter::DescribeProvidedValue(const Data:
 
 void Avida::Systematics::CladeArbiter::AdjustClade(CladePtr clade, int old_size, int new_size)
 {
-  // Remove from old size list
-  clade->m_handle->Remove();
-  
-  // Handle best clade pointer
-  bool was_best = (old_size && old_size == m_best);
-  if (was_best && m_active_sz[old_size].GetSize() == 0) {
-    for (m_best--; m_best > 0; m_best--) if (m_active_sz[m_best].GetSize()) break;
-  }
-  
   // Handle defunct clades
   if (new_size == 0 && clade->ActiveReferenceCount() == 0) {
     removeClade(clade);
     return;
-  }
-  
-  // Add to new size list
-  resizeActiveList(new_size);
-  if (was_best && m_best == new_size) {
-    // Special case to keep the current best genotype as best when shrinking to the same size as other genotypes
-    m_active_sz[new_size].Push(clade, &clade->m_handle);
-  } else {
-    m_active_sz[new_size].PushRear(clade, &clade->m_handle);
-    if (new_size > m_best) m_best = new_size;
   }
 }
 
@@ -249,7 +199,6 @@ void Avida::Systematics::CladeArbiter::setupProvidedData(World* world)
   Data::ManagerPtr mgr = Data::Manager::Of(world);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const int&> > intStat(this, &CladeArbiter::packageData<int>);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<const double&> > doubleStat(this, &CladeArbiter::packageData<double>);
-  Apto::Functor<Data::PackagePtr, Apto::TL::Create<Apto::String> > stringStat(this, &CladeArbiter::packageData<Apto::String>);
   
   // Define PROVIDE macro to simplify instantiating new provided data
 #define PROVIDE(name, desc, type, val) { \
@@ -258,28 +207,19 @@ mgr->Register(name, activate); \
 }
   
   PROVIDE("total", "Total Number of Clades", int, m_tot_clades);
-  PROVIDE("current", "Number of Current Clades", int, m_num_clades);
+  PROVIDE("current", "Number of Current Clades", int, m_clades.GetSize());
   
   PROVIDE("ave_abundance", "Average Abundance", double, m_ave_abundance);
   PROVIDE("stderr_abundance", "Abundance Standard Error", double, m_stderr_abundance);
   PROVIDE("var_abundance", "Abundance Variance", double, m_var_abundance);
-    
-  PROVIDE("dominant", "Dominant Clade", string, m_dom_name);
-  PROVIDE("dominant_id", "Dominant Clade ID", int, m_dom_id);
 }
 
 
 void Avida::Systematics::CladeArbiter::removeClade(CladePtr clade)
 {
   if (clade->ActiveReferenceCount() || clade->PassiveReferenceCount()) return;
-    
-  assert(clade->m_handle);
-  clade->m_handle->Remove(); // Remove from historic list
   
   m_clades.Remove(clade->Name());
-  
-  delete clade->m_handle;
-  clade->m_handle = NULL;
 }
 
 
@@ -298,15 +238,5 @@ Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::CladeIterator::Ge
 
 Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::CladeIterator::Next()
 {
-  if (!m_it.Next()) {
-    for (m_sz_i--; m_sz_i > 0; m_sz_i--) {
-      if (m_bgm->m_active_sz[m_sz_i].GetSize()) {
-        m_it = m_bgm->m_active_sz[m_sz_i].Begin();
-        m_it.Next();
-        break;
-      }
-    }
-  }
-  
-  return m_it.Get() ? (GroupPtr)*m_it.Get() : GroupPtr(NULL);
+  return m_it.Next() ? (GroupPtr)*m_it.Get() : GroupPtr(NULL);
 }
