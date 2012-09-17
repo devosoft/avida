@@ -51,6 +51,7 @@
 #include <fstream>
 
 static const float PANEL_MIN_WIDTH = 360.0;
+static const int MAX_GRAPH_POINTS = 1000;
 
 
 
@@ -66,17 +67,29 @@ static const float PANEL_MIN_WIDTH = 360.0;
 @implementation AvidaEDPopViewStatViewGraphData
 - (NSUInteger) numberOfRecordsForPlot:(CPTPlot*)plot
 {
-  return (recorder) ? recorder->NumPoints() : 0;
+  if (recorder) {
+    int num_points = recorder->NumPoints();
+    int div_factor = 1;
+    if (num_points > MAX_GRAPH_POINTS) div_factor = num_points / MAX_GRAPH_POINTS;
+    
+    return num_points / div_factor;
+  }
+  return 0;
 }
 
 - (NSNumber*) numberForPlot:(CPTPlot*)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index
 {
   assert(recorder);
+  
+  int num_points = recorder->NumPoints();
+  int div_factor = 1;
+  if (num_points > MAX_GRAPH_POINTS) div_factor = num_points / MAX_GRAPH_POINTS;
+  
   NSNumber* num;
   if (fieldEnum == CPTScatterPlotFieldX) {
-    num = [NSNumber numberWithDouble:recorder->DataTime(static_cast<int>(index))];
+    num = [NSNumber numberWithDouble:recorder->DataTime(static_cast<int>(index) * div_factor)];
   } else if (fieldEnum == CPTScatterPlotFieldY) {
-    num = [NSNumber numberWithDouble:recorder->DataPoint(static_cast<int>(index))];	
+    num = [NSNumber numberWithDouble:recorder->DataPoint(static_cast<int>(index) * div_factor)];
   }
 
   return num;

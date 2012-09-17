@@ -184,7 +184,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     
     for (int i = 0; i < entries.count; i++) {
       scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].index = i + 1;
-      scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].label = [(NSString*)[entries objectAtIndex:(entries.count - i - 1)] UTF8String];
+      scale_entries[i + Avida::Viewer::MAP_RESERVED_COLORS].label = [(NSString*)[entries objectAtIndex:(i)] UTF8String];
     }
     
     color_count.Resize(num_colors + Avida::Viewer::MAP_RESERVED_COLORS);
