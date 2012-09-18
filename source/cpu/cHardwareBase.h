@@ -160,7 +160,7 @@ public:
   void DeleteMiniTrace(bool print_reacs);
   virtual void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) = 0;
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
-  
+  void PrintMiniTraceReactions();
   
   // --------  Stack Manipulation...  --------
   virtual int GetStack(int depth = 0, int stack_id = -1, int in_thread = -1) const = 0;

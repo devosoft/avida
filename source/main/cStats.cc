@@ -4599,7 +4599,7 @@ void cStats::PrintMiniTraceReactions(cOrganism* org)
     df.WriteTimeStamp();  
     df.WriteComment("Reaction Data for Traced Org to Date (death or end)");
     df.WriteComment("OrgID");
-    df.WriteComment("Update");
+    df.WriteComment("Update Born");
     df.WriteComment("Reaction Counts");
     df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
     df.WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
@@ -4613,7 +4613,7 @@ void cStats::PrintMiniTraceReactions(cOrganism* org)
   tArray<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
   tArray<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
   
-  fp << org->GetID() << " ";
+  fp << org->GetID() << " " << org->GetPhenotype().GetUpdateBorn() << " ";
   for (int i = 0; i < reaction_count.GetSize() - 1; i++) {
     fp << reaction_count[i] << ",";
   }

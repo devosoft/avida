@@ -638,7 +638,10 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
   // yank the org out of any current trace queues, as appropriate (i.e. if dead (==!reproduced) or if reproduced and splitting on divide)
   bool split = m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT;
   
-  if (!reproduced || (reproduced && split)) org->GetHardware().PrintMicroTrace(org->GetBioGroup("genotype")->GetID());
+  if (!reproduced || (reproduced && split)) {
+    org->GetHardware().PrintMicroTrace(org->GetBioGroup("genotype")->GetID());
+    org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
+  }
   
   if (org->GetHardware().IsReproTrace() && repro_q.GetSize()) {
     for (int i = 0; i < repro_q.GetSize(); i++) {
@@ -1794,10 +1797,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // And clear it!
   in_cell.RemoveOrganism(ctx); 
-  if (!organism->IsRunning()) {
-    organism->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
-    delete organism;
-  }
+  if (!organism->IsRunning()) delete organism;
   else organism->GetPhenotype().SetToDelete();
   
   // Alert the scheduler that this cell has a 0 merit.

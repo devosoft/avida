@@ -2320,7 +2320,6 @@ void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<do
   }
 }
 
-
 void cPopulationInterface::BeginSleep()
 {
   if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)
