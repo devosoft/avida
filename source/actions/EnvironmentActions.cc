@@ -475,7 +475,7 @@ private:
   double m_initial;
   double m_inflow;
   double m_outflow;
-  double m_lamda;
+  double m_lambda;
   double m_theta;
   int m_x;
   int m_y;
@@ -483,7 +483,7 @@ private:
   
 public:
   cActionSetProbabilisticResource(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_res_name(""), 
-                                  m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lamda(1.0), m_theta(0.0), m_x(-1), m_y(-1), m_count(-1)
+                                  m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lambda(1.0), m_theta(0.0), m_x(-1), m_y(-1), m_count(-1)
   {
     cArgSchema schema(':','=');
     schema.AddEntry("res_name", 0, m_world->GetEnvironment().GetResourceLib().GetResource(0)->GetName());
@@ -491,7 +491,7 @@ public:
     schema.AddEntry("initial", 0, 0.0);
     schema.AddEntry("inflow", 1, 0.0);
     schema.AddEntry("outflow", 2, 0.0);
-    schema.AddEntry("lamda", 3, 1.0);
+    schema.AddEntry("lambda", 3, 1.0);
     schema.AddEntry("theta", 4, 0.0); 
     
     schema.AddEntry("x", 0, -1);
@@ -506,7 +506,7 @@ public:
       m_initial = argc->GetDouble(0);
       m_inflow = argc->GetDouble(1);
       m_outflow = argc->GetDouble(2);
-      m_lamda = argc->GetDouble(3);
+      m_lambda = argc->GetDouble(3);
       m_theta = argc->GetDouble(4);
       
       m_x = argc->GetInt(0);
@@ -518,11 +518,11 @@ public:
     assert(res);
   }
   
-  static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lamda> <double theta> <int x> <int y> <int num>"; }
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lambda> <double theta> <int x> <int y> <int num>"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lamda, m_theta, m_x, m_y, m_count);        
+    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lambda, m_theta, m_x, m_y, m_count);        
   } 
 };
 

@@ -691,21 +691,21 @@ and reaction parameters.
 </li>
 <li><p>
     <strong><a name="SetProbabilisticResource">SetProbabilisticResource</a></strong>
-    <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt; &lt;double outflow&gt; &lt;double lamda&gt; &lt;double theta&gt; &lt;int x&gt; &lt;int y&gt; &lt;int num &gt;</i>
+    <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt; &lt;double outflow&gt; &lt;double lambda&gt; &lt;double theta&gt; &lt;int x&gt; &lt;int y&gt; &lt;int num &gt;</i>
   </p>
     <p>
     A gradient resource with probabilistically distributed cells. If x and y are not specified, a random 'seed' cell
     is chosen. That cell is given the initial value. Then, we look at all of the other cells in
-    the world and add resource with prob = PDF from half normal distribution given lamda and the 
+    the world and add resource with prob = PDF from half normal distribution given lambda and the 
     current distance from the center cell. Normally you'd leave theta for the PDF alone at the fixed value 
-    of 0. However, you can do things like set lamda = 1 and theta to 10 to get 'rings' (larger theta == larger rings). 
+    of 0. However, you can do things like set lambda = 1 and theta to 10 to get 'rings' (larger theta == larger rings). 
     If num is specified, we will randomly select and test each cell in the world, looping through unused cells over and
     over until the num quota is reached. If num is not specified, we walk through and test each cell in the world only
-    once.
+    once. When looping, we give up when we have looped either 1000 times or world_size number of times, whichever is less.
     Arguements are specified in the form theta=4.0:num=7, etc not as unlabeled column arguements.
     </p>
     <p>
-    Defaults are: res_name = name of first res in environment file, initial = 0.0, inflow = 0.0, outflow = 0.0, lamda = 1.0, 
+    Defaults are: res_name = name of first res in environment file, initial = 0.0, inflow = 0.0, outflow = 0.0, lambda = 1.0, 
     theta = 0.0, x = -1 (random), y = -1 (random), num = -1.
     </p>
 </li>
