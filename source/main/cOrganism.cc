@@ -134,8 +134,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
   
-  assert(m_initial_genome.Properties().Get("instset").StringValue() != "");
-  m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
+  m_hardware = m_world->GetHardwareManager().Create(ctx, this, genome);
   
   initialize(ctx);
 }
