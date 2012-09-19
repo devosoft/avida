@@ -6398,7 +6398,7 @@ void cAnalyze::CommandMutagenize(cString)
     InstructionSequencePtr seq_p;
     seq_p.DynamicCastFrom(cur_genome.Representation());
     InstructionSequence& cur_seq = *seq_p;
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet((const char*)cur_genome.Properties().Get("instset").StringValue());
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cur_genome.Properties().Get("instset").StringValue());
 
     int line_num = m_ctx.GetRandom().GetInt(cur_seq.GetSize());
 

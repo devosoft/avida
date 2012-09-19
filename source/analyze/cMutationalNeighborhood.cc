@@ -39,12 +39,13 @@ using namespace std;
 
 cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const Genome& genome, int target)
   : m_world(world), m_initialized(false)
-  , m_inst_set(m_world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").StringValue()))
+  , m_inst_set(m_world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue()))
   , m_target(target), m_base_genome(genome)
 {
   InstructionSequencePtr seq;
   seq.DynamicCastFrom(m_base_genome.Representation());
   m_base_genome_size = seq->GetSize();
+  assert(m_base_genome.Properties().Get("instset").StringValue() != "");
   // Acquire write lock, to prevent any cMutationalNeighborhoodResults instances before computing
   m_rwlock.WriteLock();
 }
@@ -222,6 +223,7 @@ void cMutationalNeighborhood::ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* 
   InstructionSequencePtr seq_p;
   seq_p.DynamicCastFrom(mod_genome.Representation());
   InstructionSequence& seq = *seq_p;
+  assert(mod_genome.Properties().Get("instset").StringValue() != "");
   
   // Loop through all the lines of genome, testing trying all combinations.
   int cur_inst = seq[cur_site].GetOp();
@@ -250,6 +252,7 @@ void cMutationalNeighborhood::ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU*
   seq_p.DynamicCastFrom(mod_genome.Representation());
   InstructionSequence& seq = *seq_p;
   seq.Insert(cur_site, Instruction(0));
+  assert(mod_genome.Properties().Get("instset").StringValue() != "");
   
   // Loop through all instructions...
   for (int inst_num = 0; inst_num < inst_size; inst_num++) {
@@ -272,6 +275,7 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
   seq_p.DynamicCastFrom(mod_genome.Representation());
   InstructionSequence& seq = *seq_p;
   seq.Remove(cur_site);
+  assert(mod_genome.Properties().Get("instset").StringValue() != "");
 
   m_fitness_delete[cur_site][0] = ProcessOneStepGenome(ctx, testcpu, test_info, mod_genome, odata, cur_site);
   ProcessTwoStepDelete(ctx, testcpu, test_info, cur_site, mod_genome);

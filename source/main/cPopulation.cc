@@ -2490,7 +2490,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     Genome next_germ(source_deme.GetGermline().GetLatest());
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(next_germ.Representation());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)next_germ.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(next_germ.Properties().Get("instset").StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i = 0; i < seq->GetSize(); ++i) {
@@ -2544,7 +2544,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i < new_genome.GetSize(); ++i) {
@@ -2724,7 +2724,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
 
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {
@@ -3329,7 +3329,7 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {

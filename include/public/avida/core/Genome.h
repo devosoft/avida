@@ -67,8 +67,8 @@ namespace Avida {
     // Accessors
     LIB_EXPORT inline HardwareTypeID HardwareType() const { return m_hw_type; }
     
-    LIB_EXPORT inline PropertyMap& Properties() { return m_props; }
-    LIB_EXPORT inline const PropertyMap& Properties() const { return m_props; }
+    LIB_EXPORT inline PropertyMap& Properties() { assert(m_props.GetSize() > 0); return m_props; }
+    LIB_EXPORT inline const PropertyMap& Properties() const { assert(m_props.GetSize() > 0); return m_props; }
     
     LIB_EXPORT inline GeneticRepresentationPtr Representation() { return m_representation; }
     LIB_EXPORT inline ConstGeneticRepresentationPtr Representation() const { return const_cast<GeneticRepresentationPtr&>(m_representation); }

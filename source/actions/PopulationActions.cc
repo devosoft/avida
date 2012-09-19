@@ -1472,7 +1472,7 @@ public:
 				// count the number of target instructions in the genome
         ConstInstructionSequencePtr seq;
         seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-				int count = seq->CountInst(m_world->GetHardwareManager().GetInstSet((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue()).GetInst(m_inst));
+				int count = seq->CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue()).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1577,7 +1577,7 @@ public:
         seq.DynamicCastFrom(mg.Representation());
 				const InstructionSequence& genome = *seq;
 				const double genomeSize = static_cast<double>(genome.GetSize());
-				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet((const char*)mg.Properties().Get("instset").StringValue()).GetInst(m_inst));
+				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue()).GetInst(m_inst));
 				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));

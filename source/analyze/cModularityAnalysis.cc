@@ -79,7 +79,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   // Don't calculate the modularity if the organism doesn't reproduce. i.e. if the fitness is 0
   if (base_fitness > 0.0 && does_tasks) {
     // Set up the instruction set for mapping
-    cInstSet& map_inst_set = m_genotype->GetWorld()->GetHardwareManager().GetInstSet((const char*)base_genome.Properties().Get("instset").StringValue());
+    cInstSet& map_inst_set = m_genotype->GetWorld()->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue());
     const Instruction null_inst = map_inst_set.ActivateNullInst();
 
     // Genome for testing

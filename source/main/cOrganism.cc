@@ -82,7 +82,7 @@ void cOrganism::Initialize()
 
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").StringValue()).GetNumNops())
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue()).GetNumNops())
   , m_src(src)
   , m_prop_map(NULL)
   , m_initial_genome(genome)

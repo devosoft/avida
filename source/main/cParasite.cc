@@ -29,7 +29,7 @@
 
 cParasite::cParasite(cWorld* world, const Avida::Genome& genome, int parent_generation, Systematics::Source src)
   : m_src(src), m_initial_genome(genome)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet((const char*)genome.Properties().Get("instset").StringValue()).GetNumNops())
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue()).GetNumNops())
 {
   // @TODO - properly construct cPhenotype
   // @TODO - construct parasite property map...
