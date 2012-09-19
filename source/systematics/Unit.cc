@@ -100,7 +100,7 @@ void Avida::Systematics::Unit::SelfClassify(ConstConstParentGroupsPtr parent_gro
     // Loop through all parental groups and classify this bio unit with each one
     for (int i = 0; i < parent_groups->Get(0)->GetSize(); i++) {
       pg->Get(0) = parent_groups->Get(0)->Get(i);
-      GroupPtr group = parent_groups->Get(0)->Get(i)->ClassifyNewUnit(thisPtr(), pg);
+      GroupPtr group = (const_cast<GroupPtr&>(parent_groups->Get(0)->Get(i)))->ClassifyNewUnit(thisPtr(), pg);
       if (group) m_groups->Push(group);
     }
   } else {

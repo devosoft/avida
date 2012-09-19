@@ -384,12 +384,13 @@ bool Avida::Systematics::Genotype::LegacySave(void* dfp) const
 }
 
 
-void Avida::Systematics::Genotype::RemoveActiveReference()
+void Avida::Systematics::Genotype::RemoveActiveReference() const
 {
   m_a_refs--;
   assert(m_a_refs >= 0);
   
-  if (!m_a_refs) m_mgr->AdjustGenotype(thisPtr(), m_num_organisms, 0);
+  Genotype* nc_this = const_cast<Genotype*>(this);
+  if (!m_a_refs) m_mgr->AdjustGenotype(nc_this->thisPtr(), m_num_organisms, 0);
 }
 
 

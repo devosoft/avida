@@ -57,7 +57,7 @@ namespace Avida {
     {
       friend class GenotypeArbiter;
     private:
-      GenotypeArbiterPtr m_mgr;
+      mutable GenotypeArbiterPtr m_mgr;
       Apto::List<GenotypePtr, Apto::SparseVector>::EntryHandle* m_handle;
       
       Source m_src;
@@ -125,7 +125,7 @@ namespace Avida {
       bool Serialize(ArchivePtr ar) const;
       bool LegacySave(void* df) const;
 
-      void RemoveActiveReference();
+      void RemoveActiveReference() const;
       
 
       // Genotype Specific Methods

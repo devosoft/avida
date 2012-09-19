@@ -138,12 +138,13 @@ bool Avida::Systematics::Clade::Serialize(ArchivePtr) const
 
 
 
-void Avida::Systematics::Clade::RemoveActiveReference()
+void Avida::Systematics::Clade::RemoveActiveReference() const
 {
   m_a_refs--;
   assert(m_a_refs >= 0);
   
-  if (!m_a_refs) m_mgr->AdjustClade(thisPtr(), m_num_organisms, 0);
+  Clade* nc_this = const_cast<Clade*>(this);
+  if (!m_a_refs) m_mgr->AdjustClade(nc_this->thisPtr(), m_num_organisms, 0);
 }
 
 

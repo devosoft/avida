@@ -81,7 +81,7 @@ private:
   
   struct sGenotypeDatastore : public Apto::RefCountObject
   {
-    Apto::RWLock rwlock;
+    mutable Apto::RWLock rwlock;
     mutable Apto::Map<int, cGenotypeData*> dmap;
     
     sGenotypeDatastore() { ; }

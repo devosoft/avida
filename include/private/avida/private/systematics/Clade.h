@@ -56,7 +56,7 @@ namespace Avida {
     {
       friend class CladeArbiter;
     private:
-      CladeArbiterPtr m_mgr;
+      mutable CladeArbiterPtr m_mgr;
       Apto::List<CladePtr, Apto::SparseVector>::EntryHandle* m_handle;
       
       Apto::String m_name;
@@ -89,7 +89,7 @@ namespace Avida {
       
       bool Serialize(ArchivePtr ar) const;
       
-      void RemoveActiveReference();
+      void RemoveActiveReference() const;
                   
       
     private:

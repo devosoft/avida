@@ -53,8 +53,8 @@ namespace Avida {
     class Group : virtual public Apto::MTRefCountObject {
     protected:
       GroupID m_id;
-      int m_a_refs;
-      int m_p_refs;
+      mutable int m_a_refs;
+      mutable int m_p_refs;
       Apto::Map<Apto::String, Apto::SmartPtr<GroupData> > m_data;
       
     public:
@@ -83,10 +83,10 @@ namespace Avida {
       LIB_EXPORT inline int ActiveReferenceCount() const { return m_a_refs; }
       LIB_EXPORT inline int PassiveReferenceCount() const { return m_p_refs; }
       
-      LIB_EXPORT virtual void AddActiveReference();
-      LIB_EXPORT virtual void RemoveActiveReference();
-      LIB_EXPORT virtual void AddPassiveReference();
-      LIB_EXPORT virtual void RemovePassiveReference();
+      LIB_EXPORT virtual void AddActiveReference() const;
+      LIB_EXPORT virtual void RemoveActiveReference() const;
+      LIB_EXPORT virtual void AddPassiveReference() const;
+      LIB_EXPORT virtual void RemovePassiveReference() const;
 
       
       // Group Data

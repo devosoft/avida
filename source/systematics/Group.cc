@@ -43,7 +43,7 @@ bool Avida::Systematics::Group::LegacySave(void*) const
 }
 
 
-void Avida::Systematics::Group::AddActiveReference() { m_a_refs++; assert(m_a_refs >= 0); }
-void Avida::Systematics::Group::RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
-void Avida::Systematics::Group::AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
-void Avida::Systematics::Group::RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
+void Avida::Systematics::Group::AddActiveReference() const { m_a_refs++; assert(m_a_refs >= 0); }
+void Avida::Systematics::Group::RemoveActiveReference() const { m_a_refs--; assert(m_a_refs >= 0); }
+void Avida::Systematics::Group::AddPassiveReference() const { m_p_refs++; assert(m_p_refs >= 0); }
+void Avida::Systematics::Group::RemovePassiveReference() const { m_p_refs--; assert(m_p_refs >= 0); }
