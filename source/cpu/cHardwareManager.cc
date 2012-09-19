@@ -225,11 +225,19 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  int inst_set_id = m_is_name_map.GetWithDefault(mg.Properties().Get("instset").StringValue(), -1);
-  if (inst_set_id == -1) return NULL; // No valid instruction set found
+  Apto::String inst_set_name = mg.Properties().Get("instset").StringValue();
+  assert(inst_set_name.GetSize());
+  int inst_set_id = m_is_name_map.GetWithDefault(inst_set_name, -1);
+  if (inst_set_id == -1) {
+    assert(false);
+    return NULL; // No valid instruction set found
+  }
   
   cInstSet* inst_set = m_inst_sets[inst_set_id];
-  if (inst_set->GetHardwareType() != mg.HardwareType()) return NULL; // inst_set/hw_type mismatch
+  if (inst_set->GetHardwareType() != mg.HardwareType()) {
+    assert(false);
+    return NULL; // inst_set/hw_type mismatch
+  }
   
   cHardwareBase* hw = 0;
   switch (inst_set->GetHardwareType()) {
