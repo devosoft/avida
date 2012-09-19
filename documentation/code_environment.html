@@ -78,7 +78,7 @@ individual entries:
 <pre>
 class <span class="class">cTaskLib</span> {
 private:
-  <span class="class">tArray</span>&lt;<span class="class">cTaskEntry</span>*&gt; <span class="object">task_array</span>;
+  <span class="class">Apto::Array</span>&lt;<span class="class">cTaskEntry</span>*&gt; <span class="object">task_array</span>;
 
 public:
   int <span class="method">GetSize</span>() const { return <span class="object">task_array</span>.<span class="method">GetSize</span>(); }
@@ -258,8 +258,8 @@ public:
   <span class="comment">// Interaction with the organisms</span>
   <span class="class">bool</span> <span class="method">TestOutput</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>, <span class="class">cReactionResult</span>&amp; <span class="object">result</span>, <span class="class">cTaskContext</span>&amp; <span class="object">taskctx</span>,
                  const <span class="class">tBuffer</span>&lt;int&gt;&amp; <span class="object">send_buf</span>, const <span class="class">tBuffer</span>&lt;int&gt;&amp; <span class="object">receive_buf</span>,
-                 const <span class="class">tArray</span>&lt;int&gt;&amp; <span class="object">task_count</span>, const <span class="class">tArray</span>&lt;int&gt;&amp; <span class="object">reaction_count</span>,
-                 const <span class="class">tArray</span>&lt;double&gt;&amp; <span class="object">resource_count</span>) const;
+                 const <span class="class">Apto::Array</span>&lt;int&gt;&amp; <span class="object">task_count</span>, const <span class="class">Apto::Array</span>&lt;int&gt;&amp; <span class="object">reaction_count</span>,
+                 const <span class="class">Apto::Array</span>&lt;double&gt;&amp; <span class="object">resource_count</span>) const;
 };
 </pre>
 

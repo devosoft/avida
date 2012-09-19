@@ -22,7 +22,6 @@
 
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
-#include "tArray.h"
 #include "cWorld.h"
 
 #include <math.h>
@@ -33,28 +32,29 @@ using namespace std;
 
 
 // Comparison functions for qsort.
-int CompareAGPhyloDepth(const void * _a, const void * _b){
-  cAnalyzeGenotype a(**((cAnalyzeGenotype**)_a));
-  cAnalyzeGenotype b(**((cAnalyzeGenotype**)_b));
-  if(a.GetDepth() > b.GetDepth()){ return 1; }
-  if(a.GetDepth() < b.GetDepth()){ return -1; }
+int CompareAGPhyloDepth(cAnalyzeGenotype* const& a, cAnalyzeGenotype* const& b)
+{
+  if (a->GetDepth() > b->GetDepth()) return 1;
+  if (a->GetDepth() < b->GetDepth()) return -1;
   return 0;
 }
-int CompareAGUpdateBorn(const void * _a, const void * _b){
-  cAnalyzeGenotype a(**((cAnalyzeGenotype**)_a));
-  cAnalyzeGenotype b(**((cAnalyzeGenotype**)_b));
-  if(a.GetUpdateBorn() > b.GetUpdateBorn()){ return 1; }
-  if(a.GetUpdateBorn() < b.GetUpdateBorn()){ return -1; }
+
+int CompareAGUpdateBorn(cAnalyzeGenotype* const& a, cAnalyzeGenotype* const& b)
+{
+  if (a->GetUpdateBorn() > b->GetUpdateBorn()) return 1;
+  if (a->GetUpdateBorn() < b->GetUpdateBorn()) return -1;
   return 0;
 }
 
 // Quicksort functions.
-void QSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array){
-  gen_array.QSort(CompareAGPhyloDepth);
+void QSortAGPhyloDepth(Apto::Array<cAnalyzeGenotype*>& gen_array)
+{
+  Apto::QSort(gen_array, CompareAGPhyloDepth);
 } 
 
-void QSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array){
-  gen_array.QSort(CompareAGUpdateBorn);
+void QSortAGUpdateBorn(Apto::Array<cAnalyzeGenotype*>& gen_array)
+{
+  Apto::QSort(gen_array, CompareAGUpdateBorn);
 }  
 
 
@@ -113,7 +113,7 @@ void cAnalyzeTreeStats_Gamma::LoadGenotypes(tList<cAnalyzeGenotype> &genotype_li
   }
 }
 
-void cAnalyzeTreeStats_Gamma::MapIDToGenotypePos(tArray<cAnalyzeGenotype*>& lineage, Apto::Map<int, int>& out_mapping)
+void cAnalyzeTreeStats_Gamma::MapIDToGenotypePos(Apto::Array<cAnalyzeGenotype*>& lineage, Apto::Map<int, int>& out_mapping)
 {
   out_mapping.Clear();
   for (int i = 0; i < lineage.GetSize(); i++) {
@@ -121,14 +121,14 @@ void cAnalyzeTreeStats_Gamma::MapIDToGenotypePos(tArray<cAnalyzeGenotype*>& line
   }
 }
 
-void cAnalyzeTreeStats_Gamma::Unlink(tArray<cAnalyzeGenotype *>& lineage)
+void cAnalyzeTreeStats_Gamma::Unlink(Apto::Array<cAnalyzeGenotype *>& lineage)
 {
   for(int i = 0; i < lineage.GetSize(); i++){
     lineage[i]->Unlink();
   }
 }
 
-void cAnalyzeTreeStats_Gamma::EstablishLinks(tArray<cAnalyzeGenotype*>& lineage, Apto::Map<int, int>& out_mapping)
+void cAnalyzeTreeStats_Gamma::EstablishLinks(Apto::Array<cAnalyzeGenotype*>& lineage, Apto::Map<int, int>& out_mapping)
 {
   this->Unlink(lineage);
   this->MapIDToGenotypePos(lineage, out_mapping);
@@ -146,8 +146,8 @@ void cAnalyzeTreeStats_Gamma::EstablishLinks(tArray<cAnalyzeGenotype*>& lineage,
 }
 
 void cAnalyzeTreeStats_Gamma::FindFurcations(
-  tArray<cAnalyzeGenotype *> &lineage,
-  tArray<cAnalyzeLineageFurcation> &out_furcations
+  Apto::Array<cAnalyzeGenotype *> &lineage,
+  Apto::Array<cAnalyzeLineageFurcation> &out_furcations
 ){
   cAnalyzeGenotype *parent(0);
   cAnalyzeLineageFurcation furcation(0,0,0);
@@ -178,9 +178,9 @@ void cAnalyzeTreeStats_Gamma::FindFurcations(
 }
 
 void cAnalyzeTreeStats_Gamma::FindFurcationTimes(
-  tArray<cAnalyzeGenotype *> &lineage,
+  Apto::Array<cAnalyzeGenotype *> &lineage,
   int (*furcation_time_policy)(cAnalyzeLineageFurcation &furcation),
-  tArray<int> &out_furcation_times
+  Apto::Array<int> &out_furcation_times
 ){
   /*
   furcation_time_policy is one of
@@ -200,7 +200,7 @@ void cAnalyzeTreeStats_Gamma::FindFurcationTimes(
       << out_furcation_times[i] <<  endl;
     }
   }
-  out_furcation_times.QSort(CompareInt);
+  Apto::QSort(out_furcation_times);
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
     for(int i = 0; i < size; i++){
       cout << "SortedFurcationTime("
@@ -211,9 +211,9 @@ void cAnalyzeTreeStats_Gamma::FindFurcationTimes(
 }
 
 void cAnalyzeTreeStats_Gamma::FindInternodeDistances(
-  tArray<int> &furcation_times,
+  Apto::Array<int> &furcation_times,
   int end_time,
-  tArray<int> &out_internode_distances
+  Apto::Array<int> &out_internode_distances
 ){
   int size = furcation_times.GetSize();
   out_internode_distances.Resize(size, 0);
@@ -232,7 +232,7 @@ void cAnalyzeTreeStats_Gamma::FindInternodeDistances(
   }
 }
 
-double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
+double cAnalyzeTreeStats_Gamma::CalculateGamma(Apto::Array<int> &inode_dists){
   // n: number of leaves, constant for a given tree.
   int n = inode_dists.GetSize() + 1;
   
@@ -248,13 +248,17 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
    indices offset.  This permits use of the same indices as in the formula for
    gamma.
    */
-  tArray<int> g = tArray<int>(2, 0) + inode_dists;
+  
+  Apto::Array<int> g(2);
+  g.SetAll(0);
+  g = g + inode_dists;
   
   unsigned long long T = 0;
   for(int j = 2; j <= n; j++) { T += j*g[j]; }
 
   // si: interior summation values, cached
-  tArray<unsigned long long> si(n, 0);
+  Apto::Array<unsigned long long> si(n);
+  si.SetAll(0);
   for(int k = 2; k <= n-1; k++) { si[k] = k*g[k] + si[k-1]; }    
 
   // so: exterior summation
@@ -283,11 +287,11 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
 
 
 // Accessors.
-const tArray<int> &cAnalyzeTreeStats_Gamma::FurcationTimes(void) const {
+const Apto::Array<int> &cAnalyzeTreeStats_Gamma::FurcationTimes(void) const {
   return m_furcation_times;
 }
 
-const tArray<int> &cAnalyzeTreeStats_Gamma::InternodeDistances(void) const {
+const Apto::Array<int> &cAnalyzeTreeStats_Gamma::InternodeDistances(void) const {
   return m_internode_distances;
 }
 

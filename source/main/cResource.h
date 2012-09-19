@@ -25,12 +25,7 @@
 #ifndef cResource_h
 #define cResource_h
 
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 
 /*! class to hold resource information for individual cells (mini-chemostats) */
@@ -135,8 +130,8 @@ private:
   double m_threshold;
   int m_refuge;
   bool isgradient;
-  tArray<cCellResource> cell_list;
-  tArray<int> cell_id_list;
+  Apto::Array<cCellResource> cell_list;
+  Apto::Array<int> cell_id_list;
 	bool hgt_metabolize;
 	bool collectable;
 
@@ -220,8 +215,8 @@ public:
   double GetInitialPlatVal() { return m_init_plat; }
   double GetThreshold() { return m_threshold; }
   int GetRefuge() { return m_refuge; }
-  tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
-  tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
+  Apto::Array<cCellResource> *GetCellListPtr() { return &cell_list; }
+  Apto::Array<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }
 
@@ -304,7 +299,7 @@ public:
   cCellResource *GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,
                           double _inflow, double _outflow);
-  void SetCellIdList(tArray<int>& id_list); //SLG partial resources
+  void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
 	void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
 };
 

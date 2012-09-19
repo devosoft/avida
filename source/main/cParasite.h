@@ -26,7 +26,6 @@
 #include "avida/systematics/Unit.h"
 
 #include "cPhenotype.h"
-#include "cString.h"
 
 class cWorld;
 

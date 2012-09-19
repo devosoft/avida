@@ -22,12 +22,9 @@
 #ifndef cBirthNeighborhoodHandler_h
 #define cBirthNeighborhoodHandler_h
 
-#ifndef cBirthSelectionHandler_h
+#include "avida/core/Types.h"
+
 #include "cBirthSelectionHandler.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 
 class cBirthChamber;
@@ -38,7 +35,7 @@ class cBirthNeighborhoodHandler : public cBirthSelectionHandler
 {
 private:
   cBirthChamber* m_bc;
-  tArray<cBirthEntry> m_entries;
+  Apto::Array<cBirthEntry> m_entries;
   
   
 public:

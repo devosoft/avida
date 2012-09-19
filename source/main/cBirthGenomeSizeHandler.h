@@ -22,15 +22,8 @@
 #ifndef cBirthGenomeSizeHandler_h
 #define cBirthGenomeSizeHandler_h
 
-#ifndef cBirthEntry_h
 #include "cBirthEntry.h"
-#endif
-#ifndef cBirthSelectionHandler_h
 #include "cBirthSelectionHandler.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cBirthChamber;
 
@@ -39,7 +32,7 @@ class cBirthGenomeSizeHandler : public cBirthSelectionHandler
 {
 private:
   cBirthChamber* m_bc;
-  tArray<cBirthEntry> m_entries;
+  Apto::Array<cBirthEntry> m_entries;
   
   
 public:

@@ -30,7 +30,6 @@
 #include "cPhenotype.h"
 #include "cMerit.h"
 #include "cDemeNetwork.h"
-#include "tArray.h"
 #include "tBuffer.h"
 #include "cResourceCount.h"
 #include "cStringList.h"
@@ -55,7 +54,7 @@ class cDeme
 private:
   cWorld* m_world;
   int _id; //!< ID of this deme (position in cPopulation::deme_array).
-  tArray<int> cell_ids;
+  Apto::Array<int> cell_ids;
   int width; //!< Width of this deme.
 
   bool replicateDeme;
@@ -95,17 +94,17 @@ private:
   double total_energy_received;
   double total_energy_applied;
   
-  tArray<int> cur_task_exe_count;
-  tArray<int> cur_reaction_count;
-  tArray<int> last_task_exe_count;
-  tArray<int> last_reaction_count;
+  Apto::Array<int> cur_task_exe_count;
+  Apto::Array<int> cur_reaction_count;
+  Apto::Array<int> last_task_exe_count;
+  Apto::Array<int> last_reaction_count;
   
-  tArray<int> cur_org_task_count;
-  tArray<int> cur_org_task_exe_count;
-  tArray<int> cur_org_reaction_count;
-  tArray<int> last_org_task_count;
-  tArray<int> last_org_task_exe_count;
-  tArray<int> last_org_reaction_count;
+  Apto::Array<int> cur_org_task_count;
+  Apto::Array<int> cur_org_task_exe_count;
+  Apto::Array<int> cur_org_reaction_count;
+  Apto::Array<int> last_org_task_count;
+  Apto::Array<int> last_org_task_exe_count;
+  Apto::Array<int> last_org_reaction_count;
   
   double avg_founder_generation;  //Average generation of current founders                                    
   double generations_per_lifetime; //Generations between current founders and founders of parent  
@@ -117,15 +116,15 @@ private:
   cDeme(const cDeme&); // @not_implemented
   
   cResourceCount deme_resource_count; //!< Resources available to the deme
-  tArray<int> energy_res_ids; //!< IDs of energy resources
+  Apto::Array<int> energy_res_ids; //!< IDs of energy resources
   
   Apto::Array<cDemeCellEvent, Apto::Smart> cell_events;
   std::vector<std::pair<int, int> > event_slot_end_points; // (slot end point, slot flow rate)
   
   int         m_germline_genotype_id; // Genotype id of germline (if in use)
-  tArray<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
+  Apto::Array<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
                                       // Keep a lease on these genotypes for the deme's lifetime.
-  tArray<cPhenotype> m_founder_phenotypes; // List of phenotypes of founder organsisms                                    
+  Apto::Array<cPhenotype> m_founder_phenotypes; // List of phenotypes of founder organsisms
                                       
   cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
@@ -148,7 +147,7 @@ public:
   ~cDeme();
   
   cDeme& operator=(const cDeme&); //@JJB**
-  void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
+  void Setup(int id, const Apto::Array<int>& in_cells, int in_width = -1, cWorld* world = NULL);
 
   int GetID() const { return _id; }
   int GetSize() const { return cell_ids.GetSize(); }
@@ -238,17 +237,17 @@ public:
   void AddCurTask(int task_num) { cur_task_exe_count[task_num]++; }
   void AddCurReaction (int reaction_num) { cur_reaction_count[reaction_num]++; }
 
-  const tArray<int>& GetCurTaskExeCount() const { return cur_task_exe_count; } //**
-  const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; } //**
-  const tArray<int>& GetCurReactionCount() const { return cur_reaction_count; } //**
-  const tArray<int>& GetLastReactionCount() const { return last_reaction_count; } //**
+  const Apto::Array<int>& GetCurTaskExeCount() const { return cur_task_exe_count; } //**
+  const Apto::Array<int>& GetLastTaskExeCount() const { return last_task_exe_count; } //**
+  const Apto::Array<int>& GetCurReactionCount() const { return cur_reaction_count; } //**
+  const Apto::Array<int>& GetLastReactionCount() const { return last_reaction_count; } //**
 
-  const tArray<int>& GetCurOrgTaskCount() const { return cur_org_task_count; }
-  const tArray<int>& GetLastOrgTaskCount() const { return last_org_task_count; }
-  const tArray<int>& GetCurOrgTaskExeCount() const { return cur_org_task_exe_count; }
-  const tArray<int>& GetLastOrgTaskExeCount() const { return last_org_task_exe_count; }
-  const tArray<int>& GetCurOrgReactionCount() const { return cur_org_reaction_count; }
-  const tArray<int>& GetLastOrgReactionCount() const { return last_org_reaction_count; }
+  const Apto::Array<int>& GetCurOrgTaskCount() const { return cur_org_task_count; }
+  const Apto::Array<int>& GetLastOrgTaskCount() const { return last_org_task_count; }
+  const Apto::Array<int>& GetCurOrgTaskExeCount() const { return cur_org_task_exe_count; }
+  const Apto::Array<int>& GetLastOrgTaskExeCount() const { return last_org_task_exe_count; }
+  const Apto::Array<int>& GetCurOrgReactionCount() const { return cur_org_reaction_count; }
+  const Apto::Array<int>& GetLastOrgReactionCount() const { return last_org_reaction_count; }
 
   bool HasDemeMerit() const { return _current_merit.GetDouble() != 1.0; }
 
@@ -269,7 +268,7 @@ public:
   void AdjustResource(cAvidaContext& ctx, int resource_id, double amount);
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
-  void ModifyDemeResCount(cAvidaContext& ctx, const tArray<double> & res_change, const int absolute_cell_id);
+  void ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double> & res_change, const int absolute_cell_id);
   double GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const; 
   double GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx); 
   void GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext& ctx); 
@@ -308,10 +307,10 @@ public:
   // --- Founder list management --- //
   void ClearFounders();
   void AddFounder(Systematics::GroupPtr bg, cPhenotype * _in_phenotype = NULL);
-  tArray<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
-  tArray<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
+  Apto::Array<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
+  Apto::Array<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
   double GetAvgFounderGeneration() { return avg_founder_generation; }        
-  void UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArray<cPhenotype>& new_founder_phenotypes);   
+  void UpdateGenerationsPerLifetime(double old_avg_founder_generation, Apto::Array<cPhenotype>& new_founder_phenotypes);
   double GetGenerationsPerLifetime() { return generations_per_lifetime; }  
 
   // --- Germline management --- //
@@ -386,15 +385,15 @@ public:
   // -------- Deme Input and Output --------
 private:
   int m_input_pointer;
-  tArray<int> m_inputs;
+  Apto::Array<int> m_inputs;
   tBuffer<int> m_input_buf;
   tBuffer<int> m_output_buf;
   Apto::Map<void*, cTaskState*> m_task_states;
   cReactionResult* m_reaction_result;
-  tArray<int> m_task_count;               // Total times each task was performed (resetable during the life of the deme)
-  tArray<int> m_last_task_count;
-  tArray<int> m_reaction_count;
-  tArray<double> m_cur_reaction_add_reward;
+  Apto::Array<int> m_task_count;               // Total times each task was performed (resetable during the life of the deme)
+  Apto::Array<int> m_last_task_count;
+  Apto::Array<int> m_reaction_count;
+  Apto::Array<double> m_cur_reaction_add_reward;
   double m_cur_bonus;
   cMerit m_cur_merit;
 public:
@@ -410,8 +409,8 @@ public:
   const cMerit& GetCurMerit() { return m_cur_merit; }
   void UpdateCurMerit();
   cMerit CalcCurMerit();
-  const tArray<int>& GetTaskCount() const { return m_task_count; }
-  const tArray<int>& GetReactionCount() const { return m_reaction_count; }
+  const Apto::Array<int>& GetTaskCount() const { return m_task_count; }
+  const Apto::Array<int>& GetReactionCount() const { return m_reaction_count; }
 
 
 	// --- Division of Labor --- //

@@ -25,25 +25,15 @@
 #ifndef cSpatialResCount_h
 #define cSpatialResCount_h
 
-#ifndef cAvidaContext_h
 #include "cAvidaContext.h"
-#endif
-
-#ifndef cSpatialCountElem_h
 #include "cSpatialCountElem.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-
-#ifndef cResource_h
 #include "cResource.h"
-#endif
+
 
 class cSpatialResCount
 {
 private:
-  tArray<cSpatialCountElem> grid;
+  Apto::Array<cSpatialCountElem> grid;
   double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;
@@ -53,7 +43,7 @@ private:
   int    world_x, world_y, num_cells;
   int    curr_peakx, curr_peaky;
   /* instead of creating a new array use the existing one from cResource */
-  tArray<cCellResource> *cell_list_ptr;
+  Apto::Array<cCellResource> *cell_list_ptr;
   bool m_modified;
   
 public:
@@ -67,7 +57,7 @@ public:
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
   void SetPointers();
   void CheckRanges();
-  void SetCellList(tArray<cCellResource> *in_cell_list_ptr);
+  void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);
   int GetSize() const { return grid.GetSize(); }
   int GetX() const { return world_x; }
   int GetY() const { return world_y; }

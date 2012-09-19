@@ -204,7 +204,7 @@ public:
 class cActionSetCellResource : public cAction
 {
 private:
-  tArray<int> m_cell_list;
+  Apto::Array<int> m_cell_list;
   cString m_res_name;
   double m_res_count;
   int m_res_id;
@@ -234,7 +234,7 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
-      tArray<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx); 
+      Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         counts[res->GetID()] = m_res_count;
@@ -755,7 +755,7 @@ class cActionSetDemeResourceOutflow : public cAction
 class cActionSetEnvironmentInputs : public cAction
 {
 private:
-  tArray<int> m_inputs;
+  Apto::Array<int> m_inputs;
   
 public:
   cActionSetEnvironmentInputs(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_inputs()
@@ -1182,7 +1182,7 @@ class cActionSetOptimizeMinMax : public cAction
 class cActionSetDemeIOGrid: public cAction
 {
 public:
-  tArray<int> cell_list;
+  Apto::Array<int> cell_list;
   cString inputOutput;
 
 public:
@@ -1227,7 +1227,7 @@ public:
 //class cActionSendOrgInterruptMessage : public cAction
 //{
 //private:
-//  tArray<int> cell_list;
+//  Apto::Array<int> cell_list;
 //public:
 //  cActionSendOrgInterruptMessage(cWorld* world, const cString& args, Feedback&) :
 //    cAction(world, args)
@@ -1242,7 +1242,7 @@ public:
 //class cActionSendAvatarsInterruptMessage : public cAction
 //{
 //private:
-//  tArray<int> cell_list;
+//  Apto::Array<int> cell_list;
 //public:
 //  cActionSendAvatarsInterruptMessage(cWorld* world, const cString& args, Feedback&) :
 //    cAction(world, args)

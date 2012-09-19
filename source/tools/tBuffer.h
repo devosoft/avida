@@ -24,7 +24,6 @@
 #define tBuffer_h
 
 #include "cString.h"
-#include "tArray.h"
 
 #include <cassert>
 #include <iostream>
@@ -33,7 +32,7 @@
 template <class T> class tBuffer
 {
 private:
-  tArray<T> data;      // Contents of buffer...
+  Apto::Array<T> data;      // Contents of buffer...
   int offset;          // Position in buffer to next write.
   int total;           // Total inputs ever...
   int last_total;      // Total inputs at time of last ZeroNumAdds.

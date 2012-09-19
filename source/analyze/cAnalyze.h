@@ -75,13 +75,13 @@ private:
   int GetTempNextUpdate(){ return temporary_next_update; }
   int GetTempNextID(){ return temporary_next_id; }
 
-  tArray<cGenotypeBatch> batch;
+  Apto::Array<cGenotypeBatch> batch;
   tList<cAnalyzeCommand> command_list;
   tList<cAnalyzeFunction> function_list;
   tList<cAnalyzeCommandDefBase> command_lib;
-  tArray<cString> variables;
-  tArray<cString> local_variables;
-  tArray<cString> arg_variables;
+  Apto::Array<cString> variables;
+  Apto::Array<cString> local_variables;
+  Apto::Array<cString> arg_variables;
 
   bool exit_on_error;
 
@@ -193,7 +193,7 @@ private:
                                tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
   void CommandHistogram_Body(std::ostream& fp, int format_type,
                              tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
-  static int PStatsComparator(const void * elem1, const void * elem2);  // must be static for qsort to accept it
+  static int PStatsComparator(const p_stats& elem1, const p_stats& elem2);  // must be static for qsort to accept it
   
   // Loading methods...
   void LoadOrganism(cString cur_string);

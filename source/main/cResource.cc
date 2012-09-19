@@ -145,7 +145,7 @@ bool cResource::SetGeometry(cString _geometry)
           return false;
      }
 }
-void cResource::SetCellIdList(tArray<int>& id_list) {
+void cResource::SetCellIdList(Apto::Array<int>& id_list) {
 	cell_id_list.ResizeClear(id_list.GetSize());
 	cell_id_list=id_list;
 }

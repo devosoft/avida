@@ -25,7 +25,6 @@
 #include "AvidaScript.h"
 #include "ASTree.h"
 
-#include "tArray.h"
 #include "tDictionary.h"
 
 
@@ -41,9 +40,9 @@ private:
 
   
   // --------  Internal Variables  --------
-  tArray<sSymbolEntry*> m_sym_tbl;
+  Apto::Array<sSymbolEntry*> m_sym_tbl;
   tDictionary<int> m_sym_dict;
-  tArray<sFunctionEntry*> m_fun_tbl;
+  Apto::Array<sFunctionEntry*> m_fun_tbl;
   tDictionary<int> m_fun_dict;
 
   int m_scope;

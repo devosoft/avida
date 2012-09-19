@@ -26,7 +26,6 @@
 
 #include "cASCPPParameter.h"
 #include "cASNativeObjectMethod.h"
-#include "tArray.h"
 #include "tDictionary.h"
 
 class cString;
@@ -67,7 +66,7 @@ public:
   
   
 private:
-  static tArray<cASNativeObjectMethod<NativeClass>*>* s_methods;
+  static Apto::Array<cASNativeObjectMethod<NativeClass>*>* s_methods;
   static tDictionary<int>* s_method_dict;
   
   NativeClass* m_object;
@@ -90,7 +89,7 @@ public:
 
   static void InitializeMethodRegistrar()
   {
-    s_methods = new tArray<cASNativeObjectMethod<NativeClass>*>();
+    s_methods = new Apto::Array<cASNativeObjectMethod<NativeClass>*>();
     s_method_dict = new tDictionary<int>();
   }
   
@@ -107,7 +106,7 @@ public:
     delete s_method_dict;
   }
 };
-template<class NativeClass> tArray<cASNativeObjectMethod<NativeClass>*>* tASNativeObject<NativeClass>::s_methods = NULL;
+template<class NativeClass> Apto::Array<cASNativeObjectMethod<NativeClass>*>* tASNativeObject<NativeClass>::s_methods = NULL;
 template<class NativeClass> tDictionary<int>* tASNativeObject<NativeClass>::s_method_dict = NULL;
 
   

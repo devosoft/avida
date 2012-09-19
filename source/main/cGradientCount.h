@@ -92,8 +92,8 @@ private:
   double m_common_plat_height;
   int m_skip_moves;
   int m_skip_counter;
-  tArray<double> m_plateau_array;
-  tArray<int> m_plateau_cell_IDs;
+  Apto::Array<double> m_plateau_array;
+  Apto::Array<int> m_plateau_cell_IDs;
   
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              

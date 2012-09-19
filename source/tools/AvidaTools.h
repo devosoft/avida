@@ -24,7 +24,6 @@
 
 #include <cassert>
 #include <cmath>
-#include "cString.h"
 
 
 namespace AvidaTools

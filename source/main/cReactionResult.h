@@ -23,28 +23,28 @@
 #ifndef cReactionResult_h
 #define cReactionResult_h
 
-#include "tArray.h"
 #include "cString.h"
+
 
 class cReactionResult {
 private:
-  tArray<double> resources_consumed;
-  tArray<double> resources_produced;
-  tArray<double> resources_detected;  //Initialize to -1.0
-  tArray<double> internal_resources_consumed;
-  tArray<double> internal_resources_produced;
-  tArray<bool> tasks_done;
-  tArray<double> tasks_quality;
-  tArray<double> tasks_value;
-  tArray<bool> reactions_triggered;
-  tArray<double> reaction_add_bonus;
-  tArray<double> task_plasticity;
+  Apto::Array<double> resources_consumed;
+  Apto::Array<double> resources_produced;
+  Apto::Array<double> resources_detected;  //Initialize to -1.0
+  Apto::Array<double> internal_resources_consumed;
+  Apto::Array<double> internal_resources_produced;
+  Apto::Array<bool> tasks_done;
+  Apto::Array<double> tasks_quality;
+  Apto::Array<double> tasks_value;
+  Apto::Array<bool> reactions_triggered;
+  Apto::Array<double> reaction_add_bonus;
+  Apto::Array<double> task_plasticity;
   double energy_add;
   double bonus_add;
   double bonus_mult;
   double germline_add;
   double germline_mult;
-  tArray<cString> insts_triggered;
+  Apto::Array<cString> insts_triggered;
   bool lethal;
   bool sterilize;
   bool active_reaction;
@@ -102,7 +102,7 @@ public:
   double GetAddBonus() { return bonus_add; }
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }
-  tArray<cString>& GetInstArray() { return insts_triggered; }
+  Apto::Array<cString>& GetInstArray() { return insts_triggered; }
   bool UsedEnvResource() { return used_env_resource; }
   bool IsEnvResource() { return used_env_resource; }
   double GetAddDemeBonus() { return deme_add_bonus; }

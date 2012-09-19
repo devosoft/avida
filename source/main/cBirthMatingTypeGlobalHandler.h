@@ -25,12 +25,8 @@
 #ifndef cBirthMatingTypeGlobalHandler_h
 #define cBirthMatingTypeGlobalHandler_h
 
-#ifndef cBirthEntry_h
 #include "cBirthEntry.h"
-#endif
-#ifndef cBirthSelectionHandler_h
 #include "cBirthSelectionHandler.h"
-#endif
 
 class cBirthChamber;
 
@@ -40,7 +36,7 @@ class cBirthMatingTypeGlobalHandler : public cBirthSelectionHandler
 private:
   cWorld* m_world;
   cBirthChamber* m_bc;
-  tArray<cBirthEntry> m_entries;
+  Apto::Array<cBirthEntry> m_entries;
 
   int getTaskID(cString task_name, cWorld* world);
   void storeOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent);

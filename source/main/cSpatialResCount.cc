@@ -213,7 +213,7 @@ void cSpatialResCount::CheckRanges()
 }
 
 /* Set all the individual cells to their initial values */
-void cSpatialResCount::SetCellList(tArray<cCellResource>* in_cell_list_ptr)
+void cSpatialResCount::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
 {
   cell_list_ptr = in_cell_list_ptr;
   for (int i = 0; i < cell_list_ptr->GetSize(); i++) {

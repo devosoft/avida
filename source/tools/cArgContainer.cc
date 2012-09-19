@@ -30,9 +30,9 @@ using namespace Avida;
 
 cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedback& feedback)
 {
-  tArray<bool> set_ints;
-  tArray<bool> set_doubles;
-  tArray<bool> set_strings;
+  Apto::Array<bool> set_ints;
+  Apto::Array<bool> set_doubles;
+  Apto::Array<bool> set_strings;
   
   cArgContainer* ret = new cArgContainer();
 

@@ -36,7 +36,6 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
-#include "cString.h"
 #include "cWorld.h"
 
 #include <cstdio>

@@ -59,7 +59,7 @@ cResource* cResourceLib::GetResource(const cString& res_name) const
 const cResourceHistory& cResourceLib::GetInitialResourceLevels() const
 {
   if (!m_initial_levels) {
-    tArray<double> levels(m_resource_array.GetSize());
+    Apto::Array<double> levels(m_resource_array.GetSize());
     for (int i = 0; i < m_resource_array.GetSize(); i++) levels[i] = m_resource_array[i]->GetInitial();
     m_initial_levels = new cResourceHistory;
     m_initial_levels->AddEntry(0, levels);

@@ -23,12 +23,9 @@
 #ifndef cConstSchedule_h
 #define cConstSchedule_h
 
-#ifndef cSchedule_h
+#include "avida/core/Types.h"
+
 #include "cSchedule.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cMerit;
 
@@ -39,7 +36,7 @@ class cConstSchedule : public cSchedule
 {
 private:
   int last_id;
-  tArray<bool> is_active;
+  Apto::Array<bool> is_active;
   
   cConstSchedule(); // @not_implemented
   cConstSchedule(const cConstSchedule&); // @not_implemented

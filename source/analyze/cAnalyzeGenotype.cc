@@ -38,7 +38,6 @@
 #include "cHardwareManager.h"
 #include "cWorld.h"
 
-#include "tArray.h"
 #include "tDataCommandManager.h"
 #include "tDMSingleton.h"
 
@@ -390,7 +389,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   cAnalyzeGenotype base_genotype(m_world, m_genome);
   base_genotype.Recalculate(ctx);
   double base_fitness = base_genotype.GetFitness();
-  const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
+  const Apto::Array<int> base_task_counts( base_genotype.GetTaskCounts() );
   
   // If the base fitness is 0, the organism is dead and has no complexity.
   if (base_fitness == 0.0) {
@@ -402,7 +401,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   Genome mod_genome(m_genome);
   
   // Setup a NULL instruction needed for testing
-  const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)mod_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
+  const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(mod_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
   
   // If we are keeping track of the specific effects on tasks from the
   // knockouts, setup the matrix.
@@ -413,7 +412,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   
   // Loop through all the lines of code, testing the removal of each.
   // -2=lethal, -1=detrimental, 0=neutral, 1=beneficial
-  tArray<int> ko_effect(length);
+  Apto::Array<int> ko_effect(length);
   for (int line_num = 0; line_num < length; line_num++) {
     // Save a copy of the current instruction and replace it with "NULL"
     InstructionSequencePtr mod_seq_p;
@@ -425,7 +424,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     cAnalyzeGenotype ko_genotype(m_world, mod_genome);
     ko_genotype.Recalculate(ctx);
     if (check_chart == true) {
-      const tArray<int> ko_task_counts( ko_genotype.GetTaskCounts() );
+      const Apto::Array<int> ko_task_counts( ko_genotype.GetTaskCounts() );
       knockout_stats->task_counts[line_num] = ko_task_counts;
     }
     
@@ -457,7 +456,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     return;
   }
   
-  tArray<int> ko_pair_effect(ko_effect);
+  Apto::Array<int> ko_pair_effect(ko_effect);
   for (int line1 = 0; line1 < length; line1++) {
     // If this line has already been changed, keep going...
     if (ko_effect[line1] != ko_pair_effect[line1]) continue;
@@ -738,7 +737,7 @@ cString cAnalyzeGenotype::DescInstExe(int _inst_id) const
   if(_inst_id > inst_executed_counts.GetSize() || _inst_id < 0) return "";
   
   cString desc("# Times ");
-  desc += m_world->GetHardwareManager().GetInstSet(cString((const char*)m_genome.Properties().Get("instset").StringValue())).GetName(_inst_id);
+  desc += m_world->GetHardwareManager().GetInstSet(m_genome.Properties().Get("instset").StringValue()).GetName(_inst_id);
   desc += " Executed";
   return desc;
 }
@@ -803,7 +802,7 @@ int cAnalyzeGenotype::GetKOPair_Complexity() const
   return knockout_stats->pair_dead_count + knockout_stats->pair_neg_count;
 }
 
-const tArray< tArray<int> > & cAnalyzeGenotype::GetKO_TaskCounts() const
+const Apto::Array< Apto::Array<int> > & cAnalyzeGenotype::GetKO_TaskCounts() const
 {
   CalcKnockouts(false, true);  // Make sure knockouts are calculated
   return knockout_stats->task_counts;

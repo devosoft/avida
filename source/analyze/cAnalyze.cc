@@ -281,13 +281,13 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu)
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& seq = *mod_seq_p;
 
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
   const int num_lines = base_seq.GetSize();
   double base_fitness = genotype->GetFitness();
   
   // Loop through all the lines of code, testing all mutations...
-  tArray<double> test_fitness(num_insts);
-  tArray<double> prob(num_insts);
+  Apto::Array<double> test_fitness(num_insts);
+  Apto::Array<double> prob(num_insts);
   for (int line_no = 0; line_no < num_lines; line_no ++) {
     int cur_inst = base_seq[line_no].GetOp();
     
@@ -370,7 +370,7 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& mod_seq = *mod_seq_p;
 
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
   const int num_lines = base_seq.GetSize();
   double base_fitness = genotype->GetFitness();
   
@@ -507,12 +507,12 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
   mod_seq_p.DynamicCastFrom(mod_rep_p);
   InstructionSequence& seq = *mod_seq_p;
   
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
   const int num_lines = base_seq.GetSize();
   
   // Loop through all the lines of code, testing all mutations ...
-  tArray<double> test_fitness(num_insts);
-  tArray<double> prob(num_insts);
+  Apto::Array<double> test_fitness(num_insts);
+  Apto::Array<double> prob(num_insts);
   for (int line_no = 0; line_no < num_lines; line_no ++) {
     int cur_inst = base_seq[line_no].GetOp();
     int parent_inst = parent_seq[line_no].GetOp();
@@ -613,14 +613,14 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
   genotype1_mod_seq_p.DynamicCastFrom(genotype1_mod_rep_p);
   InstructionSequence& genotype1_mod_seq = *genotype1_mod_seq_p;
   
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype1_base_genome.Properties().Get("instset").StringValue())).GetSize();
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(genotype1_base_genome.Properties().Get("instset").StringValue()).GetSize();
   const int num_lines = genotype1_base_seq.GetSize();
   double genotype1_base_fitness = genotype1->GetFitness();
   vector<double> genotype1_info(num_lines, 0.0);
   
   // Loop through all the lines of code, calculate genotype1 information
-  tArray<double> test_fitness(num_insts);
-  tArray<double> prob(num_insts);
+  Apto::Array<double> test_fitness(num_insts);
+  Apto::Array<double> prob(num_insts);
   for (int line_no = 0; line_no < num_lines; line_no ++) {
     int cur_inst = genotype1_base_seq[line_no].GetOp();
     
@@ -884,7 +884,7 @@ void cAnalyze::CommandFilter(cString cur_string)
   }
   
   // Check relationship types.  rel_ok[0] = less_ok; rel_ok[1] = same_ok; rel_ok[2] = gtr_ok
-  tArray<bool> rel_ok(3, false);
+  Apto::Array<bool> rel_ok(3); rel_ok.SetAll(false);
   if (relation == "==")      {                    rel_ok[1] = true;                    }
   else if (relation == "!=") { rel_ok[0] = true;                     rel_ok[2] = true; }
   else if (relation == "<")  { rel_ok[0] = true;                                       }
@@ -988,7 +988,7 @@ void cAnalyze::FindOrganism(cString cur_string)
   tListPlus<cAnalyzeGenotype> & gen_list = batch[cur_batch].List();
   tListPlus<cAnalyzeGenotype> found_list;
   
-  tArray<int> new_counts(gen_list.GetSize());
+  Apto::Array<int> new_counts(gen_list.GetSize());
   new_counts.SetAll(0);
   
   while (cur_string.CountNumWords() > 0) {
@@ -1447,7 +1447,7 @@ void cAnalyze::SampleOrganisms(cString cur_string)
   
   // Create an array to store pointers to the genotypes and fill it in
   // while temporarily resetting all of the organism counts to zero.
-  tArray<cAnalyzeGenotype *> org_array(org_count);
+  Apto::Array<cAnalyzeGenotype *> org_array(org_count);
   int cur_org = 0;
   batch_it.Reset();
   while ((genotype = batch_it.Next()) != NULL) {
@@ -1471,7 +1471,7 @@ void cAnalyze::SampleOrganisms(cString cur_string)
   }
   
   // Now pick those that we are keeping.
-  tArray<int> keep_ids(new_org_count);
+  Apto::Array<int> keep_ids(new_org_count);
   random.Choose(org_count, keep_ids);
   
   // And increment the org counts for the associated genotypes.
@@ -1603,7 +1603,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
   int number_to_sample = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 1000;
   
   // These parameters copied from BatchRecalculate, they could change what kinds of offspring are produced!!
-  tArray<int> manual_inputs;  // Used only if manual inputs are specified  
+  Apto::Array<int> manual_inputs;  // Used only if manual inputs are specified
   cString msg;                // Holds any information we may want to send the driver to display
   int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
   int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;
@@ -1722,7 +1722,7 @@ void cAnalyze::CommandPrint(cString cur_string)
 void cAnalyze::CommandTrace(cString cur_string)
 {
   cString msg;
-  tArray<int> manual_inputs;
+  Apto::Array<int> manual_inputs;
   int sg = 0;
   
   // Process our arguments; manual inputs must be the last arguments
@@ -2067,7 +2067,7 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
   cAnalyzeGenotype * next_genotype = batch_it.Next();
   cAnalyzeGenotype * prev_genotype = NULL;
   
-  tArray<cDoubleSum> output_counts(nucoutputs);
+  Apto::Array<cDoubleSum> output_counts(nucoutputs);
   for (int i = 0; i < nucoutputs; i++) { output_counts[i].Clear();} 
   int count; 
   while (cur_genotype != NULL) { 
@@ -2503,15 +2503,15 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
 // Higher cpu_count is considered "less" in order to sort greatest-to-least
 // Furthermore, within the same cpu_count we sort greatest-to-least
 // based on genotype_count
-int cAnalyze::PStatsComparator(const void * elem1, const void * elem2)
+int cAnalyze::PStatsComparator(const p_stats& elem1, const p_stats& elem2)
 {
-  if (((p_stats*)elem2)->cpu_count > ((p_stats*)elem1)->cpu_count) return 1;
-  if (((p_stats*)elem2)->cpu_count < ((p_stats*)elem1)->cpu_count) return -1;
+  if (elem2.cpu_count > elem1.cpu_count) return 1;
+  if (elem2.cpu_count < elem1.cpu_count) return -1;
   
   // if the cpu_counts are the same, we'd like to sort greatest-to-least
   // on genotype_count
-  if (((p_stats*)elem2)->genotype_count > ((p_stats*)elem1)->genotype_count) return 1;
-  if (((p_stats*)elem2)->genotype_count < ((p_stats*)elem1)->genotype_count) return -1;
+  if (elem2.genotype_count > elem1.genotype_count) return 1;
+  if (elem2.genotype_count < elem1.genotype_count) return -1;
   
   // if they have the same cpu_count and genotype_count, we call them the same
   return 0;
@@ -2619,9 +2619,9 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   
   // Print the phenotypes in order from greatest cpu count to least
   // Within cpu_count, print in order from greatest genotype count to least
-  tArray<p_stats> phenotype_array;
+  Apto::Array<p_stats> phenotype_array;
   for (Apto::Map<cBitArray, p_stats>::ValueIterator it = phenotype_table.Values(); it.Next();) phenotype_array.Push(*it.Get());
-  phenotype_array.MergeSort(&cAnalyze::PStatsComparator);  // sort by cpu_count, greatest to least
+  Apto::QSort(phenotype_array, &cAnalyze::PStatsComparator); // sort by cpu_count, greatest to least
   
   for (int i = 0; i < phenotype_array.GetSize(); i++) {
     fp << phenotype_array[i].cpu_count << " "
@@ -2664,10 +2664,10 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
   
   // Setup the task categories...
   const int num_tasks = batch[cur_batch].List().GetFirst()->GetNumTasks();
-  tArray<int> task_count(num_tasks);
-  tArray<int> task_gen_count(num_tasks);
-  tArray<double> task_gen_dist(num_tasks);
-  tArray<double> task_site_entropy(num_tasks);
+  Apto::Array<int> task_count(num_tasks);
+  Apto::Array<int> task_gen_count(num_tasks);
+  Apto::Array<double> task_gen_dist(num_tasks);
+  Apto::Array<double> task_site_entropy(num_tasks);
   task_count.SetAll(0);
   task_gen_count.SetAll(0);
   
@@ -2688,7 +2688,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype* genotype = NULL;
     while ((genotype = batch_it.Next()) != NULL) {
-      if (m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().Get("instset").StringValue())).GetInstSetName() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
+      if (m_world->GetHardwareManager().GetInstSet(genotype->GetGenome().Properties().Get("instset").StringValue()).GetInstSetName() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
       
       const Genome& genome_p = genotype->GetGenome();
       ConstInstructionSequencePtr seq_p;
@@ -3542,7 +3542,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
     double base_fitness = genotype->GetFitness();
 
     tMatrix<double> prob(length_genome, num_insts);
@@ -3590,7 +3590,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   double oo_conditional_entropy = 0.0;
   tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
   const Genome& cur_genome = genotype->GetGenome();
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)cur_genome.Properties().Get("instset").StringValue())).GetSize();  
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(cur_genome.Properties().Get("instset").StringValue()).GetSize();
   for (int line = 0; line < length_genome; ++ line) {
     double oneline_entropy = 0.0;
     for (int inst = 0; inst < num_insts; ++ inst) {
@@ -3819,12 +3819,12 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   
   // this is our grid where we are going to calculate the fitness of an org in each box
   // given current resource contributions
-  tArray< tArray<double> > fitnesses(fsize[0]+1);
+  Apto::Array< Apto::Array<double> > fitnesses(fsize[0]+1);
   for (int i=0; i<fitnesses.GetSize(); i++)
 	  fitnesses[i].Resize(fsize[1]+1,1);
   
   // Get the resources for the specified update
-  tArray<double> resources;
+  Apto::Array<double> resources;
   if (!m_resources || !m_resources->GetResourceLevelsForUpdate(update, resources, true)) {
     cout << "error: did not find the desired update in resource history" << endl;
     return;
@@ -4061,7 +4061,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   }
   
   // Create an array of the correct size.
-  tArray<cAnalyzeGenotype *> genotype_array(org_count);
+  Apto::Array<cAnalyzeGenotype *> genotype_array(org_count);
   
   // And insert all of the organisms into the array.
   int cur_pos = 0;
@@ -4247,7 +4247,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
   } 
   
   // Create an array to store pointers to the genotypes and fill it in.
-  tArray<cAnalyzeGenotype *> org_array(org_count);
+  Apto::Array<cAnalyzeGenotype *> org_array(org_count);
   int cur_org = 0;
   batch_it.Reset();
   while ((genotype = batch_it.Next()) != NULL) {
@@ -4280,7 +4280,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& mod_seq = *mod_seq_p;
     
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)mod_genome.Properties().Get("instset").StringValue()));
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(mod_genome.Properties().Get("instset").StringValue());
     
     if (copy_mut_prob == 0.0 &&
         ins_mut_prob == 0.0 &&
@@ -4325,8 +4325,8 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     double start_fitness = genotype->GetFitness();
     int start_length = genotype->GetLength();
     int start_gest = genotype->GetGestTime();
-    const tArray<int>& start_task_counts = genotype->GetTaskCounts();
-    const tArray< tArray<int> >& start_KO_task_counts = genotype->GetKO_TaskCounts();
+    const Apto::Array<int>& start_task_counts = genotype->GetTaskCounts();
+    const Apto::Array< Apto::Array<int> >& start_KO_task_counts = genotype->GetKO_TaskCounts();
     
     cAnalyzeGenotype new_genotype(m_world, mod_genome);
     new_genotype.Recalculate(m_ctx);
@@ -4334,8 +4334,8 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     double end_fitness = new_genotype.GetFitness();
     int end_length = new_genotype.GetLength();
     int end_gest = new_genotype.GetGestTime();
-    const tArray<int> & end_task_counts = new_genotype.GetTaskCounts();
-    const tArray< tArray<int> >& end_KO_task_counts = new_genotype.GetKO_TaskCounts();
+    const Apto::Array<int> & end_task_counts = new_genotype.GetTaskCounts();
+    const Apto::Array< Apto::Array<int> >& end_KO_task_counts = new_genotype.GetKO_TaskCounts();
     
     // Calculate the complexities....
     double complexity_change = end_complexity - start_complexity;
@@ -4351,7 +4351,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     int total_info_lack = 0;   // Site never codes for any tasks.
     
     const int num_tasks = start_task_counts.GetSize();
-    tArray<int> mut_effects(num_tasks);
+    Apto::Array<int> mut_effects(num_tasks);
     for (int i = 0; i < num_tasks; i++) {
       mut_effects[i] = end_task_counts[i] - start_task_counts[i];
     }
@@ -4525,7 +4525,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& mod_seq = *mod_seq_p;
     
-    Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
+    Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
     
     // Loop through all the lines of code, testing the removal of each.
     // -2=lethal, -1=detrimental, 0=neutral, 1=beneficial
@@ -4533,7 +4533,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     int neg_count = 0;
     int neut_count = 0;
     int pos_count = 0;
-    tArray<int> ko_effect(max_line);
+    Apto::Array<int> ko_effect(max_line);
     for (int line_num = 0; line_num < max_line; line_num++) {
       // Save a copy of the current instruction and replace it with "NULL"
       int cur_inst = base_seq[line_num].GetOp();
@@ -4562,7 +4562,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
       mod_seq[line_num].SetOp(cur_inst);
     }
     
-    tArray<int> ko_pair_effect(ko_effect);
+    Apto::Array<int> ko_pair_effect(ko_effect);
     if (max_knockouts > 1) {
       for (int line1 = 0; line1 < max_line; line1++) {
       	for (int line2 = line1+1; line2 < max_line; line2++) {
@@ -4645,7 +4645,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   // Collect any other format information needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  tArray<int> manual_inputs;
+  Apto::Array<int> manual_inputs;
   
   cStringList arg_list(cur_string);
   
@@ -4851,7 +4851,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       col_fail_count[i] = 0;
     }
     
-    cInstSet& is = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue()));
+    cInstSet& is = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue());
     const Instruction null_inst = is.ActivateNullInst();
     
     // Loop through all the lines of code, testing the removal of each.
@@ -5030,23 +5030,23 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   double  av_task_overlap = 0; // average overlap between tasks
   
   // average StDev in positions used for a task
-  tArray<double> std_task_position(num_cols);
+  Apto::Array<double> std_task_position(num_cols);
   std_task_position.SetAll(0.0);
   
   // # of organisms actually doing a task
-  tArray<double> org_task(num_cols);
+  Apto::Array<double> org_task(num_cols);
   org_task.SetAll(0.0);
   
   // av. # of sites necessary for each of the tasks
-  tArray<double> av_num_inst(num_cols);
+  Apto::Array<double> av_num_inst(num_cols);
   av_num_inst.SetAll(0.0);
   
   // number of sites involved in 0-9 tasks 
-  tArray<double> av_inst_task(num_cols+1);
+  Apto::Array<double> av_inst_task(num_cols+1);
   av_inst_task.SetAll(0.0);
   
   // av. # task length (distance from first to last site used)
-  tArray<double> av_task_length(num_cols);
+  Apto::Array<double> av_task_length(num_cols);
   av_task_length.SetAll(0.0);
   
   
@@ -5098,7 +5098,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       mod_seq_p.DynamicCastFrom(mod_rep_p);
       InstructionSequence& mod_seq = *mod_seq_p;
       
-      Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
+      Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
       
       // Create and initialize the modularity matrix
       tMatrix<int> mod_matrix(num_cols, max_line);
@@ -5109,12 +5109,12 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       task_overlap.SetAll(0);
       
       // Create an initialize the counters for modularity
-      tArray<int> num_task(max_line); // number of tasks instruction is used in
-      tArray<int> num_inst(num_cols); // number of instructions involved in a task
-      tArray<int> sum(num_cols); 	    // helps with StDev calculations
-      tArray<int> sumsq(num_cols);    // helps with StDev calculations
-      tArray<int> inst_task(num_cols+1); // # of inst's involved in 0,1,2,3... tasks
-      tArray<int> task_length(num_cols);    // ditance between first and last inst involved in a task
+      Apto::Array<int> num_task(max_line); // number of tasks instruction is used in
+      Apto::Array<int> num_inst(num_cols); // number of instructions involved in a task
+      Apto::Array<int> sum(num_cols); 	    // helps with StDev calculations
+      Apto::Array<int> sumsq(num_cols);    // helps with StDev calculations
+      Apto::Array<int> inst_task(num_cols+1); // # of inst's involved in 0,1,2,3... tasks
+      Apto::Array<int> task_length(num_cols);    // ditance between first and last inst involved in a task
       
       num_task.SetAll(0);
       num_inst.SetAll(0);
@@ -5347,11 +5347,11 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     
     genotype->Recalculate(m_ctx);
     
-    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
+    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
     
     tMatrix<bool> task_matrix(num_traits, base_length);
-    tArray<int> num_inst(num_traits);  // Number of instructions for each task
-    tArray<int> num_task(base_length); // Number of traits at each locus
+    Apto::Array<int> num_inst(num_traits);  // Number of instructions for each task
+    Apto::Array<int> num_task(base_length); // Number of traits at each locus
     task_matrix.SetAll(false);
     num_inst.SetAll(0);
     num_task.SetAll(0);
@@ -5512,9 +5512,9 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
     }
     
     const Genome& genome = genotype->GetGenome();
-    const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)genome.Properties().Get("instset").StringValue()));
+    const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue());
     cInstSet* modify_inst_set = new cInstSet(original_inst_set);
-    cString isname = cString(genotype->GetGenome().Properties().Get("instset").StringValue()) + ":analyze_redundancy_by_inst_failure";
+    Apto::String isname = genotype->GetGenome().Properties().Get("instset").StringValue() + ":analyze_redundancy_by_inst_failure";
     if (!m_world->GetHardwareManager().RegisterInstSet(isname, modify_inst_set)) {
       delete modify_inst_set;
       modify_inst_set = &m_world->GetHardwareManager().GetInstSet(isname);
@@ -5643,7 +5643,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue()));
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue());
     const int num_insts = inst_set.GetSize();
     
     // Headers...
@@ -5701,10 +5701,10 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     // Keep track of the number of mutations in each category...
     int total_dead = 0, total_neg = 0, total_neut = 0, total_pos = 0;
     double total_fitness = 0.0;
-    tArray<double> col_fitness(num_insts + 1);
+    Apto::Array<double> col_fitness(num_insts + 1);
     col_fitness.SetAll(0.0);
     
-    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).ActivateNullInst();
+    const Instruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).ActivateNullInst();
     
     cString color_string;  // For coloring cells...
     
@@ -5872,7 +5872,7 @@ void cAnalyze::CommandMapDepth(cString cur_string)
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
   cout << "Output to " << filename << endl;
-  tArray<int> depth_array(max_depth+1);
+  Apto::Array<int> depth_array(max_depth+1);
   for (cur_batch = min_batch; cur_batch <= max_batch; cur_batch++) {
     depth_array.SetAll(0);
     tListIterator<cAnalyzeGenotype> list_it(batch[cur_batch].List());
@@ -7005,8 +7005,8 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   // Load in the variables...
   cString filename("inst_analyze.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  cString isname = m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
-  if (cur_string.GetSize() != 0) isname = cur_string.PopWord();
+  Apto::String isname = (const char*)m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
+  if (cur_string.GetSize() != 0) isname = (const char*)cur_string.PopWord();
   const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(isname);
   const int num_insts = inst_set.GetSize();
   
@@ -7083,7 +7083,7 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   const double max_freq = exp_freq * 2.0;
   
   double total_length = 0.0;
-  tArray<double> total_freq(num_insts);
+  Apto::Array<double> total_freq(num_insts);
   for (int i = 0; i < num_insts; i++) total_freq[i] = 0.0;
   
   // Loop through all of the genotypes in this batch...
@@ -7093,7 +7093,7 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
     if (genotype->GetGenome().Properties().Get("instset").StringValue() != isname) continue;
     
     // Setup for counting...
-    tArray<int> inst_bin(num_insts);
+    Apto::Array<int> inst_bin(num_insts);
     for (int i = 0; i < num_insts; i++) inst_bin[i] = 0;
     
     // Count it up!
@@ -7155,8 +7155,8 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   // Load in the variables...
   cString filename("inst_analyze.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  cString isname = m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
-  if (cur_string.GetSize() != 0) isname = cur_string.PopWord();
+  Apto::String isname = (const char*)m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
+  if (cur_string.GetSize() != 0) isname = (const char*)cur_string.PopWord();
   const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(isname);
   const int num_insts = inst_set.GetSize();
   
@@ -7170,7 +7170,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   fp << endl;
   
   double total_length = 0.0;
-  tArray<double> total_freq(num_insts);
+  Apto::Array<double> total_freq(num_insts);
   for (int i = 0; i < num_insts; i++) total_freq[i] = 0.0;
   int num_orgs = 0; 
   
@@ -7183,7 +7183,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
     num_orgs++; 
     
     // Setup for counting...
-    tArray<int> inst_bin(num_insts);
+    Apto::Array<int> inst_bin(num_insts);
     for (int i = 0; i < num_insts; i++) inst_bin[i] = 0;
     
     // Count it up!
@@ -7267,7 +7267,7 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
   // Setup a genome to store the previous values before mutations.
-  tArray<int> prev_inst(size);
+  Apto::Array<int> prev_inst(size);
   prev_inst.SetAll(-1);  // -1 indicates never changed.
   
   // Open the output file...
@@ -7436,11 +7436,11 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
     
     // Loop through all the lines of code, testing all mutations...
-    tArray<double> test_fitness(num_insts);
-    tArray<double> prob(num_insts);
+    Apto::Array<double> test_fitness(num_insts);
+    Apto::Array<double> prob(num_insts);
     for (int line_num = 0; line_num < max_line; line_num++) {
       int cur_inst = base_seq[line_num].GetOp();
       
@@ -7625,7 +7625,7 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
 
     // run throught sites in genome
     for (int site1 = 0; site1 < max_line; site1++) {
@@ -8047,7 +8047,7 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     mod_seq_p.DynamicCastFrom(mod_rep_p);
     InstructionSequence& seq = *mod_seq_p;
     
-    const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)base_genome.Properties().Get("instset").StringValue())).GetSize();    
+    const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.Properties().Get("instset").StringValue()).GetSize();
     /*
      * 
      *  ONE SITE CALCULATIONS
@@ -8056,12 +8056,12 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
      
     // single site entropies for use with
     // two site calculations (below)
-    tArray<double> entropy_ss_mers(max_line);
-    tArray<double> entropy_ss_bits(max_line);
+    Apto::Array<double> entropy_ss_mers(max_line);
+    Apto::Array<double> entropy_ss_bits(max_line);
     // used in single site calculations
-    tArray<double> test_fitness(num_insts);
-    tArray<double> prob(num_insts);
-    tArray<double> prob_next(num_insts);
+    Apto::Array<double> test_fitness(num_insts);
+    Apto::Array<double> prob(num_insts);
+    Apto::Array<double> prob_next(num_insts);
     
     // run through lines in genome
     for (int line_num = 0; line_num < max_line; line_num++) {
@@ -8178,8 +8178,8 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     // Loop through all the lines of code, 
     // testing all TWO SITE mutations...
     tMatrix<double> test_fitness_2s(num_insts,num_insts);
-    tArray<double> prob_1s_i(num_insts);
-    tArray<double> prob_1s_j(num_insts);
+    Apto::Array<double> prob_1s_i(num_insts);
+    Apto::Array<double> prob_1s_j(num_insts);
     tMatrix<double> prob_2s(num_insts,num_insts);
     tMatrix<double> prob_next_2s(num_insts,num_insts);
     
@@ -8460,7 +8460,7 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
   
   if (genotype == NULL) return;
   int seq_length = genotype->GetLength();
-  const int num_insts = m_world->GetHardwareManager().GetInstSet(cString((const char*)genotype->GetGenome().Properties().Get("instset").StringValue())).GetSize();  
+  const int num_insts = m_world->GetHardwareManager().GetInstSet(genotype->GetGenome().Properties().Get("instset").StringValue()).GetSize();
   tMatrix<int> inst_stat(seq_length, num_insts);
   
   // Initializing inst_stat ...
@@ -8836,7 +8836,7 @@ void cAnalyze::BatchDuplicate(cString cur_string)
 
 void cAnalyze::BatchRecalculate(cString cur_string)
 {
-  tArray<int> manual_inputs;  // Used only if manual inputs are specified
+  Apto::Array<int> manual_inputs;  // Used only if manual inputs are specified
   cString msg;                // Holds any information we may want to send the driver to display
   
   int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
@@ -8901,7 +8901,7 @@ void cAnalyze::BatchRecalculateWithArgs(cString cur_string)
 {
   // RECALC <use_resources> <random_inputs> <manual_inputs in.1 in.2 in.3> <update N> <num_trials X>
 
-  tArray<int> manual_inputs;  // Used only if manual inputs are specified
+  Apto::Array<int> manual_inputs;  // Used only if manual inputs are specified
   cString msg;                // Holds any information we may want to send the driver to display
   
   // Defaults
@@ -9043,7 +9043,7 @@ void cAnalyze::PrintTestInfo(cString)
   cFlexVar var1(1), var2(2.0), var3('3'), var4("four");
   cFlexVar var5(9), var6(9.0), var7('9'), var8("9");
   
-  tArray<cFlexVar> vars(10);
+  Apto::Array<cFlexVar> vars(10);
   vars[0] = "Testing";
   vars[1] = 1;
   vars[2] = 2.0;
@@ -9167,9 +9167,9 @@ void cAnalyze::BatchCompete(cString cur_string)
                                           );
   
   /* Initialize scheduler with fitness values per-organism. */
-  tArray<cAnalyzeGenotype*> genotype_array(parent_batch_size);
-  tArray<Genome> offspring_genome_array(parent_batch_size);
-  tArray<cMerit> fitness_array(parent_batch_size);
+  Apto::Array<cAnalyzeGenotype*> genotype_array(parent_batch_size);
+  Apto::Array<Genome> offspring_genome_array(parent_batch_size);
+  Apto::Array<cMerit> fitness_array(parent_batch_size);
   cAnalyzeGenotype * genotype = NULL;
   
   cCPUTestInfo test_info;
@@ -9227,7 +9227,7 @@ void cAnalyze::BatchCompete(cString cur_string)
     child_seq_p.DynamicCastFrom(child_rep_p);
     InstructionSequence& child_seq = *child_seq_p;
     
-    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(cString((const char*)child_genome.Properties().Get("instset").StringValue()));
+    const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(child_genome.Properties().Get("instset").StringValue());
     
     if (copy_mut_prob > 0.0) {
       for (int n = 0; n < child_seq.GetSize(); n++) {
@@ -9650,7 +9650,7 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
 
 void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info, cResourceHistory* in_resource_history, int in_resource_time_spent_offset)
 {
-  tArray<int> manual_inputs;  // Used only if manual inputs are specified  
+  Apto::Array<int> manual_inputs;  // Used only if manual inputs are specified
   cString msg;                // Holds any information we may want to send the driver to display
   int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
   int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;

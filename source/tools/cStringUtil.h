@@ -23,13 +23,8 @@
 #ifndef cStringUtil_h
 #define cStringUtil_h
 
-#ifndef cString_h
 #include "cString.h"
-#endif
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cStringUtil
 {
@@ -78,7 +73,7 @@ public:
 
   /* Return an array of integers from a string with format x,y..z,a */
 
-  static tArray<int> ReturnArray(cString& in_string);
+  static Apto::Array<int> ReturnArray(cString& in_string);
 };
 
 

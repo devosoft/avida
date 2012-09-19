@@ -168,7 +168,7 @@ void cEnvironmentScreen::UpdateResource(cAvidaContext& ctx)
           for(int k=0; k<m_world->GetPopulation().GetSize(); ++k) {
             cPopulationCell& cell = m_world->GetPopulation().GetCell(k);
             if(cell.IsOccupied()) {
-              const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
+              const Apto::Array<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
               reactions += org_rx[i];
             }
           }
@@ -201,13 +201,13 @@ void cEnvironmentScreen::UpdateReaction(cAvidaContext& ctx)
   
   // Find the sum of the reactions
   
-  tArray<int> reactions(num_reactions);
+  Apto::Array<int> reactions(num_reactions);
   reactions.SetAll(0);
   
   for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
     if(cell.IsOccupied()) {
-      const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
+      const Apto::Array<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
       for(int j=0; j<num_reactions; ++j) {
         reactions[j] += org_rx[j];
       }

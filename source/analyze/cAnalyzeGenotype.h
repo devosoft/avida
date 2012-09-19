@@ -37,7 +37,6 @@
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
-#include "tArray.h"
 #include "cPhenPlastSummary.h"
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
@@ -125,15 +124,15 @@ private:
   double div_type;
   int mate_id;
   cString executed_flags; // converted into a string
-  tArray<int> inst_executed_counts;
-  tArray<int> task_counts;
-  tArray<double> task_qualities;
-  tArray<int> internal_task_counts;
-  tArray<double> internal_task_qualities;
-  tArray<double> rbins_total;
-  tArray<double> rbins_avail;
-  tArray<int> collect_spec_counts;
-  tArray<int> m_env_inputs;
+  Apto::Array<int> inst_executed_counts;
+  Apto::Array<int> task_counts;
+  Apto::Array<double> task_qualities;
+  Apto::Array<int> internal_task_counts;
+  Apto::Array<double> internal_task_qualities;
+  Apto::Array<double> rbins_total;
+  Apto::Array<double> rbins_avail;
+  Apto::Array<int> collect_spec_counts;
+  Apto::Array<int> m_env_inputs;
   int m_mating_type; //@CHC
   int m_mate_preference; //@CHC
   int m_mating_display_a; //@CHC
@@ -166,7 +165,7 @@ private:
     int pair_pos_count;
     
     bool has_chart_info; // Keep a chart of which sites affect which tasks?
-    tArray< tArray<int> > task_counts;
+    Apto::Array< Apto::Array<int> > task_counts;
 
     void Reset() {
       dead_count = 0;
@@ -300,7 +299,7 @@ public:
   const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }
   cString GetAlignmentExecutedFlags() const;
-  const tArray<int>& GetInstExecutedCounts() const { return inst_executed_counts; }
+  const Apto::Array<int>& GetInstExecutedCounts() const { return inst_executed_counts; }
   int GetInstExecutedCount(int _inst_num) const;
   cString DescInstExe(int _inst_id) const;
   const cString & GetTag() const { return tag; }
@@ -354,7 +353,7 @@ public:
   int GetKOPair_NeutCount() const;
   int GetKOPair_PosCount() const;
   int GetKOPair_Complexity() const;
-  const tArray< tArray<int> > & GetKO_TaskCounts() const;
+  const Apto::Array< Apto::Array<int> > & GetKO_TaskCounts() const;
   
   // Landscape accessors
   double GetFracDead() const  { CheckLand(); return m_land->GetProbDead(); }
@@ -383,7 +382,7 @@ public:
     return m_phenplast_stats->m_task_probabilities[task_id];
   }
   cString DescTaskProb(int task_id) const;
-  tArray<double> GetTaskProbabilities() const { CheckPhenPlast(); return m_phenplast_stats->m_task_probabilities; }  
+  Apto::Array<double> GetTaskProbabilities() const { CheckPhenPlast(); return m_phenplast_stats->m_task_probabilities; }
     
   
   double GetFitnessRatio() const { return fitness_ratio; }
@@ -412,14 +411,14 @@ public:
     if (args.HasString("binary")) return (task_counts[task_id] > 0);
     return task_counts[task_id];
   }
-  const tArray<int>& GetTaskCounts() const { return task_counts; }
+  const Apto::Array<int>& GetTaskCounts() const { return task_counts; }
   cString DescTask(int task_id) const;
   
   double GetTaskQuality(int task_id) const {
 	  if (task_id >= task_counts.GetSize()) return 0;
 	  return task_qualities[task_id];
   }
-  const tArray<double>& GetTaskQualities() const { return task_qualities; }
+  const Apto::Array<double>& GetTaskQualities() const { return task_qualities; }
   
   
   // number of different tasks performed
@@ -442,7 +441,7 @@ public:
     if (input_id >= m_env_inputs.GetSize()) return 0;
     return m_env_inputs[input_id];
   }
-  const tArray<int>& GetEnvInputs() const{
+  const Apto::Array<int>& GetEnvInputs() const{
     return m_env_inputs;
   }
   cString DescEnvInput(int input_id) const { return cStringUtil::Stringf("task.%d", input_id); }

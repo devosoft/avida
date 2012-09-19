@@ -23,18 +23,11 @@
 #ifndef cProbDemeProbSchedule_h
 #define cProbDemeProbSchedule_h
 
-#ifndef cRandom_h
+#include "avida/core/Types.h"
+
 #include "cRandom.h"
-#endif
-#ifndef cSchedule_h
 #include "cSchedule.h"
-#endif
-#ifndef cWeightedIndex_h
 #include "cWeightedIndex.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 
 /**
@@ -56,7 +49,7 @@ private:
   cRandom m_rng; 
 
   // Array of WeightedIndex tree's to farm out the scheduling.
-  tArray<cWeightedIndex*> chart;
+  Apto::Array<cWeightedIndex*> chart;
 
   // WeightedIndex tree for scheduling demes based on population size.
   cWeightedIndex demeChart;

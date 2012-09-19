@@ -62,14 +62,14 @@ protected:
   // --------  Instruction Costs  ---------
   int m_inst_cost;
   int m_female_cost;
-  tArray<int> m_inst_ft_cost;
-  tArray<double> m_inst_energy_cost;
-  tArray<double> m_inst_res_cost; 
-  tArray<double> m_inst_fem_res_cost; 
-  tArray<int> m_thread_inst_cost;
-  tArray<int> m_thread_inst_post_cost;
-  tArray<int> m_active_thread_costs;
-  tArray<int> m_active_thread_post_costs;
+  Apto::Array<int> m_inst_ft_cost;
+  Apto::Array<double> m_inst_energy_cost;
+  Apto::Array<double> m_inst_res_cost;
+  Apto::Array<double> m_inst_fem_res_cost;
+  Apto::Array<int> m_thread_inst_cost;
+  Apto::Array<int> m_thread_inst_post_cost;
+  Apto::Array<int> m_active_thread_costs;
+  Apto::Array<int> m_active_thread_post_costs;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;

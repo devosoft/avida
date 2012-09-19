@@ -43,14 +43,13 @@
            T& operator() ( const int row, col )
        return the element at position in the matrix
 
-     const tArray<T>& operator[] ( const int row ) const
-           tArray<T>& operator[] ( const int row )
+     const Apto::Array<T>& operator[] ( const int row ) const
+           Apto::Array<T>& operator[] ( const int row )
        return the array at the row in the matrix.
 
 
 */
 
-#include "tArray.h"
 
 #include <cassert>
 
@@ -61,7 +60,7 @@
 template <class T> class tMatrix {
 protected:
   // Internal Variables
-  tArray<T> * data;  // Data Elements
+  Apto::Array<T> * data;  // Data Elements
   int num_rows;
 public:
   int GetNumRows() const { return num_rows; }
@@ -80,7 +79,7 @@ public:
       num_rows = _rows;
       assert(_rows > 0); // Invalid size specified for matrix resize
       if( data != NULL )  delete [] data;  // remove old data if exists
-      data = new tArray<T>[_rows];  // Allocate block for data
+      data = new Apto::Array<T>[_rows];  // Allocate block for data
       assert(data != NULL); // Memory Allocation Error: Out of Memory?
     }
     for (int i = 0; i < GetNumRows(); i++) data[i].ResizeClear(_cols);
@@ -96,14 +95,14 @@ public:
     }
 
     if( data != NULL )  {
-      tArray<T> * new_data = new tArray<T>[_rows];
+      Apto::Array<T> * new_data = new Apto::Array<T>[_rows];
       for (int i = 0; i < GetNumRows() && i < _rows; i++) {
 	new_data[i] = data[i];
       }
       delete [] data;  // remove old data if exists
       data = new_data;
     } else {
-      data = new tArray<T>[_rows];  // Allocate block for data
+      data = new Apto::Array<T>[_rows];  // Allocate block for data
     }
     assert(data != NULL); // Memory Allocation Error: Out of Memory?
     num_rows = _rows;
@@ -117,8 +116,8 @@ public:
         T & operator()(int _r, int _c)       { return ElementAt(_r, _c); }
   const T & operator()(int _r, int _c) const { return ElementAt(_r, _c); }
 
-        tArray<T> & operator[](int row)       { return data[row]; }
-  const tArray<T> & operator[](int row) const { return data[row]; }
+        Apto::Array<T> & operator[](int row)       { return data[row]; }
+  const Apto::Array<T> & operator[](int row) const { return data[row]; }
 
   void SetAll(const T & value) {
     for (int i = 0; i < num_rows; i++) {

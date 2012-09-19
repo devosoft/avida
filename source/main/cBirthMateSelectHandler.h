@@ -22,15 +22,8 @@
 #ifndef cBirthMateSelectHandler_h
 #define cBirthMateSelectHandler_h
 
-#ifndef cBirthEntry_h
 #include "cBirthEntry.h"
-#endif
-#ifndef cBirthSelectionHandler_h
 #include "cBirthSelectionHandler.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cBirthChamber;
 
@@ -39,7 +32,7 @@ class cBirthMateSelectHandler : public cBirthSelectionHandler
 {
 private:
   cBirthChamber* m_bc;
-  tArray<cBirthEntry> m_entries;
+  Apto::Array<cBirthEntry> m_entries;
   cBirthEntry m_non_ms_entry;
   
   

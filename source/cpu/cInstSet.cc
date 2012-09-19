@@ -140,7 +140,7 @@ bool cInstSet::InstInSet(const cString& in_name) const
   cString best_name("");
   
   for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
-    const cString & cur_name = m_inst_lib->GetName(m_lib_name_map[i].lib_fun_id);
+    const cString& cur_name = m_inst_lib->GetName(m_lib_name_map[i].lib_fun_id);
     if (cur_name == in_name) return true;
   }
   return false;

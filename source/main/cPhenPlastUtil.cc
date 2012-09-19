@@ -63,7 +63,7 @@ double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, Sys
   return ps->m_task_probabilities[task_id];
 }
 
-const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
+const Apto::Array<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, Systematics::GroupPtr bg)
 {
   Apto::SmartPtr<cPhenPlastSummary> ps = bg->GetData<cPhenPlastSummary>();
   if (!ps) {

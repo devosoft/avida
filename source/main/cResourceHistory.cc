@@ -64,7 +64,7 @@ bool cResourceHistory::GetResourceCountForUpdate(cAvidaContext& ctx, int update,
   return true;
 }
 
-bool cResourceHistory::GetResourceLevelsForUpdate(int update, tArray<double>& levels, bool exact) const
+bool cResourceHistory::GetResourceLevelsForUpdate(int update, Apto::Array<double>& levels, bool exact) const
 {
   int entry = getEntryForUpdate(update, exact);
   if (entry == -1) return false;
@@ -78,7 +78,7 @@ bool cResourceHistory::GetResourceLevelsForUpdate(int update, tArray<double>& le
   return true;
 }
 
-void cResourceHistory::AddEntry(int update, const tArray<double>& values)
+void cResourceHistory::AddEntry(int update, const Apto::Array<double>& values)
 {
   // Note that this method does not currently validate that 'update' does not already exist as an entry
   // If this happens, incorrect resource levels may be returned upon retreival

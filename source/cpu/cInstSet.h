@@ -29,7 +29,6 @@
 
 #include "cString.h"
 #include "cInstLib.h"
-#include "tArray.h"
 #include "cOrderedWeightedIndex.h"
 
 using namespace std;
@@ -75,7 +74,7 @@ public:
   };
   Apto::Array<sInstEntry, Apto::Smart> m_lib_name_map;
   
-  tArray<int> m_lib_nopmod_map;
+  Apto::Array<int> m_lib_nopmod_map;
   
   cOrderedWeightedIndex* m_mutation_index;     // Weighted index for instructions 
   

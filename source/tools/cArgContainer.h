@@ -23,7 +23,6 @@
 #define cArgContainer_h
 
 #include "cString.h"
-#include "tArray.h"
 
 namespace Avida {
   class Feedback;
@@ -40,9 +39,9 @@ using namespace Avida;
 class cArgContainer
 {
 private:
-  tArray<int> m_ints;
-  tArray<double> m_doubles;
-  tArray<cString> m_strings;
+  Apto::Array<int> m_ints;
+  Apto::Array<double> m_doubles;
+  Apto::Array<cString> m_strings;
 
   
   cArgContainer() { ; }

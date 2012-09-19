@@ -35,7 +35,6 @@
 #include "cOrgMovementPredicate.h"
 #include "cStateGrid.h"
 #include "cUserFeedback.h"
-#include "tArrayUtils.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -549,7 +548,7 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
   if (!(logic_id == 63 || logic_id == 95 || logic_id == 119)) return 0.0;
 		
   const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
-  const tArray<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
+  const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -574,7 +573,7 @@ double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
   if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))  return 0.0;
 	
   const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
-  const tArray<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
+  const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
   const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
   
   //if (resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2192,7 +2191,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   // - count number of actual entries
   // - count moves required
   // - update valmap, tracking observed inputs
-  tArray<int> sorted(size);
+  Apto::Array<int> sorted(size);
   const bool ascending = (args.GetInt(1) >= 0);
   int count = 1;
   
@@ -2357,7 +2356,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   const int function = args.GetInt(0);
   
   // get however many variables need, turn them into doubles between 0 and 1
-  tArray<double> vars;
+  Apto::Array<double> vars;
   vars.Resize(args.GetInt(3));
   
   double Fx = 0.0;
@@ -2422,7 +2421,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   }
 
   else if (function == 19) {
-    tArray<double> tempVars;
+    Apto::Array<double> tempVars;
     tempVars.Resize(args.GetInt(3));
     for (int i=0; i<args.GetInt(3); i++) {
       tempVars[i]=0;
@@ -2452,7 +2451,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       int len = args.GetInt(2);
       double base_pow = args.GetDouble(0);
       
-      tArray<double> tempVars;
+      Apto::Array<double> tempVars;
       tempVars.Resize(args.GetInt(3));
       for (int i=0; i<args.GetInt(3); i++) tempVars[i] = 0;
       
@@ -3240,9 +3239,9 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
   
   // Build and sort history
   const int history_offset = 3 + sg.GetNumStates();
-  tArray<int> history(ext_mem.GetSize() - history_offset);
+  Apto::Array<int> history(ext_mem.GetSize() - history_offset);
   for (int i = 0; i < history.GetSize(); i++) history[i] = ext_mem[i + history_offset];
-  tArrayUtils::QSort(history);
+  Apto::QSort(history);
   
   // Calculate how many unique non-poison cells have been touched
   int traversed = 0;

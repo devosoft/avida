@@ -29,15 +29,8 @@
 #include <set>
 #include <deque>
 
-#ifndef cMutationRates_h
 #include "cMutationRates.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
 #include "cGenomeUtil.h"
 
 class cHardwareBase;
@@ -61,7 +54,7 @@ private:
 
   tList<cPopulationCell> m_connections;  // A list of neighboring cells.
   cMutationRates* m_mut_rates;           // Mutation rates at this cell.
-  tArray<int> m_inputs;                 // Environmental Inputs...
+  Apto::Array<int> m_inputs;                 // Environmental Inputs...
 
   int m_cell_id;           // Unique id for position of cell in population.
   int m_deme_id;           // ID of the deme that this cell is part of.  
@@ -126,7 +119,7 @@ public:
   inline cMutationRates& MutationRates() { assert(m_mut_rates); return *m_mut_rates; }
 
   inline int GetInput(int input_cell) const { return m_inputs[input_cell]; }
-  inline const tArray<int>& GetInputs() const { return m_inputs; }
+  inline const Apto::Array<int>& GetInputs() const { return m_inputs; }
   inline int GetInputAt(int& input_pointer);
   inline int GetInputSize() { return m_inputs.GetSize(); }
   void ResetInputs(cAvidaContext& ctx);
@@ -173,9 +166,9 @@ public:
   cOrganism* GetRandAV() const;
   cOrganism* GetRandPredAV() const;
   cOrganism* GetRandPreyAV() const;
-  tArray<cOrganism*> GetCellInputAVs();
-  tArray<cOrganism*> GetCellOutputAVs();
-  tArray<cOrganism*> GetCellAVs();
+  Apto::Array<cOrganism*> GetCellInputAVs();
+  Apto::Array<cOrganism*> GetCellOutputAVs();
+  Apto::Array<cOrganism*> GetCellAVs();
 
 // -------- Neural support -------- 
 private:

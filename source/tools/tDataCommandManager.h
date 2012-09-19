@@ -34,13 +34,13 @@ template <class TargetType> class tDataCommandManager
 {
 private:
   tDictionary<tDataEntry<TargetType>*> m_entry_dict;  
-  tArray<cString> m_entry_names;
+  Apto::Array<cString> m_entry_names;
   
 public:
   tDataCommandManager() { ; }
   ~tDataCommandManager()
   {
-    tArray<tDataEntry<TargetType>*> entries;
+    Apto::Array<tDataEntry<TargetType>*> entries;
     m_entry_dict.GetValues(entries);
     for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
   }
@@ -51,7 +51,7 @@ public:
     m_entry_names.Push(name);
   }
   
-  const tArray<cString>& GetEntryNames() const { return m_entry_names; }
+  const Apto::Array<cString>& GetEntryNames() const { return m_entry_names; }
 
   tDataEntryCommand<TargetType>* GetDataCommand(const cString& cmd, cString* error_str = NULL) const
   {
@@ -83,7 +83,7 @@ public:
       // If no args were given, load all of the stats.
       // @TODO - handle indexed items...  under this scheme only the first task and env_input value will be output    
       
-      tArray<tDataEntry<TargetType>*> data_entries;
+      Apto::Array<tDataEntry<TargetType>*> data_entries;
       m_entry_dict.GetValues(data_entries);
       for (int i = 0; i < data_entries.GetSize(); i++)
         output_list.PushRear(new tDataEntryCommand<TargetType>(data_entries[i]));

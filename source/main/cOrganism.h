@@ -33,7 +33,6 @@
 #include "cPhenotype.h"
 #include "cOrgInterface.h"
 #include "cOrgMessage.h"
-#include "tArray.h"
 #include "tBuffer.h"
 #include "tList.h"
 
@@ -70,7 +69,7 @@ private:
   
   
   const Genome m_initial_genome;         // Initial genome; can never be changed!
-  tArray<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
+  Apto::Array<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
   int m_id;                               // unique id for each org, is just the number it was born
@@ -167,10 +166,10 @@ public:
   void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
   int  GetCCladeLabel() const { return cclade_id; }
 
-  const tArray<double>& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
+  const Apto::Array<double>& GetRBins() const { return m_phenotype.GetCurRBinsAvail(); }
   double GetRBin(int index) { return m_phenotype.GetCurRBinAvail(index); }
   double GetRBinsTotal();
-  void SetRBins(const tArray<double>& rbins_in);
+  void SetRBins(const Apto::Array<double>& rbins_in);
   void SetRBin(const int index, const double value);
   void AddToRBin(const int index, const double value);
   void IncCollectSpecCount(const int spec_id);
@@ -300,7 +299,7 @@ public:
   bool InjectParasite(Systematics::UnitPtr parent, const cString& label, const InstructionSequence& genome);
   bool ParasiteInfectHost(Systematics::UnitPtr parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
-  const tArray<Systematics::UnitPtr>& GetParasites() const { return m_parasites; }
+  const Apto::Array<Systematics::UnitPtr>& GetParasites() const { return m_parasites; }
   void ClearParasites();
 
   // --------  Mutation Rate Convenience Methods  --------

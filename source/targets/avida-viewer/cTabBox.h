@@ -21,17 +21,9 @@
 #ifndef cTabBox_h
 #define cTabBox_h
 
-#ifndef cStringList_h
 #include "cStringList.h"
-#endif
-
-#ifndef cTextWindow_h
 #include "cTextWindow.h"
-#endif
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cTabBox {
 private:
@@ -41,8 +33,8 @@ private:
   int rows;
   int cols;
 
-  tArray<cString> tabname_array;
-  tArray<char> optkey_array;
+  Apto::Array<cString> tabname_array;
+  Apto::Array<char> optkey_array;
   int active_tab;
 
   // Find the position of the option character in a string.

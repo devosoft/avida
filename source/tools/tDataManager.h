@@ -25,15 +25,9 @@
 
 #include <iostream>
 
-#ifndef cDataManager_Base_h
 #include "cDataManager_Base.h"
-#endif
-#ifndef tDataEntry_h
 #include "tDataEntry.h"
-#endif
-#ifndef tDictionary_h
 #include "tDictionary.h"
-#endif
 
 // This template manages a collection of keywords and associates each with
 // an accessor for a specific object.  When a list of keywords is then
@@ -53,7 +47,7 @@ public:
   tDataManager(TargetType* target, const cString& filetype = "unknown") : cDataManager_Base(filetype), m_target(target) { ; }
   ~tDataManager()
   {
-    tArray<tDataEntry<TargetType>*> entries;
+    Apto::Array<tDataEntry<TargetType>*> entries;
     m_entry_dict.GetValues(entries);
     for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
   }

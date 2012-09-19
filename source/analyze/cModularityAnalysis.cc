@@ -67,7 +67,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     
   // Check if the organism does any tasks
   bool does_tasks = false;
-  const tArray<int> base_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
+  const Apto::Array<int> base_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
   const int num_tasks = base_tasks.GetSize();
   for (int i = 0; i < num_tasks; i++) {
     if (base_tasks[i] > 0) {
@@ -94,8 +94,10 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     tMatrix<int> mod_matrix(num_tasks, max_line);
     mod_matrix.SetAll(0);
     
-    tArray<int> site_num_tasks(max_line, 0);  // number of tasks instruction is used in
-    tArray<int> sites_per_task(num_tasks, 0); // number of sites involved in each task
+    Apto::Array<int> site_num_tasks(max_line);  // number of tasks instruction is used in
+    site_num_tasks.SetAll(0);
+    Apto::Array<int> sites_per_task(num_tasks); // number of sites involved in each task
+    sites_per_task.SetAll(0);
     
     // Loop through all the lines of code, testing the removal of each.
     for (int line_num = 0; line_num < max_line; line_num++) {
@@ -107,7 +109,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
       testcpu->TestGenome(ctx, test_info, mod_genome);
       
       if (test_info.GetColonyFitness() > 0.0) {
-        const tArray<int>& test_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
+        const Apto::Array<int>& test_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
         
         for (int cur_task = 0; cur_task < num_tasks; cur_task++) {
           // This is done so that under 'binary' option it marks
@@ -127,9 +129,12 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
       mod_seq[line_num].SetOp(cur_inst);
     }
     
-    tArray<int> sites_inv_x_tasks(num_tasks + 1, 0);  // # of inst's involved in 0,1,2,3... tasks    
-    tArray<double> ave_task_position(num_tasks, 0.0); // mean positions of the tasks in the genome
-    tArray<int> task_length(num_tasks, 0);  // distance between first and last inst involved in a task
+    Apto::Array<int> sites_inv_x_tasks(num_tasks + 1);  // # of inst's involved in 0,1,2,3... tasks
+    sites_inv_x_tasks.SetAll(0);
+    Apto::Array<double> ave_task_position(num_tasks); // mean positions of the tasks in the genome
+    ave_task_position.SetAll(0.0);
+    Apto::Array<int> task_length(num_tasks);  // distance between first and last inst involved in a task
+    task_length.SetAll(0);
  
     int total_task = 0;           // total number of tasks done
     int total_inst = 0;           // total number of instructions involved in tasks
@@ -201,7 +206,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     
     
     // Calculate mean positions of the tasks
-    tArray<int> task_position(num_tasks);
+    Apto::Array<int> task_position(num_tasks);
     for (int i = 0; i < num_tasks; i++) {
       task_position[i] = 0;
       for (int j = 0; j < max_line; j++) if (mod_matrix(i,j) > 0) task_position[i] += j;

@@ -49,8 +49,8 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
   if (input_file.GetCustomDirectives().HasEntry("inst_set")) {
     cString isname = input_file.GetCustomDirectives().Get("inst_set");
     isname.Trim();
-    if (hwm.IsInstSet(isname)) {
-      is = &hwm.GetInstSet(isname);
+    if (hwm.IsInstSet((const char*)isname)) {
+      is = &hwm.GetInstSet((const char*)isname);
     } else {
       feedback.Error("invalid instruction set '%s' defined in organism '%s'", (const char*)isname, (const char*)fname);
       return GenomePtr();

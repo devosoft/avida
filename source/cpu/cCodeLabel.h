@@ -27,7 +27,6 @@
 
 #include "cString.h"
 #include "nHardware.h"
-#include "tArray.h"
 
 /**
  * The cCodeLabel class is used to identify a label within the genotype of
@@ -37,7 +36,7 @@
 class cCodeLabel
 {
 private:
-  tArray<char> m_nops;
+  Apto::Array<char> m_nops;
   int m_size;
 
 public:

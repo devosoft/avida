@@ -191,7 +191,7 @@ cDeme& cDeme::operator=(const cDeme& in_deme)
   return *this;
 }
 
-void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
+void cDeme::Setup(int id, const Apto::Array<int> & in_cells, int in_width, cWorld* world)
 {
   _id = id;
   cell_ids = in_cells;
@@ -379,7 +379,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
             orgPhenotype.ReduceEnergy(orgPhenotype.GetStoredEnergy()*m_world->GetConfig().ATTACK_DECAY_RATE.Get());
           }
           //remove energy from cell... organism might not takeup all of a cell's energy
-          tArray<double> cell_resources = deme_resource_count.GetCellResources(eventCell, ctx);  // uses global cell_id; is this a problem
+          Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(eventCell, ctx);  // uses global cell_id; is this a problem
           cell_resources[res->GetID()] *= m_world->GetConfig().ATTACK_DECAY_RATE.Get();
           deme_resource_count.ModifyCell(ctx, cell_resources, eventCell);
         }
@@ -606,7 +606,7 @@ void cDeme::DivideReset(cAvidaContext& ctx, cDeme& parent_deme, bool resetResour
 
 // Given the input deme founders and original ones,
 // calculate how many generations this deme went through to divide.
-void cDeme::UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArray<cPhenotype>& new_founder_phenotypes) 
+void cDeme::UpdateGenerationsPerLifetime(double old_avg_founder_generation, Apto::Array<cPhenotype>& new_founder_phenotypes)
 { 
   cDoubleSum gen;
   for (int i=0; i< new_founder_phenotypes.GetSize(); i++) {
@@ -700,7 +700,7 @@ void cDeme::UpdateDemeMerit(cDeme& source) {
 }
 
 
-void cDeme::ModifyDemeResCount(cAvidaContext& ctx, const tArray<double>& res_change, const int absolute_cell_id) {
+void cDeme::ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int absolute_cell_id) {
   // find relative cell_id in deme resource count
   const int relative_cell_id = GetRelativeCellID(absolute_cell_id);
   deme_resource_count.ModifyCell(ctx, res_change, relative_cell_id);
@@ -754,7 +754,7 @@ double cDeme::GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const
 
   double total_energy = 0.0;
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
+  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   // sum all energy resources
   for (int i = 0; i < energy_res_ids.GetSize(); i++) {
@@ -774,7 +774,7 @@ double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx)
   
   double total_energy = 0.0;
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
+  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   // sum all energy resources
   for (int i = 0; i < energy_res_ids.GetSize(); i++) {
@@ -796,7 +796,7 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
   
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
+  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   double amount_per_resource = value / energy_res_ids.GetSize();
   
@@ -1141,7 +1141,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext& ctx)
   //  cPopulation& pop = m_world->GetPopulation();
   
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); 
+  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx);
   
   for (int i = 0; i < deme_resource_count.GetSize(); i++) {
     if (strcmp(deme_resource_count.GetResName(i), "pheromone") == 0) {
@@ -1172,7 +1172,7 @@ double cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext&
   assert(resource_id >= 0);
   assert(resource_id < deme_resource_count.GetSize());
   
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid, ctx); 
+  Apto::Array<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid, ctx);
   return cell_resources[resource_id];
 }
 
@@ -1183,7 +1183,7 @@ void cDeme::AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resour
   assert(resource_id >= 0);
   assert(resource_id < deme_resource_count.GetSize());
   
-  tArray<double> res_change;
+  Apto::Array<double> res_change;
   res_change.Resize(deme_resource_count.GetSize(), 0);
   res_change[resource_id] = amount;
   
@@ -1281,8 +1281,8 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   cReactionResult& result = *m_reaction_result;
 
   // Not actually set up for deme's using resources during reactions
-  tArray<double> res_in;
-  tArray<double> rbins_in;
+  Apto::Array<double> res_in;
+  Apto::Array<double> rbins_in;
 
   // The environment, evaluates if a task and if a resulting reaction were completed
   bool found = env.TestOutput(ctx, result, taskctx, m_task_count, m_reaction_count, res_in, rbins_in);
@@ -1468,7 +1468,7 @@ void cDeme::UpdateShannon(cPopulationCell& cell)
   if (cell.IsOccupied()) {
     cOrganism* organism = cell.GetOrganism();
     cPhenotype& phenotype = organism->GetPhenotype();			
-    const tArray<int> curr_react =  phenotype.GetCumulativeReactionCount();
+    const Apto::Array<int> curr_react =  phenotype.GetCumulativeReactionCount();
     org_row.resize(curr_react.GetSize(), 0.0);		
     // track number of reproductives
     if ((phenotype.GetNumDivides() - phenotype.GetNumDivideFailed()) > 0) { 

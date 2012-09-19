@@ -410,10 +410,10 @@ cOrganism* cPopulationCell::GetRandPreyAV() const
 }
 
 // Returns all input avatars (organisms) contained in the cell
-tArray<cOrganism*> cPopulationCell::GetCellInputAVs()
+Apto::Array<cOrganism*> cPopulationCell::GetCellInputAVs()
 {
   assert(HasInputAV());
-  tArray<cOrganism*> avatar_inputs;
+  Apto::Array<cOrganism*> avatar_inputs;
   avatar_inputs.Resize(GetNumAVInputs());
   for (int i = 0; i < GetNumAVInputs(); i++) {
     avatar_inputs[i] = m_av_inputs[i];
@@ -422,10 +422,10 @@ tArray<cOrganism*> cPopulationCell::GetCellInputAVs()
 }
 
 // Returns all output avatars (organisms) contained in the cell
-tArray<cOrganism*> cPopulationCell::GetCellOutputAVs()
+Apto::Array<cOrganism*> cPopulationCell::GetCellOutputAVs()
 {
   assert(HasOutputAV());
-  tArray<cOrganism*> avatar_outputs;
+  Apto::Array<cOrganism*> avatar_outputs;
   avatar_outputs.Resize(GetNumAVOutputs());
   for (int i = 0; i < GetNumAVOutputs(); i++) {
     avatar_outputs[i] = m_av_outputs[i];
@@ -434,10 +434,10 @@ tArray<cOrganism*> cPopulationCell::GetCellOutputAVs()
 }
 
 // Returns all avatars (organisms) contained in the cell
-tArray<cOrganism*> cPopulationCell::GetCellAVs()
+Apto::Array<cOrganism*> cPopulationCell::GetCellAVs()
 {
   assert(HasAV());
-  tArray<cOrganism*> avatars;
+  Apto::Array<cOrganism*> avatars;
   const int num_outputs = GetNumAVOutputs();
   avatars.Resize(GetNumAV());
   for (int i = 0; i < GetNumAVOutputs(); i++) {

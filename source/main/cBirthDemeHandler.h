@@ -22,12 +22,9 @@
 #ifndef cBirthDemeHandler_h
 #define cBirthDemeHandler_h
 
-#ifndef cBirthSelectionHandler_h
+#include "avida/core/Types.h"
+
 #include "cBirthSelectionHandler.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cBirthChamber;
 class cWorld;
@@ -36,7 +33,7 @@ class cWorld;
 class cBirthDemeHandler : public cBirthSelectionHandler
 {
 private:
-  tArray<cBirthSelectionHandler*> m_deme_handlers;
+  Apto::Array<cBirthSelectionHandler*> m_deme_handlers;
   
   
 public:

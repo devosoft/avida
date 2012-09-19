@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "cpu_test_info.hh" prior to 11/29/05.
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  Copyright 1999-2012 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -17,6 +17,8 @@
  *
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  Authors: David M. Bryson <david@programerror.com>
  *
  */
 

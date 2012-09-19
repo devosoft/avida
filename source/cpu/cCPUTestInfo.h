@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "cpu_test_info.hh" prior to 11/29/05.
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  Copyright 1999-2012 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -18,29 +18,20 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
 #ifndef cCPUTestInfo_h
 #define cCPUTestInfo_h
 
-#ifndef nHardware_h
 #include "nHardware.h"
-#endif
-#ifndef cMutationRates_h
 #include "cMutationRates.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cHardwareTracer;
 class cOrganism;
 class cPhenotype;
 class cResourceHistory;
-class cString;
 
 
 enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETABLE, RES_DYNAMIC, RES_LAST };  
@@ -61,7 +52,7 @@ private:
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
 	bool use_manual_inputs;     // Do we have inputs that we must use?
-	tArray<int> manual_inputs;  //   if so, use these.
+  Apto::Array<int> manual_inputs;  //   if so, use these.
   cHardwareTracer* m_tracer;
   cMutationRates m_mut_rates;
   
@@ -73,9 +64,9 @@ private:
   int depth_found;        // Depth actually found (often same as max_depth)
   int max_cycle;          // Longest cycle found.
   int cycle_to;           // Cycle path of the last genotype.
-	tArray<int> used_inputs; //Depth 0 inputs
+	Apto::Array<int> used_inputs; //Depth 0 inputs
 
-  tArray<cOrganism*> org_array;
+  Apto::Array<cOrganism*> org_array;
   
   // Information about how to handle resources
   eTestCPUResourceMethod m_res_method;
@@ -95,7 +86,7 @@ public:
   // Input Setup
   void TraceTaskOrder(bool _trace=true) { trace_task_order = _trace; }
   void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; use_manual_inputs = false; }
-  void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
+  void UseManualInputs(Apto::Array<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
   void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(cHardwareTracer* tracer = NULL) { m_tracer = tracer; }
   void SetResourceOptions(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0)
@@ -110,7 +101,7 @@ public:
   bool GetUseRandomInputs() const { return use_random_inputs; }
   bool GetTraceExecution() const { return (m_tracer); }
 	bool GetUseManualInputs() const { return use_manual_inputs; }
-	tArray<int> GetTestCPUInputs() const { return used_inputs; }
+	const Apto::Array<int>& GetTestCPUInputs() const { return used_inputs; }
   cHardwareTracer *GetTracer() { return m_tracer; }
 
 

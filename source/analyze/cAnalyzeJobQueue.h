@@ -25,18 +25,9 @@
 #include "apto/core.h"
 #include "apto/platform.h"
 
-#ifndef cAnalyzeJob
 #include "cAnalyzeJob.h"
-#endif
-#ifndef cRandom_h
 #include "cRandom.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
 
 class cAnalyzeJobWorker;
 class cWorld;
@@ -66,7 +57,7 @@ private:
   volatile int m_jobs;      // count of waiting jobs, used in condition variable constructs
   volatile int m_pending;   // count of currently executing jobs
   
-  tArray<cAnalyzeJobWorker*> m_workers;
+  Apto::Array<cAnalyzeJobWorker*> m_workers;
 
 
   void singleThreadedJobExecution(cAnalyzeJob* job);

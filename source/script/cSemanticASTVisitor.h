@@ -24,8 +24,6 @@
 
 #include "cASTVisitor.h"
 
-#include "tArray.h"
-
 class cASLibrary;
 class cSymbolTable;
 

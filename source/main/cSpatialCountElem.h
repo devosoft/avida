@@ -23,16 +23,15 @@
 #ifndef cSpatialCountElem_h
 #define cSpatialCountElem_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
+
 
 class cSpatialCountElem
 {
 private:
   mutable double amount, delta, initial;
-  tArray<int> elempt, xdist, ydist;
-  tArray<double> dist;
+  Apto::Array<int> elempt, xdist, ydist;
+  Apto::Array<double> dist;
   
 public:
   cSpatialCountElem();

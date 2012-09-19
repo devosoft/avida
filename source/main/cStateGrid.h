@@ -23,7 +23,6 @@
 #define cStateGrid_h
 
 #include "cString.h"
-#include "tArray.h"
 
 
 class cStateGrid
@@ -35,17 +34,17 @@ private:
   int m_init_x;
   int m_init_y;
   int m_init_facing;
-  tArray<cString> m_states;
-  tArray<int> m_sense_values;
-  tArray<int> m_grid;
+  Apto::Array<cString> m_states;
+  Apto::Array<int> m_sense_values;
+  Apto::Array<int> m_grid;
   
   cStateGrid(); // @not_implemented
   cStateGrid(const cStateGrid&); // @not_implemented
   cStateGrid& operator=(const cStateGrid&); // @not_implemented
   
 public:
-  inline cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states,
-                    const tArray<int>& sense_values, const tArray<int>& grid);
+  inline cStateGrid(const cString& name, int w, int h, int x, int y, int f, const Apto::Array<cString>& states,
+                    const Apto::Array<int>& sense_values, const Apto::Array<int>& grid);
   ~cStateGrid() { ; }
   
   inline const cString& GetName() const { return m_name; }
@@ -65,8 +64,8 @@ public:
 };
 
 
-inline cStateGrid::cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states,
-                  const tArray<int>& sense_values, const tArray<int>& grid)
+inline cStateGrid::cStateGrid(const cString& name, int w, int h, int x, int y, int f, const Apto::Array<cString>& states,
+                  const Apto::Array<int>& sense_values, const Apto::Array<int>& grid)
   : m_name(name), m_w(w), m_h(h), m_init_x(x), m_init_y(y), m_init_facing(f), m_states(states)
   , m_sense_values(sense_values), m_grid(grid)
 {

@@ -57,7 +57,6 @@ cHardwareManager::cHardwareManager(cWorld* world)
 : m_world(world)
 {
   cString filename = world->GetConfig().INST_SET.Get();
-  m_is_name_map.SetDefault(-1);
   m_is_name_map.Set("(default)", 0);
 
 }
@@ -87,7 +86,7 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
       }
     } else if (line_type == "INSTSET") {
       if (cur_list) {
-        if (!loadInstSet(hw_type, name, *cur_list, feedback)) success = false;
+        if (!loadInstSet(hw_type, (const char*)name, *cur_list, feedback)) success = false;
         delete cur_list;
         cur_list = NULL;
       }
@@ -122,27 +121,27 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
   }
   
   if (cur_list) {
-    if (!loadInstSet(hw_type, name, *cur_list, feedback)) success = false;
+    if (!loadInstSet(hw_type, (const char*)name, *cur_list, feedback)) success = false;
     delete cur_list;
   }
   
   return success;
 }
 
-bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList& sl, cUserFeedback* feedback)
+bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, cStringList& sl, cUserFeedback* feedback)
 {
   // Current list in progress, create actual cInstSet instance and process it
   cInstSet* inst_set = NULL;
   switch (hw_type)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      inst_set = new cInstSet(m_world, name, hw_type, cHardwareCPU::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareCPU::GetInstLib());
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      inst_set = new cInstSet(m_world, name, hw_type, cHardwareTransSMT::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareTransSMT::GetInstLib());
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      inst_set = new cInstSet(m_world, name, hw_type, cHardwareExperimental::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareExperimental::GetInstLib());
       break;
     default:
       if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);
@@ -259,9 +258,9 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   return hw;
 }
 
-bool cHardwareManager::RegisterInstSet(const cString& name, cInstSet* inst_set)
+bool cHardwareManager::RegisterInstSet(const Apto::String& name, cInstSet* inst_set)
 {
-  if (m_is_name_map.HasEntry(name)) return false;
+  if (m_is_name_map.Has(name)) return false;
   
   int inst_set_id = m_inst_sets.GetSize();
   m_inst_sets.Push(inst_set);

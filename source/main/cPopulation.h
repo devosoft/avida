@@ -32,7 +32,6 @@
 #include "cResourceCount.h"
 #include "cString.h"
 #include "cWorld.h"
-#include "tArray.h"
 #include "tList.h"
 
 #include <fstream>
@@ -56,16 +55,16 @@ private:
   // Components...
   cWorld* m_world;
   cSchedule* schedule;                // Handles allocation of CPU cycles
-  tArray<cPopulationCell> cell_array;  // Local cells composing the population
-  tArray<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
+  Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
+  Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
   Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
-  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances;
-  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances_females;
-  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances_males;
-  Apto::Map<int, tArray<pair<int,int> > > m_group_intolerances_juvs;
+  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances;
+  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances_females;
+  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances_males;
+  Apto::Map<int, Apto::Array<pair<int,int> > > m_group_intolerances_juvs;
   
   // Keep list of live organisms
   Apto::Array<cOrganism*, Apto::Smart> live_org_list;
@@ -90,7 +89,7 @@ private:
   int num_prey_organisms;
   int num_pred_organisms;
   
-  tArray<cDeme> deme_array;            // Deme structure of the population.
+  Apto::Array<cDeme> deme_array;            // Deme structure of the population.
  
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
@@ -264,13 +263,13 @@ public:
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
-  const tArray<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); } 
-  const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); } 
-  const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
-  const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
-  const tArray<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
+  const Apto::Array<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); }
+  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); }
+  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
+  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }
+  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); }
   void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateResources(ctx); }
-  const tArray< tArray<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
+  const Apto::Array< Apto::Array<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
 
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakX(ctx, res_id); } 
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
@@ -279,10 +278,10 @@ public:
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
-  void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
+  void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateResource(cAvidaContext& ctx, int id, double change);
-  void UpdateCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id);
-  void UpdateDemeCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id);
+  void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
+  void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
   
   void SetResource(cAvidaContext& ctx, int id, double new_level);
   void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);

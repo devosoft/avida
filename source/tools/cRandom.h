@@ -11,7 +11,7 @@
 #ifndef cRandom_h
 #define cRandom_h
 
-#include "apto/core/Mutex.h"
+#include "apto/core.h"
 #include "apto/platform.h"
 
 #include <algorithm>
@@ -24,8 +24,6 @@
 /**
  * A versatile and fast pseudo random number generator.
  **/
-
-template <class T> class tArray;
 
 class cRandom
 {
@@ -168,7 +166,7 @@ public:
   inline unsigned int MutateBit(unsigned int value);
   inline unsigned int MutateBit(unsigned int value, int in_byte);
 
-  bool Choose(int num_in, tArray<int> & out_array);
+  bool Choose(int num_in, Apto::Array<int> & out_array);
 
 
   // Statistical functions ////////////////////////////////////////////////////

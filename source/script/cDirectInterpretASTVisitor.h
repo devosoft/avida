@@ -148,7 +148,7 @@ private:
   class cLocalArray
   {
   private:
-    tArray<sAggregateValue> m_storage;
+    Apto::Array<sAggregateValue> m_storage;
     int m_ref_count;
     bool m_resizable;
     
@@ -179,7 +179,7 @@ private:
     
     
   private:
-    void copy(int offset, tArray<sAggregateValue>& in_storage);
+    void copy(int offset, Apto::Array<sAggregateValue>& in_storage);
   };
   
   
@@ -207,8 +207,8 @@ private:
     void Remove(const sAggregateValue& idx) { sAggregateValue val = m_storage.Remove(idx); val.Cleanup(); }
     
     inline bool HasKey(const sAggregateValue& idx) { return m_storage.HasEntry(idx); }
-    inline void GetKeys(tArray<sAggregateValue>& out_array) { m_storage.GetKeys(out_array); }
-    inline void GetValues(tArray<sAggregateValue>& out_array) { m_storage.GetValues(out_array); }
+    inline void GetKeys(Apto::Array<sAggregateValue>& out_array) { m_storage.GetKeys(out_array); }
+    inline void GetValues(Apto::Array<sAggregateValue>& out_array) { m_storage.GetValues(out_array); }
   };
   
   

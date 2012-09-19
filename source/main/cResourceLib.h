@@ -23,18 +23,17 @@
 #ifndef cResourceLib_h
 #define cResourceLib_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
 
 class cResource;
 class cResourceHistory;
 class cString;
 
+
 class cResourceLib
 {
 private:
-  tArray<cResource*> m_resource_array;
+  Apto::Array<cResource*> m_resource_array;
   mutable cResourceHistory* m_initial_levels;
   int m_num_deme_resources;
   

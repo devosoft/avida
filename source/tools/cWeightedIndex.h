@@ -23,9 +23,7 @@
 #ifndef cWeightedIndex_h
 #define cWeightedIndex_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
 
 #ifndef NULL
 #define NULL 0
@@ -40,8 +38,8 @@ class cWeightedIndex
 {
 protected:
   int size;
-  tArray<double> item_weight;
-  tArray<double> subtree_weight;
+  Apto::Array<double> item_weight;
+  Apto::Array<double> subtree_weight;
 
   
   cWeightedIndex(); // @not_implemented

@@ -8,22 +8,15 @@
 #ifndef cMenuWindow_h
 #define cMenuWindow_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef cTextWindow_h
 #include "cTextWindow.h"
-#endif
+
 
 class cMenuWindow {
 private:
   cTextWindow * window;
   cString title;
-  tArray<cString> option_array;
+  Apto::Array<cString> option_array;
   cString key_array;
   int num_options;
 

@@ -38,7 +38,6 @@
 
 #include "nHardware.h"
 
-#include "tArray.h"
 #include "tInstLib.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
@@ -189,7 +188,7 @@ private:
   cCPUMemory m_memory;          // Memory...
   cLocalStack m_global_stack;     // A stack that all threads share.
   
-  tArray<cLocalThread> m_threads;
+  Apto::Array<cLocalThread> m_threads;
   int m_thread_id_chart;
   int m_cur_thread;
   

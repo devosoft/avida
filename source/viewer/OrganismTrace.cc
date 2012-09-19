@@ -265,7 +265,7 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));
   
   // Handle function counts
-  const tArray<int>& task_counts = hw.GetOrganism()->GetPhenotype().GetCurTaskCount();
+  const Apto::Array<int>& task_counts = hw.GetOrganism()->GetPhenotype().GetCurTaskCount();
   for (int i = 0; i < task_counts.GetSize(); i++) {
     snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetName(), task_counts[i]);
   }
@@ -385,7 +385,7 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
     snapshot->SetSelectedBuffer(Apto::FormatStr("stack %c", 'A' + hw.GetCurStack()));
     
     // Handle function counts
-    const tArray<int>& task_counts = organism.GetPhenotype().GetLastTaskCount();
+    const Apto::Array<int>& task_counts = organism.GetPhenotype().GetLastTaskCount();
     for (int i = 0; i < task_counts.GetSize(); i++) {
       snapshot->SetFunctionCount((const char*)m_world->GetEnvironment().GetTask(i).GetName(), task_counts[i]);
     }

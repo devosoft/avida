@@ -311,7 +311,7 @@ double cMutationalNeighborhood::ProcessOneStepGenome(cAvidaContext& ctx, cTestCP
   if (test_fitness >= m_neut_min) odata.site_count[cur_site]++;
   
   if (test_fitness != 0.0) { // Only count tasks if the organism is alive
-    const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
+    const Apto::Array<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
     bool knockout = false;
     bool anytask = false;
     for (int i = 0; i < m_base_tasks.GetSize(); i++) {
@@ -520,7 +520,7 @@ double cMutationalNeighborhood::ProcessTwoStepGenome(cAvidaContext& ctx, cTestCP
   if (test_fitness >= m_neut_min) tdata.site_count[cur.site]++;
   
   if (test_fitness != 0.0) { // Only count tasks if the organism is alive
-    const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
+    const Apto::Array<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
     bool knockout = false;
     bool anytask = false;
     for (int i = 0; i < m_base_tasks.GetSize(); i++) {
@@ -720,7 +720,7 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext&)
   m_fitness_delete.Resize(0, 0);
 }
 
-void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate& osa)
+void cMutationalNeighborhood::AggregateOneStep(Apto::Array<sStep>& steps, sOneStepAggregate& osa)
 {
   for (int i = 0; i < steps.GetSize(); i++) {
     sStep& odata = steps[i];
@@ -763,7 +763,7 @@ void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAgg
 }
 
 
-void cMutationalNeighborhood::AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate& tsa)
+void cMutationalNeighborhood::AggregateTwoStep(Apto::Array<sTwoStep>& steps, sTwoStepAggregate& tsa)
 {
   sPendFit* pend = NULL;
 

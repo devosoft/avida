@@ -21,13 +21,8 @@
 #ifndef cAnalyzeTreeStats_CumulativeStemminess_h
 #define cAnalyzeTreeStats_CumulativeStemminess_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
+#include "avida/core/Types.h"
 #include "tList.h"
-#endif
-
 
 class cAnalyzeGenotype;
 class cWorld;
@@ -52,7 +47,7 @@ public:
   int off_branch_dist_acc;
   double cumulative_stemminess;
   bool traversal_visited;
-  tArray<int> offspring_positions;
+  Apto::Array<int> offspring_positions;
 
   cAGLData();
 };
@@ -67,8 +62,8 @@ For now it only figures out "average cumulative stemminess".
 */
 class cAnalyzeTreeStats_CumulativeStemminess {
 public:
-  tArray<cAGLData> m_agl;
-  tArray<cAGLData> m_agl2;
+  Apto::Array<cAGLData> m_agl;
+  Apto::Array<cAGLData> m_agl2;
 
   double m_stemminess_sum;
   double m_average_stemminess;
@@ -81,15 +76,15 @@ public:
   cAnalyzeTreeStats_CumulativeStemminess(cWorld* world);
 
   // Accessors.
-  tArray<cAGLData> &AGL(){ return m_agl; }
-  tArray<cAGLData> &AGL2(){ return m_agl2; }
+  Apto::Array<cAGLData> &AGL(){ return m_agl; }
+  Apto::Array<cAGLData> &AGL2(){ return m_agl2; }
   // Getters.
   double StemminessSum(){ return m_stemminess_sum; }
   double AverageStemminess(){ return m_average_stemminess; }
   int InnerNodes(){ return m_inner_nodes; }
   bool ExcludesLeaves(){ return m_should_exclude_leaves; }
 
-  void PrintAGLData(tArray<cAGLData> &agl);
+  void PrintAGLData(Apto::Array<cAGLData> &agl);
 
   // Commands.
   void AnalyzeBatchTree(tList<cAnalyzeGenotype> &genotype_list);

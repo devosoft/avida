@@ -294,7 +294,7 @@ double cOrganism::GetRBinsTotal()
 	return total;
 }
 
-void cOrganism::SetRBins(const tArray<double>& rbins_in) 
+void cOrganism::SetRBins(const Apto::Array<double>& rbins_in)
 { 
 	m_phenotype.SetCurRBinsAvail(rbins_in);
 }
@@ -376,9 +376,9 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                          cContextPhenotype* context_phenotype)
 {  
   const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & global_resource_count = m_interface->GetResources(ctx); 
-  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); 
-  const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
+  const Apto::Array<double> & global_resource_count = m_interface->GetResources(ctx);
+  const Apto::Array<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx);
+  const Apto::Array< Apto::Array<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
@@ -410,11 +410,11 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   // Do the testing of tasks performed...
   
   
-  tArray<double> global_res_change(global_resource_count.GetSize());
+  Apto::Array<double> global_res_change(global_resource_count.GetSize());
   global_res_change.SetAll(0.0);
-  tArray<double> deme_res_change(deme_resource_count.GetSize());
+  Apto::Array<double> deme_res_change(deme_resource_count.GetSize());
   deme_res_change.SetAll(0.0);
-  tArray<cString> insts_triggered;
+  Apto::Array<cString> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
@@ -423,8 +423,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                        m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
   
   //combine global and deme resource counts
-  tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
-  tArray<double> globalAndDeme_res_change = global_res_change + deme_res_change;
+  Apto::Array<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
+  Apto::Array<double> globalAndDeme_res_change = global_res_change + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
   int cell_id=GetCellID();
@@ -457,8 +457,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   }
   
   //disassemble global and deme resource counts 
-  global_res_change = globalAndDeme_res_change.Subset(0, global_res_change.GetSize());
-  deme_res_change = globalAndDeme_res_change.Subset(global_res_change.GetSize(), globalAndDeme_res_change.GetSize());
+  for (int i = 0; i < global_res_change.GetSize(); i++) global_res_change[i] = globalAndDeme_res_change[i];
+  for (int i = 0; i < deme_res_change.GetSize(); i++) deme_res_change[i] = globalAndDeme_res_change[i + global_res_change.GetSize()];
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
     m_phenotype.RefreshEnergy();
@@ -487,9 +487,9 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
 //  const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & avatar_resource_count = m_interface->GetAVResources(ctx); 
-//  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
-  const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
+  const Apto::Array<double> & avatar_resource_count = m_interface->GetAVResources(ctx);
+//  const Apto::Array<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
+  const Apto::Array< Apto::Array<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
@@ -499,7 +499,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
+      const Apto::Array<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_input_list.Push( &(cur_neighbors[i]->m_input_buf) );
@@ -512,7 +512,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
     const int num_neighbors = m_interface->GetAVNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
-      const tArray<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
+      const Apto::Array<cOrganism*>& cur_neighbors = m_interface->GetFacedAVs();
       for (int i = 0; i < cur_neighbors.GetSize(); i++) {
         if (cur_neighbors[i] == NULL) continue;
         other_output_list.Push( &(cur_neighbors[i]->m_output_buf) );
@@ -521,11 +521,11 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   }
   
   // Do the testing of tasks performed...
-  tArray<double> avatar_res_change(avatar_resource_count.GetSize());
+  Apto::Array<double> avatar_res_change(avatar_resource_count.GetSize());
   avatar_res_change.SetAll(0.0);
-//  tArray<double> deme_res_change(deme_resource_count.GetSize());
+//  Apto::Array<double> deme_res_change(deme_resource_count.GetSize());
 //  deme_res_change.SetAll(0.0);
-  tArray<cString> insts_triggered;
+  Apto::Array<cString> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
@@ -534,8 +534,8 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                        m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
   
   //combine global and deme resource counts
-  tArray<double> avatarAndDeme_resource_count = avatar_resource_count; // + deme_resource_count;
-  tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
+  Apto::Array<double> avatarAndDeme_resource_count = avatar_resource_count; // + deme_resource_count;
+  Apto::Array<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
   int cell_id = m_interface->GetAVCellID();
@@ -568,7 +568,7 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   }
   
   //disassemble avatar and deme resource counts
-  avatar_res_change = avatarAndDeme_res_change.Subset(0, avatar_res_change.GetSize());
+  for (int i = 0; i < avatar_res_change.GetSize(); i++) avatar_res_change[i] = avatarAndDeme_res_change[i];
 //  deme_res_change = avatarAndDeme_res_change.Subset(avatar_res_change.GetSize(), avatarAndDeme_res_change.GetSize());
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
@@ -762,7 +762,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     if (habitat_required != -1) {
       bool has_req_res = false;
       const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-      tArray<double> resource_count;
+      Apto::Array<double> resource_count;
       if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
       else resource_count = m_interface->GetAVResources(ctx);
       for (int i = 0; i < resource_count.GetSize(); i ++) {
@@ -801,7 +801,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   if (single_reaction != 0)
   {
     bool toFail = true;
-    tArray<int> reactionCounts = m_phenotype.GetCurReactionCount();
+    Apto::Array<int> reactionCounts = m_phenotype.GetCurReactionCount();
     for (int i=0; i<reactionCounts.GetSize(); i++)
     {
       if (reactionCounts[i] > 0) toFail = false;
@@ -809,7 +809,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     
     if (toFail)
     {
-      const tArray<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
+      const Apto::Array<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
       for (int i = 0; i < stolenReactions.GetSize(); i++)
       {
         if (stolenReactions[i] > 0) toFail = false;

@@ -32,7 +32,6 @@
 #include "cHardwareBase.h"
 #include "cString.h"
 #include "cStats.h"
-#include "tArray.h"
 #include "tInstLib.h"
 
 #include "nHardware.h"
@@ -109,7 +108,7 @@ protected:
   cCPUMemory m_memory;          // Memory...
   cCPUStack m_global_stack;     // A stack that all threads share.
 
-  tArray<cLocalThread> m_threads;
+  Apto::Array<cLocalThread> m_threads;
   int m_thread_id_chart;
   int m_cur_thread;
 
@@ -144,7 +143,7 @@ protected:
     int GetRegulatedBitCode() { return m_bit_code ^ m_regulation; }
     ~cPromoter() { ; }
   };
-  tArray<cPromoter> m_promoters;
+  Apto::Array<cPromoter> m_promoters;
   // Promoter Model -->
 
   // <-- Epigenetic State

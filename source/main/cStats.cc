@@ -1740,7 +1740,7 @@ void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
     df.Write(deme.GetDemeID(), "Deme ID for cell [demeid]");
     df.Write(deme.GetTotalResourceAmountConsumed(), "Deme resources consumed [demeres]");
     
-    tArray<int> react_count = deme.GetReactionCount(); 
+    Apto::Array<int> react_count = deme.GetReactionCount();
     for (int k=0; k<react_count.GetSize(); ++k){
       react_count[k] = 0;
     }
@@ -1763,7 +1763,7 @@ void cStats::PrintDemeOrgGermlineSequestration(const cString& filename)
         numMut += o->GetNumOfPointMutationsApplied();
         numPresent++;
         
-         tArray<int> org_react_count = o->GetPhenotype().GetCumulativeReactionCount();
+         Apto::Array<int> org_react_count = o->GetPhenotype().GetCumulativeReactionCount();
          for (int k=0; k<org_react_count.GetSize(); ++k){
            react_count[k] += org_react_count[k];
          }
@@ -2122,7 +2122,7 @@ void cStats::PrintDemeTasksData(const cString& filename)
 
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
 
-  tArray<int> deme_tasks;
+  Apto::Array<int> deme_tasks;
   deme_tasks.ResizeClear(num_tasks);
   deme_tasks.SetAll(num_tasks);
   int occupied_demes = 0;
@@ -2154,7 +2154,7 @@ void cStats::PrintDemeTasksExeData(const cString& filename)
 
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
 
-  tArray<int> deme_tasks;
+  Apto::Array<int> deme_tasks;
   deme_tasks.ResizeClear(num_tasks);
   deme_tasks.SetAll(num_tasks);
   int occupied_demes = 0;
@@ -2185,7 +2185,7 @@ void cStats::PrintDemeReactionData(const cString& filename)
 
   const int num_reactions = m_world->GetEnvironment().GetReactionLib().GetSize();
 
-  tArray<int> deme_reactions;
+  Apto::Array<int> deme_reactions;
   deme_reactions.ResizeClear(num_reactions);
   deme_reactions.SetAll(0);
   int occupied_demes = 0;
@@ -3234,7 +3234,7 @@ void cStats::PrintGroupMTTolerance(const cString& filename)
 void cStats::PrintToleranceInstructionData(const cString& filename)
 {
   const int num_tol_inst = 8;
-  tArray<cString> m_is_tolerance_inst_names(num_tol_inst);
+  Apto::Array<cString> m_is_tolerance_inst_names(num_tol_inst);
   m_is_tolerance_inst_names[0] = "inc-tolerance_Immigrants";
   m_is_tolerance_inst_names[1] = "inc-tolerance_OffspringOwn";
   m_is_tolerance_inst_names[2] = "inc-tolerance_OffspringOthers";
@@ -3270,7 +3270,7 @@ void cStats::PrintToleranceData(const cString& filename)
   }
 
   const int num_tol_inst = 8;
-  tArray<cString> m_is_tolerance_inst_names(num_tol_inst);
+  Apto::Array<cString> m_is_tolerance_inst_names(num_tol_inst);
   m_is_tolerance_inst_names[0] = "inc-tolerance_Immigrants";
   m_is_tolerance_inst_names[1] = "inc-tolerance_OffspringOwn";
   m_is_tolerance_inst_names[2] = "inc-tolerance_OffspringOthers";
@@ -3402,7 +3402,7 @@ void cStats::PrintTargets(const cString& filename)
     }
   }
 
-  tArray<int> raw_target_list;
+  Apto::Array<int> raw_target_list;
   raw_target_list.Resize(num_targets);
   raw_target_list.SetAll(0);
   int this_index = 0;
@@ -3411,7 +3411,7 @@ void cStats::PrintTargets(const cString& filename)
     this_index++;
   }
     
-  tArray<int> target_list;
+  Apto::Array<int> target_list;
   int tot_targets = num_targets + offset;
   target_list.Resize(tot_targets);
   target_list.SetAll(0);
@@ -3426,7 +3426,7 @@ void cStats::PrintTargets(const cString& filename)
     if (raw_target_list[i] >= 0) target_list[i + offset] = raw_target_list[i];
   }
   
-  tArray<int> org_targets;
+  Apto::Array<int> org_targets;
   org_targets.Resize(tot_targets);
   org_targets.SetAll(0);
   

@@ -352,7 +352,7 @@ cString cInitFile::ReadString(const cString& name, cString def, bool warn_defaul
 }
 
 
-cString cInitFile::ReadString(const tArray<cString>& names, cString def, bool warn_default) const
+cString cInitFile::ReadString(const Apto::Array<cString>& names, cString def, bool warn_default) const
 {
   const int num_names = names.GetSize();
   if (num_names == 0) return def;

@@ -23,17 +23,16 @@
 #ifndef cReactionLib_h
 #define cReactionLib_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
 
 class cReaction;
 class cString;
 
+
 class cReactionLib
 {
 private:
-  tArray<cReaction*> reaction_array;
+  Apto::Array<cReaction*> reaction_array;
 
   cReactionLib(const cReactionLib&); // @not_implemented
   cReactionLib& operator=(const cReactionLib&); // @not_implemented

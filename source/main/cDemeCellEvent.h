@@ -21,15 +21,18 @@
 #ifndef cDemeCellEvent_h
 #define cDemeCellEvent_h
 
+#include "avida/core/Types.h"
+
 #include <utility>
-#include "tArray.h"
 
 class cDeme;
 class cWorld;
 
-class cDemeCellEvent {
+
+class cDemeCellEvent
+{
 private:
-  tArray<int> m_event_cells;
+  Apto::Array<int> m_event_cells;
   int m_eventID;
   int m_delay, m_duration, m_iter, m_deme_width, m_deme_height;
   int m_event_width, m_event_height, m_time_to_live;

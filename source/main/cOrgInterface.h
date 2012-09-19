@@ -45,7 +45,6 @@ class cOrgMessage;
 class cOrgSinkMessage;
 class cPopulationCell;
 class cString;
-template <class T> class tArray;
 
 using namespace Avida;
 
@@ -94,7 +93,7 @@ public:
   virtual cOrganism* GetNeighbor() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
   virtual int GetNumNeighbors() = 0;
-  virtual void GetNeighborhoodCellIDs(tArray<int>& list) = 0;
+  virtual void GetNeighborhoodCellIDs(Apto::Array<int>& list) = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
   virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
@@ -103,20 +102,20 @@ public:
   
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
-  virtual const tArray<int>& GetInputs() const = 0;
-  virtual const tArray<double>& GetResources(cAvidaContext& ctx) = 0; 
-  virtual const tArray<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
-  virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
-  virtual const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
-  virtual const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
-  virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
+  virtual const Apto::Array<int>& GetInputs() const = 0;
+  virtual const Apto::Array<double>& GetResources(cAvidaContext& ctx) = 0;
+  virtual const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx) = 0;
+  virtual const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0;
+  virtual const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0;
+  virtual const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
+  virtual const Apto::Array< Apto::Array<int> >& GetCellIdLists() = 0;
   virtual int GetCurrPeakX(cAvidaContext& ctx, int res_id) = 0; 
   virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
   virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
-  virtual void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
-  virtual void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
+  virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
+  virtual void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void Die(cAvidaContext& ctx) = 0; 
   virtual void KillCellID(int target, cAvidaContext& ctx) = 0; 
   virtual void Kaboom(int distance, cAvidaContext& ctx) = 0; 
@@ -220,11 +219,11 @@ public:
   virtual cOrganism* GetRandFacedAV(int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPredAV(int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPreyAV(int av_num = 0) = 0;
-  virtual tArray<cOrganism*> GetFacedAVs(int av_num = 0) = 0;
-  virtual tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0) = 0;
-  virtual const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0) = 0;
-  virtual const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;
-  virtual void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num = 0) = 0;
+  virtual Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0) = 0;
+  virtual Apto::Array<cOrganism*> GetFacedPreyAVs(int av_num = 0) = 0;
+  virtual const Apto::Array<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0) = 0;
+  virtual const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;
+  virtual void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, int av_num = 0) = 0;
 
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;

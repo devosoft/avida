@@ -49,7 +49,6 @@ class cReactionResult;
 class cStateGrid;
 class cTaskContext;
 class cWorld;
-template <class T> class tArray;
 template <class T> class tBuffer;
 
 using namespace Avida;
@@ -70,11 +69,11 @@ private:
   bool m_true_rand;
   
   bool m_use_specific_inputs; // Use specific inputs, rather than generating random ones
-  tArray<int>  m_specific_inputs;
+  Apto::Array<int>  m_specific_inputs;
   
   unsigned int m_mask;
   
-  tArray<cStateGrid*> m_state_grids;
+  Apto::Array<cStateGrid*> m_state_grids;
 
 	std::set<int> possible_group_ids;
   std::set<int> possible_target_ids;
@@ -93,18 +92,18 @@ public:
   bool LoadLine(cString line, Feedback& feedback);  // Reads in a single environment configuration line
 
   // Interaction with the organisms
-  void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random = true) const;
-  void SetSpecificInputs(const tArray<int> in_input_array) { m_use_specific_inputs = true; m_specific_inputs = in_input_array; }
+  void SetupInputs(cAvidaContext& ctx, Apto::Array<int>& input_array, bool random = true) const;
+  void SetSpecificInputs(const Apto::Array<int> in_input_array) { m_use_specific_inputs = true; m_specific_inputs = in_input_array; }
   void SetSpecificRandomMask(unsigned int mask) { m_mask = mask; }
-  void SwapInputs(cAvidaContext& ctx, tArray<int>& src_input_array, tArray<int>& dest_input_array) const;
+  void SwapInputs(cAvidaContext& ctx, Apto::Array<int>& src_input_array, Apto::Array<int>& dest_input_array) const;
 
 
   bool TestInput(cReactionResult& result, const tBuffer<int>& inputs,
-                 const tBuffer<int>& outputs, const tArray<double>& resource_count) const;
+                 const tBuffer<int>& outputs, const Apto::Array<double>& resource_count) const;
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
-                  const tArray<int>& task_count, tArray<int>& reaction_count,
-                  const tArray<double>& resource_count, const tArray<double>& rbins_count,
+                  const Apto::Array<int>& task_count, Apto::Array<int>& reaction_count,
+                  const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count,
                   bool is_parasite=false, cContextPhenotype* context_phenotype = 0) const;
 
   // Accessors
@@ -181,11 +180,11 @@ private:
                             const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;
   
   bool TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction, int task_count,
-                      const tArray<int>& reaction_count, const bool on_divide = false) const; 
+                      const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
   bool TestContextRequisites(const cReaction* cur_reaction, int task_count, 
-                      const tArray<int>& reaction_count, const bool on_divide = false) const;
+                      const Apto::Array<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
-                   const tArray<double>& resource_count, const tArray<double>& rbin_count,
+                   const Apto::Array<double>& resource_count, const Apto::Array<double>& rbin_count,
                    const double task_quality, const double task_probability,
                    const int task_count, const int reaction_id, 
                    cReactionResult& result, cTaskContext& taskctx) const;

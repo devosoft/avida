@@ -22,15 +22,8 @@
 #ifndef tHashMap_h
 #define tHashMap_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
-#ifndef nHashTable_h
 #include "nHashTable.h"
-#endif
 
 
 #pragma message("warning: use of tHashMap is deprecated, see Apto::Map")
@@ -92,7 +85,7 @@ private:
   // companion array with pointers into the list that will give the start of
   // each hash entry.
   tList< tHashEntry<HASH_TYPE, DATA_TYPE> > entry_list;
-  tArray< tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * > cell_array;
+  Apto::Array< tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * > cell_array;
   
   // Create an iterator for entry_list
   mutable tListIterator< tHashEntry<HASH_TYPE, DATA_TYPE> > list_it;
@@ -325,7 +318,7 @@ public:
     while (list_it.Next() != NULL) key_list.Push(&list_it.Get()->key);
   }
   
-  void GetKeys(tArray<DATA_TYPE>& value_array) const
+  void GetKeys(Apto::Array<DATA_TYPE>& value_array) const
   {
     value_array.Resize(entry_count);
     int idx = 0;
@@ -341,7 +334,7 @@ public:
     while (list_it.Next() != NULL) value_list.Push(&list_it.Get()->data);
   }
   
-  void GetValues(tArray<DATA_TYPE>& value_array) const
+  void GetValues(Apto::Array<DATA_TYPE>& value_array) const
   {
     value_array.Resize(entry_count);
     int idx = 0;

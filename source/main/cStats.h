@@ -38,7 +38,6 @@
 #include "cRunningAverage.h"
 #include "cRunningStats.h"
 #include "nGeometry.h"
-#include "tArray.h"
 #include "tDataManager.h"
 #include "tMatrix.h"
 
@@ -188,45 +187,45 @@ private:
   int tot_executed;
 
   // --------  Parasite Task Stats  ---------
-  tArray<int> tasks_host_current;
-  tArray<int> tasks_host_last;
-  tArray<int> tasks_parasite_current;
-  tArray<int> tasks_parasite_last;
+  Apto::Array<int> tasks_host_current;
+  Apto::Array<int> tasks_host_last;
+  Apto::Array<int> tasks_parasite_current;
+  Apto::Array<int> tasks_parasite_last;
 
 
   // --------  Organism Task Stats  ---------
-  tArray<int> task_cur_count;
-  tArray<int> task_last_count;
-  tArray<double> task_cur_quality;
-  tArray<double> task_last_quality;
-  tArray<double> task_cur_max_quality;
-  tArray<double> task_last_max_quality;
-  tArray<int> task_exe_count;
-  tArray<int> new_task_count;
-  tArray<int> prev_task_count;
-  tArray<int> cur_task_count;
-  tArray<int> new_reaction_count;
+  Apto::Array<int> task_cur_count;
+  Apto::Array<int> task_last_count;
+  Apto::Array<double> task_cur_quality;
+  Apto::Array<double> task_last_quality;
+  Apto::Array<double> task_cur_max_quality;
+  Apto::Array<double> task_last_max_quality;
+  Apto::Array<int> task_exe_count;
+  Apto::Array<int> new_task_count;
+  Apto::Array<int> prev_task_count;
+  Apto::Array<int> cur_task_count;
+  Apto::Array<int> new_reaction_count;
 
-  tArray<int> task_internal_cur_count;
-  tArray<int> task_internal_last_count;
-  tArray<double> task_internal_cur_quality;
-  tArray<double> task_internal_last_quality;
-  tArray<double> task_internal_cur_max_quality;
-  tArray<double> task_internal_last_max_quality;
+  Apto::Array<int> task_internal_cur_count;
+  Apto::Array<int> task_internal_last_count;
+  Apto::Array<double> task_internal_cur_quality;
+  Apto::Array<double> task_internal_last_quality;
+  Apto::Array<double> task_internal_cur_max_quality;
+  Apto::Array<double> task_internal_last_max_quality;
 
-  tArray<int> m_reaction_cur_count;
-  tArray<int> m_reaction_last_count;
-  tArray<double> m_reaction_cur_add_reward;
-  tArray<double> m_reaction_last_add_reward;
-  tArray<int> m_reaction_exe_count;
+  Apto::Array<int> m_reaction_cur_count;
+  Apto::Array<int> m_reaction_last_count;
+  Apto::Array<double> m_reaction_cur_add_reward;
+  Apto::Array<double> m_reaction_last_add_reward;
+  Apto::Array<int> m_reaction_exe_count;
 
-  tArray<double> resource_count;
-  tArray<int> resource_geometry;
-  tArray< tArray<double> > spatial_res_count;
+  Apto::Array<double> resource_count;
+  Apto::Array<int> resource_geometry;
+  Apto::Array< Apto::Array<double> > spatial_res_count;
 
-  tArray<cString> task_names;
-  tArray<cString> reaction_names;
-  tArray<cString> resource_names;
+  Apto::Array<cString> task_names;
+  Apto::Array<cString> reaction_names;
+  Apto::Array<cString> resource_names;
 
   // --------  Resampling Stats  ---------
   int num_resamplings;
@@ -239,13 +238,13 @@ private:
 
   // --------  Sense Instruction Stats  ---------
   int sense_size;
-  tArray<int> sense_last_count;
-  tArray<int> sense_last_exe_count;
-  tArray<cString> sense_names;
+  Apto::Array<int> sense_last_count;
+  Apto::Array<int> sense_last_exe_count;
+  Apto::Array<cString> sense_names;
 
 
   // --------  Competition Stats  ---------
-  tArray<double> avg_trial_fitnesses;
+  Apto::Array<double> avg_trial_fitnesses;
   double avg_competition_fitness;
   double min_competition_fitness;
   double max_competition_fitness;
@@ -299,8 +298,8 @@ private:
 
 
   // --------  Sexual Selection Stats  ---------
-  tArray<cBirthEntry> m_successful_mates;
-  tArray<cBirthEntry> m_choosers;
+  Apto::Array<cBirthEntry> m_successful_mates;
+  Apto::Array<cBirthEntry> m_choosers;
   int m_num_successful_mates;
   
   // --------  Pred-prey Stats  ---------
@@ -598,15 +597,15 @@ public:
   void IncReactionExeCount(int reaction, int count) { m_reaction_exe_count[reaction] += count; }
   void ZeroReactions();
 
-  void SetResources(const tArray<double> &_in) { resource_count = _in; }
-  void SetResourcesGeometry(const tArray<int> &_in) { resource_geometry = _in;}
-  void SetSpatialRes(const tArray< tArray<double> > &_in) { spatial_res_count = _in; }
+  void SetResources(const Apto::Array<double> &_in) { resource_count = _in; }
+  void SetResourcesGeometry(const Apto::Array<int> &_in) { resource_geometry = _in;}
+  void SetSpatialRes(const Apto::Array< Apto::Array<double> > &_in) { spatial_res_count = _in; }
 
   void SetInstNames(const cString& inst_set, const Apto::Array<cString>& names) { m_is_inst_names_map[inst_set] = names; }
   void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
-  void SetCompetitionTrialFitnesses(tArray<double> _in) { avg_trial_fitnesses = _in; }
+  void SetCompetitionTrialFitnesses(Apto::Array<double> _in) { avg_trial_fitnesses = _in; }
   void SetCompetitionFitnesses(double _in_avg, double _in_min, double _in_max, double _in_cp_avg, double _in_cp_min, double _in_cp_max)
     { avg_competition_fitness = _in_avg; min_competition_fitness = _in_min; max_competition_fitness = _in_max;
       avg_competition_copied_fitness = _in_cp_avg; min_competition_copied_fitness = _in_cp_min; max_competition_copied_fitness = _in_cp_max; }
@@ -657,8 +656,8 @@ public:
   double GetInternalTaskLastQuality(int task_num) const { return task_internal_last_quality[task_num]/(double)task_internal_last_count[task_num]; }
   double GetInternalTaskMaxLastQuality(int task_num) const { return task_internal_last_max_quality[task_num]; }
 
-  const tArray<int>& GetReactions() const { return m_reaction_last_count; }
-  const tArray<double> & GetResources() const { return resource_count; }
+  const Apto::Array<int>& GetReactions() const { return m_reaction_last_count; }
+  const Apto::Array<double> & GetResources() const { return resource_count; }
 
   double GetAveReproRate() const  { return sum_repro_rate.Average(); }
 

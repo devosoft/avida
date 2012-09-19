@@ -22,21 +22,14 @@
 #ifndef cTextWindow_h
 #define cTextWindow_h
 
-#ifndef cString_h
 #include "cString.h"
-#endif
-
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-
-#ifndef ncurses_defs_h
 #include "ncurses-defs.h"
-#endif
 
 class cViewer_Info;
 
-class cTextWindow {
+
+class cTextWindow
+{
 protected:
   WINDOW * m_win_id;
 

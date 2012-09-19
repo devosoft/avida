@@ -3,7 +3,7 @@
 using namespace std;
 
 
-void cContextPhenotype::AddTaskCounts(int number_tasks, tArray<int>& cur_task_count)
+void cContextPhenotype::AddTaskCounts(int number_tasks, Apto::Array<int>& cur_task_count)
 {
     // Step 1: Resize m_cur_thread_task_count array if necessary.  This is necessary
     // since CThreadPhenotype object does not have any information apriori about m_world.
@@ -22,7 +22,7 @@ void cContextPhenotype::AddTaskCounts(int number_tasks, tArray<int>& cur_task_co
       m_cur_task_count[count] += cur_task_count[count];
     }
 }
-void cContextPhenotype::AddReactionCounts(int number_reactions, tArray<int>& cur_reaction_count)
+void cContextPhenotype::AddReactionCounts(int number_reactions, Apto::Array<int>& cur_reaction_count)
 {
     // Step 1: Resize m_cur_thread_task_count array if necessary.  This is necessary
     // since CThreadPhenotype object does not have any information apriori about m_world.

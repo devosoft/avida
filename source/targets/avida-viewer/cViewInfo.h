@@ -82,8 +82,8 @@ private:
   Systematics::GroupPtr genotype_chart[NUM_SYMBOLS];
   char symbol_chart[NUM_SYMBOLS];
 
-  tArray<char> map;
-  tArray<char> color_map;
+  Apto::Array<char> map;
+  Apto::Array<char> color_map;
 
   inline bool InGenChart(Systematics::GroupPtr in_gen);
   void AddGenChart(Systematics::GroupPtr in_gen);
@@ -94,8 +94,8 @@ public:
 
   void UpdateSymbols();
   void SetupSymbolMaps(int map_mode, bool use_color);
-  tArray<char> & GetMap() { return map; }
-  tArray<char> & GetColorMap() { return color_map; }
+  Apto::Array<char> & GetMap() { return map; }
+  Apto::Array<char> & GetColorMap() { return color_map; }
   char & MapSymbol(int pos) { return map[pos]; }
   char & ColorSymbol(int pos) { return color_map[pos]; }
   int GetMapMode() { return map_mode; }

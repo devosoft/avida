@@ -2344,7 +2344,7 @@ void cDirectInterpretASTVisitor::cLocalArray::Set(int i, const sASTypeInfo& type
   
 }
 
-void cDirectInterpretASTVisitor::cLocalArray::copy(int offset, tArray<sAggregateValue>& in_storage)
+void cDirectInterpretASTVisitor::cLocalArray::copy(int offset, Apto::Array<sAggregateValue>& in_storage)
 {
   for (int i = 0; i < in_storage.GetSize(); i++) {
     m_storage[i + offset].type = in_storage[i].type;

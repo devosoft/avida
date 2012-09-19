@@ -23,9 +23,8 @@
 #ifndef cIntegratedScheduleNode_h
 #define cIntegratedScheduleNode_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
+
 
 /**
  * The cIntegratedScheduleNode object manages bundlings of item's for the
@@ -45,7 +44,7 @@
 class cIntegratedScheduleNode
 {
 private:
-  tArray<int> active_array; // Each cell in this array corressponds to the
+  Apto::Array<int> active_array; // Each cell in this array corressponds to the
                       //  item with the same ID.  If creature is not in the
                       //  list, its value in the array will be 0. If it is in
                       //  the list, it will  point to the cell of the next

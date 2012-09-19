@@ -12,13 +12,13 @@
 
 #include "apto/platform.h"
 
-#include "tArray.h"
-
 #if APTO_PLATFORM(WINDOWS)
 # include <process.h>
 #else
 # include <unistd.h>
 #endif
+
+#include <cassert>
 
 
 // Constants //////////////////////////////////////////////////////////////////
@@ -224,7 +224,7 @@ unsigned int cRandom::GetRandBinomial(const double n, const double p)
 }
 
 
-bool cRandom::Choose(int num_in, tArray<int>& out_array)
+bool cRandom::Choose(int num_in, Apto::Array<int>& out_array)
 {
   // If you ask for more than you pass in...
   assert(num_in >= out_array.GetSize());

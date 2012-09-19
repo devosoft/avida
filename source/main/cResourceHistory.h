@@ -22,14 +22,11 @@
 #ifndef cResourceHistory_h
 #define cResourceHistory_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
 
 class cAvidaContext;
 class cResourceCount;
 class cString;
-template<class T> class tArray;
 
 
 class cResourceHistory
@@ -37,10 +34,10 @@ class cResourceHistory
 private:
   struct sResourceHistoryEntry {
     int update;
-    tArray<double> values;
+    Apto::Array<double> values;
   };
   
-  tArray<sResourceHistoryEntry> m_entries;
+  Apto::Array<sResourceHistoryEntry> m_entries;
   
   
   int getEntryForUpdate(int update, bool exact) const;
@@ -53,8 +50,8 @@ public:
   cResourceHistory() { ; }
   
   bool GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResourceCount& rc, bool exact = false) const;
-  bool GetResourceLevelsForUpdate(int update, tArray<double>& levels, bool exact = false) const;
-  void AddEntry(int update, const tArray<double>& values);
+  bool GetResourceLevelsForUpdate(int update, Apto::Array<double>& levels, bool exact = false) const;
+  void AddEntry(int update, const Apto::Array<double>& values);
   
   bool LoadFile(const cString& filename, const cString& working_dir);
 };

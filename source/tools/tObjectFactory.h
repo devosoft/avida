@@ -24,15 +24,8 @@
 
 #include "apto/core/Mutex.h"
 
-#ifndef tDictionary_h
 #include "tDictionary.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
 
 class cString;
 
@@ -109,7 +102,7 @@ public:
     return NULL;
   }
   
-  void CreateAll(tArray<BaseType>& objects)
+  void CreateAll(Apto::Array<BaseType>& objects)
   {
     tList<cString> names;
     tList<CreateObjectFunction> funcs;
@@ -177,7 +170,7 @@ public:
     return NULL;
   }
   
-  void CreateAll(tArray<BaseType>& objects)
+  void CreateAll(Apto::Array<BaseType>& objects)
   {
     tList<cString> names;
     tList<CreateObjectFunction> funcs;

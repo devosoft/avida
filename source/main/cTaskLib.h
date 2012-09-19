@@ -23,23 +23,10 @@
 #ifndef cTaskLib_h
 #define cTaskLib_h
 
-#ifndef cTaskContext_h
 #include "cTaskContext.h"
-#endif
-#ifndef cTaskEntry_h
 #include "cTaskEntry.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef cWorld_h
 #include "cWorld.h"
-#endif
-#ifndef cStats_h
 #include "cStats.h"
-#endif
-
-
 
 class cEnvReqs;
 class cString;
@@ -50,7 +37,7 @@ class cTaskLib
 {
 private:
   cWorld* m_world;
-  tArray<cTaskEntry*> task_array;
+  Apto::Array<cTaskEntry*> task_array;
 
   // What extra information should be sent along when we are evaluating
   // which tasks have been performed?

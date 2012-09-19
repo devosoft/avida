@@ -27,15 +27,8 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef tMatrix_h
 #include "tMatrix.h"
-#endif
 
 class cAvidaContext;
 class cDataFile;

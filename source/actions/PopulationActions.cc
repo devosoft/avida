@@ -1082,14 +1082,14 @@ public:
       
       if (!cell.HasAV()) continue;
       
-      tArray<double> cell_res;
+      Apto::Array<double> cell_res;
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
         if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
           // for every x juvs, we require 1 adult...otherwise use killprob on the rest
-          tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
-          tArray<cOrganism*> juvs;   
+          Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
+          Apto::Array<cOrganism*> juvs;
           juvs.Resize(0);
           int num_juvs = 0;
           int num_guards = 0;
@@ -1140,7 +1140,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       
-      tArray<double> cell_res;
+      Apto::Array<double> cell_res;
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
@@ -1149,7 +1149,7 @@ public:
           
           // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest
           int num_guards = 0;
-          tArray<cOrganism*> cell_avs = cell.GetCellAVs();    
+          Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();
           for (int k = 0; k < cell_avs.GetSize(); k++) {
             if (cell_avs[k]->GetPhenotype().GetTimeUsed() >= juv_age) num_guards++;
           }
@@ -1157,7 +1157,7 @@ public:
           double guarded_res = num_guards * m_units_per;
           double unguarded_res = cell_res[m_res_id] - guarded_res;
           
-          tArray<double> res_change(cell_res.GetSize());
+          Apto::Array<double> res_change(cell_res.GetSize());
           res_change.SetAll(0.0);
           res_change[m_res_id] = -1 * unguarded_res * m_loss;          
           m_world->GetPopulation().UpdateCellResources(ctx, res_change, i);
@@ -1330,8 +1330,7 @@ public:
       // count the number of target instructions in the genome
       ConstInstructionSequencePtr seq;
       seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-      cString instset(cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue());
-			count = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst));
+			count = seq->CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue()).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
@@ -1393,7 +1392,7 @@ public:
 			// get the number of instructions of each type.
       ConstInstructionSequencePtr seq;
       seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-      cString instset((const char*)cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue());
+      Apto::String instset(cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue());
 			count1 = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst1));
 			count2 = seq->CountInst(m_world->GetHardwareManager().GetInstSet(instset).GetInst(m_inst2));
 			
@@ -3291,7 +3290,7 @@ public:
 		for(int i=0; i<deme.GetSize(); ++i) {
 			cOrganism* org = deme.GetOrganism(i);
 			if(org != 0) {
-				tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				Apto::Array<int> reactions = org->GetPhenotype().GetCurReactionCount();
 				assert(reactions.GetSize() > 1);
 				
 				if (reactions[0]) performed_t1++;
@@ -3346,8 +3345,8 @@ public:
 			cOrganism* org = deme.GetOrganism(i);
 			if(org != 0) {
 				bool performed_rx=false;
-				//				tArray<int> reactions = org->GetPhenotype().GetLastReactionCount();
-				tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				//				Apto::Array<int> reactions = org->GetPhenotype().GetLastReactionCount();
+				Apto::Array<int> reactions = org->GetPhenotype().GetCurReactionCount();
 				for(int j=0; j<reactions.GetSize(); ++j) {
 					if(reactions[j] > 0) {
 						uniq_reactions.insert(j);
@@ -3425,7 +3424,7 @@ public:
 			cOrganism* org = deme.GetOrganism(i);
       string p = desired_phenotypes[i];
 			if(org != 0) {
-        tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+        Apto::Array<int> reactions = org->GetPhenotype().GetCurReactionCount();
 				for(int j=0; j<reactions.GetSize(); ++j) {
           char curp= p[j];
           int des =  atoi(&curp);

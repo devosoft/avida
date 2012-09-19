@@ -48,7 +48,6 @@
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
 #include "cWorld.h"
-#include "tArray.h"
 
 using namespace Avida;
 
@@ -482,7 +481,7 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
       }
       else if (var_name == "cells")
       {
-        tArray<int> cell_list = cStringUtil::ReturnArray(var_value);
+        Apto::Array<int> cell_list = cStringUtil::ReturnArray(var_value);
         new_resource->SetCellIdList(cell_list);
       }
       else if (var_name == "inflowx1" || var_name == "inflowx") {
@@ -659,7 +658,7 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
       this_resource = resource_lib.GetResource(name);
     }
     cString cell_list_str = cur_resource.Pop(':');
-    tArray<int> cell_list = cStringUtil::ReturnArray(cell_list_str);
+    Apto::Array<int> cell_list = cStringUtil::ReturnArray(cell_list_str);
     double tmp_initial = 0.0;
     double tmp_inflow = 0.0;
     double tmp_outflow = 0.0;
@@ -1010,8 +1009,8 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   cString statename;
   cString statesensestr;
 
-  tArray<cString> states;
-  tArray<int> state_sense;
+  Apto::Array<cString> states;
+  Apto::Array<int> state_sense;
   cString statestr = args->GetString(0);
   statestr.Trim();
   while (statestr.GetSize()) {
@@ -1041,7 +1040,7 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   }
 
   // Load the state grid itself
-  tArray<int> lgrid(width * height);
+  Apto::Array<int> lgrid(width * height);
   cString gridstr = args->GetString(1);
   int cell = 0;
   while (gridstr.GetSize() && cell < lgrid.GetSize()) {
@@ -1070,7 +1069,7 @@ bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
   // | a a |
   // | b a |
   // would be a,a,b,a
-  tArray<int> grid(lgrid.GetSize());
+  Apto::Array<int> grid(lgrid.GetSize());
   for (int y = 0; y < height; y++) {
     int off = y * width;
     int loff = (height - y - 1) * width;
@@ -1180,7 +1179,7 @@ bool cEnvironment::Load(const cString& filename, const cString& working_dir, Fee
 }
 
 
-void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random) const
+void cEnvironment::SetupInputs(cAvidaContext& ctx, Apto::Array<int>& input_array, bool random) const
 {
   input_array.Resize(m_input_size);
 
@@ -1226,16 +1225,16 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
 }
 
 
-void cEnvironment::SwapInputs(cAvidaContext&, tArray<int>& src_input_array, tArray<int>& dest_input_array) const
+void cEnvironment::SwapInputs(cAvidaContext&, Apto::Array<int>& src_input_array, Apto::Array<int>& dest_input_array) const
 {
-  tArray<int> tmp_input_array = dest_input_array;
+  Apto::Array<int> tmp_input_array = dest_input_array;
 
   dest_input_array = src_input_array;
   src_input_array = tmp_input_array;
 }
 
 
-bool cEnvironment::TestInput(cReactionResult&, const tBuffer<int>&, const tBuffer<int>&, const tArray<double>&) const
+bool cEnvironment::TestInput(cReactionResult&, const tBuffer<int>&, const tBuffer<int>&, const Apto::Array<double>&) const
 {
   // @CAO nothing for the moment...
   return false;
@@ -1243,10 +1242,10 @@ bool cEnvironment::TestInput(cReactionResult&, const tBuffer<int>&, const tBuffe
 
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
-                              cTaskContext& taskctx, const tArray<int>& task_count,
-                              tArray<int>& reaction_count,
-                              const tArray<double>& resource_count,
-                              const tArray<double>& rbins_count,
+                              cTaskContext& taskctx, const Apto::Array<int>& task_count,
+                              Apto::Array<int>& reaction_count,
+                              const Apto::Array<double>& resource_count,
+                              const Apto::Array<double>& rbins_count,
                               bool is_parasite, cContextPhenotype* context_phenotype) const
 {
   //flag to skip processing of parasite tasks
@@ -1284,8 +1283,8 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     }
 
     if (context_phenotype != 0) {
-      tArray<int> blank_tasks;
-      tArray<int> blank_reactions;
+      Apto::Array<int> blank_tasks;
+      Apto::Array<int> blank_reactions;
       blank_tasks.ResizeClear(task_count.GetSize());
       for(int count=0;count<task_count.GetSize();count++) {
         blank_tasks[count] = 0;
@@ -1338,7 +1337,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
 
 bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction,
-                                  int task_count, const tArray<int>& reaction_count, const bool on_divide) const
+                                  int task_count, const Apto::Array<int>& reaction_count, const bool on_divide) const
 {
   const tList<cReactionRequisite>& req_list = cur_reaction->GetRequisites();
   const int num_reqs = req_list.GetSize();
@@ -1358,7 +1357,7 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     
     if (taskctx.GetOrganism()) {
       // Have all reactions been met?
-      const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); 
+      const Apto::Array<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount();
       tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
       while (reaction_it.Next() != NULL) {
         int react_id = reaction_it.Get()->GetID();
@@ -1425,7 +1424,7 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
 
 
 bool cEnvironment::TestContextRequisites(const cReaction* cur_reaction,
-					 int task_count, const tArray<int>& reaction_count,
+					 int task_count, const Apto::Array<int>& reaction_count,
 					 const bool on_divide) const
 {
   const tList<cContextReactionRequisite>& req_list = cur_reaction->GetContextRequisites();
@@ -1529,7 +1528,7 @@ double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskct
 
 
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
-                               const tArray<double>& resource_count, const tArray<double>& rbins_count,
+                               const Apto::Array<double>& resource_count, const Apto::Array<double>& rbins_count,
                                const double task_quality, const double task_probability, const int task_count,
                                const int reaction_id, cReactionResult& result, cTaskContext& taskctx) const
 {
@@ -1815,7 +1814,7 @@ bool cEnvironment::SetReactionValue(cAvidaContext& ctx, const cString& name, dou
     if (num_set > num_reactions) return false;
 
     // Choose the reactions.
-    tArray<int> reaction_ids(num_set);
+    Apto::Array<int> reaction_ids(num_set);
     ctx.GetRandom().Choose(num_reactions, reaction_ids);
 
     // And set them...

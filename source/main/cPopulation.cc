@@ -65,7 +65,6 @@
 #include "cTestCPU.h"
 #include "cTopology.h"
 #include "cWorld.h"
-#include "tArrayUtils.h"
 
 #include "cHardwareCPU.h"
 
@@ -164,7 +163,7 @@ void cPopulation::SetupCellGrid()
   assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() <= deme_size);
   
   // Setup the deme structures.
-  tArray<int> deme_cells(deme_size);
+  Apto::Array<int> deme_cells(deme_size);
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     for (int offset = 0; offset < deme_size; offset++) {
       int cell_id = deme_id * deme_size + offset;
@@ -182,26 +181,25 @@ void cPopulation::SetupCellGrid()
     // We're cheating here; we're using the random access nature of an iterator to index beyond the end of the cell_array.
     switch(geometry) {
       case nGeometry::GRID:
-        build_grid(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+        build_grid(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
         break;
       case nGeometry::TORUS:
-        build_torus(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+        build_torus(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
         break;
       case nGeometry::CLIQUE:
-        build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+        build_clique(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
         break;
       case nGeometry::HEX:
-        build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+        build_hex(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
         break;
       case nGeometry::LATTICE:
-        build_lattice(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, 1);
+        build_lattice(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y, 1);
         break;
       case nGeometry::RANDOM_CONNECTED:
-        build_random_connected_network(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
-                                       deme_size_x, deme_size_y, m_world->GetRandom());
+        build_random_connected_network(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y, m_world->GetRandom());
         break;
       case nGeometry::SCALE_FREE:
-        build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], m_world->GetConfig().SCALE_FREE_M.Get(),
+        build_scale_free(cell_array.Range(i, i + deme_size - 1), m_world->GetConfig().SCALE_FREE_M.Get(),
                          m_world->GetConfig().SCALE_FREE_ALPHA.Get(), m_world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
                          m_world->GetRandom());
         break;
@@ -430,8 +428,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   assert(parent_organism != NULL);
   bool is_doomed = false;
   int doomed_cell = (world_x * world_y) - 1; //Also at the end of cPopulation::ActivateOrganism
-  tArray<cOrganism*> offspring_array;
-  tArray<cMerit> merit_array;
+  Apto::Array<cOrganism*> offspring_array;
+  Apto::Array<cMerit> merit_array;
   
   // If divide method is split, parent will be reset to completely tolerant
   // must remove their intolerance from the group's cached total.
@@ -478,8 +476,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   // work below in the case of a migration event and 2) so that we don't mess up
   // and mistakenly kill the parent.
   if (m_world->GetConfig().ENABLE_MP.Get()) {
-    tArray<cOrganism*> non_migrants;
-    tArray<cMerit> non_migrant_merits;
+    Apto::Array<cOrganism*> non_migrants;
+    Apto::Array<cMerit> non_migrant_merits;
     for (int i=0; i<offspring_array.GetSize(); ++i) {
       if (m_world->TestForMigration()) {
         // this offspring is outta here!
@@ -495,7 +493,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     merit_array = non_migrant_merits;
   }
   
-  tArray<int> target_cells(offspring_array.GetSize());
+  Apto::Array<int> target_cells(offspring_array.GetSize());
   
   // Loop through choosing the later placement of each offspring in the population.
   bool parent_alive = true;  // Will the parent live through this process?
@@ -663,8 +661,8 @@ bool cPopulation::TestForParasiteInteraction(cOrganism* infected_host, cOrganism
   
   cPhenotype& parent_phenotype = infected_host->GetPhenotype();
   
-  tArray<int> host_task_counts = target_host->GetPhenotype().GetLastHostTaskCount();
-  tArray<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
+  Apto::Array<int> host_task_counts = target_host->GetPhenotype().GetLastHostTaskCount();
+  Apto::Array<int> parasite_task_counts = parent_phenotype.GetLastParasiteTaskCount();
   
   
   if(infection_mechanism == 0) {
@@ -1175,7 +1173,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomTraceQ(int max_samples)
   if (max_samples) max_bgs = max_samples;
   if (max_samples > live_orgs.GetSize()) max_bgs = live_orgs.GetSize();
   
-  tArray<bool> used_orgs;
+  Apto::Array<bool> used_orgs;
   used_orgs.Resize(live_orgs.GetSize());
   used_orgs.SetAll(false);
   
@@ -1200,7 +1198,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPreyTraceQ(int max_samples)
   if (max_samples) max_bgs = max_samples;
   if (max_samples > num_prey_organisms) max_bgs = num_prey_organisms;
   
-  tArray<bool> used_orgs;
+  Apto::Array<bool> used_orgs;
   used_orgs.Resize(live_orgs.GetSize());
   used_orgs.SetAll(false);
   
@@ -1227,7 +1225,7 @@ Apto::Array<int, Apto::Smart> cPopulation::SetRandomPredTraceQ(int max_samples)
   if (max_samples) max_bgs = max_samples;
   if (max_samples > num_pred_organisms) max_bgs = num_pred_organisms;
   
-  tArray<bool> used_orgs;
+  Apto::Array<bool> used_orgs;
   used_orgs.Resize(live_orgs.GetSize());
   used_orgs.SetAll(false);
   
@@ -1502,9 +1500,9 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   // get the resource library
   const cResourceLib & resource_lib = environment.GetResourceLib();
   // get the destination cell resource levels
-  tArray<double> dest_cell_resources = m_world->GetPopulation().GetCellResources(dest_cell_id, ctx);
+  Apto::Array<double> dest_cell_resources = m_world->GetPopulation().GetCellResources(dest_cell_id, ctx);
   // get the current cell resource levels
-  tArray<double> src_cell_resources = m_world->GetPopulation().GetCellResources(src_cell_id, ctx);
+  Apto::Array<double> src_cell_resources = m_world->GetPopulation().GetCellResources(src_cell_id, ctx);
   // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;
@@ -1812,7 +1810,7 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
   const int num_demes = deme_array.GetSize();
   
   double total_fitness = 0;
-  tArray<double> deme_fitness(num_demes);
+  Apto::Array<double> deme_fitness(num_demes);
   
   switch(competition_type) {
     case 0:    // deme fitness = 1;
@@ -1873,7 +1871,7 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
         deme_fitness[deme_id] = single_deme_fitness.Ave();
       }
       // ... then determine the rank of each deme based on its fitness
-      tArray<double> deme_rank(num_demes);
+      Apto::Array<double> deme_rank(num_demes);
       deme_rank.SetAll(1);
       for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         for (int test_deme = 0; test_deme < num_demes; test_deme++) {
@@ -1921,7 +1919,7 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
         deme_fitness[deme_id] = single_deme_life_fitness.Ave();
       }
       // ... then determine the rank of each deme based on its fitness
-      tArray<double> deme_rank(num_demes);
+      Apto::Array<double> deme_rank(num_demes);
       deme_rank.SetAll(1);
       for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         for (int test_deme = 0; test_deme < num_demes; test_deme++) {
@@ -1943,7 +1941,7 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
   }
   
   // Pick which demes should be in the next generation.
-  tArray<int> new_demes(num_demes);
+  Apto::Array<int> new_demes(num_demes);
   for (int i = 0; i < num_demes; i++) {
     double birth_choice = (double) m_world->GetRandom().GetDouble(total_fitness);
     double test_total = 0;
@@ -1957,13 +1955,13 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
   }
   
   // Track how many of each deme we should have.
-  tArray<int> deme_count(num_demes);
+  Apto::Array<int> deme_count(num_demes);
   deme_count.SetAll(0);
   for (int i = 0; i < num_demes; i++) {
     deme_count[new_demes[i]]++;
   }
   
-  tArray<bool> is_init(num_demes);
+  Apto::Array<bool> is_init(num_demes);
   is_init.SetAll(false);
   
   // Copy demes until all deme counts are 1.
@@ -2330,7 +2328,7 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
   
   // Update stats calculate how many different reactions the deme performed.
   double deme_performed_rx=0;
-  tArray<int> deme_reactions = source_deme.GetCurReactionCount();
+  Apto::Array<int> deme_reactions = source_deme.GetCurReactionCount();
   for(int i=0; i< deme_reactions.GetSize(); ++i) {
     //HJG
     if (deme_reactions[i] > 0){
@@ -2648,12 +2646,12 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   /* Seed deme part... */
   cRandom& random = m_world->GetRandom();
   //bool successfully_seeded = true;
-  tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
-  tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
+  Apto::Array<cOrganism*> source_founders; // List of organisms we're going to transfer.
+  Apto::Array<cOrganism*> target_founders; // List of organisms we're going to transfer.
   
   // Grab a random org from the set of orgs that have
   // flagged themselves as part of the germline.
-  tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
+  Apto::Array<cOrganism*> potential_founders; // List of organisms we might transfer.
   
   // Get list of potential founders
   for (int i = 0; i<source_deme.GetSize(); ++i) {
@@ -2903,14 +2901,14 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // Updated seed deme method that maintains genotype inheritance.
       
       // deconstruct founders into two lists...
-      tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
-      tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
+      Apto::Array<cOrganism*> source_founders; // List of organisms we're going to transfer.
+      Apto::Array<cOrganism*> target_founders; // List of organisms we're going to transfer.
       
       
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
           // being selected more than once).
-          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          Apto::Array<cOrganism*> founders; // List of organisms we're going to transfer.
           while(founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
             int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
             if (cell_array[cellid].IsOccupied()) {
@@ -2922,7 +2920,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           break;
         }
         case 1: { // Sequential selection, from the beginning.  Good with DEMES_ORGANISM_PLACEMENT=3.
-          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          Apto::Array<cOrganism*> founders; // List of organisms we're going to transfer.
           for(int i=0; i<m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
             int cellid = source_deme.GetCellID(i);
             if (cell_array[cellid].IsOccupied()) {
@@ -2967,7 +2965,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         }
         case 7: { // Grab the organisms that have flagged themselves as
           // part of the germline. Ignores replicate size...
-          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          Apto::Array<cOrganism*> founders; // List of organisms we're going to transfer.
           for (int i = 0; i<source_deme.GetSize(); ++i) {
             cPopulationCell& cell = source_deme.GetCell(i);
             if (cell.IsOccupied()) {
@@ -2984,8 +2982,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         }
         case 8: { // Grab a random org from the set of orgs that have
           // flagged themselves as part of the germline.
-          tArray<cOrganism*> potential_founders; // List of organisms we might transfer.
-          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          Apto::Array<cOrganism*> potential_founders; // List of organisms we might transfer.
+          Apto::Array<cOrganism*> founders; // List of organisms we're going to transfer.
           
           // Get list of potential founders
           for (int i = 0; i<source_deme.GetSize(); ++i) {
@@ -3018,7 +3016,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           // 3: treat germline propensities as zero or nonzero for picking
           // 4: same as 3: but replication to target fails if only one germ.
           // 5: same as 3: but replication fails and source dies if fewer than two germs.
-          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+          Apto::Array<cOrganism*> founders; // List of organisms we're going to transfer.
           
           if (source_deme.GetOrgCount() >= 2) {
             
@@ -3027,7 +3025,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
               ctx.Driver().Abort(Avida::INVALID_CONFIG);
             }
             
-            tArray<cOrganism*> prospective_founders;
+            Apto::Array<cOrganism*> prospective_founders;
             
             cDoubleSum gp_sum;
             double min = -1;
@@ -3155,7 +3153,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       // or it will be prematurely deleted before we are done!
       
       // cDoubleSum gen;
-      tArray<cOrganism*> old_source_organisms;
+      Apto::Array<cOrganism*> old_source_organisms;
       for(int i=0; i<source_deme.GetSize(); ++i) {
         int cell_id = source_deme.GetCellID(i);
         
@@ -3167,7 +3165,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       }
       
       
-      tArray<cOrganism*> old_target_organisms;
+      Apto::Array<cOrganism*> old_target_organisms;
       for(int i=0; i<target_deme.GetSize(); ++i) {
         int cell_id = target_deme.GetCellID(i);
         
@@ -3234,8 +3232,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         // do not clear or change founder list
         
         // use it to recreate ancestral state of genotypes
-        tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
-        tArray<cPhenotype>& source_founder_phenotypes = source_deme.GetFounderPhenotypes();
+        Apto::Array<int>& source_founders = source_deme.GetFounderGenotypeIDs();
+        Apto::Array<cPhenotype>& source_founder_phenotypes = source_deme.GetFounderPhenotypes();
         for(int i=0; i<source_founders.GetSize(); i++) {
           
           int cellid = DemeSelectInjectionCell(source_deme, i);
@@ -3503,7 +3501,7 @@ void cPopulation::DivideDemes(cAvidaContext& ctx)
     // Setup an array to collect the total number of tasks performed.
     const int num_tasks = cell_array[source_deme.GetCellID(0)].GetOrganism()->
     GetPhenotype().GetLastTaskCount().GetSize();
-    tArray<int> tot_tasks(num_tasks);
+    Apto::Array<int> tot_tasks(num_tasks);
     tot_tasks.SetAll(0);
     
     // Move over the odd numbered cells.
@@ -3513,7 +3511,7 @@ void cPopulation::DivideDemes(cAvidaContext& ctx)
       cOrganism * org1 = cell_array[cell1_id].GetOrganism();
       
       // Keep track of what tasks have been done.
-      const tArray<int> & cur_tasks = org1->GetPhenotype().GetLastTaskCount();
+      const Apto::Array<int> & cur_tasks = org1->GetPhenotype().GetLastTaskCount();
       for (int i = 0; i < num_tasks; i++) {
         tot_tasks[i] += cur_tasks[i];
       }
@@ -4078,7 +4076,7 @@ void cPopulation::PrintDemeInstructions()
       df_inst.WriteTimeStamp();
       df_inst.Write(stats.GetUpdate(), "update");
       
-      tArray<cIntSum> single_deme_inst(num_inst);
+      Apto::Array<cIntSum> single_deme_inst(num_inst);
       
       const cDeme& cur_deme = deme_array[deme_id];
       for (int i = 0; i < cur_deme.GetSize(); i++) {
@@ -4361,7 +4359,7 @@ void cPopulation::PrintDemeTasks() {
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
     const cDeme & cur_deme = deme_array[deme_id];
-    tArray<cIntSum> single_deme_task(num_task);
+    Apto::Array<cIntSum> single_deme_task(num_task);
     
     for (int i = 0; i < cur_deme.GetSize(); i++) {
       int cur_cell = cur_deme.GetCellID(i);
@@ -4394,7 +4392,7 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
     
     if (deme_array[i].IsEmpty()) continue;
     
-    tArray<int>& deme_founders = deme_array[i].GetFounderGenotypeIDs();
+    Apto::Array<int>& deme_founders = deme_array[i].GetFounderGenotypeIDs();
     
     fp << i << " " << deme_founders.GetSize();
     for(int j=0; j<deme_founders.GetSize(); j++) {
@@ -5442,7 +5440,7 @@ struct sOrgInfo {
 
 struct sGroupInfo {
   Systematics::GroupPtr bg;
-  tArray<sOrgInfo> orgs;
+  Apto::Array<sOrgInfo> orgs;
   bool parasite;
   
   sGroupInfo(Systematics::GroupPtr in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
@@ -5463,7 +5461,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
       cOrganism* org = cell_array[cell].GetOrganism();
       
       // Handle any parasites
-      const tArray<Systematics::UnitPtr>& parasites = org->GetParasites();
+      const Apto::Array<Systematics::UnitPtr>& parasites = org->GetParasites();
       for (int p = 0; p < parasites.GetSize(); p++) {
         Systematics::GroupPtr pg = parasites[p]->SystematicsGroup("genotype");
         if (pg == NULL) continue;
@@ -5534,7 +5532,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     
     genotype->LegacySave(&df);
     
-    tArray<sOrgInfo>& cells = group_info->orgs;
+    Apto::Array<sOrgInfo>& cells = group_info->orgs;
     cString cellstr;
     cString offsetstr;
     cString lineagestr;
@@ -5602,7 +5600,7 @@ bool cPopulation::SaveFlameData(const cString& filename)
       cOrganism* org = cell_array[cell].GetOrganism();
       
       // Handle any parasites
-      const tArray<Systematics::UnitPtr>& parasites = org->GetParasites();
+      const Apto::Array<Systematics::UnitPtr>& parasites = org->GetParasites();
       for (int p = 0; p < parasites.GetSize(); p++) {
         Systematics::GroupPtr pg = parasites[p]->SystematicsGroup("genotype");
         if (pg == NULL) continue;
@@ -5656,13 +5654,13 @@ public:
   tDictionary<cString>* props;
   
   int num_cpus;
-  tArray<int> cells;
-  tArray<int> offsets;
-  tArray<int> lineage_labels;
-  tArray<int> group_ids;
-  tArray<int> forager_types;
-  tArray<int> birth_cells;
-  tArray<int> avatar_cells;
+  Apto::Array<int> cells;
+  Apto::Array<int> offsets;
+  Apto::Array<int> lineage_labels;
+  Apto::Array<int> group_ids;
+  Apto::Array<int> forager_types;
+  Apto::Array<int> birth_cells;
+  Apto::Array<int> avatar_cells;
   
   Systematics::GroupPtr bg;
   
@@ -6022,7 +6020,7 @@ void cPopulation::InjectParasite(const cString& label, const InstructionSequence
 }
 
 
-void cPopulation::UpdateResources(cAvidaContext& ctx, const tArray<double> & res_change)
+void cPopulation::UpdateResources(cAvidaContext& ctx, const Apto::Array<double> & res_change)
 {
   resource_count.Modify(ctx, res_change);
 }
@@ -6032,12 +6030,12 @@ void cPopulation::UpdateResource(cAvidaContext& ctx, int res_index, double chang
   resource_count.Modify(ctx, res_index, change);
 }
 
-void cPopulation::UpdateCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id)
+void cPopulation::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
 {
   resource_count.ModifyCell(ctx, res_change, cell_id);
 }
 
-void cPopulation::UpdateDemeCellResources(cAvidaContext& ctx, const tArray<double>& res_change, const int cell_id)
+void cPopulation::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
 {
   GetDeme(GetCell(cell_id).GetDemeID()).ModifyDemeResCount(ctx, res_change, cell_id);
 }
@@ -6423,8 +6421,8 @@ void cPopulation::PrintPhenotypeData(const cString& filename)
   double average_num_tasks = 0.0;
   
   //implementing a very poor man's hash...
-  tArray<int> phenotypes;
-  tArray<int> phenotype_counts;
+  Apto::Array<int> phenotypes;
+  Apto::Array<int> phenotype_counts;
   
   for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
@@ -6547,8 +6545,8 @@ void cPopulation::PrintHostPhenotypeData(const cString& filename)
   double average_num_tasks = 0.0;
   
   //implementing a very poor man's hash...
-  tArray<int> phenotypes;
-  tArray<int> phenotype_counts;
+  Apto::Array<int> phenotypes;
+  Apto::Array<int> phenotype_counts;
   
   for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
@@ -6625,8 +6623,8 @@ void cPopulation::PrintParasitePhenotypeData(const cString& filename)
   double average_num_tasks = 0.0;
   
   //implementing a very poor man's hash...
-  tArray<int> phenotypes;
-  tArray<int> phenotype_counts;
+  Apto::Array<int> phenotypes;
+  Apto::Array<int> phenotype_counts;
   
   for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
@@ -6766,7 +6764,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
   
   double total_fitness = 0;
   int num_cells = GetSize();
-  tArray<double> org_fitness(num_cells);
+  Apto::Array<double> org_fitness(num_cells);
   
   double lowest_fitness = -1.0;
   double average_fitness = 0;
@@ -6807,9 +6805,9 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
   
   if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "==Compete Organisms==" << endl;
   
-  tArray<double> min_trial_fitnesses(num_trials);
-  tArray<double> max_trial_fitnesses(num_trials);
-  tArray<double> avg_trial_fitnesses(num_trials);
+  Apto::Array<double> min_trial_fitnesses(num_trials);
+  Apto::Array<double> max_trial_fitnesses(num_trials);
+  Apto::Array<double> avg_trial_fitnesses(num_trials);
   avg_trial_fitnesses.SetAll(0);
   
   bool init = false;
@@ -6818,7 +6816,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
     if (GetCell(i).IsOccupied()) {
       num_competed_orgs++;
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
-      tArray<double> trial_fitnesses = p.GetTrialFitnesses();
+      Apto::Array<double> trial_fitnesses = p.GetTrialFitnesses();
       for (int t=0; t < num_trials; t++) {
         if ((!init) || (min_trial_fitnesses[t] > trial_fitnesses[t])) {
           min_trial_fitnesses[t] = trial_fitnesses[t];
@@ -6851,7 +6849,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
       double fitness = 0.0;
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
       //Don't need to reset trial_fitnesses because we will call cPhenotype::OffspringReset on the entire pop
-      tArray<double> trial_fitnesses = p.GetTrialFitnesses();
+      Apto::Array<double> trial_fitnesses = p.GetTrialFitnesses();
       
       //If there are no trial fitnesses...use the actual fitness.
       if (trial_fitnesses.GetSize() == 0) {
@@ -6958,7 +6956,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
   }
   
   // Pick which orgs should be in the next generation. (Filling all cells)
-  tArray<int> new_orgs(num_cells);
+  Apto::Array<int> new_orgs(num_cells);
   for (int i = 0; i < num_cells; i++) {
     double birth_choice = (double) m_world->GetRandom().GetDouble(total_fitness);
     double test_total = 0;
@@ -6978,7 +6976,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
   average_fitness_copied /= num_cells;
   
   // Track how many of each org we should have.
-  tArray<int> org_count(num_cells);
+  Apto::Array<int> org_count(num_cells);
   org_count.SetAll(0);
   for (int i = 0; i < num_cells; i++) {
     org_count[new_orgs[i]]++;
@@ -7007,7 +7005,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
     }
   }
   
-  tArray<bool> is_init(num_cells);
+  Apto::Array<bool> is_init(num_cells);
   is_init.SetAll(false);
   
   // Copy orgs until all org counts are 1.
@@ -7274,7 +7272,7 @@ void  cPopulation::JoinGroup(cOrganism* org, int group_id)
     m_group_list.Set(group_id, temp);
     // If tolerance is on, create the new group's tolerance cache
     if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-      tArray<pair<int,int> > temp_array(2);
+      Apto::Array<pair<int,int> > temp_array(2);
       temp_array[0] = make_pair(-1, -1);
       temp_array[1] = make_pair(-1, -1);
       m_group_intolerances.Set(group_id, temp_array);

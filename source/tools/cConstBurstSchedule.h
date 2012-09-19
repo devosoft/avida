@@ -22,12 +22,9 @@
 #ifndef cConstBurstSchedule_h
 #define cConstBurstSchedule_h
 
-#ifndef cSchedule_h
+#include "avida/core/Types.h"
+
 #include "cSchedule.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cMerit;
 
@@ -38,7 +35,7 @@ class cConstBurstSchedule : public cSchedule
   {
   private:
     int m_burst_sz;
-    tArray<bool> m_active;
+    Apto::Array<bool> m_active;
 
     int m_cur_id;
     int m_burst_state;

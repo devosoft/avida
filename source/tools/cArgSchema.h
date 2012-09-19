@@ -69,9 +69,9 @@ private:
   
   
   tDictionary<sArgSchemaEntry*> m_entries;
-  tArray<sArgSchemaEntry*> m_ints;
-  tArray<sArgSchemaEntry*> m_doubles;
-  tArray<sArgSchemaEntry*> m_strings;
+  Apto::Array<sArgSchemaEntry*> m_ints;
+  Apto::Array<sArgSchemaEntry*> m_doubles;
+  Apto::Array<sArgSchemaEntry*> m_strings;
   
   char m_sep_entry;
   char m_sep_value;

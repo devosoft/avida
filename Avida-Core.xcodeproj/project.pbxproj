@@ -518,7 +518,6 @@
 		7061AB801358BD6F0000B036 /* Genome.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Genome.cc; sourceTree = "<group>"; };
 		7061AB811358BD6F0000B036 /* InstructionSequence.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InstructionSequence.cc; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
-		7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayUtils.h; sourceTree = "<group>"; };
 		706C6FFD0B83F254003174C1 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
 		706C6FFE0B83F265003174C1 /* cInstSet.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstSet.cc; sourceTree = "<group>"; };
 		706C703E0B83FB95003174C1 /* tInstLibEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tInstLibEntry.h; sourceTree = "<group>"; };
@@ -734,7 +733,6 @@
 		70B0892608F7630100FC65FE /* cStringUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStringUtil.cc; sourceTree = "<group>"; };
 		70B08B8008FB2E5500FC65FE /* AvidaTools.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaTools.h; sourceTree = "<group>"; };
 		70B08B8208FB2E5500FC65FE /* cWeightedIndex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cWeightedIndex.h; sourceTree = "<group>"; };
-		70B08B8408FB2E5500FC65FE /* tArray.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tArray.h; sourceTree = "<group>"; };
 		70B08B8508FB2E5500FC65FE /* tBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tBuffer.h; sourceTree = "<group>"; };
 		70B08B8608FB2E5500FC65FE /* tDataEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntry.h; sourceTree = "<group>"; };
 		70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntryCommand.h; sourceTree = "<group>"; };
@@ -1825,8 +1823,6 @@
 				70B08B8208FB2E5500FC65FE /* cWeightedIndex.h */,
 				70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */,
 				70B08B8B08FB2E5500FC65FE /* nHashTable.h */,
-				70B08B8408FB2E5500FC65FE /* tArray.h */,
-				7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */,
 				70B08B8508FB2E5500FC65FE /* tBuffer.h */,
 				70B984B40EBB71B500A828B1 /* tDataCommandManager.h */,
 				70B08B8608FB2E5500FC65FE /* tDataEntry.h */,

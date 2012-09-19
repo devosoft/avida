@@ -125,10 +125,10 @@ int cRawBitArray::FindBit1(const int num_bits, const int start_pos) const
   return -1;
 }
 
-tArray<int> cRawBitArray::GetOnes(const int num_bits) const
+Apto::Array<int> cRawBitArray::GetOnes(const int num_bits) const
 {
   // @CAO -- There are probably better ways to do this with bit tricks.
-  tArray<int> out_array(CountBits2(num_bits));
+  Apto::Array<int> out_array(CountBits2(num_bits));
   int cur_pos = 0;
   for (int i = 0; i < num_bits; i++) {
     if (GetBit(i) == true) out_array[cur_pos++] = i;

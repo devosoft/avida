@@ -1341,8 +1341,8 @@ bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-                            const tArray<double>& res_in, const tArray<double>& rbins_in,
-			    tArray<double>& res_change, tArray<cString>& insts_triggered,
+                            const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in,
+			    Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered,
 			    bool is_parasite, cContextPhenotype* context_phenotype)
 {
   assert(initialized == true);
@@ -2149,8 +2149,8 @@ int cPhenotype::Compare(const cPhenotype* lhs, const cPhenotype* rhs) {
   else if ( lhs->GetGestationTime() > rhs->GetGestationTime() ) return 1;
   
   // If gestation times are also equal, compare each task
-  tArray<int> lhsTasks = lhs->GetLastTaskCount();
-  tArray<int> rhsTasks = rhs->GetLastTaskCount();
+  Apto::Array<int> lhsTasks = lhs->GetLastTaskCount();
+  Apto::Array<int> rhsTasks = rhs->GetLastTaskCount();
   for (int k = 0; k < lhsTasks.GetSize(); k++) {
     if (lhsTasks[k] < rhsTasks[k]) return -1;
     else if (lhsTasks[k] > rhsTasks[k]) return 1;
@@ -2212,7 +2212,7 @@ double cPhenotype::GetResourcesConsumed()
 }
 
 //Deep copy parasite task count
-void cPhenotype::SetLastParasiteTaskCount(tArray<int> oldParaPhenotype)
+void cPhenotype::SetLastParasiteTaskCount(Apto::Array<int> oldParaPhenotype)
 {
   assert(initialized == true);
   
@@ -2223,10 +2223,10 @@ void cPhenotype::SetLastParasiteTaskCount(tArray<int> oldParaPhenotype)
 }
 
 /* Return the cumulative reaction count if we aren't resetting on divide. */
-tArray<int> cPhenotype::GetCumulativeReactionCount()
+Apto::Array<int> cPhenotype::GetCumulativeReactionCount()
 { 
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == 0) { 
-    tArray<int> cum_react; 
+    Apto::Array<int> cum_react;
     for (int i=0; i<cur_reaction_count.GetSize(); ++i) 
     {
       cum_react.Push(cur_reaction_count[i] + last_reaction_count[i]);

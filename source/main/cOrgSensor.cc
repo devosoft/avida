@@ -276,7 +276,7 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
 {
   double val = 0;
   if (id_sought != -1) {
-    tArray<double> res_count;
+    Apto::Array<double> res_count;
     if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
     else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
     val = res_count[id_sought];
@@ -628,7 +628,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
   
   // if looking for resources or topological features
   if (habitat_used != -2) {
-    tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
+    Apto::Array<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) { 

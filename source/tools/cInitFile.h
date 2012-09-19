@@ -52,7 +52,7 @@ private:
       : line(in_line), file(in_file), line_num(in_line_num), used(false) { ; }
   };
 
-  tArray<sLine*> m_lines;
+  Apto::Array<sLine*> m_lines;
   cString m_ftype;
   cStringList m_format;
   cStringList m_imported_files;
@@ -125,7 +125,7 @@ public:
    * one to set standard values that are used if the user does not override
    * them.
    **/
-  cString ReadString(const tArray<cString>& names, cString def = "", bool warn_default = true) const;
+  cString ReadString(const Apto::Array<cString>& names, cString def = "", bool warn_default = true) const;
   
   /**
    * Looks over all lines loaded into the file, and warns if any of them

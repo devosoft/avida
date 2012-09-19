@@ -52,7 +52,7 @@ cAnalyzeTreeStats_CumulativeStemminess::cAnalyzeTreeStats_CumulativeStemminess(c
 {}
 
 
-void cAnalyzeTreeStats_CumulativeStemminess::PrintAGLData(tArray<cAGLData> &agl){
+void cAnalyzeTreeStats_CumulativeStemminess::PrintAGLData(Apto::Array<cAGLData> &agl){
   for(int i=0; i < agl.GetSize(); i++){
     cout << i << ":";
     cout << " " << agl[i].id;
@@ -92,10 +92,10 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Scanning genotypes..." << endl;
   }
-  tArray<cAnalyzeGenotype *> gen_array(num_gens);
+  Apto::Array<cAnalyzeGenotype *> gen_array(num_gens);
   Apto::Map<int, int> id_hash;  // Store array pos for each id.
-  tArray<int> id_array(num_gens), pid_array(num_gens);
-  tArray<int> depth_array(num_gens), birth_array(num_gens);
+  Apto::Array<int> id_array(num_gens), pid_array(num_gens);
+  Apto::Array<int> depth_array(num_gens), birth_array(num_gens);
 
   array_pos = 0;
   batch_it.Reset();
@@ -118,12 +118,12 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
   }
 
   //// Now collect information about the offspring of each individual. {{{4
-  tArray<int> ppos_array(num_gens), offspring_count(num_gens);
+  Apto::Array<int> ppos_array(num_gens), offspring_count(num_gens);
   offspring_count.SetAll(0);
 
   // For each genotype, figure out how far back you need to go to get to a branch point. {{{4
-  tArray<int> anc_branch_dist_array(num_gens);
-  tArray<int> anc_branch_pos_array(num_gens);
+  Apto::Array<int> anc_branch_dist_array(num_gens);
+  Apto::Array<int> anc_branch_pos_array(num_gens);
   anc_branch_dist_array.SetAll(-1);
   anc_branch_pos_array.SetAll(-1);
   bool found = true;

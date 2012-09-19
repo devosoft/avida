@@ -23,12 +23,9 @@
 #ifndef cIntegratedSchedule_h
 #define cIntegratedSchedule_h
 
-#ifndef cSchedule_h
+#include "avida/core/Types.h"
+
 #include "cSchedule.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cDeme;
 class cIntegratedScheduleNode;
@@ -47,7 +44,7 @@ class cMerit;
 class cIntegratedSchedule : public cSchedule
 {
 private:
-  tArray<cIntegratedScheduleNode *> node_array;
+  Apto::Array<cIntegratedScheduleNode *> node_array;
   int num_active_nodes;
   cMerit * merit_chart;
 

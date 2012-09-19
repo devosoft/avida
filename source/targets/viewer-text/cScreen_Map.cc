@@ -42,7 +42,7 @@ void cScreen_Map::Draw()
 void cScreen_Map::Update()
 {
   m_map_info.UpdateMaps();
-  const tArray<int> & color_map( m_map_info.GetColors() );
+  const Apto::Array<int> & color_map( m_map_info.GetColors() );
 
   const int world_x = m_info.GetPopulation().GetWorldX();
   const int world_y = m_info.GetPopulation().GetWorldY();

@@ -34,7 +34,7 @@ private:
   
 
   // --------  Internal Variables  --------
-  tArray<sObjectEntry*> m_obj_tbl;
+  Apto::Array<sObjectEntry*> m_obj_tbl;
   tDictionary<int> m_obj_dict;
   tDictionary<const cASFunction*> m_fun_dict;
 

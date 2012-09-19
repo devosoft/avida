@@ -23,9 +23,7 @@
 #ifndef cOrderedWeightedIndex_h
 #define cOrderedWeightedIndex_h
 
-#ifndef tArray_h
-#include "tArray.h"
-#endif
+#include "avida/core/Types.h"
 
 #ifndef NULL
 #define NULL 0
@@ -44,9 +42,9 @@ using namespace std;
 class cOrderedWeightedIndex
 {
 protected:
-  tArray<double> item_weight;
-  tArray<double> cum_weight;
-  tArray<int>    item_value;
+  Apto::Array<double> item_weight;
+  Apto::Array<double> cum_weight;
+  Apto::Array<int>    item_value;
 
   int Lookup(double weight, int ndxA, int ndxE);
 

@@ -50,75 +50,6 @@ public:
 };
 
 
-#include "tArray.h"
-class tArrayTests : public cUnitTest
-{
-public:
-  const char* GetUnitName() { return "tArray"; }
-protected:
-  void RunTests()
-  {
-    bool result = false;
-    const int SIZE = 10;
-    
-    tArray<int> test1;
-    ReportTestResult("Constructor with no args", test1.GetSize() == 0);
-    
-    test1.Resize(SIZE);
-    ReportTestResult("Resize Empty", test1.GetSize() == SIZE);
-    
-    for (int i = 0; i < SIZE; i++) test1[i] = i;
-    ReportTestResult("Get/Set Values", test1[5] == 5);
-    
-    tArray<int> test2(SIZE);
-    ReportTestResult("Constructor with default size", test2.GetSize() == SIZE);
-    
-    result = true;
-    test2.SetAll(5);
-    for (int i = 0; i < SIZE; i++) if (test2[i] != 5) result = false;
-    ReportTestResult("SetAll", result);
-    
-    test2 = test1;
-    ReportTestResult("Assignment", test2[6] == 6);
-    
-    test2.Resize(SIZE + 1, -1);
-    ReportTestResult("Resize with default value", test2[SIZE] == -1 && test2[SIZE - 1] == (SIZE - 1));
-    
-    test1.Push(-1);
-    ReportTestResult("Push value", test1[SIZE] == -1 && test1[SIZE - 1] == (SIZE - 1));
-    
-    result = true;
-    for (tArray<int>::iterator it = test1.begin(); it != test1.end(); it++) (*it) = -2;
-    for (int i = 0; i < test1.GetSize(); i++) if (test1[i] != -2) result = false;
-    ReportTestResult("STL-style iterator", result);
-    
-    result = true;
-    tArray<int> test3(10);
-    test3[0] = 3;
-    test3[1] = 9;
-    test3[2] = 0;
-    test3[3] = -1;
-    test3[4] = 2;
-    test3[5] = 3;
-    test3[6] = 7;
-    test3[7] = -3;
-    test3[8] = 0;
-    test3[9] = 4;
-    test3.MergeSort(IntCompareFunction);
-    for(int i = 0; i < test3.GetSize() - 1; i++) if (test3[i] > test3[i+1]) result = false;
-    ReportTestResult("MergeSort", result);
-  }
-  
-  static int IntCompareFunction(const void * a, const void * b)
-  {
-    if( *((int*)a) > *((int*)b) ) return 1;
-    if( *((int*)a) < *((int*)b) ) return -1;
-    return 0;
-  }
-  
-};
-
-
 
 #include "cBitArray.h"
 class cRawBitArrayTests : public cUnitTest
@@ -400,7 +331,6 @@ int main(int argc, const char* argv[])
   cout << "Avida Tools Unit Tests" << endl;
   cout << endl;
   
-  TEST(tArray);
   TEST(cRawBitArray);
   TEST(cBitArray);
   

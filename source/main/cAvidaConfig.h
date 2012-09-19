@@ -141,7 +141,7 @@ private:
   // It is used to manage the various types of entries in a dynamic fashion.
   class cBaseConfigEntry {
   private:
-    tArray<cString> config_name;  // Names for this setting (first is main name; remainder are aliases)
+    Apto::Array<cString> config_name;  // Names for this setting (first is main name; remainder are aliases)
     const cString type;           // What type does this entry return?
     cString default_value;        // Value to use if not found in config file.
     const cString description;    // Explaination of the use of this setting
@@ -160,7 +160,7 @@ private:
     virtual bool EqualsString(const cString& str_value) const = 0;
     
     const cString& GetName(int id=0) const { return config_name[id]; }
-    const tArray<cString>& GetNames() const { return config_name; }
+    const Apto::Array<cString>& GetNames() const { return config_name; }
     const cString& GetType() const { return type; }
     const cString& GetDefault() const { return default_value; }
     const cString& GetDesc() const { return description; }

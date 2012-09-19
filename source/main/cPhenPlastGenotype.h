@@ -27,10 +27,6 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cCPUMemory.h"
-#include "cString.h"
-#include "cStringList.h"
-#include "cStringUtil.h"
-#include "tArray.h"
 #include "cPlasticPhenotype.h"
 #include "cPhenotype.h"
 #include "cHardwareManager.h"
@@ -69,7 +65,7 @@ class cPhenPlastGenotype
   double m_min_fit_freq;
   double m_min_fitness;
   double m_viable_probability;
-  tArray<double> m_task_probabilities;
+  Apto::Array<double> m_task_probabilities;
     
     
   
@@ -93,7 +89,7 @@ public:
   const cPlasticPhenotype* GetPlasticPhenotype(int num) const;
   const cPlasticPhenotype* GetMostLikelyPhenotype() const;
   const cPlasticPhenotype* GetHighestFitnessPhenotype() const;
-  tArray<double> GetTaskProbabilities() const { return m_task_probabilities; }
+  Apto::Array<double> GetTaskProbabilities() const { return m_task_probabilities; }
   double GetViableProbability() const { return m_viable_probability; }
 };
 

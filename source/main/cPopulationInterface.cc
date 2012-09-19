@@ -184,7 +184,7 @@ int cPopulationInterface::GetNumNeighbors()
   return cell.ConnectionList().GetSize();
 }
 
-void cPopulationInterface::GetNeighborhoodCellIDs(tArray<int>& list)
+void cPopulationInterface::GetNeighborhoodCellIDs(Apto::Array<int>& list)
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
@@ -247,37 +247,37 @@ void cPopulationInterface::ResetInputs(cAvidaContext& ctx)
   m_world->GetPopulation().GetCell(m_cell_id).ResetInputs(ctx); 
 }
 
-const tArray<int>& cPopulationInterface::GetInputs() const
+const Apto::Array<int>& cPopulationInterface::GetInputs() const
 {
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
 }
 
-const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx) 
+const Apto::Array<double>& cPopulationInterface::GetResources(cAvidaContext& ctx)
 {
   return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx) 
+const Apto::Array<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx)
 {
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
+const Apto::Array<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx)
 {
   return m_world->GetPopulation().GetCellResources(cell_id, ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id) 
+const Apto::Array<double>& cPopulationInterface::GetFrozenResources(cAvidaContext& ctx, int cell_id)
 {
   return m_world->GetPopulation().GetFrozenResources(ctx, cell_id); 
 }
 
-const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
+const Apto::Array<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx)
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 
 }
 
-const tArray< tArray<int> >& cPopulationInterface::GetCellIdLists()
+const Apto::Array< Apto::Array<int> >& cPopulationInterface::GetCellIdLists()
 {
 	return m_world->GetPopulation().GetCellIdLists();
 }
@@ -307,12 +307,12 @@ void cPopulationInterface::TriggerDoUpdates(cAvidaContext& ctx)
   m_world->GetPopulation().TriggerDoUpdates(ctx);
 }
 
-void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change)
+void cPopulationInterface::UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
 {
   return m_world->GetPopulation().UpdateCellResources(ctx, res_change, m_cell_id);
 }
 
-void cPopulationInterface::UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change)
+void cPopulationInterface::UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change)
 {
   return m_world->GetPopulation().UpdateDemeCellResources(ctx, res_change, m_cell_id);
 }
@@ -1390,7 +1390,7 @@ void cPopulationInterface::PushToleranceInstExe(int tol_inst, cAvidaContext& ctx
     return;
   }
   
-  const tArray<double> res_count = GetResources(ctx);
+  const Apto::Array<double> res_count = GetResources(ctx);
   
   int group_id = GetOrganism()->GetOpinion().first;
   int group_size = NumberOfOrganismsInGroup(group_id);
@@ -1763,6 +1763,7 @@ int cPopulationInterface::FindAV(bool input, bool output, int av_num)
       return index;
     }
   }
+  return -1;
 }
 
 // Sets the avatar's facing, then sets the faced cell
@@ -2130,43 +2131,43 @@ cOrganism* cPopulationInterface::GetRandFacedPreyAV(int av_num)
 }
 
 // Returns an array of all avatars in the organism's avatar's faced cell
-tArray<cOrganism*> cPopulationInterface::GetFacedAVs(int av_num)
+Apto::Array<cOrganism*> cPopulationInterface::GetFacedAVs(int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellAVs();
   }
-  tArray<cOrganism*> null_array(0, NULL);
+  Apto::Array<cOrganism*> null_array(0);
   return null_array;
 }
 
 // Returns an array of all prey avatars in the organism's avatar's faced cell
-tArray<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
+Apto::Array<cOrganism*> cPopulationInterface::GetFacedPreyAVs(int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {
     return m_world->GetPopulation().GetCell(m_avatars[av_num].av_faced_cell).GetCellOutputAVs();
   }
-  tArray<cOrganism*> null_array(0, NULL);
+  Apto::Array<cOrganism*> null_array(0);
   return null_array;
 }
 
 // Returns the avatar's cell resources
-const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx, int av_num)
+const Apto::Array<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx, int av_num)
 {
   assert(av_num < GetNumAV());
   return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_cell_id, ctx);
 }
 
 // Returns the avatar's faced cell's resources
-const tArray<double>& cPopulationInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
+const Apto::Array<double>& cPopulationInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
 {
   assert(av_num < GetNumAV());
   return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_faced_cell, ctx);
 }
 
 // Updates the avatar's cell resources
-void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num)
+void cPopulationInterface::UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, int av_num)
 {
   // If the avatar exists..
   if (av_num < GetNumAV()) {

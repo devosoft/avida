@@ -98,7 +98,7 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
     cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
-      const tArray<cString> & keywords = cur_entry->GetNames();
+      const Apto::Array<cString>& keywords = cur_entry->GetNames();
       const cString default_val = cur_entry->GetDefault();
       cur_entry->LoadStr( init_file.ReadString(keywords, default_val, warn_default) );
     }

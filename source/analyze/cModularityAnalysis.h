@@ -22,15 +22,8 @@
 #ifndef cModularityAnalysis_h
 #define cModularityAnalysis_h
 
-#ifndef cGenotypeData_h
 #include "cGenotypeData.h"
-#endif
-#ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
 class cAvidaContext;
 class cAnalyzeGenotype;
@@ -77,10 +70,10 @@ private:
     double ave_tasks_per_site;                // average tasks per site
     double ave_sites_per_task;                // average sites per task
     double ave_prop_nonoverlap;               // average proportion of nonoverlap
-    tArray<int> sites_per_task;               // number sites used for each task
-    tArray<int> sites_inv_x_tasks;            // Number of sites involved in 0, 1, 2, 3... tasks
-    tArray<int> task_length;                  // Length of each task from first to last instruction
-    tArray<double> ave_task_position;         // Average task position
+    Apto::Array<int> sites_per_task;               // number sites used for each task
+    Apto::Array<int> sites_inv_x_tasks;            // Number of sites involved in 0, 1, 2, 3... tasks
+    Apto::Array<int> task_length;                  // Length of each task from first to last instruction
+    Apto::Array<double> ave_task_position;         // Average task position
     
     cModularityData();
   };

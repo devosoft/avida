@@ -43,11 +43,11 @@ cBirthEntry* cBirthNeighborhoodHandler::SelectOffspring(cAvidaContext& ctx, cons
   int parent_id = parent->GetOrgInterface().GetCellID();
   
   // Get all neighborhood cell ids
-  tArray<int> neighborhood;
+  Apto::Array<int> neighborhood;
   parent->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
   
   // Produce a list of all valid offspring waiting
-  tArray<int> valid(neighborhood.GetSize());
+  Apto::Array<int> valid(neighborhood.GetSize());
   int valid_count = 0;
   for (int i = 0; i < neighborhood.GetSize(); i++) {
     // Store the cell id of valid birth entries in the valid list

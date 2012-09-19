@@ -291,7 +291,7 @@ cBirthEntry* cBirthMatingTypeGlobalHandler::selectMate(cAvidaContext& ctx, const
     //This is a non-choosy individual, so pick a mate randomly!
     //First, get a list of every element of m_entries that contains a waiting offspring (of the compatible sex)
     //Then pick one at random
-    tArray<int> compatible_entries; //This will hold a list of all the compatible birth entries waiting in the birth chamber
+    Apto::Array<int> compatible_entries; //This will hold a list of all the compatible birth entries waiting in the birth chamber
     compatible_entries.Resize(num_waiting, -1);
     int last_compatible = -1; //The index of the last entry in compatible_entries holding a compatible m_entries index
     for (int i = 0; i < num_waiting; i++) {

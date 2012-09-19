@@ -24,7 +24,6 @@
 #include "avida/systematics/Group.h"
 
 #include "cPhenPlastGenotype.h"
-#include "tArray.h"
 
 
 class cPhenPlastSummary : public Systematics::GroupData
@@ -41,7 +40,7 @@ class cPhenPlastSummary : public Systematics::GroupData
     double  m_min_fit_frequency;
     double  m_max_fit_frequency;
     double m_viable_probability;
-    tArray<double> m_task_probabilities;
+    Apto::Array<double> m_task_probabilities;
   
   cPhenPlastSummary(const cPhenPlastGenotype& pp) 
   {
