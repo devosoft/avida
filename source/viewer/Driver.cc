@@ -248,6 +248,18 @@ void Avida::Viewer::Driver::Finish()
   m_pause_cv.Broadcast();
 }
 
+void Avida::Viewer::Driver::Sync()
+{
+  m_mutex.Lock();
+  if (m_pause_state == DRIVER_SYNCING) {
+    m_pause_state = DRIVER_UNPAUSED;
+  }
+  m_mutex.Unlock();
+  m_pause_cv.Broadcast();
+}
+
+
+
 void Avida::Viewer::Driver::Abort(AbortCondition condition)
 {
   throw condition;
@@ -392,6 +404,9 @@ void Avida::Viewer::Driver::Run()
         m_pause_state = DRIVER_PAUSED;
         m_pause_at = -2;
       }
+      if (m_pause_state != DRIVER_PAUSED && m_sync_mode) {
+        m_pause_state = DRIVER_SYNCING;
+      }
       m_mutex.Unlock();
       
       for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
@@ -399,7 +414,7 @@ void Avida::Viewer::Driver::Run()
       }
       
       m_mutex.Lock();
-      while (!m_done && m_pause_state == DRIVER_PAUSED) {
+      while (!m_done && m_pause_state != DRIVER_UNPAUSED) {
         m_paused = true;
         m_pause_cv.Wait(m_mutex);
       }

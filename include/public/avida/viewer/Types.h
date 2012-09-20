@@ -61,6 +61,7 @@ namespace Avida {
     
     enum DriverPauseState {
       DRIVER_PAUSED,
+      DRIVER_SYNCING,
       DRIVER_UNPAUSED
     };    
     

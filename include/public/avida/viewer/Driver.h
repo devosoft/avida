@@ -56,6 +56,7 @@ namespace Avida {
       bool m_started;
       bool m_done;
       bool m_paused;
+      bool m_sync_mode;
       
       Update m_pause_at;
       
@@ -91,6 +92,10 @@ namespace Avida {
       LIB_EXPORT bool IsPaused() const { return m_paused; }
       LIB_EXPORT bool HasFinished() const { return m_done; }
       LIB_EXPORT void Resume();
+
+      LIB_EXPORT inline bool IsSyncModeEnabled() const { return m_sync_mode; }
+      LIB_EXPORT inline void SetSyncMode(bool enabled = true) { m_sync_mode = enabled; }
+      LIB_EXPORT void Sync();
       
       LIB_EXPORT void InjectGenomeAt(GenomePtr genome, int x, int y, const Apto::String& name);
       LIB_EXPORT bool HasPendingInjects() const;
