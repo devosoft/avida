@@ -105,7 +105,12 @@ private:
   
   bool m_probabilistic;
   tArray<int> m_prob_res_cells;
-  
+
+  int m_min_usedx;
+  int m_min_usedy;
+  int m_max_usedx;
+  int m_max_usedy;
+    
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
@@ -156,20 +161,33 @@ public:
   void SetPredatoryResource(double odds, int juvsper);
   void UpdatePredatoryRes(cAvidaContext& ctx); 
   
-  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda, double theta, int x, int y);
-  void BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y);
+  void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells);
+  void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
   void UpdateProbabilisticRes();
  
   void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
   
   tArray<int>* GetWallCells() { return &m_wall_cells; }
+  int GetMinUsedX() { return m_min_usedx; }
+  int GetMinUsedY() { return m_min_usedy; }
+  int GetMaxUsedX() { return m_max_usedx; }
+  int GetMaxUsedY() { return m_max_usedy; }
   
 private:
-  void refreshResourceValues();
+  void fillinResourceValues();
+  void updatePeakRes(cAvidaContext& ctx);
+  void moveRes(cAvidaContext& ctx);
+  int setHaloPeakMovement(cAvidaContext& ctx, int current_orbit);
+  void setPeakMoveMovement(cAvidaContext& ctx);
+  void moveHaloPeak(int current_orbit);
+  void movePeak();
   void generatePeak(cAvidaContext& ctx);
   void getCurrentPlatValues();
   void generateBarrier(cAvidaContext& ctx);
   void generateHills(cAvidaContext& ctx);    
+  void updateBounds(int x, int y);
+  void resetUsedBounds();
+  void clearExistingProbRes();
 };
 
 #endif

@@ -123,6 +123,13 @@ tArray<cOrganism*> cTestCPUInterface::GetFacedAVs(int av_num)
   return null_array;
 }
 
+tArray<cOrganism*> cTestCPUInterface::GetCellAVs(int cell_id, int av_num)
+{
+    tArray<cOrganism*> null_array;
+    null_array.SetAll(NULL);
+    return null_array;
+}
+
 tArray<cOrganism*> cTestCPUInterface::GetFacedPreyAVs(int av_num)
 {
   tArray<cOrganism*> null_array;

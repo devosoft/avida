@@ -45,6 +45,7 @@ class cOrgMessage;
 class cOrgSinkMessage;
 class cPopulationCell;
 class cString;
+class cResourceCount;
 template <class T> class tArray;
 template <class T> class tSmartArray;
 
@@ -119,6 +120,7 @@ public:
   virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
   virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
+  virtual cResourceCount* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) = 0;
@@ -232,6 +234,7 @@ public:
   virtual cOrganism* GetRandFacedPredAV(int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPreyAV(int av_num = 0) = 0;
   virtual tArray<cOrganism*> GetFacedAVs(int av_num = 0) = 0;
+  virtual tArray<cOrganism*> GetCellAVs(int av_cell_id, int av_num=0) =0;
   virtual tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0) = 0;
   virtual const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;

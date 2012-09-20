@@ -98,7 +98,7 @@ class cOrgSensor
   int GetMinDist(cAvidaContext& ctx, const int worldx, sBounds& bounds, const int cell_id, const int distance_sought, 
                  const int facing);
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& res_bounds);
-  sBounds GetBounds(cAvidaContext& ctx, const cResourceLib& resource_lib, const int res_id, const int search_type);
+  sBounds GetBounds(cAvidaContext& ctx, const int res_id, const int search_type);
   bool TestBounds(const cCoords cell_id, sBounds& bounds_set);
   tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
   

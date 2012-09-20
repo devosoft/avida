@@ -98,6 +98,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
+  cResourceCount* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext& ctx) { }
   void UpdateResources(cAvidaContext& ctx, const tArray<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const tArray<double>& res_change) {;}
@@ -230,6 +231,7 @@ public:
   cOrganism* GetRandFacedPredAV(int av_num = 0) { return NULL; }
   cOrganism* GetRandFacedPreyAV(int av_num = 0) { return NULL; }
   tArray<cOrganism*> GetFacedAVs(int av_num = 0);
+    tArray<cOrganism*> GetCellAVs(int cell_id, int av_num = 0);
   tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0);
   const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
   const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);

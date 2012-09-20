@@ -638,7 +638,10 @@ void cPopulation::UpdateQs(cOrganism* org, bool reproduced)
   // yank the org out of any current trace queues, as appropriate (i.e. if dead (==!reproduced) or if reproduced and splitting on divide)
   bool split = m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT;
   
-  if (!reproduced || (reproduced && split)) org->GetHardware().PrintMicroTrace(org->GetBioGroup("genotype")->GetID());
+  if (!reproduced || (reproduced && split)) {
+    org->GetHardware().PrintMicroTrace(org->GetBioGroup("genotype")->GetID());
+    org->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
+  }
   
   if (org->GetHardware().IsReproTrace() && repro_q.GetSize()) {
     for (int i = 0; i < repro_q.GetSize(); i++) {
@@ -1794,10 +1797,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   
   // And clear it!
   in_cell.RemoveOrganism(ctx); 
-  if (!organism->IsRunning()) {
-    organism->GetHardware().DeleteMiniTrace(print_mini_trace_reacs);
-    delete organism;
-  }
+  if (!organism->IsRunning()) delete organism;
   else organism->GetPhenotype().SetToDelete();
   
   // Alert the scheduler that this cell has a 0 merit.
@@ -5078,13 +5078,15 @@ int cPopulation::FindRandEmptyCell()
   if (num_organisms >= world_size) return -1;
 
   tArray<int>& cells = GetEmptyCellIDArray();
-  int cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
+  int cell_idx = m_world->GetRandom().GetUInt(world_size);
+  int cell_id = cells[cell_idx];
   while (GetCell(cell_id).IsOccupied()) {
     // no need to pop this cell off the array, just move it and don't check that far anymore
-    cells.Swap(cell_id, --world_size);
+    cells.Swap(cell_idx, --world_size);
     // if ran out of cells to check (e.g. with birth chamber weirdness)
-    if (world_size == 1) return -1; 
-    cell_id = cells[m_world->GetRandom().GetUInt(world_size)];
+    if (world_size == 1) return -1;
+    cell_idx = m_world->GetRandom().GetUInt(world_size); 
+    cell_id = cells[cell_idx];
   }
   return cell_id;
 }
@@ -7556,7 +7558,7 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
 }
 
 void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
-  const double outflow, const double lamda, const double theta, const int x, const int y)
+  const double outflow, const double lambda, const double theta, const int x, const int y, const int count)
 {
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
@@ -7565,7 +7567,7 @@ void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res
     cResource* res = resource_lib.GetResource(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
-      resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lamda, theta, x, y);
+      resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lambda, theta, x, y, count);
       break;
     }
   }
@@ -7579,7 +7581,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   tArray<double> cell_res;
-  cell_res = m_world->GetPopulation().GetCellResources(cell_id, ctx);
+  cell_res = GetCellResources(cell_id, ctx);
   
   bool cell_has_den = false;
   for (int j = 0; j < cell_res.GetSize(); j++) {

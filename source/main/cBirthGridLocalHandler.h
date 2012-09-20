@@ -28,7 +28,9 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
-
+#ifndef cBitArray_h
+#include "cBitArray.h"
+#endif
 
 class cWorld;
 class cBirthChamber;
@@ -42,6 +44,7 @@ private:
   int m_world_x;
   int m_world_y;
   tArray<cBirthEntry> m_entries;
+  cBitArray m_occupied; 
   
   
 public:

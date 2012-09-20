@@ -3302,16 +3302,15 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-//    for (int i = 0; i < m_memory.GetSize(); i++) {
+    //    for (int i = 0; i < m_memory.GetSize(); i++) {
     for (int i = 0; i < child_genome.GetSize(); i++) {
       //Need to check no_mut_insts for head to head kaboom experiments
-        bool in_list = false;
-        char test_inst = child_genome[i].GetSymbol();
-        cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
-        for(int i =0; i<(int)strlen(no_mut_list); i++) {
-            if ((char) no_mut_list[i] == test_inst) in_list = true;
-        }
-        
+      bool in_list = false;
+      char test_inst = child_genome[i].GetSymbol();
+      cString no_mut_list = m_world->GetConfig().NO_MUT_INSTS.Get();
+      for (int j = 0; j < (int)strlen(no_mut_list); j++) {
+        if ((char) no_mut_list[j] == test_inst) in_list = true;
+      }
       if (m_organism->TestCopyMut(ctx) && !(in_list)) {
         child_genome[i] = m_inst_set->GetRandomInst(ctx);
       }
@@ -3417,8 +3416,8 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_AX);
 
     
-  double percent_prob;
-  int distance;
+    double percent_prob = 1.0;
+    int distance = -1;
   if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM_HAMMING.Get() == -1) {
     //Case where Probability is static and hamming distance is adjustable
     int get_reg_value = GetRegister(reg_used);
@@ -3444,8 +3443,9 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 {
     assert(m_world->GetConfig().KABOOM_PROB.Get() != -1 || m_world->GetConfig().KABOOM5_HAMMING.Get() != -1);
     const int reg_used = FindModifiedRegister(REG_AX);
-    int distance;
-    double percent_prob;
+    //These must always be set in the if, they can't both be adjustable, so don't do it
+    int distance = -1;
+    double percent_prob = 1.0;
     if ((int) m_world->GetConfig().KABOOM_PROB.Get() != -1 && (int) m_world->GetConfig().KABOOM5_HAMMING.Get() == -1) {
         //Case where Probability is static and hamming distance is adjustable
         int get_reg_value = GetRegister(reg_used);

@@ -35,6 +35,7 @@ cBirthGridLocalHandler::cBirthGridLocalHandler(cWorld* world, cBirthChamber* bc)
 : m_world(world), m_bc(bc), m_world_x(m_world->GetConfig().WORLD_X.Get()), m_world_y(m_world->GetConfig().WORLD_Y.Get())
 {
   m_entries.Resize(m_world_x * m_world_y);
+  m_occupied.Resize(m_world_x * m_world_y);
 }
 
 cBirthGridLocalHandler::~cBirthGridLocalHandler()
@@ -51,10 +52,13 @@ cBirthEntry* cBirthGridLocalHandler::SelectOffspring(cAvidaContext& ctx, const G
   
   if (!hasNeighborWaiting(parent_id)) { 
     m_bc->StoreAsEntry(offspring, parent, m_entries[parent_id]);
+    m_occupied[parent_id] = true;
     return NULL; 				
   }
   
-  return &(m_entries[selectRandomNeighbor(ctx, parent_id)]);
+  int selected = selectRandomNeighbor(ctx, parent_id); 
+  m_occupied[selected] = false;
+  return &(m_entries[selected]);
 }
 
 
@@ -62,7 +66,7 @@ bool cBirthGridLocalHandler::hasNeighborWaiting(int parent_id)
 {
   for (int i = -1; i <= 1; i++) {
     for (int j = -1; j <= 1; j++) { 
-      if (m_entries[GridNeighbor(parent_id, m_world_x, m_world_y, i, j)].timestamp >= 0) return true;
+      if (m_occupied[GridNeighbor(parent_id, m_world_x, m_world_y, i, j)]) return true;
     }
   }
   return false;
@@ -71,14 +75,16 @@ bool cBirthGridLocalHandler::hasNeighborWaiting(int parent_id)
 
 int cBirthGridLocalHandler::selectRandomNeighbor(cAvidaContext& ctx, int parent_id)
 {
+  int selected = -1;
+  
   while (true) {
     int test_neighbor = ctx.GetRandom().GetUInt(9);
     int i = test_neighbor / 3 - 1; 
     int j = test_neighbor % 3 - 1;
-    int test_loc = GridNeighbor(parent_id, m_world_x, m_world_y, i, j);
+    selected = GridNeighbor(parent_id, m_world_x, m_world_y, i, j);
     
-    if (m_entries[test_loc].timestamp >= 0) return test_loc;
+    if (m_occupied[selected]) break;
   }
   
-  return -1;
+  return selected;
 }

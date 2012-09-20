@@ -265,7 +265,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"resourceloc.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetPopulation().TriggerDoUpdates(ctx);
     m_world->GetStats().PrintResourceLocData(m_filename, ctx);
   }
 };
@@ -284,7 +284,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"reswallloc.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetPopulation().TriggerDoUpdates(ctx);
     m_world->GetStats().PrintResWallLocData(m_filename, ctx);
   }
 };
