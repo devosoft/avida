@@ -229,6 +229,8 @@ cStats::cStats(cWorld* world)
 
   resource_names.Resize( m_world->GetNumResources() );
   
+  m_resource_print_thresh = m_world->GetConfig().RES_FOR_DEME_REP.Get();
+  
   // This block calculates how many slots we need to
   // make for paying attention to different label combinations
   // Require sense instruction to be present then die if not at least 2 NOPs
@@ -4285,6 +4287,39 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 
   df.Endl();
 }
+
+/*! Print statistics related to the amount of resources amassed by the deme, 
+ as well as germ/soma information */
+void cStats::PrintDemeGermResourcesData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  int deme_id = 0;
+  double deme_res = m_world->GetPopulation().GetDeme(deme_id).GetTotalResourceAmountConsumed(); 
+  
+  if (deme_res > m_resource_print_thresh) {
+    
+    // update thresh
+    m_resource_print_thresh += m_world->GetConfig().RES_FOR_DEME_REP.Get();
+    
+    df.WriteComment("Avida deme germ/soma and resources amassed data");
+    df.WriteTimeStamp();
+    df.Write(GetUpdate(), "Update [update]");
+    df.Write(deme_res, "Mean amount of resources consumed");
+    
+    std::pair<double, double> p = m_world->GetPopulation().GetDeme(deme_id).GetGermlineNumPercent();
+    df.Write(p.first, "Mean number of organisms flagged as germ");
+    df.Write(p.second, "Mean percent of organisms flagged as germ");
+    
+    p = m_world->GetPopulation().GetDeme(deme_id).GetAveVarWorkLoad();
+    df.Write(p.first, "Mean workload of organisms");
+    
+    
+    df.Endl();
+  }
+
+}
+
 
 /*! Prints the genotype ids of all organisms within the maximally-fit deme.
  */

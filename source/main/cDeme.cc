@@ -1664,5 +1664,33 @@ std::pair<double, double> cDeme::GetAveVarSomaWorkLoad() {
 }
 
 
-
+std::pair<double, double> cDeme::GetAveVarWorkLoad() {
+  cDoubleSum work_load;
+  
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      double cur_org_w = 0;
+        // Compute workload...
+        const tArray<int> curr_react =  o->GetPhenotype().GetCumulativeReactionCount();
+        for (int j=0; j<curr_react.GetSize(); j++) {
+          double weight = 1.0;
+          // weight each reaction according to.
+          if (m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() > 0.0) { 
+            weight = m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() * j; 
+          }
+          // The first task never has any work associated with it.
+          if (j > 0) {
+            cur_org_w += weight * curr_react[j];
+          }
+        work_load.Add(cur_org_w);
+      }
+    }
+  }
+  
+  return (make_pair(work_load.Average(), work_load.Variance()));
+  
+}
 

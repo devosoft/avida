@@ -433,6 +433,7 @@ public:
   std::pair<double, double> GetGermlineNumPercent();
   std::pair<double, double> GetAveVarGermWorkLoad();
   std::pair<double, double> GetAveVarSomaWorkLoad();
+  std::pair<double, double> GetAveVarWorkLoad();
 
 	void ClearTotalResourceAmountConsumed() {m_total_res_consumed = 0;}
     

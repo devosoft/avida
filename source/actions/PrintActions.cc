@@ -127,6 +127,7 @@ STATS_OUT_FILE(PrintDemeGermlineSequestration, deme_germ.dat);
 STATS_OUT_FILE(PrintDemeOrgGermlineSequestration, deme_org_germ.dat);
 STATS_OUT_FILE(PrintDemeGLSFounders, deme_gls_founders.dat);
 STATS_OUT_FILE(PrintDemeReactionDiversityReplicationData, deme_rx_repl.dat );
+STATS_OUT_FILE(PrintDemeGermResourcesData, deme_germ_res.dat );
 STATS_OUT_FILE(PrintWinningDeme, deme_winners.dat);
 STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
 STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat       );
@@ -4873,6 +4874,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeOrgGermlineSequestration>("PrintDemeOrgGermlineSequestration");
   action_lib->Register<cActionPrintDemeGLSFounders>("PrintDemeGLSFounders");
   action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
+  action_lib->Register<cActionPrintDemeGermResourcesData>("PrintDemeGermResourcesData");
   action_lib->Register<cActionPrintWinningDeme>("PrintWinningDeme");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");

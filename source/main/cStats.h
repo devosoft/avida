@@ -1119,6 +1119,7 @@ public:
 	void PrintDemeMigrationSuicidePoints(const cString& filename);
 	void PrintDemeReactionDiversityReplicationData(const cString& filename);
   void PrintWinningDeme(const cString& filename);
+  void PrintDemeGermResourcesData(const cString& filename);
 
   void PrintDemesTasksData(const cString& filename); //@JJB**
   void PrintDemesReactionsData(const cString& filename); //@JJB**
@@ -1239,6 +1240,7 @@ protected:
   dblq m_shannon_div_norm;
 	dblq m_num_orgs_perf_reaction;
   dblq m_percent_reproductives;
+  int m_resource_print_thresh;
 
 public:
 	void IncDemeReactionDiversityReplicationData(double deme_div, double switch_pen,  \

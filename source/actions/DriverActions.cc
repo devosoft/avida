@@ -27,6 +27,7 @@
 #include "cActionLibrary.h"
 #include "cStats.h"
 #include "cWorld.h"
+#include "cPopulation.h"
 
 #include <ctime>
 
@@ -208,7 +209,6 @@ public:
     if(largs.GetSize()) {
       m_deme_rep = largs.PopWord().AsInt();
     } else {
-      // error; no default value for elapsed time.
       m_world->GetDriver().RaiseFatalException(-1, "ExitDemeReplications event requires a number of deme replications.");
     }
 	}
@@ -228,6 +228,39 @@ protected:
   int m_deme_rep; //!< Number of deme replications after which Avida should exit.
 };
 
+/*! Exit Avida when a certain number of deme resources have been accrued.
+ */
+class cActionExitDemeResources : public cAction {
+public:
+  /*! Constructor; parse out the number of replications.
+	 */
+  cActionExitDemeResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) {
+    cString largs(args);
+    if(largs.GetSize()) {
+      m_deme_res = largs.PopWord().AsInt();
+    } else {
+      m_world->GetDriver().RaiseFatalException(-1, "ExitDemeResources event requires an amount of resources.");
+    }
+	}
+  
+  static const cString GetDescription() { return "Arguments: <int number of deme resources>"; }
+  
+  /*! Check to see if we should exit Avida based on the number of deme resources. 
+	 This method is called based on the events file.
+	 */
+  void Process(cAvidaContext& ctx) {
+    cPopulation& pop = m_world->GetPopulation();
+    int res_amt = pop.GetDeme(0).GetTotalResourceAmountConsumed();
+
+    if(res_amt >= m_deme_res) {
+      m_world->GetDriver().SetDone();
+    }
+  }
+  
+protected:
+  int m_deme_res; //!< Number of deme resources after which Avida should exit.
+};
+
 
 
 void RegisterDriverActions(cActionLibrary* action_lib)
@@ -239,5 +272,6 @@ void RegisterDriverActions(cActionLibrary* action_lib)
   action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
   action_lib->Register<cActionStopFastForward>("StopFastForward");
 	action_lib->Register<cActionExitDemeReplications>("ExitDemeReplications");
+  action_lib->Register<cActionExitDemeResources>("ExitDemeResources");
   action_lib->Register<cActionPause>("Pause");
 }
