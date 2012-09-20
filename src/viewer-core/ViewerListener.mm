@@ -66,6 +66,9 @@ void MainThreadListener::NotifyState(Avida::Viewer::DriverPauseState state)
         [m_target performSelectorOnMainThread:@selector(handleRunPaused:) withObject:nil waitUntilDone:NO];
       }
       break;
+    case Avida::Viewer::DRIVER_SYNCING:
+      [m_target performSelectorOnMainThread:@selector(handleRunSync:) withObject:nil waitUntilDone:NO];
+      break;
     case Avida::Viewer::DRIVER_UNPAUSED:
       break;
   }

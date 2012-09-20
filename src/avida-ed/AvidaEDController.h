@@ -135,6 +135,7 @@
   Avida::Viewer::Map* map;
   Apto::Map<NSInteger, int> map_mode_to_color;
   BOOL runActive;
+  BOOL sheetActive;
 }
 
 // Init and Dealloc Methods
@@ -260,5 +261,6 @@
 - (void) handleMap:(ViewerMap*)object;
 - (void) handleUpdate:(ViewerUpdate*)object;
 - (void) handleRunPaused:(id)unused;
+- (void) handleRunSync:(id)unused;
 
 @end

@@ -167,6 +167,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   ancestorArray = [[NSMutableArray alloc] init];
   autoAncestorArray = [[NSMutableArray alloc] init];
   manualAncestorArray = [[NSMutableArray alloc] init];
+  sheetActive = NO;
 }
 
 
@@ -213,6 +214,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       [alert setInformativeText:@"Would you like to save or discard the current petri dish before starting a new experiment?"];
       [alert setAlertStyle:NSWarningAlertStyle];
       void* contextInfo = new Avida::Viewer::FreezerID(freezerID);
+      sheetActive = YES;
       [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(loadRunFromFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:contextInfo];
       return;
     }
@@ -347,6 +349,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     default:
       break;
   }
+  sheetActive = NO;
 }
 
 - (void) saveAnyToFreezerAlertDidEnd:(NSAlert*)alert returnCode:(NSInteger)returnCode contextInfo:(void*)contextInfo
@@ -367,6 +370,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     default:
       break;
   }
+  sheetActive = NO;
 }
 
 
@@ -699,7 +703,14 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   [alert setMessageText:@"Before you can save items to the freezer you must choose a workspace to work with."];
   [alert setInformativeText:@"Would you like to save the default workspace or open an existing one?"];
   [alert setAlertStyle:NSWarningAlertStyle];
-  [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(nonDefaultFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+  if (sheetActive) {
+    [self nonDefaultFreezerAlertDidEnd:alert returnCode:[alert runModal] contextInfo:NULL];
+  } else {
+    [alert beginSheetModalForWindow:[self window]
+                      modalDelegate:self
+                     didEndSelector:@selector(nonDefaultFreezerAlertDidEnd:returnCode:contextInfo:)
+                        contextInfo:NULL];
+  }
   
   return (!isDefaultFreezer);
 }
@@ -1022,6 +1033,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [alert setMessageText:@"What would you like to save to the freezer?"];
     [alert setInformativeText:@"Population saves organisms and experiment history.\nConfiguration saves the experiment settings only."];
     [alert setAlertStyle:NSWarningAlertStyle];
+    sheetActive = YES;
     [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
   } else {
     NSAlert* alert = [[NSAlert alloc] init];
@@ -1032,6 +1044,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [alert setMessageText:@"What would you like to save to the freezer?"];
     [alert setInformativeText:@"Population saves organisms and experiment history.\nConfiguration saves the experiment settings only.\nOrganism saves teh currently selected organism."];
     [alert setAlertStyle:NSWarningAlertStyle];
+    sheetActive = YES;
     [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveAnyToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
   }
 }
@@ -1698,6 +1711,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
         [alert setMessageText:@"What would you like to save to the freezer?"];
         [alert setInformativeText:@"Population saves organisms and experiment history.\nConfigation saves the experiment settings only."];
         [alert setAlertStyle:NSWarningAlertStyle];
+        sheetActive = YES;
         [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveRunToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
         return YES;
       }
@@ -1829,8 +1843,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   Avida::GenomePtr genome_ptr(freezer->InstantiateGenome(fid));
   if (genome_ptr) {
     if (runActive) {
-      [currentRun injectGenome:genome_ptr atX:x Y:y withName:freezer->NameOf(fid)];
-      [mapView setPendingActionAtX:x Y:y withColor:-2];
+      // Disabled without advanced mode
+//      [currentRun injectGenome:genome_ptr atX:x Y:y withName:freezer->NameOf(fid)];
+//      [mapView setPendingActionAtX:x Y:y withColor:-2];
     } else {
       Genome* genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome_ptr->AsString()] name:[NSString stringWithAptoString:freezer->NameOf(fid)]];
       genome.location = NSMakePoint(x, y);
@@ -1847,8 +1862,9 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   Avida::GenomePtr genome_ptr(new Avida::Genome([[genome genomeStr] UTF8String]));
   if (genome_ptr) {
     if (runActive) {
-      [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome name] UTF8String]];
-      [mapView setPendingActionAtX:x Y:y withColor:-2];
+      // Disabled without advanced mode
+//      [currentRun injectGenome:genome_ptr atX:x Y:y withName:[[genome name] UTF8String]];
+//      [mapView setPendingActionAtX:x Y:y withColor:-2];
     } else {
       genome.location = NSMakePoint(x,y);
       genome.name = [self uniqueNameForAncestorWithName:genome.name];
@@ -2144,6 +2160,10 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 - (void) handleRunPaused:(id)unused {
   if (runActive) [self setInterfacePaused];
+}
+
+- (void) handleRunSync:(id)unused {
+  if (currentRun) [currentRun sync];
 }
 
 

@@ -90,6 +90,7 @@ void handleDriverCallback(Avida::DriverEvent event)
     if (update == -1) driver->Pause();
     else driver->PauseAt(update);
     
+    driver->SetSyncMode();
     driver->Start();
   }
   
@@ -217,6 +218,10 @@ void handleDriverCallback(Avida::DriverEvent event)
 
 - (void) end {
   driver->Finish();
+}
+
+- (void) sync {
+  driver->Sync();
 }
 
 - (void) injectGenome:(Avida::GenomePtr)genome atX:(int)x Y:(int)y withName:(Apto::String)name {
