@@ -201,15 +201,16 @@ void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<Hardware
   
   
   // Setup context
-  cRandom rng(100);
+  cRandom rng;
   cAvidaContext ctx(this, rng);
   
   // Create a test cpu
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
   // Setup test info to trace into this tracer
-  cCPUTestInfo test_info;
+  cCPUTestInfo test_info(1);
   test_info.MutationRates().SetCopyMutProb(mut_rate);
+  test_info.UseRandomInputs();
   test_info.SetTraceExecution(this);
   
   // Test the actual genome
@@ -295,6 +296,7 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
   // - handle the offspring part of the memory
   memory.Resize(hw.GetMemory().GetSize() - memory.GetSize());
   mutated.Resize(memory.GetSize());
+  mutated.SetAll(false);
   for (int i = m_genome_length; i < hw.GetMemory().GetSize(); i++) {
     memory[i - m_genome_length] = hw.GetMemory()[i];
     mutated[i - m_genome_length] = hw.GetMemory().FlagMutated(i);
@@ -306,6 +308,9 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
     int head_pos = hw.GetHead(i).GetPosition();
     if (head_pos > max_head_pos) max_head_pos = head_pos;
   }
+  
+  // Hack to get fixed length Avida-ED organisms to show offspring as expected
+  if (hw.GetHead(1).GetPosition() == m_genome_length) max_head_pos = hw.GetMemory().GetSize() - 1;
   
   // - if the maximum position is in the offspring part of the memory
   if (max_head_pos >= m_genome_length) {
@@ -413,8 +418,9 @@ void Private::SnapshotTracer::TraceTestCPU(int time_used, int time_allocated, co
     seq.DynamicCastFrom(organism.OffspringGenome().Representation());
     memory.Resize(seq->GetSize());
     mutated.Resize(memory.GetSize());
-    for (int i = m_genome_length; i < seq->GetSize(); i++) {
-      memory[i - m_genome_length] = (*seq)[i];
+    mutated.SetAll(false);
+    for (int i = 0; i < seq->GetSize(); i++) {
+      memory[i] = (*seq)[i];
     }
     
     // Hack to get mutated state into the final state... potential for offset, etc.
