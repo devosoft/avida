@@ -2789,7 +2789,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
 }
 
-/*! ReplaceDemeFlaggedGermline is a helper method that handles deme replication when the organisms are flagging their own germ line. It is similar to ReplaceDeme, but some events are reordered. (Demes are reset only after we know that the replication will work. In addition, it only supports a small subset of the deme replication options. 
+/*! ReplaceDemeFlaggedGermline is a helper method that handles deme replication when the organisms are flagging their own germ line. It is similar to ReplaceDeme, but some events are reordered. (Demes are reset only after we know that the replication will work. In addition, it only supports a small subset of the deme replication options.) 
  */
 void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx2) 
 {
@@ -2799,7 +2799,6 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   /* Seed deme part... */
   cRandom& random = m_world->GetRandom();
   //bool successfully_seeded = true;
-  tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
   tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
   
   // Grab a random org from the set of orgs that have
@@ -2862,9 +2861,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   target_deme.KillAll(ctx2);
   std::vector<std::pair<int, std::string> > track_founders;
   
-  
   for(int i=0; i<target_founders.GetSize(); i++) {
-    int cellid = DemeSelectInjectionCell(target_deme, i);       
     
     // this is the genome we need to use. However, we only need part of it...since it can include an offspring
     cCPUMemory in_memory_genome = target_founders[i]->GetHardware().GetMemory();
@@ -2903,6 +2900,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     }
     mg.SetSequence(new_genome);
 
+    int cellid = DemeSelectInjectionCell(target_deme, i);       
     InjectGenome(cellid, SRC_DEME_REPLICATE, mg, ctx, target_founders[i]->GetLineageLabel()); 
     
     
@@ -2921,6 +2919,27 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   }
   
   
+  // For source deme...
+  if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 1) {
+    
+    source_deme.UpdateStats();
+    source_deme.KillAll(ctx2); 
+    // do not clear or change founder list
+    
+    // use it to recreate ancestral state of genotypes
+    tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
+    tArray<cPhenotype>& source_founder_phenotypes = source_deme.GetFounderPhenotypes();
+    for(int i=0; i<source_founders.GetSize(); i++) {
+      
+      int cellid = DemeSelectInjectionCell(source_deme, i);
+      //cout << "founder: " << source_founders[i] << endl;
+      cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
+      SeedDeme_InjectDemeFounder(cellid, bg, ctx2, &source_founder_phenotypes[i], -1, true); 
+      DemePostInjection(source_deme, cell_array[cellid]);
+    }
+    
+  } 
+    
   source_deme.ClearTotalResourceAmountConsumed();
   
   source_deme.ClearShannonInformationStats();
