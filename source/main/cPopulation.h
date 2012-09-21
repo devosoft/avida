@@ -75,9 +75,13 @@ private:
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
   Apto::Array<int, Apto::Smart> minitrace_queue;
   bool print_mini_trace_genomes;
+  bool print_mini_trace_reacs;
   bool use_micro_traces;
   int m_next_prey_q;
   int m_next_pred_q;
+  
+  Apto::Array<cOrganism*, Apto::Smart> repro_q;
+  Apto::Array<cOrganism*, Apto::Smart> topnav_q;
   
   // Default organism setups...
   cEnvironment& environment;          // Physics & Chemistry description
@@ -88,6 +92,9 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
+  int pop_enforce;
+  Apto::Array<int> min_prey_failures;
+  bool m_has_predatory_res;
   
   Apto::Array<cDeme> deme_array;            // Deme structure of the population.
  
@@ -137,6 +144,8 @@ public:
   // Helper function for ActivateParasite - returns if the parasite from the infected host should infect the target host
   bool TestForParasiteInteraction(cOrganism* infected_host, cOrganism* target_host);
   
+  void UpdateQs(cOrganism* parent, bool reproduced = false);
+  
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, bool inject_with_group = false, int group_id = -1, int forager_type = -1, int trace = 0); 
   void InjectGroup(const Genome& genome, Systematics::Source src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0, int group_id = -1, int forager_type = -1, int trace = 0);
@@ -144,6 +153,8 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
+  
+  void SetPopCapEnforcement(int rate) { pop_enforce = rate; }
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -241,20 +252,25 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false);
-  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0, bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false); 
+  bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false,
+                      bool save_rebirth = false);
+  bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0,
+                      bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false);
   bool SaveFlameData(const cString& filename);
   
-  void SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool use_micro = false);
-  void AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool use_micro = false);
-  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes);
+  void SetMiniTraceQueue(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro = false);
+  void AppendMiniTraces(Apto::Array<int, Apto::Smart> new_queue, const bool print_genomes, const bool print_reacs, const bool use_micro = false);
+  void LoadMiniTraceQ(cString& filename, int orgs_per, bool print_genomes, bool print_reacs);
   Apto::Array<int, Apto::Smart> SetRandomTraceQ(int max_samples);
   Apto::Array<int, Apto::Smart> SetRandomPreyTraceQ(int max_samples);
   Apto::Array<int, Apto::Smart> SetRandomPredTraceQ(int max_samples);
-  void SetNextPreyQ(int num_prey, bool print_genomes, bool use_micro);
-  void SetNextPredQ(int num_pred, bool print_genomes, bool use_micro);
+  void SetNextPreyQ(int num_prey, bool print_genomes, bool print_reacs, bool use_micro);
+  void SetNextPredQ(int num_pred, bool print_genomes, bool print_reacs, bool use_micro);
   Apto::Array<int, Apto::Smart> SetTraceQ(int save_dominants, int save_groups, int save_foragers, int orgs_per, int max_samples);
   const Apto::Array<int, Apto::Smart>& GetMiniTraceQueue() const { return minitrace_queue; }
+  void AppendRecordReproQ(cOrganism* new_org);
+  void SetTopNavQ();
+  Apto::Array<cOrganism*, Apto::Smart> GetTopNavQ() { return topnav_q; }
   
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
@@ -275,6 +291,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakX(ctx, res_id); } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakY(ctx, res_id); } 
+  Apto::Array<int>* GetWallCells(int res_id) { return resource_count.GetWallCells(res_id); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
@@ -307,7 +324,12 @@ public:
   void DecNumPredOrganisms() { num_pred_organisms--; }
   void IncNumPreyOrganisms() { num_prey_organisms++; }
   void IncNumPredOrganisms() { num_pred_organisms++; }
+  void RecordMinPreyFailedAttack() { min_prey_failures.Push(m_world->GetStats().GetUpdate()); }
+  void ClearMinPreyFailedAttacks() { min_prey_failures.Resize(0); }
+  Apto::Array<int> GetMinPreyFailedAttacks() { return min_prey_failures; }
   
+  void RemovePredators(cAvidaContext& ctx);
+   
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);
@@ -336,6 +358,12 @@ public:
   void UpdateGradientConeInflow(const cString res_name, const double inflow);
   void UpdateGradientConeOutflow(const cString res_name, const double outflow);
   void UpdateGradientInflow(const cString res_name, const double inflow);
+  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
+  void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
+  void SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
+                                const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
+  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
+  bool HasPredatoryRes() { return m_has_predatory_res; }
  
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
@@ -399,7 +427,9 @@ private:
   cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
   cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
   int UpdateEmptyCellIDArray(int deme_id = -1);
+  Apto::Array<int>& GetEmptyCellIDArray() { return empty_cell_id_array; }
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
+  int FindRandEmptyCell();
   
   // Update statistics collecting...
   void UpdateDemeStats(cAvidaContext& ctx); 
@@ -416,7 +446,7 @@ private:
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
-  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true);
+  bool ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell, bool assign_group = true, bool is_inject = false);
   
   void TestForMiniTrace(cOrganism* in_organism);
   void SetupMiniTrace(cOrganism* in_organism);

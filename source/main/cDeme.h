@@ -426,9 +426,13 @@ public:
 	void UpdateShannonAll();
   double GetPercentReproductives();
 	void ClearShannonInformationStats();
-  double GetAveGermMut();
-  double GetAveNonGermMut();
-  double GetGermlinePercent();
+  std::pair<double, double> GetAveVarGermMut();
+  std::pair<double, double> GetAveVarSomaMut();
+  std::pair<double, double> GetGermlineNumPercent();
+  std::pair<double, double> GetAveVarGermWorkLoad();
+  std::pair<double, double> GetAveVarSomaWorkLoad();
+  std::pair<double, double> GetAveVarWorkLoad();
+
 	void ClearTotalResourceAmountConsumed() {m_total_res_consumed = 0;}
     
 private:

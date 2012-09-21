@@ -446,6 +446,28 @@ void cResourceCount::SetGradientInflow(const int& res_id, const double& inflow)
   spatial_resource_count[res_id]->SetGradientInflow(inflow);
 }
 
+void cResourceCount::SetGradPlatVarInflow(const int& res_id, const double& mean, const double& variance, const int& type) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetGradPlatVarInflow(mean, variance, type);
+}
+
+void cResourceCount::SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetPredatoryResource(odds, juvsper);
+}
+
+void cResourceCount::SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
+                                              const double& outflow, const double& lambda, const double& theta, const int& x, const int& y, const int& count) 
+{
+  assert(res_id >= 0 && res_id < resource_count.GetSize());
+  assert(spatial_resource_count[res_id]->GetSize() > 0);
+  spatial_resource_count[res_id]->SetProbabilisticResource(ctx, initial, inflow, outflow, lambda, theta, x, y, count);
+}
+
 /*
  * This is unnecessary now that a resource has an index
  * TODO: 
@@ -677,6 +699,31 @@ int cResourceCount::GetFrozenPeakY(cAvidaContext&, int res_id) const
   return spatial_resource_count[res_id]->GetCurrPeakY();
 }
 
+Apto::Array<int>* cResourceCount::GetWallCells(int res_id)
+{
+  return spatial_resource_count[res_id]->GetWallCells();
+}
+
+int cResourceCount::GetMinUsedX(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMinUsedX();
+}
+
+int cResourceCount::GetMinUsedY(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMinUsedY();
+}
+
+int cResourceCount::GetMaxUsedX(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMaxUsedX();
+}
+
+int cResourceCount::GetMaxUsedY(int res_id)
+{
+  return spatial_resource_count[res_id]->GetMaxUsedY();
+}
+
 ///// Private Methods /////////
 void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 { 
@@ -710,8 +757,6 @@ void cResourceCount::DoUpdates(cAvidaContext& ctx, bool global_only) const
 
   // If one (or more) complete update has occured update the spatial resources
   while (m_spatial_update > m_last_updated) {
-//  while (spatial_update_time >= 1.0) {
-//    spatial_update_time -= 1.0;
     m_last_updated++;
     for (int i = 0; i < resource_count.GetSize(); i++) {
      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {

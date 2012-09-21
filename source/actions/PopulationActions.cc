@@ -1086,7 +1086,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
           // for every x juvs, we require 1 adult...otherwise use killprob on the rest
           Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
           Apto::Array<cOrganism*> juvs;
@@ -1098,13 +1098,16 @@ public:
               num_juvs++;
               juvs.Push(cell_avs[k]);
             }
-            else num_guards++;
+            else if (cell_avs[k]->IsGuard()) num_guards++;
           }
           if (num_juvs == 0) break;
           int guarded_juvs = num_guards * m_juvs_per;
           int unguarded_juvs = num_juvs - guarded_juvs;
           for (int k = 0; k < unguarded_juvs; k++) {
-            if (ctx.GetRandom().P(m_killprob)) juvs[k]->Die(ctx); 
+              if (ctx.GetRandom().P(m_killprob)){
+                  juvs[k]->Die(ctx);
+                  m_world->GetStats().IncJuvKilled();
+              }
           }
           break;  // only do this once if two dens overlap
         }
@@ -1144,7 +1147,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if (resource_lib.GetResource(j)->GetHabitat() == 4 && cell_res[j] > 0) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
           if (cell_res[m_res_id] <= 0) break;
           
           // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest
@@ -5413,11 +5416,12 @@ private:
   int m_orgs_per;
   int m_max_samples;
   bool m_print_genomes;
+  bool m_print_reacs;
   
 public:
   cActionPrintMiniTraces(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_random(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
-  m_print_genomes(true)
+  m_print_genomes(true), m_print_reacs(false)
   {
     cArgSchema schema(':','=');
     
@@ -5429,6 +5433,7 @@ public:
     schema.AddEntry("orgs_per", 4, 1);
     schema.AddEntry("max_samples", 5, 0); // recommended if using save_groups and restrict to defined is not set
     schema.AddEntry("print_genomes", 6, 0, 1, 1);
+    schema.AddEntry("print_reacs", 7, 0, 1, 0);
     
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
@@ -5440,10 +5445,11 @@ public:
       m_orgs_per = argc->GetInt(4);
       m_max_samples = argc->GetInt(5);
       m_print_genomes = argc->GetInt(6);
+      m_print_reacs = argc->GetInt(7);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1]"; }
+  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=1] [boolean print_reacs = 0]"; }
   
   void Process(cAvidaContext&)
   {
@@ -5451,7 +5457,7 @@ public:
     target_bgs.Resize(0);
     if (m_random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
     else target_bgs = m_world->GetPopulation().SetTraceQ(m_save_dominants, m_save_groups, m_save_foragers, m_orgs_per, m_max_samples);
-    m_world->GetPopulation().SetMiniTraceQueue(target_bgs, m_print_genomes);
+    m_world->GetPopulation().SetMiniTraceQueue(target_bgs, m_print_genomes, m_print_reacs);
   }
 };
 
@@ -5470,11 +5476,11 @@ private:
   int m_orgs_per;
   int m_max_samples;
   bool m_print_genomes;
+  bool m_print_reacs;
   
 public:
   cActionPrintMicroTraces(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), 
-  m_print_genomes(true)
+  : cAction(world, args), m_random(false), m_rand_prey(false), m_rand_pred(false), m_next_prey(false), m_next_pred(false), m_save_dominants(false), m_save_groups(false), m_save_foragers(false), m_orgs_per(1), m_max_samples(0), m_print_genomes(true), m_print_reacs(false)
   {
     cArgSchema schema(':','=');
     
@@ -5490,6 +5496,7 @@ public:
     schema.AddEntry("orgs_per", 8, 1);
     schema.AddEntry("max_samples", 9, 0); // recommended if using save_groups and restrict to defined is not set
     schema.AddEntry("print_genomes", 10, 0, 1, 0);
+    schema.AddEntry("print_reacs", 11, 0, 1, 0);
     
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
@@ -5505,18 +5512,19 @@ public:
       m_orgs_per = argc->GetInt(8);
       m_max_samples = argc->GetInt(9);
       m_print_genomes = argc->GetInt(10);
+      m_print_reacs = argc->GetInt(11);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0]"; }
+  static const cString GetDescription() { return "Arguments: [boolean random=0] [boolean rand_prey=0] [boolean rand_pred=0] [int next_prey=0] [int next_pred=0] [boolean save_dominants=0] [boolean save_groups=0] [boolean save_foragers=0] [int orgs_per=1] [int max_samples=0] [boolean print_genomes=0] [boolean print_reacs=0]"; }
   
   void Process(cAvidaContext& ctx)
   { 
     Apto::Array<int, Apto::Smart> target_bgs;
     target_bgs.Resize(0);
     if (m_next_prey || m_next_pred) {
-      if (m_next_prey) m_world->GetPopulation().SetNextPreyQ(m_next_prey, m_print_genomes, true);
-      if (m_next_pred) m_world->GetPopulation().SetNextPredQ(m_next_pred, m_print_genomes, true);
+      if (m_next_prey) m_world->GetPopulation().SetNextPreyQ(m_next_prey, m_print_genomes, m_print_reacs, true);
+      if (m_next_pred) m_world->GetPopulation().SetNextPredQ(m_next_pred, m_print_genomes, m_print_reacs, true);
     }
     if (m_rand_prey || m_rand_pred) {
       if (m_rand_prey) target_bgs = m_world->GetPopulation().SetRandomPreyTraceQ(m_max_samples);
@@ -5531,7 +5539,7 @@ public:
     else if (m_random) target_bgs = m_world->GetPopulation().SetRandomTraceQ(m_max_samples);
     else target_bgs = m_world->GetPopulation().SetTraceQ(m_save_dominants, m_save_groups, m_save_foragers, m_orgs_per, m_max_samples);
     
-    if (target_bgs.GetSize() > 0) m_world->GetPopulation().AppendMiniTraces(target_bgs, m_print_genomes, true);
+    if (target_bgs.GetSize() > 0) m_world->GetPopulation().AppendMiniTraces(target_bgs, m_print_genomes, m_print_reacs);
   }
 };
 
@@ -5542,10 +5550,11 @@ private:
   cString m_filename; 
   int m_orgs_per;
   bool m_print_genomes;
+  bool m_print_reacs;
   
 public:
   cActionLoadMiniTraceQ(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_filename(""), m_orgs_per(1), m_print_genomes(true)
+  : cAction(world, args), m_filename(""), m_orgs_per(1), m_print_genomes(true), m_print_reacs(false)
   {
     cArgSchema schema(':','=');
     
@@ -5553,6 +5562,7 @@ public:
     schema.AddEntry("file", 0, "genotype_ids");
     schema.AddEntry("orgs_per", 0, 1);
     schema.AddEntry("print_genomes", 1, 0, 1, 1);
+    schema.AddEntry("print_reacs", 2, 0, 1, 0);
 
     cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
     
@@ -5560,14 +5570,131 @@ public:
       m_filename = argc->GetString(0);
       m_orgs_per = argc->GetInt(0);
       m_print_genomes = argc->GetInt(1);
+      m_print_reacs = argc->GetInt(2);
     }
   }
   
-  static const cString GetDescription() { return "Arguments: <cString fname> [int orgs_per=1] [boolean print_genomes=1]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int orgs_per=1] [boolean print_genomes=1] [boolean print_reacs=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().LoadMiniTraceQ(m_filename, m_orgs_per, m_print_genomes);
+    m_world->GetPopulation().LoadMiniTraceQ(m_filename, m_orgs_per, m_print_genomes, false);
+  }
+};
+
+/* Record and print some data up to first reproduction for every org alive now. */
+// will pring nothing if org dies or run ends prior to first birth
+class cActionPrintReproData : public cAction
+{
+private:
+  
+public:
+  cActionPrintReproData(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    const Apto::Array<cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {  
+      m_world->GetPopulation().AppendRecordReproQ(live_orgs[i]);
+    }
+  }
+};
+
+/*   Record and print some nav data up to first reproduction for best of orgs alive now, including trace execution,
+  locations, and facings. Will print these data for the org among those with the highest reaction achieved by
+  time of reproduction in shortest amount of time (as measured by cycles). Will print nothing if any of the 
+  candidate orgs are still alive when avida exits and no FlushTopNavTrace events were called.
+  Meant for use in behavioral trials where call to this event happens at start of update 0 of orgs lives.
+*/
+class cActionPrintTopNavTrace : public cAction
+{
+private:
+  
+public:
+  cActionPrintTopNavTrace(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    m_world->GetPopulation().SetTopNavQ();
+  }
+};
+
+/* Force Printing of current TopNacTrace even if orgs still being tracked. */
+class cActionFlushTopNavTrace : public cAction
+{
+private:
+  
+public:
+  cActionFlushTopNavTrace(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    m_world->GetStats().PrintTopNavTrace();
+  }
+};
+
+class cActionRemovePredators : public cAction
+{
+private:
+  
+public:
+  cActionRemovePredators(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args)
+  {
+  }
+  
+  static const cString GetDescription() { return "Arguments: ''"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    m_world->GetPopulation().RemovePredators(ctx);
+  }
+};
+
+class cActionSetPopCapEnforcement : public cAction
+{
+private:
+  cString m_cap;
+  int m_rate;
+public:
+  cActionSetPopCapEnforcement(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args), m_cap("0"), m_rate(1)
+  {
+    cArgSchema schema(':','=');
+    
+    // Entries
+    schema.AddEntry("cap", 0, "0");
+    schema.AddEntry("rate", 0, 1);
+
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (args) {
+      m_cap = argc->GetString(0);
+      m_rate = argc->GetInt(0);
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int cap=0] [int rate=1]"; }
+
+  void Process(cAvidaContext& ctx)
+  { 
+    m_world->GetPopulation().SetPopCapEnforcement(m_rate);
+    m_world->GetConfig().Set("POPULATION_CAP", m_cap);
   }
 };
 
@@ -5726,4 +5853,10 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMiniTraces>("PrintMiniTraces");
   action_lib->Register<cActionPrintMicroTraces>("PrintMicroTraces");
   action_lib->Register<cActionLoadMiniTraceQ>("LoadMiniTraceQ");
+  action_lib->Register<cActionPrintReproData>("PrintReproData");
+  action_lib->Register<cActionPrintTopNavTrace>("PrintTopNavTrace");
+  action_lib->Register<cActionFlushTopNavTrace>("FlushTopNavTrace");
+
+  action_lib->Register<cActionRemovePredators>("RemovePredators");
+  action_lib->Register<cActionSetPopCapEnforcement>("SetPopCapEnforcement");
 }

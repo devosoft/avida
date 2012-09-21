@@ -174,6 +174,22 @@ void cPopulationCell::GetOccupiedNeighboringCells(std::set<cPopulationCell*>& oc
 	}
 }
 
+void cPopulationCell::GetOccupiedNeighboringCells(Apto::Array<cPopulationCell*>& occupied_cells) const
+{
+  occupied_cells.Resize(m_connections.GetSize());
+  int occupied_count = 0;
+
+  tLWConstListIterator<cPopulationCell> i(m_connections);
+  while(!i.AtEnd()) {
+    cPopulationCell* cell = i.Next();
+		assert(cell); // cells should never be null.
+    if (cell->IsOccupied()) occupied_cells[occupied_count++] = cell;
+  }
+  
+  occupied_cells.Resize(occupied_count);
+}
+
+
 /*! These values are chosen so as to make loops on the facing 'easy'.
  111 = NE
  101 = E

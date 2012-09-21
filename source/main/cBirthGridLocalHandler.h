@@ -25,7 +25,7 @@
 #include "avida/core/Types.h"
 
 #include "cBirthSelectionHandler.h"
-
+#include "cBitArray.h"
 
 class cWorld;
 class cBirthChamber;
@@ -39,6 +39,7 @@ private:
   int m_world_x;
   int m_world_y;
   Apto::Array<cBirthEntry> m_entries;
+  cBitArray m_occupied;
   
   
 public:

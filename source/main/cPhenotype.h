@@ -120,6 +120,8 @@ private:
   Apto::Array<double> cur_rbins_avail;             // Amount of internal resources available
   Apto::Array<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   Apto::Array<int> cur_reaction_count;             // Total times each reaction was triggered.
+  Apto::Array<int> first_reaction_cycles;          // CPU cycles of first time reaction was triggered.
+  Apto::Array<int> first_reaction_execs;            // Execution count at first time reaction was triggered (will be > cycles in parallel exec multithreaded orgs).
   Apto::Array<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.
   Apto::Array<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   Apto::Array<int> cur_inst_count;                 // Instruction exection counter
@@ -182,6 +184,7 @@ private:
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
   int time_used;         // Total CPU cycles consumed, including additional time costs of some instructions.
+  int num_execs;         // Total number of instructions executions attempted...accounts for parallel executions in multi-threaded orgs & corrects for cpu-cost 'pauses'
   int age;               // Number of updates organism has survived for.
   cString fault_desc;    // A description of the most recent error.
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation
@@ -191,6 +194,7 @@ private:
   double gmu_exec_time_born; //@MRR mutation-rate and gestation time scaled time of birth
   int birth_update;      // @MRR update *organism* born
   int birth_cell_id;
+  int av_birth_cell_id;
   int birth_group_id;
   int birth_forager_type;
   Apto::Array<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
@@ -369,9 +373,11 @@ public:
   int GetUpdateBorn() const {return birth_update;}
   
   int GetBirthCell() const { return birth_cell_id; }
+  int GetAVBirthCell() const { return av_birth_cell_id; }
   int GetBirthGroupID() const { return birth_group_id; }
   int GetBirthForagerType() const { return birth_forager_type; }
   inline void SetBirthCellID(int birth_cell);
+  inline void SetAVBirthCellID(int av_birth_cell);
   inline void SetBirthGroupID(int group_id);
   inline void SetBirthForagerType(int forager_type);
 
@@ -400,11 +406,18 @@ public:
   double GetCurRBinTotal(int index) const { assert(initialized == true); return cur_rbins_total[index]; }
   const Apto::Array<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
+
   const Apto::Array<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
+  const Apto::Array<int>& GetFirstReactionCycles() const { assert(initialized == true); return first_reaction_cycles;}
+  void SetFirstReactionCycle(int idx) { if (first_reaction_cycles[idx] < 0) first_reaction_cycles[idx] = time_used; }
+  const Apto::Array<int>& GetFirstReactionExecs() const { assert(initialized == true); return first_reaction_execs;}
+  void SetFirstReactionExec(int idx) { if (first_reaction_execs[idx] < 0) first_reaction_execs[idx] = num_execs; }
+
   const Apto::Array<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const Apto::Array<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const Apto::Array<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const Apto::Array<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
+
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const Apto::Array<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
@@ -457,6 +470,7 @@ public:
   int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
+  int GetNumExecs() const { assert(initialized == true); return num_execs; }
   int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
   const cString& GetFault() const { assert(initialized == true); return fault_desc; }
@@ -630,6 +644,7 @@ public:
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
   void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; trial_cpu_cycles_used--; }
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
+  void IncNumExecs() { assert(initialized == true); num_execs++; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
@@ -695,6 +710,7 @@ inline void cPhenotype::SetInstSetSize(int inst_set_size)
 }
 
 inline void cPhenotype::SetBirthCellID(int birth_cell) { birth_cell_id = birth_cell; }
+inline void cPhenotype::SetAVBirthCellID(int av_birth_cell) { av_birth_cell_id = av_birth_cell; }
 inline void cPhenotype::SetBirthGroupID(int group_id) { birth_group_id = group_id; }
 inline void cPhenotype::SetBirthForagerType(int forager_type) { birth_forager_type = forager_type; }
 

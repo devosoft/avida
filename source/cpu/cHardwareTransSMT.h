@@ -190,9 +190,9 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
   bool SupportsSpeculative() const { return false; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString&, cOrganism*, const int, const int, const cString&) { ; }
-  void PrintMiniTraceStatus(cAvidaContext&, std::ostream&, const cString&) { ; }
-  void PrintMiniTraceSuccess(std::ostream&, const int) { }
+  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) { }
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { }
+  void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { }
 		
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;

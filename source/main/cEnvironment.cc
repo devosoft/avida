@@ -926,7 +926,6 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
       else if (var_name == "habitat") {
         if (!AssertInputInt(var_value, "habitat", var_type, feedback)) return false;
         new_resource->SetHabitat( var_value.AsInt() );
-        // Add this target id to the list in the instructions file. 
         AddHabitat(var_value.AsInt());
       } 
       else if (var_name == "min_size") {
@@ -1323,18 +1322,17 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
       DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count,
                   task_quality, task_probability, task_cnt, i, result, taskctx);
       
-      if (result.ReactionTriggered(i) == true) reaction_count[i]++;
-
+      if (result.ReactionTriggered(i) == true) {
+        reaction_count[i]++;
+        taskctx.GetOrganism()->GetPhenotype().SetFirstReactionCycle(i);
+        taskctx.GetOrganism()->GetPhenotype().SetFirstReactionExec(i);
+      }
       // Note: the reaction is actually marked as being performed inside DoProcesses.
     }
   }
 
   return result.GetActive();
 }
-
-
-
-
 
 bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_reaction,
                                   int task_count, const Apto::Array<int>& reaction_count, const bool on_divide) const

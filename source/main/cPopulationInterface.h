@@ -95,6 +95,8 @@ public:
   void SetPrevSeenCellID(int in_id) { m_prevseen_cell_id = in_id; }
   void SetPrevTaskCellID(int in_id) { m_prev_task_cell = in_id; }
 
+  bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq);
+
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
@@ -118,6 +120,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id);
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id); 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id);
+  cResourceCount* GetResourceCount();
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
@@ -243,7 +246,7 @@ public:
   void DecNumPredOrganisms();
   void IncNumPreyOrganisms();
   void IncNumPredOrganisms();
-  
+  void RecordMinPreyFailedAttack();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   
 // -------- Avatar support -------- @JJB
@@ -267,7 +270,7 @@ public:
   bool FacedHasAV(int av_num = 0);
   bool FacedHasPredAV(int av_num = 0);
   bool FacedHasPreyAV(int av_num = 0);
-  void AddAV(int av_cell_id, int av_facing, bool input, bool output);
+  void AddIOAV(int av_cell_id, int av_facing, bool input, bool output);
   void AddPredPreyAV(int av_cell_id);
   void SwitchPredPrey(int av_num = 0);
   void RemoveAllAV();
@@ -294,6 +297,7 @@ public:
   cOrganism* GetRandFacedPredAV(int av_num = 0);
   cOrganism* GetRandFacedPreyAV(int av_num = 0);
   Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0);
+  Apto::Array<cOrganism*> GetCellAVs(int cell_id, int av_num = 0);
   Apto::Array<cOrganism*> GetFacedPreyAVs(int av_num = 0);
   const Apto::Array<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
   const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);

@@ -44,6 +44,7 @@ class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
 class cPopulationCell;
+class cResourceCount;
 class cString;
 
 using namespace Avida;
@@ -100,6 +101,8 @@ public:
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
   
+  virtual bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq) = 0;
+  
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const Apto::Array<int>& GetInputs() const = 0;
@@ -113,6 +116,7 @@ public:
   virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
   virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
+  virtual cResourceCount* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
@@ -185,7 +189,7 @@ public:
   virtual void DecNumPredOrganisms() = 0;
   virtual void IncNumPreyOrganisms() = 0;
   virtual void IncNumPredOrganisms() = 0;
-  
+  virtual void RecordMinPreyFailedAttack() = 0;
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;
@@ -193,7 +197,7 @@ public:
   virtual bool FacedHasAV(int av_num = 0) = 0;
   virtual bool FacedHasPredAV(int av_num = 0) = 0;
   virtual bool FacedHasPreyAV(int av_num = 0) = 0;
-  virtual void AddAV(int av_cell_id, int av_facing, bool input, bool output) = 0;
+  virtual void AddIOAV(int av_cell_id, int av_facing, bool input, bool output) = 0;
   virtual void AddPredPreyAV(int av_cell_id) = 0;
   virtual void SwitchPredPrey(int av_num = 0) = 0;
   virtual void RemoveAllAV() = 0;
@@ -220,6 +224,7 @@ public:
   virtual cOrganism* GetRandFacedPredAV(int av_num = 0) = 0;
   virtual cOrganism* GetRandFacedPreyAV(int av_num = 0) = 0;
   virtual Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0) = 0;
+  virtual Apto::Array<cOrganism*> GetCellAVs(int av_cell_id, int av_num = 0) = 0;
   virtual Apto::Array<cOrganism*> GetFacedPreyAVs(int av_num = 0) = 0;
   virtual const Apto::Array<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0) = 0;
   virtual const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0) = 0;

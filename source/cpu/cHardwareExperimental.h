@@ -249,7 +249,7 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype);
+  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype);
   void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name);
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success);
   
@@ -621,6 +621,7 @@ private:
   bool Inst_AttackPrey(cAvidaContext& ctx); 
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
+  bool Inst_FightBonusOrg(cAvidaContext& ctx); 
   bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
   bool Inst_FightOrg(cAvidaContext& ctx); 
   bool Inst_AttackPred(cAvidaContext& ctx); 
@@ -633,6 +634,12 @@ private:
   bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
+  
+  bool Inst_SetGuard(cAvidaContext& ctx);
+  bool Inst_SetGuardOnce(cAvidaContext& ctx);
+  bool Inst_GetNumGuards(cAvidaContext& ctx);
+  bool Inst_GetNumJuvs(cAvidaContext& ctx);
+  
   bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
   bool Inst_ActivateDisplay(cAvidaContext& ctx);

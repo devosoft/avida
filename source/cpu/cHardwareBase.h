@@ -56,8 +56,13 @@ protected:
   cHardwareTracer* m_tracer;        // Set this if you want execution traced.
   cHardwareTracer* m_minitracer;    // Set this if you want execution traced in a condensed and tractable format.
   cString& m_minitrace_file;
-  Apto::Array<Apto::String, Apto::Smart> m_microtracer;
+  Apto::Array<char, Apto::Smart> m_microtracer;
+  Apto::Array<int, Apto::Smart> m_navtraceloc;
+  Apto::Array<int, Apto::Smart> m_navtracefacing;
+  Apto::Array<int, Apto::Smart> m_navtraceupdate;
   bool m_microtrace;
+  bool m_topnavtrace;
+  bool m_reprotrace;
 
   // --------  Instruction Costs  ---------
   int m_inst_cost;
@@ -131,13 +136,23 @@ public:
   virtual void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) = 0;
   virtual void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
-  void SetMiniTrace(const cString& filename, const int org_id, const int gen_id, const cString& genotype);
+  void SetMiniTrace(const cString& filename, const int gen_id, const cString& genotype);
   void SetMicroTrace() { m_microtrace = true; } 
+  void SetTopNavTrace(bool nav_trace) { m_topnavtrace = nav_trace; }
+  bool IsTopNavTrace() { return m_topnavtrace; }
+  void SetReproTrace(bool repro_trace) { m_reprotrace = repro_trace; }
+  bool IsReproTrace() { return m_reprotrace; }
   void RecordMicroTrace(const Instruction& cur_inst);
   void PrintMicroTrace(int gen_id);
-  void DeleteMiniTrace();
-  virtual void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype) = 0;
+  void RecordNavTrace(bool use_avatar);
+  Apto::Array<char, Apto::Smart>& GetMicroTrace() { return m_microtracer; }
+  Apto::Array<int, Apto::Smart>& GetNavTraceLoc() { return m_navtraceloc; }
+  Apto::Array<int, Apto::Smart>& GetNavTraceFacing() { return m_navtracefacing; }
+  Apto::Array<int, Apto::Smart>& GetNavTraceUpdate() { return m_navtraceupdate; }
+  void DeleteMiniTrace(bool print_reacs);
+  virtual void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) = 0;
   void SetupExtendedMemory(const Apto::Array<int, Apto::Smart>& ext_mem) { m_ext_mem = ext_mem; }
+  void PrintMiniTraceReactions();
   
   // --------  Stack Manipulation...  --------
   virtual int GetStack(int depth = 0, int stack_id = -1, int in_thread = -1) const = 0;
@@ -229,6 +244,7 @@ protected:
   bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id);
   void SingleProcess_PayPostResCosts(cAvidaContext& ctx, const Instruction& cur_inst);
   void SingleProcess_SetPostCPUCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id);
+  bool IsPayingActiveCost(cAvidaContext& ctx, const int thread_id);
   virtual void internalReset() = 0;
 	virtual void internalResetOnFailedDivide() = 0;
   
@@ -254,6 +270,8 @@ protected:
   bool doUniformMutation(cAvidaContext& ctx, InstructionSequence& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
   void doSlipMutation(cAvidaContext& ctx, InstructionSequence& genome, int from = -1);
+  void doTransMutation(cAvidaContext& ctx, InstructionSequence& genome, int from = -1);
+  void doLGTMutation(cAvidaContext& ctx, InstructionSequence& genome);
   
 
   // --------  Organism Execution Property Calculation  --------

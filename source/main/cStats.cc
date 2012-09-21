@@ -86,6 +86,8 @@ cStats::cStats(cWorld* world)
   , num_modified(0)
   , tot_organisms(0)
   , tot_executed(0)
+  , num_kabooms(0)
+  , num_kaboom_kills(0)
   , num_resamplings(0)
   , num_failedResamplings(0)
   , last_update(0)
@@ -103,9 +105,9 @@ cStats::cStats(cWorld* world)
   , num_migrations(0)
   , m_num_successful_mates(0)
   , prey_entropy(0.0)
-  , num_prey_creatures(0)
   , pred_entropy(0.0)
-  , num_pred_creatures(0)
+  , topreac(-1)
+  , topcycle(-1)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -191,6 +193,61 @@ cStats::cStats(cWorld* world)
 
   resource_names.Resize( m_world->GetNumResources() );
   
+  m_resource_print_thresh = m_world->GetConfig().RES_FOR_DEME_REP.Get();
+  
+  // This block calculates how many slots we need to
+  // make for paying attention to different label combinations
+  // Require sense instruction to be present then die if not at least 2 NOPs
+
+  // @DMB - This code makes assumptions about instruction sets that may not hold true under multiple inst sets.
+  //      - This sort of functionality should be reimplemented as instruction set stats or something similar
+//  bool sense_used = m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense") )
+//                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-unit") )
+//                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-m100") );
+//  if (sense_used)
+//  {
+//    if (m_world->GetHardwareManager().GetInstSet().GetNumNops() < 2)
+//    {
+//      cerr << "Error: If you have a sense instruction in your instruction set, then";
+//      cerr << "you MUST also include at least two NOPs in your instruction set. " << endl; exit(1);
+//    }
+//
+//    int on = 1;
+//    int max_sense_label_length = 0;
+//    while (on < m_world->GetNumResources())
+//    {
+//      max_sense_label_length++;
+//      sense_size += on;
+//      on *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+//    }
+//    sense_size += on;
+//
+//    sense_last_count.Resize( sense_size );
+//    sense_last_count.SetAll(0);
+//
+//    sense_last_exe_count.Resize( sense_size );
+//    sense_last_exe_count.SetAll(0);
+//
+//    sense_names.Resize( sense_size );
+//    int assign_index = 0;
+//    int num_per = 1;
+//    for (int i=0; i<= max_sense_label_length; i++)
+//    {
+//      for (int j=0; j< num_per; j++)
+//      {
+//        sense_names[assign_index] = (on > 1) ?
+//          cStringUtil::Stringf("sense_res.%i-%i", j*on, (j+1)*on-1) :
+//          cStringUtil::Stringf("sense_res.%i", j);
+//
+//        assign_index++;
+//      }
+//      on /= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+//      num_per *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+//    }
+//  }
+  // End sense tracking initialization
+
+
   setupProvidedData();
 }
 
@@ -437,8 +494,6 @@ void cStats::ZeroMTInst()
 
 void cStats::RecordBirth(bool breed_true)
 {
-
-
 	if (m_world->GetEventsList()->CheckBirthInterruptQueue(tot_organisms) == true)
 		m_world->GetEventsList()->ProcessInterrupt(m_world->GetDefaultContext());
 
@@ -509,6 +564,15 @@ void cStats::ProcessUpdate()
   m_num_successful_mates = 0;
 }
 
+int cStats::GetNumPreyCreatures() const
+{ 
+  return m_world->GetPopulation().GetNumPreyOrganisms(); 
+}
+
+int cStats::GetNumPredCreatures() const
+{ 
+  return m_world->GetPopulation().GetNumPredOrganisms(); 
+}
 
 void cStats::PrintDataFile(const cString& filename, const cString& format, char sep)
 {
@@ -794,6 +858,26 @@ void cStats::PrintPredatorVarianceData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintMinPreyFailedAttacks(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Updates of individual attack that failed due to MIN_PREY config setting");
+    df.WriteTimeStamp();
+    df.Endl();
+  }
+  
+  Apto::Array<int> failure_events = m_world->GetPopulation().GetMinPreyFailedAttacks();
+  if (failure_events.GetSize() > 0) {
+    for (int i = 0; i < failure_events.GetSize(); i++) {
+      df.WriteAnonymous(failure_events[i]);
+      df.Endl();
+    }
+    m_world->GetPopulation().ClearMinPreyFailedAttacks();
+  }
+}
+
 void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
 {
   cDataFile& df = m_world->GetDataFile(filename);
@@ -806,7 +890,6 @@ void cStats::PrintPreyInstructionData(const cString& filename, const cString& in
   for (int i = 0; i < m_is_prey_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_prey_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
-  
   df.Endl();
 }
 
@@ -822,7 +905,6 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
   for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
-  
   df.Endl();
 }
 
@@ -1269,7 +1351,34 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
   df.Endl();
 }
 
-void cStats::PrintSpatialResData(const cString&, int i)
+void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Avida wall resource filled cells data");
+    df.WriteTimeStamp();
+    df.WriteComment("First column gives the current update, all further columns give filled cell ids for each wall res");
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  fp << m_update << " ";
+
+  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  for (int i = 0; i < resLib.GetSize(); i++) {
+    if (resLib.GetResource(i)->GetGradient() && resLib.GetResource(i)->GetHabitat() == 2) {
+      Apto::Array<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
+      for (int i = 0; i < cells.GetSize() - 1; i++) {
+        fp << cells[i] << ",";
+      }
+      fp << cells[cells.GetSize() - 1] << " ";
+    }
+  }
+  fp << endl;
+}
+
+void cStats::PrintSpatialResData(const cString& filename, int i)
 {
 
   // Write spatial resource data to a file that can easily be read into Matlab
@@ -1624,12 +1733,32 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme&)
     m_deme_density_untreatable.Add(source_deme.GetDensity());
   }
   
+
+  
   /* Track the number of mutations that have occured to the germline as the result of damage resulting from performing metabolic work. Only add to stats if there is a germline... */
-  double n_mut = source_deme.GetAveGermMut();
-  if (n_mut >= 0) {
-    m_ave_germ_mut.push_back(n_mut);
-    m_ave_non_germ_mut.push_back(source_deme.GetAveNonGermMut());
-    m_ave_germ_size.push_back(source_deme.GetGermlinePercent());
+
+  std::pair<double, double> p = source_deme.GetGermlineNumPercent();
+  
+  if (p.first >= 0) {
+    m_ave_germ_size.push_back(p.first);
+    m_ave_germ_percent.push_back(p.second);
+    
+    p = source_deme.GetAveVarGermMut();
+    m_ave_germ_mut.push_back(p.first);
+    m_var_germ_mut.push_back(p.second);
+    
+    p = source_deme.GetAveVarSomaMut();
+    m_ave_soma_mut.push_back(p.first);
+    m_var_soma_mut.push_back(p.second);
+    
+    p = source_deme.GetAveVarGermWorkLoad();
+    m_ave_germ_work.push_back(p.first);
+    m_var_germ_work.push_back(p.second);
+    
+    p = source_deme.GetAveVarSomaWorkLoad();
+    m_ave_soma_work.push_back(p.first);
+    m_var_soma_work.push_back(p.second);
+    
   }
 }
 
@@ -1695,26 +1824,41 @@ void cStats::PrintDemeGermlineSequestration(const cString& filename)
   df.WriteTimeStamp();
   df.Write(GetUpdate(), "Update [update]");
   
-  while(m_ave_germ_mut.size()>100) {
-		m_ave_germ_mut.pop_front();
-	}
-  while(m_ave_non_germ_mut.size()>100) {
-		m_ave_non_germ_mut.pop_front();
-	}
-  while(m_ave_germ_size.size()>100) {
-		m_ave_germ_size.pop_front();
-	}
-  
+  while(m_ave_germ_mut.size()>100) { m_ave_germ_mut.pop_front(); }
+  while(m_var_germ_mut.size()>100) { m_var_germ_mut.pop_front(); }
+  while(m_ave_soma_mut.size()>100) { m_ave_soma_mut.pop_front(); }
+  while(m_var_soma_mut.size()>100) { m_var_soma_mut.pop_front(); }
+  while(m_ave_germ_size.size()>100) { m_ave_germ_size.pop_front(); }
+  while(m_ave_germ_percent.size()>100) { m_ave_germ_percent.pop_front(); }
+  while(m_ave_germ_work.size()>100) { m_ave_germ_work.pop_front(); }
+  while(m_var_germ_work.size()>100) { m_var_germ_work.pop_front(); }
+  while(m_ave_soma_work.size()>100) { m_ave_soma_work.pop_front(); }
+  while(m_var_soma_work.size()>100) { m_var_soma_work.pop_front(); }
+    
   if(m_ave_germ_mut.empty()) {
-		df.Write(0.0, "Mean number of mutations to germline [meangermmut]"); 
-    df.Write(0.0, "Mean number of mutations to non-germline orgs [meannongermmut]");
-    df.Write(0.0, "Mean size of germ line [meangermsize]");
-
+    df.Write(0.0, "Mean absolute germ size [m_ave_germ_size]"); 
+		df.Write(0.0, "Mean percent of germ size [m_ave_germ_percent]");
+		df.Write(0.0, "Mean number of mutations to germline [m_ave_germ_mut]"); 
+		df.Write(0.0, "Mean variance of mutations to germline [m_var_germ_mut]"); 
+		df.Write(0.0, "Mean number of mutations to soma [m_ave_soma_mut]"); 
+		df.Write(0.0, "Mean variance of mutations to soma [m_var_soma_mut]");     
+		df.Write(0.0, "Mean germ workload [m_ave_germ_work]"); 
+		df.Write(0.0, "Mean variance of germ workload [m_var_germ_work]"); 
+    df.Write(0.0, "Mean soma workload [m_ave_soma_work]"); 
+		df.Write(0.0, "Mean variance of soma workload [m_var_soma_work]"); 
 	} 
   else {
-    df.Write(std::accumulate(m_ave_germ_mut.begin(), m_ave_germ_mut.end(), 0.0)/m_ave_germ_mut.size(), "Mean number of mutations to germline [meangermmut]");
-    df.Write(std::accumulate(m_ave_non_germ_mut.begin(), m_ave_non_germ_mut.end(), 0.0)/m_ave_non_germ_mut.size(), "Mean number of mutations to non-germline orgs [meannongermmut]");	
-    df.Write(std::accumulate(m_ave_germ_size.begin(), m_ave_germ_size.end(), 0.0)/m_ave_germ_size.size(), "Mean size of germ line [meangermsize]");
+    df.Write(std::accumulate(m_ave_germ_size.begin(), m_ave_germ_size.end(), 0.0)/m_ave_germ_size.size(), "Mean absolute germ size [m_ave_germ_size]"); 
+		df.Write(std::accumulate(m_ave_germ_percent.begin(), m_ave_germ_percent.end(), 0.0)/m_ave_germ_percent.size(), "Mean percent of germ size [m_ave_germ_percent]");
+		df.Write(std::accumulate(m_ave_germ_mut.begin(), m_ave_germ_mut.end(), 0.0)/m_ave_germ_mut.size(), "Mean number of mutations to germline [m_ave_germ_mut]"); 
+		df.Write(std::accumulate(m_var_germ_mut.begin(), m_var_germ_mut.end(), 0.0)/m_var_germ_mut.size(), "Mean variance of mutations to germline [m_var_germ_mut]"); 
+		df.Write(std::accumulate(m_ave_soma_mut.begin(), m_ave_soma_mut.end(), 0.0)/m_ave_soma_mut.size(), "Mean number of mutations to soma [m_ave_soma_mut]"); 
+		df.Write(std::accumulate(m_var_soma_mut.begin(), m_var_soma_mut.end(), 0.0)/m_var_soma_mut.size(), "Mean variance of mutations to soma [m_var_soma_mut]");     
+		df.Write(std::accumulate(m_ave_germ_work.begin(), m_ave_germ_work.end(), 0.0)/m_ave_germ_work.size(), "Mean germ workload [m_ave_germ_work]"); 
+		df.Write(std::accumulate(m_var_germ_work.begin(), m_var_germ_work.end(), 0.0)/m_var_germ_work.size(), "Mean variance of germ workload [m_var_germ_work]"); 
+    df.Write(std::accumulate(m_ave_soma_work.begin(), m_ave_soma_work.end(), 0.0)/m_ave_soma_work.size(), "Mean soma workload [m_ave_soma_work]"); 
+		df.Write(std::accumulate(m_var_soma_work.begin(), m_var_soma_work.end(), 0.0)/m_var_soma_work.size(), "Mean variance of soma workload [m_var_soma_work]"); 
+
   }
    
   df.Endl();
@@ -3076,6 +3220,28 @@ void cStats::PrintShadedAltruists(const cString& filename) {
 }
 
 /*
+ Print data regarding explosions (kazi) and the hamming distances associated with them.
+ */
+void cStats::PrintKaboom(const cString& filename)
+{
+    cDataFile& df = m_world->GetDataFile(filename);
+    df.WriteComment("The number of kabooms.");
+    
+    df.WriteTimeStamp();
+    df.Write(m_update, "Update [update]");
+    
+    df.Write(num_kabooms, "number of kabooms");
+    df.Write(num_kaboom_kills, "number of orgs killed by kabooms");
+    df.Write(hd_list, "hamming distances", "");
+    
+    df.Endl();
+    hd_list.ResizeClear(0);
+    num_kabooms = 0;
+    num_kaboom_kills=0;
+    
+}
+
+/*
  Print data regarding group formation.
  */
 void cStats::PrintGroupsFormedData(const cString& filename)
@@ -3379,7 +3545,7 @@ void cStats::PrintTargets(const cString& filename)
   
   bool has_pred = false;
   int offset = 1;
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
     has_pred = true;
     offset = 2;
   }
@@ -3639,6 +3805,104 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 }
 
 
+void cStats::PrintDenData(const cString& filename) {
+  if (m_world->GetConfig().USE_AVATARS.Get() <= 0) return; 
+  
+  int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
+  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
+  int num_juvs = 0;
+  int num_adults = 0;
+  int num_guards = 0;
+
+  int population_size = m_world->GetPopulation().GetSize();
+
+  int num_loiterers = 0;
+  int active_dens = 0;
+
+  
+  for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+    if (!cell.HasAV()) continue;
+    
+    Apto::Array<double> cell_res;
+    cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
+    
+    bool is_active = false;    
+    for (int j = 0; j < cell_res.GetSize(); j++) {
+      if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+        Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs(); 
+        for (int k = 0; k < cell_avs.GetSize(); k++) {
+          if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 
+            num_juvs++;
+            is_active = true;
+          }
+          else 
+          {
+            num_adults++;
+            if (cell_avs[k]->IsGuard()) num_guards++;
+            else num_loiterers++;
+          }
+        }
+        active_dens += (int)is_active;
+        break;  // only do this once if two dens overlap
+      }
+    }
+  }
+    double percent_juv_guard;
+    double percent_juv_pop;
+    double percent_guards_pop;
+    
+    if (num_guards > 0){
+        percent_juv_guard = (double)num_juvs/(double)num_guards;
+    } else {
+        percent_juv_guard = 0;
+    }
+    if (population_size > 0){
+        percent_juv_pop = (double)num_juvs/(double)population_size;
+        percent_guards_pop = (double)num_guards/(double)population_size;
+    } else {
+        percent_juv_pop = 0;
+        percent_guards_pop = 0;
+    }
+    
+
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Number of juveniles and adults in dens");
+  df.WriteTimeStamp();
+	df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("ActiveDens [active_dens]");
+  df.WriteColumnDesc("Juveniles [juveniles]");
+	df.WriteColumnDesc("Adults [adults]");
+    df.WriteColumnDesc("Guards [guards]");
+	df.WriteColumnDesc("Loiterers [loiterers]");
+
+    df.WriteColumnDesc("Juveniles Killed [juveniles killed]");
+    df.WriteColumnDesc("Ratio of Juveniles to Guards [percent juvs to guards]");
+    df.WriteColumnDesc("Ratio of Juveniles to Population [percent juvs to pop]");
+    df.WriteColumnDesc("Ratio of Guards to Population [percent guards to pop]");
+
+	
+  df.FlushComments();
+    
+    df.Write(m_update,   "Update");
+      df.Write(active_dens,      "ActiveDens");
+    df.Write(num_juvs,      "Juveniles");
+	df.Write(num_adults,    "Adults");
+	df.Write(num_guards,    "Guards");
+	df.Write(num_loiterers, "Loiterers");
+    df.Write(juv_killed, "Juveniles Killed");
+    df.Write(percent_juv_guard, "Ratio of Juveniles to Guards");
+    df.Write(percent_juv_pop, "Ratio of Juveniles to Population");
+    df.Write(percent_guards_pop, "Ratio of Guards to Population");
+
+
+	df.Endl();  
+
+}
+
+
 
 
 /*! Print statistics related to the diversity of reactions performed by a deme
@@ -3704,6 +3968,39 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 
   df.Endl();
 }
+
+/*! Print statistics related to the amount of resources amassed by the deme, 
+ as well as germ/soma information */
+void cStats::PrintDemeGermResourcesData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  int deme_id = 0;
+  double deme_res = m_world->GetPopulation().GetDeme(deme_id).GetTotalResourceAmountConsumed(); 
+  
+  if (deme_res > m_resource_print_thresh) {
+    
+    // update thresh
+    m_resource_print_thresh += m_world->GetConfig().RES_FOR_DEME_REP.Get();
+    
+    df.WriteComment("Avida deme germ/soma and resources amassed data");
+    df.WriteTimeStamp();
+    df.Write(GetUpdate(), "Update [update]");
+    df.Write(deme_res, "Mean amount of resources consumed");
+    
+    std::pair<double, double> p = m_world->GetPopulation().GetDeme(deme_id).GetGermlineNumPercent();
+    df.Write(p.first, "Mean number of organisms flagged as germ");
+    df.Write(p.second, "Mean percent of organisms flagged as germ");
+    
+    p = m_world->GetPopulation().GetDeme(deme_id).GetAveVarWorkLoad();
+    df.Write(p.first, "Mean workload of organisms");
+    
+    
+    df.Endl();
+  }
+
+}
+
 
 /*! Prints the genotype ids of all organisms within the maximally-fit deme.
  */
@@ -4004,7 +4301,55 @@ void cStats::PrintFemaleInstructionData(const cString& filename, const cString& 
   df.Endl();  
 }
 
-void cStats::PrintMicroTraces(Apto::Array<Apto::String, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id)
+void cStats::PrintMiniTraceReactions(cOrganism* org)
+{
+  int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
+  if (org->HasOpinion()) group_id = org->GetOpinion().first;
+  cString filename("");
+  filename.Set("minitraces/trace_reactions/org%d-ud%d-grp%d_ft%d-gt%d.trcreac", org->GetID(), org->GetPhenotype().GetUpdateBorn(), group_id, org->GetForageTarget(), org->SystematicsGroup("genotype")->ID());
+  
+  // Open the file...
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteTimeStamp();  
+    df.WriteComment("Reaction Data for Traced Org to Date (death or end)");
+    df.WriteComment("OrgID");
+    df.WriteComment("Update Born");
+    df.WriteComment("Reaction Counts");
+    df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
+    df.WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
+    df.FlushComments();
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  
+  Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  Apto::Array<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
+  Apto::Array<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
+  
+  fp << org->GetID() << " " << org->GetPhenotype().GetUpdateBorn() << " ";
+  for (int i = 0; i < reaction_count.GetSize() - 1; i++) {
+    fp << reaction_count[i] << ",";
+  }
+  fp << reaction_count[reaction_count.GetSize() - 1] << " ";
+  
+  for (int i = 0; i < reaction_cycles.GetSize() - 1; i++) {
+    fp << reaction_cycles[i] << ",";
+  }
+  fp << reaction_cycles[reaction_cycles.GetSize() - 1] << " ";
+  
+  for (int i = 0; i < reaction_execs.GetSize() - 1; i++) {
+    fp << reaction_execs[i] << ",";
+  }
+  fp << reaction_execs[reaction_execs.GetSize() - 1];
+  fp << endl;
+  
+  m_world->GetDataFileManager().Remove(filename);
+}
+
+void cStats::PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id)
 {
   int death_update = GetUpdate();
   cDataFile& df = m_world->GetDataFile("microtrace.dat");
@@ -4022,8 +4367,166 @@ void cStats::PrintMicroTraces(Apto::Array<Apto::String, Apto::Smart>& exec_trace
   
   std::ofstream& fp = df.GetOFStream();
   fp << death_update << "," << birth_update << "," << org_id << "," << gen_id << "," << ft << ",";
-  for (int i = exec_trace.GetSize() - 1; i >= 0; i--) {
+  for (int i = 0; i < exec_trace.GetSize(); i++) {
     fp << exec_trace[i];
   }
   fp << endl;
+}
+
+void cStats::UpdateTopNavTrace(cOrganism* org)
+{
+  // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
+  // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
+  int best_reac = -1;
+  Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  for (int i = reaction_count.GetSize() -1; i >= 0; i--) {
+    if (reaction_count[i] > 0) {
+      best_reac = i;
+      break;
+    }
+  }
+  int cycle = org->GetPhenotype().GetTimeUsed();
+  bool new_winner = false;
+  if (best_reac >= topreac) {
+    if (best_reac == topreac && cycle < topcycle) new_winner = true;
+    else if (best_reac > topreac) new_winner = true;      
+  }
+  if (new_winner) {
+    topreac = best_reac;
+    topcycle = cycle;
+    topgenid = org->SystematicsGroup("genotype")->ID();
+    topid = org->GetID();
+    
+    Apto::Array<char, Apto::Smart> trace = org->GetHardware().GetMicroTrace();
+    Apto::Array<int, Apto::Smart> traceloc = org->GetHardware().GetNavTraceLoc();
+    Apto::Array<int, Apto::Smart> tracefacing = org->GetHardware().GetNavTraceFacing();
+    Apto::Array<int, Apto::Smart> traceupdate = org->GetHardware().GetNavTraceUpdate();
+
+    toptrace.Resize(trace.GetSize());
+    topnavtraceloc.Resize(traceloc.GetSize());
+    topnavtraceloc.SetAll(-1);
+    topnavtracefacing.Resize(tracefacing.GetSize());
+    topnavtracefacing.SetAll(-1);
+    topnavtraceupdate.Resize(traceupdate.GetSize());
+    topnavtraceupdate.SetAll(-1);
+    
+    assert(toptrace.GetSize() == topnavtraceloc.GetSize()); 
+    assert(topnavtraceloc.GetSize() == topnavtracefacing.GetSize());
+    assert(topnavtracefacing.GetSize() == topnavtraceupdate.GetSize());
+    for (int i = 0; i < toptrace.GetSize(); i++) {
+      toptrace[i] = trace[i];
+      topnavtraceloc[i] = traceloc[i];
+      topnavtracefacing[i] = tracefacing[i];
+      topnavtraceupdate[i] = traceupdate[i];
+    }
+    
+    Apto::Array<int> reaction_cycles = org->GetPhenotype().GetFirstReactionCycles();
+    Apto::Array<int> reaction_execs = org->GetPhenotype().GetFirstReactionExecs();
+    
+    topreactioncycles.Resize(reaction_cycles.GetSize());
+    topreactioncycles.SetAll(-1);
+    topreactionexecs.Resize(reaction_execs.GetSize());
+    topreactionexecs.SetAll(-1);
+    topreactions.Resize(reaction_count.GetSize());
+    topreactions.SetAll(0);
+    
+    assert(topreactions.GetSize() == topreactioncycles.GetSize());
+    assert(topreactioncycles.GetSize() == topreactionexecs.GetSize());
+    for (int i = 0; i < topreactions.GetSize(); i++) {
+      topreactions[i] = reaction_count[i];
+      topreactioncycles[i] = reaction_cycles[i];
+      topreactionexecs[i] = reaction_execs[i];
+    }
+  }
+  if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace();
+}
+
+void cStats::PrintTopNavTrace()
+{  
+  cDataFile& df = m_world->GetDataFile("navtrace.dat");
+
+  df.WriteComment("Org That Reproduced the Fastest (fewest cycles) Among Orgs with the Highest Reaction ID");
+  df.WriteTimeStamp();
+  df.WriteComment("GenotypeID");
+  df.WriteComment("OrgID");
+  df.WriteComment("Cycle at First Reproduction (parallel multithread execs = 1 cycle)");
+  df.WriteComment("Reaction Counts at First Reproduction");
+  df.WriteComment("CPU Cycle at First Trigger of Each Reaction");
+  df.WriteComment("Exec Count at First Trigger (== index into execution trace and nav traces)");
+  df.WriteComment("");
+  df.WriteComment("Updates for each entry in each following trace (to match with res data)");
+  df.WriteComment("CellIDs to First Reproduction");
+  df.WriteComment("OrgFacings to First Reproduction");
+  df.WriteComment("Execution Trace to First Reproduction");
+  df.Endl();
+
+  std::ofstream& fp = df.GetOFStream();
+
+  if (topreactions.GetSize()) {
+    fp << topgenid << " " << topid << " " << topcycle << " ";
+    // reaction related
+    for (int i = 0; i < topreactions.GetSize() - 1; i++) {
+      fp << topreactions[i] << ",";
+    }
+    fp << topreactions[topreactions.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topreactioncycles.GetSize() - 1; i++) {
+      fp << topreactioncycles[i] << ",";
+    }
+    fp << topreactioncycles[topreactioncycles.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topreactionexecs.GetSize() - 1; i++) {
+      fp << topreactionexecs[i] << ",";
+    }
+    fp << topreactionexecs[topreactionexecs.GetSize() - 1] << " ";
+    
+    // instruction exec sequence related (printed in reverse order to get firs exec as first printed)
+    for (int i = 0; i < topnavtraceupdate.GetSize() - 1; i++) {
+      fp << topnavtraceupdate[i] << ",";
+    }
+    fp << topnavtraceupdate[topnavtraceupdate.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topnavtraceloc.GetSize() - 1; i++) {
+      fp << topnavtraceloc[i] << ",";
+    }
+    fp << topnavtraceloc[topnavtraceloc.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < topnavtracefacing.GetSize() - 1; i++) {
+      fp << topnavtracefacing[i] << ",";
+    }
+    fp << topnavtracefacing[topnavtracefacing.GetSize() - 1] << " ";
+    
+    for (int i = 0; i < toptrace.GetSize(); i++) {
+      fp << toptrace[i];
+    }
+    fp << endl;
+  }
+}
+
+void cStats::PrintReproData(cOrganism* org)
+{
+  int update = GetUpdate();
+  cDataFile& df = m_world->GetDataFile("repro_data.dat");
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Org Data up to First Reproduction");
+    df.WriteTimeStamp();
+    df.WriteComment("ReproUpdate");
+    df.WriteComment("GenotypeID");
+    df.WriteComment("OrgID");
+    df.WriteComment("Age (updates)");
+    df.WriteComment("TimeUsed (cycles)");
+    df.WriteComment("NumExecutions (attempted executions)");
+    df.WriteComment("ReactionCounts");
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  fp << update << " " << org->SystematicsGroup("genotype")->ID()<< " " << org->GetID() << " " << org->GetPhenotype().GetAge() << " " << org->GetPhenotype().GetTimeUsed()
+      << " " << org->GetPhenotype().GetNumExecs() << " ";
+  Apto::Array<int> reaction_count = org->GetPhenotype().GetCurReactionCount();
+  for (int i = 0; i < reaction_count.GetSize() - 1; i++) {
+    fp << reaction_count[i] << ",";
+  }
+  fp << reaction_count[reaction_count.GetSize() - 1] << endl;
 }

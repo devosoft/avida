@@ -127,6 +127,11 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_parent_teacher(false)
   , m_parent_ft(-1)
   , m_parent_group(world->GetConfig().DEFAULT_GROUP.Get())
+  , m_beggar(false)
+  , m_guard(false)
+  , m_num_guard(0)
+  , m_num_deposits(0)
+  , m_amount_deposited(0)
   , m_num_point_mut(0)
   , m_av_in_index(-1)
   , m_av_out_index(-1)
@@ -816,10 +821,8 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
       }
     }
     
-    if (toFail)
-    {
-      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-            cStringUtil::Stringf("Lacks any reaction required for divide"));
+    if (toFail) {
+      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, cStringUtil::Stringf("Lacks any reaction required for divide"));
       return false; //  (divide fails)
     }
   }
@@ -1167,7 +1170,7 @@ bool cOrganism::HasOpinion() {
 
 void cOrganism::SetForageTarget(int forage_target) {
   // if using avatars, make sure you swap avatar lists if the org type changes!
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     if (forage_target <= -2 && m_forage_target > -2) {
       m_interface->DecNumPreyOrganisms();
       m_interface->IncNumPredOrganisms();
@@ -1184,7 +1187,7 @@ void cOrganism::CopyParentFT() {
   bool copy_ft = true;
   // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
   // switch ft to pred, and then copy parent to become prey again.
-  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() <= 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
     if (m_parent_ft != -2 && m_forage_target < -1) {
       copy_ft = false;
     }

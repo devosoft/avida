@@ -1,6 +1,6 @@
-# Thu Apr 19 10:20:17 2012
-# Filename........: archive/024-aaaac.org
-# Update Output...: 30
+# Fri Sep 21 10:01:57 2012
+# Filename........: archive/024-aaaab.org
+# Update Output...: 20
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -19,13 +19,12 @@
 # live-on-patch-id 0 (0.000000)
 
 
-nop-A
+if-not-0
 zero
 nop-B
 zero
 nop-C
-nop-C
-nop-C
+nop-B
 nop-C
 nop-C
 nop-C
@@ -36,9 +35,10 @@ nop-C
 nop-C
 IO
 nop-C
-rotate-uphill
+nop-C
 nop-C
 IO
+nop-C
 nop-C
 nop-C
 rotate-to-unoccupied-cell

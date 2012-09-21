@@ -1,18 +1,18 @@
-# Thu Apr 19 10:20:17 2012
-# Filename........: archive/027-aaaai.org
-# Update Output...: 20
+# Fri Sep 21 10:01:58 2012
+# Filename........: archive/025-aaaap.org
+# Update Output...: 30
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 27.000000
+# Merit...........: 25.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 27
-# Copied Size.....: 27
-# Executed Size...: 27
+# Genome Size.....: 25
+# Copied Size.....: 25
+# Executed Size...: 25
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -24,7 +24,7 @@ nop-A
 zero
 nop-B
 zero
-nop-C
+sub
 join-group
 nop-C
 nop-C
@@ -32,17 +32,15 @@ nop-C
 nop-C
 nop-C
 nop-C
-push
 nop-C
-nop-C
-nop-C
-IO
 nop-C
 nop-C
 nop-C
 IO
 nop-C
-get-easterly
+IO
 nop-C
+nop-C
+h-copy
 rotate-to-unoccupied-cell
 repro

@@ -51,6 +51,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
+, first_reaction_cycles(m_world->GetEnvironment().GetReactionLib().GetSize())
+, first_reaction_execs(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_stolen_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_sense_count(m_world->GetStats().GetSenseSize())
@@ -157,6 +159,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_rbins_avail          = in_phen.cur_rbins_avail;
   cur_collect_spec_counts  = in_phen.cur_collect_spec_counts;
   cur_reaction_count       = in_phen.cur_reaction_count;            
+  first_reaction_cycles    = in_phen.first_reaction_cycles;            
+  first_reaction_execs     = first_reaction_execs;            
   cur_reaction_add_reward  = in_phen.cur_reaction_add_reward;     
   cur_inst_count           = in_phen.cur_inst_count;                 
   cur_sense_count          = in_phen.cur_sense_count;                 
@@ -212,7 +216,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   num_divides_failed       = in_phen.num_divides_failed;
   generation               = in_phen.generation;        
   cpu_cycles_used          = in_phen.cpu_cycles_used;   
-  time_used                = in_phen.time_used;         
+  time_used                = in_phen.time_used; 
+  num_execs                = in_phen.num_execs;
   age                      = in_phen.age;               
   fault_desc               = in_phen.fault_desc;    
   neutral_metric           = in_phen.neutral_metric; 
@@ -377,6 +382,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  first_reaction_cycles.SetAll(-1);
+  first_reaction_execs.SetAll(-1);
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -433,6 +440,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
   time_used       = 0;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   neutral_metric  = parent_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
@@ -586,6 +594,8 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  first_reaction_cycles.SetAll(-1);
+  first_reaction_execs.SetAll(-1);
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -633,6 +643,7 @@ void cPhenotype::SetupInject(const InstructionSequence& _genome)
   generation      = 0;
   cpu_cycles_used = 0;
   time_used       = 0;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   neutral_metric  = 0;
@@ -836,6 +847,8 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  first_reaction_cycles.SetAll(-1);
+  first_reaction_execs.SetAll(-1);
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -847,6 +860,7 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   num_divides++;
   (void) generation;
   (void) time_used;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   (void) neutral_metric;
@@ -1031,6 +1045,8 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  first_reaction_cycles.SetAll(-1);
+  first_reaction_execs.SetAll(-1);
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -1052,6 +1068,7 @@ void cPhenotype::TestDivideReset(const InstructionSequence& _genome)
   num_divides++;
   generation++;
   (void) time_used;
+  (void) num_execs;
   (void) age;
   (void) fault_desc;
   (void) neutral_metric;
@@ -1187,6 +1204,8 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  first_reaction_cycles.SetAll(-1);
+  first_reaction_execs.SetAll(-1);
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -1235,6 +1254,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
   time_used       = 0;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   neutral_metric  = clone_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
@@ -1342,8 +1362,8 @@ bool cPhenotype::TestInput(tBuffer<int>&, tBuffer<int>&)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const Apto::Array<double>& res_in, const Apto::Array<double>& rbins_in,
-			    Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered,
-			    bool is_parasite, cContextPhenotype* context_phenotype)
+                            Apto::Array<double>& res_change, Apto::Array<cString>& insts_triggered,
+                            bool is_parasite, cContextPhenotype* context_phenotype)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
@@ -1362,7 +1382,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult& result = *m_reaction_result;
   
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, is_parasite, context_phenotype); //NEED different eff_task_count and cur_reaction_count for deme resource
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, 
+                              is_parasite, context_phenotype); //NEED different eff_task_count and cur_reaction_count for deme resource
   
   // If nothing was found, stop here.
   if (found == false) {
@@ -1995,6 +2016,8 @@ void cPhenotype::NewTrial()
   cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
+  first_reaction_cycles.SetAll(-1);
+  first_reaction_execs.SetAll(-1);
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -2011,6 +2034,7 @@ void cPhenotype::NewTrial()
   num_divides++;
   (void) generation;
   (void) time_used;
+  num_execs       = 0;
   age             = 0;
   fault_desc      = "";
   (void) neutral_metric;
@@ -2124,6 +2148,7 @@ void cPhenotype::TrialDivideReset(const InstructionSequence& _genome)
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
+    num_execs = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
   

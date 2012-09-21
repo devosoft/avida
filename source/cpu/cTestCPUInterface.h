@@ -87,6 +87,8 @@ public:
   void SetPrevSeenCellID(int) { ; }
   void SetPrevTaskCellID(int) { ; }
 
+  bool GetLGTFragment(cAvidaContext& ctx, int region, const Genome& dest_genome, InstructionSequence& seq) { return false; }
+
   bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor() { return NULL; }
   bool IsNeighborCellOccupied() { return false; }
@@ -110,6 +112,7 @@ public:
   int GetCurrPeakY(cAvidaContext&, int) { return 0; } 
   int GetFrozenPeakX(cAvidaContext&, int) { return 0; } 
   int GetFrozenPeakY(cAvidaContext&, int) { return 0; } 
+  cResourceCount* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
@@ -117,7 +120,7 @@ public:
   
   void Die(cAvidaContext& ctx) { ; } 
   void KillCellID(int target, cAvidaContext& ctx) { ; } 
-  void Kaboom(int distance, cAvidaContext& ctx); 
+  void Kaboom(int distance, cAvidaContext& ctx);
   void SpawnDeme(cAvidaContext& ctx) { ; }
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
@@ -209,13 +212,14 @@ public:
   void DecNumPredOrganisms() { ; }
   void IncNumPreyOrganisms() { ; }
   void IncNumPredOrganisms() { ; }
+  void RecordMinPreyFailedAttack() { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }
   bool FacedHasOutputAV(int av_num = 0) { return false; }
   bool FacedHasAV(int av_num = 0) { return false; }
   bool FacedHasPredAV(int av_num = 0) { return false; }
   bool FacedHasPreyAV(int av_num = 0) { return false; }
-  void AddAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
+  void AddIOAV(int av_cell_id, int av_facing, bool input, bool output) { ; }
   void AddPredPreyAV(int av_cell_id) { ; }
   void SwitchPredPrey(int av_num = 0) { ; }
   void RemoveAllAV() { ; }
@@ -242,6 +246,7 @@ public:
   cOrganism* GetRandFacedPredAV(int av_num = 0) { return NULL; }
   cOrganism* GetRandFacedPreyAV(int av_num = 0) { return NULL; }
   Apto::Array<cOrganism*> GetFacedAVs(int av_num = 0);
+  Apto::Array<cOrganism*> GetCellAVs(int cell_id, int av_num = 0);
   Apto::Array<cOrganism*> GetFacedPreyAVs(int av_num = 0);
   const Apto::Array<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
   const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);

@@ -132,6 +132,10 @@ private:
   bool isgradient;
   Apto::Array<cCellResource> cell_list;
   Apto::Array<int> cell_id_list;
+  double m_predator_odds;
+  bool m_predator;
+  double m_guard_juvs_per;
+  double m_prob_detect;
 	bool hgt_metabolize;
 	bool collectable;
 
@@ -215,8 +219,12 @@ public:
   double GetInitialPlatVal() { return m_init_plat; }
   double GetThreshold() { return m_threshold; }
   int GetRefuge() { return m_refuge; }
-  Apto::Array<cCellResource> *GetCellListPtr() { return &cell_list; }
-  Apto::Array<int> *GetCellIdListPtr() { return &cell_id_list; }
+  Apto::Array<cCellResource>* GetCellListPtr() { return &cell_list; }
+  Apto::Array<int>* GetCellIdListPtr() { return &cell_id_list; }
+  bool IsPredatory() { return m_predator; }
+  double GetPredatorResOdds() { return m_predator_odds; }
+  double GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
+  double GetDetectionProb() { return m_prob_detect; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }
 
@@ -295,6 +303,8 @@ public:
   void SetThreshold(double _threshold) { m_threshold = _threshold; } 
   void SetRefuge(int _refuge) { m_refuge = _refuge; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
+  void SetPredatoryResource(double _odds, int _juvsper, double _prob) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; m_prob_detect = _prob; } 
+
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,

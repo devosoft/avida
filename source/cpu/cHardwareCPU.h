@@ -247,10 +247,8 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
-  void SetupMiniTraceFileHeader(const cString& filename, cOrganism* in_organism, const int org_id, const int gen_id, const cString& genotype)
-    { (void)filename, (void)in_organism, (void)org_id, (void)gen_id, (void)genotype;; }
-  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name)
-    { (void)ctx, (void)fp, (void)next_name; }
+  void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype) { (void)filename, (void)gen_id, (void)genotype; }
+  void PrintMiniTraceStatus(cAvidaContext& ctx, std::ostream& fp, const cString& next_name) { (void)ctx, (void)fp, (void)next_name; }
   void PrintMiniTraceSuccess(std::ostream& fp, const int exec_success) { (void)fp, (void)exec_success; }
 
   // --------  Stack Manipulation...  --------
@@ -304,6 +302,9 @@ public:
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
+    
+  // -------- Kaboom Stuff ------------
+  bool checkNoMutList(cHeadCPU to);
 
 
   // Non-Standard Methods
@@ -999,6 +1000,11 @@ public:
   // Apply point mutations to a genome, where the mutation rate
   // depends on the task last performed
   bool Inst_ApplyVaryingPointMutations(cAvidaContext& ctx);
+  // Apply point mutations to a genome in the deme with the same 
+  // germ/soma status
+  bool Inst_ApplyPointMutationsGroupGS(cAvidaContext& ctx);
+  // Apply point mutations to a genome in the deme at random
+  bool Inst_ApplyPointMutationsGroupRandom(cAvidaContext& ctx);
 
   bool Inst_JoinGermline(cAvidaContext& ctx);
   bool Inst_ExitGermline(cAvidaContext& ctx);

@@ -91,6 +91,21 @@ void cDataFile::Write(const char* data_str, const char* descr, const char* forma
   }
 }
 
+void cDataFile::Write(Apto::Array<int> list, const char* descr, const char* format)
+{
+    //Anya is trying to make a commant to write vectors for Kaboom data
+    if (!m_descr_written) {
+        for (int i=0; i< (int)list.GetSize();i++) {
+            m_data << list[i] << " ";
+        }
+        WriteColumnDesc(descr, format);
+    } else {
+        for (int i =0; i < (int)list.GetSize(); i++) {
+            m_fp << list[i] << " ";
+        }
+    }
+}
+
 
 void cDataFile::WriteBlockElement(double x, int element, int x_size)
 {

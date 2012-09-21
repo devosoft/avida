@@ -191,6 +191,16 @@ private:
   Apto::Array<int> tasks_host_last;
   Apto::Array<int> tasks_parasite_current;
   Apto::Array<int> tasks_parasite_last;
+    
+  // ------- Kaboom Stats --------------------
+  int num_kabooms;
+  int num_kaboom_kills;
+  Apto::Array<int> hd_list;
+  
+  
+  // ------- Division of Labor Stats ---------
+  //TODO: Right place for this?
+  int juv_killed;
 
 
   // --------  Organism Task Stats  ---------
@@ -318,9 +328,7 @@ private:
   cDoubleSum sum_pred_size;
 
   double prey_entropy;
-  int num_prey_creatures;
   double pred_entropy;
-  int num_pred_creatures;
 
   // --------  Mating type (male/female) Stats  ---------
   cDoubleSum sum_male_fitness;
@@ -336,6 +344,21 @@ private:
   cDoubleSum sum_female_creature_age;
   cDoubleSum sum_female_generation;
   cDoubleSum sum_female_size;
+  
+  // --------  TopNavTrace Stats  ---------
+  Apto::Array<char> toptrace;
+  Apto::Array<int> topnavtraceupdate;
+  Apto::Array<int> topnavtraceloc;
+  Apto::Array<int> topnavtracefacing;
+  Apto::Array<int> topreactions;
+  Apto::Array<int> topreactioncycles;
+  Apto::Array<int> topreactionexecs;
+  int topreac;
+  int topcycle;   
+  int topid;
+  int topgenid;
+    
+
     
 public:
   cStats(cWorld* world);
@@ -377,9 +400,6 @@ public:
   inline void SetNumMultiThreadCreatures(int in_num_multi_thread_creatures);
   inline void SetNumThreads(int in_num_threads) { m_num_threads = in_num_threads; }
   inline void SetNumModified(int in_num_modified);
-
-  inline void SetNumPreyCreatures(int new_prey_creatures) { num_prey_creatures = new_prey_creatures; }
-  inline void SetNumPredCreatures(int new_pred_creatures) { num_pred_creatures = new_pred_creatures; }
 
   void SetMaxFitness(double in_max_fitness) { max_fitness = in_max_fitness; }
   void SetMaxMerit(double in_max_merit) { max_merit = in_max_merit; }
@@ -701,9 +721,9 @@ public:
   int GetNumMigrations() const { return num_migrations; }
   
   // Pred-Prey
-  int GetNumPreyCreatures() const { return num_prey_creatures; }
-  int GetNumPredCreatures() const { return num_pred_creatures; }
-
+  int GetNumPreyCreatures() const;
+  int GetNumPredCreatures() const;
+  
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
   // i.e., when the maximum fitness in the population drops, this value will
@@ -726,6 +746,7 @@ public:
   void PrintPredatorErrorData(const cString& filename);
   void PrintPreyVarianceData(const cString& filename);
   void PrintPredatorVarianceData(const cString& filename);
+  void PrintMinPreyFailedAttacks(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
   void PrintCountData(const cString& filename);
@@ -749,6 +770,7 @@ public:
   void PrintCurrentReactionRewardData(const cString& filename);
   void PrintResourceData(const cString& filename);
   void PrintResourceLocData(const cString& filename, cAvidaContext& ctx);
+  void PrintResWallLocData(const cString& filename, cAvidaContext& ctx);
   void PrintSpatialResData(const cString& filename, int i);
   void PrintTimeData(const cString& filename);
   void PrintDivideMutData(const cString& filename);
@@ -780,7 +802,21 @@ public:
   void PrintMaleInstructionData(const cString& filename, const cString& inst_set);
   void PrintFemaleInstructionData(const cString& filename, const cString& inst_set);
 
-  void PrintMicroTraces(Apto::Array<Apto::String, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
+  void PrintMiniTraceReactions(cOrganism* org);
+  void PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
+  void UpdateTopNavTrace(cOrganism* org);
+  void PrintTopNavTrace();
+  void PrintReproData(cOrganism* org);
+    
+ // Kaboom stats
+  void IncKaboom() { num_kabooms++; }
+    void IncKaboomKills() {num_kaboom_kills++;}
+  void AddHamDistance(int distance) { hd_list.Push(distance); }
+  void PrintKaboom(const cString& filename);
+    
+ // Division of Labor Stats
+    void IncJuvKilled() { juv_killed++; }
+
   
   // deme predicate stats
   void IncEventCount(int x, int y);
@@ -908,6 +944,7 @@ public:
 	void PrintDemeMigrationSuicidePoints(const cString& filename);
 	void PrintDemeReactionDiversityReplicationData(const cString& filename);
   void PrintWinningDeme(const cString& filename);
+  void PrintDemeGermResourcesData(const cString& filename);
 
   void PrintDemesTasksData(const cString& filename); //@JJB**
   void PrintDemesReactionsData(const cString& filename); //@JJB**
@@ -929,8 +966,16 @@ protected:
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
   cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
   std::deque<double> m_ave_germ_mut; //!< Mean number of mutations that occurred as a result of damage related to performing metabolic work (does not include mutations that occur as part of replication).
-  std::deque<double> m_ave_non_germ_mut; 
+  std::deque<double> m_var_germ_mut;
+  std::deque<double> m_ave_soma_mut; 
+  std::deque<double> m_var_soma_mut;
   std::deque<double> m_ave_germ_size;
+  std::deque<double> m_ave_germ_percent;
+  std::deque<double> m_ave_soma_work; 
+  std::deque<double> m_var_soma_work;
+  std::deque<double> m_ave_germ_work; 
+  std::deque<double> m_var_germ_work;
+
   t_gls_founder_map m_gls_deme_founders; //! Data structure to track the founders of gls demes.
   
 
@@ -1020,6 +1065,7 @@ protected:
   dblq m_shannon_div_norm;
 	dblq m_num_orgs_perf_reaction;
   dblq m_percent_reproductives;
+  int m_resource_print_thresh;
 
 public:
 	void IncDemeReactionDiversityReplicationData(double deme_div, double switch_pen,  \
@@ -1039,7 +1085,12 @@ public:
 	int GetNumDemeReplications() { return m_total_deme_num_repls; }
   //! Add a task time tracking event
   void AddTaskSwitchTime(int t1, int t2, int time); 
+  
+  //! Figure out how many juveniles and guards there are in the den
+  void PrintDenData(const cString& filename);
+    
 
+    
 
 protected:
 	std::map<int, cDoubleSum> reaction_age_map;

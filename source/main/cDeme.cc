@@ -1522,8 +1522,9 @@ void cDeme::ClearShannonInformationStats()
 }
 
 
+
 /* Returns the average number of mutations that have occured to the deme's germline as a the result damage accrued by performing tasks. */
-double cDeme::GetAveGermMut() 
+std::pair<double, double> cDeme::GetAveVarGermMut() 
 {
 
   if ((m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) && 
@@ -1531,29 +1532,23 @@ double cDeme::GetAveGermMut()
     cPopulationCell& c = GetCell(0);
     if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
   }
-  double mut_count = 0;
-  double count = 0;
+  cDoubleSum mut_count;
   
   for (int i=0; i<GetSize(); ++i) {
     cPopulationCell& cell = GetCell(i);
     if (cell.IsOccupied()) {
       cOrganism* o = cell.GetOrganism();
       if (o->IsGermline()) {
-        mut_count += o->GetNumOfPointMutationsApplied();
-        ++count; 
+        mut_count.Add(o->GetNumOfPointMutationsApplied());
       }
     }
   }
   
-  if (count > 0) mut_count = mut_count/count;
-  return (mut_count);
-
+  return (make_pair(mut_count.Average(), mut_count.Variance()));
 }
 
-double cDeme::GetAveNonGermMut() 
+std::pair<double, double> cDeme::GetAveVarSomaMut() 
 {
-  double mut_count = 0;
-  double count = 0;
   
   if ((m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 7) && 
       (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 8)) {
@@ -1561,23 +1556,23 @@ double cDeme::GetAveNonGermMut()
     if (c.IsOccupied()) { c.GetOrganism()->JoinGermline(); }
   }
   
+  cDoubleSum mut_count;
+
   for (int i=0; i<GetSize(); ++i) {
     
     cPopulationCell& cell = GetCell(i);
     if (cell.IsOccupied()) {
       cOrganism* o = cell.GetOrganism();
       if (!o->IsGermline()) {
-        mut_count += o->GetNumOfPointMutationsApplied();
-        ++count; 
+        mut_count.Add(o->GetNumOfPointMutationsApplied());
       }
     }
   }
   
-  if (count > 0) mut_count = mut_count/count;
-  return (mut_count);
+  return (make_pair(mut_count.Average(), mut_count.Variance()));
 }
 
-double cDeme::GetGermlinePercent() {
+std::pair<double, double> cDeme::GetGermlineNumPercent() {
   double count = 0;
   double total_count = 0;
   for (int i=0; i<GetSize(); ++i) {
@@ -1592,5 +1587,101 @@ double cDeme::GetGermlinePercent() {
     }
   }
   total_count = (count/total_count) * 100;
-  return total_count;
+  return (make_pair(count, total_count));
 }
+
+std::pair<double, double> cDeme::GetAveVarGermWorkLoad() {
+  cDoubleSum work_load;
+  
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      double cur_org_w = 0;
+      if (o->IsGermline()) {
+        // Compute workload...
+        const Apto::Array<int> curr_react =  o->GetPhenotype().GetCumulativeReactionCount();
+        for (int j=0; j<curr_react.GetSize(); j++) {
+          double weight = 1.0;
+          // weight each reaction according to.
+          if (m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() > 0.0) { 
+            weight = m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() * j; 
+          }
+          // The first task never has any work associated with it.
+          if (j > 0) {
+            cur_org_w += weight * curr_react[j];
+          }
+        }
+        work_load.Add(cur_org_w);
+      }
+    }
+  }
+  
+  return (make_pair(work_load.Average(), work_load.Variance()));
+
+}
+
+std::pair<double, double> cDeme::GetAveVarSomaWorkLoad() {
+  cDoubleSum work_load;
+  
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      double cur_org_w = 0;
+      if (!o->IsGermline()) {
+        // Compute workload...
+        const Apto::Array<int> curr_react =  o->GetPhenotype().GetCumulativeReactionCount();
+        for (int j=0; j<curr_react.GetSize(); j++) {
+          double weight = 1.0;
+          // weight each reaction according to.
+          if (m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() > 0.0) { 
+            weight = m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() * j; 
+          }
+          // The first task never has any work associated with it.
+          if (j > 0) {
+            cur_org_w += weight * curr_react[j];
+          }
+        }
+        work_load.Add(cur_org_w);
+      }
+    }
+  }
+  
+  return (make_pair(work_load.Average(), work_load.Variance()));
+
+}
+
+
+std::pair<double, double> cDeme::GetAveVarWorkLoad() {
+  cDoubleSum work_load;
+  
+  for (int i=0; i<GetSize(); ++i) {
+    
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) {
+      cOrganism* o = cell.GetOrganism();
+      double cur_org_w = 0;
+        // Compute workload...
+        const Apto::Array<int> curr_react =  o->GetPhenotype().GetCumulativeReactionCount();
+        for (int j=0; j<curr_react.GetSize(); j++) {
+          double weight = 1.0;
+          // weight each reaction according to.
+          if (m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() > 0.0) { 
+            weight = m_world->GetConfig().INST_POINT_MUT_SLOPE.Get() * j; 
+          }
+          // The first task never has any work associated with it.
+          if (j > 0) {
+            cur_org_w += weight * curr_react[j];
+          }
+        work_load.Add(cur_org_w);
+      }
+    }
+  }
+  
+  return (make_pair(work_load.Average(), work_load.Variance()));
+  
+}
+

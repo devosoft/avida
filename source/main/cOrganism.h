@@ -251,7 +251,7 @@ public:
   void Die(cAvidaContext& ctx) { m_interface->Die(ctx); m_is_dead = true; } 
   void KillCellID(int target, cAvidaContext& ctx) { m_interface->KillCellID(target, ctx); } 
   void Kaboom(int dist, cAvidaContext& ctx) { m_interface->Kaboom(dist,ctx);} 
-  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); } 
+  void SpawnDeme(cAvidaContext& ctx) { m_interface->SpawnDeme(ctx); }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -312,14 +312,17 @@ public:
   bool TestDivideMut(cAvidaContext& ctx) const { return m_mut_rates.TestDivideMut(ctx); }
   bool TestDivideIns(cAvidaContext& ctx) const { return m_mut_rates.TestDivideIns(ctx); }
   bool TestDivideDel(cAvidaContext& ctx) const { return m_mut_rates.TestDivideDel(ctx); }
-
+  bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
+  bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); }
+  bool TestDivideTrans(cAvidaContext& ctx) const { return m_mut_rates.TestDivideTrans(ctx); }
+  bool TestDivideLGT(cAvidaContext& ctx) const { return m_mut_rates.TestDivideLGT(ctx); }
+  
   unsigned int NumDividePoissonMut(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonMut(ctx); }
   unsigned int NumDividePoissonIns(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonIns(ctx); }
   unsigned int NumDividePoissonDel(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonDel(ctx); }
   unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonSlip(ctx); }
-
-  bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
-  bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); } 
+  unsigned int NumDividePoissonTrans(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonTrans(ctx); }
+  unsigned int NumDividePoissonLGT(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonLGT(ctx); }
 
   bool TestDeath(cAvidaContext& ctx) const { return m_mut_rates.TestDeath(ctx); }
 
@@ -337,6 +340,8 @@ public:
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
   double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
   double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
+  double GetDivTransProb() const { return m_mut_rates.GetDivTransProb(); }
+  double GetDivLGTProb() const { return m_mut_rates.GetDivLGTProb(); }
   
   double GetPointInsProb() const { return m_mut_rates.GetPointInsProb(); }
   double GetPointDelProb() const { return m_mut_rates.GetPointDelProb(); }
@@ -603,6 +608,22 @@ public:
   void CopyParentFT();
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
+  void SetParentMerit(double parent_merit) { m_p_merit = parent_merit; }
+  double GetParentMerit() { return m_p_merit; }
+  void SetParentMultiThreaded(bool parent_is_mt) { m_p_mthread = parent_is_mt; }
+  bool IsParentMThreaded() { return m_p_mthread; }
+  
+  void ChangeBeg() { m_beggar = !m_beggar; }
+  bool IsBeggar() { return m_beggar; }
+  
+  void SetGuard() { m_guard = !m_guard; }
+  bool IsGuard() { return m_guard; }
+  void IncGuard() { m_num_guard++; }
+  int GetNumGuard() { return m_num_guard; }
+  void IncNumDeposits() { m_num_deposits++; }
+  void IncAmountDeposited(double amount) { m_amount_deposited = m_amount_deposited + amount; } 
+  int GetNumDeposits() { return m_num_deposits; }
+  double GetAmountDeposited() { return m_amount_deposited; }
   
 protected:
   // The organism's own raw materials
@@ -638,6 +659,15 @@ protected:
   bool m_parent_teacher;
   int m_parent_ft;
   int m_parent_group;
+  double m_p_merit;
+  bool m_p_mthread;
+  
+  bool m_beggar;
+  
+  bool m_guard;
+    int m_num_guard;
+    int m_num_deposits;
+    double m_amount_deposited;
   
   /*! Contains all the different data structures needed to
   track strings, production of strings, and donation/trade
