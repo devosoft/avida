@@ -465,6 +465,9 @@ void cStats::setupProvidedData()
   m_data_manager.Add("ave_copy_length","Average Copied Length",            &cStats::GetAveCopySize);
   m_data_manager.Add("ave_exe_length", "Average Executed Length",          &cStats::GetAveExeSize);
   m_data_manager.Add("ave_thresh_age", "Average Threshold Genotype Age",   &cStats::GetAveThresholdAge);
+  
+  m_data_manager.Add("ave_speculative","Averate Speculative Instructions", &cStats::GetAveSpeculative);
+  m_data_manager.Add("speculative_waste", "Speculative Execution Waste",   &cStats::GetSpeculativeWaste);
 
   PROVIDE("core.world.ave_metabolic_rate", "Average Metabolic Rate",               double, GetAveMerit);
   PROVIDE("core.world.ave_age",            "Average Organism Age (in updates)",    double, GetAveCreatureAge);
