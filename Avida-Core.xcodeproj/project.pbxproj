@@ -13,7 +13,6 @@
 		4AAF523B153DE7B100C66840 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64C15C6E90D00EE3F14 /* Clade.cc */; };
 		7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7000B64D15C6E90D00EE3F14 /* CladeArbiter.cc */; };
-		700E2996085A1F6000CF158A /* avida in Create work dir */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
@@ -225,7 +224,6 @@
 				705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */,
 				705B103D1073AEF1002242E6 /* default-heads-sex.org in Create work dir */,
 				705B103E1073AEF1002242E6 /* default-heads.org in Create work dir */,
-				700E2996085A1F6000CF158A /* avida in Create work dir */,
 				7039884D09F00D020052ACE7 /* analyze.cfg in Create work dir */,
 				7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */,
 				7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */,
