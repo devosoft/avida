@@ -136,7 +136,7 @@ void DoublePropMapMode::Update(cPopulation& pop)
     for (int i = 0; i < m_scale_labels.GetSize(); i++) {
       m_scale_labels[i].index = (SCALE_MAX / (m_scale_labels.GetSize() - 1)) * i;
       m_scale_labels[i].label =
-      static_cast<const char*>(cStringUtil::Stringf("%f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
+      static_cast<const char*>(cStringUtil::Stringf("%2.2f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
     }
   } else {
     if (max_fit < (1.0 - RESCALE_TOLERANCE) * m_target_max || m_target_max < max_fit) {
