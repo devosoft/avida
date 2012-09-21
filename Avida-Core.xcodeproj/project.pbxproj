@@ -1933,7 +1933,7 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida-Core" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2171,6 +2171,7 @@
 		7023EC350C0A42BC00362B9C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Debug;
@@ -2178,6 +2179,7 @@
 		7023EC360C0A42BC00362B9C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Release;
@@ -2214,7 +2216,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -2246,7 +2247,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
@@ -2296,6 +2296,7 @@
 		706C7B65125F64B100EDB4B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "viewer-core";
 			};
 			name = Debug;
@@ -2303,6 +2304,7 @@
 		706C7B66125F64B100EDB4B9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "viewer-core";
 			};
 			name = Release;
