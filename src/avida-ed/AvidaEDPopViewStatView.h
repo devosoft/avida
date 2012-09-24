@@ -139,7 +139,8 @@ private:
 
   int m_x;
   int m_y;
-  Avida::Data::DataID m_data_id;
+  Avida::Data::DataID m_genotype_data_id;
+  Avida::Data::DataID m_clade_data_id;
   mutable Avida::Data::DataSetPtr m_requested;
   
 public:

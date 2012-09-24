@@ -119,7 +119,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       [color_cache insertObject:[NSColor greenColor] atIndex:0];
       [color_cache insertObject:[NSColor redColor] atIndex:1];
       [color_cache insertObject:[NSColor blueColor] atIndex:2];
-      [color_cache insertObject:[NSColor cyanColor] atIndex:3];
+      [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:1.0f alpha:1.0f] atIndex:3]; // cyanColor
       [color_cache insertObject:[NSColor yellowColor] atIndex:4];
       [color_cache insertObject:[NSColor magentaColor] atIndex:5];
       [color_cache insertObject:[NSColor orangeColor] atIndex:6];

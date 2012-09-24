@@ -88,7 +88,7 @@
           // Draw the label string in the center of the calculated rect
           if (obj.label.GetSize() && obj.label_color.a > 0.0) {
             // Set up string attributes for the label
-            NSFont* font = [NSFont fontWithName:@"Helvetica" size:(10.0 * obj.font_size)];
+            NSFont* font = [NSFont fontWithName:@"Helvetica" size:(12.0 * obj.font_size)];
             NSColor* color = [NSColor colorWithSRGBRed:obj.label_color.r green:obj.label_color.g blue:obj.label_color.b
                                                  alpha:obj.label_color.a];
             NSDictionary* str_attributes = [NSDictionary dictionaryWithObjectsAndKeys:

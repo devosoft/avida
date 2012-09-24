@@ -125,6 +125,7 @@ static const int MAX_GRAPH_POINTS = 1000;
 @public
   Avida::Update update;
   int genotype_id;
+  int clade_id;
   int x;
   int y;
 }
@@ -199,7 +200,7 @@ static const int MAX_GRAPH_POINTS = 1000;
   graph.paddingTop = 0.0;
   graph.paddingRight = 0.0;
   graph.paddingBottom = 0.0;
-  graph.plotAreaFrame.paddingLeft = 50.0;
+  graph.plotAreaFrame.paddingLeft = 60.0;
   graph.plotAreaFrame.paddingTop = 5.0;
   graph.plotAreaFrame.paddingRight = 15.0;
   graph.plotAreaFrame.paddingBottom = 45.0;
@@ -623,14 +624,22 @@ static const int MAX_GRAPH_POINTS = 1000;
   [txtOrgAge setIntValue:(cur_update - genotype->Properties().Get("update_born").IntValue())];
   
   // Set the name of the parent genotype
-  Apto::String parents(genotype->Properties().Get("parents").StringValue());
-  parents = parents.Pop(','); // extracts the first parent only
-  if (parents.GetSize()) {
-    Avida::Systematics::GroupPtr parent_genotype = g_arb->Group(Apto::StrAs(parents));
-    [txtOrgAncestor setStringValue:[NSString stringWithAptoString:((Apto::String)parent_genotype->Properties().Get("name")).Substring(4)]];
+  Avida::Systematics::ArbiterPtr c_arb = Avida::Systematics::Manager::Of(world)->ArbiterForRole("clade");
+  Avida::Systematics::GroupPtr clade = c_arb->Group(values->clade_id);
+  if (clade) {
+    [txtOrgAncestor setStringValue:[NSString stringWithAptoString:(clade->Properties().Get("name").StringValue())]];
   } else {
     [txtOrgAncestor setStringValue:@"-"];
   }
+  
+//  Apto::String parents(genotype->Properties().Get("parents").StringValue());
+//  parents = parents.Pop(','); // extracts the first parent only
+//  if (parents.GetSize()) {
+//    Avida::Systematics::GroupPtr parent_genotype = g_arb->Group(Apto::StrAs(parents));
+//    [txtOrgAncestor setStringValue:[NSString stringWithAptoString:((Apto::String)parent_genotype->Properties().Get("name")).Substring(4)]];
+//  } else {
+//    [txtOrgAncestor setStringValue:@"-"];
+//  }
   
   // Set box color based on color from the map object
   [boxOrgColor setColor:[[ctlr mapView] colorOfX:values->x Y:values->y]];
@@ -781,16 +790,22 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewOrgRecorder::RequestedData() 
 
 void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update update, Avida::Data::DataRetrievalFunctor retrieve_data)
 {
-  if (m_data_id == "") return;
+  if (m_genotype_data_id.GetSize() == 0) return;
   
   
   AvidaEDPopViewStatViewOrgValues* values = [[AvidaEDPopViewStatViewOrgValues alloc] init];
   
-  Avida::Data::PackagePtr package = retrieve_data(m_data_id);
+  Avida::Data::PackagePtr package = retrieve_data(m_genotype_data_id);
   if (package) {
     values->genotype_id = package->IntValue();
   } else {
     values->genotype_id = -1;
+  }
+  package = retrieve_data(m_clade_data_id);
+  if (package) {
+    values->clade_id = package->IntValue();
+  } else {
+    values->clade_id = -1;
   }
   values->update = update;
   values->x = m_x;
@@ -804,13 +819,21 @@ void AvidaEDPopViewStatViewOrgRecorder::SetCoords(int x, int y)
   m_x = x;
   m_y = y;
   
-  m_data_id = "core.population.group_id[genotype@";
-  m_data_id += Apto::AsStr(x);
-  m_data_id += ",";
-  m_data_id += Apto::AsStr(y);
-  m_data_id += "]";
   m_requested->Clear();
-  m_requested->Insert(m_data_id);
+  
+  m_genotype_data_id = "core.population.group_id[genotype@";
+  m_genotype_data_id += Apto::AsStr(x);
+  m_genotype_data_id += ",";
+  m_genotype_data_id += Apto::AsStr(y);
+  m_genotype_data_id += "]";
+  m_requested->Insert(m_genotype_data_id);
+  
+  m_clade_data_id = "core.population.group_id[clade@";
+  m_clade_data_id += Apto::AsStr(x);
+  m_clade_data_id += ",";
+  m_clade_data_id += Apto::AsStr(y);
+  m_clade_data_id += "]";
+  m_requested->Insert(m_clade_data_id);
 }
 
 

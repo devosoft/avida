@@ -360,11 +360,11 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       break;
       
     case NSAlertSecondButtonReturn:
-      [self freezeCurrentConfig];
+      [self freezeGenome:[popViewStatView selectedOrgGenome]];
       break;
       
     case NSAlertThirdButtonReturn:
-      [self freezeGenome:[popViewStatView selectedOrgGenome]];
+      [self freezeCurrentConfig];
       break;
       
     default:
@@ -1038,12 +1038,16 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   } else {
     NSAlert* alert = [[NSAlert alloc] init];
     [alert addButtonWithTitle:@"Population"];
-    [alert addButtonWithTitle:@"Configuration"];
     [alert addButtonWithTitle:@"Organism"];
+    [alert addButtonWithTitle:@"Configuration"];
     [alert addButtonWithTitle:@"Cancel"];
     [alert setMessageText:@"What would you like to save to the freezer?"];
-    [alert setInformativeText:@"Population saves organisms and experiment history.\nConfiguration saves the experiment settings only.\nOrganism saves teh currently selected organism."];
+    [alert setInformativeText:@"Population saves organisms and experiment history.\nOrganism saves the currently selected organism.\nConfiguration saves the experiment settings only."];
     [alert setAlertStyle:NSWarningAlertStyle];
+    if ([popViewStatView selectedOrgGenome] != nil) {
+      [[alert.buttons objectAtIndex:0] setKeyEquivalent:@""];
+      [[alert.buttons objectAtIndex:1] setKeyEquivalent:@"\r"];
+    }
     sheetActive = YES;
     [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(saveAnyToFreezerAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
   }
