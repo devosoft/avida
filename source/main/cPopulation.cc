@@ -328,17 +328,18 @@ Data::PackagePtr cPopulation::GetProvidedValueForArgument(const Apto::String& da
   Data::PackagePtr rtn;
   
   if (data_id == "core.population.group_id[]") {
-    if (arg.GetSize() > 11 && arg.Substring(0, 9) == "genotype@") {
-      Apto::String coordstr = arg.Substring(9);
-      int x = Apto::StrAs(coordstr.Pop(','));
-      if (!coordstr.GetSize() || !coordstr.IsNumber(0)) return rtn;
-      int y = Apto::StrAs(coordstr);
+    Apto::String larg = arg;
+    Systematics::RoleID role(larg.Pop('@'));
+    if (role.GetSize() > 0 && larg.GetSize() > 2) {
+      int x = Apto::StrAs(larg.Pop(','));
+      if (!larg.GetSize() || !larg.IsNumber(0)) return rtn;
+      int y = Apto::StrAs(larg);
       if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
         // Valid X and Y coordinates, return genotype ID @ cell if applicable
         const cPopulationCell& cell = cell_array[x + (y * world_x)];
         if (cell.IsOccupied()) {
-          rtn = Data::PackagePtr(new Data::Wrap<int>(cell.GetOrganism()->SystematicsGroup("genotype")->ID()));
-          assert(rtn);
+          Systematics::GroupPtr grp(cell.GetOrganism()->SystematicsGroup(role));
+          if (grp) rtn = Data::PackagePtr(new Data::Wrap<int>(grp->ID()));
         }
       }
     }
@@ -351,7 +352,7 @@ Apto::String cPopulation::DescribeProvidedValue(const Apto::String& data_id) con
 {
   Apto::String rtn;
   if (data_id == "core.population.group_id[]") {
-    rtn = "Group ID for specified cell of the specified BioGroup type";
+    rtn = "Group ID for specified cell of the specified systemtics role";
   }
   return rtn;
 }
@@ -378,7 +379,7 @@ Data::ConstArgumentSetPtr cPopulation::GetValidArguments(const Data::DataID& dat
   if (data_id == "core.population.group_id[]") {
     for (int y = 0; y < world_y; y++) {
       for (int x = 0; x < world_x; x++) {
-        argument = "genotype@";
+        argument = "{systematics_role}@";
         argument += Apto::AsStr(x);
         argument += ",";
         argument += Apto::AsStr(y);
@@ -396,11 +397,12 @@ bool cPopulation::IsValidArgument(const Data::DataID& data_id, Data::Argument ar
   if (Data::IsStandardID(data_id)) return false;
   
   if (data_id == "core.population.group_id[]") {
-    if (arg.GetSize() > 11 && arg.Substring(0, 9) == "genotype@") {
-      Apto::String coordstr = arg.Substring(9);
-      int x = Apto::StrAs(coordstr.Pop(','));
-      if (!coordstr.GetSize() || !coordstr.IsNumber(0)) return false;
-      int y = Apto::StrAs(coordstr);
+    Apto::String larg = arg;
+    Systematics::RoleID role(larg.Pop('@'));
+    if (role.GetSize() > 0 && larg.GetSize() > 2) {
+      int x = Apto::StrAs(larg.Pop(','));
+      if (!larg.GetSize() || !larg.IsNumber(0)) return false;
+      int y = Apto::StrAs(larg);
       if (x >= 0 && x < world_x && y >= 0 && y < world_y) return true;
     }
   }
