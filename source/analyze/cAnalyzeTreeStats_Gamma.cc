@@ -49,12 +49,12 @@ int CompareAGUpdateBorn(cAnalyzeGenotype* const& a, cAnalyzeGenotype* const& b)
 // Quicksort functions.
 void QSortAGPhyloDepth(Apto::Array<cAnalyzeGenotype*>& gen_array)
 {
-  Apto::QSort(gen_array, CompareAGPhyloDepth);
+  Apto::QSort(gen_array, Apto::Functor<int, Apto::TL::Create<cAnalyzeGenotype* const&, cAnalyzeGenotype* const&> >(CompareAGPhyloDepth));
 } 
 
 void QSortAGUpdateBorn(Apto::Array<cAnalyzeGenotype*>& gen_array)
 {
-  Apto::QSort(gen_array, CompareAGUpdateBorn);
+  Apto::QSort(gen_array, Apto::Functor<int, Apto::TL::Create<cAnalyzeGenotype* const&, cAnalyzeGenotype* const&> >(CompareAGUpdateBorn));
 }  
 
 

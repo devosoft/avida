@@ -2621,7 +2621,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   // Within cpu_count, print in order from greatest genotype count to least
   Apto::Array<p_stats> phenotype_array;
   for (Apto::Map<cBitArray, p_stats>::ValueIterator it = phenotype_table.Values(); it.Next();) phenotype_array.Push(*it.Get());
-  Apto::QSort(phenotype_array, &cAnalyze::PStatsComparator); // sort by cpu_count, greatest to least
+  Apto::QSort(phenotype_array, Apto::Functor<int, Apto::TL::Create<const p_stats&, const p_stats&> >(&cAnalyze::PStatsComparator)); // sort by cpu_count, greatest to least
   
   for (int i = 0; i < phenotype_array.GetSize(); i++) {
     fp << phenotype_array[i].cpu_count << " "
