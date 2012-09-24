@@ -1055,6 +1055,40 @@ public:
   }
 };
 
+class cActionKillDominantGenotype : public cAction
+{
+private:
+
+public:
+  cActionKillDominantGenotype(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
+  {
+    
+  }
+  
+  static const cString GetDescription() { return "Arguments:"; }                        
+  
+  void Process(cAvidaContext& ctx)
+  {
+    Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+    Systematics::Arbiter::IteratorPtr it = classmgr->ArbiterForRole("genotype")->Begin();
+    Systematics::GroupPtr dom_g = it->Next();
+    int dom_id = dom_g->ID();
+    
+    const Apto::Array<cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    
+    Apto::Array<int, Apto::Smart> doomed_orgs;
+    
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      if (live_orgs[i]->SystematicsGroup("genotype")->ID() == dom_id) doomed_orgs.Push(live_orgs[i]->GetCellID());
+    }
+    cPopulation& pop = m_world->GetPopulation();                                                
+    
+    for (int j=0; j < doomed_orgs.GetSize(); j++) {
+      pop.KillOrganism(ctx, doomed_orgs[j]);
+    }
+  }
+};
+
 class cActionAttackDen : public cAction
 {
 private:
@@ -5760,6 +5794,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("KillProb");
   action_lib->Register<cActionKillProb>("KillProb");
   action_lib->Register<cActionApplyBottleneck>("ApplyBottleneck");
+  action_lib->Register<cActionKillDominantGenotype>("KillDominantGenotype");
   action_lib->Register<cActionAttackDen>("AttackDen");
   action_lib->Register<cActionRaidDen>("RaidDen");
   action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
