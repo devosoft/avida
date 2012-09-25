@@ -47,6 +47,10 @@
 #include "avida/viewer/Freezer.h"
 
 
+static const CGFloat SPLIT_LEFT_MIN = 300;
+static const CGFloat SPLIT_RIGHT_MIN = 202;
+
+
 @interface AvidaEDOrganismViewController ()
 - (void) viewDidLoad;
 @end
@@ -65,6 +69,9 @@
 - (NSString*) descriptionOfInst:(Avida::Instruction)inst;
 
 - (void) drawOrgWithTimelineInRect:(NSRect)rect inContext:(NSGraphicsContext*)gc;
+
+- (void) splitViewAnimationEnd:(NSNumber*)collapsed;
+
 @end
 
 
@@ -82,6 +89,7 @@
   }
   
   [sldStatus setIntValue:curSnapshotIndex];
+  [txtCycle setIntValue:curSnapshotIndex];
   
   if (curSnapshotIndex == 0) {
     [viewOffspringDrag removeFromSuperview];
@@ -303,6 +311,15 @@
   // Restore previous graphics context
   [NSGraphicsContext setCurrentContext:currentContext];
 }
+
+- (void) splitViewAnimationEnd:(NSNumber*)collapsed {
+  splitViewIsAnimating = NO;
+  if ([collapsed boolValue]) {
+    [statView setHidden:YES];
+  }
+}
+
+
 
 @end
 
@@ -715,6 +732,134 @@
   
   [popoverSettings release];
   popoverSettings = nil;
+}
+
+
+
+- (IBAction) toggleStatView:(id)sender {
+  
+  if (splitViewIsAnimating) return;
+  
+  if ([sender state] == NSOnState) {
+    // uncollapse
+    [statSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    CGFloat dividerThickness = [statSplitView dividerThickness];
+    
+    NSRect oldStatViewFrame = statView.frame;
+    oldStatViewFrame.size.width = 0;
+    oldStatViewFrame.origin.x = statSplitView.frame.size.width;
+    [statView setFrame:oldStatViewFrame];
+    [statView setHidden:NO];
+    
+    NSMutableDictionary *shrinkMainViewAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [shrinkMainViewAnimationDict setObject:mainView forKey:NSViewAnimationTargetKey];
+    NSRect newMainViewFrame = mainView.frame;
+    newMainViewFrame.size.width =  statSplitView.frame.size.width - SPLIT_RIGHT_MIN - dividerThickness;
+    [shrinkMainViewAnimationDict setObject:[NSValue valueWithRect:newMainViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSMutableDictionary *expandStatViewAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [expandStatViewAnimationDict setObject:statView forKey:NSViewAnimationTargetKey];
+    NSRect newStatViewFrame = statView.frame;
+    newStatViewFrame.size.width = SPLIT_RIGHT_MIN;
+    newStatViewFrame.origin.x = statSplitView.frame.size.width - SPLIT_RIGHT_MIN;
+    [expandStatViewAnimationDict setObject:[NSValue valueWithRect:newStatViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSViewAnimation *expandAnimation = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObjects:shrinkMainViewAnimationDict, expandStatViewAnimationDict, nil]];
+    [expandAnimation setDuration:0.25f];
+    [expandAnimation startAnimation];
+    [self performSelector:@selector(splitViewAnimationEnd:) withObject:[NSNumber numberWithBool:NO] afterDelay:0.25f];
+  } else {
+    // collapse
+    // Store last width so we can jump back
+    
+    [statSplitView setDividerStyle:NSSplitViewDividerStylePaneSplitter];
+    CGFloat dividerThickness = [statSplitView dividerThickness];
+    
+    NSMutableDictionary *expandMainAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [expandMainAnimationDict setObject:mainView forKey:NSViewAnimationTargetKey];
+    NSRect newMainViewFrame = mainView.frame;
+    newMainViewFrame.size.width =  statSplitView.frame.size.width - dividerThickness;
+    [expandMainAnimationDict setObject:[NSValue valueWithRect:newMainViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSMutableDictionary *collapseStatViewAnimationDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [collapseStatViewAnimationDict setObject:statView forKey:NSViewAnimationTargetKey];
+    NSRect newStatViewFrame = statView.frame;
+    //    newPopViewStatViewFrame.size.width = 0.0f;
+    newStatViewFrame.origin.x = statView.frame.size.width;
+    [collapseStatViewAnimationDict setObject:[NSValue valueWithRect:newStatViewFrame] forKey:NSViewAnimationEndFrameKey];
+    
+    NSViewAnimation *collapseAnimation = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObjects:expandMainAnimationDict, collapseStatViewAnimationDict, nil]];
+    [collapseAnimation setDuration:0.25f];
+    [collapseAnimation startAnimation];
+    [self performSelector:@selector(splitViewAnimationEnd:) withObject:[NSNumber numberWithBool:YES] afterDelay:0.25f];
+  }
+  splitViewIsAnimating = YES;
+}
+
+
+- (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
+
+  NSView* leftView = [[splitView subviews] objectAtIndex:0];
+  NSView* rightView = [[splitView subviews] objectAtIndex:1];
+  NSRect newFrame = [splitView frame];
+  NSRect leftFrame = [leftView frame];
+  NSRect rightFrame = [rightView frame];
+  
+  CGFloat dividerThickness = [splitView dividerThickness];
+  
+  if ([splitView isSubviewCollapsed:statView]) {
+    leftFrame.size.height = newFrame.size.height;
+    leftFrame.origin = NSMakePoint(0, 0);
+    leftFrame.size.width = newFrame.size.width - dividerThickness;
+  } else {
+    if (rightFrame.size.width != SPLIT_RIGHT_MIN && !splitViewIsAnimating) {
+      leftFrame.size.width = newFrame.size.width - dividerThickness - SPLIT_RIGHT_MIN;
+      rightFrame.size.width = SPLIT_RIGHT_MIN;
+    } else {
+      CGFloat diffWidth = floor(newFrame.size.width - oldSize.width);
+      leftFrame.size.width += floor(diffWidth / 2);
+      rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
+    }
+    
+    leftFrame.size.height = newFrame.size.height;
+    leftFrame.origin = NSMakePoint(0, 0);
+    rightFrame.size.height = newFrame.size.height;
+    rightFrame.origin.x = leftFrame.size.width + dividerThickness;
+  }
+  
+  [leftView setFrame:leftFrame];
+  [rightView setFrame:rightFrame];
+  [splitView adjustSubviews];
+}
+
+
+- (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview {
+  if (subview == statView) return YES;
+  
+  return NO;
+}
+
+
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index {
+  return proposedMax - SPLIT_RIGHT_MIN;
+}
+
+
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index {
+  return proposedMin + SPLIT_LEFT_MIN;  
+}
+
+- (void) splitViewDidResizeSubviews:(NSNotification*)notification {
+  if (!splitViewIsAnimating) {
+    if ([statSplitView isSubviewCollapsed:statView]) {
+      [btnToggleStatView setState:NSOffState];
+      [statSplitView setDividerStyle:NSSplitViewDividerStylePaneSplitter];
+    } else {
+      [btnToggleStatView setState:NSOnState];
+      [statSplitView setDividerStyle:NSSplitViewDividerStyleThin];
+    }
+    [statSplitView adjustSubviews];
+  }
 }
 
 @end

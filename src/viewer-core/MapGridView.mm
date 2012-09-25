@@ -116,7 +116,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   if (num_colors != [color_cache count]) {
     [color_cache removeAllObjects];
     if (num_colors == 10) {
-      [color_cache insertObject:[NSColor greenColor] atIndex:0];
+      [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:0.0f alpha:1.0f] atIndex:0]; // greenColor
       [color_cache insertObject:[NSColor redColor] atIndex:1];
       [color_cache insertObject:[NSColor blueColor] atIndex:2];
       [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:1.0f alpha:1.0f] atIndex:3]; // cyanColor

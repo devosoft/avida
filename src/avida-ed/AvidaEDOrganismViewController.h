@@ -43,7 +43,7 @@
 @class TaskTimelineView;
 
 
-@interface AvidaEDOrganismViewController : NSViewController <DraggableImageViewDelegate, NSPopoverDelegate> {
+@interface AvidaEDOrganismViewController : NSViewController <DraggableImageViewDelegate, NSPopoverDelegate, NSSplitViewDelegate> {
   IBOutlet OrganismView* orgView;
   IBOutlet TaskTimelineView* timelineView;
   IBOutlet NSView* fullView;
@@ -57,7 +57,14 @@
   IBOutlet NSButton* btnGo;
   IBOutlet NSButton* btnForward;
   IBOutlet NSButton* btnEnd;
-  
+
+  IBOutlet NSTextField* txtCycle;
+
+  IBOutlet NSView* mainView;
+  IBOutlet NSView* statView;
+  IBOutlet NSButton* btnToggleStatView;
+  IBOutlet NSSplitView* statSplitView;
+  BOOL splitViewIsAnimating;
 
   // Show/hide instruction details
   IBOutlet NSButton* btnToggleInstInfo;
@@ -116,6 +123,7 @@
 - (IBAction) showSettings:(id)sender;
 
 - (IBAction) toggleInstInfo:(id)sender;
+- (IBAction) toggleStatView:(id)sender;
 
 - (IBAction) changeMutRate:(id)sender;
 
@@ -125,5 +133,13 @@
 - (NSString*) getOrganismName;
 
 - (void) exportGraphic:(ExportGraphicsFileFormat)format withOptions:(NSMatrix*)optMat toURL:(NSURL*)url;
+
+
+// NSSplitViewDelegate Protocol
+- (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize;
+- (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview;
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index;
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index;
+- (void) splitViewDidResizeSubviews:(NSNotification*)notification;
 
 @end
