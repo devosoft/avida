@@ -1444,10 +1444,14 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) changeWorldSize:(id)sender {
+  for (Genome* genome in manualAncestorArray) [ancestorArrayCtlr removeObject:genome];
+  [manualAncestorArray removeAllObjects];
+
   [currentRun setWorldSize:NSMakeSize([txtCfgWorldX intValue], [txtCfgWorldY intValue])];
   [mapView setDimensions:[currentRun worldSize]];
   [mapZoom setDoubleValue:[mapView zoom]];
-
+  
+  [self updatePendingInjectColors];
 }
 
 
