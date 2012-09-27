@@ -5806,6 +5806,108 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
   return true;
 }
 
+
+bool cPopulation::SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.SetFileType("systematics_data");
+  df.WriteComment("Structured Systematics Group Save");
+  df.WriteTimeStamp();
+  
+  // Build up hash table of all current genotypes and the cells in which the organisms reside
+  Apto::Map<int, sGroupInfo*> group_map;
+  
+  for (int cell = 0; cell < cell_array.GetSize(); cell++) {
+    if (cell_array[cell].IsOccupied()) {
+      cOrganism* org = cell_array[cell].GetOrganism();
+      
+      // Handle any parasites
+      const Apto::Array<Systematics::UnitPtr>& parasites = org->GetParasites();
+      for (int p = 0; p < parasites.GetSize(); p++) {
+        Systematics::GroupPtr pg = parasites[p]->SystematicsGroup(role);
+        if (pg == NULL) continue;
+        
+        sGroupInfo* map_entry = NULL;
+        if (group_map.Get(pg->ID(), map_entry)) {
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1, -1, -1, 0, 1));
+        } else {
+          map_entry = new sGroupInfo(pg, true);
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1, -1, -1, 0, -1, -1, -1, 0, 1));
+          group_map.Set(pg->ID(), map_entry);
+        }
+      }
+      
+      
+      // Handle the organism itself
+      Systematics::GroupPtr group = org->SystematicsGroup(role);
+      if (!group) continue;
+      
+      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+      sGroupInfo* map_entry = NULL;
+      if (group_map.Get(group->ID(), map_entry)) {
+        map_entry->orgs.Push(sOrgInfo(cell, offset, 0, -1, -1, 0, -1, -1, -1, 0, 1));
+      } else {
+        map_entry = new sGroupInfo(group);
+        map_entry->orgs.Push(sOrgInfo(cell, offset, 0, -1, -1, 0, -1, -1, -1, 0, 1));
+        group_map.Set(group->ID(), map_entry);
+      }
+    }
+  }
+  
+  // Output all current genotypes
+  for (Apto::Map<int, sGroupInfo*>::ValueIterator it = group_map.Values(); it.Next();) {
+    sGroupInfo* group_info = *it.Get();
+    Systematics::GroupPtr group = group_info->bg;
+    
+    group->LegacySave(&df);
+    
+    Apto::Array<sOrgInfo>& cells = group_info->orgs;
+    cString cellstr;
+    cellstr.Set("%d", cells[0].cell_id);
+    for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
+    df.Write(cellstr, "Occupied Cell IDs", "cells");
+    df.Endl();
+    
+    delete group_info;
+  }
+  
+  m_world->GetDataFileManager().Remove(filename);
+  return true;
+}
+
+bool cPopulation::LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Systematics::RoleID& role, const cString& filename)
+{
+  cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
+  if (!input_file.WasOpened()) return false;
+  
+  
+  Systematics::ManagerPtr classmgr = Systematics::Manager::Of(m_world->GetNewWorld());
+  Systematics::ArbiterPtr arbiter = classmgr->ArbiterForRole(role);
+
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString cur_line = input_file.GetLine(line_id);
+    
+    // Setup the group for this line...
+    tDictionary<cString>* props = input_file.GetLineAsDict(line_id);
+    Systematics::GroupPtr grp = arbiter->LegacyLoad(props);
+    
+    // Process resident cell ids
+    cString cellstr(props->Get("cells"));
+    if (cellstr.GetSize()) {
+      while (cellstr.GetSize()) {
+        int cell_id = cellstr.Pop(',').AsInt();
+        if (cell_array[cell_id].IsOccupied()) {
+          Systematics::UnitPtr unit(cell_array[cell_id].GetOrganism());
+          cell_array[cell_id].GetOrganism()->AddReference(); // creating new smart pointer to org, explicitly add reference
+          unit->AddClassification(grp->ClassifyNewUnit(unit, Systematics::ConstGroupMembershipPtr(NULL)));
+        }
+      }
+    }
+  }
+  
+  return true;
+}
+
 bool cPopulation::SaveFlameData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);

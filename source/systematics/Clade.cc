@@ -27,6 +27,7 @@
 
 #include "avida/private/systematics/CladeArbiter.h"
 
+#include "cDataFile.h"
 
 
 static Avida::PropertyDescriptionMap s_prop_desc_map;
@@ -49,17 +50,17 @@ void Avida::Systematics::Clade::Initialize()
 }
 
 
-Avida::Systematics::Clade::Clade(CladeArbiterPtr mgr, GroupID in_id, const Apto::String& name)
+Avida::Systematics::Clade::Clade(CladeArbiterPtr mgr, GroupID in_id, const Apto::String& name, bool create_empty)
 : Group(in_id)
 , m_mgr(mgr)
 , m_handle(NULL)
 , m_name(name)
-, m_num_organisms(1)
+, m_num_organisms(create_empty ? 0 : 1)
 , m_last_num_organisms(0)
-, m_total_organisms(1)
+, m_total_organisms(create_empty ? 0 : 1)
 , m_prop_map(NULL)
 {
-  AddActiveReference();
+  if (!create_empty) AddActiveReference();
 }
 
 
@@ -133,6 +134,13 @@ int Avida::Systematics::Clade::NumUnits() const
 bool Avida::Systematics::Clade::Serialize(ArchivePtr) const
 {
   // @TODO - serialize genotype
+  return false;
+}
+
+bool Avida::Systematics::Clade::LegacySave(void* dfp) const
+{
+  cDataFile& df = *static_cast<cDataFile*>(dfp);
+  df.Write(m_name, "Clade Name", "name");
   return false;
 }
 

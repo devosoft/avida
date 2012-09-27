@@ -88,13 +88,14 @@ namespace Avida {
       const PropertyMap& Properties() const;
       
       bool Serialize(ArchivePtr ar) const;
+      bool LegacySave(void* df) const;
       
       void RemoveActiveReference() const;
                   
       
     private:
       // Methods called by CladeArbiter
-      Clade(CladeArbiterPtr mgr, GroupID in_id, const Apto::String& name);
+      Clade(CladeArbiterPtr mgr, GroupID in_id, const Apto::String& name, bool create_empty = false);
       
       void NotifyNewUnit(UnitPtr u);
       void UpdateReset();

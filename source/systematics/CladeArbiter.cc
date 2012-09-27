@@ -28,6 +28,8 @@
 
 #include "avida/private/systematics/Clade.h"
 
+#include "tDictionary.h"
+
 #include <cmath>
 
 
@@ -55,17 +57,22 @@ Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::ClassifyNewUnit(U
   CladePtr grp;
   Apto::String group_name;
 
-  if (hints && hints->Get("name", group_name)) {
+  if (hints) {
+    if (hints->Get("name", group_name)) {
     
-    if (m_clades.Get(group_name, grp)) {
-      grp->NotifyNewUnit(u);
-    }
+      if (m_clades.Get(group_name, grp)) {
+        grp->NotifyNewUnit(u);
+      }
     
-    if (!grp) {
-      grp = CladePtr(new Clade(thisPtr(), m_next_id++, group_name));
-      m_clades.Set(group_name, grp);
-      
-      m_tot_clades++;
+      if (!grp) {
+        grp = CladePtr(new Clade(thisPtr(), m_next_id++, group_name));
+        m_clades.Set(group_name, grp);
+        
+        m_tot_clades++;
+      }
+    } else if (hints->Get("id", group_name)) {
+      int group_id = Apto::StrAs(group_name);
+      return Group(group_id);
     }
   }
   
@@ -88,6 +95,24 @@ bool Avida::Systematics::CladeArbiter::Serialize(ArchivePtr) const
   assert(false);
   return false;
 }
+
+Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::LegacyLoad(void* props)
+{
+  Apto::String group_name = (const char*)static_cast<const tDictionary<cString>*>(props)->GetWithDefault("name", "");
+  if (group_name.GetSize()) {
+    
+    CladePtr grp(m_clades.GetWithDefault(group_name, CladePtr(NULL)));
+    if (!grp) {
+      grp = CladePtr(new Clade(thisPtr(), m_next_id++, group_name, true));
+      m_clades.Set(group_name, grp);
+      m_tot_clades++;
+    }
+    return grp;
+  }
+  
+  return GroupPtr(NULL);
+}
+
 
 
 Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::GroupWithName(const Apto::String& name)

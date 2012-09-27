@@ -132,6 +132,80 @@ public:
 };
 
 
+class cActionLoadStructuredSystematicsGroup : public cAction
+{
+private:
+  cString m_filename;
+  cString m_role;
+  
+public:
+  cActionLoadStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_filename(""), m_role("")
+  {
+    cArgSchema schema(':','=');
+    
+    // String Entries
+    schema.AddEntry("filename", 0, cArgSchema::SCHEMA_STRING);
+    schema.AddEntry("role", 1, cArgSchema::SCHEMA_STRING);
+    
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (argc) {
+      m_filename = argc->GetString(0);
+      m_role = argc->GetString(1);
+    }
+    
+    delete argc;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string fname> <string role>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {    
+    if (!m_world->GetPopulation().LoadStructuredSystematicsGroup(ctx, (const char*)m_role, m_filename)) {
+      m_world->GetDriver().Feedback().Error("failed to load structured systematics group information");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+    }
+  }
+};
+
+
+class cActionSaveStructuredSystematicsGroup : public cAction
+{
+private:
+  cString m_filename;
+  cString m_role;
+
+public:
+  cActionSaveStructuredSystematicsGroup(cWorld* world, const cString& args, Feedback& feedback)
+  : cAction(world, args), m_filename(""), m_role("")
+  {
+    cArgSchema schema(':','=');
+    
+    // String Entries
+    schema.AddEntry("filename", 0, "");
+    schema.AddEntry("role", 0, cArgSchema::SCHEMA_STRING);
+    
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (argc) {
+      m_filename = argc->GetString(0);
+      m_role = argc->GetString(0);
+    }
+    
+    delete argc;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string filename=''] <string role>"; }
+  
+  void Process(cAvidaContext&)
+  {
+    int update = m_world->GetStats().GetUpdate();
+    cString filename = cStringUtil::Stringf("%s-%d.ssg", (const char*)m_role, update);
+    if (m_filename.GetSize()) filename = cStringUtil::Stringf("%s-%s", (const char*)m_filename, (const char*)filename);
+    m_world->GetPopulation().SaveStructuredSystematicsGroup((const char*)m_role, m_filename);
+  }
+};
+
 class cActionSaveFlameData : public cAction
 {
 private:
@@ -167,5 +241,7 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
+  action_lib->Register<cActionLoadStructuredSystematicsGroup>("LoadStructuredSystematicsGroup");
+  action_lib->Register<cActionSaveStructuredSystematicsGroup>("SaveStructuredSystematicsGroup");
   action_lib->Register<cActionSaveFlameData>("SaveFlameData");
 }

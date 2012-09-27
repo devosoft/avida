@@ -255,6 +255,8 @@ public:
   // Saving and loading...
   bool SavePopulation(const cString& filename, bool save_historic, bool save_group_info = false, bool save_avatars = false,
                       bool save_rebirth = false);
+  bool SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename);
+  bool LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Systematics::RoleID& role, const cString& filename);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0,
                       bool load_groups = false, bool load_birth_cells = false, bool load_avatars = false, bool load_rebirth = false);
   bool SaveFlameData(const cString& filename);
