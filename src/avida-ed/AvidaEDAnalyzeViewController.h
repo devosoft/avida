@@ -66,6 +66,7 @@
 - (void) removePop:(id)pop;
 - (NSInteger) numPops;
 - (BOOL) willAcceptPopWithFreezerID:(Avida::Viewer::FreezerID)fid;
+- (void) clearAllPops;
 
 - (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url;
 - (void) exportGraphic:(ExportGraphicsFileFormat)format toURL:(NSURL*)url;

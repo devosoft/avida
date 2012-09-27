@@ -338,6 +338,11 @@
 }
 
 
+- (void) clearAllPops {
+  NSArray* allPops = [popArrayCtlr arrangedObjects];
+  for (AvidaEDAnalyzePopulation* pop in allPops) [self removePop:pop];
+}
+
 
 
 - (void) exportData:(NSArray*)dataValues toURL:(NSURL*)url {

@@ -83,6 +83,7 @@
   IBOutlet NSButton* btnOrgView;
   IBOutlet NSButton* btnAnalyzeView;
 
+  IBOutlet DraggableImageView* imgAnalyze;
   IBOutlet DraggableImageView* imgOrg;
   IBOutlet DraggableImageView* imgTrash;
   

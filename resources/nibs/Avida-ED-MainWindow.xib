@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">12B19</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
-		<string key="IBDocument.AppKitVersion">1187</string>
-		<string key="IBDocument.HIToolboxVersion">624.00</string>
+		<string key="IBDocument.SystemVersion">12C54</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2840</string>
+		<string key="IBDocument.AppKitVersion">1187.34</string>
+		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2549</string>
+			<string key="NS.object.0">2840</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSArrayController</string>
@@ -4190,6 +4190,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">imgAnalyze</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="298503845"/>
+					</object>
+					<int key="connectionID">1046</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="1005"/>
 						<reference key="destination" ref="1001"/>
@@ -4443,6 +4451,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="destination" ref="1001"/>
 					</object>
 					<int key="connectionID">1000</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">dropDelegate</string>
+						<reference key="source" ref="298503845"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">1047</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -6505,6 +6521,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="960.CustomClassName">DraggableImageView</string>
 				<string key="960.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="961.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="962.CustomClassName">DraggableImageView</string>
 				<string key="962.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="963.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="964.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -6526,7 +6543,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1045</int>
+			<int key="maxID">1047</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6695,6 +6712,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="btnRunState">NSButton</string>
 						<string key="btnTogglePopViewStatView">NSButton</string>
 						<string key="cvAncestors">NSCollectionView</string>
+						<string key="imgAnalyze">DraggableImageView</string>
 						<string key="imgOrg">DraggableImageView</string>
 						<string key="imgTrash">DraggableImageView</string>
 						<string key="mainSplitView">NSSplitView</string>
@@ -6760,6 +6778,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="IBToOneOutletInfo" key="cvAncestors">
 							<string key="name">cvAncestors</string>
 							<string key="candidateClassName">NSCollectionView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="imgAnalyze">
+							<string key="name">imgAnalyze</string>
+							<string key="candidateClassName">DraggableImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="imgOrg">
 							<string key="name">imgOrg</string>
@@ -6930,6 +6952,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="showSettings:">id</string>
 						<string key="toggleAnimation:">id</string>
 						<string key="toggleInstInfo:">id</string>
+						<string key="toggleStatView:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="changeMutRate:">
@@ -6968,6 +6991,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">toggleInstInfo:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="toggleStatView:">
+							<string key="name">toggleStatView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="arrctlrCurStack">NSArrayController</string>
@@ -6981,15 +7008,20 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="btnForward">NSButton</string>
 						<string key="btnGo">NSButton</string>
 						<string key="btnToggleInstInfo">NSButton</string>
+						<string key="btnToggleStatView">NSButton</string>
 						<string key="ctlrSettings">AvidaEDOrganismSettingsViewController</string>
 						<string key="fullView">NSView</string>
 						<string key="imgOffspring">DraggableImageView</string>
 						<string key="imgOrg">DraggableImageView</string>
+						<string key="mainView">NSView</string>
 						<string key="orgView">OrganismView</string>
 						<string key="panelSettings">NSPanel</string>
 						<string key="sldStatus">NSSlider</string>
+						<string key="statSplitView">NSSplitView</string>
+						<string key="statView">NSView</string>
 						<string key="tblTaskCounts">NSTableView</string>
 						<string key="timelineView">TaskTimelineView</string>
+						<string key="txtCycle">NSTextField</string>
 						<string key="txtJustExec">NSTextView</string>
 						<string key="txtOrgName">NSTextField</string>
 						<string key="txtWillExec">NSTextView</string>
@@ -7042,6 +7074,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">btnToggleInstInfo</string>
 							<string key="candidateClassName">NSButton</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="btnToggleStatView">
+							<string key="name">btnToggleStatView</string>
+							<string key="candidateClassName">NSButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="ctlrSettings">
 							<string key="name">ctlrSettings</string>
 							<string key="candidateClassName">AvidaEDOrganismSettingsViewController</string>
@@ -7058,6 +7094,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">imgOrg</string>
 							<string key="candidateClassName">DraggableImageView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="mainView">
+							<string key="name">mainView</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="orgView">
 							<string key="name">orgView</string>
 							<string key="candidateClassName">OrganismView</string>
@@ -7070,6 +7110,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">sldStatus</string>
 							<string key="candidateClassName">NSSlider</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="statSplitView">
+							<string key="name">statSplitView</string>
+							<string key="candidateClassName">NSSplitView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="statView">
+							<string key="name">statView</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="tblTaskCounts">
 							<string key="name">tblTaskCounts</string>
 							<string key="candidateClassName">NSTableView</string>
@@ -7077,6 +7125,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="IBToOneOutletInfo" key="timelineView">
 							<string key="name">timelineView</string>
 							<string key="candidateClassName">TaskTimelineView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="txtCycle">
+							<string key="name">txtCycle</string>
+							<string key="candidateClassName">NSTextField</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="txtJustExec">
 							<string key="name">txtJustExec</string>
