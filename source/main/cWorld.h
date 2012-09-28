@@ -46,7 +46,6 @@ class cStats;
 class cTestCPU;
 class cUserFeedback;
 template<class T> class tDataEntry;
-template<class T> class tDictionary;
 
 using namespace Avida;
 

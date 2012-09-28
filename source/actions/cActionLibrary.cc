@@ -57,17 +57,12 @@ cActionLibrary& cActionLibrary::GetInstance()
 }
 
 
-const cString cActionLibrary::DescribeAll() const
+Apto::String cActionLibrary::DescribeAll() const
 {
-  tList<cString> names;
-  tList<ClassDescFunction> funcs;
-  m_desc_funcs.AsLists(names, funcs);
+  Apto::String ret("");
   
-  cString ret("");
-  
-  tListIterator<cString> names_it(names);
-  for (int i = 0; names_it.Next() != NULL; i++) {
-    ret = ret + *names_it.Get() + " - " + Describe(*names_it.Get()) + "\n";
+  for (Apto::Map<Apto::String, ClassDescFunction>::ConstIterator it = m_desc_funcs.Begin(); it.Next();) {
+    ret = ret + it.Get()->Value1() + " - " + (*it.Get()->Value2())() + "\n";
   }
   
   return ret;

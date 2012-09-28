@@ -39,7 +39,6 @@
 #include <iostream>
 
 class cUserFeedback;
-template <class T> class tDictionary;
 
 using namespace std;
 
@@ -868,7 +867,7 @@ public:
 #endif
   
   bool Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback = NULL,
-            const tDictionary<cString>* mappings = NULL, bool warn_default = true);
+            const Apto::Map<Apto::String, Apto::String>* mappings = NULL, bool warn_default = true);
   void Print(const cString& filename);
   void Status();
   void PrintReview();
@@ -878,7 +877,7 @@ public:
   bool HasEntry(const cString& entry) const { cString rtn; return Get(entry, rtn); }
   
   bool Set(const cString& entry, const cString& val);
-  void Set(tDictionary<cString>& sets);
+  void Set(Apto::Map<Apto::String, Apto::String>& sets);
   
   void GenerateOverides();
 };

@@ -33,7 +33,7 @@ using namespace std;
 
 
 cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback,
-                     const Apto::Set<cString>* custom_directives)
+                     const Apto::Set<Apto::String>* custom_directives)
 : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   Apto::Array<sLine*, Apto::Smart> lines;
@@ -41,7 +41,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedba
   postProcess(lines);
 }
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<cString>* custom_directives)
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   Apto::Array<sLine*, Apto::Smart> lines;
@@ -49,7 +49,7 @@ cInitFile::cInitFile(const cString& filename, const cString& working_dir, const 
   postProcess(lines);
 }
 
-cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir)
+cInitFile::cInitFile(const cString& filename, const Apto::Map<Apto::String, Apto::String>& mappings, const cString& working_dir)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   initMappings(mappings);
@@ -89,22 +89,16 @@ cInitFile::~cInitFile()
 }
 
 
-void cInitFile::initMappings(const tDictionary<cString>& mappings)
+void cInitFile::initMappings(const Apto::Map<Apto::String, Apto::String>& mappings)
 {
-  tList<cString> names;
-  mappings.GetKeys(names);
-  
-  tListIterator<cString> names_it(names);
-  while (names_it.Next() != NULL) {
-    cString* name = names_it.Get();
-    cString value;
-    if (mappings.Find(*name, value)) m_mappings.Set(*name, value);
+  for (Apto::Map<Apto::String, Apto::String>::ConstIterator it = mappings.Begin(); it.Next() != NULL;) {
+    m_mappings.Set(it.Get()->Value1(), *it.Get()->Value2());
   }
 }
 
 
 bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smart>& lines, const cString& working_dir,
-                         const Apto::Set<cString>* custom_directives, Feedback& feedback)
+                         const Apto::Set<Apto::String>* custom_directives, Feedback& feedback)
 {
   cString path = cString(Apto::FileSystem::GetAbsolutePath(Apto::String(filename), Apto::String(working_dir))); 
   cFile file(path);
@@ -135,7 +129,7 @@ bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smar
 
 
 bool cInitFile::processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>& lines, const cString& filename, int linenum,
-                               const cString& working_dir, const Apto::Set<cString>* custom_directives, Feedback& feedback)
+                               const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, Feedback& feedback)
 {
   cString cmd = cmdstr.PopWord();
   
@@ -159,7 +153,8 @@ bool cInitFile::processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>&
     }
     
     // Handle mapping, if specified
-    if (mapping.GetSize()) m_mappings.Find(mapping, path);
+    Apto::String aPath;
+    if (mapping.GetSize() && m_mappings.Get((const char*)mapping, aPath)) path = (const char*)aPath;
     
     if (cmd != "#import" || !m_imported_files.HasString(path)) {
       // Attempt to include the specified file
@@ -187,19 +182,20 @@ bool cInitFile::processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>&
       cString value = cmdstr.PopWord();
       value.Trim();
       
-      if (value.GetSize()) {
-        m_mappings.Set(mapping, value);
+      Apto::String aValue((const char*)value);
+      if (aValue.GetSize()) {
+        m_mappings.Set((const char*)mapping, aValue);
       } else {
-        m_mappings.Remove(mapping);
+        m_mappings.Remove((const char*)mapping);
       }
     } else {
       feedback.Error("%s:%d: invalid define directive", (const char*)filename, linenum);      
       return false;
     }
   } else if (custom_directives) {
-    for (Apto::Set<cString>::ConstIterator it = custom_directives->Begin(); it.Next();) {
-      if (cmd == (cString("#") + *it.Get())) {
-        m_custom_directives.Set(*it.Get(), cmdstr);
+    for (Apto::Set<Apto::String>::ConstIterator it = custom_directives->Begin(); it.Next();) {
+      if (cmd == (cString("#") + (const char*)*it.Get())) {
+        m_custom_directives.Set(*it.Get(), (const char*)cmdstr);
         break;
       }
     }
@@ -297,15 +293,15 @@ cString cInitFile::GetLine(int line_num)
   return m_lines[line_num]->line;
 }
 
-tDictionary<cString>* cInitFile::GetLineAsDict(int line_num)
+Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > cInitFile::GetLineAsDict(int line_num)
 {
-  tDictionary<cString>* dict = new tDictionary<cString>;
+  Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > dict(new Apto::Map<Apto::String, Apto::String>);
   
   cStringList fmt = m_format;
   cStringList line;
   if (line_num >= 0 && line_num < m_lines.GetSize()) line.Load(m_lines[line_num]->line);  
   
-  while (fmt.GetSize() && line.GetSize()) dict->Set(fmt.Pop(), line.Pop());
+  while (fmt.GetSize() && line.GetSize()) dict->Set((const char*)fmt.Pop(), (const char*)line.Pop());
   
   return dict;
 }

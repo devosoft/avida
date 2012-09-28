@@ -29,10 +29,10 @@ cArgSchema::~cArgSchema()
   for (int i = 0; i < m_strings.GetSize(); i++) delete m_strings[i];
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, tType in_type)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, tType in_type)
 {
   AdjustArgName(in_name);
-  if (m_entries.HasEntry(in_name)) return false;
+  if (m_entries.Has(in_name)) return false;
   
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, in_type);
   
@@ -59,10 +59,10 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, tType in_type)
   return true;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, int def)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, int def)
 {
   AdjustArgName(in_name);
-  if (m_entries.HasEntry(in_name)) return false;
+  if (m_entries.Has(in_name)) return false;
   
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, def); 
   m_entries.Set(in_name, entry);
@@ -73,7 +73,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, int def)
   return true;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, int lower, int upper)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, int lower, int upper)
 {
   if (AddEntry(in_name, in_idx, SCHEMA_INT)) {
     m_ints[in_idx]->has_range_limits = true;
@@ -85,7 +85,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, int lower, int upper)
   return false;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, int lower, int upper, int def)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, int lower, int upper, int def)
 {
   if (AddEntry(in_name, in_idx, def)) {
     m_ints[in_idx]->has_range_limits = true;
@@ -97,10 +97,10 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, int lower, int upper, int
   return false;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, double def)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, double def)
 {
   AdjustArgName(in_name);
-  if (m_entries.HasEntry(in_name)) return false;
+  if (m_entries.Has(in_name)) return false;
   
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, def); 
   m_entries.Set(in_name, entry);
@@ -111,7 +111,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, double def)
   return true;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, double lower, double upper)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, double lower, double upper)
 {
   if (AddEntry(in_name, in_idx, SCHEMA_DOUBLE)) {
     m_ints[in_idx]->has_range_limits = true;
@@ -123,7 +123,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, double lower, double uppe
   return false;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, double lower, double upper, double def)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, double lower, double upper, double def)
 {
   if (AddEntry(in_name, in_idx, def)) {
     m_ints[in_idx]->has_range_limits = true;
@@ -135,12 +135,12 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, double lower, double uppe
   return false;
 }
 
-bool cArgSchema::AddEntry(cString in_name, int in_idx, const cString& def)
+bool cArgSchema::AddEntry(Apto::String in_name, int in_idx, const Apto::String& def)
 {
   AdjustArgName(in_name);
-  if (m_entries.HasEntry(in_name)) return false;
+  if (m_entries.Has(in_name)) return false;
   
-  cString* str = new cString(def);
+  Apto::String* str = new Apto::String(def);
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, str); 
   m_entries.Set(in_name, entry);
   
@@ -151,10 +151,10 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, const cString& def)
 }
 
 
-bool cArgSchema::FindEntry(const cString& in_name, tType& ret_type, int& ret_idx) const
+bool cArgSchema::FindEntry(const Apto::String& in_name, tType& ret_type, int& ret_idx) const
 {
   sArgSchemaEntry* entry;
-  if (m_entries.Find(in_name, entry)) {
+  if (m_entries.Get(in_name, entry)) {
     ret_type = entry->type;
     ret_idx = entry->index;
     return true;

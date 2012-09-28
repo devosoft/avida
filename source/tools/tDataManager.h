@@ -27,7 +27,6 @@
 
 #include "cDataManager_Base.h"
 #include "tDataEntry.h"
-#include "tDictionary.h"
 
 // This template manages a collection of keywords and associates each with
 // an accessor for a specific object.  When a list of keywords is then
@@ -41,15 +40,13 @@ template <class TargetType> class tDataManager : public cDataManager_Base
 {
 private:
   TargetType* m_target;
-  tDictionary<tDataEntry<TargetType>*> m_entry_dict;  
+  Apto::Map<Apto::String, tDataEntry<TargetType>*> m_entry_dict;
   
 public:
   tDataManager(TargetType* target, const cString& filetype = "unknown") : cDataManager_Base(filetype), m_target(target) { ; }
   ~tDataManager()
   {
-    Apto::Array<tDataEntry<TargetType>*> entries;
-    m_entry_dict.GetValues(entries);
-    for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
+    for (typename Apto::Map<Apto::String, tDataEntry<TargetType>* >::ValueIterator it = m_entry_dict.Values(); it.Next();) delete *it.Get();
   }
 
   template<class EntryType> bool Add(const cString& name,  const cString& desc,
@@ -58,14 +55,14 @@ public:
   {
     tDataEntry<TargetType>* new_entry =
       new tDataEntryOfType<TargetType, EntryType ()>(name, desc, funR, funS, compare, null, html_cell);
-    m_entry_dict.Set(name, new_entry);
+    m_entry_dict.Set((const char*)name, new_entry);
     return true;
   }
 
   bool Print(const cString& name, std::ostream& fp) const
   {
     tDataEntry<TargetType>* cur_entry = NULL;
-    if (m_entry_dict.Find(name, cur_entry) == false) return false;
+    if (m_entry_dict.Get((const char*)name, cur_entry) == false) return false;
     fp << cur_entry->Get(m_target);
     return true;
   }
@@ -73,14 +70,14 @@ public:
   bool GetDesc(const cString& name, cString& out_desc) const
   {
     tDataEntry<TargetType>* cur_entry = NULL;
-    if (m_entry_dict.Find(name, cur_entry) == false) return false;
+    if (m_entry_dict.Get((const char*)name, cur_entry) == false) return false;
     out_desc = cur_entry->GetDesc(m_target, 0);
     return true;
   }
   
   inline bool GetEntry(const cString& name, const tDataEntry<TargetType>*& entry) const
   { 
-    if (m_entry_dict.Find(name, entry)) return true;
+    if (m_entry_dict.Get((const char*)name, entry)) return true;
     return false;
   }
 };

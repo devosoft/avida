@@ -486,7 +486,7 @@ public:
                                   m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lambda(1.0), m_theta(0.0), m_x(-1), m_y(-1), m_count(-1)
   {
     cArgSchema schema(':','=');
-    schema.AddEntry("res_name", 0, m_world->GetEnvironment().GetResourceLib().GetResource(0)->GetName());
+    schema.AddEntry("res_name", 0, (const char*)m_world->GetEnvironment().GetResourceLib().GetResource(0)->GetName());
     
     schema.AddEntry("initial", 0, 0.0);
     schema.AddEntry("inflow", 1, 0.0);

@@ -23,7 +23,6 @@
 #define cHardwareManager_h
 
 #include "cTestCPU.h"
-#include "tDictionary.h"
 
 namespace Avida {
   class Genome;

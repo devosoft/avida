@@ -1216,8 +1216,8 @@ void cPopulation::LoadMiniTraceQ(cString& filename, int orgs_per, bool print_gen
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
     cString cur_line = input_file.GetLine(line_id);
     
-    tDictionary<cString>* line = input_file.GetLineAsDict(line_id);
-    int gen_id_num = line->Get("id").AsInt();
+    Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > line = input_file.GetLineAsDict(line_id);
+    int gen_id_num = Apto::StrAs(line->Get("id"));
     
     // setup the genotype 'list' which will be checked in activateorg
     // skip if enough already in the existing trace queue (e.g if loading multiple genotype id files that overlap)
@@ -5888,8 +5888,8 @@ bool cPopulation::LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Syste
     cString cur_line = input_file.GetLine(line_id);
     
     // Setup the group for this line...
-    tDictionary<cString>* props = input_file.GetLineAsDict(line_id);
-    Systematics::GroupPtr grp = arbiter->LegacyLoad(props);
+    Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > props = input_file.GetLineAsDict(line_id);
+    Systematics::GroupPtr grp = arbiter->LegacyLoad(&props);
     
     // Process resident cell ids
     cString cellstr(props->Get("cells"));
@@ -5973,7 +5973,7 @@ struct sTmpGenotype
 {
 public:
   int id_num;
-  tDictionary<cString>* props;
+  Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > props;
   
   int num_cpus;
   Apto::Array<int> cells;
@@ -6020,11 +6020,11 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     // Setup the genotype for this line...
     sTmpGenotype& tmp = genotypes[line_id];
     tmp.props = input_file.GetLineAsDict(line_id);
-    tmp.id_num = tmp.props->Get("id").AsInt();
+    tmp.id_num = Apto::StrAs(tmp.props->Get("id"));
 
     // Loads "num_units" preferrentially, but will fall back to "num_cpus" if present
-    assert(tmp.props->HasEntry("num_cpus") || tmp.props->HasEntry("num_units"));
-    tmp.num_cpus = (tmp.props->HasEntry("num_units")) ? tmp.props->Get("num_units").AsInt() : tmp.props->Get("num_cpus").AsInt();
+    assert(tmp.props->Has("num_cpus") || tmp.props->Has("num_units"));
+    tmp.num_cpus = (tmp.props->Has("num_units")) ? Apto::StrAs(tmp.props->Get("num_units")) : Apto::StrAs(tmp.props->Get("num_cpus"));
     
     // Process resident cell ids
     cString cellstr(tmp.props->Get("cells"));
@@ -6050,27 +6050,27 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     
     // Other org specs (if given in file)
     if (load_rebirth) {
-      if (tmp.props->HasEntry("birth_cell")) {
+      if (tmp.props->Has("birth_cell")) {
         cString birthstr(tmp.props->Get("birth_cell"));
         while (birthstr.GetSize()) tmp.birth_cells.Push(birthstr.Pop(',').AsInt());
         assert(tmp.birth_cells.GetSize() == 0 || tmp.birth_cells.GetSize() == tmp.num_cpus);      
       }
-      if (tmp.props->HasEntry("av_bcell") && m_world->GetConfig().USE_AVATARS.Get()) {
+      if (tmp.props->Has("av_bcell") && m_world->GetConfig().USE_AVATARS.Get()) {
         cString avatarstr(tmp.props->Get("av_bcell"));
         while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
         assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
       }
-      if (tmp.props->HasEntry("parent_is_teach")) {
+      if (tmp.props->Has("parent_is_teach")) {
         cString teachstr(tmp.props->Get("parent_is_teach"));
         while (teachstr.GetSize()) tmp.parent_teacher.Push((bool)(teachstr.Pop(',').AsInt()));
         assert(tmp.parent_teacher.GetSize() == 0 || tmp.parent_teacher.GetSize() == tmp.num_cpus);
       }
-      if (tmp.props->HasEntry("parent_ft")) {
+      if (tmp.props->Has("parent_ft")) {
         cString parentftstr(tmp.props->Get("parent_ft"));
         while (parentftstr.GetSize()) tmp.parent_ft.Push(parentftstr.Pop(',').AsInt());
         assert(tmp.parent_ft.GetSize() == 0 || tmp.parent_ft.GetSize() == tmp.num_cpus);
       }
-      if (tmp.props->HasEntry("parent_merit")) {
+      if (tmp.props->Has("parent_merit")) {
         cString meritstr(tmp.props->Get("parent_merit"));
         while (meritstr.GetSize()) tmp.parent_merit.Push(meritstr.Pop(',').AsDouble());
         assert(tmp.parent_merit.GetSize() == 0 || tmp.parent_merit.GetSize() == tmp.num_cpus);      
@@ -6078,30 +6078,30 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     }
     else {
       if (load_groups) {
-        if (tmp.props->HasEntry("group_id")) {
+        if (tmp.props->Has("group_id")) {
           cString groupstr(tmp.props->Get("group_id"));
           while (groupstr.GetSize()) tmp.group_ids.Push(groupstr.Pop(',').AsInt());
           assert(tmp.group_ids.GetSize() == 0 || tmp.group_ids.GetSize() == tmp.num_cpus);
         }
-        if (tmp.props->HasEntry("forager_type")) {
+        if (tmp.props->Has("forager_type")) {
           cString foragestr(tmp.props->Get("forager_type"));
           while (foragestr.GetSize()) tmp.forager_types.Push(foragestr.Pop(',').AsInt());
           assert(tmp.forager_types.GetSize() == 0 || tmp.forager_types.GetSize() == tmp.num_cpus);
         }
       }
       if (load_birth_cells) {   
-        if (tmp.props->HasEntry("birth_cell")) {
+        if (tmp.props->Has("birth_cell")) {
           cString birthstr(tmp.props->Get("birth_cell"));
           while (birthstr.GetSize()) tmp.birth_cells.Push(birthstr.Pop(',').AsInt());
           assert(tmp.birth_cells.GetSize() == 0 || tmp.birth_cells.GetSize() == tmp.num_cpus);
         }
-        if (tmp.props->HasEntry("av_bcell") && m_world->GetConfig().USE_AVATARS.Get()) {
+        if (tmp.props->Has("av_bcell") && m_world->GetConfig().USE_AVATARS.Get()) {
           cString avatarstr(tmp.props->Get("av_bcell"));
           while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
           assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
         }
       }
-      else if (!load_birth_cells && load_avatars && tmp.props->HasEntry("avatar_cell")) {
+      else if (!load_birth_cells && load_avatars && tmp.props->Has("avatar_cell")) {
         cString avatarstr(tmp.props->Get("avatar_cell"));
         while (avatarstr.GetSize()) tmp.avatar_cells.Push(avatarstr.Pop(',').AsInt());
         assert(tmp.avatar_cells.GetSize() == 0 || tmp.avatar_cells.GetSize() == tmp.num_cpus);
@@ -6119,7 +6119,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
-    cString lparentstr = genotypes[i].props->Get("parents");
+    cString lparentstr = (const char*)genotypes[i].props->Get("parents");
     if (lparentstr == "(none)") lparentstr = ""; 
     cStringList opidlist(lparentstr, ',');
     while (opidlist.GetSize()) {
@@ -6136,9 +6136,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
       nparentstr += cStringUtil::Convert(npid);
       pcount++; 
     }
-    genotypes[i].props->Set("parents", nparentstr);
+    genotypes[i].props->Set("parents", (const char*)nparentstr);
     
-    genotypes[i].bg = bgm->LegacyLoad(genotypes[i].props);
+    genotypes[i].bg = bgm->LegacyLoad(&genotypes[i].props);
   }
   
   
@@ -6183,9 +6183,9 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
         phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
       } else {
         // Set the phenotype merit from the save file
-        assert(tmp.props->HasEntry("merit"));
-        double merit = tmp.props->Get("merit").AsDouble();
-        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->HasEntry("parent_merit")) { 
+        assert(tmp.props->Has("merit"));
+        double merit = Apto::StrAs(tmp.props->Get("merit"));
+        if (load_rebirth && m_world->GetConfig().INHERIT_MERIT.Get() && tmp.props->Has("parent_merit")) { 
           merit = tmp.parent_merit[cell_i]; 
         }
         
@@ -6199,7 +6199,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           // Adjust initial merit to account for organism execution at the time the population was saved
           // - this factors the merit by the fraction of the gestation time remaining
           // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
-          double gest_time = tmp.props->Get("gest_time").AsDouble();
+          double gest_time = Apto::StrAs(tmp.props->Get("gest_time"));
           double gest_remain = gest_time - (double)tmp.offsets[cell_i];
           if (gest_remain > 0.0 && gest_time > 0.0) {
             double new_merit = phenotype.GetMerit().GetDouble() * (gest_time / gest_remain);

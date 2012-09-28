@@ -34,7 +34,6 @@
 #include "cDataFile.h"
 #include "cInitFile.h"
 #include "cStringUtil.h"
-#include "tDictionary.h"
 
 
 Avida::Genome::Genome() : m_hw_type(-1) { ; }

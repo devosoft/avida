@@ -99,7 +99,7 @@ Apto::String Avida::Data::Manager::Describe(const DataID& data_id) const
         break;
       }
     }
-    if (start_idx == -1) return false;  // argument start not found
+    if (start_idx == -1) return "";  // argument start not found
     
     // Separate argument from incoming requested data id
     DataID raw_id = data_id.Substring(0, start_idx) + "]";

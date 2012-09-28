@@ -26,28 +26,25 @@
 #include "cUserFeedback.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
-#include "tDictionary.h"
 #include "tList.h"
 
 
 template <class TargetType> class tDataCommandManager
 {
 private:
-  tDictionary<tDataEntry<TargetType>*> m_entry_dict;  
+  Apto::Map<Apto::String, tDataEntry<TargetType>*> m_entry_dict;
   Apto::Array<cString> m_entry_names;
   
 public:
   tDataCommandManager() { ; }
   ~tDataCommandManager()
   {
-    Apto::Array<tDataEntry<TargetType>*> entries;
-    m_entry_dict.GetValues(entries);
-    for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
+    for (typename Apto::Map<Apto::String, tDataEntry<TargetType>* >::ValueIterator it = m_entry_dict.Values(); it.Next();) delete *it.Get();
   }
   
   void Add(const cString& name, tDataEntry<TargetType>* entry)
   {
-    m_entry_dict.Set(name, entry);
+    m_entry_dict.Set((const char*)name, entry);
     m_entry_names.Push(name);
   }
   
@@ -57,15 +54,15 @@ public:
   {
     cString arg_list = cmd;
     cString idx = arg_list.Pop(':');
-    cString entry_name = idx.Pop('.');
+    Apto::String entry_name = (const char*)idx.Pop('.');
     
     tDataEntry<TargetType>* data_entry;
-    if (m_entry_dict.Find(entry_name, data_entry)) {
+    if (m_entry_dict.Get(entry_name, data_entry)) {
       return new tDataEntryCommand<TargetType>(data_entry, idx, arg_list);
     }
     
     if (error_str) {
-      cString nm = m_entry_dict.NearMatch(entry_name);
+      Apto::String nm = Apto::NearMatch(entry_name, m_entry_dict.Keys());
       if (nm.GetSize()) {
         (*error_str) = cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", (const char*)entry_name, (const char*)nm);
       } else {
@@ -83,10 +80,9 @@ public:
       // If no args were given, load all of the stats.
       // @TODO - handle indexed items...  under this scheme only the first task and env_input value will be output    
       
-      Apto::Array<tDataEntry<TargetType>*> data_entries;
-      m_entry_dict.GetValues(data_entries);
-      for (int i = 0; i < data_entries.GetSize(); i++)
-        output_list.PushRear(new tDataEntryCommand<TargetType>(data_entries[i]));
+      for (typename Apto::Map<Apto::String, tDataEntry<TargetType>* >::ConstIterator it = m_entry_dict.Begin(); it.Next();) {
+        output_list.PushRear(new tDataEntryCommand<TargetType>(*it.Get()->Value2()));
+      }
     } else {
       while (arg_list.GetSize() != 0) {
         cString error_str;

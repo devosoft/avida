@@ -44,7 +44,7 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
   ret->m_strings.Resize(schema.GetNumStringArgs());
 
   cString arg_ent;
-  cString arg_name;
+  Apto::String arg_name;
   bool success = true;
 
   arg_ent = args.Pop(schema.GetEntrySeparator());
@@ -60,7 +60,7 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
           set_ints[index] = true;
           ret->m_ints[index] = arg_ent.AsInt();
           if (!schema.ValidateInt(index, ret->m_ints[index])) {
-            cString name;
+            Apto::String name;
             if (schema.GetIntName(index, name)) {
               feedback.Error("value of '%s' exceeds its defined range", static_cast<const char*>(name));
             } else {
@@ -72,7 +72,7 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
           set_doubles[index] = true;
           ret->m_doubles[index] = arg_ent.AsDouble();
           if (!schema.ValidateDouble(index, ret->m_doubles[index])) {
-            cString name;
+            Apto::String name;
             if (schema.GetDoubleName(index, name)) {
               feedback.Error("value of '%s' exceeds its defined range", static_cast<const char*>(name));
             } else {
@@ -101,7 +101,7 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
     if (schema.IsOptionalInt(i)) schema.SetDefaultInt(i, ret->m_ints[i]);
     else {
       success = false; // doc err here
-      cString name;
+      Apto::String name;
       if (schema.GetIntName(i, name)) {
         feedback.Error("required argument '%s' was not found", static_cast<const char*>(name));
       } else {
@@ -114,7 +114,7 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
     if (schema.IsOptionalDouble(i)) schema.SetDefaultDouble(i, ret->m_doubles[i]);
     else {
       success = false; // doc err here
-      cString name;
+      Apto::String name;
       if (schema.GetDoubleName(i, name)) {
         feedback.Error("required argument '%s' was not found", static_cast<const char*>(name));
       } else {
@@ -124,10 +124,14 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
   }
   for (int i = 0; i < set_strings.GetSize(); i++) {
     if (set_strings[i]) continue;
-    if (schema.IsOptionalString(i)) schema.SetDefaultString(i, ret->m_strings[i]);
+    if (schema.IsOptionalString(i)) {
+      Apto::String def_string;
+      schema.SetDefaultString(i, def_string);
+      ret->m_strings[i] = def_string;
+    }
     else {
       success = false; // doc err here
-      cString name;
+      Apto::String name;
       if (schema.GetStringName(i, name)) {
         feedback.Error("required argument '%s' was not found", static_cast<const char*>(name));
       } else {

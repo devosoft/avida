@@ -30,11 +30,7 @@ cDataFileManager::cDataFileManager(const cString& target_dir, bool) : m_target_d
 
 cDataFileManager::~cDataFileManager()
 {
-  tList<cString> names;
-  tList<cDataFile*> files;
-  m_datafiles.AsLists(names, files);
-  tListIterator<cDataFile*> list_it(files);
-  while (list_it.Next() != NULL) delete *list_it.Get();
+  for (Apto::Map<Apto::String, cDataFile*>::ValueIterator it = m_datafiles.Values(); it.Next();) delete *it.Get();
 }
 
 cDataFile& cDataFileManager::Get(const cString& name)
@@ -44,7 +40,7 @@ cDataFile& cDataFileManager::Get(const cString& name)
   cDataFile* found_file;
   
   // If found, return file
-  if (m_datafiles.Find(name, found_file)) return *found_file;
+  if (m_datafiles.Get((const char*)name, found_file)) return *found_file;
   
   
   // Create and sanitize a local copy of the file name
@@ -92,26 +88,24 @@ cDataFile& cDataFileManager::Get(const cString& name)
 
   target = dir_prefix + target;
   found_file = new cDataFile(target);
-  m_datafiles.Set(name, found_file);
+  m_datafiles.Set((const char*)name, found_file);
 
   return *found_file;
 }
 
 void cDataFileManager::FlushAll()
 {
-  tList<cString> names;
-  tList<cDataFile*> files;
-  m_datafiles.AsLists(names, files);
-  tListIterator<cDataFile*> list_it(files);
-  while (list_it.Next() != NULL) (*list_it.Get())->Flush();
+  for (Apto::Map<Apto::String, cDataFile*>::ValueIterator it = m_datafiles.Values(); it.Next();) (*it.Get())->Flush();
 }
 
 bool cDataFileManager::Remove(const cString& name)
 {
   cDataFile* found_file = NULL;
-  m_datafiles.Remove(name, found_file);
-  if (found_file == NULL) return false;
+  if (m_datafiles.Get((const char*)name, found_file)) {
+    delete found_file;
+    m_datafiles.Remove((const char*)name);
+    return true;
+  }
 
-  delete found_file;
-  return true;
+  return false;
 }

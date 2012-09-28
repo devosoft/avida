@@ -32,7 +32,6 @@
 #include "cInitFile.h"
 #include "cStringIterator.h"
 #include "cUserFeedback.h"
-#include "tDictionary.h"
 
 #include <fstream>
 
@@ -63,9 +62,9 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
 }
 
 bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback,
-                        const tDictionary<cString>* mappings, bool warn_default)
+                        const Apto::Map<Apto::String, Apto::String>* mappings, bool warn_default)
 {
-  tDictionary<cString> lmap;
+  Apto::Map<Apto::String, Apto::String> lmap;
   
   // Load the contents from the file.
   cInitFile init_file(filename, (mappings) ? *mappings : lmap, working_dir);
@@ -106,24 +105,27 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
   
   
   // Build dictionary of custom format entries
-  tDictionary<cBaseConfigFormatEntry*> entry_dict;
+  Apto::Map<Apto::String, cBaseConfigFormatEntry*> entry_dict;
   
   tListIterator<cBaseConfigCustomFormat> format_it(m_format_list);
   cBaseConfigCustomFormat* cur_format;
   while ((cur_format = format_it.Next())) {
     tListIterator<cBaseConfigFormatEntry> entry_it(cur_format->GetEntryList());
     cBaseConfigFormatEntry* cur_entry;
-    while ((cur_entry = entry_it.Next())) entry_dict.Set(cur_entry->GetName(), cur_entry);
+    while ((cur_entry = entry_it.Next())) {
+      Apto::String name = (const char*)cur_entry->GetName();
+      entry_dict.Set(name, cur_entry);
+    }
   }
   
   
   // Pass over the file again, checking for custom format entries
   for (int line_id = 0; line_id < init_file.GetNumLines(); line_id++) {
     cString cur_line = init_file.GetLine(line_id);
-    cString keyword = cur_line.PopWord();
+    Apto::String keyword = (const char*)cur_line.PopWord();
     
     cBaseConfigFormatEntry* cur_entry;
-    if (entry_dict.Find(keyword, cur_entry)) {
+    if (entry_dict.Get(keyword, cur_entry)) {
       cur_entry->LoadStr(cur_line);
       init_file.MarkLineUsed(line_id);
     }
@@ -412,23 +414,25 @@ bool cAvidaConfig::Set(const cString& entry, const cString& val)
 }
 
 
-void cAvidaConfig::Set(tDictionary<cString>& sets)
+void cAvidaConfig::Set(Apto::Map<Apto::String, Apto::String>& sets)
 {
   // Loop through all groups, then all entries, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup* cur_group;
-  cString val;
+  Apto::String val;
+  
   while ((cur_group = group_it.Next()) != NULL) {
     // Loop through entries for this group...
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
     cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
       for (int i = 0; i < cur_entry->GetNumNames(); i++) {
-        if (sets.Find(cur_entry->GetName(i), val)) {
-          cur_entry->LoadStr(val);
-          sets.Remove(cur_entry->GetName(i));
+        Apto::String entry_name = (const char*)cur_entry->GetName(i);
+        if (sets.Get(entry_name, val)) {
+          cur_entry->LoadStr((const char*)val);
+          sets.Remove(entry_name);
           if (VERBOSITY.Get() > VERBOSE_NORMAL)
-            cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
+            cout << "CmdLine Set: " << entry_name << " " << val << endl;
           break;
         }
       }

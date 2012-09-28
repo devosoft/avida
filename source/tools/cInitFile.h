@@ -28,7 +28,6 @@
 #include "cString.h"
 #include "cStringList.h"
 #include "cUserFeedback.h"
-#include "tDictionary.h"
 
 #include <iostream>
 
@@ -57,8 +56,8 @@ private:
   cStringList m_format;
   cStringList m_imported_files;
   
-  tDictionary<cString> m_mappings;
-  tDictionary<cString> m_custom_directives;
+  Apto::Map<Apto::String, Apto::String> m_mappings;
+  Apto::Map<Apto::String, Apto::String> m_custom_directives;
 
   
   cInitFile(const cInitFile&); // @not_implemented
@@ -66,16 +65,16 @@ private:
   
 
 public:
-  cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Set<cString>* custom_directives = NULL);
-  cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<cString>* custom_directives = NULL);
-  cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir);
+  cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Set<Apto::String>* custom_directives = NULL);
+  cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives = NULL);
+  cInitFile(const cString& filename, const Apto::Map<Apto::String, Apto::String>& mappings, const cString& working_dir);
   cInitFile(std::istream& in_stream, const cString& working_dir);
   ~cInitFile();
   
   bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
   const cUserFeedback& GetFeedback() const { return m_feedback; }
-  const tDictionary<cString>& GetCustomDirectives() const { return m_custom_directives; }
+  const Apto::Map<Apto::String, Apto::String>& GetCustomDirectives() const { return m_custom_directives; }
   
   void Save(const cString& in_filename = "");
   
@@ -88,7 +87,7 @@ public:
    **/
   cString GetLine(int line_num = 0);
   
-  tDictionary<cString>* GetLineAsDict(int line_num = 0);
+  Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> > GetLineAsDict(int line_num = 0);
   
 
   /**
@@ -144,11 +143,11 @@ public:
 
 
 private:
-  void initMappings(const tDictionary<cString>& mappings);
+  void initMappings(const Apto::Map<Apto::String, Apto::String>& mappings);
   bool loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smart>& lines, const cString& working_dir,
-                const Apto::Set<cString>* custom_directives, Feedback& feedback);
+                const Apto::Set<Apto::String>* custom_directives, Feedback& feedback);
   bool processCommand(cString cmdstr, Apto::Array<sLine*, Apto::Smart>& lines, const cString& filename, int linenum,
-                      const cString& working_dir, const Apto::Set<cString>* custom_directives, Feedback& feedback);
+                      const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, Feedback& feedback);
   void postProcess(Apto::Array<sLine*, Apto::Smart>& lines);
 };
 

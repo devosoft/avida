@@ -31,7 +31,6 @@
 #include "cString.h"
 #include "cStringIterator.h"
 #include "cUserFeedback.h"
-#include "tDictionary.h"
 
 #include <iostream>
 #include <cstdio>
@@ -55,8 +54,8 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
   }
   
   cString config_filename = "avida.cfg";
-  tDictionary<cString> sets;
-  tDictionary<cString> defs;
+  Apto::Map<Apto::String, Apto::String> sets;
+  Apto::Map<Apto::String, Apto::String> defs;
   
   bool flag_analyze = false;
   bool flag_interactive = false;
@@ -134,7 +133,7 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
       cString name(cur_arg);
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
-      sets.Set(name, value);
+      sets.Set((const char*)name, (const char*)value);
     } else if (cur_arg == "-def") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {
         cerr << "'-def' option must be followed by name and value" << endl;
@@ -144,7 +143,7 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
       cString name(cur_arg);
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
-      defs.Set(name, value);
+      defs.Set((const char*)name, (const char*)value);
     } else if (cur_arg == "-c" || cur_arg == "-config") {
       if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
         cerr << "Error: Filename for configuration must be specified." << endl;
@@ -190,11 +189,8 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
   cfg->Set(sets); // Process all command line -set statements
   
   if (sets.GetSize()) {
-    tList<cString> keys;
-    sets.GetKeys(keys);
-    cString* keystr = NULL;
-    while ((keystr = keys.Pop())) {
-      cerr << "error: unrecognized command line configuration setting '" << *keystr << "'." << endl;
+    for (Apto::Map<Apto::String, Apto::String>::KeyIterator kit = sets.Keys(); kit.Next();) {
+      cerr << "error: unrecognized command line configuration setting '" << *kit.Get() << "'." << endl;
     }
     exit(1);
   }

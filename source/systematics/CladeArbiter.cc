@@ -28,8 +28,6 @@
 
 #include "avida/private/systematics/Clade.h"
 
-#include "tDictionary.h"
-
 #include <cmath>
 
 
@@ -98,7 +96,7 @@ bool Avida::Systematics::CladeArbiter::Serialize(ArchivePtr) const
 
 Avida::Systematics::GroupPtr Avida::Systematics::CladeArbiter::LegacyLoad(void* props)
 {
-  Apto::String group_name = (const char*)static_cast<const tDictionary<cString>*>(props)->GetWithDefault("name", "");
+  Apto::String group_name = (const char*)(*static_cast<Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> >*>(props))->GetWithDefault("name", "");
   if (group_name.GetSize()) {
     
     CladePtr grp(m_clades.GetWithDefault(group_name, CladePtr(NULL)));

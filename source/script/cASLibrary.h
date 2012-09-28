@@ -23,7 +23,6 @@
 #define cASLibrary_h
 
 #include "cASFunction.h"
-#include "tDictionary.h"
 
 
 class cASLibrary
@@ -35,8 +34,8 @@ private:
 
   // --------  Internal Variables  --------
   Apto::Array<sObjectEntry*> m_obj_tbl;
-  tDictionary<int> m_obj_dict;
-  tDictionary<const cASFunction*> m_fun_dict;
+  Apto::Map<Apto::String, int> m_obj_dict;
+  Apto::Map<Apto::String, const cASFunction*> m_fun_dict;
 
   
   // --------  Private Constructors  --------

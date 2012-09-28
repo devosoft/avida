@@ -25,7 +25,6 @@
 #include "AvidaScript.h"
 #include "ASTree.h"
 
-#include "tDictionary.h"
 
 
 // Active/inactive functions and variables within the scope of the current function (or globally)
@@ -41,9 +40,9 @@ private:
   
   // --------  Internal Variables  --------
   Apto::Array<sSymbolEntry*> m_sym_tbl;
-  tDictionary<int> m_sym_dict;
+  Apto::Map<Apto::String, int> m_sym_dict;
   Apto::Array<sFunctionEntry*> m_fun_tbl;
-  tDictionary<int> m_fun_dict;
+  Apto::Map<Apto::String, int> m_fun_dict;
 
   int m_scope;
   int m_deactivate_cycle;

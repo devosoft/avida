@@ -32,7 +32,6 @@
 #include "cHardwareManager.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
-#include "tDictionary.h"
 
 
 static Apto::String s_unit_prop_name_last_copied_size("last_copied_size");
@@ -197,7 +196,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
 , m_task_counts(mgr->NumEnvironmentActionTriggers())
 , m_prop_map(NULL)
 {
-  const tDictionary<cString>& props = *static_cast<const tDictionary<cString>*>(prop_p);
+  Apto::Map<Apto::String, Apto::String>& props = *(*static_cast<Apto::SmartPtr<Apto::Map<Apto::String, Apto::String> >*>(prop_p));
   
   m_src.transmission_type = DIVISION;
   m_src.external = true;
@@ -205,31 +204,31 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
   if (m_src.arguments == "(none)") m_src.arguments = "";
   
   PropertyMap prop_map;
-  cString inst_set = props.Get("inst_set");
+  cString inst_set = (const char*)props.Get("inst_set");
   if (inst_set == "") inst_set = "(default)";
   
   cHardwareManager::SetupPropertyMap(prop_map, (const char*)inst_set);
-  m_genome = Avida::Genome(props.Get("hw_type").AsInt(), prop_map, GeneticRepresentationPtr(new InstructionSequence((const char*)props.Get("sequence"))));
+  m_genome = Avida::Genome(Apto::StrAs(props.Get("hw_type")), prop_map, GeneticRepresentationPtr(new InstructionSequence((const char*)props.Get("sequence"))));
   
-  if (props.HasEntry("gen_born")) {
-    m_generation_born = props.Get("gen_born").AsInt();
+  if (props.Has("gen_born")) {
+    m_generation_born = Apto::StrAs(props.Get("gen_born"));
   } else {
     m_generation_born = -1;
   }
-  assert(props.HasEntry("update_born"));
-  m_update_born = props.Get("update_born").AsInt();
-  if (props.HasEntry("update_deactivated")) {
-    m_update_deactivated = props.Get("update_deactivated").AsInt();
+  assert(props.Has("update_born"));
+  m_update_born = Apto::StrAs(props.Get("update_born"));
+  if (props.Has("update_deactivated")) {
+    m_update_deactivated = Apto::StrAs(props.Get("update_deactivated"));
   } else {
     m_update_deactivated = -1;
   }
-  assert(props.HasEntry("depth"));  
-  m_depth = props.Get("depth").AsInt();
+  assert(props.Has("depth"));
+  m_depth = Apto::StrAs(props.Get("depth"));
   
-  if (props.HasEntry("parents")) {
-    m_parent_str = props.Get("parents");
-  } else if (props.HasEntry("parent_id")) { // Backwards compatible load
-    m_parent_str = props.Get("parent_id");
+  if (props.Has("parents")) {
+    m_parent_str = (const char*)props.Get("parents");
+  } else if (props.Has("parent_id")) { // Backwards compatible load
+    m_parent_str = (const char*)props.Get("parent_id");
   }
   if (m_parent_str == "(none)") m_parent_str = "";
   cStringList parents((const char*)m_parent_str,',');

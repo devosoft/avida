@@ -13,12 +13,7 @@
 
 #include <fstream>
 
-#ifndef cDataFile_h
 #include "cDataFile.h"
-#endif
-#ifndef tDictionary_h
-#include "tDictionary.h"
-#endif
 
 
 /**
@@ -26,7 +21,6 @@
  * to add files, to remove files, and to access existing files by name.
  **/
 
-class cDataFile;
 class cString;
 template <class T> class tList; // aggregate
 
@@ -34,7 +28,7 @@ class cDataFileManager
 {
 private:
   cString m_target_dir;
-  tDictionary<cDataFile*> m_datafiles;
+  Apto::Map<Apto::String, cDataFile*> m_datafiles;
 
   cDataFileManager(const cDataFileManager&); // @not_implemented
   cDataFileManager& operator=(const cDataFileManager&); // @not_implemented
@@ -70,7 +64,7 @@ public:
 inline bool cDataFileManager::IsOpen(const cString & name)
 {
   cDataFile* found;
-  if (m_datafiles.Find(name, found)) return false;
+  if (m_datafiles.Get((const char*)name, found)) return false;
   return true;
 }
 

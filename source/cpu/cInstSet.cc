@@ -187,8 +187,9 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     int fun_id = m_inst_lib->GetIndex(inst_name);
     if (fun_id == -1) {
       // Oh oh!  Didn't find an instruction!
+      Apto::String a_inst_name((const char*)inst_name);
       if (feedback) feedback->Error("unknown instruction '%s' (Best match = '%s')",
-                                    (const char*)inst_name, (const char*)m_inst_lib->GetNearMatch(inst_name));
+                                    (const char*)inst_name, (const char*)m_inst_lib->GetNearMatch(a_inst_name));
       success = false;
       continue;
     }

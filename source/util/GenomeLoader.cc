@@ -36,7 +36,7 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
 {
   bool success = true;
   
-  Apto::Set<cString> custom_directives;
+  Apto::Set<Apto::String> custom_directives;
   custom_directives.Insert("inst_set");
   custom_directives.Insert("hw_type");
   
@@ -46,8 +46,8 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
   
   const cInstSet* is = &hwm.GetDefaultInstSet();
   
-  if (input_file.GetCustomDirectives().HasEntry("inst_set")) {
-    cString isname = input_file.GetCustomDirectives().Get("inst_set");
+  if (input_file.GetCustomDirectives().Has("inst_set")) {
+    cString isname = (const char*)input_file.GetCustomDirectives().GetWithDefault("inst_set", "");
     isname.Trim();
     if (hwm.IsInstSet((const char*)isname)) {
       is = &hwm.GetInstSet((const char*)isname);
@@ -60,8 +60,8 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
   int hw_type = -1;
   cString inst_set;
   
-  if (input_file.GetCustomDirectives().HasEntry("hw_type")) {
-    hw_type = input_file.GetCustomDirectives().Get("hw_type").AsInt();
+  if (input_file.GetCustomDirectives().Has("hw_type")) {
+    hw_type = Apto::StrAs(input_file.GetCustomDirectives().GetWithDefault("hw_type", "0"));
     if (is->GetHardwareType() != hw_type) {
       feedback.Error("hardware type mismatch in organism '%s': is = %d, org = %d",
                      (const char*)fname, is->GetHardwareType(), hw_type);

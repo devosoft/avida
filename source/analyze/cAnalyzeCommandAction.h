@@ -50,7 +50,7 @@ public:
   
   void Run(cAnalyze*, const cString& args, cAnalyzeCommand&, Feedback& feedback) const
   {
-    cAction* action = cActionLibrary::GetInstance().Create(m_name, m_world, args, feedback);
+    cAction* action = cActionLibrary::GetInstance().Create((const char*)m_name, m_world, args, feedback);
     cAvidaContext& ctx = m_world->GetDefaultContext();
     action->Process(ctx);
   }

@@ -38,8 +38,8 @@ class cActionLibrary
 private:
   typedef const cString (*ClassDescFunction)();
   
-  tObjectFactoryNoCase<cAction* (cWorld*, const cString&, Feedback&)> m_factory;
-  tDictionary<ClassDescFunction> m_desc_funcs;
+  tObjectFactory<cAction* (cWorld*, const cString&, Feedback&)> m_factory;
+  Apto::Map<Apto::String, ClassDescFunction> m_desc_funcs;
   
   cActionLibrary() { ; }
 
@@ -50,33 +50,35 @@ public:
   static void Initialize();
   static cActionLibrary& GetInstance();
   
-  template<typename ClassType> bool Register(const cString& key)
+  template<typename ClassType> bool Register(const Apto::String& key)
   {
     ClassDescFunction func;
-    if (m_desc_funcs.Find(key, func)) return false;
-    m_desc_funcs.Set(key, &ClassType::GetDescription);
-    return m_factory.Register<ClassType>(key);
+    Apto::String lkey(key.AsLower());
+    if (m_desc_funcs.Get(lkey, func)) return false;
+    m_desc_funcs.Set(lkey, &ClassType::GetDescription);
+    return m_factory.Register<ClassType>(lkey);
   }
-  bool Unregister(const cString& key)
+  bool Unregister(const Apto::String& key)
   {
-    m_desc_funcs.Remove(key);
-    return m_factory.Unregister(key);
+    Apto::String lkey(key.AsLower());
+    m_desc_funcs.Remove(lkey);
+    return m_factory.Unregister(lkey);
   }
   
-  cAction* Create(const cString& key, cWorld* world, const cString& args, Feedback& feedback)
+  cAction* Create(const Apto::String& key, cWorld* world, const cString& args, Feedback& feedback)
   {
-    return m_factory.Create(key, world, args, feedback);
+    return m_factory.Create(key.AsLower(), world, args, feedback);
   }
   
-  bool Supports(const cString& key) const { return m_factory.Supports(key); }  
+  bool Supports(const Apto::String& key) const { return m_factory.Supports(key.AsLower()); }
   
-  const cString Describe(const cString& key) const
+  const cString Describe(const Apto::String& key) const
   {
     ClassDescFunction func;
-    if (m_desc_funcs.Find(key, func)) return func();
+    if (m_desc_funcs.Get(key.AsLower(), func)) return func();
     return "(Not Available)";
   }  
-  const cString DescribeAll() const;
+  Apto::String DescribeAll() const;
   
   
 private:

@@ -1653,7 +1653,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
     // to save duplication of the same offspring genotype.
     // NumCPUs is incremented whenever an offspring is
     // created more than once from the same parent.
-    tDictionary<cAnalyzeGenotype*> genome_hash;
+    Apto::Map<Apto::String, cAnalyzeGenotype*> genome_hash;
     
     for (int i=0; i<number_to_sample; i++) {
       test_cpu->TestGenome(m_world->GetDefaultContext(), test_info, parent_genotype->GetGenome());
@@ -1662,7 +1662,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
       GeneticRepresentationPtr offspring_rep_p = test_info.GetTestOrganism(0)->OffspringGenome().Representation();
       offspring_seq_p.DynamicCastFrom(offspring_rep_p);
       const InstructionSequence& offspring_seq = *offspring_seq_p;
-      bool found = genome_hash.Find((const char *)offspring_seq.AsString(), offspring_genotype);
+      bool found = genome_hash.Get((const char *)offspring_seq.AsString(), offspring_genotype);
       
       if (found) {
         offspring_genotype->SetNumCPUs(offspring_genotype->GetNumCPUs() + 1);
@@ -2422,32 +2422,26 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
       << data_command->GetDesc(first_genotype) << "</th></tr>" << endl;
     }
     
-    tDictionary<int> count_dict;
+    Apto::Map<Apto::String, int> count_dict;
     
     // Loop through all genotypes in this batch to collect the info we need.
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype * cur_genotype;
     while ((cur_genotype = batch_it.Next()) != NULL) {
-      const cString cur_name(data_command->GetValue(cur_genotype).AsString());
+      const Apto::String cur_name((const char*)data_command->GetValue(cur_genotype).AsString());
       int count = 0;
-      count_dict.Find(cur_name, count);
+      count_dict.Get(cur_name, count);
       count += cur_genotype->GetNumCPUs();
       count_dict.Set(cur_name, count);
     }
-    
-    tList<cString> name_list;
-    tList<int> count_list;
-    count_dict.AsLists(name_list, count_list);
-    
+        
     // Figure out the maximum count and the maximum widths...
     int max_count = 0;
     int max_name_width = 0;
     int max_count_width = 0;
-    tListIterator<int> count_it(count_list);
-    tListIterator<cString> name_it(name_list);
-    while (count_it.Next() != NULL) {
-      const cString cur_name( *(name_it.Next()) );
-      const int cur_count = *(count_it.Get());
+    for (Apto::Map<Apto::String, int>::Iterator it = count_dict.Begin(); it.Next();) {
+      const Apto::String& cur_name(it.Get()->Value1());
+      const int cur_count = *it.Get()->Value2();
       const int name_width = cur_name.GetSize();
       const int count_width = cStringUtil::Stringf("%d", cur_count).GetSize();
       if (cur_count > max_count) max_count = cur_count;
@@ -2459,11 +2453,9 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
     const int max_stars = 75 - max_name_width - max_count_width;
     
     // Now print everything out...
-    count_it.Reset();
-    name_it.Reset();
-    while (count_it.Next() != NULL) {
-      const cString cur_name( *(name_it.Next()) );
-      const int cur_count = *(count_it.Get());
+    for (Apto::Map<Apto::String, int>::Iterator it = count_dict.Begin(); it.Next();) {
+      const Apto::String& cur_name(it.Get()->Value1());
+      const int cur_count = *it.Get()->Value2();
       if (cur_count == 0) continue;
       int num_stars = (cur_count * max_stars) / max_count;
       
@@ -9911,7 +9903,7 @@ cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
   }
   cAnalyzeCommandDefBase* command_def = lib_it.Get();
   
-  if (command_def == NULL && cActionLibrary::GetInstance().Supports(name)) {
+  if (command_def == NULL && cActionLibrary::GetInstance().Supports((const char*)name)) {
     command_def = new cAnalyzeCommandAction(name, m_world);
     command_lib.PushRear(command_def);
   }

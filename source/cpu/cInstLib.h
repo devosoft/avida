@@ -25,12 +25,7 @@
 
 #include "avida/core/InstructionSequence.h"
 
-#ifndef tDictionary_h
-#include "tDictionary.h"
-#endif
-#ifndef cInstLibEntry_h
 #include "cInstLibEntry.h"
-#endif
 
 class cString;
 
@@ -41,7 +36,7 @@ class cInstLib
 {
 protected:
   const int m_size;
-  tDictionary<int> m_namemap;
+  Apto::Map<Apto::String, int> m_namemap;
 
   int m_inst_default;
   int m_inst_null;
@@ -58,7 +53,7 @@ public:
   virtual const cInstLibEntry& Get(int i) const = 0;
   inline const cInstLibEntry& operator[](int i) const { return Get(i); }
   inline int GetIndex(const cString& name) const;
-  inline cString GetNearMatch(const cString& name) const { return m_namemap.NearMatch(name); }
+  inline Apto::String GetNearMatch(const Apto::String& name) const { return Apto::NearMatch(name, m_namemap.Keys()); }
 
   inline const cString& GetName(int entry) const { return Get(entry).GetName(); }
   
@@ -79,14 +74,14 @@ private:
 inline int cInstLib::GetIndex(const cString& name) const
 {
   int idx = -1;
-  if (m_namemap.Find(name, idx)) return idx;
+  if (m_namemap.Get((const char*)name, idx)) return idx;
   return -1;
 }
 
 inline Instruction cInstLib::GetInst(const cString& name)
 {
   int idx;
-  if (m_namemap.Find(name, idx)) return Instruction(idx);
+  if (m_namemap.Get((const char*)name, idx)) return Instruction(idx);
   return Instruction(255);
 }
 
