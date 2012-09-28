@@ -42,9 +42,8 @@
   <target name="consistencytest" depends="check-for-consistencytesting-targets" if="avida.built">
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
     <mkdir dir="${build}/reports"/>
-    <exec dir="${root}/avida-core" osfamily="unix" executable="python" failonerror="true">
+    <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
       <arg path="${root}/avida-core/tests/_testrunner/testrunner.py"/>
-      <arg value="--builddir=../cbuild"/>
       <arg value="--mode=slave"/>
       <arg value="--xml-report=${build}/reports/avida.xml"/>
     </exec>
