@@ -1,4 +1,4 @@
-Avida-Core 2.13.x   http://avida.devosoft.org/
+Avida-Core 2.12.x   http://avida.devosoft.org/
 --------------------------------------------------------------------------------
 Digital Evolution Laboratory at Michigan State University
 (http://devolab.msu.edu)
@@ -38,7 +38,7 @@ Additional Requirements for Specific Targets
 
 
   Mac OS X Development (using included Xcode Project):
-   - Xcode 3.1 or greater, Xcode 4 recommended.
+   - Xcode 4
 
 
 II. GETTING STARTED
@@ -159,4 +159,4 @@ Helpful usage and code documentation can be found in the HTML files in the
 'documentation' directory.  See index.html.
 
 
-Revised 2011-05-05 DMB
+Revised 2012-09-28 DMB

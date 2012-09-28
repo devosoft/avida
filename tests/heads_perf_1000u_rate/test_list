@@ -2,7 +2,7 @@
 [main]
 ; Command line arguments to pass to the application
 args = %(default_app)s %(cpus)s
-app = tests/heads_perf_1000u_rate/config/rate_runner
+app = %(testdir)s/heads_perf_1000u_rate/config/rate_runner
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
                          ;  allow - all exit codes are acceptable

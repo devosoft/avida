@@ -30,11 +30,11 @@
 
 namespace Avida {
   namespace Version {
-    inline const char* String() { return "2.12.3 (BEACON SS12)"; }
+    inline const char* String() { return "2.12.4 (Pre-Systematics API EOL)"; }
     inline int Major() { return 2; }
     inline int Minor() { return 12; }
-    inline int Patch() { return 3; }
-    inline const char* Tag() { return "BEACON SS12"; }
+    inline int Patch() { return 4; }
+    inline const char* Tag() { return "Pre-Systematics API EOL"; }
     
     Apto::String Banner();
     
