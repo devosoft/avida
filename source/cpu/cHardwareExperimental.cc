@@ -4904,6 +4904,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
       Apto::Array<double> target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
       setInternalValue(bin_reg, spec_bin, true);
@@ -5003,6 +5004,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       Apto::Array<double> target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
       setInternalValue(bin_reg, spec_bin, true);
@@ -5271,6 +5273,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
       Apto::Array<double> target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
       setInternalValue(bin_reg, spec_bin, true);
