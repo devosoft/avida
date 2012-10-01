@@ -41,6 +41,7 @@
     <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
       <arg path="${root}/tests/_testrunner/testrunner.py"/>
       <arg value="--mode=slave"/>
+      <arg value="--testdir=tests"/>
       <arg value="--xml-report=${build}/reports/avida.xml"/>
     </exec>
   </target>
