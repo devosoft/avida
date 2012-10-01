@@ -377,7 +377,7 @@ void cResourceCount::SetGradientCount(cAvidaContext& ctx, cWorld* world, const i
   spatial_resource_count[res_id]->SetGradHeight(height);
   spatial_resource_count[res_id]->SetGradSpread(spread);
   spatial_resource_count[res_id]->SetGradPlateau(plateau);
-  spatial_resource_count[res_id]->SetGradInitialPlatVal(plat_val);
+  spatial_resource_count[res_id]->SetGradInitialPlat(plat_val);
   spatial_resource_count[res_id]->SetGradDecay(decay);
   spatial_resource_count[res_id]->SetGradMaxX(max_x);
   spatial_resource_count[res_id]->SetGradMaxY(max_y);
