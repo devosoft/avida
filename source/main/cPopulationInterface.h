@@ -118,6 +118,7 @@ public:
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
+  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
   int GetCurrPeakX(cAvidaContext& ctx, int res_id); 

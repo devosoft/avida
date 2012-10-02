@@ -114,6 +114,7 @@ public:
   virtual const tArray<double>& GetFacedCellResources(cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) = 0; 
   virtual const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) = 0; 
+  virtual double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) = 0;
   virtual const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) = 0;
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
   virtual int GetCurrPeakX(cAvidaContext& ctx, int res_id) = 0; 

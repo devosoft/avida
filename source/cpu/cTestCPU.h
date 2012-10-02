@@ -118,6 +118,7 @@ public:
   inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   inline const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   inline const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id); 
+  inline double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -179,6 +180,12 @@ inline const tArray<double>& cTestCPU::GetAvatarResources(cAvidaContext& ctx)
 inline const tArray<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int cell_id)   
 {
   return m_cell_resource_count.GetResources(ctx); 
+}
+
+inline double cTestCPU::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+{
+  const tArray<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
 }
 
 inline const tArray< tArray<int> >& cTestCPU::GetCellIdLists()

@@ -630,45 +630,45 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
   
   // if looking for resources or topological features
   if (habitat_used != -2) {
-    tArray<double> cell_res = m_organism->GetOrgInterface().GetFrozenResources(ctx, target_cell_num);
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) { 
+      double cell_res = m_organism->GetOrgInterface().GetFrozenCellResVal(ctx, target_cell_num, val_res[k]);
       double edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
       if (habitat_used == 0 || habitat_used > 5) {
-        if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {
+        if (search_type == 0 && cell_res >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
-            returnInfo.amountFound += floor(cell_res[val_res[k]] / edible_threshold);                                                         
+            returnInfo.amountFound += floor(cell_res / edible_threshold);                                                         
           }
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < edible_threshold && cell_res[val_res[k]] > 0) {         // only get sum amounts when < threshold if search = get counts
+        else if (search_type == 1 && cell_res < edible_threshold && cell_res > 0) {         // only get sum amounts when < threshold if search = get counts
           if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
-            returnInfo.amountFound += cell_res[val_res[k]];                                                         
+            returnInfo.amountFound += cell_res;                                                         
           }
         } 
       }
-      else if ((habitat_used == 1 || habitat_used == 2) && cell_res[val_res[k]] > 0) {                              // hills and walls work with any vals > 0, not the threshold default of 1
+      else if ((habitat_used == 1 || habitat_used == 2) && cell_res > 0) {                              // hills and walls work with any vals > 0, not the threshold default of 1
         if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
         returnInfo.has_edible = true;
-        returnInfo.amountFound += cell_res[val_res[k]];
+        returnInfo.amountFound += cell_res;
       }
-      else if (habitat_used == 5 && cell_res[val_res[k]] > 0) {                                                   // simulated predators work with any vals > 0 and have chance of detection failing
+      else if (habitat_used == 5 && cell_res > 0) {                                                   // simulated predators work with any vals > 0 and have chance of detection failing
         if (ctx.GetRandom().P(resource_lib.GetResource(val_res[k])->GetDetectionProb())) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
-          returnInfo.amountFound += cell_res[val_res[k]];
+          returnInfo.amountFound += cell_res;
         }
       }
       else if (habitat_used == 4) { 
-        if (search_type == 0 && cell_res[val_res[k]] >= edible_threshold) {                                       // dens only work above a config set level, but threshold will override this for OrgSensor
+        if (search_type == 0 && cell_res >= edible_threshold) {                                       // dens only work above a config set level, but threshold will override this for OrgSensor
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
-          returnInfo.amountFound += floor(cell_res[val_res[k]] / edible_threshold);        
+          returnInfo.amountFound += floor(cell_res / edible_threshold);        
         }
-        else if (search_type == 1 && cell_res[val_res[k]] < edible_threshold && cell_res[val_res[k]] > 0) {
-          returnInfo.amountFound += cell_res[val_res[k]];        
+        else if (search_type == 1 && cell_res < edible_threshold && cell_res > 0) {
+          returnInfo.amountFound += cell_res;        
         }
       }
     }

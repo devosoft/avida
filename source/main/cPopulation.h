@@ -278,6 +278,7 @@ public:
   const tArray<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); } 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); } 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
+  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resource_count.GetFrozenCellResVal(ctx, cell_id, res_id); }
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   const tArray<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
   void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateResources(ctx); }
