@@ -133,6 +133,7 @@ public:
   const Apto::Array<double>& GetResources(cAvidaContext& ctx) const;
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const;
+  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const;
   const Apto::Array<int>& GetResourcesGeometry() const;
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
   const Apto::Array<Apto::Array<double> >& GetSpatialRes(cAvidaContext& ctx);

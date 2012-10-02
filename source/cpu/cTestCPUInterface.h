@@ -106,6 +106,7 @@ public:
   const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx);
   const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx);
   const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
+  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   
   const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   int GetCurrPeakX(cAvidaContext&, int) { return 0; } 

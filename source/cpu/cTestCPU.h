@@ -102,6 +102,7 @@ public:
   inline const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx);
   inline const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx);
   inline const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
+  inline double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   inline const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -163,6 +164,12 @@ inline const Apto::Array<double>& cTestCPU::GetAvatarResources(cAvidaContext& ct
 inline const Apto::Array<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int)
 {
   return m_cell_resource_count.GetResources(ctx); 
+}
+
+inline double cTestCPU::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+{
+  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
 }
 
 inline const Apto::Array< Apto::Array<int> >& cTestCPU::GetCellIdLists()
