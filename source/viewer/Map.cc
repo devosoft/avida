@@ -252,7 +252,7 @@ public:
 
 ClassificationMapMode::ClassificationMapMode(cWorld* world, const Apto::String& role_id, const Apto::String& role_desc)
 : m_role_id(role_id), m_role_desc(role_desc)
-, m_info(new Avida::Viewer::ClassificationInfo(world->GetNewWorld(), role_id, NUM_COLORS))
+, m_info(new Avida::Viewer::ClassificationInfo(world->GetNewWorld(), role_id, NUM_COLORS, NUM_COLORS))
 , m_color_count(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
 , m_scale_labels(NUM_COLORS + Avida::Viewer::MAP_RESERVED_COLORS)
 {

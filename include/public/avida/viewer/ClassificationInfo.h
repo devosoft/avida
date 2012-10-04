@@ -82,7 +82,7 @@ namespace Avida {
       typedef Apto::SmartPtr<MapColor> MapColorPtr;
       
     public:
-      LIB_EXPORT ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors);
+      LIB_EXPORT ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors, int threshold_colors = -1);
       LIB_EXPORT ~ClassificationInfo() { ; }
       
       LIB_EXPORT void Update();      

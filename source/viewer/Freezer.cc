@@ -103,7 +103,7 @@ namespace Avida {
         *fs << "WORLD_X 60" << std::endl;
         *fs << "WORLD_Y 60" << std::endl;
         *fs << "WORLD_GEOMETRY 1" << std::endl;
-        *fs << "COPY_MUT_PROB 0.0075" << std::endl;
+        *fs << "COPY_MUT_PROB 0.02" << std::endl;
         *fs << "DIVIDE_INS_PROB 0.0" << std::endl;
         *fs << "DIVIDE_DEL_PROB 0.0" << std::endl;
         *fs << "OFFSPRING_SIZE_RANGE 1.0" << std::endl;

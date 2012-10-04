@@ -40,12 +40,12 @@ bool Avida::Viewer::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
 }
 
 
-Avida::Viewer::ClassificationInfo::ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors)
+Avida::Viewer::ClassificationInfo::ClassificationInfo(World* in_world, const Systematics::RoleID& role, int total_colors, int threshold_colors)
   : m_world(in_world)
   , m_role(role)
   , m_color_chart_id(total_colors)
   , m_color_chart_ptr(total_colors)
-  , m_threshold_colors(total_colors * 5 / 6)
+  , m_threshold_colors(threshold_colors)
   , m_next_color(0)
 {
   m_color_chart_id.SetAll(-1);
