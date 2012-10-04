@@ -811,6 +811,32 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 @implementation AvidaEDController
 
+
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate {
+  self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
+  
+  if (self != nil) {
+    app = delegate;
+    
+    [self setup];
+    
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSString* tempPath = [fileManager createTemporaryDirectory];
+    freezerURL = [[NSURL fileURLWithPath:tempPath isDirectory:YES] URLByAppendingPathComponent:@"default.avidaedworkspace" isDirectory:YES];
+    
+    isDefaultFreezer = YES;
+    
+    Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
+    freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
+    [self setupFreezer];
+        
+    [self showWindow:self];
+  }
+  
+  return self;
+}
+
+
 - (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir {
   self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
   
@@ -820,17 +846,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     [self setup];
     
     freezerURL = dir;
-    
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
-    
-    assert([urls count] != 0);
-    
-    NSURL* userDocumentsURL = [urls objectAtIndex:0];
-    NSURL* defaultFreezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
-
-    isDefaultFreezer = ([[defaultFreezerURL absoluteURL] isEqual:[freezerURL absoluteURL]] ||
-                        ([defaultFreezerURL isFileURL] && [freezerURL isFileURL] && [[defaultFreezerURL path] isEqual:[freezerURL path]]));
+    isDefaultFreezer = NO;
 
     Apto::String freezer_path([[freezerURL path] cStringUsingEncoding:NSASCIIStringEncoding]);
     freezer = Avida::Viewer::FreezerPtr(new Avida::Viewer::Freezer(freezer_path));
@@ -838,7 +854,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     
     // Hide freezer extension
     NSDictionary* fileAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:NSFileExtensionHidden];
-    [fileManager setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
+    [[NSFileManager defaultManager] setAttributes:fileAttrs ofItemAtPath:[freezerURL path] error:nil];
 
     [self showWindow:self];
   }
@@ -1445,8 +1461,18 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 
 
 - (IBAction) changeWorldSize:(id)sender {
-  for (Genome* genome in manualAncestorArray) [ancestorArrayCtlr removeObject:genome];
-  [manualAncestorArray removeAllObjects];
+  
+  if (manualAncestorArray.count > 0) {
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"Oops! The organism you placed was removed when you resized the dish."];
+    [alert setInformativeText:@"Please drag in a new starting organism(s)."];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    [alert beginSheetModalForWindow:[self window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    
+    for (Genome* genome in manualAncestorArray) [ancestorArrayCtlr removeObject:genome];
+    [manualAncestorArray removeAllObjects];
+  }
 
   [currentRun setWorldSize:NSMakeSize([txtCfgWorldX intValue], [txtCfgWorldY intValue])];
   [mapView setDimensions:[currentRun worldSize]];

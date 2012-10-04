@@ -69,21 +69,11 @@
 
 - (IBAction) newAvidaED:(id)sender {
   
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
-  
-  if ([urls count] == 0) return;
-  
-  NSURL* userDocumentsURL = [urls objectAtIndex:0];
-  NSURL* freezerURL = [NSURL URLWithString:@"default.avidaedworkspace" relativeToURL:userDocumentsURL];
-
-  if (![self isWorkspaceOpenForURL:freezerURL]) {
-    AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:freezerURL];
-    if (ctrl == nil) {
-      NSLog(@"Error loading Avida-ED-MainWindow NIB");
-    } else {
-      [windows addObject:ctrl];
-    }
+  AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self];
+  if (ctrl == nil) {
+    NSLog(@"Error loading Avida-ED-MainWindow NIB");
+  } else {
+    [windows addObject:ctrl];
   }
 }
 

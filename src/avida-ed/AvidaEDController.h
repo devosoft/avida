@@ -140,6 +140,7 @@
 }
 
 // Init and Dealloc Methods
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate;
 - (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir;
 
 - (void) dealloc;
