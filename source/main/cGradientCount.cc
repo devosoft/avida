@@ -158,12 +158,12 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   
   // once a resource cone has been 'bitten', start the clock that counts down to when the entire peak will be
   // refreshed (carcass rots for only so long before disappearing)
-  if (has_edible && GetModified()) m_counter++;
+  if (has_edible && GetModified() && m_decay > 1) m_counter++;
 
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) {
     if (m_predator) UpdatePredatoryRes(ctx);
-    return; 
+    return;
   } 
                    
   // before we move anything, if we have a depletable resource, we need to get the current plateau cell values 
@@ -185,8 +185,6 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   if (m_move_a_scaler > 1 || m_plateau_inflow != 0 || m_plateau_outflow != 0 || m_cone_inflow != 0 || m_cone_outflow != 0
   || m_gradient_inflow != 0 || (m_move_a_scaler == 1 && m_just_reset)) fillinResourceValues();
 
-  m_counter = 0;  // reset decay counter after cone resources updated
-  
   if (m_predator) UpdatePredatoryRes(ctx);
 }
 
