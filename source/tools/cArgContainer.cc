@@ -92,6 +92,7 @@ cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedb
     } else {
       success = false;
       feedback.Error("unrecognized argument: '%s'", static_cast<const char*>(arg_name));
+      cout << arg_name << endl;
     }
     arg_ent = args.Pop(schema.GetEntrySeparator());
   }

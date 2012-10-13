@@ -898,17 +898,17 @@ void cGradientCount::SetPredatoryResource(double odds, int juvsper)
   m_guarded_juvs_per_adult = juvsper;
 }
 
-void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lamda, double theta, int x, int y, int num_cells)
+void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells)
 {
   m_probabilistic = true;
   m_initial_plat = initial;
   m_plateau_inflow = inflow;
   m_plateau_outflow = outflow;
   
-  BuildProbabilisticRes(ctx, lamda, theta, x , y, num_cells);
+  BuildProbabilisticRes(ctx, lambda, theta, x , y, num_cells);
 }
 
-void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, double theta, int x, int y, int num_cells)
+void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells)
 {
   if (m_min_usedx != -1) clearExistingProbRes();
   resetUsedBounds();
@@ -964,7 +964,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lamda, dou
     int this_y = cell_id / worldx;  
     double cell_dist = sqrt((double) (m_peakx - this_x) * (m_peakx - this_x) + (m_peaky - this_y) * (m_peaky - this_y));
     // use a half normal
-    double this_prob = (1/lamda) * (sqrt(2 / 3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lamda), 2));
+    double this_prob = (1/lambda) * (sqrt(2 / 3.14159)) * exp(-0.5 * pow(((cell_dist - theta) / lambda), 2));
     
     if (ctx.GetRandom().P(this_prob)) {
       Element(cell_id).SetAmount(m_initial_plat);
