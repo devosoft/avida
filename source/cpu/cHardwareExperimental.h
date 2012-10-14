@@ -430,6 +430,7 @@ private:
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
+  bool Inst_One(cAvidaContext& ctx);
   bool Inst_Mult100(cAvidaContext& ctx);
   
   // Double Argument Math
