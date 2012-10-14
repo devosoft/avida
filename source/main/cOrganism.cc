@@ -447,8 +447,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
       GetPhenotype().SetToDie();
     }
   }
-  if (!m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateResources(ctx, global_res_change);
-  else m_interface->UpdateAVResources(ctx, global_res_change);
+  m_interface->UpdateResources(ctx, global_res_change);
 
   //update deme resources
   m_interface->UpdateDemeResources(ctx, deme_res_change);
@@ -778,7 +777,8 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   
   // Return currently stored internal resources to the world
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
-  	m_interface->UpdateResources(ctx, GetRBins());
+  	if (!m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateAVResources(ctx, GetRBins());
+    else m_interface->UpdateResources(ctx, GetRBins());
   }
   
   // Make sure the group composition is updated.
