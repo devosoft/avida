@@ -248,8 +248,19 @@ class SCMWrapper_Git:
   def __init__(self):
     global settings
     self.cmd = settings["git"]
+    self.submodule = settings["git_submodule"]
+    print self.submodule
+    
+  def goSubmodule(self):
+    if self.submodule != "":
+      os.chdir(self.submodule)
+      
+  def retSubmodule(self):
+    if self.submodule != "":
+      os.chdir("..")
     
   def getVersionString(self, path):
+    self.goSubmodule()
     rev = "exported"
     try:
       gverp = os.popen("%s describe" % (self.cmd))
@@ -257,21 +268,33 @@ class SCMWrapper_Git:
       gverp.close()
       if rev == "": rev = "exported"
     except (IOError, OSError): pass
+    self.retSubmodule();
     return rev
     
   def deleteMetadata(self, path): pass
   def removeMetadataFromDirList(self, dirs): pass
   
   def addDirectory(self, dir):
+    self.goSubmodule()
     open(os.path.join(dir, ".gitignore"), "a").close()
     ecode = os.spawnlp(os.P_WAIT, self.cmd, self.cmd, "add", dir)
-    if ecode != 0: return False
+    if ecode != 0:
+      self.retSubmodule()
+      return False
+    
+    self.retSubmodule()
     return True
     
   def removeDirectory(self, dir):
+    self.goSubmodule()
     ecode = os.spawnlp(os.P_WAIT, self.cmd, self.cmd, "rm", "-r", dir)
-    if ecode != 0: return False
-    if os.path.exists(dir): return False
+    if ecode != 0:
+      self.retSubmodule()
+      return False
+    if os.path.exists(dir):
+      self.retSubmodule()
+      return False
+    self.retSubmodule()
     return True
 
 
@@ -1011,6 +1034,7 @@ def main(argv):
   settings["scm"] = getConfig("testrunner", "scm", "none")
   
   settings["git"] = getConfig("git", "cmd", "git")
+  settings["git_submodule"] = getConfig("git", "submodule", "")
   
   settings["svn"] = getConfig("svn", "cmd", "svn")
   settings["svnversion"] = getConfig("svn", "svnversion", "svnversion")
