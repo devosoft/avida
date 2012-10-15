@@ -72,7 +72,7 @@ private:
   friend class cCharProxy;  // Telling rvalue vs lvalue ....
 
   // cStringData -- Holds the actual data and is reference count --
-  class cStringData : public Apto::RefCountObject
+  class cStringData : public Apto::RefCountObject<Apto::ThreadSafe>
   {
     // NOTE: Terminating NULL is always there (you can't assign!!)
   private:
@@ -570,7 +570,7 @@ std::ostream& operator << (std::ostream& out, const cString& string);
 
 void cString::CopyOnWrite()
 {
-  if (!value->IsExclusive()) {  // if it is shared
+  if (value->RefCount() != 1) {  // if it is shared
     value = Apto::SmartPtr<cStringData, Apto::InternalRCObject>(new cStringData(*value));  // make own copy of value
   }
 }

@@ -39,7 +39,7 @@ private:
   Apto::String m_src_args;
   const Avida::Genome m_initial_genome;
   
-  PropertyMap m_prop_map;
+  HashPropertyMap m_prop_map;
   
   cPhenotype m_phenotype;
   double virulence;

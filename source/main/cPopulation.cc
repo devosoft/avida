@@ -6391,7 +6391,7 @@ void cPopulation::InjectParasite(const cString& label, const InstructionSequence
   if (target_organism == NULL) return;
   
   GeneticRepresentationPtr rep(new InstructionSequence(injected_code));
-  PropertyMap props;
+  HashPropertyMap props;
   cHardwareManager::SetupPropertyMap(props, (const char*)target_organism->GetHardware().GetInstSet().GetInstSetName());
   Genome mg(target_organism->GetHardware().GetType(), props, rep);
   Apto::SmartPtr<cParasite, Apto::InternalRCObject> parasite(new cParasite(m_world, mg, 0, Systematics::Source(Systematics::HORIZONTAL, (const char*)label)));

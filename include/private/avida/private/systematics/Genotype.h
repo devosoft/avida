@@ -84,9 +84,9 @@ namespace Avida {
       cCountTracker m_breed_in;
       cCountTracker m_breed_true;
       cCountTracker m_breed_out;
-      
-      bool m_provisional_stats;
-      
+
+      cCountTracker m_gestation_count;
+            
       cDoubleSum m_copied_size;
       cDoubleSum m_exe_size;
       cDoubleSum m_gestation_time;

@@ -44,7 +44,7 @@ cString::cStringData::cStringData(int in_size, const char* in) : m_size(in_size)
   m_data[m_size] = '\0';
 }
 
-cString::cStringData::cStringData(const cStringData& in) : Apto::RefCountObject(*this), m_size(in.GetSize()), m_data(new char[m_size + 1])
+cString::cStringData::cStringData(const cStringData& in) : Apto::RefCountObject<Apto::ThreadSafe>(*this), m_size(in.GetSize()), m_data(new char[m_size + 1])
 {
   assert(m_data != NULL); // Memory Allocation Error: Out of Memory
   for (int i = 0; i < m_size; i++)  m_data[i] = in[i];

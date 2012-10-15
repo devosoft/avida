@@ -86,7 +86,29 @@ Avida::PropertyDescriptionMap Avida::PropertyMap::s_null_desc_map;
 Avida::PropertyPtr Avida::PropertyMap::s_default_prop(new StringProperty("", Property::Null, s_null_desc_map, (const char*)""));
 
 
-bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const Apto::String& prop_value)
+
+// PropertyMap
+// --------------------------------------------------------------------------------------------------------------
+
+Avida::PropertyMap::~PropertyMap() { ; }
+
+
+// HashPropertyMap
+// --------------------------------------------------------------------------------------------------------------
+
+Avida::HashPropertyMap::~HashPropertyMap() { ; }
+
+int Avida::HashPropertyMap::GetSize() const { return m_prop_map.GetSize(); }
+
+bool Avida::HashPropertyMap::Has(const PropertyID& p_id) const { return m_prop_map.Has(p_id); }
+
+const Avida::Property& Avida::HashPropertyMap::Get(const PropertyID& p_id) const
+{
+  return *m_prop_map.GetWithDefault(p_id, s_default_prop);
+}
+
+
+bool Avida::HashPropertyMap::SetValue(const PropertyID& p_id, const Apto::String& prop_value)
 {
   PropertyPtr prop;
   if (m_prop_map.Get(p_id, prop)) {
@@ -96,7 +118,7 @@ bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const Apto::String& pr
 }
 
 
-bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const int prop_value)
+bool Avida::HashPropertyMap::SetValue(const PropertyID& p_id, const int prop_value)
 {
   PropertyPtr prop;
   if (m_prop_map.Get(p_id, prop)) {
@@ -106,7 +128,7 @@ bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const int prop_value)
 }
 
 
-bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const double prop_value)
+bool Avida::HashPropertyMap::SetValue(const PropertyID& p_id, const double prop_value)
 {
   PropertyPtr prop;
   if (m_prop_map.Get(p_id, prop)) {
@@ -117,14 +139,15 @@ bool Avida::PropertyMap::SetValue(const PropertyID& p_id, const double prop_valu
 
 
 
-bool Avida::PropertyMap::operator==(const PropertyMap& p) const
+bool Avida::HashPropertyMap::operator==(const PropertyMap& p) const
 {
   // Build distinct key sets
   Apto::Set<PropertyID> pm1pids, pm2pids;
-  PropertyIDIterator it = m_prop_map.Keys();
+  Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault>::KeyIterator it = m_prop_map.Keys();
   while (it.Next()) pm1pids.Insert(*it.Get());
-  it = p.PropertyIDs();
-  while (it.Next()) pm2pids.Insert(*it.Get());
+  
+  PropertyIDSet::ConstIterator pidit = p.PropertyIDs()->Begin();
+  while (pidit.Next()) pm2pids.Insert(*pidit.Get());
   
   // Compare key sets
   if (pm1pids != pm2pids) return false;
@@ -138,7 +161,21 @@ bool Avida::PropertyMap::operator==(const PropertyMap& p) const
   return true;
 }
 
-bool Avida::PropertyMap::Serialize(ArchivePtr) const
+void Avida::HashPropertyMap::Define(PropertyPtr p) { m_prop_map.Set(p->ID(), p); }
+bool Avida::HashPropertyMap::Remove(const PropertyID& p_id) { return m_prop_map.Remove(p_id); }
+
+Avida::ConstPropertyIDSetPtr Avida::HashPropertyMap::PropertyIDs() const
+{
+  PropertyIDSetPtr pidset(new PropertyIDSet);
+  
+  Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault>::KeyIterator it = m_prop_map.Keys();
+  while (it.Next()) pidset->Insert(*it.Get());
+  
+  return pidset;
+}
+
+
+bool Avida::HashPropertyMap::Serialize(ArchivePtr) const
 {
   // @TODO
   assert(false);

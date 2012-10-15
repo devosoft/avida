@@ -1958,6 +1958,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7023EC5F0C0A431B00362B9C /* cHardwareCPU.cc in Sources */,
 				70D5B4FB14F4009000D15FFD /* Avida.cc in Sources */,
 				7029D7BD1491AF7800C3B8AA /* GeneticRepresentation.cc in Sources */,
 				70D5B4D914F4009000D15FFD /* Genome.cc in Sources */,
@@ -2002,7 +2003,6 @@
 				7023EC490C0A431B00362B9C /* cCPUStack.cc in Sources */,
 				7023EC4A0C0A431B00362B9C /* cCPUTestInfo.cc in Sources */,
 				7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */,
-				7023EC5F0C0A431B00362B9C /* cHardwareCPU.cc in Sources */,
 				7023EC600C0A431B00362B9C /* cHardwareExperimental.cc in Sources */,
 				7023EC620C0A431B00362B9C /* cHardwareManager.cc in Sources */,
 				7023EC640C0A431B00362B9C /* cHardwareStatusPrinter.cc in Sources */,
@@ -2223,7 +2223,6 @@
 					"-Wall",
 					"-Wextra",
 					"-Wno-unused-parameter",
-					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
 			};
@@ -2243,6 +2242,7 @@
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = "";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
@@ -2250,8 +2250,9 @@
 				);
 				SDKROOT = macosx10.7;
 				WARNING_CFLAGS = (
+					"-Wall",
 					"-Wextra",
-					"-Wno-four-char-constants",
+					"-Wno-unused-parameter",
 					"-Wno-unknown-pragmas",
 				);
 			};

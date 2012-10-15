@@ -1169,7 +1169,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   m_mem_array[mem_space_used].Resize(write_head_pos);
 
   InstructionSequencePtr offspring_seq(new InstructionSequence(m_mem_array[mem_space_used]));
-  PropertyMap props;
+  HashPropertyMap props;
   cHardwareManager::SetupPropertyMap(props, (const char*)m_inst_set->GetInstSetName());
   Genome offspring(GetType(), props, offspring_seq);
 

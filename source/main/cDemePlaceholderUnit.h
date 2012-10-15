@@ -38,7 +38,7 @@ private:
   cString m_src_args;
   Genome m_genome;
   cPhenotype m_phenotype;
-  PropertyMap m_prop_map;
+  HashPropertyMap m_prop_map;
   
   
 public:

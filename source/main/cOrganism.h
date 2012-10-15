@@ -65,8 +65,6 @@ private:
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   Systematics::Source m_src;
-  mutable PropertyMap* m_prop_map;
-  
   
   const Genome m_initial_genome;         // Initial genome; can never be changed!
   Apto::Array<Systematics::UnitPtr> m_parasites;   // List of all parasites associated with this organism.
@@ -724,7 +722,91 @@ private:
   
   void initialize(cAvidaContext& ctx);
   
-  void setupPropertyMap() const;
+  
+  friend class OrgPropRetrievalContainer;
+  template <class T> friend class OrgPropOfType;
+  
+  class OrgPropertyMap : public PropertyMap
+  {
+    friend class cOrganism;
+  private:
+    class OrgIntProp : public IntProperty
+    {
+    public:
+      inline OrgIntProp(const PropertyDescriptionMap& desc_map) : IntProperty("", desc_map, 0) { ; }
+      inline void SetPropertyID(const PropertyID& prop_id) { m_id = prop_id; }
+    };
+    
+    class OrgDoubleProp : public DoubleProperty
+    {
+    public:
+      inline OrgDoubleProp(const PropertyDescriptionMap& desc_map) : DoubleProperty("", desc_map, 0) { ; }
+      inline void SetPropertyID(const PropertyID& prop_id) { m_id = prop_id; }
+    };
+    
+    class OrgStringProp : public StringProperty
+    {
+    public:
+      inline OrgStringProp(const PropertyDescriptionMap& desc_map) : StringProperty("", desc_map, Apto::String()) { ; }
+      inline void SetPropertyID(const PropertyID& prop_id) { m_id = prop_id; }
+    };
+    
+  private:
+    cOrganism* m_organism;
+    mutable OrgIntProp m_prop_int;
+    mutable OrgDoubleProp m_prop_double;
+    mutable OrgStringProp m_prop_string;
+    
+  public:
+    LIB_LOCAL OrgPropertyMap(cOrganism* organism);
+    LIB_LOCAL ~OrgPropertyMap();
+    
+    LIB_LOCAL int GetSize() const;
+    
+    LIB_LOCAL bool operator==(const PropertyMap& p) const;
+    
+    LIB_LOCAL bool Has(const PropertyID& p_id) const;
+    
+    LIB_LOCAL const Property& Get(const PropertyID& p_id) const;
+    
+    LIB_LOCAL bool SetValue(const PropertyID& p_id, const Apto::String& prop_value);
+    LIB_LOCAL bool SetValue(const PropertyID& p_id, const int prop_value);
+    LIB_LOCAL bool SetValue(const PropertyID& p_id, const double prop_value);
+    
+    
+    LIB_LOCAL void Define(PropertyPtr p);
+    LIB_LOCAL bool Remove(const PropertyID& p_id);
+    
+    LIB_LOCAL ConstPropertyIDSetPtr PropertyIDs() const;
+    
+    LIB_LOCAL bool Serialize(ArchivePtr ar) const;
+    
+    inline const Property& SetTempProp(const PropertyID& prop_id, int value) const
+    {
+      m_prop_int.SetPropertyID(prop_id); m_prop_int.SetValue(value); return m_prop_int;
+    }
+    inline const Property& SetTempProp(const PropertyID& prop_id, double value) const
+    {
+      m_prop_double.SetPropertyID(prop_id); m_prop_double.SetValue(value); return m_prop_double;
+    }
+    inline const Property& SetTempProp(const PropertyID& prop_id, const Apto::String& value) const
+    {
+      m_prop_string.SetPropertyID(prop_id); m_prop_string.SetValue(value); return m_prop_string;
+    }
+  };
+  
+  Apto::String getGenomeString();
+  int getSrcTransmissionType();
+  int getAge();
+  int getGeneration();
+  int getLastCopied();
+  int getLastExecuted();
+  int getLastGestation();
+  double getLastMetabolicRate();
+  double getLastFitness();
+  
+private:
+  OrgPropertyMap m_prop_map;
 
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);

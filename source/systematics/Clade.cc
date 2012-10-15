@@ -179,7 +179,7 @@ void Avida::Systematics::Clade::setupPropertyMap() const
 {
   if (m_prop_map) return;
   
-  m_prop_map = new PropertyMap();
+  m_prop_map = new HashPropertyMap();
   
 #define ADD_REF_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new ReferenceProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, const_cast<TYPE&>(VAL))));
   

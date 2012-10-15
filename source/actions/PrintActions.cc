@@ -2751,7 +2751,7 @@ public:
   static const cString GetDescription() { return "Arguments: [int lines_saved=0]"; }
   void Process(cAvidaContext& ctx)
   {
-    PropertyMap mg_props;
+    HashPropertyMap mg_props;
     cHardwareManager::SetupPropertyMap(mg_props, (const char*)m_inst_set);
     Genome mg(m_world->GetHardwareManager().GetInstSet((const char*)m_inst_set).GetHardwareType(), mg_props, InstructionSequencePtr(new InstructionSequence));
     const int num_inst = m_world->GetHardwareManager().GetInstSet((const char*)m_inst_set).GetSize();

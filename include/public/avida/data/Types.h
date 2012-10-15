@@ -45,26 +45,26 @@ namespace Avida {
 
     typedef Apto::String DataID;
     typedef Apto::SmartPtr<Provider, Apto::InternalRCObject> ProviderPtr;
-    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<World*> > ProviderActivateFunctor;
+    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<World*>, SmallObjectMalloc> ProviderActivateFunctor;
     
     typedef Apto::String Argument;
     typedef Apto::Set<Argument> ArgumentSet;
     typedef Apto::SmartPtr<ArgumentSet, Apto::ThreadSafeRefCount> ArgumentSetPtr;
     typedef Apto::SmartPtr<const ArgumentSet, Apto::ThreadSafeRefCount> ConstArgumentSetPtr;
     typedef Apto::SmartPtr<ArgumentedProvider, Apto::InternalRCObject> ArgumentedProviderPtr;
-    typedef Apto::Functor<ArgumentedProviderPtr, Apto::TL::Create<World*> > ArgumentedProviderActivateFunctor;
+    typedef Apto::Functor<ArgumentedProviderPtr, Apto::TL::Create<World*>, SmallObjectMalloc> ArgumentedProviderActivateFunctor;
     
-    typedef Apto::SmartPtr<Recorder, Apto::ThreadSafeRefCount> RecorderPtr;
+    typedef Apto::SmartPtr<Recorder, Apto::InternalRCObject> RecorderPtr;
     
     typedef Apto::Set<DataID> DataSet;
     typedef Apto::SmartPtr<DataSet, Apto::ThreadSafeRefCount> DataSetPtr;
     typedef Apto::SmartPtr<const DataSet, Apto::ThreadSafeRefCount> ConstDataSetPtr;
     typedef Apto::Set<Apto::String>::ConstIterator ConstDataSetIterator;
     
-    typedef Apto::SmartPtr<Package, Apto::ThreadSafeRefCount> PackagePtr;
-    typedef Apto::SmartPtr<const Package, Apto::ThreadSafeRefCount> ConstPackagePtr;
+    typedef Apto::SmartPtr<Package, Apto::InternalRCObject> PackagePtr;
+    typedef Apto::SmartPtr<const Package, Apto::InternalRCObject> ConstPackagePtr;
     
-    typedef Apto::Functor<PackagePtr, Apto::TL::Create<const DataID&> > DataRetrievalFunctor;
+    typedef Apto::Functor<PackagePtr, Apto::TL::Create<const DataID&>, SmallObjectMalloc> DataRetrievalFunctor;
     
     typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
   };

@@ -37,7 +37,7 @@ namespace Avida {
   // Property
   // --------------------------------------------------------------------------------------------------------------  
   
-  class Property
+  class Property : public Apto::ClassAllocator<SmallObjectMalloc>
   {
   public:
     static PropertyTypeID Null;
@@ -118,8 +118,8 @@ namespace Avida {
   template <typename T> class FunctorProperty : public Property
   {
   public:
-    typedef Apto::Functor<T, Apto::NullType> GetFunctor;
-    typedef Apto::Functor<bool, Apto::TL::Create<const T&> > SetFunctor;
+    typedef Apto::Functor<T, Apto::NullType, SmallObjectMalloc> GetFunctor;
+    typedef Apto::Functor<bool, Apto::TL::Create<const T&>, SmallObjectMalloc> SetFunctor;
   private:
     GetFunctor m_g_fun;
     SetFunctor m_s_fun;
@@ -144,8 +144,8 @@ namespace Avida {
   template <> class FunctorProperty<Apto::String> : public Property
   {
   public:
-    typedef Apto::Functor<Apto::String, Apto::NullType> GetFunctor;
-    typedef Apto::Functor<bool, Apto::TL::Create<const Apto::String&> > SetFunctor;
+    typedef Apto::Functor<Apto::String, Apto::NullType, SmallObjectMalloc> GetFunctor;
+    typedef Apto::Functor<bool, Apto::TL::Create<const Apto::String&>, SmallObjectMalloc> SetFunctor;
   private:
     GetFunctor m_g_fun;
     SetFunctor m_s_fun;
@@ -305,50 +305,77 @@ namespace Avida {
   
   class PropertyMap
   {
-    template <class K, class V> class PropertyMapStorage : public Apto::HashStaticTableLinkedList<K, V, 5> { ; };
-    
-  public:
-    typedef Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault>::KeyIterator PropertyIDIterator;
-    
-  private:
-    Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault> m_prop_map;
-    
-    
+  protected:
     static PropertyPtr s_default_prop;
     static PropertyDescriptionMap s_null_desc_map;
 
   public:
     LIB_EXPORT inline PropertyMap() { ; }
-    LIB_EXPORT inline ~PropertyMap() { ; }
+    LIB_EXPORT virtual ~PropertyMap();
     
-    LIB_EXPORT inline int GetSize() const { return m_prop_map.GetSize(); }
+    LIB_EXPORT virtual int GetSize() const = 0;
     
-    LIB_EXPORT bool operator==(const PropertyMap& p) const;
+    LIB_EXPORT virtual bool operator==(const PropertyMap& p) const = 0;
     LIB_EXPORT inline bool operator!=(const PropertyMap& p) const { return !operator==(p); }
     
-    LIB_EXPORT inline bool Has(const PropertyID& p_id) const { return m_prop_map.Has(p_id); }
+    LIB_EXPORT virtual bool Has(const PropertyID& p_id) const = 0;
     
-//    LIB_EXPORT inline Property& Get(const PropertyID& p_id) { return *m_prop_map.GetWithDefault(p_id, PropertyPtr(new StringProperty(p_id, s_null_desc_map, (const char*)""))); }
-    LIB_EXPORT inline const Property& Get(const PropertyID& p_id) const { return *m_prop_map.GetWithDefault(p_id, s_default_prop); }
-//    LIB_EXPORT inline Property& operator[](const PropertyID& p_id) { return Get(p_id); }
+    LIB_EXPORT virtual const Property& Get(const PropertyID& p_id) const = 0;
     LIB_EXPORT inline const Property& operator[](const PropertyID& p_id) const { return Get(p_id); }
+    
+    LIB_EXPORT virtual bool SetValue(const PropertyID& p_id, const Apto::String& prop_value) = 0;
+    LIB_EXPORT virtual bool SetValue(const PropertyID& p_id, const int prop_value) = 0;
+    LIB_EXPORT virtual bool SetValue(const PropertyID& p_id, const double prop_value) = 0;
+    
+    
+    LIB_EXPORT virtual void Define(PropertyPtr p) = 0;
+    LIB_EXPORT virtual bool Remove(const PropertyID& p_id) = 0;
+    
+    LIB_EXPORT virtual ConstPropertyIDSetPtr PropertyIDs() const = 0;
+    
+    LIB_EXPORT virtual bool Serialize(ArchivePtr ar) const = 0;
+    
+  private:
+    // Disallow copying
+    PropertyMap(const PropertyMap&);
+    PropertyMap& operator=(const PropertyMap&);
+  };
+
+  
+  // HashPropertyMap
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class HashPropertyMap : public PropertyMap
+  {
+    template <class K, class V> class PropertyMapStorage
+    : public Apto::HashStaticTableLinkedList<K, V, 5, Apto::HashKey, SmallObjectMalloc> { ; };
+    
+  private:
+    Apto::Map<PropertyID, PropertyPtr, PropertyMapStorage, Apto::ExplicitDefault> m_prop_map;
+    
+  public:
+    LIB_EXPORT inline HashPropertyMap() { ; }
+    LIB_EXPORT ~HashPropertyMap();
+    
+    LIB_EXPORT int GetSize() const;
+    
+    LIB_EXPORT bool operator==(const PropertyMap& p) const;
+    
+    LIB_EXPORT bool Has(const PropertyID& p_id) const;
+    
+    LIB_EXPORT const Property& Get(const PropertyID& p_id) const;
     
     LIB_EXPORT bool SetValue(const PropertyID& p_id, const Apto::String& prop_value);
     LIB_EXPORT bool SetValue(const PropertyID& p_id, const int prop_value);
     LIB_EXPORT bool SetValue(const PropertyID& p_id, const double prop_value);
     
     
-    LIB_EXPORT inline void Define(PropertyPtr p) { m_prop_map.Set(p->ID(), p); }
-    LIB_EXPORT inline bool Remove(const PropertyID& p_id) { return m_prop_map.Remove(p_id); }
+    LIB_EXPORT void Define(PropertyPtr p);
+    LIB_EXPORT bool Remove(const PropertyID& p_id);
     
-    LIB_EXPORT PropertyIDIterator PropertyIDs() const { return m_prop_map.Keys(); }
+    LIB_EXPORT ConstPropertyIDSetPtr PropertyIDs() const;
     
-    LIB_EXPORT bool Serialize(ArchivePtr ar) const;
-    
-  private:
-    // Disallow copying
-    PropertyMap(const PropertyMap&);
-    PropertyMap& operator=(const PropertyMap&);
+    LIB_EXPORT bool Serialize(ArchivePtr ar) const;    
   };
 
 };

@@ -26,6 +26,7 @@
 #define AvidaCoreTypes_h
 
 #include "apto/core.h"
+#include "apto/malloc.h"
 #include "avida/core/Definitions.h"
 
 
@@ -71,6 +72,8 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------  
   
   typedef int Update; // Discrete unit of activity in Avida
+    
+  typedef Apto::Malloc::FixedSegment<32, Apto::Malloc::TCFreeList<Apto::BasicMalloc>, Apto::BasicMalloc> SmallObjectMalloc;
   
   typedef Apto::SmartPtr<Archive> ArchivePtr;
   typedef Apto::SmartPtr<const Archive> ConstArchivePtr;
@@ -84,8 +87,8 @@ namespace Avida {
   typedef Apto::SmartPtr<GeneticRepresentation> GeneticRepresentationPtr;
   typedef Apto::SmartPtr<const GeneticRepresentation> ConstGeneticRepresentationPtr;
   
-  typedef Apto::Functor<bool, Apto::TL::Create<GeneticRepresentationPtr> > GeneticRepresentationProcessFunctor;
-  typedef Apto::Functor<bool, Apto::TL::Create<ConstGeneticRepresentationPtr> > ConstGeneticRepresentationProcessFunctor;
+  typedef Apto::Functor<bool, Apto::TL::Create<GeneticRepresentationPtr>, SmallObjectMalloc> GeneticRepresentationProcessFunctor;
+  typedef Apto::Functor<bool, Apto::TL::Create<ConstGeneticRepresentationPtr>, SmallObjectMalloc> ConstGeneticRepresentationProcessFunctor;
   typedef Apto::Map<Apto::String, GeneticRepresentationProcessFunctor> GeneticRepresentationDispatchTable;
   typedef Apto::Map<Apto::String, ConstGeneticRepresentationProcessFunctor> ConstGeneticRepresentationDispatchTable;
   
@@ -112,9 +115,9 @@ namespace Avida {
   
   typedef Apto::String WorldFacetID;
   typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;
-  typedef Apto::Functor<WorldFacetPtr, Apto::TL::Create<ArchivePtr> > WorldFacetDeserializeFunctor;
+  typedef Apto::Functor<WorldFacetPtr, Apto::TL::Create<ArchivePtr>, SmallObjectMalloc> WorldFacetDeserializeFunctor;
   
-  typedef Apto::Functor<void, Apto::TL::Create<DriverEvent> > DriverCallback;
+  typedef Apto::Functor<void, Apto::TL::Create<DriverEvent>, SmallObjectMalloc> DriverCallback;
 
   
   // Constant Declarations

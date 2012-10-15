@@ -1500,6 +1500,7 @@ void cHardwareBase::DeleteMiniTrace(bool print_reacs)
     m_minitracer = NULL;
     bool success = m_world->GetDataFileManager().Remove(m_minitrace_file);
     assert(success);
+    (void)success;
   }
 }
 

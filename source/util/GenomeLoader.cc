@@ -91,7 +91,7 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
   
   if (!success) return GenomePtr();
   
-  PropertyMap props;
+  HashPropertyMap props;
   cHardwareManager::SetupPropertyMap(props, (const char*)inst_set);
   return GenomePtr(new Genome(hw_type, props, new_seq));
 }

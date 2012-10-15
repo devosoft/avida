@@ -156,7 +156,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    PropertyMap props;
+    HashPropertyMap props;
     cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
     Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(m_length)));
     InstructionSequencePtr seq_p;
@@ -209,7 +209,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      PropertyMap props;
+      HashPropertyMap props;
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(m_length + 1)));
       InstructionSequencePtr seq_p;
@@ -406,7 +406,7 @@ public:
       ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      PropertyMap props;
+      HashPropertyMap props;
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
@@ -470,7 +470,7 @@ public:
       ctx.Driver().Feedback().Warning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      PropertyMap props;
+      HashPropertyMap props;
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)m_sequence)));
       for (int i = m_cell_start; i < m_cell_end; i++) {
@@ -5747,14 +5747,11 @@ private:
 public:
 	cActionSetRedundancy(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
 	{
-		//Get the instruction set
-		const cInstSet& is = world->GetHardwareManager().GetDefaultInstSet();
-		
 		cString largs(args);
 		m_inst_name = largs.PopWord();
 		
 		//Make sure that the instruction the user has specified is in the instruction set
-		assert(is.InstInSet(m_inst_name));
+		assert(world->GetHardwareManager().GetDefaultInstSet().InstInSet(m_inst_name));
     
 		//Get the new redundancy
 		m_redundancy = largs.PopWord().AsInt();

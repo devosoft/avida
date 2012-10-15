@@ -261,8 +261,7 @@ public:
     if (largs.GetSize()) largs.PopWord();
     if (largs.GetSize()) m_res_name = largs.PopWord().Pop(':');
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string env_string>"; }
@@ -298,8 +297,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
@@ -323,8 +321,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
@@ -348,8 +345,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
@@ -373,8 +369,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
@@ -398,8 +393,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
@@ -427,8 +421,7 @@ public:
     if (largs.GetSize()) m_variance = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_type = largs.PopWord().AsInt();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double mean> <double variance>"; }
@@ -456,8 +449,7 @@ public:
     if (largs.GetSize()) m_juvs_per = largs.PopWord().AsInt();
     if (largs.GetSize()) m_detection_prob = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double kill_odds> <int guarded_juvs_per_adult> <double detection_prob>"; }
@@ -514,8 +506,7 @@ public:
       m_count = argc->GetInt(2);
     }
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    assert(res);
+    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lambda> <double theta> <int x> <int y> <int num>"; }

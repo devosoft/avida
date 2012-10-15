@@ -224,6 +224,30 @@ void Avida::Viewer::Driver::SetReactionValue(const Apto::String& name, double va
   m_world->GetEnvironment().SetReactionValue(ctx, (const char*)name, value);
 }
 
+
+double Avida::Viewer::Driver::TestFitnessOfGroup(Avida::Systematics::GroupPtr group)
+{
+  cRandom rng(100);
+  cAvidaContext ctx(this, rng);
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetFitness();
+}
+
+double Avida::Viewer::Driver::TestGestationTimeOfGroup(Avida::Systematics::GroupPtr group)
+{
+  cRandom rng(100);
+  cAvidaContext ctx(this, rng);
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetGestationTime();
+}
+
+double Avida::Viewer::Driver::TestMetabolicRateOfGroup(Avida::Systematics::GroupPtr group)
+{
+  cRandom rng(100);
+  cAvidaContext ctx(this, rng);
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetMerit();
+}
+
+
+
 void Avida::Viewer::Driver::Pause()
 {
   m_mutex.Lock();

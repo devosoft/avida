@@ -49,9 +49,14 @@ using namespace std;
 using namespace Avida;
 
 // Referenced external properties
+// --------------------------------------------------------------------------------------------------------------
+
 static Apto::String s_ext_prop_name_instset("instset");
 
+
 // Internal cOrganism Properties
+// --------------------------------------------------------------------------------------------------------------
+
 static PropertyDescriptionMap s_prop_desc_map;
 
 static Apto::String s_prop_name_genome("genome");
@@ -65,26 +70,85 @@ static Apto::String s_prop_name_last_metabolic_rate("last_metabolic_rate");
 static Apto::String s_prop_name_last_fitness("last_fitness");
 
 
+// OrgPropRetrievalContainer - base container class for the global property map
+// --------------------------------------------------------------------------------------------------------------
+
+class OrgPropRetrievalContainer
+{
+public:
+  virtual ~OrgPropRetrievalContainer() { ; }
+  
+  virtual const Property& Get(cOrganism*, const cOrganism::OrgPropertyMap*) const = 0;
+};
+
+
+// OrgPropOfType - concrete implementations of OrgPropRetrievalContainer for each necessary type
+// --------------------------------------------------------------------------------------------------------------
+
+template <class T> class OrgPropOfType : public OrgPropRetrievalContainer
+{
+private:
+  typedef T (cOrganism::*RetrieveFunction)();
+  
+  PropertyID m_prop_id;
+  RetrieveFunction m_fun;
+  
+public:
+  OrgPropOfType(const PropertyID& prop_id, RetrieveFunction fun) : m_prop_id(prop_id), m_fun(fun) { ; }
+  
+  const Property& Get(cOrganism* org, const cOrganism::OrgPropertyMap* prop_map) const
+  {
+    return prop_map->SetTempProp(m_prop_id, (org->*m_fun)());
+  }
+};
+
+
+// OrgGlobalPropMap and OrgGlobalPropMapSingletone - global singleton structure holding the global org prop map
+// --------------------------------------------------------------------------------------------------------------
+
+struct OrgGlobalPropMap
+{
+  Apto::Map<Apto::String, OrgPropRetrievalContainer*> prop_map;
+  
+  ~OrgGlobalPropMap()
+  {
+    for (Apto::Map<Apto::String, OrgPropRetrievalContainer*>::ValueIterator it = prop_map.Values(); it.Next();) {
+      delete *it.Get();
+    }
+  }
+};
+
+typedef Apto::SingletonHolder<OrgGlobalPropMap, Apto::CreateWithNew, Apto::DestroyAtExit, Apto::ThreadSafe> OrgGlobalPropMapSingleton;
+
+
+// cOrganism::Intialize() - static method that sets up global data structures
+// --------------------------------------------------------------------------------------------------------------
+
 void cOrganism::Initialize()
 {
-#define DEFINE_PROP(NAME, DESC) s_prop_desc_map.Set(s_prop_name_ ## NAME, DESC);
-  DEFINE_PROP(genome, "Genome");
-  DEFINE_PROP(src_transmission_type, "Source Transmission Type");
-  DEFINE_PROP(age, "Age");
-  DEFINE_PROP(generation, "Generation");
-  DEFINE_PROP(last_copied_size, "Last Copied Size");
-  DEFINE_PROP(last_executed_size, "Last Exectuted Size");
-  DEFINE_PROP(last_gestation_time, "Last Gestation Time");
-  DEFINE_PROP(last_metabolic_rate, "Last Metabolic Rage");
-  DEFINE_PROP(last_fitness, "Last Fitness");
+#define DEFINE_PROP(NAME, TYPE, FUNCTION, DESC) s_prop_desc_map.Set(s_prop_name_ ## NAME, DESC); \
+  OrgGlobalPropMapSingleton::Instance().prop_map.Set(s_prop_name_ ## NAME, new OrgPropOfType<TYPE>(s_prop_name_ ## NAME, &cOrganism::FUNCTION));
+  DEFINE_PROP(genome, Apto::String, getGenomeString, "Genome");
+  DEFINE_PROP(src_transmission_type, int, getSrcTransmissionType, "Source Transmission Type");
+  DEFINE_PROP(age, int, getAge, "Age");
+  DEFINE_PROP(generation, int, getGeneration, "Generation");
+  DEFINE_PROP(last_copied_size, int, getLastCopied, "Last Copied Size");
+  DEFINE_PROP(last_executed_size, int, getLastExecuted, "Last Exectuted Size");
+  DEFINE_PROP(last_gestation_time, int, getLastGestation, "Last Gestation Time");
+  DEFINE_PROP(last_metabolic_rate, double, getLastMetabolicRate, "Last Metabolic Rage");
+  DEFINE_PROP(last_fitness, double, getLastFitness, "Last Fitness");
 #undef DEFINE_PROP
 }
+
+
+
+// Creation Policies
+// --------------------------------------------------------------------------------------------------------------
 
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
   , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue()).GetNumNops())
   , m_src(src)
-  , m_prop_map(NULL)
   , m_initial_genome(genome)
   , m_interface(NULL)
   , m_lineage_label(-1)
@@ -135,6 +199,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_num_point_mut(0)
   , m_av_in_index(-1)
   , m_av_out_index(-1)
+  , m_prop_map(this)
 {
 	// initializing this here because it may be needed during hardware creation:
 	m_id = m_world->GetStats().GetTotCreatures();
@@ -183,7 +248,6 @@ cOrganism::~cOrganism()
   assert(m_is_running == false);
   delete m_hardware;
   delete m_interface;
-  delete m_prop_map;
   
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
@@ -192,40 +256,8 @@ cOrganism::~cOrganism()
   delete m_queued_display_data;
 }
 
-void cOrganism::setupPropertyMap() const
-{
-  assert(m_prop_map == NULL);
-  
-  m_prop_map = new PropertyMap;
-  
-#define ADD_FUN_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new FunctorProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, FunctorProperty<TYPE>::VAL)));
-#define ADD_REF_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new ReferenceProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, const_cast<TYPE&>(VAL))));
-#define ADD_STR_PROP(NAME, VAL) m_prop_map->Define(PropertyPtr(new StringProperty(s_prop_name_ ## NAME, s_prop_desc_map, VAL)));
-  ADD_FUN_PROP(genome, Apto::String, GetFunctor(&m_initial_genome, &Genome::AsString));
-  ADD_STR_PROP(src_transmission_type, (int)m_src.transmission_type);
-  
-  ADD_FUN_PROP(age, int, GetFunctor(&m_phenotype, &cPhenotype::GetAge));
-  ADD_FUN_PROP(generation, int, GetFunctor(&m_phenotype, &cPhenotype::GetGeneration));
-  ADD_FUN_PROP(last_copied_size, double, GetFunctor(&m_phenotype, &cPhenotype::GetCopiedSize));
-  ADD_FUN_PROP(last_executed_size, double, GetFunctor(&m_phenotype, &cPhenotype::GetExecutedSize));
-  ADD_FUN_PROP(last_gestation_time, double, GetFunctor(&m_phenotype, &cPhenotype::GetGestationTime));
-  ADD_FUN_PROP(last_metabolic_rate, double, GetFunctor(&m_phenotype, &cPhenotype::GetLastMerit));
-  ADD_FUN_PROP(last_fitness, double, GetFunctor(&m_phenotype, &cPhenotype::GetFitness));
-  
-  const cEnvironment& env = m_world->GetEnvironment();
-  Apto::Functor<int, Apto::TL::Create<int> > getLastTaskFun(&m_phenotype, &cPhenotype::GetLastCountForTask);
-  for(int i = 0; i < env.GetNumTasks(); i++) {    
-    m_prop_map->Define(PropertyPtr(new FunctorProperty<int>(env.GetTask(i).CountPropertyID(), s_prop_desc_map, Apto::BindFirst(getLastTaskFun, i))));
-	}
-  
-  
-#undef ADD_FUN_PROP
-#undef ADD_REF_PROP
-#undef ADD_STR_PROP
-}
 
-const PropertyMap& cOrganism::Properties() const { if (!m_prop_map) setupPropertyMap(); return *m_prop_map; }
-
+const PropertyMap& cOrganism::Properties() const { return m_prop_map; }
 
 void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface)
 {
@@ -1526,4 +1558,102 @@ bool cOrganism::MoveAV(cAvidaContext& ctx)
   //  m_world->GetStats().Move(*this);
   
   return true;    
-} 
+}
+
+
+
+// cOrganism::OrgPropertyMap implementation
+// --------------------------------------------------------------------------------------------------------------
+
+cOrganism::OrgPropertyMap::OrgPropertyMap(cOrganism* organism)
+  : m_organism(organism), m_prop_int(s_prop_desc_map), m_prop_double(s_prop_desc_map), m_prop_string(s_prop_desc_map) { ; }
+cOrganism::OrgPropertyMap::~OrgPropertyMap() { ; }
+
+int cOrganism::OrgPropertyMap::GetSize() const
+{
+  return OrgGlobalPropMapSingleton::Instance().prop_map.GetSize();
+}
+
+bool cOrganism::OrgPropertyMap::Has(const PropertyID& p_id) const
+{
+  return OrgGlobalPropMapSingleton::Instance().prop_map.Has(p_id);
+}
+
+const Avida::Property& cOrganism::OrgPropertyMap::Get(const PropertyID& p_id) const
+{
+  OrgPropRetrievalContainer* container = NULL;
+  if (OrgGlobalPropMapSingleton::Instance().prop_map.Get(p_id, container)) {
+    return container->Get(m_organism, this);
+  }
+
+  return *s_default_prop;
+}
+
+
+bool cOrganism::OrgPropertyMap::SetValue(const PropertyID& p_id, const Apto::String& prop_value) { return false; }
+bool cOrganism::OrgPropertyMap::SetValue(const PropertyID& p_id, const int prop_value) { return false; }
+bool cOrganism::OrgPropertyMap::SetValue(const PropertyID& p_id, const double prop_value) { return false; }
+
+
+bool cOrganism::OrgPropertyMap::operator==(const PropertyMap& p) const
+{
+  // Build distinct key sets
+  Apto::Set<PropertyID> pm1pids, pm2pids;
+  Apto::Map<PropertyID, OrgPropRetrievalContainer*>::KeyIterator it = OrgGlobalPropMapSingleton::Instance().prop_map.Keys();
+  while (it.Next()) pm1pids.Insert(*it.Get());
+  
+  PropertyIDSet::ConstIterator pidit = p.PropertyIDs()->Begin();
+  while (pidit.Next()) pm2pids.Insert(*pidit.Get());
+  
+  // Compare key sets
+  if (pm1pids != pm2pids) return false;
+  
+  // Compare values
+  it = OrgGlobalPropMapSingleton::Instance().prop_map.Keys();
+  while (it.Next()) {
+    OrgPropRetrievalContainer* container = NULL;
+    if (OrgGlobalPropMapSingleton::Instance().prop_map.Get(*it.Get(), container)) {
+      if (container->Get(m_organism, this) != p.Get(*it.Get())) return false;
+    } else {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+void cOrganism::OrgPropertyMap::Define(PropertyPtr p) { ; }
+bool cOrganism::OrgPropertyMap::Remove(const PropertyID& p_id) { return false; }
+
+Avida::ConstPropertyIDSetPtr cOrganism::OrgPropertyMap::PropertyIDs() const
+{
+  PropertyIDSetPtr pidset(new PropertyIDSet);
+  
+  Apto::Map<PropertyID, OrgPropRetrievalContainer*>::KeyIterator it = OrgGlobalPropMapSingleton::Instance().prop_map.Keys();
+  while (it.Next()) pidset->Insert(*it.Get());
+  
+  return pidset;
+}
+
+
+bool cOrganism::OrgPropertyMap::Serialize(ArchivePtr) const
+{
+  // @TODO
+  assert(false);
+  return false;
+}
+
+
+
+// Property Map Retrieival Functions
+// --------------------------------------------------------------------------------------------------------------
+
+Apto::String cOrganism::getGenomeString() { return m_initial_genome.AsString(); }
+int cOrganism::getSrcTransmissionType() { return m_src.transmission_type; }
+int cOrganism::getAge() { return m_phenotype.GetAge(); }
+int cOrganism::getGeneration() { return m_phenotype.GetGeneration(); }
+int cOrganism::getLastCopied() { return m_phenotype.GetCopiedSize(); }
+int cOrganism::getLastExecuted() { return m_phenotype.GetExecutedSize(); }
+int cOrganism::getLastGestation() { return m_phenotype.GetGestationTime(); }
+double cOrganism::getLastMetabolicRate() { return m_phenotype.GetLastMerit(); }
+double cOrganism::getLastFitness() { return m_phenotype.GetFitness(); }

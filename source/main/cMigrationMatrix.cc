@@ -63,6 +63,7 @@ int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id,cRandom& p_r
     }    
     // Should never get to this point
     assert(false);
+  return -1;
 };
 
 bool cMigrationMatrix::Load(const int num_demes, const cString& filename, const cString& working_dir,bool p_count_parasites, bool p_count_offspring, bool p_is_reload, Feedback& feedback){

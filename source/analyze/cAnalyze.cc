@@ -217,7 +217,7 @@ void cAnalyze::LoadSequence(cString cur_string)
   
   // Setup the genotype...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-  PropertyMap props;
+  HashPropertyMap props;
   cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
   Genome genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)sequence)));
   cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
@@ -819,7 +819,7 @@ void cAnalyze::LoadFile(cString cur_string)
   
   // Setup the genome...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-  PropertyMap props;
+  HashPropertyMap props;
   cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
   Genome default_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
   int load_count = 0;
@@ -4803,7 +4803,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << "<tr><th colspan=3>Base Creature";
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      PropertyMap props;
+      HashPropertyMap props;
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome null_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence(1)));
       cAnalyzeGenotype null_genotype(m_world, null_genome);
@@ -6914,7 +6914,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       
       // Determine the fitness of the current sequence...
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      PropertyMap props;
+      HashPropertyMap props;
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome test_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)test_sequence)));
       cCPUTestInfo test_info;
@@ -6943,7 +6943,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     
     for (int i = 0; i <= total_diffs; i++) {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      PropertyMap props;
+      HashPropertyMap props;
       cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
       Genome max_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)max_sequence[i])));
       cAnalyzeGenotype max_genotype(m_world, max_genome);
@@ -8618,7 +8618,7 @@ void cAnalyze::MutationRevert(cString cur_string)
 					}
 					
           const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-          PropertyMap props;
+          HashPropertyMap props;
           cHardwareManager::SetupPropertyMap(props, (const char*)is.GetInstSetName());
           Genome rev_genome(is.GetHardwareType(), props, GeneticRepresentationPtr(new InstructionSequence((const char*)reverted)));
 					cAnalyzeGenotype new_genotype(m_world, rev_genome);  //Get likely fitness

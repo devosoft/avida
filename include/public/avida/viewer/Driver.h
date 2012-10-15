@@ -30,6 +30,7 @@
 #include "avida/core/Genome.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Recorder.h"
+#include "avida/systematics/Types.h"
 #include "avida/viewer/Types.h"
 
 class cWorld;
@@ -126,6 +127,10 @@ namespace Avida {
 
       LIB_EXPORT double ReactionValue(const Apto::String& name);
       LIB_EXPORT void SetReactionValue(const Apto::String& name, double value);
+      
+      LIB_EXPORT double TestFitnessOfGroup(Avida::Systematics::GroupPtr group);
+      LIB_EXPORT double TestGestationTimeOfGroup(Avida::Systematics::GroupPtr group);
+      LIB_EXPORT double TestMetabolicRateOfGroup(Avida::Systematics::GroupPtr group);
       
       // WorldDriver Protocol
       // ------------------------------------------------------------------------------------------------------------  

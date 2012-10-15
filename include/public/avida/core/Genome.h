@@ -52,8 +52,10 @@ namespace Avida {
   class Genome
   {
   private:
+    class InstSetPropertyMap;
+    
+  private:
     HardwareTypeID m_hw_type;
-    PropertyMap m_props;
     GeneticRepresentationPtr m_representation;
     Apto::Map<Apto::String, Apto::SmartPtr<EpigeneticObject> > m_epigenetic_objs;
     
@@ -102,7 +104,41 @@ namespace Avida {
     LIB_EXPORT bool Serialize(ArchivePtr ar) const;
     LIB_EXPORT static GenomePtr Deserialize(ArchivePtr ar);
     LIB_EXPORT bool LegacySave(void* df) const;
-  };  
+    
+  private:
+    class InstSetPropertyMap : public PropertyMap
+    {
+    private:
+      StringProperty m_inst_set;
+      
+    public:
+      LIB_LOCAL InstSetPropertyMap();
+      LIB_LOCAL ~InstSetPropertyMap();
+      
+      LIB_LOCAL int GetSize() const;
+      
+      LIB_LOCAL bool operator==(const PropertyMap& p) const;
+      
+      LIB_LOCAL bool Has(const PropertyID& p_id) const;
+      
+      LIB_LOCAL const Property& Get(const PropertyID& p_id) const;
+      
+      LIB_LOCAL bool SetValue(const PropertyID& p_id, const Apto::String& prop_value);
+      LIB_LOCAL bool SetValue(const PropertyID& p_id, const int prop_value);
+      LIB_LOCAL bool SetValue(const PropertyID& p_id, const double prop_value);
+      
+      
+      LIB_LOCAL void Define(PropertyPtr p);
+      LIB_LOCAL bool Remove(const PropertyID& p_id);
+      
+      LIB_LOCAL ConstPropertyIDSetPtr PropertyIDs() const;
+      
+      LIB_LOCAL bool Serialize(ArchivePtr ar) const;
+    };
+    
+  private:
+    InstSetPropertyMap m_props;
+  };
 };
 
 #endif

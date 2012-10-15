@@ -79,13 +79,13 @@ private:
   cString name;              // Name, if one was provided in loading
   cCPUTestInfo m_cpu_test_info; // Use this test info
   
-  struct sGenotypeDatastore : public Apto::RefCountObject
+  struct sGenotypeDatastore : public Apto::RefCountObject<Apto::ThreadSafe>
   {
     mutable Apto::RWLock rwlock;
     mutable Apto::Map<int, cGenotypeData*> dmap;
     
     sGenotypeDatastore() { ; }
-    sGenotypeDatastore(const sGenotypeDatastore& ds) : Apto::RefCountObject(ds) { ; } // Note that data objects are not copied right now
+    sGenotypeDatastore(const sGenotypeDatastore& ds) : Apto::RefCountObject<Apto::ThreadSafe>(ds) { ; } // Note that data objects are not copied right now
     
     ~sGenotypeDatastore();
   };

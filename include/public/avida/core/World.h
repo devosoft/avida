@@ -88,7 +88,7 @@ namespace Avida {
   // implemented) must register their facet type and deserialization functor with the global factory via 
   // RegisterFacetType().
   
-  class WorldFacet : public Apto::MTRefCountObject
+  class WorldFacet : public Apto::RefCountObject<Apto::ThreadSafe>
   {
   public:
     LIB_EXPORT virtual WorldFacetID UpdateBefore() const = 0;

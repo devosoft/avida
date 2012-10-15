@@ -64,6 +64,7 @@ static Apto::String s_prop_name_recent_deaths("recent_deaths");
 static Apto::String s_prop_name_recent_breed_true("recent_breed_true");
 static Apto::String s_prop_name_recent_breed_in("recent_breed_in");
 static Apto::String s_prop_name_recent_breed_out("recent_breed_out");
+static Apto::String s_prop_name_recent_gestation_count("recent_gestation_count");
 
 static Apto::String s_prop_name_total_organisms("total_organisms");
 static Apto::String s_prop_name_last_births("last_births");
@@ -71,10 +72,13 @@ static Apto::String s_prop_name_last_deaths("last_deaths");
 static Apto::String s_prop_name_last_breed_true("last_breed_true");
 static Apto::String s_prop_name_last_breed_in("last_breed_in");
 static Apto::String s_prop_name_last_breed_out("last_breed_out");
+static Apto::String s_prop_name_last_gestation_count("last_gestation_count");
 
 static Apto::String s_prop_name_last_birth_cell("last_birth_cell");
 static Apto::String s_prop_name_last_group_id("last_group_id");
 static Apto::String s_prop_name_last_forager_type("last_forager_type");
+
+static Apto::String s_prop_name_total_gestation_count("total_gestation_count");
 
 
 void Avida::Systematics::Genotype::Initialize()
@@ -101,6 +105,7 @@ void Avida::Systematics::Genotype::Initialize()
   DEFINE_PROP(recent_breed_true, "Recent Breed True (during update)");
   DEFINE_PROP(recent_breed_in, "Recent Breed In (during update)");
   DEFINE_PROP(recent_breed_out, "Recent Breed Out (during update)");
+  DEFINE_PROP(recent_gestation_count, "Recent Gestation Count (during update)");
   
   DEFINE_PROP(total_organisms, "Total Organisms");
   DEFINE_PROP(last_births, "Births (during last update)");
@@ -108,10 +113,13 @@ void Avida::Systematics::Genotype::Initialize()
   DEFINE_PROP(last_breed_true, "Breed True (during last update)");
   DEFINE_PROP(last_breed_in, "Breed In (during last update)");
   DEFINE_PROP(last_breed_out, "Breed Out (during last update)");
+  DEFINE_PROP(last_gestation_count, "Gestation Count (during last update)");
   
   DEFINE_PROP(last_birth_cell, "Last birth cell");
   DEFINE_PROP(last_group_id, "Last birth group");
   DEFINE_PROP(last_forager_type, "Last birth forager type");
+
+  DEFINE_PROP(total_gestation_count, "Gestation Count (total)");
 #undef DEFINE_PROP
 }
 
@@ -134,7 +142,6 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   , m_num_organisms(1)
   , m_last_num_organisms(0)
   , m_total_organisms(1)
-  , m_provisional_stats(true)
   , m_last_birth_cell(0)
   , m_last_group_id(-1)
   , m_last_forager_type(-1)
@@ -153,17 +160,17 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
       if (i > 0) m_parent_str += ",";
       m_parent_str += Apto::AsStr(m_parents[i]->ID());
       
-      m_copied_size.Add(p->Properties().Get(s_prop_name_ave_copy_size));
-      m_exe_size.Add(p->Properties().Get(s_prop_name_ave_exe_size));
-      m_gestation_time.Add(p->Properties().Get(s_prop_name_ave_gestation_time));
-      m_repro_rate.Add(p->Properties().Get(s_prop_name_ave_repro_rate));
-      m_merit.Add(p->Properties().Get(s_prop_name_ave_metabolic_rate));
-      m_fitness.Add(p->Properties().Get(s_prop_name_ave_fitness));
+//      m_copied_size.Add(p->Properties().Get(s_prop_name_ave_copy_size));
+//      m_exe_size.Add(p->Properties().Get(s_prop_name_ave_exe_size));
+//      m_gestation_time.Add(p->Properties().Get(s_prop_name_ave_gestation_time));
+//      m_repro_rate.Add(p->Properties().Get(s_prop_name_ave_repro_rate));
+//      m_merit.Add(p->Properties().Get(s_prop_name_ave_metabolic_rate));
+//      m_fitness.Add(p->Properties().Get(s_prop_name_ave_fitness));
       
       // Collect all relevant action trigger counts
-      for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {
-        m_task_counts[i].Add(static_cast<int>(p->Properties().Get(m_mgr->EnvironmentActionTriggerAverageIDs()[i])));
-      }
+//      for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {
+//        m_task_counts[i].Add(static_cast<int>(p->Properties().Get(m_mgr->EnvironmentActionTriggerAverageIDs()[i])));
+//      }
     }
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->Depth() + 1;
@@ -203,7 +210,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, vo
   m_src.arguments = props.Get("src_args");
   if (m_src.arguments == "(none)") m_src.arguments = "";
   
-  PropertyMap prop_map;
+  HashPropertyMap prop_map;
   cString inst_set = (const char*)props.Get("inst_set");
   if (inst_set == "") inst_set = "(default)";
   
@@ -281,17 +288,7 @@ Avida::Systematics::GroupPtr Avida::Systematics::Genotype::ClassifyNewUnit(UnitP
 
 void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
 {
-  if (m_provisional_stats) {
-    m_copied_size.Clear();
-    m_exe_size.Clear();
-    m_gestation_time.Clear();
-    m_repro_rate.Clear();
-    m_merit.Clear();
-    m_fitness.Clear();
-    
-    for (int i = 0; i < m_task_counts.GetSize(); i++) m_task_counts[i].Clear();
-    m_provisional_stats = false;
-  }
+  m_gestation_count.Inc();
   
   m_copied_size.Add(u->Properties().Get(s_unit_prop_name_last_copied_size));
   m_exe_size.Add(u->Properties().Get(s_unit_prop_name_last_executed_size));
@@ -369,9 +366,9 @@ bool Avida::Systematics::Genotype::LegacySave(void* dfp) const
   seq.DynamicCastFrom(m_genome.Representation());
   df.Write(seq->GetSize(), "Genome Length", "length");
   
-  df.Write((m_provisional_stats) ? 0 : m_merit.Average(), "Average Merit", "merit");
-  df.Write((m_provisional_stats) ? 0 : m_gestation_time.Average(), "Average Gestation Time", "gest_time");
-  df.Write((m_provisional_stats) ? 0 : m_fitness.Average(), "Average Fitness", "fitness");
+  df.Write(m_merit.Average(), "Average Merit", "merit");
+  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
+  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
   
   df.Write(m_generation_born, "Generation Born", "gen_born");
   df.Write(m_update_born, "Update Born", "update_born");
@@ -477,6 +474,7 @@ void Avida::Systematics::Genotype::UpdateReset()
   m_breed_out.Next();
   m_breed_true.Next();
   m_breed_in.Next();
+  m_gestation_count.Next();
 }
 
 
@@ -484,7 +482,7 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 {
   if (m_prop_map) return;
 
-  m_prop_map = new PropertyMap();
+  m_prop_map = new HashPropertyMap();
   
 #define ADD_FUN_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new FunctorProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, FunctorProperty<TYPE>::VAL)));
 #define ADD_REF_PROP(NAME, TYPE, VAL) m_prop_map->Define(PropertyPtr(new ReferenceProperty<TYPE>(s_prop_name_ ## NAME, s_prop_desc_map, const_cast<TYPE&>(VAL))));
@@ -511,6 +509,7 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_REF_PROP(recent_breed_true, int, m_breed_true.GetCur());
   ADD_REF_PROP(recent_breed_in, int, m_breed_in.GetCur());
   ADD_REF_PROP(recent_breed_out, int, m_breed_out.GetCur());
+  ADD_REF_PROP(recent_gestation_count, int, m_gestation_count.GetCur());
   
   ADD_REF_PROP(total_organisms, int, m_total_organisms);
   ADD_REF_PROP(last_births, int, m_births.GetLast());
@@ -518,11 +517,14 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
   ADD_REF_PROP(last_breed_true, int, m_breed_true.GetLast());
   ADD_REF_PROP(last_breed_in, int, m_breed_in.GetLast());
   ADD_REF_PROP(last_breed_out, int, m_breed_out.GetLast());
+  ADD_REF_PROP(last_gestation_count, int, m_gestation_count.GetLast());
   
   ADD_REF_PROP(last_birth_cell, int, m_last_birth_cell);
   ADD_REF_PROP(last_group_id, int, m_last_group_id);
   ADD_REF_PROP(last_forager_type, int, m_last_forager_type);
-  
+
+  ADD_REF_PROP(total_gestation_count, int, m_gestation_count.GetTotal());
+
   // Collect all relevant action trigger counts
   for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {
     m_prop_map->Define(PropertyPtr(new FunctorProperty<double>(m_mgr->EnvironmentActionTriggerAverageIDs()[i], s_prop_desc_map, FunctorProperty<double>::GetFunctor(&m_task_counts[i], &cIntSum::Average))));

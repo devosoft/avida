@@ -38,19 +38,6 @@
 
 using namespace Avida;
 
-static Apto::String s_prop_id_instset("instset");
-static PropertyDescriptionMap s_prop_desc_map;
-
-void cHardwareManager::Initialize()
-{
-  s_prop_desc_map.Set(s_prop_id_instset, "Instruction Set");
-}
-
-void cHardwareManager::SetupPropertyMap(PropertyMap& props, const Apto::String& instset)
-{
-  props.Define(PropertyPtr(new StringProperty(s_prop_id_instset, s_prop_desc_map, instset)));
-}
-
 
 
 cHardwareManager::cHardwareManager(cWorld* world)

@@ -35,6 +35,20 @@
 #include "cInitFile.h"
 #include "cStringUtil.h"
 
+static Apto::String s_prop_id_instset("instset");
+static PropertyDescriptionMap s_prop_desc_map;
+
+void cHardwareManager::Initialize()
+{
+  s_prop_desc_map.Set(s_prop_id_instset, "Instruction Set");
+}
+
+void cHardwareManager::SetupPropertyMap(PropertyMap& props, const Apto::String& instset)
+{
+  props.Define(PropertyPtr(new StringProperty(s_prop_id_instset, s_prop_desc_map, instset)));
+}
+
+
 
 Avida::Genome::Genome() : m_hw_type(-1) { ; }
 
@@ -44,8 +58,7 @@ Avida::Genome::Genome(HardwareTypeID hw, const PropertyMap& props, GeneticRepres
   assert(rep);
   
   // Copy over properties
-  PropertyMap::PropertyIDIterator it = props.PropertyIDs();
-  while (it.Next()) m_props.Define(PropertyPtr(new StringProperty(props.Get(*it.Get()))));
+  m_props.SetValue(s_prop_id_instset, props.Get(s_prop_id_instset).StringValue());
 }
 
 Avida::Genome::Genome(const Apto::String& genome_str)
@@ -53,22 +66,21 @@ Avida::Genome::Genome(const Apto::String& genome_str)
   // @TODO - unpack genome string more generally
   Apto::String str(genome_str);
   m_hw_type = Apto::StrAs(str.Pop(','));
-  cHardwareManager::SetupPropertyMap(m_props, str.Pop(','));
+  m_props.SetValue(s_prop_id_instset, str.Pop(','));
   m_representation = GeneticRepresentationPtr(new InstructionSequence(str));
 }
 
 Avida::Genome::Genome(const Genome& genome)
 : m_hw_type(genome.m_hw_type), m_representation(genome.m_representation->Clone())
 {
-  PropertyMap::PropertyIDIterator it = genome.m_props.PropertyIDs();
-  while (it.Next()) m_props.Define(PropertyPtr(new StringProperty(genome.m_props.Get(*it.Get()))));
+  m_props.SetValue(s_prop_id_instset, genome.m_props.Get(s_prop_id_instset).StringValue());
 }
 
 
 Apto::String Avida::Genome::AsString() const
 {
   // @TODO - generate genome string more generally
-  return Apto::FormatStr("%d,%s,%s", m_hw_type, (const char*)m_props.Get("instset").StringValue(), (const char*)m_representation->AsString());
+  return Apto::FormatStr("%d,%s,%s", m_hw_type, (const char*)m_props.Get(s_prop_id_instset).StringValue(), (const char*)m_representation->AsString());
   return "";
 }
 
@@ -89,9 +101,7 @@ Avida::Genome& Avida::Genome::operator=(const Genome& genome)
 {
   m_hw_type = genome.m_hw_type;
   
-  // @TODO - should clear internal properties first
-  PropertyMap::PropertyIDIterator it = genome.m_props.PropertyIDs();
-  while (it.Next()) m_props.Define(PropertyPtr(new StringProperty(genome.m_props.Get(*it.Get()))));
+  m_props.SetValue(s_prop_id_instset, genome.m_props.Get(s_prop_id_instset).StringValue());
 
   m_representation = genome.m_representation->Clone();
   
@@ -116,8 +126,59 @@ bool Avida::Genome::LegacySave(void* dfp) const
 {
   cDataFile& df = *static_cast<cDataFile*>(dfp);
   df.Write(m_hw_type, "Hardware Type ID", "hw_type");
-  df.Write(m_props.Get("instset").StringValue(), "Inst Set Name" , "inst_set");
+  df.Write(m_props.Get(s_prop_id_instset).StringValue(), "Inst Set Name" , "inst_set");
   df.Write(m_representation->AsString(), "Genome Sequence", "sequence");
   return false;
 }
 
+
+
+Avida::Genome::InstSetPropertyMap::InstSetPropertyMap() : m_inst_set(s_prop_id_instset, s_prop_desc_map, Apto::String("")) { ; }
+Avida::Genome::InstSetPropertyMap::~InstSetPropertyMap() { ; }
+
+int Avida::Genome::InstSetPropertyMap::GetSize() const { return 1; }
+bool Avida::Genome::InstSetPropertyMap::Has(const PropertyID& p_id) const { return (p_id == s_prop_id_instset); }
+
+const Avida::Property& Avida::Genome::InstSetPropertyMap::Get(const PropertyID& p_id) const
+{
+  if (p_id == s_prop_id_instset) return m_inst_set;
+
+  return *s_default_prop;
+}
+
+
+bool Avida::Genome::InstSetPropertyMap::SetValue(const PropertyID& p_id, const Apto::String& prop_value)
+{
+  if (p_id == s_prop_id_instset) {
+    return m_inst_set.SetValue(prop_value);
+  }
+  return false;
+}
+
+
+bool Avida::Genome::InstSetPropertyMap::SetValue(const PropertyID& p_id, const int prop_value) { return false; }
+bool Avida::Genome::InstSetPropertyMap::SetValue(const PropertyID& p_id, const double prop_value) { return false; }
+
+bool Avida::Genome::InstSetPropertyMap::operator==(const PropertyMap& p) const
+{
+  if (p.GetSize() == 1 && p.Has(s_prop_id_instset) && p.Get(s_prop_id_instset) == m_inst_set) return true;
+  
+  return false;
+}
+
+void Avida::Genome::InstSetPropertyMap::Define(PropertyPtr p) { ; }
+bool Avida::Genome::InstSetPropertyMap::Remove(const PropertyID& p_id) { return false; }
+
+Avida::ConstPropertyIDSetPtr Avida::Genome::InstSetPropertyMap::PropertyIDs() const
+{
+  PropertyIDSetPtr pidset(new PropertyIDSet);
+  pidset->Insert(s_prop_id_instset);
+  return pidset;
+}
+
+bool Avida::Genome::InstSetPropertyMap::Serialize(ArchivePtr) const
+{
+  // @TODO
+  assert(false);
+  return false;
+}
