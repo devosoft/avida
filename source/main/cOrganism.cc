@@ -378,7 +378,7 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
 {
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
   else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
 }
 
@@ -386,21 +386,21 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPheno
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, false);
   else doOutput(ctx, m_input_buf, m_output_buf, false, false);
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite, cContextPhenotype* context_phenotype) 
 {
   m_output_buf.Add(value);
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
   else doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   output_buffer.Add(value);
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false, false);
   else doOutput(ctx, input_buffer, output_buffer, false, false);
 }
 
@@ -663,7 +663,8 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   
   // Return currently stored internal resources to the world
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
-  	m_interface->UpdateResources(ctx, GetRBins());
+  	if (m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateAVResources(ctx, GetRBins());
+    else m_interface->UpdateResources(ctx, GetRBins());
   }
   
   // Make sure the group composition is updated.
