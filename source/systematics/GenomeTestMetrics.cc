@@ -47,7 +47,8 @@ Avida::Systematics::GenomeTestMetrics::GenomeTestMetrics(cWorld* world, cAvidaCo
   m_merit = phenotype.GetMerit().GetDouble();
   m_executed_size = phenotype.GetExecutedSize();
   m_copied_size = phenotype.GetCopiedSize();
-  m_gestation_time = phenotype.GetGestationTime();  
+  m_gestation_time = phenotype.GetGestationTime();
+  m_task_counts = phenotype.GetLastTaskCount();
 }
 
 

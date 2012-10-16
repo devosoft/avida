@@ -405,6 +405,8 @@ Apto::String EnvActionMapMode::GetProperty(const Apto::String& property) const
 
 void EnvActionMapMode::Update(cPopulation& pop)
 {
+  cAvidaContext ctx(&m_world->GetDriver(), m_world->GetRandom());
+
   m_action_grid.Resize(pop.GetSize());
   m_raw_action_counts.Resize(pop.GetSize());
   for (int i = 0; i < m_raw_action_counts.GetSize(); i++) m_raw_action_counts[i].Resize(m_action_ids.GetSize());
@@ -416,8 +418,12 @@ void EnvActionMapMode::Update(cPopulation& pop)
       m_raw_action_counts[i].SetAll(0);
     } else {
       for (int task_id = 0; task_id < m_action_ids.GetSize(); task_id++) {
-        if (org->GetPhenotype().GetLastTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 1;
-        else if (org->GetPhenotype().GetCurTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 2;
+//        if (org->GetPhenotype().GetLastTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 1;
+//        else if (org->GetPhenotype().GetCurTaskCount()[task_id] > 0) m_raw_action_counts[i][task_id] = 2;
+        Systematics::GroupPtr genotype = org->SystematicsGroup("genotype");
+        Systematics::GenomeTestMetricsPtr metrics(Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, genotype));
+        const Apto::Array<int>& task_counts = metrics->GetTaskCounts();
+        if (task_counts[task_id] > 0) m_raw_action_counts[i][task_id] = 1;
         else m_raw_action_counts[i][task_id] = 0;
       }
     }

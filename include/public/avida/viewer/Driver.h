@@ -30,6 +30,7 @@
 #include "avida/core/Genome.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Recorder.h"
+#include "avida/environment/Types.h"
 #include "avida/systematics/Types.h"
 #include "avida/viewer/Types.h"
 
@@ -131,6 +132,7 @@ namespace Avida {
       LIB_EXPORT double TestFitnessOfGroup(Avida::Systematics::GroupPtr group);
       LIB_EXPORT double TestGestationTimeOfGroup(Avida::Systematics::GroupPtr group);
       LIB_EXPORT double TestMetabolicRateOfGroup(Avida::Systematics::GroupPtr group);
+      LIB_EXPORT int TestEnvironmentTriggerCountOfGroup(Avida::Systematics::GroupPtr group, Avida::Environment::ActionTriggerID action_id);
       
       // WorldDriver Protocol
       // ------------------------------------------------------------------------------------------------------------  

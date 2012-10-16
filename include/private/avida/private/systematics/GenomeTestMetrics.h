@@ -59,6 +59,7 @@ namespace Avida {
       int m_copied_size;
       int m_executed_size;
       int m_gestation_time;
+      Apto::Array<int> m_task_counts;
       
       
       LIB_LOCAL GenomeTestMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr bg);
@@ -73,6 +74,7 @@ namespace Avida {
       LIB_LOCAL int GetLinesCopied() const { return m_copied_size; }
       LIB_LOCAL int GetLinesExecuted() const { return m_executed_size; }
       LIB_LOCAL int GetGestationTime() const { return m_gestation_time; }
+      LIB_LOCAL const Apto::Array<int>& GetTaskCounts() const { return m_task_counts; }
       
       
       LIB_LOCAL static GenomeTestMetricsPtr GetMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr bg);

@@ -25,6 +25,8 @@
 
 #include "avida/core/Context.h"
 #include "avida/data/Manager.h"
+#include "avida/environment/ActionTrigger.h"
+#include "avida/environment/Manager.h"
 #include "avida/systematics/Manager.h"
 #include "avida/viewer/Map.h"
 #include "avida/viewer/Listener.h"
@@ -244,6 +246,14 @@ double Avida::Viewer::Driver::TestMetabolicRateOfGroup(Avida::Systematics::Group
   cRandom rng(100);
   cAvidaContext ctx(this, rng);
   return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetMerit();
+}
+
+int Avida::Viewer::Driver::TestEnvironmentTriggerCountOfGroup(Avida::Systematics::GroupPtr group, Avida::Environment::ActionTriggerID action_id)
+{
+  cRandom rng(100);
+  cAvidaContext ctx(this, rng);
+  Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(m_new_world);
+  return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetTaskCounts()[env->GetActionTrigger(action_id)->TempOrdering()];
 }
 
 

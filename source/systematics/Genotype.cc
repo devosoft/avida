@@ -300,9 +300,9 @@ void Avida::Systematics::Genotype::HandleUnitGestation(UnitPtr u)
   m_fitness.Add(u->Properties().Get(s_unit_prop_name_last_fitness));
 
   // Collect all relevant action trigger counts
-  for (int i = 0; i < m_mgr->EnvironmentActionTriggerCountIDs().GetSize(); i++) {
-    m_task_counts[i].Add(static_cast<int>(u->Properties().Get(m_mgr->EnvironmentActionTriggerCountIDs()[i])));
-  }
+//  for (int i = 0; i < m_mgr->EnvironmentActionTriggerCountIDs().GetSize(); i++) {
+//    m_task_counts[i].Add(static_cast<int>(u->Properties().Get(m_mgr->EnvironmentActionTriggerCountIDs()[i])));
+//  }
 }
 
 
