@@ -37,13 +37,12 @@ Apto::String Avida::Version::Banner()
   banner += "Lead Developer: David M. Bryson\n\n";
   
   banner += "Active developers include:\n";
-  banner += "Brian Baer, James Bosko, Brian Connelly, Art Covert, Heather Goldsby,\n";
-  banner += "David Knoester, Philip McKinley, Dusan Misevic, Anu Pakanati, Robert Pennock,\n";
-  banner += "Matthew Rupp, Aaron P Wagner, Bess Walker, Jacob Walker, and Luis Zaman\n\n";
+  banner += "Rose Canino-Koning, Heather J. Goldsby, Anya E. Johnson, Neem Serra,\n";
+  banner += "Aaron P. Wagner, Bess Walker, and Luis Zaman\n\n";
   
   banner += "For a more complete list of contributors, see the AUTHORS file.\n\n";
   
-  banner += "Copyright 1999-2011 Michigan State University.\n";
+  banner += "Copyright 1999-2012 Michigan State University.\n";
   banner += "Copyright 1993-2003 California Institute of Technology.\n\n";
   
   banner += "Avida comes with ABSOLUTELY NO WARRANTY.\n";
