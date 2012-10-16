@@ -159,6 +159,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, 0, "Increment ?BX? by one"),
     tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, 0, "Decrement ?BX? by one"),
     tInstLibEntry<tMethod>("zero", &cHardwareExperimental::Inst_Zero, 0, "Set ?BX? to 0"),
+    tInstLibEntry<tMethod>("one", &cHardwareExperimental::Inst_One, 0, "Set ?BX? to 1"),
     tInstLibEntry<tMethod>("mult100", &cHardwareExperimental::Inst_Mult100, 0, "Mult ?BX? by 100"),
     
     tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, 0, "Add BX to CX and place the result in ?BX?"),
@@ -1900,6 +1901,13 @@ bool cHardwareExperimental::Inst_Zero(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 0, false);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_One(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, 1, false);
   return true;
 }
 
