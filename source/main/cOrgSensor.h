@@ -46,8 +46,6 @@ class cOrgSensor
   cOrganism* m_organism;     // Organism using this sensor
   
   private:
-  int m_worldx;
-  int m_worldy;
   int m_use_avatar;
   bool m_return_rel_facing; 
   sOrgDisplay m_last_seen_display;
@@ -88,16 +86,12 @@ class cOrgSensor
     int max_y;
   };
   tArray<sBounds> m_soloBounds;
-  sSearchInfo m_returnInfo;
-  sBounds m_tot_bounds;
-  sBounds m_worldBounds;
-  sLookOut m_stuffSeen;
   
   void Reset() { ResetOrgSensor(); }
 
   const sLookOut SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft);
   sSearchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
-                      const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step, bool stop_at_first_found);
+                      const cCoords& target_cell_coords, const tSmartArray<int>& val_res, bool first_step, bool stop_at_first_found);
   sLookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
   sLookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
   sLookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
@@ -106,7 +100,7 @@ class cOrgSensor
                  const int facing);
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& res_bounds);
   sBounds GetBounds(cAvidaContext& ctx, const int res_id);
-  bool TestBounds(const cCoords cell_id, sBounds& bounds_set);
+  inline bool TestBounds(const cCoords& cell_id, sBounds& bounds_set);
   tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
   
   void SetReturnRelativeFacing(bool do_set) { m_return_rel_facing = do_set; }
@@ -120,5 +114,13 @@ class cOrgSensor
   int FindDirFromHome();
   int FindDistanceFromHome();
 };
+
+inline bool cOrgSensor::TestBounds(const cCoords& cell_id, sBounds& bounds)
+{
+  const int curr_x = cell_id.GetX();
+  const int curr_y = cell_id.GetY();
+  if (curr_x < bounds.min_x || curr_y < bounds.min_y || curr_x > bounds.max_x || curr_y > bounds.max_y) return false;
+  return true;
+}
 
 #endif

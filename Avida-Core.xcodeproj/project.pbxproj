@@ -44,6 +44,7 @@
 		3EEF67C1158766A4006B5612 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEF67C0158766A4006B5612 /* libapto.a */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
+		4A4B0233162DE49600CCC710 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEDAB361587703500C83A67 /* libtcmalloc-1.4.a */; };
 		4A587EEC1332B6590037A393 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EE81332B6590037A393 /* cDynamicCount.cc */; };
 		4A587EED1332B6590037A393 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EE91332B6590037A393 /* cDynamicCount.h */; };
 		4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EEA1332B6590037A393 /* cGradientCount.cc */; };
@@ -1154,6 +1155,7 @@
 			files = (
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
 				3EEF67C1158766A4006B5612 /* libapto.a in Frameworks */,
+				4A4B0233162DE49600CCC710 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2547,6 +2549,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
 					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+					"\"$(SRCROOT)/../../../../../hjg/Desktop/research/code/gls-works/avida/libs/tcmalloc-1.4/build/Debug\"",
 				);
 				PRODUCT_NAME = avida;
 			};
@@ -2561,6 +2564,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../libs/apto/build/Debug\"",
 					"\"$(SRCROOT)/../libs/tcmalloc-1.4/build/Debug\"",
+					"\"$(SRCROOT)/../../../../../hjg/Desktop/research/code/gls-works/avida/libs/tcmalloc-1.4/build/Debug\"",
 				);
 				PRODUCT_NAME = avida;
 			};
