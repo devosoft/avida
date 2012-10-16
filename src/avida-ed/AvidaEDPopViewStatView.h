@@ -69,7 +69,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
   
   AvidaRun* run;
   Avida::Data::RecorderPtr recorder;
-  Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::ThreadSafeRefCount> org_recorder;
+  Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::InternalRCObject> org_recorder;
   AvidaEDEnvActionsDataSource* envActions;
   AvidaEDEnvActionsDataSource* orgEnvActions;
   IBOutlet id envActionChangeDelegate;
@@ -79,7 +79,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
   CPTXYGraph* graph;
   AvidaEDPopViewStatViewGraphData* graphData;
   
-  Apto::Array<Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> > timeRecorders;
+  Apto::Array<Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject> > timeRecorders;
 }
 
 - (id) initWithFrame:(NSRect)frame;

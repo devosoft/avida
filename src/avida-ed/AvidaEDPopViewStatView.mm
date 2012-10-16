@@ -56,11 +56,11 @@ static const int MAX_GRAPH_POINTS = 1000;
 
 
 @interface AvidaEDPopViewStatViewGraphData : NSObject <CPTPlotDataSource> {
-  Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> recorder;
+  Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject> recorder;
 }
 
-- (Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>) recorder;
-- (void) setRecorder:(Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>)in_recorder;
+- (Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>) recorder;
+- (void) setRecorder:(Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>)in_recorder;
 @end
 
 
@@ -95,11 +95,11 @@ static const int MAX_GRAPH_POINTS = 1000;
   return num;
 }
 
-- (Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>) recorder {
+- (Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>) recorder {
   return recorder;
 }
 
-- (void) setRecorder:(Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>)in_recorder
+- (void) setRecorder:(Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>)in_recorder
 {
   recorder = in_recorder;
 }
@@ -309,7 +309,7 @@ static const int MAX_GRAPH_POINTS = 1000;
 
 - (void) rescalePlot {
   
-  Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount> curRecorder = graphData.recorder;
+  Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject> curRecorder = graphData.recorder;
   
   const Avida::Update x_scale_constant = 50;
   
@@ -446,7 +446,6 @@ static const int MAX_GRAPH_POINTS = 1000;
   }
 }
 
-
 - (void) setAvidaRun:(AvidaRun*)avidarun fromFreezer:(Avida::Viewer::FreezerPtr)freezer withID:(Avida::Viewer::FreezerID)fid {
   [self clearAvidaRun];
   run = avidarun;
@@ -470,13 +469,13 @@ static const int MAX_GRAPH_POINTS = 1000;
   Apto::String loaded_data;
   timeRecorders.ResizeClear(4);
   loaded_data = freezer->LoadAttachment(fid, "tr0");
-  timeRecorders[0] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_fitness", loaded_data));
+  timeRecorders[0] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_fitness", loaded_data));
   loaded_data = freezer->LoadAttachment(fid, "tr1");
-  timeRecorders[1] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_gestation_time", loaded_data));
+  timeRecorders[1] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_gestation_time", loaded_data));
   loaded_data = freezer->LoadAttachment(fid, "tr2");
-  timeRecorders[2] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_metabolic_rate", loaded_data));
+  timeRecorders[2] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.ave_metabolic_rate", loaded_data));
   loaded_data = freezer->LoadAttachment(fid, "tr3");
-  timeRecorders[3] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.organisms", loaded_data));
+  timeRecorders[3] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewTimeRecorder(self, "core.world.organisms", loaded_data));
   
   for (int i = 0; i < timeRecorders.GetSize(); i++) [run attachRecorder:timeRecorders[i]];
   
@@ -501,7 +500,7 @@ static const int MAX_GRAPH_POINTS = 1000;
   }
   for (int i = 0; i < timeRecorders.GetSize(); i++) {
     [run detachRecorder:timeRecorders[i]];
-    timeRecorders[i] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(NULL);
+    timeRecorders[i] = Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(NULL);
   }
   timeRecorders.Resize(0);
   run = nil;
@@ -517,7 +516,7 @@ static const int MAX_GRAPH_POINTS = 1000;
   
   [self clearSelectedOrg];
   
-  [graphData setRecorder:Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::ThreadSafeRefCount>(NULL)];
+  [graphData setRecorder:Apto::SmartPtr<AvidaEDPopViewStatViewTimeRecorder, Apto::InternalRCObject>(NULL)];
   [[graph plotWithIdentifier:@"graph"] reloadData];
 }
 
@@ -545,7 +544,7 @@ static const int MAX_GRAPH_POINTS = 1000;
   if (org_recorder) {
     [run detachRecorder:org_recorder];
   } else {
-    org_recorder = Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::ThreadSafeRefCount>(new AvidaEDPopViewStatViewOrgRecorder(self));
+    org_recorder = Apto::SmartPtr<AvidaEDPopViewStatViewOrgRecorder, Apto::InternalRCObject>(new AvidaEDPopViewStatViewOrgRecorder(self));
   }
   org_recorder->SetCoords([mapView selectedObject].x, [mapView selectedObject].y);
   [run attachRecorder:org_recorder concurrentUpdate:YES];
@@ -614,9 +613,16 @@ static const int MAX_GRAPH_POINTS = 1000;
   }
   
   [txtOrgName setStringValue:[NSString stringWithAptoString:((Apto::String)genotype->Properties().Get("name")).Substring(4)]];
-  [txtOrgFitness setStringValue:[NSString stringWithFormat:@"%0.2f",(double)genotype->Properties().Get("ave_fitness")]];
-  [txtOrgMetabolicRate setDoubleValue:genotype->Properties().Get("ave_metabolic_rate")];
-  [txtOrgGestation setDoubleValue:genotype->Properties().Get("ave_gestation_time")];
+  
+  if (genotype->Properties().Get("total_gestation_count").IntValue() > 0) {
+    [txtOrgFitness setStringValue:[NSString stringWithFormat:@"%0.2f",(double)genotype->Properties().Get("ave_fitness")]];
+    [txtOrgMetabolicRate setDoubleValue:genotype->Properties().Get("ave_metabolic_rate")];
+    [txtOrgGestation setDoubleValue:genotype->Properties().Get("ave_gestation_time")];
+  } else {
+    [txtOrgFitness setStringValue:[NSString stringWithFormat:@"est. %0.2f",[run testFitnessOfGroup:genotype]]];
+    [txtOrgMetabolicRate setStringValue:[NSString stringWithFormat:@"est. %0.1f",[run testMetabolicRateOfGroup:genotype]]];
+    [txtOrgGestation setStringValue:[NSString stringWithFormat:@"est. %0.1f",[run testGestationTimeOfGroup:genotype]]];
+  }
   Avida::Update cur_update = values->update;
   if (cur_update == Avida::UPDATE_CONCURRENT) {
     cur_update = ctlr.curUpdate;
@@ -646,12 +652,15 @@ static const int MAX_GRAPH_POINTS = 1000;
 
   // Update the data source for the organism environment actions
   for (NSUInteger i = 0; i < [orgEnvActions entryCount]; i++) {
+//    NSString* entry_name = [orgEnvActions entryAtIndex:i];
+//    Apto::String data_id("environment.triggers.");
+//    data_id += [entry_name UTF8String];
+//    data_id += ".average";
+//    double count = genotype->Properties().Get(data_id);
+//    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
     NSString* entry_name = [orgEnvActions entryAtIndex:i];
-    Apto::String data_id("environment.triggers.");
-    data_id += [entry_name UTF8String];
-    data_id += ".average";
-    double count = genotype->Properties().Get(data_id);
-    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
+    int count = [run testEnvironmentTriggerCountFor:entry_name ofGroup:genotype];
+    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
   }
   [tblOrgEnvActions reloadData];
   

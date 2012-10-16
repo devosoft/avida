@@ -31,6 +31,7 @@
 
 #include "avida/core/Types.h"
 #include "avida/data/Types.h"
+#include "avida/systematics/Types.h"
 #include "avida/viewer.h"
 
 @protocol ViewerListener;
@@ -86,5 +87,10 @@
 - (void) attachRecorder:(Avida::Data::RecorderPtr)recorder;
 - (void) attachRecorder:(Avida::Data::RecorderPtr)recorder concurrentUpdate:(BOOL)concurrentUpdate;
 - (void) detachRecorder:(Avida::Data::RecorderPtr)recorder;
+
+- (double) testFitnessOfGroup:(Avida::Systematics::GroupPtr)group;
+- (double) testGestationTimeOfGroup:(Avida::Systematics::GroupPtr)group;
+- (double) testMetabolicRateOfGroup:(Avida::Systematics::GroupPtr)group;
+- (int) testEnvironmentTriggerCountFor:(NSString*)trigger ofGroup:(Avida::Systematics::GroupPtr)group;
 
 @end

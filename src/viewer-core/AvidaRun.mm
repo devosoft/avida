@@ -263,4 +263,25 @@ void handleDriverCallback(Avida::DriverEvent event)
   if (driver) driver->DetachRecorder(recorder);
 }
 
+
+- (double) testFitnessOfGroup:(Avida::Systematics::GroupPtr)group {
+  if (driver) return driver->TestFitnessOfGroup(group);
+  return 0.0;
+}
+
+- (double) testGestationTimeOfGroup:(Avida::Systematics::GroupPtr)group {
+  if (driver) return driver->TestGestationTimeOfGroup(group);
+  return 0.0;
+}
+
+- (double) testMetabolicRateOfGroup:(Avida::Systematics::GroupPtr)group {
+  if (driver) return driver->TestMetabolicRateOfGroup(group);
+  return 0.0;
+}
+
+- (int) testEnvironmentTriggerCountFor:(NSString*)trigger ofGroup:(Avida::Systematics::GroupPtr)group {
+  if (driver) return driver->TestEnvironmentTriggerCountOfGroup(group, [trigger UTF8String]);
+  return 0;
+}
+
 @end
