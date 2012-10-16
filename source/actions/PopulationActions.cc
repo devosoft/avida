@@ -1066,11 +1066,8 @@ public:
       
       if (!cell.HasAV()) continue;
       
-      tArray<double> cell_res;
-      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
-      
-      for (int j = 0; j < cell_res.GetSize(); j++) {
-        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+      for (int j = 0; j < resource_lib.GetSize(); j++) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && m_world->GetPopulation().GetCellResVal(ctx, j, i) > 0) {
           // for every x juvs, we require 1 adult...otherwise use killprob on the rest
           tArray<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
           tArray<cOrganism*> juvs;   
@@ -1127,12 +1124,9 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       
-      tArray<double> cell_res;
-      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
-      
-      for (int j = 0; j < cell_res.GetSize(); j++) {
-        if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
-          if (cell_res[m_res_id] <= 0) break;
+      for (int j = 0; j < resource_lib.GetSize(); j++) {
+        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && m_world->GetPopulation().GetCellResVal(ctx, j, i) > 0) {
+          if (m_world->GetPopulation().GetCellResVal(ctx, j, m_res_id) <= 0) break;
           
           // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest
           int num_guards = 0;
@@ -1142,9 +1136,9 @@ public:
           }
           
           double guarded_res = num_guards * m_units_per;
-          double unguarded_res = cell_res[m_res_id] - guarded_res;
+          double unguarded_res = m_world->GetPopulation().GetCellResVal(ctx, j, m_res_id) - guarded_res;
           
-          tArray<double> res_change(cell_res.GetSize());
+          tArray<double> res_change(resource_lib.GetSize());
           res_change.SetAll(0.0);
           res_change[m_res_id] = -1 * unguarded_res * m_loss;          
           m_world->GetPopulation().UpdateCellResources(ctx, res_change, i);

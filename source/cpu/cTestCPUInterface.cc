@@ -58,12 +58,22 @@ const tArray<double>& cTestCPUInterface::GetResources(cAvidaContext& ctx)
   return m_testcpu->GetResources(ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ctx) 
+double cTestCPUInterface::GetResourceVal(cAvidaContext& ctx, int res_id)
+{
+  return m_testcpu->GetResourceVal(ctx, res_id);
+}
+
+const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ctx)
 {
   return m_testcpu->GetFacedCellResources(ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
+double cTestCPUInterface::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
+{
+  return m_testcpu->GetFacedResourceVal(ctx, res_id);
+}
+
+const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx)
 { 
   return m_testcpu->GetDemeResources(deme_id, ctx); 
 }
@@ -81,6 +91,11 @@ const tArray<double>& cTestCPUInterface::GetFrozenResources(cAvidaContext& ctx, 
 double cTestCPUInterface::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
 {
   return m_testcpu->GetFrozenCellResVal(ctx, cell_id, res_id);
+}
+
+double cTestCPUInterface::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+{
+  return m_testcpu->GetCellResVal(ctx, cell_id, res_id);
 }
 
 const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
@@ -144,12 +159,22 @@ tArray<cOrganism*> cTestCPUInterface::GetFacedPreyAVs(int av_num)
 
 const tArray<double>& cTestCPUInterface::GetAVResources(cAvidaContext& ctx, int av_num)
 {
-  return m_testcpu->GetAvatarResources(ctx);
+  return m_testcpu->GetAVResources(ctx);
+}
+
+double cTestCPUInterface::GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num)
+{
+  return m_testcpu->GetAVResourceVal(ctx, res_id);
 }
 
 const tArray<double>& cTestCPUInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
 {
-  return m_testcpu->GetFacedAvatarResources(ctx);
+  return m_testcpu->GetAVFacedResources(ctx);
+}
+
+double cTestCPUInterface::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num)
+{
+  return m_testcpu->GetAVFacedResourceVal(ctx, res_id);
 }
 
 void cTestCPUInterface::UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num)

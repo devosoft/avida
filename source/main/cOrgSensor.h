@@ -46,11 +46,13 @@ class cOrgSensor
   cOrganism* m_organism;     // Organism using this sensor
   
   private:
+  int m_worldx;
+  int m_worldy;
   int m_use_avatar;
   bool m_return_rel_facing; 
   sOrgDisplay m_last_seen_display;
   bool m_has_seen_display;
-  
+
   void ResetOrgSensor();
 
   public:
@@ -85,12 +87,17 @@ class cOrgSensor
     int max_x;
     int max_y;
   };
+  tArray<sBounds> m_soloBounds;
+  sSearchInfo m_returnInfo;
+  sBounds m_tot_bounds;
+  sBounds m_worldBounds;
+  sLookOut m_stuffSeen;
   
   void Reset() { ResetOrgSensor(); }
 
   const sLookOut SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft);
   sSearchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
-                      const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step);  
+                      const cCoords target_cell_coords, const tSmartArray<int>& val_res, bool first_step, bool stop_at_first_found);
   sLookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
   sLookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
   sLookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
@@ -98,7 +105,7 @@ class cOrgSensor
   int GetMinDist(cAvidaContext& ctx, const int worldx, sBounds& bounds, const int cell_id, const int distance_sought, 
                  const int facing);
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& res_bounds);
-  sBounds GetBounds(cAvidaContext& ctx, const int res_id, const int search_type);
+  sBounds GetBounds(cAvidaContext& ctx, const int res_id);
   bool TestBounds(const cCoords cell_id, sBounds& bounds_set);
   tSmartArray<int> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
   

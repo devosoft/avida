@@ -316,7 +316,7 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
 {
   if (m_net) m_net->valid = false;
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
   else doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
 }
 
@@ -325,7 +325,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
   NetValidate(ctx, value);
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, false);
   else doOutput(ctx, m_input_buf, m_output_buf, false, false);
 }
 
@@ -333,7 +333,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite, 
 {
   m_output_buf.Add(value);
   NetValidate(ctx, value);
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
   else doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
 }
 
@@ -341,7 +341,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer
 {
   output_buffer.Add(value);
   NetValidate(ctx, value);
-  if(m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false, false);
+  if (m_world->GetConfig().USE_AVATARS.Get()) doAVOutput(ctx, input_buffer, output_buffer, false, false);
   else doOutput(ctx, input_buffer, output_buffer, false, false);
 }
 
@@ -464,9 +464,9 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                          cContextPhenotype* context_phenotype)
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
-//  const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & avatar_resource_count = m_interface->GetAVResources(ctx); 
-//  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
+
+  //  const int deme_id = m_interface->GetDemeID();
+  //  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
   const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
@@ -499,10 +499,12 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   }
   
   // Do the testing of tasks performed...
-  tArray<double> avatar_res_change(avatar_resource_count.GetSize());
+  tArray<double> avatar_res_change(m_world->GetEnvironment().GetResourceLib().GetSize());
   avatar_res_change.SetAll(0.0);
-//  tArray<double> deme_res_change(deme_resource_count.GetSize());
-//  deme_res_change.SetAll(0.0);
+
+  //  tArray<double> deme_res_change(deme_resource_count.GetSize());
+  //  deme_res_change.SetAll(0.0);
+
   tArray<cString> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
@@ -512,30 +514,31 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                        m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
   
   //combine global and deme resource counts
-  tArray<double> avatarAndDeme_resource_count = avatar_resource_count; // + deme_resource_count;
+  const tArray<double> & av_res_count = m_interface->GetAVResources(ctx);
+  tArray<double> avatarAndDeme_res_count = av_res_count; // + deme_resource_count;
   tArray<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
   int cell_id = m_interface->GetAVCellID();
   if (cell_id_lists.GetSize())
   {
-	  for (int i=0; i<cell_id_lists.GetSize(); i++)
+	  for (int i = 0; i < cell_id_lists.GetSize(); i++)
 	  {
 		  // if cell_id_lists have been set then we have to check if this cell is in the list
 		  if (cell_id_lists[i].GetSize()) {
-			  int j;
-			  for (j=0; j<cell_id_lists[i].GetSize(); j++)
+			  int j = 0;
+			  for (j = 0; j < cell_id_lists[i].GetSize(); j++)
 			  {
-				  if (cell_id==cell_id_lists[i][j])
+				  if (cell_id == cell_id_lists[i][j])
 					  break;
 			  }
-			  if (j==cell_id_lists[i].GetSize())
-				  avatarAndDeme_resource_count[i]=0;
+			  if (j == cell_id_lists[i].GetSize())
+				  avatarAndDeme_res_count[i] = 0;
 		  }
 	  }
   }
   
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, avatarAndDeme_resource_count, 
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, avatarAndDeme_res_count, 
                                                m_phenotype.GetCurRBinsAvail(), avatarAndDeme_res_change, 
                                                insts_triggered, is_parasite, context_phenotype);
   
@@ -777,7 +780,7 @@ void cOrganism::NotifyDeath(cAvidaContext& ctx)
   
   // Return currently stored internal resources to the world
   if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
-  	if (!m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateAVResources(ctx, GetRBins());
+  	if (m_world->GetConfig().USE_AVATARS.Get()) m_interface->UpdateAVResources(ctx, GetRBins());
     else m_interface->UpdateResources(ctx, GetRBins());
   }
   
@@ -912,13 +915,15 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     if (habitat_required != -1) {
       bool has_req_res = false;
       const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-      tArray<double> resource_count;
-      if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
-      else resource_count = m_interface->GetAVResources(ctx);
-      for (int i = 0; i < resource_count.GetSize(); i ++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required && resource_count[i] >= required_value) {
-          has_req_res = true;
-          break;
+      double resource_count = 0;
+      for (int i = 0; i < resource_lib.GetSize(); i ++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required) {
+          if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResourceVal(ctx, i);
+          else resource_count = m_interface->GetAVResourceVal(ctx, i);
+          if (resource_count >= required_value) {
+            has_req_res = true;
+            break;
+          }
         }
       }
       if (!has_req_res) return false;

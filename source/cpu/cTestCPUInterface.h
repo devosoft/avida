@@ -89,11 +89,14 @@ public:
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources(cAvidaContext& ctx); 
+  double GetResourceVal(cAvidaContext& ctx, int res_id);
   const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
   const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
   double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
+  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   const tArray< tArray<int> >& GetCellIdLists();  
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetCurrPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
@@ -235,7 +238,9 @@ public:
     tArray<cOrganism*> GetCellAVs(int cell_id, int av_num = 0);
   tArray<cOrganism*> GetFacedPreyAVs(int av_num = 0);
   const tArray<double>& GetAVResources(cAvidaContext& ctx, int av_num = 0);
+  double GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0);
   const tArray<double>& GetAVFacedResources(cAvidaContext& ctx, int av_num = 0);
+  double GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num = 0);
   void UpdateAVResources(cAvidaContext& ctx, const tArray<double>& res_change, int av_num = 0);
   
   void BeginSleep() { ; }

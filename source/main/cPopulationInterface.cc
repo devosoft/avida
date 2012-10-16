@@ -339,12 +339,22 @@ const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx)
   return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx) 
+double cPopulationInterface::GetResourceVal(cAvidaContext& ctx, int res_id)
+{
+  return m_world->GetPopulation().GetCellResVal(ctx, m_cell_id, res_id);
+}
+
+const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx)
 {
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx) 
+double cPopulationInterface::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
+{
+  return m_world->GetPopulation().GetCellResVal(ctx, GetCell()->GetCellFaced().GetID(), res_id);
+}
+
+const tArray<double>& cPopulationInterface::GetCellResources(int cell_id, cAvidaContext& ctx)
 {
   return m_world->GetPopulation().GetCellResources(cell_id, ctx); 
 }
@@ -357,6 +367,11 @@ const tArray<double>& cPopulationInterface::GetFrozenResources(cAvidaContext& ct
 double cPopulationInterface::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
 {
   return m_world->GetPopulation().GetFrozenCellResVal(ctx, cell_id, res_id);
+}
+
+double cPopulationInterface::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+{
+  return m_world->GetPopulation().GetCellResVal(ctx, cell_id, res_id);
 }
 
 cResourceCount* cPopulationInterface::GetResourceCount()
@@ -2309,11 +2324,24 @@ const tArray<double>& cPopulationInterface::GetAVResources(cAvidaContext& ctx, i
   return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_cell_id, ctx);
 }
 
+double cPopulationInterface::GetAVResourceVal(cAvidaContext& ctx, int res_id, int av_num)
+{
+  assert(av_num < getNumAV());
+  return m_world->GetPopulation().GetCellResVal(ctx, m_avatars[av_num].av_cell_id, res_id);
+}
+
 // Returns the avatar's faced cell's resources
 const tArray<double>& cPopulationInterface::GetAVFacedResources(cAvidaContext& ctx, int av_num)
 {
   assert(av_num < getNumAV());
   return m_world->GetPopulation().GetCellResources(m_avatars[av_num].av_faced_cell, ctx);
+}
+
+// Returns the avatar's faced cell's resources
+double cPopulationInterface::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id, int av_num)
+{
+  assert(av_num < getNumAV());
+  return m_world->GetPopulation().GetCellResVal(ctx, m_avatars[av_num].av_faced_cell, res_id);
 }
 
 // Updates the avatar's cell resources

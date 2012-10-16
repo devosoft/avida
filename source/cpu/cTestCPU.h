@@ -112,13 +112,18 @@ public:
 
   inline int GetReceiveValue();
   inline const tArray<double>& GetResources(cAvidaContext& ctx); 
-  inline const tArray<double>& GetAvatarResources(cAvidaContext& ctx); 
+  inline double GetResourceVal(cAvidaContext& ctx, int res_id);
+  inline const tArray<double>& GetAVResources(cAvidaContext& ctx);
+  inline double GetAVResourceVal(cAvidaContext& ctx, int res_id);
   inline const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
-  inline const tArray<double>& GetFacedAvatarResources(cAvidaContext& ctx); 
+  inline double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
+  inline const tArray<double>& GetAVFacedResources(cAvidaContext& ctx);
+  double GetAVFacedResourceVal(cAvidaContext& ctx, int res_id);
   inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   inline const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
   inline const tArray<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id); 
   inline double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
+  inline double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -152,17 +157,35 @@ inline const tArray<double>& cTestCPU::GetResources(cAvidaContext& ctx)
   return m_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)   
+inline double cTestCPU::GetResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const tArray<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
+}
+
+inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)
 {
   return m_faced_cell_resource_count.GetResources(ctx); 
 }
  
-inline const tArray<double>& cTestCPU::GetFacedAvatarResources(cAvidaContext& ctx)   
+inline double cTestCPU::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const tArray<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
+  return faced_res[res_id];
+}
+
+inline const tArray<double>& cTestCPU::GetAVFacedResources(cAvidaContext& ctx)
 {
   return m_faced_cell_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)    
+inline double cTestCPU::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const tArray<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
+  return faced_res[res_id];
+}
+
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)
 {
     return m_deme_resource_count.GetResources(ctx); 
 }
@@ -172,9 +195,15 @@ inline const tArray<double>& cTestCPU::GetCellResources(int cell_id, cAvidaConte
   return m_cell_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetAvatarResources(cAvidaContext& ctx)   
+inline const tArray<double>& cTestCPU::GetAVResources(cAvidaContext& ctx)
 {
   return m_cell_resource_count.GetResources(ctx); 
+}
+
+inline double cTestCPU::GetAVResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const tArray<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
 }
 
 inline const tArray<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int cell_id)   
@@ -183,6 +212,12 @@ inline const tArray<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, in
 }
 
 inline double cTestCPU::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+{
+  const tArray<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
+}
+
+inline double cTestCPU::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
 {
   const tArray<double>& cell_res = m_cell_resource_count.GetResources(ctx);
   return cell_res[res_id];
