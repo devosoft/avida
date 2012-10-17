@@ -584,13 +584,8 @@ const tArray<double> & cResourceCount::GetFrozenResources(cAvidaContext& ctx, in
 double cResourceCount::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
 // This differs from GetFrozenCellResources by only pulling for res of interest.
 {
-  double res_val = 0;
-  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) {
-    res_val = resource_count[res_id];
-  } else {
-    res_val = spatial_resource_count[res_id]->GetAmount(cell_id);
-  }
-  return res_val;
+  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) return resource_count[res_id];
+  else return spatial_resource_count[res_id]->GetAmount(cell_id);
 }
 
 double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const

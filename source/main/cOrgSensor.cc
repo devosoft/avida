@@ -332,9 +332,6 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   int start_dist = 0;
   int end_dist = distance_sought;
   
-  cCoords center_cell(cell % worldx, cell / worldx);
-  cCoords this_cell = center_cell;
-  
   bool diagonal = true;
   if (facing == 0 || facing == 2 || facing == 4 || facing == 6) diagonal = false;
   
@@ -342,7 +339,6 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   if (m_use_avatar) faced_cell_int = m_organism->GetOrgInterface().GetAVFacedCellID();
   
   cCoords faced_cell(faced_cell_int % worldx, faced_cell_int / worldx);
-  const cCoords ahead_dir(faced_cell.GetX() - this_cell.GetX(), faced_cell.GetY() - this_cell.GetY());
   
   bool do_left = true;
   bool do_right = true;
@@ -356,17 +352,6 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   int first_whole_resource = -9;
   
   bool stop_at_first_found = (search_type == 0) || (habitat_used == -2 && (search_type == -1 || search_type == 1));
-  
-  sSearchInfo cellResultInfo;
-  cellResultInfo.amountFound = 0;
-  cellResultInfo.has_edible = false;
-  cellResultInfo.resource_id = -9;
-  
-  sBounds worldBounds;
-  worldBounds.min_x = 0;
-  worldBounds.min_y = 0;    
-  worldBounds.max_x = worldx - 1;
-  worldBounds.max_y = worldy - 1;
   
   // Key for facings
   // 7 0 1
@@ -410,6 +395,16 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       right.Set(1, 0);
       break;
   }  
+  cCoords center_cell(cell % worldx, cell / worldx);
+  cCoords this_cell = center_cell;
+  cCoords direction = left;
+  const cCoords ahead_dir(faced_cell.GetX() - this_cell.GetX(), faced_cell.GetY() - this_cell.GetY());
+
+  sSearchInfo cellResultInfo;
+  cellResultInfo.amountFound = 0;
+  cellResultInfo.has_edible = false;
+  cellResultInfo.resource_id = -9;
+  
   tSmartArray<int> val_res;                                                     // resource ids of this habitat type
   val_res.Resize(0);
   // END definitions
@@ -418,6 +413,12 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   if (habitat_used != -2) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound); 
   
   // set geometric bounds, and fast-forward, if possible
+  sBounds worldBounds;
+  worldBounds.min_x = 0;
+  worldBounds.min_y = 0;    
+  worldBounds.max_x = worldx - 1;
+  worldBounds.max_y = worldy - 1;
+  
   sBounds tot_bounds;
   tot_bounds.min_x = worldx;
   tot_bounds.min_y = worldy;    
@@ -432,7 +433,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
         int this_start_dist = 0;
         sBounds res_bounds = GetBounds(ctx, val_res[i]);
-        this_start_dist = GetMinDist(ctx, worldx, res_bounds, cell, distance_sought, facing);
+        this_start_dist = GetMinDist(worldx, res_bounds, cell, distance_sought, facing);
         // drop any out of range...
         if (this_start_dist == -1) {
           val_res.Swap(i, val_res.GetSize() - 1);
@@ -473,7 +474,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     int num_cells_either_side = 0;
     if (dist > 0) num_cells_either_side = (dist % 2) ? (int) ((dist - 1) * 0.5) : (int) (dist * 0.5);
     // look left then right
-    cCoords direction = left;
+    direction = left;
     for (int do_lr = 0; do_lr <= 1; do_lr++) {
       if (do_lr == 1) direction = right;
       if (!do_left && direction == left) continue;
@@ -718,8 +719,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
   return returnInfo;
 }
 
-int cOrgSensor::GetMinDist(cAvidaContext& ctx, const int worldx, sBounds& bounds, const int cell_id, 
-                                      const int distance_sought, const int facing)
+int cOrgSensor::GetMinDist(const int worldx, sBounds& bounds, const int cell_id, const int distance_sought, const int facing)
 {
   const int org_x = cell_id % worldx;
   const int org_y = cell_id / worldx;
