@@ -323,7 +323,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   stuff_seen.value = -9;
   stuff_seen.group = -9;
   stuff_seen.forage = -9;
-  if (m_use_avatar && m_use_avatar != 2 && habitat_used == -2) return stuff_seen;
+  if ((m_use_avatar && m_use_avatar != 2 && habitat_used == -2) || (habitat_used == 3)) return stuff_seen;
   
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
@@ -410,7 +410,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   // END definitions
   
   bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
-  if (habitat_used != -2) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound); 
+  if (habitat_used != -2 && habitat_used != 3) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound);
   
   // set geometric bounds, and fast-forward, if possible
   sBounds worldBounds;
@@ -420,13 +420,16 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   worldBounds.max_y = worldy - 1;
   
   sBounds tot_bounds;
-  tot_bounds.min_x = worldx;
-  tot_bounds.min_y = worldy;    
-  tot_bounds.max_x = -1 * worldx;
-  tot_bounds.max_y = -1 * worldy;
+  tot_bounds.min_x = worldx - 1;
+  tot_bounds.min_y = worldy - 1;
+  tot_bounds.max_x = -1 * (worldx - 1);
+  tot_bounds.max_y = -1 * (worldy - 1);
   
   m_soloBounds.SetAll(worldBounds);
   
+  bool has_global = false;
+  bool global_only = true;
+  tSmartArray<int> val_res2 = val_res;
   if (habitat_used != -2 && habitat_used != 3) {
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
@@ -439,30 +442,39 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
           val_res.Swap(i, val_res.GetSize() - 1);
           val_res.Pop();
           i--;
-        }
-        else {
+        } else {
+          global_only = false;
           if (res_bounds.min_x < tot_bounds.min_x) tot_bounds.min_x = res_bounds.min_x;
           if (res_bounds.min_y < tot_bounds.min_y) tot_bounds.min_y = res_bounds.min_y;
           if (res_bounds.max_x > tot_bounds.max_x) tot_bounds.max_x = res_bounds.max_x;
           if (res_bounds.max_y > tot_bounds.max_y) tot_bounds.max_y = res_bounds.max_y;
           if (this_start_dist < temp_start_dist) temp_start_dist = this_start_dist;
         }
-      }
-      else {                                      // if any is not gradient type resource, use world bounds and break
-        tot_bounds = worldBounds;
-        temp_start_dist = 0;
+      } else {
+        // if any res is global, we just need to make sure we check at least one cell
+        if (resource_lib.GetResource(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
+        // if any res is spatial and non-gradient, we can't bound things because those res don't track the variables we use for bounding
+        else {
+          global_only = false;
+          tot_bounds = worldBounds;
+          temp_start_dist = 0;
+          break;
+        }
       }
     }
     start_dist = temp_start_dist;
     if (val_res.GetSize() == 0) {     // nothing in range
       stuff_seen.report_type = 0;
-      return stuff_seen;      
+      return stuff_seen;
     }
     end_dist = GetMaxDist(worldx, cell, distance_sought, tot_bounds);
-    
     center_cell += (ahead_dir * start_dist);
+    if (has_global && global_only) {
+      end_dist = 0;
+      start_dist = 0;
+    }
   } // END set bounds & fast-forward
-  
+
   // START WALKING
   bool first_step = true;
   for (int dist = start_dist; dist <= end_dist; dist++) {
@@ -625,7 +637,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
   returnInfo.has_edible = false;
   
   // if looking for resources or topological features
-  if (habitat_used != -2) {
+  if (habitat_used != -2 && habitat_used != 3) {
     // look at every resource ID of this habitat type in the array of resources of interest that we built
     // if counting edible (search_type == 0), return # edible units in each cell, not raw values
     for (int k = 0; k < val_res.GetSize(); k++) {
@@ -723,8 +735,8 @@ int cOrgSensor::GetMinDist(const int worldx, sBounds& bounds, const int cell_id,
 {
   const int org_x = cell_id % worldx;
   const int org_y = cell_id / worldx;
-  
-  if (org_x <= bounds.max_x && org_x >= bounds.min_x && org_y <= bounds.max_y && org_y >= bounds.min_y) return 0; // standing on it                     
+
+  if (org_x <= bounds.max_x && org_x >= bounds.min_x && org_y <= bounds.max_y && org_y >= bounds.min_y) return 0; // standing on it
   
   // now for the direction
   int min_x = bounds.min_x;
@@ -748,7 +760,7 @@ int cOrgSensor::GetMinDist(const int worldx, sBounds& bounds, const int cell_id,
   else if (facing == 5 && (max_y < org_y || min_x > org_x)) return -1;
   else if (facing == 7 && (min_y > org_y || min_x > org_x)) return -1;
   
-  // if not completely behind you, get min travel distance
+  // if not completely behind you, does min travel distance exceed distance used?
   int travel_dist = 0;
   if (facing == 0) travel_dist = org_y - max_y;
   else if (facing == 4) travel_dist = min_y - org_y;
@@ -775,35 +787,56 @@ int cOrgSensor::GetMinDist(const int worldx, sBounds& bounds, const int cell_id,
     else travel_dist = max(abs(org_x - max_x), abs(org_y - max_y));
   }
   if (travel_dist > distance_sought) return -1;
+  if (travel_dist > 0) return travel_dist;
   
+  // still going?
+  return 0;
+/*  the following is not implemented because it is not quite correct (e.g. for non-geometric shapes
   // check the distance when we consider offset from center sight line (is it within sight cone?)
+  // this requires checks using the farthest distance
+  int max_sidex = max(abs(org_x - min_x), abs(org_x - max_x));
+  int max_sidey = max(abs(org_y - min_y), abs(org_y - max_y));
+  max_sidex = (max_sidex % 2) ? (int) ((max_sidex - 1) * 0.5) : (int) (max_sidex * 0.5);
+  max_sidey = (max_sidey % 2) ? (int) ((max_sidey - 1) * 0.5) : (int) (max_sidey * 0.5);
+  
+  if ((facing == 0 || facing == 4) && (min_x > org_x + max_sidex || max_x < org_x - max_sidex)) return -1;
+  else if ((facing == 2 || facing == 6) && (min_y > org_y + max_sidey || max_y < org_y - max_sidey)) return -1;
+
+  int center_res_x = (int) ((max_x - min_x)  * 0.5);
+  int center_res_y = (int) ((max_y - min_y)  * 0.5);
   int center_cell_x = 0;
   int center_cell_y = 0;
-  const int num_side = (travel_dist % 2) ? (int) ((travel_dist - 1) * 0.5) : (int) (travel_dist * 0.5);
   
-  if ((facing == 0 || facing == 4) && (min_x > org_x + num_side || max_x < org_x - num_side)) return -1;
-  else if ((facing == 2 || facing == 6) && (min_y > org_y + num_side || max_y < org_y - num_side)) return -1;
-  else if (facing == 1) {
-    center_cell_x = org_x + travel_dist;
-    center_cell_y = org_y - travel_dist;
-    if ((max_x < center_cell_x - num_side) || (min_y > center_cell_y + num_side)) return -1;
+  // the following only good for diagonals (with slope = 1)
+  if (facing == 1) {
+    center_cell_x = org_y + center_res_y;
+    center_cell_y = org_x - center_res_x;
+    max_sidex = org_y + center_res_y;
+    max_sidey = org_x - center_res_x;
+    if ((max_x < center_cell_x - max_sidex) || (min_y > center_cell_y + max_sidey)) return -1;
   }
   else if (facing == 3) {
-    center_cell_x = org_x + travel_dist;
-    center_cell_y = org_y + travel_dist;
-    if ((max_x < center_cell_x - num_side) || (max_y < center_cell_y - num_side)) return -1;
+    center_cell_x = org_y + center_res_y;
+    center_cell_y = org_x + center_res_x;
+    max_sidex = org_y + center_res_y;
+    max_sidey = org_x + center_res_x;
+    if ((max_x < center_cell_x - max_sidex) || (max_y < center_cell_y - max_sidey)) return -1;
   }
   else if (facing == 5) {
-    center_cell_x = org_x - travel_dist;
-    center_cell_y = org_y + travel_dist;
-    if ((min_x > center_cell_x + num_side) || (max_y < center_cell_y - num_side)) return -1;
+    center_cell_x = org_y - center_res_y;
+    center_cell_y = org_x + center_res_x;
+    max_sidex = org_y - center_res_y;
+    max_sidey = org_x + center_res_x;
+    if ((min_x > center_cell_x + max_sidex) || (max_y < center_cell_y - max_sidey)) return -1;
   }
   else if (facing == 7) {
-    center_cell_x = org_x - travel_dist;
-    center_cell_y = org_y - travel_dist;
-    if ((min_x > center_cell_x + num_side) || (min_y > center_cell_y + num_side)) return -1;
-  }
-  return travel_dist;  
+    center_cell_x = org_y - center_res_y;
+    center_cell_y = org_x - center_res_x;
+    max_sidex = org_y - center_res_y;
+    max_sidey = org_x - center_res_x;
+    if ((min_x > center_cell_x + max_sidex) || (min_y > center_cell_y + max_sidey)) return -1;
+  } 
+  return distance_sought; */
 }
 
 int cOrgSensor::GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& bounds)

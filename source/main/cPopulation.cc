@@ -1558,7 +1558,6 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   
   // get the resource library
   const cResourceLib& resource_lib = environment.GetResourceLib();
-  if (true_cell != -1) GetCell(true_cell).GetOrganism()->GetOrgInterface().TriggerDoUpdates(ctx); // this is here only to maintain consistency in random number pulls form prev experiments -- should be removed
   
   // test for death by predatory resource
   for (int i = 0; i < resource_lib.GetSize(); i++) {

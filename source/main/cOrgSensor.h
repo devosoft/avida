@@ -88,7 +88,6 @@ class cOrgSensor
   tArray<sBounds> m_soloBounds;
   
   void Reset() { ResetOrgSensor(); }
-
   const sLookOut SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft);
   sSearchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
                       const cCoords& target_cell_coords, const tSmartArray<int>& val_res, bool first_step, bool stop_at_first_found);
