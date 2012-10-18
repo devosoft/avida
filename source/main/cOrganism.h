@@ -581,8 +581,8 @@ public:
   int GetNumberOfDonatedLineages() { return donating_lineages.size(); }
   void InitStringMap(); 
   bool ProduceString(int i);  
-  int GetNumberStringsProduced(int i) { return  m_string_map[i].prod_string; }
-  int GetNumberStringsOnHand(int i) { return m_string_map[i].on_hand; }
+  int GetNumberStringsProduced(int i) { return  (*m_string_map)[i].prod_string; }
+  int GetNumberStringsOnHand(int i) { return (*m_string_map)[i].on_hand; }
   bool DonateString(int string_tag, int amount); 
   bool ReceiveString(int string_tag, int amount, int donor_id); 
   bool CanReceiveString(int string_tag, int amount); 
@@ -683,7 +683,7 @@ protected:
   /* This member variable is a map of tags to strings. It can
   be used to track production, consumption, and donation of 
   strings. */
-  std::map < int, cStringSupport > m_string_map;
+  std::map < int, cStringSupport >* m_string_map;
 
 
   // -------- HGT conjugation support --------

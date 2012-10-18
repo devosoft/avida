@@ -144,7 +144,7 @@ private:
 
   // --------  Instruction Counts  ---------
   Apto::Map<cString, Apto::Array<cString> > m_is_inst_names_map;
-  Apto::Map<cString, Apto::Array<cIntSum> > m_is_exe_inst_map;
+  Apto::Map<Apto::String, Apto::Array<cIntSum> > m_is_exe_inst_map;
   Apto::Array<pair<int,int> > m_is_tolerance_exe_counts;
   Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts;
   Apto::Map<cString, Apto::Array<cIntSum> > m_is_prey_exe_inst_map;
@@ -493,7 +493,7 @@ public:
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
   void ZeroInst();
-  Apto::Array<cIntSum>& InstExeCountsForInstSet(const cString& inst_set) { return m_is_exe_inst_map[inst_set]; }
+  Apto::Array<cIntSum>& InstExeCountsForInstSet(const Apto::String& inst_set) { return m_is_exe_inst_map[inst_set]; }
 
   // And constant versions of the above...
   const cDoubleSum& SumFitness() const       { return sum_fitness; }

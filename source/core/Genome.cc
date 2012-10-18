@@ -73,7 +73,7 @@ Avida::Genome::Genome(const Apto::String& genome_str)
 Avida::Genome::Genome(const Genome& genome)
 : m_hw_type(genome.m_hw_type), m_representation(genome.m_representation->Clone())
 {
-  m_props.SetValue(s_prop_id_instset, genome.m_props.Get(s_prop_id_instset).StringValue());
+  m_props.SetValue(s_prop_id_instset, genome.m_props.Get(s_prop_id_instset).StringValue().Clone());
 }
 
 

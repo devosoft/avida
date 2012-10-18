@@ -143,7 +143,8 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, cStrin
   Apto::Array<cString> names(inst_set->GetSize());
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
-  m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  Apto::String is((const char*)inst_set->GetInstSetName());
+  m_world->GetStats().InstExeCountsForInstSet(is).Resize(inst_set->GetSize());
   m_world->GetStats().InstPreyExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstMaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());

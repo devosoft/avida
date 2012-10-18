@@ -196,6 +196,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, in
   , m_num_guard(0)
   , m_num_deposits(0)
   , m_amount_deposited(0)
+  , m_string_map(NULL)
   , m_num_point_mut(0)
   , m_av_in_index(-1)
   , m_av_out_index(-1)
@@ -254,6 +255,7 @@ cOrganism::~cOrganism()
   if (m_neighborhood) delete m_neighborhood;
   delete m_org_display;
   delete m_queued_display_data;
+  if (m_string_map) delete m_string_map;
 }
 
 
@@ -1430,12 +1432,13 @@ void cOrganism::SetOutputNegative1()
 /* Initialize the string tracking map */
 void cOrganism::InitStringMap() 
 {
-	if (!m_string_map.size()) { 
+	if (!m_string_map) {
+    m_string_map = new std::map < int, cStringSupport >;
 		// Get the strings from the task lib. 
 		std::vector < cString > temp_strings = m_world->GetEnvironment().GetMatchStringsFromTask(); 
 		// Create structure for each of them. 
 		for (unsigned int i=0; i < temp_strings.size(); i++){
-			m_string_map[i].m_string = temp_strings[i]; 
+			(*m_string_map)[i].m_string = temp_strings[i];
 		}
 	}
 }
@@ -1445,10 +1448,10 @@ bool cOrganism::ProduceString(int i)
 { 
 	bool val = false; 
 	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 
-	if ((cap == -1) || (m_string_map[i].on_hand < cap)) 
+	if ((cap == -1) || ((*m_string_map)[i].on_hand < cap))
 	{
-		m_string_map[i].prod_string++; 
-		m_string_map[i].on_hand++;
+		(*m_string_map)[i].prod_string++; 
+		(*m_string_map)[i].on_hand++;
 		val = true;
 	}
 	return val;
@@ -1458,9 +1461,9 @@ bool cOrganism::ProduceString(int i)
 bool cOrganism::DonateString(int string_tag, int amount)
 {
 	bool val = false; 
-	if (m_string_map[string_tag].on_hand >= amount) {
+	if ((*m_string_map)[string_tag].on_hand >= amount) {
 		val = true;
-		m_string_map[string_tag].on_hand -= amount;
+		(*m_string_map)[string_tag].on_hand -= amount;
 	}
 	return val;
 	
@@ -1471,10 +1474,10 @@ bool cOrganism::ReceiveString(int string_tag, int amount, int donor_id)
 {
 	bool val = false; 
 	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 
-	if ((cap == -1) || (m_string_map[string_tag].on_hand < cap)) 
+	if ((cap == -1) || ((*m_string_map)[string_tag].on_hand < cap)) 
 	{
-		m_string_map[string_tag].received_string++; 
-		m_string_map[string_tag].on_hand++;
+		(*m_string_map)[string_tag].received_string++; 
+		(*m_string_map)[string_tag].on_hand++;
 		donor_list.insert(donor_id);	
 		m_num_donate_received += amount;
 		m_amount_donate_received++;
@@ -1488,7 +1491,7 @@ bool cOrganism::CanReceiveString(int string_tag, int)
 {
 	bool val = false; 
 	int cap = m_world->GetConfig().STRING_AMOUNT_CAP.Get(); 
-	if ((cap == -1) || (m_string_map[string_tag].on_hand < cap)) 
+	if ((cap == -1) || ((*m_string_map)[string_tag].on_hand < cap))
 	{
 		val = true;
 	}

@@ -81,6 +81,7 @@
 using namespace std;
 using namespace AvidaTools;
 
+static const PropertyID s_prop_id_instset("instset");
 
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
@@ -902,7 +903,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
   // Pre-check target hardware
   const cHardwareBase& hw = target_organism->GetHardware();
   if (hw.GetType() != parent->UnitGenome().HardwareType() ||
-      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get("instset").StringValue() ||
+      hw.GetInstSet().GetInstSetName() != (const char*)parent->UnitGenome().Properties().Get(s_prop_id_instset).StringValue() ||
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   //Handle host specific injection
@@ -2598,7 +2599,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     Genome next_germ(source_deme.GetGermline().GetLatest());
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(next_germ.Representation());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(next_germ.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(next_germ.Properties().Get(s_prop_id_instset).StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i = 0; i < seq->GetSize(); ++i) {
@@ -2652,7 +2653,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get(s_prop_id_instset).StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i < new_genome.GetSize(); ++i) {
@@ -2830,7 +2831,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
 
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get(s_prop_id_instset).StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {
@@ -3458,7 +3459,7 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, Systematics::GroupPtr
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(mg.Representation());
     cCPUMemory new_genome(*seq);
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.Properties().Get(s_prop_id_instset).StringValue());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {
@@ -4211,7 +4212,7 @@ void cPopulation::PrintDemeInstructions()
       for (int i = 0; i < cur_deme.GetSize(); i++) {
         int cur_cell = cur_deme.GetCellID(i);
         if (!cell_array[cur_cell].IsOccupied()) continue;
-        if (cell_array[cur_cell].GetOrganism()->GetGenome().Properties().Get("instset").StringValue() != inst_set) continue;
+        if (cell_array[cur_cell].GetOrganism()->GetGenome().Properties().Get(s_prop_id_instset).StringValue() != inst_set) continue;
         cPhenotype& phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
         
         for (int j = 0; j < num_inst; j++) single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
@@ -5293,8 +5294,8 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     
-    Apto::String inst_set = organism->GetGenome().Properties().Get("instset").StringValue();
-    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet((const char*)inst_set);
+    Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
+    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet(inst_set);
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
@@ -5444,7 +5445,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPreyCreatureAge().Add(phenotype.GetAge());
       stats.SumPreyGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").StringValue());
+      Apto::Array<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5456,7 +5457,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPredCreatureAge().Add(phenotype.GetAge());
       stats.SumPredGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").StringValue());
+      Apto::Array<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5512,7 +5513,7 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
       stats.SumMaleCreatureAge().Add(phenotype.GetAge());
       stats.SumMaleGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").StringValue());
+      Apto::Array<cIntSum>& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         male_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5524,7 +5525,7 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
       stats.SumFemaleCreatureAge().Add(phenotype.GetAge());
       stats.SumFemaleGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get("instset").StringValue());
+      Apto::Array<cIntSum>& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         female_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }

@@ -218,7 +218,10 @@ void cMutationalNeighborhood::ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* 
   const int inst_size = m_inst_set.GetSize();
   sStep& odata = m_onestep_point[cur_site];
   
+  m_mutex.Lock();
   Genome mod_genome(m_base_genome);
+  m_mutex.Unlock();
+  
   InstructionSequencePtr seq_p;
   seq_p.DynamicCastFrom(mod_genome.Representation());
   InstructionSequence& seq = *seq_p;
@@ -245,7 +248,10 @@ void cMutationalNeighborhood::ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU*
   const int inst_size = m_inst_set.GetSize();
   sStep& odata = m_onestep_insert[cur_site];
   
+  m_mutex.Lock();
   Genome mod_genome(m_base_genome);
+  m_mutex.Unlock();
+  
   InstructionSequencePtr seq_p;
   seq_p.DynamicCastFrom(mod_genome.Representation());
   InstructionSequence& seq = *seq_p;
@@ -267,7 +273,10 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
 {
   sStep& odata = m_onestep_delete[cur_site];
   
+  m_mutex.Lock();
   Genome mod_genome(m_base_genome);
+  m_mutex.Unlock();
+  
   InstructionSequencePtr seq_p;
   seq_p.DynamicCastFrom(mod_genome.Representation());
   InstructionSequence& seq = *seq_p;
