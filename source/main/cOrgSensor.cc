@@ -472,6 +472,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     if (has_global && global_only) {
       end_dist = 0;
       start_dist = 0;
+      tot_bounds = worldBounds;
     }
   } // END set bounds & fast-forward
   else if (habitat_used == -2) tot_bounds = worldBounds;
