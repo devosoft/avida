@@ -73,7 +73,7 @@ nop-C
 nop-D
 dec
 nop-F		# count output reg
-if-not-0
+if-equ-0
 nop-F
 IO
 nop-A		# random number

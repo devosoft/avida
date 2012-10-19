@@ -4918,11 +4918,10 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     }
     
     // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-    tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-    tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    const tArray<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const tArray<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
     for (int i = 0; i < org_reactions.GetSize(); i++) {
-      org_reactions[i] += target_reactions[i];
-      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
     }
     
     // and add current merit bonus after adjusting for conversion efficiency
@@ -5018,11 +5017,10 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     }
     
     // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-    tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-    tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    const tArray<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const tArray<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
     for (int i = 0; i < org_reactions.GetSize(); i++) {
-      org_reactions[i] += target_reactions[i];
-      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
     }
     
     // and add current merit bonus after adjusting for conversion efficiency
@@ -5289,11 +5287,10 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
       m_organism->UpdateMerit(attacker_merit);
     }
     
-    tArray<int> target_reactions = target->GetPhenotype().GetLastReactionCount();
-    tArray<int> org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    const tArray<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const tArray<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
     for (int i = 0; i < org_reactions.GetSize(); i++) {
-      org_reactions[i] += target_reactions[i];
-      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i]);
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
     }
     
     const double target_bonus = target->GetPhenotype().GetCurBonus();

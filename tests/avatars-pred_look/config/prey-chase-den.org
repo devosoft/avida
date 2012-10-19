@@ -26,7 +26,7 @@ nop-D
 nop-E
 dec
 nop-F		# count output reg
-if-not-0	# if no edible found
+if-equ-0	# if no edible found
 nop-F
 IO
 nop-A

@@ -962,7 +962,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     }
     
     if (toFail) {
-      const tArray<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
+      const tArray<int>& stolenReactions = m_phenotype.GetStolenReactionCount();
       for (int i = 0; i < stolenReactions.GetSize(); i++) {
         if (stolenReactions[i] > 0) toFail = false;
       }

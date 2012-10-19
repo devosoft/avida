@@ -427,10 +427,10 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   
   m_soloBounds.SetAll(worldBounds);
   
-  bool has_global = false;
-  bool global_only = true;
   tSmartArray<int> val_res2 = val_res;
   if (habitat_used != -2 && habitat_used != 3) {
+    bool has_global = false;
+    bool global_only = true;
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
       if (resource_lib.GetResource(val_res[i])->GetGradient()) {
@@ -474,7 +474,8 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
       start_dist = 0;
     }
   } // END set bounds & fast-forward
-
+  else if (habitat_used == -2) tot_bounds = worldBounds;
+  
   // START WALKING
   bool first_step = true;
   for (int dist = start_dist; dist <= end_dist; dist++) {
@@ -687,7 +688,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
   else if (habitat_used == -2) {
     const cPopulationCell* target_cell = m_organism->GetOrgInterface().GetCell(target_cell_num);
     if (!m_use_avatar) {
-      if(target_cell->IsOccupied() && !target_cell->GetOrganism()->IsDead()) {
+      if (target_cell->IsOccupied() && !target_cell->GetOrganism()->IsDead()) {
         int type_seen = target_cell->GetOrganism()->GetForageTarget();
         if (search_type == 0) {
           returnInfo.amountFound++;

@@ -1483,7 +1483,7 @@ bool cEnvironment::TestRequisites(cTaskContext& taskctx, const cReaction* cur_re
     
     if (taskctx.GetOrganism()) {
       // Have all reactions been met?
-      const tArray<int> stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount(); 
+      const tArray<int>& stolen_reactions = taskctx.GetOrganism()->GetPhenotype().GetStolenReactionCount();
       tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
       while (reaction_it.Next() != NULL) {
         int react_id = reaction_it.Get()->GetID();
