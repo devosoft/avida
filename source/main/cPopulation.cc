@@ -83,6 +83,102 @@ using namespace AvidaTools;
 
 static const PropertyID s_prop_id_instset("instset");
 
+
+cPopulationOrgStatProvider::~cPopulationOrgStatProvider() { ; }
+
+
+class InstructionExecCountsProvider : public cPopulationOrgStatProvider
+{
+private:
+  cWorld* m_world;
+  Apto::Map<Apto::String, Apto::Array<cIntSum>, Apto::DefaultHashBTree, Apto::ImplicitDefault> m_is_exe_inst_map;
+  Data::DataSetPtr m_provides;
+
+public:
+  InstructionExecCountsProvider(cWorld* world) : m_world(world), m_provides(new Data::DataSet)
+  {
+    m_provides->Insert(Apto::String("core.population.inst_exec_counts[]"));
+
+    cHardwareManager& hwm = m_world->GetHardwareManager();
+    for (int i = 0; i < hwm.GetNumInstSets(); i++) {
+      m_is_exe_inst_map[Apto::String((const char*)hwm.GetInstSet(i).GetInstSetName())].Resize(hwm.GetInstSet(i).GetSize());
+    }
+  }
+  
+  Data::ConstDataSetPtr Provides() const { return m_provides; }
+  void UpdateProvidedValues(Update current_update) { (void)current_update; }
+  
+  Apto::String DescribeProvidedValue(const Apto::String& data_id) const
+  {
+    Apto::String rtn;
+    if (data_id == "core.population.inst_exec_counts[]") {
+      rtn = "Instruction execution counts for the specified instruction set.";
+    }
+    return rtn;
+  }
+  
+  void SetActiveArguments(const Data::DataID& data_id, Data::ConstArgumentSetPtr args) { (void)data_id; (void)args; }
+  
+  Data::ConstArgumentSetPtr GetValidArguments(const Data::DataID& data_id) const
+  {
+    Data::ArgumentSetPtr args(new Data::ArgumentSet);
+    
+    for (int i = 0; i < m_world->GetHardwareManager().GetNumInstSets(); i++) {
+      args->Insert(Apto::String((const char*)m_world->GetHardwareManager().GetInstSet(i).GetInstSetName()));
+    }
+    
+    return args;
+  }
+
+  bool IsValidArgument(const Data::DataID& data_id, Data::Argument arg) const
+  {
+    return GetValidArguments(data_id)->Has(arg);
+  }
+  
+
+  Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const
+  {
+    Apto::SmartPtr<Data::ArrayPackage, Apto::InternalRCObject> pkg(new Data::ArrayPackage);
+    
+    const Apto::Array<cIntSum>& inst_exe_counts = m_is_exe_inst_map[arg];
+    for (int i = 0; i < inst_exe_counts.GetSize(); i++) {
+      pkg->AddComponent(Data::PackagePtr(new Data::Wrap<int>(inst_exe_counts[i].Sum())));
+    }
+    
+    return pkg;
+  }
+  
+  
+  void UpdateReset()
+  {
+    for (Apto::Map<Apto::String, Apto::Array<cIntSum> >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
+      Apto::Array<cIntSum>& inst_counts = (*it.Get());
+      for (int i = 0; i < inst_counts.GetSize(); i++) inst_counts[i].Clear();
+    }
+  }
+  
+  void HandleOrganism(cOrganism* organism)
+  {
+    Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
+    Apto::Array<cIntSum>& inst_exe_counts = m_is_exe_inst_map[inst_set];
+    for (int j = 0; j < organism->GetPhenotype().GetLastInstCount().GetSize(); j++) {
+      inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+    }
+  }
+  
+  static Data::ArgumentedProviderPtr Activate(cWorld* world, World* new_world)
+  {
+    (void)new_world;
+    cPopulationOrgStatProviderPtr osp(new InstructionExecCountsProvider(world));
+    world->GetPopulation().AttachOrgStatProvider(osp);
+    return osp;
+  }
+};
+
+
+
+
+
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
 , schedule(NULL)
@@ -122,6 +218,10 @@ cPopulation::cPopulation(cWorld* world)
   
   Data::ArgumentedProviderActivateFunctor activate(m_world, &cWorld::GetPopulationProvider);
   m_world->GetDataManager()->Register("core.population.group_id[]", activate);
+
+  Apto::Functor<Data::ArgumentedProviderPtr, Apto::TL::Create<cWorld*, World*> > is_activate(&InstructionExecCountsProvider::Activate);
+  Data::ArgumentedProviderActivateFunctor isp_activate(Apto::BindFirst(is_activate, m_world));
+  m_world->GetDataManager()->Register("core.population.inst_exec_counts[]", isp_activate);
 }
 
 
@@ -5249,8 +5349,8 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.ZeroTasks();
   stats.ZeroReactions();
   
-  stats.ZeroInst();
-  
+  for (int osp_idx = 0; osp_idx < m_org_stat_providers.GetSize(); osp_idx++) m_org_stat_providers[osp_idx]->UpdateReset();
+
   // Counts...
   int num_breed_true = 0;
   int num_parasites = 0;
@@ -5274,6 +5374,11 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   
   for (int i = 0; i < live_org_list.GetSize(); i++) {  
     cOrganism* organism = live_org_list[i];
+    
+    for (int osp_idx = 0; osp_idx < m_org_stat_providers.GetSize(); osp_idx++) {
+      m_org_stat_providers[osp_idx]->HandleOrganism(organism);
+    }
+    
     const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
@@ -5294,11 +5399,11 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     
-    Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
-    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet(inst_set);
-    for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
-      inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
-    }
+//    Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
+//    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet(inst_set);
+//    for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+//      inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+//    }
     
     if (cur_merit > max_merit) max_merit = cur_merit;
     if (cur_fitness > max_fitness) max_fitness = cur_fitness;

@@ -313,14 +313,14 @@ private:
   Apto::String m_enabled_action_string;
   DiscreteScale::Entry m_scale_label_entry;
   Apto::String m_scale_label;
-  
+  const Apto::String m_name;
   
 public:
   EnvActionMapMode(cWorld* world);
   ~EnvActionMapMode() { ; }
   
   // MapMode Interface
-  const Apto::String& GetName() const { static const Apto::String name("Actions"); return name; }
+  const Apto::String& GetName() const { return m_name; }
   const Apto::Array<int>& GetGridValues() const { return m_action_grid; }
   const Apto::Array<int>& GetValueCounts() const { return m_action_counts; }
   
@@ -347,7 +347,7 @@ private:
 
 
 EnvActionMapMode::EnvActionMapMode(cWorld* world)
- : m_world(world), m_action_counts(Avida::Viewer::MAP_RESERVED_COLORS)
+ : m_world(world), m_action_counts(Avida::Viewer::MAP_RESERVED_COLORS), m_name("Actions")
 {
   cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();

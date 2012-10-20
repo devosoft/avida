@@ -32,11 +32,11 @@
 
 static Avida::PropertyDescriptionMap s_prop_desc_map;
 
-static Apto::String s_prop_name_name("name");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_name("name");
 
 
 
-static Apto::String s_prop_name_total_organisms("total_organisms");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_total_organisms("total_organisms");
 
 
 void Avida::Systematics::Clade::Initialize()

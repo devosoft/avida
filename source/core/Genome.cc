@@ -35,7 +35,7 @@
 #include "cInitFile.h"
 #include "cStringUtil.h"
 
-static Apto::String s_prop_id_instset("instset");
+static Apto::BasicString<Apto::ThreadSafe> s_prop_id_instset("instset");
 static PropertyDescriptionMap s_prop_desc_map;
 
 void cHardwareManager::Initialize()
@@ -141,6 +141,7 @@ bool Avida::Genome::InstSetPropertyMap::Has(const PropertyID& p_id) const { retu
 
 const Avida::Property& Avida::Genome::InstSetPropertyMap::Get(const PropertyID& p_id) const
 {
+  assert(p_id.GetSize() == 7);
   if (p_id == s_prop_id_instset) return m_inst_set;
 
   return *s_default_prop;

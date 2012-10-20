@@ -36,34 +36,30 @@
 class cCodeLabel
 {
 private:
-  Apto::Array<char> m_nops;
-  int m_size;
+  Apto::Array<char, Apto::Smart> m_nops;
 
 public:
-  cCodeLabel() : m_size(0) { ; }
-  cCodeLabel(const cCodeLabel& in_label) : m_nops(in_label.m_nops), m_size(in_label.m_size) { ; }  
+  inline cCodeLabel() { m_nops.SetReserve(nHardware::MAX_LABEL_SIZE); }
+  inline cCodeLabel(const cCodeLabel& in_label) : m_nops(in_label.m_nops) { ; }
   ~cCodeLabel() { ; }
 
-  bool operator==(const cCodeLabel& other_label) const;
-  bool operator!=(const cCodeLabel& other_label) const { return !(operator==(other_label)); }
-  char operator[](int position) const { return (int) m_nops[position]; }
-  cCodeLabel& operator=(const cCodeLabel& in_lbl)
-  {
-    m_nops = in_lbl.m_nops;
-    m_size = in_lbl.m_size;
-    return *this;
-  }
+  inline bool operator==(const cCodeLabel& other_label) const;
+  inline bool operator!=(const cCodeLabel& other_label) const { return !(operator==(other_label)); }
+  inline char operator[](int position) const { return (int) m_nops[position]; }
+  inline cCodeLabel& operator=(const cCodeLabel& in_lbl) { m_nops = in_lbl.m_nops; return *this; }
 
   void ReadString(const cString& label_str);
   
   int FindSublabel(cCodeLabel& sub_label);
 
-  void Clear() { m_size = 0; }
+  inline void Clear() { m_nops.Resize(0); }
   inline void AddNop(int nop_num);
   inline void Rotate(const int rot, const int base);
 
-  int GetSize() const { return m_size; }
+  inline int GetSize() const { return m_nops.GetSize(); }
+  
   inline cString AsString() const;
+  
   int AsInt(const int base) const;
   int AsIntGreyCode(const int base) const;
   int AsIntDirect(const int base) const;
@@ -74,33 +70,40 @@ public:
 };
 
 
-void cCodeLabel::AddNop(int nop_num) {
-
-  if (m_size < nHardware::MAX_LABEL_SIZE) {
-    if (m_size == m_nops.GetSize()) {
-      m_nops.Resize(m_size + 1);
-    }
-    m_nops[m_size++] = (char) nop_num;
+inline void cCodeLabel::AddNop(int nop_num)
+{
+  if (m_nops.GetSize() < nHardware::MAX_LABEL_SIZE) {
+    m_nops.Push((char)nop_num);
   }
 }
 
-void cCodeLabel::Rotate(const int rot, const int base)
+inline void cCodeLabel::Rotate(const int rot, const int base)
 {
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
     m_nops[i] += rot;
     if (m_nops[i] >= base) m_nops[i] -= base;
   }
 }
 
 
-cString cCodeLabel::AsString() const
+inline cString cCodeLabel::AsString() const
 {
   cString out_string;
-  for (int i = 0; i < m_size; i++) {
-    out_string += (char) m_nops[i] + 'A';
+  for (int i = 0; i < m_nops.GetSize(); i++) {
+    out_string += m_nops[i] + 'A';
   }
 
   return out_string;
+}
+
+
+inline bool cCodeLabel::operator==(const cCodeLabel & other_label) const
+{
+  if (m_nops.GetSize() != other_label.GetSize()) return false;
+  
+  for (int i = 0; i < m_nops.GetSize(); i++) if (m_nops[i] != other_label[i]) return false;
+  
+  return true;
 }
 
 #endif

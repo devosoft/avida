@@ -163,7 +163,6 @@ cStats::cStats(cWorld* world)
   task_internal_last_max_quality.SetAll(0.0);
 
 
-  ZeroInst();
   ZeroFTInst();
 
   const int num_reactions = env.GetNumReactions();
@@ -466,13 +465,6 @@ void cStats::ZeroReactions()
 }
 
 
-void cStats::ZeroInst()
-{
-  for (Apto::Map<Apto::String, Apto::Array<cIntSum> >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
-    Apto::Array<cIntSum>& inst_counts = (*it.Get());
-    for (int i = 0; i < inst_counts.GetSize(); i++) inst_counts[i].Clear();
-  }
-}
 
 void cStats::ZeroFTInst()
 {
@@ -1501,22 +1493,6 @@ void cStats::PrintDivideMutData(const cString& filename)
   df.Endl();
 }
 
-void cStats::PrintInstructionData(const cString& filename, const cString& inst_set)
-{
-  cDataFile& df = m_world->GetDataFile(filename);
-
-  df.WriteComment("Avida instruction execution data");
-  df.WriteTimeStamp();
-
-  df.Write(m_update, "Update");
-  Apto::String is((const char*)inst_set);
-
-  for (int i = 0; i < m_is_exe_inst_map[is].GetSize(); i++) {
-    df.Write(m_is_exe_inst_map[is][i].Sum(), m_is_inst_names_map[inst_set][i]);
-  }
-
-  df.Endl();
-}
 
 void cStats::PrintSenseData(const cString& filename)
 {

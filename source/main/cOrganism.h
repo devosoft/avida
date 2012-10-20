@@ -581,8 +581,8 @@ public:
   int GetNumberOfDonatedLineages() { return donating_lineages.size(); }
   void InitStringMap(); 
   bool ProduceString(int i);  
-  int GetNumberStringsProduced(int i) { return  (*m_string_map)[i].prod_string; }
-  int GetNumberStringsOnHand(int i) { return (*m_string_map)[i].on_hand; }
+  int GetNumberStringsProduced(int i) { return m_string_map ? (*m_string_map)[i].prod_string : 0; }
+  int GetNumberStringsOnHand(int i) { return m_string_map ? (*m_string_map)[i].on_hand : 0; }
   bool DonateString(int string_tag, int amount); 
   bool ReceiveString(int string_tag, int amount, int donor_id); 
   bool CanReceiveString(int string_tag, int amount); 

@@ -24,6 +24,9 @@
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/data/Manager.h"
+#include "avida/data/Package.h"
+#include "avida/data/Recorder.h"
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
@@ -339,11 +342,13 @@ public:
 };
 
 
-class cActionPrintInstructionData : public cAction
+class cActionPrintInstructionData : public cAction, public Data::Recorder
 {
 private:
   cString m_filename;
   cString m_inst_set;
+  Data::DataID m_data_id;
+  Data::PackagePtr m_data;
   
 public:
   cActionPrintInstructionData(cWorld* world, const cString& args, Feedback&)
@@ -358,13 +363,45 @@ public:
     if (largs.GetSize()) m_inst_set = largs.PopWord();
     
     if (m_filename == "") m_filename.Set("instruction-%s.dat", (const char*)m_inst_set);
+    
+    m_data_id = Apto::FormatStr("core.population.inst_exec_counts[%s]", (const char*)m_inst_set);
+    
+    Data::RecorderPtr thisPtr(this);
+    this->AddReference();
+    m_world->GetDataManager()->AttachRecorder(thisPtr);
   }
   
   static const cString GetDescription() { return "Arguments: [string fname=\"instruction-${inst_set}.dat\"] [string inst_set]"; }
   
+  Data::ConstDataSetPtr RequestedData() const
+  {
+    Data::DataSetPtr ds(new Data::DataSet);
+    ds->Insert(m_data_id);
+    return ds;
+  }
+  
+  
+  void NotifyData(Update, Data::DataRetrievalFunctor retrieve_data)
+  {
+    m_data = retrieve_data(m_data_id);
+  }
+  
   void Process(cAvidaContext&)
   {
-    m_world->GetStats().PrintInstructionData(m_filename, m_inst_set);
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    
+    df.WriteComment("Avida instruction execution data");
+    df.WriteTimeStamp();
+    
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    
+    if (m_data) {
+      for (int i = 0; i < m_data->NumComponents(); i++) {
+        df.Write(m_data->GetComponent(i)->IntValue(), cStringUtil::Stringf("inst %d", i));
+      }
+    }
+    
+    df.Endl();
   }
 };
 

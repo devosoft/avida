@@ -49,6 +49,18 @@ class cSchedule;
 using namespace Avida;
 
 
+class cPopulationOrgStatProvider : public Data::ArgumentedProvider
+{
+public:
+  ~cPopulationOrgStatProvider();
+
+  virtual void UpdateReset() = 0;
+  virtual void HandleOrganism(cOrganism* org) = 0;
+};
+
+typedef Apto::SmartPtr<cPopulationOrgStatProvider, Apto::InternalRCObject> cPopulationOrgStatProviderPtr;
+
+
 class cPopulation : public Data::ArgumentedProvider
 {
 private:
@@ -68,6 +80,9 @@ private:
   
   // Keep list of live organisms
   Apto::Array<cOrganism*, Apto::Smart> live_org_list;
+  
+  Apto::Array<cPopulationOrgStatProviderPtr> m_org_stat_providers;
+  
   
   Apto::Array<pair<int,int>, Apto::Smart>* sleep_log;
   
@@ -132,6 +147,8 @@ public:
   Data::PackagePtr GetProvidedValueForArgument(const Data::DataID& data_id, const Data::Argument& arg) const;
 
   // cPopulation
+  
+  void AttachOrgStatProvider(cPopulationOrgStatProviderPtr provider) { m_org_stat_providers.Push(provider); }
   
   void ResizeCellGrid(int x, int y);
     

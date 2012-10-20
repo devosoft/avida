@@ -35,7 +35,6 @@ void cCodeLabel::ReadString(const cString& label_str)
 {
   cString lbl(label_str);
   lbl.Trim();
-  m_size = lbl.GetSize();
   m_nops.Resize(lbl.GetSize());
   
   for (int i = 0; i < lbl.GetSize(); i++) {
@@ -45,29 +44,13 @@ void cCodeLabel::ReadString(const cString& label_str)
 }
 
 
-bool cCodeLabel::operator==(const cCodeLabel & other_label) const
-{
-  if (m_size != other_label.GetSize()) {
-    return false;
-  }
-
-  for (int i = 0; i < m_size; i++) {
-    if (m_nops[i] != other_label[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-
 // This function returns true if the sub_label can be found within
 // the label affected.
 int cCodeLabel::FindSublabel(cCodeLabel & sub_label)
 {
   bool error = false;
 
-  for (int offset = 0; offset <= m_size - sub_label.GetSize(); offset++) {
+  for (int offset = 0; offset <= m_nops.GetSize() - sub_label.GetSize(); offset++) {
     for (int i = 0; i < sub_label.GetSize(); i++) {
       if (m_nops[i + offset] != sub_label[i]) {
 	error = true;
@@ -95,7 +78,7 @@ int cCodeLabel::AsInt(const int base) const
 {
   int value = 0;
 
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
     value *= base;
     value += m_nops[i];
   }
@@ -108,7 +91,7 @@ int cCodeLabel::AsIntGreyCode(const int base) const
   int value = 0;
   int oddCount = 0;
 
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
     value *= base;
 
     if(oddCount % 2 == 0) {
@@ -129,7 +112,7 @@ int cCodeLabel::AsIntDirect(const int base) const
 {
   int value = 0;
   
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
     value *= base;
     value += m_nops[i];
   }
@@ -153,7 +136,7 @@ int cCodeLabel::AsIntUnique(const int base) const
 {
   int value = 0;
   
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
     value *= base;
     value += m_nops[i] + 1;
   }
@@ -165,16 +148,16 @@ int cCodeLabel::AsIntAdditivePolynomial(const int) const
 {
   double value = 0.0;
 
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
 #if 1
     int n = (int)m_nops[i] + 1;
-    double a = pow((double)n, 0.4 * (double)(m_size-1));
-    double b = 0.3 * (double)i * (double)(m_size-1);
+    double a = pow((double)n, 0.4 * (double)(m_nops.GetSize() - 1));
+    double b = 0.3 * (double)i * (double)(m_nops.GetSize() - 1);
     double c = 0.45 * (double)i;
     value += a + b + c;
 #else
-    value += (pow(((double)m_nops[i] + 1.0), (0.4 * (double)(m_size-1))) +
-	      (0.3 * (double)i * (double)(m_size-1)) +
+    value += (pow(((double)m_nops[i] + 1.0), (0.4 * (double)(m_nops.GetSize() - 1))) +
+	      (0.3 * (double)i * (double)(m_nops.GetSize() - 1)) +
 	      (0.45 * (double)i));
 #endif
   }
@@ -196,7 +179,7 @@ int cCodeLabel::AsIntFib(const int base) const
     fib[i] = fib[i-2] + fib[i-1];
   }
 
-  for (int i = 0; i < m_size; i++) {
+  for (int i = 0; i < m_nops.GetSize(); i++) {
     value += fib[(int)m_nops[i]];
 
     fib[2] = fib[base-2] + fib[base-1];
@@ -213,10 +196,10 @@ int cCodeLabel::AsIntPolynomialCoefficent(const int base) const
 {
   int value = 0;
 
-  int extra = m_size % 2;
+  int extra = m_nops.GetSize() % 2;
   int c = 1;
 
-  for (int i = 0; i < m_size - extra; i+=2, c++) {
+  for (int i = 0; i < m_nops.GetSize() - extra; i+=2, c++) {
     int b = m_nops[i];
     int a = m_nops[i+1];
 
@@ -224,7 +207,7 @@ int cCodeLabel::AsIntPolynomialCoefficent(const int base) const
   }
 
   if(extra) {
-    value += (int)pow((double)m_nops[m_size-1], c);
+    value += (int)pow((double)m_nops[m_nops.GetSize() - 1], c);
   }
 
   return value;

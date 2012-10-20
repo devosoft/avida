@@ -51,7 +51,7 @@ using namespace Avida;
 // Referenced external properties
 // --------------------------------------------------------------------------------------------------------------
 
-static Apto::String s_ext_prop_name_instset("instset");
+static const Apto::BasicString<Apto::ThreadSafe> s_ext_prop_name_instset("instset");
 
 
 // Internal cOrganism Properties
@@ -59,15 +59,15 @@ static Apto::String s_ext_prop_name_instset("instset");
 
 static PropertyDescriptionMap s_prop_desc_map;
 
-static Apto::String s_prop_name_genome("genome");
-static Apto::String s_prop_name_src_transmission_type("src_transmission_type");
-static Apto::String s_prop_name_age("age");
-static Apto::String s_prop_name_generation("generation");
-static Apto::String s_prop_name_last_copied_size("last_copied_size");
-static Apto::String s_prop_name_last_executed_size("last_exectuted_size");
-static Apto::String s_prop_name_last_gestation_time("last_gestation_time");
-static Apto::String s_prop_name_last_metabolic_rate("last_metabolic_rate");
-static Apto::String s_prop_name_last_fitness("last_fitness");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_genome("genome");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_src_transmission_type("src_transmission_type");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_age("age");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_generation("generation");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_copied_size("last_copied_size");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_executed_size("last_exectuted_size");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_gestation_time("last_gestation_time");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_metabolic_rate("last_metabolic_rate");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_fitness("last_fitness");
 
 
 // OrgPropRetrievalContainer - base container class for the global property map
@@ -147,7 +147,7 @@ void cOrganism::Initialize()
 
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation, Systematics::Source src)
   : m_world(world)
-  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get("instset").StringValue()).GetNumNops())
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.Properties().Get(s_ext_prop_name_instset).StringValue()).GetNumNops())
   , m_src(src)
   , m_initial_genome(genome)
   , m_interface(NULL)

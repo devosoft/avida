@@ -34,51 +34,51 @@
 #include "cStringUtil.h"
 
 
-static Apto::String s_unit_prop_name_last_copied_size("last_copied_size");
-static Apto::String s_unit_prop_name_last_executed_size("last_executed_size");
-static Apto::String s_unit_prop_name_last_gestation_time("last_gestation_time");
-static Apto::String s_unit_prop_name_last_metabolic_rate("last_metabolic_rate");
-static Apto::String s_unit_prop_name_last_fitness("last_fitness");
+static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_copied_size("last_copied_size");
+static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_executed_size("last_executed_size");
+static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_gestation_time("last_gestation_time");
+static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_metabolic_rate("last_metabolic_rate");
+static const Apto::BasicString<Apto::ThreadSafe> s_unit_prop_name_last_fitness("last_fitness");
 
 
 static Avida::PropertyDescriptionMap s_prop_desc_map;
 
-static Apto::String s_prop_name_genome("genome");
-static Apto::String s_prop_name_src_transmission_type("src_transmission_type");
-static Apto::String s_prop_name_name("name");
-static Apto::String s_prop_name_parents("parents");
-static Apto::String s_prop_name_threshold("threshold");
-static Apto::String s_prop_name_update_born("update_born");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_genome("genome");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_src_transmission_type("src_transmission_type");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_name("name");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_parents("parents");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_threshold("threshold");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_update_born("update_born");
 
-static Apto::String s_prop_name_ave_copy_size("ave_copy_size");
-static Apto::String s_prop_name_ave_exe_size("ave_exe_size");
-static Apto::String s_prop_name_ave_gestation_time("ave_gestation_time");
-static Apto::String s_prop_name_ave_repro_rate("ave_repro_rate");
-static Apto::String s_prop_name_ave_metabolic_rate("ave_metabolic_rate");
-static Apto::String s_prop_name_ave_fitness("ave_fitness");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_ave_copy_size("ave_copy_size");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_ave_exe_size("ave_exe_size");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_ave_gestation_time("ave_gestation_time");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_ave_repro_rate("ave_repro_rate");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_ave_metabolic_rate("ave_metabolic_rate");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_ave_fitness("ave_fitness");
 
-static Apto::String s_prop_name_max_fitness("max_fitness");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_max_fitness("max_fitness");
 
-static Apto::String s_prop_name_recent_births("recent_births");
-static Apto::String s_prop_name_recent_deaths("recent_deaths");
-static Apto::String s_prop_name_recent_breed_true("recent_breed_true");
-static Apto::String s_prop_name_recent_breed_in("recent_breed_in");
-static Apto::String s_prop_name_recent_breed_out("recent_breed_out");
-static Apto::String s_prop_name_recent_gestation_count("recent_gestation_count");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_recent_births("recent_births");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_recent_deaths("recent_deaths");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_recent_breed_true("recent_breed_true");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_recent_breed_in("recent_breed_in");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_recent_breed_out("recent_breed_out");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_recent_gestation_count("recent_gestation_count");
 
-static Apto::String s_prop_name_total_organisms("total_organisms");
-static Apto::String s_prop_name_last_births("last_births");
-static Apto::String s_prop_name_last_deaths("last_deaths");
-static Apto::String s_prop_name_last_breed_true("last_breed_true");
-static Apto::String s_prop_name_last_breed_in("last_breed_in");
-static Apto::String s_prop_name_last_breed_out("last_breed_out");
-static Apto::String s_prop_name_last_gestation_count("last_gestation_count");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_total_organisms("total_organisms");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_births("last_births");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_deaths("last_deaths");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_breed_true("last_breed_true");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_breed_in("last_breed_in");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_breed_out("last_breed_out");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_gestation_count("last_gestation_count");
 
-static Apto::String s_prop_name_last_birth_cell("last_birth_cell");
-static Apto::String s_prop_name_last_group_id("last_group_id");
-static Apto::String s_prop_name_last_forager_type("last_forager_type");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_birth_cell("last_birth_cell");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_group_id("last_group_id");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_last_forager_type("last_forager_type");
 
-static Apto::String s_prop_name_total_gestation_count("total_gestation_count");
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_name_total_gestation_count("total_gestation_count");
 
 
 void Avida::Systematics::Genotype::Initialize()
@@ -134,7 +134,7 @@ Avida::Systematics::Genotype::Genotype(GenotypeArbiterPtr mgr, GroupID in_id, Un
   , m_name("001-no_name")
   , m_threshold(false)
   , m_active(true)
-  , m_generation_born(Apto::StrAs(founder->Properties().Get("generation")))
+  , m_generation_born(founder->Properties().Get("generation").IntValue())
   , m_update_born(update)
   , m_update_deactivated(-1)
   , m_depth(0)

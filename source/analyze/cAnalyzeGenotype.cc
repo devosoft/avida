@@ -703,7 +703,7 @@ void cAnalyzeGenotype::SetParent2ID(int _parent2_id)
 
 void cAnalyzeGenotype::SetInstSet(const cString& inst_set)
 {
-  static const Apto::String prop_instset("instset");
+  static const Apto::BasicString<Apto::ThreadSafe> prop_instset("instset");
   m_genome.Properties().SetValue(prop_instset, (const char*)inst_set);
 }
 

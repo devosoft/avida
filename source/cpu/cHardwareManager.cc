@@ -38,7 +38,7 @@
 
 using namespace Avida;
 
-
+static const Apto::BasicString<Apto::ThreadSafe> s_prop_id_instset("instset");
 
 cHardwareManager::cHardwareManager(cWorld* world)
 : m_world(world)
@@ -144,7 +144,6 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, cStrin
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
   Apto::String is((const char*)inst_set->GetInstSetName());
-  m_world->GetStats().InstExeCountsForInstSet(is).Resize(inst_set->GetSize());
   m_world->GetStats().InstPreyExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstMaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
@@ -213,7 +212,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  Apto::String inst_set_name = mg.Properties().Get("instset").StringValue();
+  Apto::String inst_set_name = mg.Properties().Get(s_prop_id_instset).StringValue();
   assert(inst_set_name.GetSize());
   int inst_set_id = m_is_name_map.GetWithDefault(inst_set_name, -1);
   if (inst_set_id == -1) {
