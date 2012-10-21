@@ -25,6 +25,7 @@
 #define cGradientCount_h
 
 #include "cSpatialResCount.h"
+#include "tSmartArray.h"
 
 class cWorld;
 
@@ -104,7 +105,7 @@ private:
   int m_guarded_juvs_per_adult;
   
   bool m_probabilistic;
-  tArray<int> m_prob_res_cells;
+  tSmartArray<int> m_prob_res_cells;
 
   int m_min_usedx;
   int m_min_usedy;
