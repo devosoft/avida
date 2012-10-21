@@ -234,6 +234,7 @@ public:
   int GetID() { return m_id; }
 
   int GetCellID() { return m_interface->GetCellID(); }
+  int GetAVCellID() { return m_interface->GetAVCellID(); }
   int GetDemeID() { return m_interface->GetDemeID(); }
   cDeme* GetDeme() { return m_interface->GetDeme(); }
 
