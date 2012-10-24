@@ -621,10 +621,13 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
       // only assign an avatar cell if the org lived through birth and it isn't the parent
       if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
         int avatar_target_cell = PlaceAvatar(parent_organism);
-        offspring_array[i]->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
-        if (offspring_array[i] != parent_organism) {
-          offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+        if (avatar_target_cell != -1) {
+          offspring_array[i]->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
+          if (offspring_array[i] != parent_organism) {
+            offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+          }
         }
+        else KillOrganism(GetCell(target_cells[i]), ctx);
       }
     } else {
       delete offspring_array[i];
@@ -8404,5 +8407,13 @@ int cPopulation::PlaceAvatar(cOrganism* parent)
     avatar_target_cell += 1;
     if (avatar_target_cell >= world_x * world_y) avatar_target_cell = 0;
   }
+    if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1 && avatar_target_cell >= 0) {
+    int dest_x = avatar_target_cell % m_world->GetConfig().WORLD_X.Get();
+    int dest_y = avatar_target_cell / m_world->GetConfig().WORLD_X.Get();
+    if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
+      return -1;
+    }
+  } 
+
   return avatar_target_cell;
 }

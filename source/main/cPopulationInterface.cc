@@ -2248,7 +2248,8 @@ bool cPopulationInterface::RotateAV(int increment, int av_num)
       increment = -increment;
     }
     // Adjust facing by increment
-    SetAVFacing((m_avatars[av_num].av_facing + increment + 8) % 8);
+    int new_facing = (m_avatars[av_num].av_facing + increment + 8) % 8;
+    SetAVFacing(new_facing);
     return true;
   }
   return false;

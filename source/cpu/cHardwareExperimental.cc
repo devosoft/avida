@@ -350,9 +350,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-prey-area-dist", &cHardwareExperimental::Inst_AttackPreyAreaDist, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, nInstFlag::STALL),
     tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, nInstFlag::STALL), 
@@ -4967,114 +4967,62 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (!TestAttack(ctx)) return false;
   if (m_use_avatar && m_use_avatar != 2) return false;
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  int org_x = 0;
-  int org_y = 0;
   int num_neighbors = 0;
-  if (!m_use_avatar) {
-    num_neighbors = m_organism->GetNeighborhoodSize();
-    org_x = m_organism->GetOrgInterface().GetCellID() % worldx;
-    org_y = m_organism->GetOrgInterface().GetCellID() / worldx;
-  }
-  else if (m_use_avatar == 2) {
-    num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
-    org_x = m_organism->GetOrgInterface().GetAVCellID() % worldx;
-    org_y = m_organism->GetOrgInterface().GetAVCellID() / worldx;
-  }
+  if (!m_use_avatar) num_neighbors = m_organism->GetNeighborhoodSize();
+  else if (m_use_avatar == 2) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
   if (num_neighbors == 0) return false;
   
   int facing = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
-  
-  int max_x = org_x + 10;
-  int min_x = org_x - 10;
-  int max_y = org_y + 10;
-  int min_y = org_y - 10;
-  bool diagonal = false;
-  
-  if (facing == 0) {
-    max_y = org_y;
-  }
-  else if (facing == 4) {
-    min_y = org_y;
-  }
-  else if (facing == 2) {
-    min_x = org_x;
-  }
-  else if (facing == 6) {
-    max_x = org_x;
-  }
-  else diagonal = true;
-
-  if (max_x >= worldx - 1) max_x = worldx - 1;
-  if (min_x <= 0) min_x = 0;
-  if (max_y >= worldy - 1) max_y = worldy - 1;
-  if (min_y <= 0) min_y = 0;
-  
-  const int x_dist = max_x - min_x + 1;
-  const int y_dist = max_y - min_y + 1;
-  const int ul = min_y * worldx + min_x;
   int prey_count = 0;
   int pred_count = 0;
-  for (int i = 0; i < x_dist; i++) {
-    for (int j = 0; j < y_dist; j++) {
-      int cellid = ul + i + (j * worldx);
-      if (diagonal) {
-        int x_offset = (cellid % worldx) - org_x;
-        int y_offset = (cellid / worldx) - org_y;
-        if (facing == 1 && (y_offset > x_offset)) continue;
-        else if (facing == 5 && (x_offset > y_offset)) continue;
-        else if (facing == 3 && ((x_offset < 0 && (abs(x_offset) > abs(y_offset) || x_offset == y_offset)) ||
-                                 (y_offset < 0 && abs(y_offset) > abs(x_offset)) )) continue;
-        else if (facing == 7 && ((x_offset > 0 && (abs(x_offset) > abs(y_offset) || x_offset == y_offset)) ||  
-                                 (y_offset > 0 && abs(y_offset) > abs(x_offset)) )) continue;
-      }
-      const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
-      if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) { 
-        if (cell->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (cell->GetOrganism()->GetForageTarget() == -2) pred_count++;
-      }
-      else if (m_use_avatar == 2) { 
-        prey_count += cell->GetNumPreyAV();
-        pred_count += cell->GetNumPredAV();
-        if (cellid == m_organism->GetOrgInterface().GetAVCellID()) {
-          if (m_organism->GetForageTarget() > -2) prey_count--;
-          else pred_count--;
-        }
-      }
+  for (int i = 0; i < num_neighbors; i++) {
+    m_organism->Rotate(-1);
+    if (!m_use_avatar) {
+      if (!m_organism->IsNeighborCellOccupied() || m_organism->GetOrgInterface().GetNeighbor()->IsDead()) continue;
+      if (m_organism->GetOrgInterface().GetNeighbor()->GetForageTarget() > -2) prey_count++;
+      if (m_organism->GetOrgInterface().GetNeighbor()->GetForageTarget() == -2) pred_count++;
+    }
+    else if (m_use_avatar == 2) {
+      cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVFacedCellID());
+      if (cell->HasPreyAV()) prey_count += 1;
+      if (cell->HasPredAV()) pred_count += 1;
+//      prey_count += cell->GetNumPreyAV();
+//      pred_count += cell->GetNumPredAV();
     }
   }
-  double odds = 1.0 / (double) (prey_count);
-  odds = odds * (double) (pred_count + 1);
+
+  double odds = 1.0 / ((double) (prey_count * 2));
+  odds = odds * (double) ((pred_count + 1) * 4);
   
-    if (m_world->GetRandom().P(odds)) {
-  cOrganism* target = NULL;
-  if (!m_use_avatar) {
-    target = m_organism->GetOrgInterface().GetNeighbor();
-  }
-  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+  if (!m_use_avatar) assert(m_organism->IsNeighborCellOccupied());
+  else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
   
-  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target->GetForageTarget() == -2) return false;
-  
-  if (target->IsDead()) return false;
-  
-  const int success_reg = FindModifiedRegister(rBX);
-  const int bonus_reg = FindModifiedNextRegister(success_reg);
-  const int bin_reg = FindModifiedNextRegister(bonus_reg);
-  
-  if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
-    setInternalValue(success_reg, -1, true);
-    setInternalValue(bonus_reg, -1, true);
-    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
-    return false;
-  }
-  else {
+  if (m_world->GetRandom().P(odds)) {
+    cOrganism* target = NULL;
+    if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+    else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+    
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() == -2) return false;
+    
+    if (target->IsDead()) return false;
+    
+    const int success_reg = FindModifiedRegister(rBX);
+    const int bonus_reg = FindModifiedNextRegister(success_reg);
+    const int bin_reg = FindModifiedNextRegister(bonus_reg);
+    
+    if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
+        (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
+      double injury = m_world->GetConfig().PRED_INJURY.Get();
+      if (injury > 0) InjureOrg(target, injury);
+      setInternalValue(success_reg, -1, true);
+      setInternalValue(bonus_reg, -1, true);
+      if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+      return false;
+    }
+    else {
       // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
       if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
         const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
@@ -5092,7 +5040,8 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
       
       // and add current merit bonus after adjusting for conversion efficiency
       const double target_bonus = target->GetPhenotype().GetCurBonus();
-      m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+      double bonus = m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get());
+      m_organism->GetPhenotype().SetCurBonus(bonus);
       
       // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
       if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
@@ -5116,15 +5065,115 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
   return true;
 }
 
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
+bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->HasOpinion()) return false;
+  int opinion = m_organism->GetOpinion().first;
+  if (!TestAttack(ctx)) return false;
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  int num_neighbors = 0;
+  if (!m_use_avatar) num_neighbors = m_organism->GetNeighborhoodSize();
+  else if (m_use_avatar == 2) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  if (num_neighbors == 0) return false;
+  
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (m_use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
+  int friend_count = 0;
+  for (int i = 0; i < num_neighbors; i++) {
+    m_organism->Rotate(-1);
+    if (!m_use_avatar) {
+      if (!m_organism->IsNeighborCellOccupied() || m_organism->GetOrgInterface().GetNeighbor()->IsDead()) continue;
+      cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+      if (neighbor->GetForageTarget() == -2 && neighbor->HasOpinion() && neighbor->GetOpinion().first == opinion) friend_count++;
+    }
+    else if (m_use_avatar == 2) {
+      cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVFacedCellID());
+      tArray<cOrganism*> predators = cell->GetCellInputAVs();
+      for (int i = 0; i < predators.GetSize(); i++) {
+        if (!predators[i]->IsDead() && !predators[i]->GetForageTarget() == -2 && !predators[i]->HasOpinion() &&
+            !predators[i]->GetOpinion().first == opinion) friend_count++;
+      }
+    }
+  }
+  
+  if (!m_use_avatar) assert(m_organism->IsNeighborCellOccupied());
+  else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
+  
+  double odds = m_world->GetConfig().PRED_ODDS.Get() * friend_count * 4;
+  
+  cOrganism* target = NULL;
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+  
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() == -2) return false;
+  
+  if (target->IsDead()) return false;
+  
+  const int success_reg = FindModifiedRegister(rBX);
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+  
+  if (m_world->GetRandom().GetDouble() >= odds ||
+      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
+    double injury = m_world->GetConfig().PRED_INJURY.Get();
+    if (injury > 0) InjureOrg(target, injury);
+    setInternalValue(success_reg, -1, true);
+    setInternalValue(bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
+  }
+  else {
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    const tArray<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const tArray<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
+    double bonus = m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get());
+    m_organism->GetPhenotype().SetCurBonus(bonus);
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      tArray<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+      }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
+    }
+    
+    // if you weren't a predator before, you are now!
+    MakePred();
+    target->Die(ctx);
+    
+    setInternalValue(success_reg, 1, true);
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+  }
+  return true;
+}
+
 bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int id_sought_reg = FindModifiedRegister(rBX);
   const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  int max_dist = 10;
   bool have_org2use = false;
   
   // return false if invalid number or self
@@ -5141,43 +5190,11 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
       break;
     }
   }
-  if (!have_org2use) return Inst_AttackPrey(ctx);
-  int target_org_cell = target_org->GetOrgInterface().GetCellID();
-  int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_use_avatar == 2) {
-    target_org_cell = target_org->GetOrgInterface().GetAVCellID();
-    searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
-    if (target_org_cell == searching_org_cell) return true; // avatars in same cell
-  }
-  const int target_x = target_org_cell % worldx;
-  const int target_y = target_org_cell / worldx;
-  const int searching_x = searching_org_cell % worldx;
-  const int searching_y = searching_org_cell / worldx;
-  int x_dist = target_x - searching_x;
-  int y_dist = target_y - searching_y;
-  
-  const int travel_dist = max(abs(x_dist), abs(y_dist));
-  if (travel_dist > max_dist)  return true; // pay the cost
-  
-  int correct_facing = 0;
-  if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N
-  else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
-  else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
-  else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
-  else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
-  else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
-  else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
-  else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW
-  
-  bool found_org = false;
-  if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
-    found_org = true;
-  }
-  else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing)  {
-    found_org = true;
-  }
-  if (!found_org) return true; // pay the cost
-  
+  if (!have_org2use) return true; // pay the cost
+
+  if (!m_use_avatar) { if (target_org != m_organism->GetOrgInterface().GetNeighbor())  return true; } // pay the cost;
+  else if (m_use_avatar == 2) { if (target_org->GetCellID() != m_organism->GetOrgInterface().GetAVFacedCellID())  return true; }// pay the cost;
+
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
   if (target_org->GetForageTarget() == -2) return false;
   
@@ -5236,209 +5253,6 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
   return true;  
-}
-
-bool cHardwareExperimental::Inst_AttackPreyAreaDist(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  const int id_sought_reg = FindModifiedRegister(rBX);
-  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
-  const int worldx = m_world->GetConfig().WORLD_X.Get();
-  const int worldy = m_world->GetConfig().WORLD_Y.Get();
-  int max_dist = 10;
-  bool have_org2use = false;
-  
-  // return false if invalid number or self
-  if (id_sought < 0 || id_sought == m_organism->GetID()) return Inst_AttackPrey(ctx);
-  
-  // if valid number, does the value represent a living organism?
-  cOrganism* target_org  = NULL;
-  const tSmartArray <cOrganism*> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
-  for (int i = 0; i < live_orgs.GetSize(); i++) {
-    cOrganism* org = live_orgs[i];
-    if (id_sought == org->GetID()) {
-      target_org = org;
-      have_org2use = true;
-      break;
-    }
-  }
-  if (!have_org2use) return Inst_AttackPrey(ctx);
-  int target_org_cell = target_org->GetOrgInterface().GetCellID();
-  int searching_org_cell = m_organism->GetOrgInterface().GetCellID();
-  if (m_use_avatar == 2) {
-    target_org_cell = target_org->GetOrgInterface().GetAVCellID();
-    searching_org_cell = m_organism->GetOrgInterface().GetAVCellID();
-    if (target_org_cell == searching_org_cell) return true; // avatars in same cell
-  }
-  const int target_x = target_org_cell % worldx;
-  const int target_y = target_org_cell / worldx;
-  const int searching_x = searching_org_cell % worldx;
-  const int searching_y = searching_org_cell / worldx;
-  int x_dist = target_x - searching_x;
-  int y_dist = target_y - searching_y;
-  
-  const int travel_dist = max(abs(x_dist), abs(y_dist));
-  if (travel_dist > max_dist) return Inst_AttackPrey(ctx);
-  
-  int correct_facing = 0;
-  if (y_dist < 0 && x_dist == 0) correct_facing = 0; // rotate N
-  else if (y_dist < 0 && x_dist > 0) correct_facing = 1; // rotate NE
-  else if (y_dist == 0 && x_dist > 0) correct_facing = 2; // rotate E
-  else if (y_dist > 0 && x_dist > 0) correct_facing = 3; // rotate SE
-  else if (y_dist > 0 && x_dist == 0) correct_facing = 4; // rotate S
-  else if (y_dist > 0 && x_dist < 0) correct_facing = 5; // rotate SW
-  else if (y_dist == 0 && x_dist < 0) correct_facing = 6; // rotate W
-  else if (y_dist < 0 && x_dist < 0) correct_facing = 7; // rotate NW
-  
-  bool found_org = false;
-  if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) {
-    found_org = true;
-  }
-  else if (m_use_avatar && m_organism->GetOrgInterface().GetAVFacing() == correct_facing)  {
-    found_org = true;
-  }
-  if (!found_org) return Inst_AttackPrey(ctx);
-  
-  int org_x = 0;
-  int org_y = 0;
-  int num_neighbors = 0;
-  if (!m_use_avatar) {
-    num_neighbors = m_organism->GetNeighborhoodSize();
-    org_x = m_organism->GetOrgInterface().GetCellID() % worldx;
-    org_y = m_organism->GetOrgInterface().GetCellID() / worldx;
-  }
-  else if (m_use_avatar == 2) {
-    num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
-    org_x = m_organism->GetOrgInterface().GetAVCellID() % worldx;
-    org_y = m_organism->GetOrgInterface().GetAVCellID() / worldx;
-  }
-  if (num_neighbors == 0) return false;
-  
-  int facing = m_organism->GetOrgInterface().GetFacedDir();
-  if (m_use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
-  
-  int max_x = org_x + 10;
-  int min_x = org_x - 10;
-  int max_y = org_y + 10;
-  int min_y = org_y - 10;
-  bool diagonal = false;
-  
-  if (facing == 0) {
-    max_y = org_y;
-  }
-  else if (facing == 4) {
-    min_y = org_y;
-  }
-  else if (facing == 2) {
-    min_x = org_x;
-  }
-  else if (facing == 6) {
-    max_x = org_x;
-  }
-  else diagonal = true;
-  
-  if (max_x >= worldx - 1) max_x = worldx - 1;
-  if (min_x <= 0) min_x = 0;
-  if (max_y >= worldy - 1) max_y = worldy - 1;
-  if (min_y <= 0) min_y = 0;
-  
-  x_dist = max_x - min_x + 1;
-  y_dist = max_y - min_y + 1;
-  const int ul = min_y * worldx + min_x;
-  int prey_count = 0;
-  int pred_count = 0;
-  for (int i = 0; i < x_dist; i++) {
-    for (int j = 0; j < y_dist; j++) {
-      int cellid = ul + i + (j * worldx);
-      if (diagonal) {
-        int x_offset = (cellid % worldx) - org_x;
-        int y_offset = (cellid / worldx) - org_y;
-        if (facing == 1 && (y_offset > x_offset)) continue;
-        else if (facing == 5 && (x_offset > y_offset)) continue;
-        else if (facing == 3 && ((x_offset < 0 && (abs(x_offset) > abs(y_offset) || x_offset == y_offset)) ||
-                                 (y_offset < 0 && abs(y_offset) > abs(x_offset)) )) continue;
-        else if (facing == 7 && ((x_offset > 0 && (abs(x_offset) > abs(y_offset) || x_offset == y_offset)) ||
-                                 (y_offset > 0 && abs(y_offset) > abs(x_offset)) )) continue;
-      }
-      const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
-      if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) {
-        if (cell->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (cell->GetOrganism()->GetForageTarget() == -2) pred_count++;
-      }
-      else if (m_use_avatar == 2) {
-        prey_count += cell->GetNumPreyAV();
-        pred_count += cell->GetNumPredAV();
-        if (cellid == m_organism->GetOrgInterface().GetAVCellID()) {
-          if (m_organism->GetForageTarget() > -2) prey_count--;
-          else pred_count--;
-        }
-      }
-    }
-  }
-  double odds = 1.0 / (double) (prey_count);
-  odds = odds * (double) (pred_count + 1);
-  
-  if (m_world->GetRandom().P(odds)) {
-    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target_org->GetForageTarget() == -2) return false;
-    
-    if (target_org->IsDead()) return false;
-    
-    const int success_reg = FindModifiedRegister(rBX);
-    const int bonus_reg = FindModifiedNextRegister(success_reg);
-    const int bin_reg = FindModifiedNextRegister(bonus_reg);
-    
-    if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
-        (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
-      double injury = m_world->GetConfig().PRED_INJURY.Get();
-      if (injury > 0) InjureOrg(target_org, injury);
-      setInternalValue(success_reg, -1, true);
-      setInternalValue(bonus_reg, -1, true);
-      if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
-      return false;
-    }
-    else {
-      // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
-      if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-        const double target_merit = target_org->GetPhenotype().GetMerit().GetDouble();
-        double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-        attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
-        m_organism->UpdateMerit(attacker_merit);
-      }
-      
-      // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-      const tArray<int>& target_reactions = target_org->GetPhenotype().GetLastReactionCount();
-      const tArray<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
-      for (int i = 0; i < org_reactions.GetSize(); i++) {
-        m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
-      }
-      
-      // and add current merit bonus after adjusting for conversion efficiency
-      const double target_bonus = target_org->GetPhenotype().GetCurBonus();
-      m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
-      
-      // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
-      if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-        tArray<double> target_bins = target_org->GetRBins();
-        for (int i = 0; i < target_bins.GetSize(); i++) {
-          m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
-          target_org->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
-        }
-        const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
-        setInternalValue(bin_reg, spec_bin, true);
-      }
-      
-      // if you weren't a predator before, you are now!
-      MakePred();
-      target_org->Die(ctx);
-      
-      setInternalValue(success_reg, 1, true);
-      setInternalValue(bonus_reg, (int) (target_bonus), true);
-    }
-  }
-  return true;
 }
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
