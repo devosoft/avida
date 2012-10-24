@@ -571,6 +571,46 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
       return NSMakePoint(round(worldSize.width / 3.0) * (orgIndex - 1), round(worldSize.height / 3.0) * 2.0);
   }
   
+  if (count == 5) {
+    switch (orgIndex) {
+      case 0:
+        return NSMakePoint(round(worldSize.width / 2.0), round(worldSize.height / 2.0));
+      case 1:
+      case 3:
+        return NSMakePoint(round(worldSize.width / 4.0 * orgIndex), round(worldSize.height / 4.0 * orgIndex));
+      case 2:
+        return NSMakePoint(round(worldSize.width / 4.0), round(worldSize.height * 0.75));
+      case 4:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height / 4.0));
+    }
+  }
+  
+  if (count >= 6 && count <= 9) {
+    switch (orgIndex) {
+      case 0:
+        return NSMakePoint(round(worldSize.width / 4.0), round(worldSize.height / 4.0));
+      case 1:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height / 4.0));
+      case 2:
+        return NSMakePoint(round(worldSize.width / 4.0), round(worldSize.height / 2.0));
+      case 3:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height / 2.0));
+      case 4:
+        return NSMakePoint(round(worldSize.width / 4.0), round(worldSize.height * 0.75));
+      case 5:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.75));
+      case 6:
+      case 7:
+      case 8:
+        return NSMakePoint(round(worldSize.width / 2.0), round(worldSize.height / (count - 5) * (orgIndex - 5)));
+    }
+  }
+  
+  
+  
+  
+  
+  
   NSUInteger spacing = round((worldSize.width * worldSize.height) / (count + 1));
   NSUInteger cellID = spacing * (orgIndex + 1);
 
