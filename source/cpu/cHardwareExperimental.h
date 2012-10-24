@@ -26,7 +26,6 @@
 #include "avida/Avida.h"
 
 #include "cCodeLabel.h"
-#include "cCoords.h"
 #include "cCPUMemory.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
@@ -41,7 +40,6 @@
 #include "tInstLib.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
-#include "cCoords.h"
 
 #include <cstring>
 #include <iomanip>

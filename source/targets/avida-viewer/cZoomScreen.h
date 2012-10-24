@@ -103,7 +103,7 @@ private:
   void ViewInputs();
   void ViewThreads();
 
-  cCoords GetSectionCoords(int in_section);
+  Apto::Coord<int> GetSectionCoords(int in_section);
   //cString GetSectionName(int in_section);
   const char* GetSectionName(int in_section);
   void SetActiveSection(int in_section);

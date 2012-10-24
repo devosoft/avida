@@ -799,7 +799,6 @@
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
 		70DF728F13BE20130085F85E /* World.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = World.cc; sourceTree = "<group>"; };
-		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
 		70E14D4B1279FA5B0059FB9D /* Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
@@ -1740,7 +1739,6 @@
 				70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */,
 				70B087DA08F5F4A900FC65FE /* cConstSchedule.h */,
 				70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */,
-				70E130BF0C442B2900CE9249 /* cCoords.h */,
 				70B087DB08F5F4A900FC65FE /* cCountTracker.h */,
 				70A778380D69D5C200735F1E /* cDemeProbSchedule.h */,
 				70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */,

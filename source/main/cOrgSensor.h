@@ -24,7 +24,6 @@
 #ifndef cOrgSensor_h
 #define cOrgSensor_h
 
-#include "cCoords.h"
 #include "cOrganism.h"
 #include "cResourceLib.h"
 #include "cWorld.h"
@@ -89,7 +88,7 @@ class cOrgSensor
 
   const sLookOut SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft);
   sSearchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
-                      const cCoords target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step);  
+                      const Apto::Coord<int> target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step);  
   sLookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, const int distance_sought, const int id_sought, const int facing, const int cell_id);
   sLookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
   sLookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
@@ -98,7 +97,7 @@ class cOrgSensor
                  const int facing);
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& res_bounds);
   sBounds GetBounds(cAvidaContext& ctx, const int res_id, const int search_type);
-  bool TestBounds(const cCoords cell_id, sBounds& bounds_set);
+  bool TestBounds(const Apto::Coord<int> cell_id, sBounds& bounds_set);
   Apto::Array <int, Apto::Smart> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
   
   void SetReturnRelativeFacing(bool do_set) { m_return_rel_facing = do_set; }

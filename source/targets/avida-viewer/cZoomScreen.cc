@@ -1318,40 +1318,40 @@ void cZoomScreen::ViewThreads()
 {
 }
 
-cCoords cZoomScreen::GetSectionCoords(int in_section)
+Apto::Coord<int> cZoomScreen::GetSectionCoords(int in_section)
 {
   switch (in_section) {
     case ZOOM_SECTION_MEMORY:
-      return cCoords(MEMORY_X, MEMORY_Y);
+      return Apto::Coord<int>(MEMORY_X, MEMORY_Y);
       break;
       
     case ZOOM_SECTION_REGISTERS:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-        return cCoords(REG_X, REG_Y);
+        return Apto::Coord<int>(REG_X, REG_Y);
       else
-        return cCoords(REG_X, REG_Y-1);
+        return Apto::Coord<int>(REG_X, REG_Y-1);
       break;
       
     case ZOOM_SECTION_STACK:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-        return cCoords(STACK_X, STACK_Y);
+        return Apto::Coord<int>(STACK_X, STACK_Y);
       else
-        return cCoords(STACK_X, STACK_Y-1);
+        return Apto::Coord<int>(STACK_X, STACK_Y-1);
       break;
       
     case ZOOM_SECTION_INPUTS:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-        return cCoords(INPUT_X, INPUT_Y);
+        return Apto::Coord<int>(INPUT_X, INPUT_Y);
       else
-        return cCoords(INPUT_X, INPUT_Y-1);
+        return Apto::Coord<int>(INPUT_X, INPUT_Y-1);
       break;
       
     case ZOOM_SECTION_MAP:
-      return cCoords(MINI_MAP_X, MINI_MAP_Y);
+      return Apto::Coord<int>(MINI_MAP_X, MINI_MAP_Y);
       break;
   }
   
-  return cCoords(0,0);
+  return Apto::Coord<int>(0,0);
 }
 
 
@@ -1392,7 +1392,7 @@ void cZoomScreen::SetActiveSection(int in_section)
 {
   if (in_section != active_section) {
     // Set the old section to be normal white
-    cCoords sect_coords(GetSectionCoords(active_section));
+    Apto::Coord<int> sect_coords(GetSectionCoords(active_section));
     sect_coords.Translate(2, 1);
     SetColor(COLOR_WHITE);
     Print(sect_coords.GetY(), sect_coords.GetX(), "%s",
@@ -1400,7 +1400,7 @@ void cZoomScreen::SetActiveSection(int in_section)
     active_section = in_section;
   }
   
-  cCoords sect_coords(GetSectionCoords(active_section));
+  Apto::Coord<int> sect_coords(GetSectionCoords(active_section));
   sect_coords.Translate(2, 1);
   SetBoldColor(COLOR_BLUE);
   Print(sect_coords.GetY(), sect_coords.GetX(), "%s",

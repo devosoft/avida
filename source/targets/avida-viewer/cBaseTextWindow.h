@@ -10,10 +10,6 @@
 
 #include <cassert>
 
-#ifndef cCoords_h
-#include "cCoords.h"
-#endif
-
 #define MAX_SUB_WINDOWS 4
 
 
