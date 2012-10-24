@@ -43,9 +43,7 @@ cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world)
   const int max_workers = world->GetConfig().MAX_CONCURRENCY.Get();
   if (max_workers > 0 && max_workers < m_workers.GetSize()) m_workers.Resize(max_workers);
   
-  for (int i = 0; i < MT_RANDOM_POOL_SIZE; i++) {
-    m_rng_pool[i] = new cRandomMT(world->GetRandom().GetInt(0x7FFFFFFF));
-  }
+  m_job_seed_rng = new Apto::RNG::AvidaRNG(world->GetRandom().GetInt(world->GetRandom().MaxSeed()));
   
   if (m_workers.GetSize() > 1) {
     for (int i = 0; i < m_workers.GetSize(); i++) {
@@ -79,6 +77,8 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
     m_workers[i]->Join();
     delete m_workers[i];
   }
+  
+  delete m_job_seed_rng;
 }
 
 inline void cAnalyzeJobQueue::queueJob(cAnalyzeJob* job)
@@ -135,8 +135,8 @@ void cAnalyzeJobQueue::Execute()
 
 void cAnalyzeJobQueue::singleThreadedJobExecution(cAnalyzeJob* job)
 {
-  cAvidaContext ctx(&m_world->GetDriver(), NULL);
-  ctx.SetRandom(GetRandom(job->GetID()));
+  Apto::RNG::AvidaRNG rng(GetSeedForJob(job->GetID()));
+  cAvidaContext ctx(&m_world->GetDriver(), rng);
   job->Run(ctx);
   delete job;
 }

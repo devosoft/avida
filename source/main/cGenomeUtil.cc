@@ -27,7 +27,6 @@
 #include "cAvidaContext.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cRandom.h"
 
 #include "AvidaTools.h"
 
@@ -210,13 +209,29 @@ void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, 
 }
 
 
+
+#if !APTO_PLATFORM(WINDOWS)
+/*! Convenience function to assign increasing values to a range.
+ */
+namespace std {
+  template <typename ForwardIterator, typename T>
+  void iota(ForwardIterator first, ForwardIterator last, T value) {
+	  while(first != last) {
+		  *first = value;
+		  ++first;
+		  ++value;
+	  }
+  }
+};
+#endif
+
+
 /*! Randomly shuffle the instructions within genome in-place.
  */
 void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, InstructionSequence& genome) {
 	std::vector<int> idx(static_cast<std::size_t>(genome.GetSize()));
 	std::iota(idx.begin(), idx.end(), 0);
-	cRandomStdAdaptor rng(ctx.GetRandom());
-	std::random_shuffle(idx.begin(), idx.end(), rng);
+	std::random_shuffle(idx.begin(), idx.end(), ctx.GetRandom());
 	InstructionSequence shuffled(genome.GetSize());
 	for(int i=0; i<genome.GetSize(); ++i) {
 		shuffled[i] = genome[idx[i]];

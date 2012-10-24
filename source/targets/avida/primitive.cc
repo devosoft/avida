@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
   
   const int rand_seed = world->GetConfig().RANDOM_SEED.Get();
   cout << "Random Seed: " << rand_seed;
-  if (rand_seed != world->GetRandom().GetSeed()) cout << " -> " << world->GetRandom().GetSeed();
+  if (rand_seed != world->GetRandom().Seed()) cout << " -> " << world->GetRandom().Seed();
   cout << endl;
 
   if (world->GetConfig().VERBOSITY.Get() > VERBOSE_NORMAL)

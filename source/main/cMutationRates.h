@@ -23,12 +23,7 @@
 #ifndef cMutationRates_h
 #define cMutationRates_h
 
-#ifndef cAvidaContext_h
 #include "cAvidaContext.h"
-#endif
-#ifndef cRandom_h
-#include "cRandom.h"
-#endif
 
 class cWorld;
 

@@ -31,7 +31,6 @@
 #include "cHardwareTracer.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cRandom.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
 #include "tInstLibEntry.h"

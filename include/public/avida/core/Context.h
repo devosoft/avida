@@ -29,8 +29,6 @@
 
 #include <cassert>
 
-class cRandom;
-
 
 namespace Avida {
   
@@ -41,15 +39,15 @@ namespace Avida {
   {
   private:
     WorldDriver* m_driver;
-    cRandom* m_rng;
+    Apto::Random* m_rng;
     
   public:
-    inline Context(WorldDriver* driver, cRandom* rng) : m_driver(driver), m_rng(rng) { assert(driver); }
+    inline Context(WorldDriver* driver, Apto::Random* rng) : m_driver(driver), m_rng(rng) { assert(driver); }
     
     LIB_EXPORT inline WorldDriver& Driver() { return *m_driver; }
-    LIB_EXPORT inline cRandom& Random() { return *m_rng; }
+    LIB_EXPORT inline Apto::Random& Random() { return *m_rng; }
     
-    LIB_EXPORT inline void SetRandom(cRandom* rng) { m_rng = rng; }
+    LIB_EXPORT inline void SetRandom(Apto::Random* rng) { m_rng = rng; }
   };
   
 };

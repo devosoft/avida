@@ -22,7 +22,7 @@
 #include "cGenotypeBatch.h"
 
 #include "cAnalyzeGenotype.h"
-#include "cRandom.h"
+
 
 cGenotypeBatch::cGenotypeBatch(const cGenotypeBatch& rhs) : m_list(rhs.m_list), m_name(rhs.m_name), m_is_lineage(rhs.m_is_lineage), m_is_aligned(rhs.m_is_aligned)
 {
@@ -131,14 +131,14 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeID(int gid)
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeRandom(cRandom& rng) const
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeRandom(Apto::Random& rng) const
 {
   if (m_list.GetSize() == 0) return NULL;
   
   return new cAnalyzeGenotype(*(m_list.GetPos(rng.GetUInt(m_list.GetSize()))));
 }
 
-cAnalyzeGenotype* cGenotypeBatch::PopGenotypeRandom(cRandom& rng)
+cAnalyzeGenotype* cGenotypeBatch::PopGenotypeRandom(Apto::Random& rng)
 {
   if (m_list.GetSize() == 0) return NULL;
 
@@ -147,7 +147,7 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeRandom(cRandom& rng)
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindOrganismRandom(cRandom& rng) const
+cAnalyzeGenotype* cGenotypeBatch::FindOrganismRandom(Apto::Random& rng) const
 {
   if (m_list.GetSize() == 0) return NULL;
   
@@ -160,7 +160,7 @@ cAnalyzeGenotype* cGenotypeBatch::FindOrganismRandom(cRandom& rng) const
   return NULL;
 }
 
-cAnalyzeGenotype* cGenotypeBatch::PopOrganismRandom(cRandom& rng)
+cAnalyzeGenotype* cGenotypeBatch::PopOrganismRandom(Apto::Random& rng)
 {
   if (m_list.GetSize() == 0) return NULL;
 

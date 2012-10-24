@@ -25,7 +25,8 @@
 
 #include "avida/core/Types.h"
 
-#include "cRandom.h"
+#include "apto/rng.h"
+
 #include "cSchedule.h"
 #include "cWeightedIndex.h"
 
@@ -46,7 +47,7 @@ class cProbDemeProbSchedule : public cSchedule
 private:
 
   // Keep our own RNG so as to better preserve consistancy.
-  cRandom m_rng; 
+  Apto::Random* m_rng;
 
   // Array of WeightedIndex tree's to farm out the scheduling.
   Apto::Array<cWeightedIndex*> chart;
@@ -70,14 +71,14 @@ private:
 
 public:
   cProbDemeProbSchedule(int num_cells, int seed, int ndemes)
-    : cSchedule(num_cells), m_rng(seed), demeChart(ndemes), num_demes(ndemes)
+    : cSchedule(num_cells), m_rng(new Apto::RNG::AvidaRNG(seed)), demeChart(ndemes), num_demes(ndemes)
   {     
     deme_size = num_cells / num_demes;
 
     for (int i = 0; i < num_demes; i++) chart.Push(new cWeightedIndex(deme_size));
   }
 
-  ~cProbDemeProbSchedule() { for (int i = 0; i < chart.GetSize(); i++) delete chart[i]; }
+  ~cProbDemeProbSchedule() { for (int i = 0; i < chart.GetSize(); i++) delete chart[i]; delete m_rng; }
 
   virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0);
 

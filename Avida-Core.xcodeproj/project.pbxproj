@@ -59,7 +59,6 @@
 		7023EC7F0C0A431B00362B9C /* cPopulationCell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868A08F49EA800FC65FE /* cPopulationCell.cc */; };
 		7023EC800C0A431B00362B9C /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
 		7023EC810C0A431B00362B9C /* cProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891F08F7630100FC65FE /* cProbSchedule.cc */; };
-		7023EC820C0A431B00362B9C /* cRandom.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0892008F7630100FC65FE /* cRandom.cc */; };
 		7023EC830C0A431B00362B9C /* cReaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871E08F5E82D00FC65FE /* cReaction.cc */; };
 		7023EC840C0A431B00362B9C /* cReactionLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871F08F5E82D00FC65FE /* cReactionLib.cc */; };
 		7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
@@ -683,7 +682,6 @@
 		70B0890208F762EA00FC65FE /* cIntSum.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cIntSum.h; sourceTree = "<group>"; };
 		70B0890308F762EA00FC65FE /* cMerit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMerit.h; sourceTree = "<group>"; };
 		70B0890A08F762EA00FC65FE /* cProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cProbSchedule.h; sourceTree = "<group>"; };
-		70B0890B08F762EA00FC65FE /* cRandom.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cRandom.h; sourceTree = "<group>"; };
 		70B0890E08F762EA00FC65FE /* cRunningAverage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cRunningAverage.h; sourceTree = "<group>"; };
 		70B0891108F762EA00FC65FE /* cSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSchedule.h; sourceTree = "<group>"; };
 		70B0891208F762EA00FC65FE /* cString.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cString.h; sourceTree = "<group>"; };
@@ -697,7 +695,6 @@
 		70B0891D08F7630100FC65FE /* cIntSum.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cIntSum.cc; sourceTree = "<group>"; };
 		70B0891E08F7630100FC65FE /* cMerit.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMerit.cc; sourceTree = "<group>"; };
 		70B0891F08F7630100FC65FE /* cProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cProbSchedule.cc; sourceTree = "<group>"; };
-		70B0892008F7630100FC65FE /* cRandom.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cRandom.cc; sourceTree = "<group>"; };
 		70B0892108F7630100FC65FE /* cRunningAverage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cRunningAverage.cc; sourceTree = "<group>"; };
 		70B0892208F7630100FC65FE /* cSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSchedule.cc; sourceTree = "<group>"; };
 		70B0892308F7630100FC65FE /* cString.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cString.cc; sourceTree = "<group>"; };
@@ -1770,8 +1767,6 @@
 				2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */,
 				70B0890A08F762EA00FC65FE /* cProbSchedule.h */,
 				70B0891F08F7630100FC65FE /* cProbSchedule.cc */,
-				70B0890B08F762EA00FC65FE /* cRandom.h */,
-				70B0892008F7630100FC65FE /* cRandom.cc */,
 				70B0890E08F762EA00FC65FE /* cRunningAverage.h */,
 				70B0892108F7630100FC65FE /* cRunningAverage.cc */,
 				70100BD7108F8F4F005999F0 /* cRunningStats.h */,
@@ -2070,7 +2065,6 @@
 				70D5B4FD14F4009000D15FFD /* cOrderedWeightedIndex.cc in Sources */,
 				70D5B50014F4009000D15FFD /* cProbDemeProbSchedule.cc in Sources */,
 				7023EC810C0A431B00362B9C /* cProbSchedule.cc in Sources */,
-				7023EC820C0A431B00362B9C /* cRandom.cc in Sources */,
 				7023EC890C0A431B00362B9C /* cRunningAverage.cc in Sources */,
 				7023EC8A0C0A431B00362B9C /* cSchedule.cc in Sources */,
 				7023EC910C0A431B00362B9C /* cString.cc in Sources */,

@@ -29,6 +29,8 @@
 
 #include "avida/private/util/GenomeLoader.h"
 
+#include "apto/rng.h"
+
 #include "cActionLibrary.h"
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeCommandAction.h"
@@ -3476,7 +3478,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
       }
     } while ((genotype = batch_it.Next()) != NULL);
     
-    cRandom random;
+    Apto::RNG::AvidaRNG random;
     for (int task_id = 0; task_id < num_tasks; ++ task_id) {
       int num_genotype = genotype_class[task_id].size();
       if (num_genotype > 0) {

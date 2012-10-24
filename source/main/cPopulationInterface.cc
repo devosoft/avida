@@ -34,7 +34,6 @@
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"
-#include "cRandom.h"
 #include "cInstSet.h"
 
 #include <cassert>
@@ -1142,7 +1141,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				break;
 			}
 			case 1: { // random shuffle of the instructions in the fragment.
-				cGenomeUtil::RandomShuffle(ctx, *i);
+				assert(false); //cGenomeUtil::RandomShuffle(ctx, *i);
 				break;
 			}
 			case 2: { // replace the instructions in the fragment with random instructions.

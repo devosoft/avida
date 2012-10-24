@@ -33,6 +33,8 @@
 
 #include "avida/private/systematics/CladeArbiter.h"
 
+#include "apto/rng.h"
+
 #include "cAvidaContext.h"
 #include "cEnvironment.h"
 #include "cFile.h"
@@ -229,28 +231,28 @@ void Avida::Viewer::Driver::SetReactionValue(const Apto::String& name, double va
 
 double Avida::Viewer::Driver::TestFitnessOfGroup(Avida::Systematics::GroupPtr group)
 {
-  cRandom rng(100);
+  Apto::RNG::AvidaRNG rng(100);
   cAvidaContext ctx(this, rng);
   return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetFitness();
 }
 
 double Avida::Viewer::Driver::TestGestationTimeOfGroup(Avida::Systematics::GroupPtr group)
 {
-  cRandom rng(100);
+  Apto::RNG::AvidaRNG rng(100);
   cAvidaContext ctx(this, rng);
   return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetGestationTime();
 }
 
 double Avida::Viewer::Driver::TestMetabolicRateOfGroup(Avida::Systematics::GroupPtr group)
 {
-  cRandom rng(100);
+  Apto::RNG::AvidaRNG rng(100);
   cAvidaContext ctx(this, rng);
   return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetMerit();
 }
 
 int Avida::Viewer::Driver::TestEnvironmentTriggerCountOfGroup(Avida::Systematics::GroupPtr group, Avida::Environment::ActionTriggerID action_id)
 {
-  cRandom rng(100);
+  Apto::RNG::AvidaRNG rng(100);
   cAvidaContext ctx(this, rng);
   Avida::Environment::ManagerPtr env = Avida::Environment::Manager::Of(m_new_world);
   return Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, group)->GetTaskCounts()[env->GetActionTrigger(action_id)->TempOrdering()];

@@ -302,7 +302,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cOrderedWeightedIndex.cc
   ${TOOLS_DIR}/cProbDemeProbSchedule.cc
   ${TOOLS_DIR}/cProbSchedule.cc
-  ${TOOLS_DIR}/cRandom.cc
   ${TOOLS_DIR}/cRunningAverage.cc
   ${TOOLS_DIR}/cSchedule.cc
   ${TOOLS_DIR}/cString.cc
@@ -554,7 +553,6 @@ IF(AVD_TASK_EVENT_GEN)
   SET(UTILS_DIR source/utils)
   SET(TASK_EVENT_GEN_SOURCES
     ${TOOLS_DIR}/cFile.cc
-    ${TOOLS_DIR}/cRandom.cc
     ${TOOLS_DIR}/cString.cc
     ${TOOLS_DIR}/cInitFIle.cc
     ${TOOLS_DIR}/cStringIterator.cc

@@ -26,7 +26,6 @@
 #include "apto/platform.h"
 
 #include "cAnalyzeJob.h"
-#include "cRandom.h"
 #include "tList.h"
 
 class cAnalyzeJobWorker;
@@ -37,7 +36,6 @@ class cWorld;
 #endif
 
 
-const int MT_RANDOM_POOL_SIZE = 128;
 const int MT_RANDOM_INDEX_MASK = 0x7F;
 
 
@@ -49,7 +47,7 @@ private:
   cWorld* m_world;
   tList<cAnalyzeJob> m_queue;
   int m_last_jobid;
-  cRandomMT* m_rng_pool[MT_RANDOM_POOL_SIZE];
+  Apto::Random* m_job_seed_rng;
   Apto::Mutex m_mutex;
   Apto::ConditionVariable m_cond;
   Apto::ConditionVariable m_term_cond;
@@ -79,7 +77,7 @@ public:
   void Start();
   void Execute();
   
-  cRandom* GetRandom(int jobid) { return m_rng_pool[jobid & MT_RANDOM_INDEX_MASK]; } 
+  int GetSeedForJob(int jobid) { Apto::MutexAutoLock lock(m_mutex); return m_job_seed_rng->GetInt(m_job_seed_rng->MaxSeed()); }
 };
 
 #endif

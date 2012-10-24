@@ -28,6 +28,8 @@
 #include "avida/core/WorldDriver.h"
 #include "avida/viewer/GraphicsContext.h"
 
+#include "apto/rng.h"
+
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -201,7 +203,7 @@ void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<Hardware
   
   
   // Setup context
-  cRandom rng;
+  Apto::RNG::AvidaRNG rng;
   cAvidaContext ctx(this, rng);
   
   // Create a test cpu

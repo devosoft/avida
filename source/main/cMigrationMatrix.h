@@ -23,7 +23,6 @@
 #define cMigrationMatrix_h
 
 #include "cAvidaContext.h"
-#include "cRandom.h"
 #include "cString.h"
 
 namespace Avida {
@@ -42,7 +41,7 @@ public:
   int GetParasiteCountAt(int from_deme_id, int to_deme_id);
   
   bool AlterConnectionWeight(const int from_deme_id, const int to_deme_id, const double alter_amount);
-  int GetProbabilisticDemeID(const int from_deme_id,cRandom& p_rng,bool p_is_parasite_migration);
+  int GetProbabilisticDemeID(const int from_deme_id, Apto::Random& p_rng,bool p_is_parasite_migration);
   bool Load(const int num_demes, const cString& filename, const cString& working_dir,bool p_count_parasites, bool p_count_offspring, bool p_is_reload, Feedback& feedback);
   void Print();
   void ResetParasiteCounts();

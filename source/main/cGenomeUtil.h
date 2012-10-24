@@ -80,7 +80,7 @@ public:
 	typedef std::deque<InstructionSequence> fragment_list_type; //!< Type for the list of genome fragments.
 	//! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
 	static void RandomSplit(cAvidaContext& ctx, double mean, double variance, const InstructionSequence& genome, fragment_list_type& fragments);
-	//! Randomly shuffle the instructions within genome in-place.
+  //! Randomly shuffle the instructions within genome in-place.
 	static void RandomShuffle(cAvidaContext& ctx, InstructionSequence& genome);
 };
 

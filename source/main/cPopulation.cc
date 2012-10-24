@@ -35,6 +35,9 @@
 #include "avida/private/systematics/GenomeTestMetrics.h"
 #include "avida/private/systematics/Genotype.h"
 
+#include "apto/platform.h"
+#include "apto/rng.h"
+
 #include "AvidaTools.h"
 
 #include "cAvidaContext.h"
@@ -58,7 +61,6 @@
 #include "cPopulationCell.h"
 #include "cProbSchedule.h"
 #include "cProbDemeProbSchedule.h"
-#include "cRandom.h"
 #include "cResource.h"
 #include "cResourceCount.h"
 #include "cStats.h"
@@ -1273,7 +1275,7 @@ void cPopulation::SetupMiniTrace(cOrganism* in_organism)
 void cPopulation::PrintMiniTraceGenome(cOrganism* in_organism, cString& filename)
 {
   // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
-  cRandom rng(0);
+  Apto::RNG::AvidaRNG rng(0);
   cAvidaContext ctx2(&m_world->GetDriver(), rng);
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
@@ -2231,6 +2233,49 @@ void cPopulation::CompeteDemes(cAvidaContext& ctx, int competition_type)
 }
 
 
+
+#if !APTO_PLATFORM(WINDOWS)
+/*! Convenience function to assign increasing values to a range.
+ */
+namespace std {
+  template <typename ForwardIterator, typename T>
+  void iota(ForwardIterator first, ForwardIterator last, T value) {
+	  while(first != last) {
+		  *first = value;
+		  ++first;
+		  ++value;
+	  }
+  }
+};
+#endif
+
+/*! Draw a sample (without replacement) from an input range, copying to the output range.
+ */
+template <typename ForwardIterator, typename OutputIterator, typename RNG>
+void sample_without_replacement(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG& rng) {
+	std::size_t range = std::distance(first, last);
+	std::size_t output_range = std::distance(ofirst, olast);
+	
+	// if our output range is greater in size than our input range, copy the whole thing.
+	if(output_range >= range) {
+		std::copy(first, last, ofirst);
+		return;
+	}
+	
+	std::vector<std::size_t> rmap(range);
+	std::iota(rmap.begin(), rmap.end(), 0);
+	std::random_shuffle(rmap.begin(), rmap.end(), rng);
+	
+	while(ofirst != olast) {
+		*ofirst = *(first + rmap.back());
+		++ofirst;
+		rmap.pop_back();
+	}
+}
+
+
+
+
 /*! Compete all demes with each other based on the given vector of fitness values.
  
  This form of compete demes supports both fitness-proportional selection and a
@@ -2337,7 +2382,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
         std::vector<int> tournament(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get());
         sample_without_replacement(deme_ids.begin(), deme_ids.end(),
                                    tournament.begin(), tournament.end(),
-                                   cRandomStdAdaptor(m_world->GetRandom()));
+                                   m_world->GetRandom());
         
         // Now, iterate through the fitnesses of each of the tournament players,
         // capturing the winner's index and fitness.
@@ -2853,7 +2898,7 @@ void cPopulation::ReplaceDemeFlaggedGermline(cDeme& source_deme, cDeme& target_d
   bool target_successfully_seeded = true;
   
   /* Seed deme part... */
-  cRandom& random = m_world->GetRandom();
+  Apto::Random& random = m_world->GetRandom();
   //bool successfully_seeded = true;
   Apto::Array<cOrganism*> source_founders; // List of organisms we're going to transfer.
   Apto::Array<cOrganism*> target_founders; // List of organisms we're going to transfer.
@@ -3048,7 +3093,7 @@ void cPopulation::SeedDeme(cDeme& _deme, Systematics::GroupPtr bg, Systematics::
  the source will be cloned to the target. Returns whether target deme was successfully seeded.
  */
 bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx) { 
-  cRandom& random = m_world->GetRandom();
+  Apto::Random& random = m_world->GetRandom();
   
   bool successfully_seeded = true;
   
@@ -3708,7 +3753,7 @@ void cPopulation::DivideDemes(cAvidaContext& ctx)
 {
   // Determine which demes should be replicated.
   const int num_demes = GetNumDemes();
-  cRandom & random = m_world->GetRandom();
+  Apto::Random& random = m_world->GetRandom();
   
   // Loop through all candidate demes...
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
@@ -3918,7 +3963,7 @@ void cPopulation::SpawnDeme(int deme1_id, cAvidaContext& ctx, int deme2_id)
   const int num_demes = deme_array.GetSize();
   
   // If the second argument is a -1, choose a deme at random.
-  cRandom & random = m_world->GetRandom();
+  Apto::Random& random = m_world->GetRandom();
   while (deme2_id == -1 || deme2_id == deme1_id) {
     deme2_id = random.GetUInt(num_demes);
   }
@@ -8519,8 +8564,7 @@ void cPopulation::MixPopulation(cAvidaContext& ctx)
   }
   
   // Shuffle them:
-  cRandomStdAdaptor adapted_rng(m_world->GetRandom());
-  std::random_shuffle(population.begin(), population.end(), adapted_rng);
+  std::random_shuffle(population.begin(), population.end(), m_world->GetRandom());
   
   // Reset the organism pointers of all cells:
   for(int i=0; i<cell_array.GetSize(); ++i) {

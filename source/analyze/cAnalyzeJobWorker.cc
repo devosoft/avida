@@ -28,7 +28,8 @@
 
 void cAnalyzeJobWorker::Run()
 {
-  cAvidaContext ctx(&m_queue->m_world->GetDriver(), NULL);
+  Apto::RNG::AvidaRNG rng;
+  cAvidaContext ctx(&m_queue->m_world->GetDriver(), rng);
   ctx.SetAnalyzeMode();
   
   cAnalyzeJob* job = NULL;
@@ -45,7 +46,7 @@ void cAnalyzeJobWorker::Run()
     
     if (job) {
       // Set RNG from the waiting pool and execute the job
-      ctx.SetRandom(m_queue->GetRandom(job->GetID()));
+      rng.ResetSeed(m_queue->GetSeedForJob(job->GetID()));
       job->Run(ctx);
       delete job;
       m_queue->m_mutex.Lock();

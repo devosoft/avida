@@ -74,10 +74,6 @@ static void setupNativeObjects()
   REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeFitness", PopGenotypeFitness, cAnalyzeGenotype* ());
   REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeID", FindGenotypeID, cAnalyzeGenotype* (int));
   REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeID", PopGenotypeID, cAnalyzeGenotype* (int));
-//  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeRandom", FindGenotypeRandom, cAnalyzeGenotype* (cRandom*));
-//  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeRandom", PopGenotypeRandom, cAnalyzeGenotype* (cRandom*));
-//  REGISTER_C_METHOD(cGenotypeBatch, "FindOrganismRandom", FindOrganismRandom, cAnalyzeGenotype* (cRandom*));
-//  REGISTER_S_METHOD(cGenotypeBatch, "PopOrganismRandom", PopOrganismRandom, cAnalyzeGenotype* (cRandom*));
   REGISTER_S_METHOD(cGenotypeBatch, "FindLastCommonAncestor", FindLastCommonAncestor, cAnalyzeGenotype* ());
   REGISTER_C_METHOD(cGenotypeBatch, "FindLineage", FindLineage, cGenotypeBatch* (cAnalyzeGenotype*));
   REGISTER_C_METHOD(cGenotypeBatch, "FindSexLineage", FindSexLineage, cGenotypeBatch* (cAnalyzeGenotype*, bool));

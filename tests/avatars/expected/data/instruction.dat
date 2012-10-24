@@ -1,66 +1,66 @@
 # Avida instruction execution data
-# Fri Sep 21 10:00:00 2012
+# Wed Oct 24 15:18:16 2012
 #  1: Update
-#  2: nop-A
-#  3: nop-B
-#  4: nop-C
-#  5: nop-D
-#  6: nop-E
-#  7: nop-F
-#  8: nop-G
-#  9: nop-H
-# 10: if-n-equ
-# 11: if-less
-# 12: mov-head
-# 13: jmp-head
-# 14: get-head
-# 15: set-flow
-# 16: search-seq-comp-s
-# 17: search-seq-direct-s
-# 18: label
-# 19: shift-r
-# 20: shift-l
-# 21: inc
-# 22: dec
-# 23: push
-# 24: pop
-# 25: swap-stk
-# 26: swap
-# 27: pop-all
-# 28: push-all
-# 29: add
-# 30: sub
-# 31: nand
-# 32: fork-thread
-# 33: exit-thread
-# 34: id-thread
-# 35: IO
-# 36: repro
-# 37: wait-cond-equ
-# 38: wait-cond-less
-# 39: wait-cond-gtr
-# 40: if-not-0
-# 41: if-equ-0
-# 42: if-gtr-0
-# 43: if-less-0
-# 44: if-gtr-x
-# 45: if-equ-x
-# 46: move
-# 47: get-north-offset
-# 48: rotate-x
-# 49: rotate-org-id
-# 50: rotate-away-org-id
-# 51: set-ft-once
-# 52: get-forage-target
-# 53: look-around
-# 54: attack-ft-prey
-# 55: attack-pred
-# 56: teach-offspring
-# 57: learn-parent
-# 58: check-faced-kin
-# 59: nop-X
-# 60: scramble-registers
-# 61: zero
+#  2: inst 0
+#  3: inst 1
+#  4: inst 2
+#  5: inst 3
+#  6: inst 4
+#  7: inst 5
+#  8: inst 6
+#  9: inst 7
+# 10: inst 8
+# 11: inst 9
+# 12: inst 10
+# 13: inst 11
+# 14: inst 12
+# 15: inst 13
+# 16: inst 14
+# 17: inst 15
+# 18: inst 16
+# 19: inst 17
+# 20: inst 18
+# 21: inst 19
+# 22: inst 20
+# 23: inst 21
+# 24: inst 22
+# 25: inst 23
+# 26: inst 24
+# 27: inst 25
+# 28: inst 26
+# 29: inst 27
+# 30: inst 28
+# 31: inst 29
+# 32: inst 30
+# 33: inst 31
+# 34: inst 32
+# 35: inst 33
+# 36: inst 34
+# 37: inst 35
+# 38: inst 36
+# 39: inst 37
+# 40: inst 38
+# 41: inst 39
+# 42: inst 40
+# 43: inst 41
+# 44: inst 42
+# 45: inst 43
+# 46: inst 44
+# 47: inst 45
+# 48: inst 46
+# 49: inst 47
+# 50: inst 48
+# 51: inst 49
+# 52: inst 50
+# 53: inst 51
+# 54: inst 52
+# 55: inst 53
+# 56: inst 54
+# 57: inst 55
+# 58: inst 56
+# 59: inst 57
+# 60: inst 58
+# 61: inst 59
 
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 10 0 0 2078 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 26 0 0 0 0 0 0 0 0 0 0 0 0 0 260 26 0 0 0 0 0 0 0 0 0 0 0 26 0 0 26 0 0 0 0 26 0 0 2 0 26 

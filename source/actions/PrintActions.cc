@@ -33,6 +33,8 @@
 
 #include "avida/private/util/GenomeLoader.h"
 
+#include "apto/rng.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
@@ -965,7 +967,7 @@ public:
         else filename = filename.Set(filename + "grp%d_ft%d", last_birth_group_id, last_birth_forager_type); 
 
         // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
-        cRandom rng(0);
+        Apto::RNG::AvidaRNG rng(0);
         cAvidaContext ctx2(&m_world->GetDriver(), rng);
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
         testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
@@ -1034,7 +1036,7 @@ public:
         else filename = filename.Set(filename + ".ft%d_grp%d", last_birth_forager_type, last_birth_group_id); 
 
         // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
-        cRandom rng(0);
+        Apto::RNG::AvidaRNG rng(0);
         cAvidaContext ctx2(&m_world->GetDriver(), rng);
         cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
         testcpu->PrintGenome(ctx2, Genome(bg->Properties().Get("genome")), filename, m_world->GetStats().GetUpdate(), true, last_birth_cell, last_birth_group_id, last_birth_forager_type);
@@ -3025,8 +3027,7 @@ public:
 protected:
 	//! Calculate the average edit distance of the given container of organisms.
 	double average_edit_distance(std::vector<cOrganism*> organisms, cAvidaContext& ctx) {
-		cRandomStdAdaptor rng(ctx.GetRandom());
-		std::random_shuffle(organisms.begin(), organisms.end(), rng);
+		std::random_shuffle(organisms.begin(), organisms.end(), ctx.GetRandom());
 		if(organisms.size() % 2) {
 			organisms.pop_back();
 		}

@@ -39,13 +39,13 @@
 int cProbDemeProbSchedule::GetNextID()
 {
   //choose a deme to schedule
-  curr_deme = demeChart.FindPosition(m_rng.GetDouble(demeChart.GetTotalWeight()));
+  curr_deme = demeChart.FindPosition(m_rng->GetDouble(demeChart.GetTotalWeight()));
 
   //calculate the offset
   int offset = curr_deme * deme_size;
   
   // get the within postion of the node whos corresponding cell will get the CPU cycle
-  const double position = m_rng.GetDouble(chart[curr_deme]->GetTotalWeight());
+  const double position = m_rng->GetDouble(chart[curr_deme]->GetTotalWeight());
   
   // return the adjusted ID of the cell to get the CPU cycle
   return chart[curr_deme]->FindPosition(position) + offset;

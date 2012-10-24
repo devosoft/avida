@@ -47,7 +47,7 @@ bool cMigrationMatrix::AlterConnectionWeight(const int from_deme_id, const int t
     return true;
 };
 
-int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id,cRandom& p_rng,bool p_is_parasite_migration){
+int cMigrationMatrix::GetProbabilisticDemeID(const int from_deme_id, Apto::Random& p_rng,bool p_is_parasite_migration){
     assert(0 <= from_deme_id && from_deme_id < m_migration_matrix.GetSize());
     double rand_dbl_value_in_range = p_rng.GetDouble(m_row_connectivity_sums[from_deme_id]);
     for(int col = 0; col < m_migration_matrix[from_deme_id].GetSize(); col++){

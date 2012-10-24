@@ -30,7 +30,7 @@
 int cProbSchedule::GetNextID()
 {
   if (chart.GetTotalWeight() == 0) return -1;
-  const double position = m_rng.GetDouble(chart.GetTotalWeight());
+  const double position = m_rng->GetDouble(chart.GetTotalWeight());
   return chart.FindPosition(position);
 }
 

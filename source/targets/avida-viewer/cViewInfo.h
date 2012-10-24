@@ -107,7 +107,7 @@ public:
 
   cPopulation & GetPopulation() { return m_world->GetPopulation(); }
   cAvidaConfig& GetConfig() { return m_world->GetConfig(); }
-  cRandom& GetRandom() { return m_world->GetRandom(); }
+  Apto::Random& GetRandom() { return m_world->GetRandom(); }
   cWorld& GetWorld() { return *m_world; }
   cView_Base& GetView() { return *m_view; }
 

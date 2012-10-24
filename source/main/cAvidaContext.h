@@ -28,7 +28,6 @@
 
 #include "avida/core/Types.h"
 
-class cRandom;
 class cWorld;
 
 
@@ -36,21 +35,21 @@ class cAvidaContext
 {
 private:
   Avida::WorldDriver* m_driver;
-  cRandom* m_rng;
+  Apto::Random* m_rng;
   bool m_analyze;
   bool m_testing;
   bool m_org_faults;
   
 public:
-  cAvidaContext(Avida::WorldDriver* driver, cRandom& rng) : m_driver(driver), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
-  cAvidaContext(Avida::WorldDriver* driver, cRandom* rng) : m_driver(driver), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(Avida::WorldDriver* driver, Apto::Random& rng) : m_driver(driver), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(Avida::WorldDriver* driver, Apto::Random* rng) : m_driver(driver), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
   ~cAvidaContext() { ; }
   
   Avida::WorldDriver& Driver() { return *m_driver; }
   
-  void SetRandom(cRandom& rng) { m_rng = &rng; }  
-  void SetRandom(cRandom* rng) { m_rng = rng; }  
-  cRandom& GetRandom() { return *m_rng; }
+  void SetRandom(Apto::Random& rng) { m_rng = &rng; }
+  void SetRandom(Apto::Random* rng) { m_rng = rng; }
+  Apto::Random& GetRandom() { return *m_rng; }
   
   void SetAnalyzeMode() { m_analyze = true; }
   void ClearAnalyzeMode() { m_analyze = false; }

@@ -229,7 +229,7 @@ void build_lattice(ArraySlice slice, unsigned int x_size, unsigned int y_size, u
  
  */
 template< typename ArraySlice >
-void build_random_connected_network(ArraySlice slice, unsigned int x_size, unsigned int y_size, cRandom& rng) {
+void build_random_connected_network(ArraySlice slice, unsigned int x_size, unsigned int y_size, Apto::Random& rng) {
 	
 	// keep track of boundaries for this deme:
 	int offset = slice[0].GetID();
@@ -373,7 +373,7 @@ bool edge(InputIterator u, InputIterator v) {
  connect u-v with probability: (d(v)/|E(G)|)^alpha + zero_appeal
  */
 template <typename ArraySlice>
-void build_scale_free(ArraySlice slice, int m, double alpha, double zero_appeal, cRandom& rng) {
+void build_scale_free(ArraySlice slice, int m, double alpha, double zero_appeal, Apto::Random& rng) {
 	assert(slice.GetSize() > 1); // at least two vertices.
 	// Connect the first and second cells:
 	connect(&slice[0], &slice[1]);

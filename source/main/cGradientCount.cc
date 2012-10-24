@@ -191,7 +191,7 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
 void cGradientCount::generatePeak(cAvidaContext& ctx)
 {
   // Get initial peak cell x, y coordinates and movement directions.
-  cRandom& rng = ctx.GetRandom();
+  Apto::Random& rng = ctx.GetRandom();
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
@@ -764,7 +764,7 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
       }
     }
 
-    cRandom& rng = ctx.GetRandom();
+    Apto::Random& rng = ctx.GetRandom();
     // generate number hills equal to count
     for (int i = 0; i < m_count; i++) {
       // decide the size of the current hill

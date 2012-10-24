@@ -23,15 +23,10 @@
 #ifndef cProbSchedule_h
 #define cProbSchedule_h
 
-#ifndef cRandom_h
-#include "cRandom.h"
-#endif
-#ifndef cSchedule_h
+#include "apto/rng.h"
+
 #include "cSchedule.h"
-#endif
-#ifndef cWeightedIndex_h
 #include "cWeightedIndex.h"
-#endif
 
 class cDeme;
 class cMerit;
@@ -43,7 +38,7 @@ class cMerit;
 class cProbSchedule : public cSchedule
 {
 private:
-  cRandom m_rng;
+  Apto::Random* m_rng;
   cWeightedIndex chart;
   
   
@@ -51,8 +46,8 @@ private:
   cProbSchedule& operator=(const cProbSchedule&); // @not_implemented
 
 public:
-  cProbSchedule(int num_cells, int seed) : cSchedule(num_cells), m_rng(seed), chart(num_cells) { ; }
-  ~cProbSchedule() { ; }
+  cProbSchedule(int num_cells, int seed) : cSchedule(num_cells), m_rng(new Apto::RNG::AvidaRNG(seed)), chart(num_cells) { ; }
+  ~cProbSchedule() { delete m_rng; }
 
   virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0);
 

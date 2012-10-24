@@ -33,9 +33,10 @@
 // cGenotypeBatch      : Collection of cAnalyzeGenotypes
 
 class cAnalyzeGenotype;
-class cRandom;
 
-class cGenotypeBatch {
+
+class cGenotypeBatch
+{
 private:
   tListPlus<cAnalyzeGenotype> m_list;
   cString m_name;
@@ -76,15 +77,15 @@ public:
   cAnalyzeGenotype* PopGenotypeFitness();
   cAnalyzeGenotype* FindGenotypeID(int gid) const;
   cAnalyzeGenotype* PopGenotypeID(int gid);
-  cAnalyzeGenotype* FindGenotypeRandom(cRandom& rng) const;
-  cAnalyzeGenotype* PopGenotypeRandom(cRandom& rng);
-  inline cAnalyzeGenotype* FindGenotypeRandom(cRandom* rng) const { return FindGenotypeRandom(*rng); }
-  inline cAnalyzeGenotype* PopGenotypeRandom(cRandom* rng) { return PopGenotypeRandom(*rng); }
+  cAnalyzeGenotype* FindGenotypeRandom(Apto::Random& rng) const;
+  cAnalyzeGenotype* PopGenotypeRandom(Apto::Random& rng);
+  inline cAnalyzeGenotype* FindGenotypeRandom(Apto::Random* rng) const { return FindGenotypeRandom(*rng); }
+  inline cAnalyzeGenotype* PopGenotypeRandom(Apto::Random* rng) { return PopGenotypeRandom(*rng); }
   
-  cAnalyzeGenotype* FindOrganismRandom(cRandom& rng) const;
-  cAnalyzeGenotype* PopOrganismRandom(cRandom& rng);
-  inline cAnalyzeGenotype* FindOrganismRandom(cRandom* rng) const { return FindOrganismRandom(*rng); }
-  inline cAnalyzeGenotype* PopOrganismRandom(cRandom* rng) { return PopOrganismRandom(*rng); }
+  cAnalyzeGenotype* FindOrganismRandom(Apto::Random& rng) const;
+  cAnalyzeGenotype* PopOrganismRandom(Apto::Random& rng);
+  inline cAnalyzeGenotype* FindOrganismRandom(Apto::Random* rng) const { return FindOrganismRandom(*rng); }
+  inline cAnalyzeGenotype* PopOrganismRandom(Apto::Random* rng) { return PopOrganismRandom(*rng); }
   
   cAnalyzeGenotype* FindLastCommonAncestor();
   

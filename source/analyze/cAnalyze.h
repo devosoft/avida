@@ -23,6 +23,8 @@
 #ifndef cAnalyze_h
 #define cAnalyze_h
 
+#include "apto/rng.h"
+
 #include <iostream>
 
 #include "cAnalyzeJobQueue.h"
@@ -30,7 +32,6 @@
 #include "cBitArray.h"
 #include "cGenotypeBatch.h"
 #include "cFlexVar.h"
-#include "cRandom.h"
 #include "cString.h"
 #include "cStringList.h"
 #include "tList.h"
@@ -96,7 +97,7 @@ private:
 
   int interactive_depth;  // How nested are we if in interactive mode?
 
-  cRandom random;
+  Apto::RNG::AvidaRNG random;
 
   // These are a set of constants used to determine what type of comparisons should be done between an
   // organism and its parent to determine how it should be colored
