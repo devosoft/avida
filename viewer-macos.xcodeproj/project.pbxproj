@@ -229,12 +229,12 @@
 		7035496113379F3F00D3865C = {
 			isa = PBXGroup;
 			children = (
-				7046CF7614D0B5320030F1DF /* petri.icns */,
 				703549991337A30500D3865C /* Source */,
 				703549961337A11C00D3865C /* Resources */,
 				7035497413379FBD00D3865C /* Frameworks */,
 				703549C91337AF1300D3865C /* Libraries */,
 				7035497213379FBD00D3865C /* Products */,
+				7046CF7614D0B5320030F1DF /* petri.icns */,
 				708D312F1342312100AE5CEF /* README */,
 			);
 			sourceTree = "<group>";
