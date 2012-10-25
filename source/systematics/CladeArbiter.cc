@@ -28,6 +28,8 @@
 
 #include "avida/private/systematics/Clade.h"
 
+#include "apto/stat/Accumulator.h"
+
 #include <cmath>
 
 
@@ -153,7 +155,7 @@ void Avida::Systematics::CladeArbiter::UpdateProvidedValues(Update current_updat
 {
   (void)current_update;
   
-  cDoubleSum sum_abundance;
+  Apto::Stat::Accumulator<double> sum_abundance;
   
   // Pre-calculate the total number of units that are currently active (used in entropy calculation)
   Apto::Map<Apto::String, CladePtr>::ValueIterator list_it(m_clades.Values());
@@ -162,7 +164,7 @@ void Avida::Systematics::CladeArbiter::UpdateProvidedValues(Update current_updat
   }
     
   // Stash all stats so that the can be retrieved using the provider mechanisms
-  m_ave_abundance = sum_abundance.Average();
+  m_ave_abundance = sum_abundance.Mean();
   m_stderr_abundance = sum_abundance.StdError();
   m_var_abundance = sum_abundance.Variance();
 }

@@ -536,8 +536,7 @@ public:
   // -------- Time Slicing config options --------
   CONFIG_ADD_GROUP(TIME_GROUP, "Time Slicing");
   CONFIG_ADD_VAR(AVE_TIME_SLICE, int, 30, "Average number of CPU-cycles per org per update");
-  CONFIG_ADD_VAR(SLICING_METHOD, int, 1, "0 = CONSTANT: all organisms receive equal number of CPU cycles\n1 = PROBABILISTIC: CPU cycles distributed randomly, proportional to merit.\n2 = INTEGRATED: CPU cycles given out deterministicly, proportional to merit\n3 = DEME_PROBABALISTIC: Demes receive fixed number of CPU cycles, awarded probabalistically to members\n4 = CROSS_DEME_PROBABALISTIC: Demes receive CPU cycles proportional to living population size, awarded probabalistically to members\n5 = CONSTANT BURST: all organisms receive equal number of CPU cycles, in SLICING_BURST_SIZE chunks");
-  CONFIG_ADD_VAR(SLICING_BURST_SIZE, int, 1, "Sets the scheduler burst size for SLICING_METHOD 5.");
+  CONFIG_ADD_VAR(SLICING_METHOD, int, 1, "0 = CONSTANT: all organisms receive equal number of CPU cycles\n1 = PROBABILISTIC: CPU cycles distributed randomly, proportional to merit.\n2 = INTEGRATED: CPU cycles given out deterministicly, proportional to merit\n3 = DEME_PROBABALISTIC: Demes receive fixed number of CPU cycles, awarded probabalistically to members\n4 = CROSS_DEME_PROBABALISTIC: Demes receive CPU cycles proportional to living population size, awarded probabalistically to members");
   CONFIG_ADD_VAR(BASE_MERIT_METHOD, int, 4, "How should merit be initialized?\n0 = Constant (merit independent of size)\n1 = Merit proportional to copied size\n2 = Merit prop. to executed size\n3 = Merit prop. to full size\n4 = Merit prop. to min of executed or copied size\n5 = Merit prop. to sqrt of the minimum size\n6 = Merit prop. to num times MERIT_BONUS_INST is in genome.");
   CONFIG_ADD_VAR(BASE_CONST_MERIT, int, 100, "Base merit valse for BASE_MERIT_METHOD 0");
   CONFIG_ADD_VAR(MERIT_BONUS_INST, int, 0, "Instruction ID to count for BASE_MERIT_METHOD 6"); 

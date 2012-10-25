@@ -321,7 +321,7 @@ public:
   int GetLength() const { return length; }
   int GetCopyLength() const { return copy_length; }
   int GetExeLength() const { return exe_length; }
-  int GetMinLength() const { return AvidaTools::Min(exe_length, copy_length); }
+  int GetMinLength() const { return Apto::Min(exe_length, copy_length); }
   double GetMerit() const { return merit; }
   double GetCompMerit() const { return merit / (double) GetMinLength(); }
   int GetGestTime() const { return gest_time; }

@@ -28,9 +28,10 @@
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Unit.h"
 
+#include "apto/stat/Accumulator.h"
+
 #include "cCountTracker.h"
 #include "cDoubleSum.h"
-#include "cIntSum.h"
 
 
 namespace Avida {
@@ -98,7 +99,7 @@ namespace Avida {
       int m_last_group_id;
       int m_last_forager_type;
       
-      Apto::Array<cIntSum> m_task_counts;
+      Apto::Array<Apto::Stat::Accumulator<int> > m_task_counts;
       
       mutable PropertyMap* m_prop_map;
       

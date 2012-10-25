@@ -114,7 +114,7 @@ int cStringUtil::Distance(const cString & string1, const cString & string2,
   const int size2 = string2.GetSize();
 
   // Calculate by how much the strings overlap.
-  int overlap = Min( size1 - offset,  size2 );
+  int overlap = Apto::Min( size1 - offset,  size2 );
 
   // Initialize the distance to that part of the strings which do not
   // overlap.

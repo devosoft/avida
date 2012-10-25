@@ -27,10 +27,6 @@
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Unit.h"
 
-#include "cCountTracker.h"
-#include "cDoubleSum.h"
-#include "cIntSum.h"
-
 
 namespace Avida {
   namespace Systematics {

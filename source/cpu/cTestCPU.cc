@@ -240,7 +240,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const Gen
   ////////////////////////////////////////////////////////////////
 
 
-  const int depth_comp = Min(test_info.max_depth, 2);
+  const int depth_comp = Apto::Min(test_info.max_depth, 2);
   int repro_type = ((int) test_info.is_viable) * 3 + 1 + depth_comp;
   if (test_info.is_viable == false && depth_comp == 0)  repro_type = 0;
 

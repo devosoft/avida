@@ -24,7 +24,6 @@
 		7023EC420C0A431B00362B9C /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7023EC430C0A431B00362B9C /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
 		7023EC460C0A431B00362B9C /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
-		7023EC470C0A431B00362B9C /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
 		7023EC480C0A431B00362B9C /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
 		7023EC490C0A431B00362B9C /* cCPUStack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF6108C3954700F50912 /* cCPUStack.cc */; };
 		7023EC4A0C0A431B00362B9C /* cCPUTestInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */; };
@@ -46,9 +45,6 @@
 		7023EC6A0C0A431B00362B9C /* cHistogram.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891908F7630100FC65FE /* cHistogram.cc */; };
 		7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891A08F7630100FC65FE /* cInitFile.cc */; };
 		7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
-		7023EC710C0A431B00362B9C /* cIntegratedSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891B08F7630100FC65FE /* cIntegratedSchedule.cc */; };
-		7023EC720C0A431B00362B9C /* cIntegratedScheduleNode.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891C08F7630100FC65FE /* cIntegratedScheduleNode.cc */; };
-		7023EC730C0A431B00362B9C /* cIntSum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891D08F7630100FC65FE /* cIntSum.cc */; };
 		7023EC740C0A431B00362B9C /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		7023EC770C0A431B00362B9C /* cMerit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891E08F7630100FC65FE /* cMerit.cc */; };
 		7023EC780C0A431B00362B9C /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
@@ -58,7 +54,6 @@
 		7023EC7E0C0A431B00362B9C /* cPopulation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868908F49EA800FC65FE /* cPopulation.cc */; };
 		7023EC7F0C0A431B00362B9C /* cPopulationCell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868A08F49EA800FC65FE /* cPopulationCell.cc */; };
 		7023EC800C0A431B00362B9C /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
-		7023EC810C0A431B00362B9C /* cProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891F08F7630100FC65FE /* cProbSchedule.cc */; };
 		7023EC830C0A431B00362B9C /* cReaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871E08F5E82D00FC65FE /* cReaction.cc */; };
 		7023EC840C0A431B00362B9C /* cReactionLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871F08F5E82D00FC65FE /* cReactionLib.cc */; };
 		7023EC850C0A431B00362B9C /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
@@ -66,7 +61,6 @@
 		7023EC870C0A431B00362B9C /* cResourceCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872408F5E82D00FC65FE /* cResourceCount.cc */; };
 		7023EC880C0A431B00362B9C /* cResourceLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872508F5E82D00FC65FE /* cResourceLib.cc */; };
 		7023EC890C0A431B00362B9C /* cRunningAverage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0892108F7630100FC65FE /* cRunningAverage.cc */; };
-		7023EC8A0C0A431B00362B9C /* cSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0892208F7630100FC65FE /* cSchedule.cc */; };
 		7023EC8B0C0A431B00362B9C /* cSpatialCountElem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */; };
 		7023EC8C0C0A431B00362B9C /* cSpatialResCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */; };
 		7023EC900C0A431B00362B9C /* cStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872B08F5E82D00FC65FE /* cStats.cc */; };
@@ -151,11 +145,9 @@
 		70D5B4DE14F4009000D15FFD /* cBirthNeighborhoodHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447C4D0F83C55300E1BF72 /* cBirthNeighborhoodHandler.cc */; };
 		70D5B4DF14F4009000D15FFD /* cPhenPlastUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */; };
 		70D5B4E014F4009000D15FFD /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
-		70D5B4E114F4009000D15FFD /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
 		70D5B4E214F4009000D15FFD /* LandscapeActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 707AF04509EAB529001AEA89 /* LandscapeActions.cc */; };
 		70D5B4E314F4009000D15FFD /* Version.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BBE135B5F2200C3E661 /* Version.cc */; };
 		70D5B4E414F4009000D15FFD /* CmdLine.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BC8135B740100C3E661 /* CmdLine.cc */; };
-		70D5B4E514F4009000D15FFD /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
 		70D5B4E614F4009000D15FFD /* TimeSeriesRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */; };
 		70D5B4E714F4009000D15FFD /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
 		70D5B4E814F4009000D15FFD /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
@@ -182,7 +174,6 @@
 		70D5B4FD14F4009000D15FFD /* cOrderedWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */; };
 		70D5B4FE14F4009000D15FFD /* GlobalObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A53BA9135A29AA00C3E661 /* GlobalObject.cc */; };
 		70D5B4FF14F4009000D15FFD /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = D7FB16D50ED62684002E939E /* cOrgMessage.cc */; };
-		70D5B50014F4009000D15FFD /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		70D5B50114F4009000D15FFD /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		70D5B50214F4009000D15FFD /* EnvironmentActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */; };
 		70D5B50314F4009000D15FFD /* cBirthGenomeSizeHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA20F83DB2900E1BF72 /* cBirthGenomeSizeHandler.cc */; };
@@ -663,9 +654,7 @@
 		70B0872D08F5E82D00FC65FE /* cTaskLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskLib.cc; sourceTree = "<group>"; };
 		70B0875A08F5EC8900FC65FE /* nGeometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGeometry.h; sourceTree = "<group>"; };
 		70B0875C08F5ECBC00FC65FE /* nReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nReaction.h; sourceTree = "<group>"; };
-		70B087DA08F5F4A900FC65FE /* cConstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cConstSchedule.h; sourceTree = "<group>"; };
 		70B087DB08F5F4A900FC65FE /* cCountTracker.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCountTracker.h; sourceTree = "<group>"; };
-		70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cConstSchedule.cc; sourceTree = "<group>"; };
 		70B0884908F5FE4500FC65FE /* cDataFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFile.h; sourceTree = "<group>"; };
 		70B0884A08F5FE4500FC65FE /* cDataFileManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFileManager.h; sourceTree = "<group>"; };
 		70B0884B08F5FE4500FC65FE /* cDataManager_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataManager_Base.h; sourceTree = "<group>"; };
@@ -677,26 +666,16 @@
 		70B0888308F603D400FC65FE /* cFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFile.cc; sourceTree = "<group>"; };
 		70B088FC08F762EA00FC65FE /* cHistogram.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHistogram.h; sourceTree = "<group>"; };
 		70B088FF08F762EA00FC65FE /* cInitFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInitFile.h; sourceTree = "<group>"; };
-		70B0890008F762EA00FC65FE /* cIntegratedSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cIntegratedSchedule.h; sourceTree = "<group>"; };
-		70B0890108F762EA00FC65FE /* cIntegratedScheduleNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cIntegratedScheduleNode.h; sourceTree = "<group>"; };
-		70B0890208F762EA00FC65FE /* cIntSum.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cIntSum.h; sourceTree = "<group>"; };
 		70B0890308F762EA00FC65FE /* cMerit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMerit.h; sourceTree = "<group>"; };
-		70B0890A08F762EA00FC65FE /* cProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cProbSchedule.h; sourceTree = "<group>"; };
 		70B0890E08F762EA00FC65FE /* cRunningAverage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cRunningAverage.h; sourceTree = "<group>"; };
-		70B0891108F762EA00FC65FE /* cSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSchedule.h; sourceTree = "<group>"; };
 		70B0891208F762EA00FC65FE /* cString.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cString.h; sourceTree = "<group>"; };
 		70B0891308F762EA00FC65FE /* cStringIterator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cStringIterator.h; sourceTree = "<group>"; };
 		70B0891408F762EA00FC65FE /* cStringList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cStringList.h; sourceTree = "<group>"; };
 		70B0891508F762EA00FC65FE /* cStringUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cStringUtil.h; sourceTree = "<group>"; };
 		70B0891908F7630100FC65FE /* cHistogram.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHistogram.cc; sourceTree = "<group>"; };
 		70B0891A08F7630100FC65FE /* cInitFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInitFile.cc; sourceTree = "<group>"; };
-		70B0891B08F7630100FC65FE /* cIntegratedSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cIntegratedSchedule.cc; sourceTree = "<group>"; };
-		70B0891C08F7630100FC65FE /* cIntegratedScheduleNode.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cIntegratedScheduleNode.cc; sourceTree = "<group>"; };
-		70B0891D08F7630100FC65FE /* cIntSum.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cIntSum.cc; sourceTree = "<group>"; };
 		70B0891E08F7630100FC65FE /* cMerit.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMerit.cc; sourceTree = "<group>"; };
-		70B0891F08F7630100FC65FE /* cProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cProbSchedule.cc; sourceTree = "<group>"; };
 		70B0892108F7630100FC65FE /* cRunningAverage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cRunningAverage.cc; sourceTree = "<group>"; };
-		70B0892208F7630100FC65FE /* cSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSchedule.cc; sourceTree = "<group>"; };
 		70B0892308F7630100FC65FE /* cString.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cString.cc; sourceTree = "<group>"; };
 		70B0892408F7630100FC65FE /* cStringIterator.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStringIterator.cc; sourceTree = "<group>"; };
 		70B0892508F7630100FC65FE /* cStringList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStringList.cc; sourceTree = "<group>"; };
@@ -799,8 +778,6 @@
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
 		70E14D4B1279FA5B0059FB9D /* Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
-		70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConstBurstSchedule.h; sourceTree = "<group>"; };
-		70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cConstBurstSchedule.cc; sourceTree = "<group>"; };
 		70F27F0C13B4E59F008A88A7 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
 		70F962BF135AA2E7008EDD1C /* Genome.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Genome.cc; sourceTree = "<group>"; };
@@ -1732,10 +1709,6 @@
 				703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */,
 				7020828E0FB9F2DF00637AD6 /* cBitArray.h */,
 				7020828D0FB9F2DF00637AD6 /* cBitArray.cc */,
-				70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */,
-				70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */,
-				70B087DA08F5F4A900FC65FE /* cConstSchedule.h */,
-				70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */,
 				70B087DB08F5F4A900FC65FE /* cCountTracker.h */,
 				70A778380D69D5C200735F1E /* cDemeProbSchedule.h */,
 				70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */,
@@ -1753,25 +1726,15 @@
 				70B0891908F7630100FC65FE /* cHistogram.cc */,
 				70B088FF08F762EA00FC65FE /* cInitFile.h */,
 				70B0891A08F7630100FC65FE /* cInitFile.cc */,
-				70B0890008F762EA00FC65FE /* cIntegratedSchedule.h */,
-				70B0891B08F7630100FC65FE /* cIntegratedSchedule.cc */,
-				70B0890108F762EA00FC65FE /* cIntegratedScheduleNode.h */,
-				70B0891C08F7630100FC65FE /* cIntegratedScheduleNode.cc */,
-				70B0890208F762EA00FC65FE /* cIntSum.h */,
-				70B0891D08F7630100FC65FE /* cIntSum.cc */,
 				70B0890308F762EA00FC65FE /* cMerit.h */,
 				70B0891E08F7630100FC65FE /* cMerit.cc */,
 				7030DB201326C44C00B6DADA /* cOrderedWeightedIndex.h */,
 				7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */,
 				2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */,
 				2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */,
-				70B0890A08F762EA00FC65FE /* cProbSchedule.h */,
-				70B0891F08F7630100FC65FE /* cProbSchedule.cc */,
 				70B0890E08F762EA00FC65FE /* cRunningAverage.h */,
 				70B0892108F7630100FC65FE /* cRunningAverage.cc */,
 				70100BD7108F8F4F005999F0 /* cRunningStats.h */,
-				70B0891108F762EA00FC65FE /* cSchedule.h */,
-				70B0892208F7630100FC65FE /* cSchedule.cc */,
 				70B0891208F762EA00FC65FE /* cString.h */,
 				70B0892308F7630100FC65FE /* cString.cc */,
 				70B0891308F762EA00FC65FE /* cStringIterator.h */,
@@ -2049,24 +2012,15 @@
 				7023EC400C0A431B00362B9C /* cArgContainer.cc in Sources */,
 				7023EC410C0A431B00362B9C /* cArgSchema.cc in Sources */,
 				70D5B4ED14F4009000D15FFD /* cBitArray.cc in Sources */,
-				70D5B4E114F4009000D15FFD /* cConstBurstSchedule.cc in Sources */,
-				7023EC470C0A431B00362B9C /* cConstSchedule.cc in Sources */,
 				7023EC4B0C0A431B00362B9C /* cDataFile.cc in Sources */,
 				7023EC4C0C0A431B00362B9C /* cDataFileManager.cc in Sources */,
 				7023EC4D0C0A431B00362B9C /* cDataManager_Base.cc in Sources */,
-				70D5B4E514F4009000D15FFD /* cDemeProbSchedule.cc in Sources */,
 				7023EC6A0C0A431B00362B9C /* cHistogram.cc in Sources */,
 				7023EC6B0C0A431B00362B9C /* cInitFile.cc in Sources */,
 				7023EC700C0A431B00362B9C /* cInstSet.cc in Sources */,
-				7023EC710C0A431B00362B9C /* cIntegratedSchedule.cc in Sources */,
-				7023EC720C0A431B00362B9C /* cIntegratedScheduleNode.cc in Sources */,
-				7023EC730C0A431B00362B9C /* cIntSum.cc in Sources */,
 				7023EC770C0A431B00362B9C /* cMerit.cc in Sources */,
 				70D5B4FD14F4009000D15FFD /* cOrderedWeightedIndex.cc in Sources */,
-				70D5B50014F4009000D15FFD /* cProbDemeProbSchedule.cc in Sources */,
-				7023EC810C0A431B00362B9C /* cProbSchedule.cc in Sources */,
 				7023EC890C0A431B00362B9C /* cRunningAverage.cc in Sources */,
-				7023EC8A0C0A431B00362B9C /* cSchedule.cc in Sources */,
 				7023EC910C0A431B00362B9C /* cString.cc in Sources */,
 				7023EC920C0A431B00362B9C /* cStringIterator.cc in Sources */,
 				7023EC930C0A431B00362B9C /* cStringList.cc in Sources */,

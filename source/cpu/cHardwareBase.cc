@@ -159,8 +159,8 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
 
   // Make sure that neither parent nor child will be below the minimum size.  
   const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
-  const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
-  const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
+  const int min_size = Apto::Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
+  const int max_size = Apto::Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
   
   if (child_size < min_size || child_size > max_size) {
     ORG_FAULT(cStringUtil::Stringf("Invalid offspring length (%d)", child_size));

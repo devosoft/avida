@@ -527,7 +527,7 @@ void Avida::Systematics::Genotype::setupPropertyMap() const
 
   // Collect all relevant action trigger counts
   for (int i = 0; i < m_mgr->EnvironmentActionTriggerAverageIDs().GetSize(); i++) {
-    m_prop_map->Define(PropertyPtr(new FunctorProperty<double>(m_mgr->EnvironmentActionTriggerAverageIDs()[i], s_prop_desc_map, FunctorProperty<double>::GetFunctor(&m_task_counts[i], &cIntSum::Average))));
+    m_prop_map->Define(PropertyPtr(new FunctorProperty<double>(m_mgr->EnvironmentActionTriggerAverageIDs()[i], s_prop_desc_map, FunctorProperty<double>::GetFunctor(&m_task_counts[i], &Apto::Stat::Accumulator<int>::Mean))));
   }
   
 #undef ADD_FUN_PROP

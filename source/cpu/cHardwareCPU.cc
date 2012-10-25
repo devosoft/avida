@@ -3206,8 +3206,7 @@ bool cHardwareCPU::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = REG_AX;
   const int cur_size = m_memory.GetSize();
-  const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
-                             MAX_GENOME_LENGTH - cur_size);
+  const int alloc_size = Apto::Min((int)(m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size), MAX_GENOME_LENGTH - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
     GetRegister(dst) = cur_size;
     return true;
@@ -3219,8 +3218,7 @@ bool cHardwareCPU::Inst_MaxAllocMoveWriteHead(cAvidaContext& ctx)   // Allocate 
 {
   const int dst = REG_AX;
   const int cur_size = m_memory.GetSize();
-  const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
-                             MAX_GENOME_LENGTH - cur_size);
+  const int alloc_size = Apto::Min((int)(m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size), MAX_GENOME_LENGTH - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
     GetRegister(dst) = cur_size;
     getHead(nHardware::HEAD_WRITE).Set(cur_size);
@@ -5841,7 +5839,7 @@ bool cHardwareCPU::Inst_RotateHome(cAvidaContext&)
 bool cHardwareCPU::Inst_SetCopyMut(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  const int new_mut_rate = Max(GetRegister(reg_used), 1 );
+  const int new_mut_rate = Apto::Max(GetRegister(reg_used), 1 );
   m_organism->SetCopyMutProb(static_cast<double>(new_mut_rate) / 10000.0);
   return true;
 }

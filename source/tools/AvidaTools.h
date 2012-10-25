@@ -29,8 +29,6 @@
 namespace AvidaTools
 {  
   // Utility Functions
-  template <typename T> inline T Min(T op1, T op2) { return (op1 > op2) ? op2 : op1; }
-  template <typename T> inline T Max(T op1, T op2) { return (op1 > op2) ? op1 : op2; }
   template <typename T> inline T Range(T value, T min, T max);
   
   inline int Abs(int val) { return (val < 0) ? -val : val; }
