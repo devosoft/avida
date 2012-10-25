@@ -277,6 +277,17 @@ void cPopulationInterface::GetNeighborhoodCellIDs(tArray<int>& list)
   while (it.Next() != NULL) list[i++] = it.Get()->GetID();
 }
 
+void cPopulationInterface::GetAVNeighborhoodCellIDs(tArray<int>& list, int av_num)
+{
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id);
+  assert(cell.HasAV());
+  
+  list.Resize(cell.ConnectionList().GetSize());
+  tConstListIterator<cPopulationCell> it(cell.ConnectionList());
+  int i = 0;
+  while (it.Next() != NULL) list[i++] = it.Get()->GetID();
+}
+
 int cPopulationInterface::GetFacing()
 {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);

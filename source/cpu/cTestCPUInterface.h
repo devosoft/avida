@@ -82,6 +82,7 @@ public:
   bool IsNeighborCellOccupied() { return false; }
   int GetNumNeighbors() { return 0; }
   void GetNeighborhoodCellIDs(tArray<int>& list) { ; }
+  void GetAVNeighborhoodCellIDs(tArray<int>& list, int av_num = 0) { ; }
   int GetNeighborCellContents() { return 0; }
   void Rotate(int direction = 1) { ; }
   void Breakpoint() { ; }

@@ -105,6 +105,7 @@ public:
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
   void GetNeighborhoodCellIDs(tArray<int>& list);
+  void GetAVNeighborhoodCellIDs(tArray<int>& list, int av_num = 0);
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
   int GetFacedDir(); // Returns the human interpretable facing of this org.

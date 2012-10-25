@@ -4173,6 +4173,70 @@ public:
   }
 };
 
+class cActionPrintPreyFlockingData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintPreyFlockingData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    /*Print data on prey neighborhood */
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_dumps/prey_flocking.%d.dat", m_world->GetStats().GetUpdate());    
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,num_prey_neighbors,num_prey_this_cell" << endl;
+    else fp << "# org_id,org_av_cellx,org_av_celly,num_neighbor_cells_with_prey,num_prey_this_cell" << endl;
+    
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    
+    tArray<int> neighborhood;
+    const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      cOrganism* org = live_orgs[i];
+      if (org->GetForageTarget() == -2) continue;
+      const int id = org->GetID();
+      int num_neighbors = 0;
+      neighborhood.Resize(0);
+      if (!use_av) {
+        const int loc = org->GetCellID();
+        const int locx = loc % worldx;
+        const int locy = loc / worldx;
+        org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+        for (int j = 0; j < neighborhood.GetSize(); j++) {
+          if (m_world->GetPopulation().GetCell(neighborhood[j]).IsOccupied()) {
+            if (m_world->GetPopulation().GetCell(neighborhood[j]).GetOrganism()->GetForageTarget() != -2) {
+              num_neighbors++;
+            }
+          }
+        }
+        fp << id << "," << locx << "," << locy << "," << num_neighbors << "," << "1";
+      }
+      else {
+        const int avloc = org->GetOrgInterface().GetAVCellID();
+        const int num_prey_this_cell = m_world->GetPopulation().GetCell(avloc).GetNumPreyAV();
+        const int avlocx = avloc % worldx;
+        const int avlocy = avloc / worldx;
+        org->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+        for (int j = 0; j < neighborhood.GetSize(); j++) {
+          if (m_world->GetPopulation().GetCell(neighborhood[j]).HasPreyAV()) num_neighbors++;
+        }
+        fp << id << "," << avlocx << "," << avlocy << "," << num_neighbors << "," << num_prey_this_cell;
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 class cActionPrintOrgGuardData : public cAction
 {
 private:
@@ -4913,6 +4977,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
+  action_lib->Register<cActionPrintPreyFlockingData>("PrintPreyFlockingData");
   action_lib->Register<cActionPrintOrgGuardData>("PrintOrgGuardData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
   action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");

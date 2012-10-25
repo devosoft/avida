@@ -626,6 +626,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
           if (offspring_array[i] != parent_organism) {
             offspring_array[i]->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
           }
+          if (m_world->GetConfig().AVATAR_BIRTH_FACING.Get() == 1) {
+            const int rots = m_world->GetRandom().GetUInt(0,8);
+            for (int j = 0; j < rots; j++) offspring_array[i]->Rotate(rots);
+          }
         }
         else KillOrganism(GetCell(target_cells[i]), ctx);
       }

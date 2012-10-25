@@ -97,6 +97,7 @@ public:
   virtual bool IsNeighborCellOccupied() = 0;
   virtual int GetNumNeighbors() = 0;
   virtual void GetNeighborhoodCellIDs(tArray<int>& list) = 0;
+  virtual void GetAVNeighborhoodCellIDs(tArray<int>& list, int av_num = 0) = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
   virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
