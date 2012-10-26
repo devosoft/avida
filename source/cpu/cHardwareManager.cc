@@ -29,6 +29,7 @@
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
 #include "cHardwareTransSMT.h"
+#include "cHardwareMBE.h"
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
@@ -130,6 +131,9 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, cStrin
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
       inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareExperimental::GetInstLib());
       break;
+    case HARDWARE_TYPE_CPU_MBE:
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareMBE::GetInstLib());
+      break;
     default:
       if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);
       return false;
@@ -166,6 +170,9 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 			break;
 		case HARDWARE_TYPE_CPU_EXPERIMENTAL:
 			default_filename = cHardwareExperimental::GetDefaultInstFilename();
+			break;
+		case HARDWARE_TYPE_CPU_MBE:
+			default_filename = cHardwareMBE::GetDefaultInstFilename();
 			break;
 		default:
       if (feedback) feedback->Error("unknown/unsupported HARDWARE_TYPE specified");
@@ -236,6 +243,9 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
       hw = new cHardwareExperimental(ctx, m_world, org, inst_set);
+      break;
+    case HARDWARE_TYPE_CPU_MBE:
+      hw = new cHardwareMBE(ctx, m_world, org, inst_set);
       break;
     default:
       assert(false);

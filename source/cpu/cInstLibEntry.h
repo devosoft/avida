@@ -45,6 +45,14 @@ enum InstructionClass {
   NUM_INST_CLASSES
 };
 
+enum BehavClass {
+  BEHAV_CLASS_INPUT = 0,
+  BEHAV_CLASS_ACTION,
+  BEHAV_CLASS_COPY,
+  BEHAV_CLASS_NONE,
+  BEHAV_CLASS_BREAK,
+};
+
 class cInstLibEntry
 {
 private:
@@ -52,17 +60,19 @@ private:
   const unsigned int m_flags;
   const cString m_desc;
   const InstructionClass m_class;
+  const BehavClass m_bclass;
   
   cInstLibEntry(); // @not_implemented
   
 public:
-  cInstLibEntry(const cString& name, InstructionClass _class, unsigned int flags, const cString& desc)
-    : m_name(name), m_flags(flags), m_desc(desc), m_class(_class) { ; }
+  cInstLibEntry(const cString& name, InstructionClass _class, unsigned int flags, const cString& desc, BehavClass _bclass)
+    : m_name(name), m_flags(flags), m_desc(desc), m_class(_class), m_bclass(_bclass) { ; }
 
   inline const cString& GetName() const { return m_name; }
   inline const cString& GetDescription() const { return m_desc; }
   
   inline InstructionClass GetClass() const { return m_class; }
+  inline BehavClass GetBehavClass() const { return m_bclass; }
   
   inline unsigned int GetFlags() const { return m_flags; }
   inline bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT) != 0; }

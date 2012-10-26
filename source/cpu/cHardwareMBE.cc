@@ -1,8 +1,8 @@
 /*
- *  cHardwareExperimental.cc
+ *  cHardwareMBE.cc
  *  Avida
  *
- *  Created by David on 2/10/07 based on cHardwareCPU.cc
+ *  Created by APWagner on 10/26/2012 based on cHardwareMBE.h
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
@@ -21,12 +21,10 @@
  */
 
 
-#include "cHardwareExperimental.h"
+#include "cHardwareMBE.h"
 
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
-
-#include "avida/private/systematics/SexualAncestry.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
@@ -55,7 +53,7 @@ using namespace AvidaTools;
 static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;
 static const unsigned int CONSENSUS24 = 12;
 
-inline unsigned int cHardwareExperimental::BitCount(unsigned int value) const
+inline unsigned int cHardwareMBE::BitCount(unsigned int value) const
 {
   const unsigned int w = value - ((value >> 1) & 0x55555555);
   const unsigned int x = (w & 0x33333333) + ((w >> 2) & 0x33333333);
@@ -64,9 +62,9 @@ inline unsigned int cHardwareExperimental::BitCount(unsigned int value) const
 }
 
 
-tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::s_inst_slib = cHardwareExperimental::initInstLib();
+tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::s_inst_slib = cHardwareMBE::initInstLib();
 
-tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(void)
+tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::initInstLib(void)
 {
   struct cNOPEntry {
     cString name;
@@ -100,304 +98,195 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
      in the same order in tInstLibEntry<tMethod> s_f_array, and these entries must
      be the first elements of s_f_array.
      */
-    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-G", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-H", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-A", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-B", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-C", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-D", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-E", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-F", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-G", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-H", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     
-    tInstLibEntry<tMethod>("nop-I", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-J", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-K", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-L", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-M", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-N", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-O", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-P", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-I", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-J", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-K", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-L", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-M", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-N", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-O", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-P", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     
-    tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
-    tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
-    
+    tInstLibEntry<tMethod>("NULL", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
+    tInstLibEntry<tMethod>("nop-X", &cHardwareMBE::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
     
     // Threading 
-    tInstLibEntry<tMethod>("fork-thread", &cHardwareExperimental::Inst_ForkThread),
-    tInstLibEntry<tMethod>("exit-thread", &cHardwareExperimental::Inst_ExitThread),
-    tInstLibEntry<tMethod>("id-thread", &cHardwareExperimental::Inst_IdThread),
+    tInstLibEntry<tMethod>("fork-thread", &cHardwareMBE::Inst_ForkThread, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("exit-thread", &cHardwareMBE::Inst_ExitThread, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
+    tInstLibEntry<tMethod>("id-thread", &cHardwareMBE::Inst_IdThread, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_NONE),
     
-    
+    // Behavioral Execution
+    tInstLibEntry<tMethod>("set-behavior", &cHardwareMBE::Inst_SetBehavior, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_BREAK),
+
     // Standard Conditionals
-    tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
-    tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
-    tInstLibEntry<tMethod>("if-not-0", &cHardwareExperimental::Inst_IfNotZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? != 0, else skip it"),
-    tInstLibEntry<tMethod>("if-equ-0", &cHardwareExperimental::Inst_IfEqualZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? == 0, else skip it"),
-    tInstLibEntry<tMethod>("if-gtr-0", &cHardwareExperimental::Inst_IfGreaterThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? > 0, else skip it"),
-    tInstLibEntry<tMethod>("if-less-0", &cHardwareExperimental::Inst_IfLessThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < 0, else skip it"),
-    tInstLibEntry<tMethod>("if-gtr-x", &cHardwareExperimental::Inst_IfGtrX, INST_CLASS_CONDITIONAL),
-    tInstLibEntry<tMethod>("if-equ-x", &cHardwareExperimental::Inst_IfEquX, INST_CLASS_CONDITIONAL),
-    
-    tInstLibEntry<tMethod>("if-cons", &cHardwareExperimental::Inst_IfConsensus, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
-    tInstLibEntry<tMethod>("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
-    tInstLibEntry<tMethod>("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
-    tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
-    
-    tInstLibEntry<tMethod>("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
+    tInstLibEntry<tMethod>("if-n-equ", &cHardwareMBE::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-less", &cHardwareMBE::Inst_IfLess, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-not-0", &cHardwareMBE::Inst_IfNotZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? != 0, else skip it"),
+    tInstLibEntry<tMethod>("if-equ-0", &cHardwareMBE::Inst_IfEqualZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? == 0, else skip it"),
+    tInstLibEntry<tMethod>("if-gtr-0", &cHardwareMBE::Inst_IfGreaterThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? > 0, else skip it"),
+    tInstLibEntry<tMethod>("if-less-0", &cHardwareMBE::Inst_IfLessThanZero, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX? < 0, else skip it"),
+    tInstLibEntry<tMethod>("if-gtr-x", &cHardwareMBE::Inst_IfGtrX, INST_CLASS_CONDITIONAL),
+    tInstLibEntry<tMethod>("if-equ-x", &cHardwareMBE::Inst_IfEquX, INST_CLASS_CONDITIONAL),
     
     // Core ALU Operations
-    tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, INST_CLASS_DATA, 0, "Remove top number from stack and place into ?BX?"),
-    tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, INST_CLASS_DATA, 0, "Copy number from ?BX? and place it into the stack"),
-    tInstLibEntry<tMethod>("pop-all", &cHardwareExperimental::Inst_PopAll, INST_CLASS_DATA, 0, "Remove top numbers from stack and place into ?BX?"),
-    tInstLibEntry<tMethod>("push-all", &cHardwareExperimental::Inst_PushAll, INST_CLASS_DATA, 0, "Copy number from all registers and place into the stack"),
-    tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, INST_CLASS_DATA, 0, "Toggle which stack is currently being used"),
-    tInstLibEntry<tMethod>("swap-stk-top", &cHardwareExperimental::Inst_SwapStackTop, INST_CLASS_DATA, 0, "Swap the values at the top of both stacks"),
-    tInstLibEntry<tMethod>("swap", &cHardwareExperimental::Inst_Swap, INST_CLASS_DATA, 0, "Swap the contents of ?BX? with ?CX?"),
+    tInstLibEntry<tMethod>("pop", &cHardwareMBE::Inst_Pop, INST_CLASS_DATA, 0, "Remove top number from stack and place into ?BX?"),
+    tInstLibEntry<tMethod>("push", &cHardwareMBE::Inst_Push, INST_CLASS_DATA, 0, "Copy number from ?BX? and place it into the stack"),
+    tInstLibEntry<tMethod>("pop-all", &cHardwareMBE::Inst_PopAll, INST_CLASS_DATA, 0, "Remove top numbers from stack and place into ?BX?"),
+    tInstLibEntry<tMethod>("push-all", &cHardwareMBE::Inst_PushAll, INST_CLASS_DATA, 0, "Copy number from all registers and place into the stack"),
+    tInstLibEntry<tMethod>("swap-stk", &cHardwareMBE::Inst_SwitchStack, INST_CLASS_DATA, 0, "Toggle which stack is currently being used"),
+    tInstLibEntry<tMethod>("swap-stk-top", &cHardwareMBE::Inst_SwapStackTop, INST_CLASS_DATA, 0, "Swap the values at the top of both stacks"),
+    tInstLibEntry<tMethod>("swap", &cHardwareMBE::Inst_Swap, INST_CLASS_DATA, 0, "Swap the contents of ?BX? with ?CX?"),
     
-    tInstLibEntry<tMethod>("shift-r", &cHardwareExperimental::Inst_ShiftR, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? right by one (divide by two)"),
-    tInstLibEntry<tMethod>("shift-l", &cHardwareExperimental::Inst_ShiftL, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? left by one (multiply by two)"),
-    tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, INST_CLASS_ARITHMETIC_LOGIC, 0, "Increment ?BX? by one"),
-    tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, 0, "Decrement ?BX? by one"),
-    tInstLibEntry<tMethod>("zero", &cHardwareExperimental::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
-    tInstLibEntry<tMethod>("one", &cHardwareExperimental::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 1"),
-    tInstLibEntry<tMethod>("mult100", &cHardwareExperimental::Inst_Mult100, INST_CLASS_ARITHMETIC_LOGIC, 0, "Mult ?BX? by 100"),
+    tInstLibEntry<tMethod>("shift-r", &cHardwareMBE::Inst_ShiftR, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? right by one (divide by two)"),
+    tInstLibEntry<tMethod>("shift-l", &cHardwareMBE::Inst_ShiftL, INST_CLASS_ARITHMETIC_LOGIC, 0, "Shift bits in ?BX? left by one (multiply by two)"),
+    tInstLibEntry<tMethod>("inc", &cHardwareMBE::Inst_Inc, INST_CLASS_ARITHMETIC_LOGIC, 0, "Increment ?BX? by one"),
+    tInstLibEntry<tMethod>("dec", &cHardwareMBE::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, 0, "Decrement ?BX? by one"),
+    tInstLibEntry<tMethod>("zero", &cHardwareMBE::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
+    tInstLibEntry<tMethod>("one", &cHardwareMBE::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
     
-    tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, INST_CLASS_ARITHMETIC_LOGIC, 0, "Add BX to CX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, INST_CLASS_ARITHMETIC_LOGIC, 0, "Subtract CX from BX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Nand BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("add", &cHardwareMBE::Inst_Add, INST_CLASS_ARITHMETIC_LOGIC, 0, "Add BX to CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("sub", &cHardwareMBE::Inst_Sub, INST_CLASS_ARITHMETIC_LOGIC, 0, "Subtract CX from BX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("nand", &cHardwareMBE::Inst_Nand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Nand BX by CX and place the result in ?BX?"),
     
-    tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?"),
-    tInstLibEntry<tMethod>("IO-expire", &cHardwareExperimental::Inst_TaskIOExpire, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?, if the number has not yet expired"),
-    tInstLibEntry<tMethod>("input", &cHardwareExperimental::Inst_TaskInput, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Input new number into ?BX?"),
-    tInstLibEntry<tMethod>("output", &cHardwareExperimental::Inst_TaskOutput, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?"),
-    tInstLibEntry<tMethod>("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?"),
-    tInstLibEntry<tMethod>("output-expire", &cHardwareExperimental::Inst_TaskOutputExpire, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?, as long as the output has not yet expired"),
-    tInstLibEntry<tMethod>("deme-IO", &cHardwareExperimental::Inst_DemeIO, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("IO", &cHardwareMBE::Inst_TaskIO, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("input", &cHardwareMBE::Inst_TaskInput, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Input new number into ?BX?", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("output", &cHardwareMBE::Inst_TaskOutput, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "Output ?BX?", BEHAV_CLASS_ACTION),
     
-    tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, INST_CLASS_ARITHMETIC_LOGIC, 0, "Multiple BX by CX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, INST_CLASS_ARITHMETIC_LOGIC, 0, "Divide BX by CX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("mod", &cHardwareExperimental::Inst_Mod, INST_CLASS_ARITHMETIC_LOGIC),
-    
-    
+    tInstLibEntry<tMethod>("mult", &cHardwareMBE::Inst_Mult, INST_CLASS_ARITHMETIC_LOGIC, 0, "Multiple BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("div", &cHardwareMBE::Inst_Div, INST_CLASS_ARITHMETIC_LOGIC, 0, "Divide BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("mod", &cHardwareMBE::Inst_Mod, INST_CLASS_ARITHMETIC_LOGIC),
+        
     // Flow Control Instructions
-    tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, INST_CLASS_FLOW_CONTROL, nInstFlag::LABEL),
-    
-    tInstLibEntry<tMethod>("search-lbl-comp-s", &cHardwareExperimental::Inst_Search_Label_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement label from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-comp-f", &cHardwareExperimental::Inst_Search_Label_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement label forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-comp-b", &cHardwareExperimental::Inst_Search_Label_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement label backward and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-direct-s", &cHardwareExperimental::Inst_Search_Label_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct label from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-direct-f", &cHardwareExperimental::Inst_Search_Label_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct label forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-direct-b", &cHardwareExperimental::Inst_Search_Label_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct label backward and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-comp-s", &cHardwareExperimental::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-comp-f", &cHardwareExperimental::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-comp-b", &cHardwareExperimental::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-direct-s", &cHardwareExperimental::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-direct-f", &cHardwareExperimental::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareExperimental::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
-    
-    tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
-    tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareExperimental::Inst_MoveHeadIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
-    tInstLibEntry<tMethod>("mov-head-if-less", &cHardwareExperimental::Inst_MoveHeadIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
-    
-    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position matching the label that follows"),
-    tInstLibEntry<tMethod>("goto-if-n-equ", &cHardwareExperimental::Inst_GotoIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position if BX != CX"),
-    tInstLibEntry<tMethod>("goto-if-less", &cHardwareExperimental::Inst_GotoIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move IP to labeled position if BX < CX"),
-    tInstLibEntry<tMethod>("goto-if-cons", &cHardwareExperimental::Inst_GotoConsensus, INST_CLASS_FLOW_CONTROL, 0, "Move IP to the labeled position if BX consensus"), 
-    tInstLibEntry<tMethod>("goto-if-cons-24", &cHardwareExperimental::Inst_GotoConsensus24, INST_CLASS_FLOW_CONTROL, 0, "Move IP to the labeled position if BX consensus"),
-    
-    tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
-    tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
-    
+    tInstLibEntry<tMethod>("search-seq-comp-s", &cHardwareMBE::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
+    tInstLibEntry<tMethod>("search-seq-comp-f", &cHardwareMBE::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
+    tInstLibEntry<tMethod>("search-seq-comp-b", &cHardwareMBE::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-seq-direct-s", &cHardwareMBE::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
+    tInstLibEntry<tMethod>("search-seq-direct-f", &cHardwareMBE::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
+    tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareMBE::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
+
+    tInstLibEntry<tMethod>("mov-head", &cHardwareMBE::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
+    tInstLibEntry<tMethod>("jmp-head", &cHardwareMBE::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
+    tInstLibEntry<tMethod>("get-head", &cHardwareMBE::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
     
     // Replication Instructions
-    tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, INST_CLASS_LIFECYCLE, 0, "Allocate maximum allowed space"),
-    tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Divide code between read and write heads."),
-    tInstLibEntry<tMethod>("h-divide-sex", &cHardwareExperimental::Inst_HeadDivideSex, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Divide code between read and write heads."),
-    tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, INST_CLASS_LIFECYCLE, 0, "Copy from read-head to write-head; advance both"),
-    tInstLibEntry<tMethod>("h-reqd", &cHardwareExperimental::Inst_HeadRead, INST_CLASS_LIFECYCLE, 0, "Read instruction from ?read-head? to ?AX?; advance the head."),
-    tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite, INST_CLASS_LIFECYCLE, 0, "Write to ?write-head? instruction from ?AX?; advance the head."),
-    tInstLibEntry<tMethod>("if-copied-lbl-comp", &cHardwareExperimental::Inst_IfCopiedCompLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached label"),
-    tInstLibEntry<tMethod>("if-copied-lbl-direct", &cHardwareExperimental::Inst_IfCopiedDirectLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached label"),
-    tInstLibEntry<tMethod>("if-copied-seq-comp", &cHardwareExperimental::Inst_IfCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached sequence"),
-    tInstLibEntry<tMethod>("if-copied-seq-direct", &cHardwareExperimental::Inst_IfCopiedDirectSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached sequence"),
+    tInstLibEntry<tMethod>("h-alloc", &cHardwareMBE::Inst_HeadAlloc, INST_CLASS_LIFECYCLE, 0, "Allocate maximum allowed space", BEHAV_CLASS_COPY),
+    tInstLibEntry<tMethod>("h-divide", &cHardwareMBE::Inst_HeadDivide, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Divide code between read and write heads.", BEHAV_CLASS_COPY),
+    tInstLibEntry<tMethod>("h-copy", &cHardwareMBE::Inst_HeadCopy, INST_CLASS_LIFECYCLE, 0, "Copy from read-head to write-head; advance both", BEHAV_CLASS_COPY),
+    tInstLibEntry<tMethod>("h-read", &cHardwareMBE::Inst_HeadRead, INST_CLASS_LIFECYCLE, 0, "Read instruction from ?read-head? to ?AX?; advance the head.", BEHAV_CLASS_COPY),
+    tInstLibEntry<tMethod>("h-write", &cHardwareMBE::Inst_HeadWrite, INST_CLASS_LIFECYCLE, 0, "Write to ?write-head? instruction from ?AX?; advance the head.", BEHAV_CLASS_COPY),
+    tInstLibEntry<tMethod>("if-copied-lbl-comp", &cHardwareMBE::Inst_IfCopiedCompLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached label"),
+    tInstLibEntry<tMethod>("if-copied-lbl-direct", &cHardwareMBE::Inst_IfCopiedDirectLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached label"),
+    tInstLibEntry<tMethod>("if-copied-seq-comp", &cHardwareMBE::Inst_IfCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached sequence"),
+    tInstLibEntry<tMethod>("if-copied-seq-direct", &cHardwareMBE::Inst_IfCopiedDirectSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached sequence"),
     
-    tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly reproduces the organism"),
+    tInstLibEntry<tMethod>("repro", &cHardwareMBE::Inst_Repro, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly reproduces the organism", BEHAV_CLASS_COPY),
     
-    tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly kills the organism"),
+    tInstLibEntry<tMethod>("die", &cHardwareMBE::Inst_Die, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly kills the organism", BEHAV_CLASS_COPY),
     
     // Thread Execution Control
-    tInstLibEntry<tMethod>("wait-cond-equ", &cHardwareExperimental::Inst_WaitCondition_Equal, INST_CLASS_OTHER, nInstFlag::STALL, ""),
-    tInstLibEntry<tMethod>("wait-cond-less", &cHardwareExperimental::Inst_WaitCondition_Less, INST_CLASS_OTHER, nInstFlag::STALL, ""),
-    tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareExperimental::Inst_WaitCondition_Greater, INST_CLASS_OTHER, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-equ", &cHardwareMBE::Inst_WaitCondition_Equal, INST_CLASS_OTHER, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-less", &cHardwareMBE::Inst_WaitCondition_Less, INST_CLASS_OTHER, nInstFlag::STALL, ""),
+    tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareMBE::Inst_WaitCondition_Greater, INST_CLASS_OTHER, nInstFlag::STALL, ""),
         
-    // Promoter Model
-    tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter, INST_CLASS_FLOW_CONTROL, nInstFlag::PROMOTER),
-    tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("term-cons", &cHardwareExperimental::Inst_TerminateConsensus, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("term-cons-24", &cHardwareExperimental::Inst_TerminateConsensus24, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("regulate", &cHardwareExperimental::Inst_Regulate, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("regulate-sp", &cHardwareExperimental::Inst_RegulateSpecificPromoters, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("s-regulate", &cHardwareExperimental::Inst_SenseRegulate, INST_CLASS_FLOW_CONTROL),
-    tInstLibEntry<tMethod>("numberate", &cHardwareExperimental::Inst_Numberate, INST_CLASS_DATA),
-    tInstLibEntry<tMethod>("numberate-24", &cHardwareExperimental::Inst_Numberate24, INST_CLASS_DATA),
-    tInstLibEntry<tMethod>("bit-cons", &cHardwareExperimental::Inst_BitConsensus, INST_CLASS_DATA),
-    tInstLibEntry<tMethod>("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24, INST_CLASS_DATA),
-    tInstLibEntry<tMethod>("execurate", &cHardwareExperimental::Inst_Execurate, INST_CLASS_DATA),
-    tInstLibEntry<tMethod>("execurate-24", &cHardwareExperimental::Inst_Execurate24, INST_CLASS_DATA),
-    
-    
-    // State Grid instructions
-    tInstLibEntry<tMethod>("sg-move", &cHardwareExperimental::Inst_SGMove, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("sg-rotate-l", &cHardwareExperimental::Inst_SGRotateL, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareExperimental::Inst_SGRotateR, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("sg-sense", &cHardwareExperimental::Inst_SGSense, INST_CLASS_ENVIRONMENT),
-    
     // Movement and Navigation instructions
-    tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("juv-move", &cHardwareExperimental::Inst_JuvMove, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("range-move", &cHardwareExperimental::Inst_RangeMove, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("range-pred-move", &cHardwareExperimental::Inst_RangePredMove, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-cell-xy", &cHardwareExperimental::Inst_GetCellPosition, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("get-cell-x", &cHardwareExperimental::Inst_GetCellPositionX, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("get-cell-y", &cHardwareExperimental::Inst_GetCellPositionY, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("get-north-offset", &cHardwareExperimental::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT),    
-    tInstLibEntry<tMethod>("get-position-offset", &cHardwareExperimental::Inst_GetPositionOffset, INST_CLASS_ENVIRONMENT),    
-    tInstLibEntry<tMethod>("get-northerly", &cHardwareExperimental::Inst_GetNortherly, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("get-easterly", &cHardwareExperimental::Inst_GetEasterly, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("zero-easterly", &cHardwareExperimental::Inst_ZeroEasterly, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("zero-northerly", &cHardwareExperimental::Inst_ZeroNortherly, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("zero-position-offset", &cHardwareExperimental::Inst_ZeroPosOffset, INST_CLASS_ENVIRONMENT),
+    tInstLibEntry<tMethod>("move", &cHardwareMBE::Inst_Move, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("juv-move", &cHardwareMBE::Inst_JuvMove, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("get-north-offset", &cHardwareMBE::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("get-position-offset", &cHardwareMBE::Inst_GetPositionOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),    
+    tInstLibEntry<tMethod>("get-northerly", &cHardwareMBE::Inst_GetNortherly, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("get-easterly", &cHardwareMBE::Inst_GetEasterly, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("zero-easterly", &cHardwareMBE::Inst_ZeroEasterly, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("zero-northerly", &cHardwareMBE::Inst_ZeroNortherly, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("zero-position-offset", &cHardwareMBE::Inst_ZeroPosOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
 
     // Rotation
-    tInstLibEntry<tMethod>("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-right-one", &cHardwareExperimental::Inst_RotateRightOne, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-up-ft-hill", &cHardwareExperimental::Inst_RotateUpFtHill, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareExperimental::Inst_RotateUnoccupiedCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-x", &cHardwareExperimental::Inst_RotateX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-org-id", &cHardwareExperimental::Inst_RotateOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareExperimental::Inst_RotateAwayOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    
-    // Neural networking instructions 
-    tInstLibEntry<tMethod>("rotate-neuron-AV-left-one", &cHardwareExperimental::Inst_RotateNeuronAVLeft, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-neuron-AV-right-one", &cHardwareExperimental::Inst_RotateNeuronAVRight, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("rotate-neuron-AV-by-X", &cHardwareExperimental::Inst_RotateNeuronAVbyX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("move-neuron-AV", &cHardwareExperimental::Inst_MoveNeuronAV, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputHasOutputAV, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-not-neuron-input-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-not-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-home", &cHardwareMBE::Inst_RotateHome, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareMBE::Inst_RotateUnoccupiedCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("rotate-x", &cHardwareMBE::Inst_RotateX, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("rotate-org-id", &cHardwareMBE::Inst_RotateOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("rotate-away-org-id", &cHardwareMBE::Inst_RotateAwayOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     
     // Resource and Topography Sensing
-    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-nest", &cHardwareExperimental::Inst_SenseNest, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-ahead", &cHardwareExperimental::Inst_LookAhead, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareExperimental::Inst_LookAheadIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-around", &cHardwareExperimental::Inst_LookAround, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-around-intercept", &cHardwareExperimental::Inst_LookAroundIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-ft", &cHardwareExperimental::Inst_LookFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
+    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareMBE::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT), 
+    tInstLibEntry<tMethod>("sense-nest", &cHardwareMBE::Inst_SenseNest, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareMBE::Inst_SenseFacedHabitat, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-ahead", &cHardwareMBE::Inst_LookAhead, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-ahead-intercept", &cHardwareMBE::Inst_LookAheadIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-around", &cHardwareMBE::Inst_LookAround, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-around-intercept", &cHardwareMBE::Inst_LookAroundIntercept, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-ft", &cHardwareMBE::Inst_LookFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("look-around-ft", &cHardwareMBE::Inst_LookAroundFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     
-    tInstLibEntry<tMethod>("collect-edible", &cHardwareExperimental::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("collect-specific", &cHardwareExperimental::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("deposit-resource", &cHardwareExperimental::Inst_DepositResource, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("deposit-specific", &cHardwareExperimental::Inst_DepositSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("deposit-all-as-specific", &cHardwareExperimental::Inst_DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("nop-deposit-specific", &cHardwareExperimental::Inst_NopDepositSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("nop-deposit-resource", &cHardwareExperimental::Inst_NopDepositResource, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("nop-deposit-all-as-specific", &cHardwareExperimental::Inst_NopDepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("nop-collect-edible", &cHardwareExperimental::Inst_NopCollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("get-res-stored", &cHardwareExperimental::Inst_GetResStored, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    tInstLibEntry<tMethod>("get-specific-stored", &cHardwareExperimental::Inst_GetSpecificStored, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
- 
-    // Data collection
-    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareExperimental::Inst_CollectCellData, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("if-cell-data-changed", &cHardwareExperimental::Inst_IfCellDataChanged, INST_CLASS_CONDITIONAL, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("read-cell-data", &cHardwareExperimental::Inst_ReadCellData, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("read-group-cell", &cHardwareExperimental::Inst_ReadGroupCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-forage-target", &cHardwareMBE::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("set-ft-once", &cHardwareMBE::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
 
+    tInstLibEntry<tMethod>("get-forage-target", &cHardwareMBE::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareMBE::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),    
+    tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareMBE::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),    
+    
+    tInstLibEntry<tMethod>("collect-edible", &cHardwareMBE::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),    
+    tInstLibEntry<tMethod>("collect-specific", &cHardwareMBE::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),    
+    tInstLibEntry<tMethod>("deposit-resource", &cHardwareMBE::Inst_DepositResource, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),    
+    tInstLibEntry<tMethod>("deposit-specific", &cHardwareMBE::Inst_DepositSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),    
+    tInstLibEntry<tMethod>("deposit-all-as-specific", &cHardwareMBE::Inst_DepositAllAsSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    
+    tInstLibEntry<tMethod>("get-res-stored", &cHardwareMBE::Inst_GetResStored, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),    
+    tInstLibEntry<tMethod>("get-specific-stored", &cHardwareMBE::Inst_GetSpecificStored, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),    
+ 
     // Opinion instructions.
-    tInstLibEntry<tMethod>("set-opinion", &cHardwareExperimental::Inst_SetOpinion, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-opinion", &cHardwareExperimental::Inst_GetOpinion, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-opinion", &cHardwareMBE::Inst_SetOpinion, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("get-opinion", &cHardwareMBE::Inst_GetOpinion, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
 
     // Grouping instructions
-    tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("change-pred-group", &cHardwareExperimental::Inst_ChangePredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("make-pred-group", &cHardwareExperimental::Inst_MakePredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareExperimental::Inst_LeavePredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareExperimental::Inst_AdoptPredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareExperimental::Inst_GetPredGroupID, INST_CLASS_ENVIRONMENT),
-    tInstLibEntry<tMethod>("inc-pred-tolerance", &cHardwareExperimental::Inst_IncPredTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("dec-pred-tolerance", &cHardwareExperimental::Inst_DecPredTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-pred-tolerance", &cHardwareExperimental::Inst_GetPredTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),   
-    tInstLibEntry<tMethod>("get-pred-group-tolerance", &cHardwareExperimental::Inst_GetPredGroupTolerance, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("join-group", &cHardwareMBE::Inst_JoinGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("change-pred-group", &cHardwareMBE::Inst_ChangePredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("make-pred-group", &cHardwareMBE::Inst_MakePredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("leave-pred-group", &cHardwareMBE::Inst_LeavePredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("adopt-pred-group", &cHardwareMBE::Inst_AdoptPredGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    
+    tInstLibEntry<tMethod>("get-group-id", &cHardwareMBE::Inst_GetGroupID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    tInstLibEntry<tMethod>("get-pred-group-id", &cHardwareMBE::Inst_GetPredGroupID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
     
     // Org Interaction instructions
-    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("mark-group-cell", &cHardwareExperimental::Inst_MarkGroupCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("mark-pred-cell", &cHardwareExperimental::Inst_MarkPredCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("read-faced-cell", &cHardwareExperimental::Inst_ReadFacedCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("read-faced-pred-cell", &cHardwareExperimental::Inst_ReadFacedPredCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareExperimental::Inst_GetMeritFightOdds, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("fight-org", &cHardwareExperimental::Inst_FightOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("attack-pred", &cHardwareExperimental::Inst_AttackPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("kill-pred", &cHardwareExperimental::Inst_KillPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareMBE::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    
+    tInstLibEntry<tMethod>("attack-prey", &cHardwareMBE::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareMBE::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("fight-merit-org", &cHardwareMBE::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareMBE::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    
+    tInstLibEntry<tMethod>("get-merit-fight-odds", &cHardwareMBE::Inst_GetMeritFightOdds, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    
+    tInstLibEntry<tMethod>("fight-org", &cHardwareMBE::Inst_FightOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("attack-pred", &cHardwareMBE::Inst_AttackPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("kill-pred", &cHardwareMBE::Inst_KillPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("fight-pred", &cHardwareMBE::Inst_FightPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    
+    tInstLibEntry<tMethod>("teach-offspring", &cHardwareMBE::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("learn-parent", &cHardwareMBE::Inst_LearnParent, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
 
-    tInstLibEntry<tMethod>("set-guard", &cHardwareExperimental::Inst_SetGuard, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-num-guards", &cHardwareExperimental::Inst_GetNumGuards, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("get-num-juvs", &cHardwareExperimental::Inst_GetNumJuvs, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-
-    tInstLibEntry<tMethod>("activate-display", &cHardwareExperimental::Inst_ActivateDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("update-display", &cHardwareExperimental::Inst_UpdateDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("modify-display", &cHardwareExperimental::Inst_ModifyDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("read-last-seen-display", &cHardwareExperimental::Inst_ReadLastSeenDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("kill-display", &cHardwareExperimental::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("modify-simp-display", &cHardwareExperimental::Inst_ModifySimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("read-simp-display", &cHardwareExperimental::Inst_ReadLastSimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-
-    // Messaging
-    tInstLibEntry<tMethod>("send-msg", &cHardwareExperimental::Inst_SendMessage, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareExperimental::Inst_RetrieveMessage, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-
-    tInstLibEntry<tMethod>("send-msg-interrupt-type0", &cHardwareExperimental::Inst_SendMessageInterruptType0, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type1", &cHardwareExperimental::Inst_SendMessageInterruptType1, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareExperimental::Inst_SendMessageInterruptType2, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type3", &cHardwareExperimental::Inst_SendMessageInterruptType3, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type4", &cHardwareExperimental::Inst_SendMessageInterruptType4, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type5", &cHardwareExperimental::Inst_SendMessageInterruptType5, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("msg-handler-type0", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type3", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type4", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type5", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("end-handler", &cHardwareExperimental::Inst_End_Handler),
+    tInstLibEntry<tMethod>("activate-display", &cHardwareMBE::Inst_ActivateDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("update-display", &cHardwareMBE::Inst_UpdateDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("modify-display", &cHardwareMBE::Inst_ModifyDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    
+    tInstLibEntry<tMethod>("read-last-seen-display", &cHardwareMBE::Inst_ReadLastSeenDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
+    
+    tInstLibEntry<tMethod>("kill-display", &cHardwareMBE::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION), 
+    tInstLibEntry<tMethod>("modify-simp-display", &cHardwareMBE::Inst_ModifySimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    
+    tInstLibEntry<tMethod>("read-simp-display", &cHardwareMBE::Inst_ReadLastSimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_INPUT), 
 
     // Control-type Instructions
-    tInstLibEntry<tMethod>("scramble-registers", &cHardwareExperimental::Inst_ScrambleReg, INST_CLASS_DATA, nInstFlag::STALL),
-
-    // DEPRECATED Instructions
-    tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, INST_CLASS_FLOW_CONTROL, 0, "Set flow-head to position in ?CX?")
+    tInstLibEntry<tMethod>("scramble-registers", &cHardwareMBE::Inst_ScrambleReg, INST_CLASS_DATA, nInstFlag::STALL, "", BEHAV_CLASS_INPUT),
   };
   
   
@@ -420,7 +309,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+cHardwareMBE::cHardwareMBE(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(world, in_organism, in_inst_set), m_sensor(world, in_organism)
 {
   m_functions = s_inst_slib->GetFunctions();
@@ -429,12 +318,6 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
   
   m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
-  
-  m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
-  if (m_promoters_enabled) {
-    m_constitutive_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
-    m_no_active_promoter_halt = (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2);
-  }
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
@@ -449,13 +332,13 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
 }
 
 
-void cHardwareExperimental::internalReset()
+void cHardwareMBE::internalReset()
 {
   m_cycle_count = 0;
   m_last_output = 0;
   m_global_stack.Clear();
   
-  // We want to reset to have a single thread.
+  // We want to reset to have three threads.
   m_threads.Resize(1);
   
   // Reset that single thread.
@@ -464,44 +347,26 @@ void cHardwareExperimental::internalReset()
   m_thread_id_chart = 1; // Mark only the first thread as taken...
   m_cur_thread = 0;
   m_waiting_threads = 0;
+  m_threads[0].SetCurrBehav(1);
   
   m_mal_active = false;
   m_executedmatchstrings = false;
   
-  // Promoter model
-  if (m_promoters_enabled) {
-    m_promoter_index = -1; // Meaning the last promoter was nothing
-    m_promoter_offset = 0;
-    
-    m_promoters.Resize(0);
-    
-    for (int i=0; i < m_memory.GetSize(); i++) {
-      if (m_inst_set->IsPromoter(m_memory[i])) {
-        int code = Numberate(i - 1, -1, m_world->GetConfig().PROMOTER_CODE_SIZE.Get());
-        m_promoters.Push(cPromoter(i, code));
-      }
-    }
-  }
-  
-  m_io_expire = m_world->GetConfig().IO_EXPIRE.Get();
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   m_sensor.Reset();
 }
 
 
-void cHardwareExperimental::internalResetOnFailedDivide()
+void cHardwareMBE::internalResetOnFailedDivide()
 {
 	internalReset();
 }
 
-void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
+void cHardwareMBE::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
-  m_promoter_inst_executed = in_thread.m_promoter_inst_executed;
-  m_execurate = in_thread.m_execurate;
-  m_messageTriggerType = in_thread.m_messageTriggerType;
   
-  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
+  for (int i = 0; i < NUM_REGISTERS; i++) { for (int j = 0; j < NUM_BEHAVIORS; j++) behav[j].reg[i] = in_thread.behav[j].reg[i]; }
   for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
   stack = in_thread.stack;
   cur_stack = in_thread.cur_stack;
@@ -518,14 +383,15 @@ void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_threa
   
   read_label = in_thread.read_label;
   read_seq = in_thread.read_seq;
-  next_label = in_thread.next_label;  
+  next_label = in_thread.next_label;
+  m_curr_behav = in_thread.m_curr_behav;
 }
 
-void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
+void cHardwareMBE::cLocalThread::Reset(cHardwareMBE* in_hardware, int in_id)
 {
   m_id = in_id;
   
-  for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
+  for (int i = 0; i < NUM_REGISTERS; i++)  { for (int j = 0; j < NUM_BEHAVIORS; j++) behav[j].reg[i].Clear(); }
   for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
   
   stack.Clear();
@@ -537,10 +403,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   active = true;
   read_label.Clear();
   next_label.Clear();
-  
-  // Promoter model
-  m_execurate = 0;
-  m_promoter_inst_executed = 0;
+  m_curr_behav = 0;
 
   m_messageTriggerType = -1;
 }
@@ -549,7 +412,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
 
-bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
+bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
   assert(!speculative || (speculative && !m_thread_slicing_parallel));
   
@@ -564,9 +427,6 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   cPhenotype& phenotype = m_organism->GetPhenotype();
   
-  // First instruction - check whether we should be starting at a promoter, when enabled.
-  if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
-  
   m_cycle_count++;
   assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
@@ -574,134 +434,141 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
-  
+  const int num_thrd_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
+
   int num_active = 0;
   for (int i = 0; i < m_threads.GetSize(); i++) {
     if (m_threads[i].active) num_active++;
   }
   assert(num_active == (m_threads.GetSize() - m_waiting_threads));
   
-  for (int i = 0; i < num_inst_exec; i++) {
+  // per thread:
+  for (int i = 0; i < num_thrd_exec; i++) {
+    
     // Setup the hardware for the next instruction to be executed.
     int last_thread = m_cur_thread++;
     if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
     
     // If the currently selected thread is inactive, proceed to the next thread
     if (!m_threads[m_cur_thread].active) {
-      if (num_inst_exec == 1) i--;  // When running in non-parallel mode, adjust i so that we will continue to loop
+      if (num_thrd_exec == 1) i--;  // When running in non-parallel mode, adjust i so that we will continue to loop
       continue;
     }
     
-    m_advance_ip = true;
-    cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
-    ip.Adjust();
-       
-    // Print the status of this CPU at each step...    
-    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
+    // per inst execution type (aka thread classes):
+    int types_used = 0;
+    int type_exec_count = 0;
+    Apto::Array<bool> classes_used(NUM_BEHAVIORS);
+    classes_used.SetAll(false);
     
-    // Find the instruction to be executed
-    const Instruction& cur_inst = ip.GetInst();
-    
-    if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
-      // Speculative instruction reject, flush and return
-      m_cur_thread = last_thread;
-      phenotype.DecCPUCyclesUsed();
-      if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed(-1);
-      m_organism->SetRunning(false);
-      return false;
-    }
-    
-    // Print the short form status of this CPU at each step... 
-    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
-    
-    // Test if costs have been paid and it is okay to execute this now...
-    bool exec = true;
-    int exec_success = 0;
-    
-    // record any failure due to costs being paid
-    // before we try to execute the instruction, is this org currently paying precosts for it
-    bool on_pause = IsPayingActiveCost(ctx, m_cur_thread);
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);    
-    if (!exec) exec_success = -1;
+    while (types_used < NUM_BEHAVIORS) {
+      type_exec_count++;
+      if (type_exec_count >= 0x8000) break;   // APW
+      assert(type_exec_count < 0x8000);
 
-    if (m_promoters_enabled) {
-      // Constitutive regulation applied here
-      if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
-      
-      // If there are no active promoters and a certain mode is set, then don't execute any further instructions
-      if (m_no_active_promoter_halt && m_promoter_index == -1) exec = false;
-    }
+      m_advance_ip = true;
+      cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
+      ip.Adjust();
     
-    // Now execute the instruction...
-    bool rand_fail = false;
-    if (exec == true) {
-      // NOTE: This call based on the cur_inst must occur prior to instruction
-      //       execution, because this instruction reference may be invalid after
-      //       certain classes of instructions (namely divide instructions) @DMB
-      const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
-      
-      // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
-        exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
-        rand_fail = !exec;
+      // execute all no-class instructions, exiting if we hit an instruction from the current class and 'jumping'
+      // to a new class if we hit an instruction from a different classthre)
+      BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
+      // if we have already used this class in this cycle in this thread you're done
+      if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
+        if (classes_used[BEHAV_CLASS]) break;
+        if (BEHAV_CLASS != m_threads[m_cur_thread].GetCurrBehav()) {
+          m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
+        }
       }
       
-      //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
-      if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
+      // Print the status of this CPU at each step...
+      if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
       
+      // Find the instruction to be executed
+      const Instruction& cur_inst = ip.GetInst();
+      if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
+        // Speculative instruction reject, flush and return
+        m_cur_thread = last_thread;
+        phenotype.DecCPUCyclesUsed();
+        if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed(-1);
+        m_organism->SetRunning(false);
+        return false;
+      }
+      
+      // Print the short form status of this CPU at each step...
+      if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
+      
+      // Test if costs have been paid and it is okay to execute this now...
+      bool exec = true;
+      int exec_success = 0;
+      
+      // record any failure due to costs being paid
+      // before we try to execute the instruction, is this org currently paying precosts for it
+      bool on_pause = IsPayingActiveCost(ctx, m_cur_thread);
+      if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
+      if (!exec) exec_success = -1;
+      
+      // Now execute the instruction...
+      bool rand_fail = false;
       if (exec == true) {
-        if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
-          SingleProcess_PayPostResCosts(ctx, cur_inst); 
-          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread); 
-          // record execution success
-          exec_success = 1;
+        // NOTE: This call based on the cur_inst must occur prior to instruction
+        //       execution, because this instruction reference may be invalid after
+        //       certain classes of instructions (namely divide instructions) @DMB
+        const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
+        
+        // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
+        if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
+          exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+          rand_fail = !exec;
+        }
+        
+        if (exec == true) {
+          if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
+            SingleProcess_PayPostResCosts(ctx, cur_inst);
+            SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread);
+            // record execution success
+            exec_success = 1;
+          }
+        }
+        // Check if the instruction just executed caused premature death, break out of execution if so
+        if (phenotype.GetToDelete()) {
+          if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+          break;
+        }
+        
+        // Some instruction (such as jump) may turn m_advance_ip off.  Usually
+        // we now want to move to the next instruction in the memory.
+        if (m_advance_ip == true) ip.Advance();
+        
+        // Pay the additional death_cost of the instruction now
+        phenotype.IncTimeUsed(addl_time_cost);
+      }
+      // if using mini traces, report success or failure of execution
+      if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+      
+      bool do_record = false;
+      // record exec failed if the org just now started paying precosts
+      if (exec_success == -1 && !on_pause) do_record = true;
+      // if exec succeeded but was on pause before this execution, we already recorded it
+      // otherwise we record what the org did
+      else if (exec_success == 1 && !on_pause) do_record = true;
+      // if random failure, we record 'what the org was trying to do'
+      else if (rand_fail) do_record = true;
+      // if exec failed because of something inside the instruction itself, record the attempt
+      else if (exec_success == 0) do_record = true;
+      if (do_record) {
+        // this will differ from time used
+        phenotype.IncNumExecs();
+        if (m_microtrace || m_topnavtrace) {
+          RecordMicroTrace(cur_inst);
+          if (m_topnavtrace) RecordNavTrace(m_use_avatar);
         }
       }
-      // Check if the instruction just executed caused premature death, break out of execution if so
-      if (phenotype.GetToDelete()) {
-        if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
-        break;
+      // when you switch classes, increment type counter--ignoring BEHAV_CLASS_NONE instructions
+      if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
+        if (!classes_used[BEHAV_CLASS]) { classes_used[BEHAV_CLASS] = true; types_used++; }
       }
-      
-      // Some instruction (such as jump) may turn m_advance_ip off.  Usually
-      // we now want to move to the next instruction in the memory.
-      if (m_advance_ip == true) ip.Advance();
-      
-      // Pay the additional death_cost of the instruction now
-      phenotype.IncTimeUsed(addl_time_cost);
-      
-      // In the promoter model, we may force termination after a certain number of inst have been executed
-      if (m_promoters_enabled) {
-        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-        if (ctx.GetRandom().P(1 - processivity)) PromoterTerminate(ctx);
-        if (m_world->GetConfig().PROMOTER_INST_MAX.Get() &&
-            (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get())) {
-          PromoterTerminate(ctx);
-        }
-      }
-    }
-    // if using mini traces, report success or failure of execution
-    if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
-    
-    bool do_record = false;
-    // record exec failed if the org just now started paying precosts
-    if (exec_success == -1 && !on_pause) do_record = true;
-    // if exec succeeded but was on pause before this execution, we already recorded it
-    // otherwise we record what the org did
-    else if (exec_success == 1 && !on_pause) do_record = true;
-    // if random failure, we record 'what the org was trying to do'
-    else if (rand_fail) do_record = true;
-    // if exec failed because of something inside the instruction itself, record the attempt
-    else if (exec_success == 0) do_record = true;
-    if (do_record) {
-      // this will differ from time used 
-      phenotype.IncNumExecs();
-      if (m_microtrace || m_topnavtrace) {
-        RecordMicroTrace(cur_inst);
-        if (m_topnavtrace) RecordNavTrace(m_use_avatar);      
-      }
-    }    
+    } // end per execution type
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed
@@ -720,7 +587,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 // This method will handle the actuall execution of an instruction
 // within single process, once that function has been finalized.
-bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
+bool cHardwareMBE::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
 {
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
@@ -742,21 +609,15 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
   
-	if (exec_success) {
-    int code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
-    m_threads[m_cur_thread].UpdateExecurate(code_len, m_inst_set->GetInstructionCode(actual_inst));
-  }
-  
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
-  }
-  
+  }  
   return exec_success;
 }
 
 
-void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
+void cHardwareMBE::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 {
   // Mark this organism as running...
   bool prev_run_state = m_organism->IsRunning();
@@ -770,7 +631,7 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const Instructi
 }
 
 
-void cHardwareExperimental::PrintStatus(ostream& fp)
+void cHardwareMBE::PrintStatus(ostream& fp)
 {
   fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "THREAD:" << m_cur_thread << "  ";
@@ -778,7 +639,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    sInternalValue& reg = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[i];
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
     fp << setbase(16) << "[0x" << reg.value <<  "] " << setbase(10);
     fp << "(" << reg.from_env << " " << reg.env_component << " " << reg.originated << " " << reg.oldest_component << ")  ";
@@ -810,24 +671,10 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   << "  " << m_memory.AsString()
   << endl;
   
-  
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
-  {
-    fp << "Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
-    fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
-    for (int i=0; i<m_promoters.GetSize(); i++)
-    {
-      fp << setfill(' ') << setbase(10) << m_promoters[i].pos << ":";
-      fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].GetRegulatedBitCode()) << " "; 
-    }
-    fp << endl;    
-    fp << setfill(' ') << setbase(10) << endl;
-  }    
-  
   fp.flush();
 }
 
-void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype)
+void cHardwareMBE::SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype)
 {
   const Genome& in_genome = m_organism->GetGenome();
   ConstInstructionSequencePtr in_seq_p;
@@ -869,13 +716,13 @@ void cHardwareExperimental::SetupMiniTraceFileHeader(const cString& filename, co
   df.Endl();
 }
 
-void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+void cHardwareMBE::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
 {
   // basic status info
   fp << m_cycle_count << " ";
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    sInternalValue& reg = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[i];
     fp << GetRegister(i) << " ";
     fp << "(" << reg.originated << ") ";
   }    
@@ -934,14 +781,14 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   else fp << "NoMods" << " ";
 }
 
-void cHardwareExperimental::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
+void cHardwareMBE::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
 {
   fp << exec_sucess;
   fp << endl;
   fp.flush();
 }
 
-cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
+cHeadCPU cHardwareMBE::FindLabelStart(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
@@ -987,7 +834,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
   return ip;
 }
 
-cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
+cHeadCPU cHardwareMBE::FindNopSequenceStart(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
@@ -1030,7 +877,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
 }
 
 
-cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
+cHeadCPU cHardwareMBE::FindLabelForward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
@@ -1080,7 +927,7 @@ cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
   return ip;
 }
 
-cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
+cHeadCPU cHardwareMBE::FindLabelBackward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
@@ -1131,7 +978,7 @@ cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
 
 
 
-cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
+cHeadCPU cHardwareMBE::FindNopSequenceForward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
@@ -1181,7 +1028,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
 }
 
 
-cHeadCPU cHardwareExperimental::FindNopSequenceBackward(bool mark_executed)
+cHeadCPU cHardwareMBE::FindNopSequenceBackward(bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
@@ -1230,7 +1077,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceBackward(bool mark_executed)
   return ip;
 }
 
-void cHardwareExperimental::ReadInst(Instruction in_inst)
+void cHardwareMBE::ReadInst(Instruction in_inst)
 {
   bool is_nop = m_inst_set->IsNop(in_inst);
   
@@ -1255,7 +1102,7 @@ void cHardwareExperimental::ReadInst(Instruction in_inst)
   }
 }
 
-void cHardwareExperimental::AdjustHeads()
+void cHardwareMBE::AdjustHeads()
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_HEADS; j++) {
@@ -1264,12 +1111,11 @@ void cHardwareExperimental::AdjustHeads()
   }
 }
 
-
 // This function looks at the current position in the info of a creature,
 // and sets the next_label to be the sequence of nops which follows.  The
 // instruction pointer is left on the last line of the label found.
 
-void cHardwareExperimental::ReadLabel(int max_size)
+void cHardwareMBE::ReadLabel(int max_size)
 {
   int count = 0;
   cHeadCPU * inst_ptr = &( getIP() );
@@ -1289,7 +1135,7 @@ void cHardwareExperimental::ReadLabel(int max_size)
   }
 }
 
-bool cHardwareExperimental::ForkThread()
+bool cHardwareMBE::ForkThread()
 {
   const int num_threads = m_threads.GetSize();
   if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
@@ -1311,7 +1157,7 @@ bool cHardwareExperimental::ForkThread()
   return true;
 }
 
-bool cHardwareExperimental::ExitThread()
+bool cHardwareMBE::ExitThread()
 {
   // Make sure that there is always at least one thread awake...
   if ((m_threads.GetSize() == 1) || (int(m_waiting_threads) == (m_threads.GetSize() - 1))) return false;
@@ -1337,18 +1183,11 @@ bool cHardwareExperimental::ExitThread()
   return true;
 }
 
-bool cHardwareExperimental::Inst_IdThread(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, GetCurThreadID(), false);
-  return true;
-}
-
 ////////////////////////////
 //  Instruction Helpers...
 ////////////////////////////
 
-inline int cHardwareExperimental::FindModifiedRegister(int default_register)
+inline int cHardwareMBE::FindModifiedRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1360,7 +1199,7 @@ inline int cHardwareExperimental::FindModifiedRegister(int default_register)
   return default_register;
 }
 
-inline int cHardwareExperimental::FindModifiedNextRegister(int default_register)
+inline int cHardwareMBE::FindModifiedNextRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1374,7 +1213,7 @@ inline int cHardwareExperimental::FindModifiedNextRegister(int default_register)
   return default_register;
 }
 
-inline int cHardwareExperimental::FindModifiedPreviousRegister(int default_register)
+inline int cHardwareMBE::FindModifiedPreviousRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
@@ -1389,7 +1228,7 @@ inline int cHardwareExperimental::FindModifiedPreviousRegister(int default_regis
 }
 
 
-inline int cHardwareExperimental::FindModifiedHead(int default_head)
+inline int cHardwareMBE::FindModifiedHead(int default_head)
 {
   assert(default_head < NUM_HEADS); // Head ID too high.
   
@@ -1402,19 +1241,19 @@ inline int cHardwareExperimental::FindModifiedHead(int default_head)
 }
 
 
-inline int cHardwareExperimental::FindNextRegister(int base_reg)
+inline int cHardwareMBE::FindNextRegister(int base_reg)
 {
   return (base_reg + 1) % NUM_REGISTERS;
 }
 
 
-bool cHardwareExperimental::Allocate_Necro(const int new_size)
+bool cHardwareMBE::Allocate_Necro(const int new_size)
 {
   m_memory.ResizeOld(new_size);
   return true;
 }
 
-bool cHardwareExperimental::Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size)
+bool cHardwareMBE::Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size)
 {
   m_memory.Resize(new_size);
   
@@ -1424,7 +1263,7 @@ bool cHardwareExperimental::Allocate_Random(cAvidaContext& ctx, const int old_si
   return true;
 }
 
-bool cHardwareExperimental::Allocate_Default(const int new_size)
+bool cHardwareMBE::Allocate_Default(const int new_size)
 {
   m_memory.Resize(new_size);
   
@@ -1433,7 +1272,7 @@ bool cHardwareExperimental::Allocate_Default(const int new_size)
   return true;
 }
 
-bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
+bool cHardwareMBE::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
   if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) {
@@ -1491,7 +1330,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   return true;
 }
 
-int cHardwareExperimental::calcCopiedSize(const int parent_size, const int child_size)
+int cHardwareMBE::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
   for (int i = parent_size; i < parent_size + child_size; i++) {
@@ -1500,7 +1339,7 @@ int cHardwareExperimental::calcCopiedSize(const int parent_size, const int child
   return copied_size;
 }  
 
-bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point, const int extra_lines, double mut_multiplier)
+bool cHardwareMBE::Divide_Main(cAvidaContext& ctx, const int div_point, const int extra_lines, double mut_multiplier)
 {
   const int child_size = m_memory.GetSize() - div_point - extra_lines;
   
@@ -1549,12 +1388,12 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   return true;
 }
 
-void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
+void cHardwareMBE::checkWaitingThreads(int cur_thread, int reg_num)
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     if (i != cur_thread && !m_threads[i].active && int(m_threads[i].wait_reg) == reg_num) {
       int wait_value = m_threads[i].wait_value;
-      int check_value = m_threads[cur_thread].reg[reg_num].value;
+      int check_value = m_threads[cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num].value;
       if ((m_threads[i].wait_greater && check_value > wait_value) ||
           (m_threads[i].wait_equal && check_value == wait_value) ||
           (m_threads[i].wait_less && check_value < wait_value)) {
@@ -1564,12 +1403,12 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
         m_waiting_threads--;
         
         // Set destination register to be the check value
-        sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
+        sInternalValue& dest = m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[m_threads[i].wait_dst];
         dest.value = check_value;
         dest.from_env = false;
         dest.originated = m_cycle_count;
-        dest.oldest_component = m_threads[cur_thread].reg[reg_num].oldest_component;
-        dest.env_component = m_threads[cur_thread].reg[reg_num].env_component;
+        dest.oldest_component = m_threads[cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num].oldest_component;
+        dest.env_component = m_threads[cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num].env_component;
         
         // Cascade check
         if (m_waiting_threads) checkWaitingThreads(i, m_threads[i].wait_dst);
@@ -1581,86 +1420,41 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
 //////////////////////////
 // And the instructions...
 //////////////////////////
-
 // Multi-threading.
-bool cHardwareExperimental::Inst_ForkThread(cAvidaContext&)
+bool cHardwareMBE::Inst_ForkThread(cAvidaContext&)
 {
   getIP().Advance();
   if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   return true;
 }
 
-bool cHardwareExperimental::InterruptThread(int interruptType)
-{
-  // Will interrupt be successful? i.e. is head instruction present
-  cString handlerHeadInstructionString;
-  int interruptMsgType = -1;
-
-  switch (interruptType) {
-  case MSG_INTERRUPT:
-    interruptMsgType = GetOrganism()->PeekAtNextMessageType();
-    handlerHeadInstructionString.Set("msg-handler-type%d", interruptMsgType);
-    break;
-  case MOVE_INTERRUPT:
-    handlerHeadInstructionString.Set("moved-handler");
-    break;
-  default:
-    cerr << "Unknown interrupt type " << interruptType << "  Exitting.\n\n";
-    exit(-1);
-    break;
-  }
-
-  const Instruction label_inst = GetInstSet().GetInst(handlerHeadInstructionString);
-
-  cHeadCPU search_head(IP());
-  int start_pos = search_head.GetPosition();
-  search_head++;
-
-  while (start_pos != search_head.GetPosition()) {
-    if (search_head.GetInst() == label_inst) { // found handlerHeadInstructionString
-      search_head++; // one instruction past instruction
-      break;
-    }
-    search_head++;
-  }
-
-  if (start_pos == search_head.GetPosition()) return false;
-
-  if (ForkThread()) {
-    const int num_threads = m_threads.GetSize() - 1;
-    m_threads[num_threads].setMessageTriggerType(interruptMsgType);
-
-    int old_thread = m_cur_thread;
-    m_cur_thread = num_threads;
-
-    // move all heads to one past beginning of interrupt
-    for (int i = 0; i < NUM_HEADS; i++) {
-      GetHead(i).Set(search_head.GetPosition());
-    }
-
-    switch (interruptType) {
-    case MSG_INTERRUPT:
-      IP().Retreat();
-      Inst_RetrieveMessage(m_world->GetDefaultContext());
-      IP().Advance();
-      break;
-    case MOVE_INTERRUPT:
-      break;
-    }
-    m_cur_thread = old_thread;
-    return true;
-  }
-  return false;
-}
-
-bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ExitThread(cAvidaContext& ctx)
 {
   if (!ExitThread()) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
   else m_advance_ip = false;
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
+bool cHardwareMBE::Inst_IdThread(cAvidaContext&)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, GetCurThreadID(), false);
+  return true;
+}
+
+bool cHardwareMBE::Inst_SetBehavior(cAvidaContext&)
+{
+  const int reg_used = FindModifiedRegister(rAX);
+  int behavior = (reg_used % NUM_BEHAVIORS) % NUM_REGISTERS;
+  
+  if (m_inst_set->IsNop(getIP().GetNextInst())) m_threads[m_cur_thread].SetCurrBehav(behavior);
+  else m_threads[m_cur_thread].SetCurrBehav((m_threads[m_cur_thread].GetCurrBehav() + 1) % NUM_BEHAVIORS);
+  
+  setInternalValue(reg_used, m_threads[m_cur_thread].GetCurrBehav(), false);
+  return true;
+}
+
+bool cHardwareMBE::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1668,7 +1462,7 @@ bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext&) // Execute next if bx !=
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? < ?cx?
+bool cHardwareMBE::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -1676,26 +1470,26 @@ bool cHardwareExperimental::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? 
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfNotZero(cAvidaContext&)  // Execute next if ?bx? != 0
+bool cHardwareMBE::Inst_IfNotZero(cAvidaContext&)  // Execute next if ?bx? != 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) == 0)  getIP().Advance();
   return true;
 }
-bool cHardwareExperimental::Inst_IfEqualZero(cAvidaContext&)  // Execute next if ?bx? == 0
+bool cHardwareMBE::Inst_IfEqualZero(cAvidaContext&)  // Execute next if ?bx? == 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) != 0)  getIP().Advance();
   return true;
 }
-bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute next if ?bx? > 0
+bool cHardwareMBE::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) <= 0)  getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLessThanZero(cAvidaContext&)  // Execute next if ?bx? < 0
+bool cHardwareMBE::Inst_IfLessThanZero(cAvidaContext&)  // Execute next if ?bx? < 0
 {
   const int op1 = FindModifiedRegister(rBX);
   if (GetRegister(op1) >= 0)  getIP().Advance();
@@ -1703,7 +1497,7 @@ bool cHardwareExperimental::Inst_IfLessThanZero(cAvidaContext&)  // Execute next
 }
 
 
-bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext&)       // Execute next if BX > X; X value set according to NOP label
+bool cHardwareMBE::Inst_IfGtrX(cAvidaContext&)       // Execute next if BX > X; X value set according to NOP label
 {
   // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
   //    no nop label (default): valueToCompare = 1;
@@ -1729,7 +1523,7 @@ bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext&)       // Execute next if
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X; X value set according to NOP label
+bool cHardwareMBE::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X; X value set according to NOP label
 {
   // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
   //    no nop label (default): valueToCompare = 1;
@@ -1755,52 +1549,7 @@ bool cHardwareExperimental::Inst_IfEquX(cAvidaContext&)       // Execute next if
   return true;
 }
 
-
-
-bool cHardwareExperimental::Inst_IfConsensus(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  if (BitCount(GetRegister(op1)) <  CONSENSUS)  getIP().Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_IfConsensus24(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  getIP().Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_IfLessConsensus(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  const int op2 = FindModifiedNextRegister(op1);
-  if (BitCount(GetRegister(op1)) >=  BitCount(GetRegister(op2)))  getIP().Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_IfLessConsensus24(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  const int op2 = FindModifiedNextRegister(op1);
-  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24))  getIP().Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_IfStackGreater(cAvidaContext&)
-{
-  int cur_stack = m_threads[m_cur_thread].cur_stack;
-  if (getStack(cur_stack).Peek().value <=  getStack(!cur_stack).Peek().value)  getIP().Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Label(cAvidaContext&)
-{
-  ReadLabel();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Pop(cAvidaContext&)
+bool cHardwareMBE::Inst_Pop(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   sInternalValue pop = stackPop();
@@ -1808,14 +1557,14 @@ bool cHardwareExperimental::Inst_Pop(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Push(cAvidaContext&)
+bool cHardwareMBE::Inst_Push(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
+  getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
   return true;
 }
 
-bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
+bool cHardwareMBE::Inst_PopAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -1827,20 +1576,20 @@ bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_PushAll(cAvidaContext&)
+bool cHardwareMBE::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
+    getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }
   return true;
 }
 
-bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext&) { switchStack(); return true; }
+bool cHardwareMBE::Inst_SwitchStack(cAvidaContext&) { switchStack(); return true; }
 
-bool cHardwareExperimental::Inst_SwapStackTop(cAvidaContext&)
+bool cHardwareMBE::Inst_SwapStackTop(cAvidaContext&)
 {
   sInternalValue v0 = getStack(0).Pop();
   sInternalValue v1 = getStack(1).Pop();
@@ -1849,106 +1598,104 @@ bool cHardwareExperimental::Inst_SwapStackTop(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Swap(cAvidaContext&)
+bool cHardwareMBE::Inst_Swap(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue v1 = m_threads[m_cur_thread].reg[op1];
-  m_threads[m_cur_thread].reg[op1] = m_threads[m_cur_thread].reg[op2];
-  m_threads[m_cur_thread].reg[op2] = v1;
+  sInternalValue v1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1] =
+      m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
+  m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2] = v1;
   return true;
 }
 
-bool cHardwareExperimental::Inst_ShiftR(cAvidaContext&)
+bool cHardwareMBE::Inst_ShiftR(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1, m_threads[m_cur_thread].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value >> 1,
+      m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
   return true;
 }
 
-bool cHardwareExperimental::Inst_ShiftL(cAvidaContext&)
+bool cHardwareMBE::Inst_ShiftL(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1, m_threads[m_cur_thread].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value << 1,
+      m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
   return true;
 }
 
 
-bool cHardwareExperimental::Inst_Inc(cAvidaContext&)
+bool cHardwareMBE::Inst_Inc(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1, m_threads[m_cur_thread].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value + 1,
+      m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Dec(cAvidaContext&)
+bool cHardwareMBE::Inst_Dec(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1, m_threads[m_cur_thread].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value - 1,
+      m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Zero(cAvidaContext&)
+bool cHardwareMBE::Inst_Zero(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 0, false);
   return true;
 }
 
-bool cHardwareExperimental::Inst_One(cAvidaContext&)
+bool cHardwareMBE::Inst_One(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 1, false);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Mult100(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value * 100, false);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Add(cAvidaContext&)
+bool cHardwareMBE::Inst_Add(cAvidaContext&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
   setInternalValue(dst, r1.value + r2.value, r1, r2);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Sub(cAvidaContext&)
+bool cHardwareMBE::Inst_Sub(cAvidaContext&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
   setInternalValue(dst, r1.value - r2.value, r1, r2);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Mult(cAvidaContext&)
+bool cHardwareMBE::Inst_Mult(cAvidaContext&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
   setInternalValue(dst, r1.value * r2.value, r1, r2);
   return true;
 }
 
-bool cHardwareExperimental::Inst_Div(cAvidaContext&)
+bool cHardwareMBE::Inst_Div(cAvidaContext&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
   if (r2.value != 0) {
     if (0 - INT_MAX > r1.value && r2.value == -1)
       m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
@@ -1961,13 +1708,13 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
+bool cHardwareMBE::Inst_Mod(cAvidaContext&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
   if (r2.value != 0) {
     setInternalValue(dst, r1.value % r2.value, r1, r2);
   } else {
@@ -1978,18 +1725,18 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
 }
 
 
-bool cHardwareExperimental::Inst_Nand(cAvidaContext&)
+bool cHardwareMBE::Inst_Nand(cAvidaContext&)
 {
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[op2];
   setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate maximal more
+bool cHardwareMBE::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = FindModifiedRegister(rAX);
   const int cur_size = m_memory.GetSize();
@@ -2001,10 +1748,10 @@ bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate max
   } else return false;
 }
 
-bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_TaskIO(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  sInternalValue& reg = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -2018,27 +1765,7 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  
-  if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
-  
-  // Do the "put" component
-  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
-  m_last_output = m_cycle_count;  
-  
-  // Do the "get" component
-  const int value_in = m_organism->GetNextInput();
-  setInternalValue(reg_used, value_in, true);
-  m_organism->DoInput(value_in);
-  
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
+bool cHardwareMBE::Inst_TaskInput(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   
@@ -2050,10 +1777,10 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_TaskOutput(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  sInternalValue& reg = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -2062,53 +1789,7 @@ bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  
-  // Do the "put" component
-  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
-  m_last_output = m_cycle_count;
-  
-  setInternalValue(reg_used, 0);
-  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-  
-  if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
-  
-  // Do the "put" component
-  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
-  m_last_output = m_cycle_count;
-  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_DemeIO(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
-
-  // Do deme output..
-  m_organism->GetOrgInterface().DoDemeOutput(ctx, reg.value);
-  //m_last_output = m_cycle_count; //**
-
-  // Do deme input..
-  int value_in = m_organism->GetOrgInterface().GetNextDemeInput(ctx);
-  if (value_in != -1) {
-    setInternalValue(reg_used, value_in, true);
-    m_organism->GetOrgInterface().DoDemeInput(value_in);
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_MoveHead(cAvidaContext&)
+bool cHardwareMBE::Inst_MoveHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int target = FindModifiedHead(nHardware::HEAD_FLOW);
@@ -2117,99 +1798,16 @@ bool cHardwareExperimental::Inst_MoveHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_MoveHeadIfNEqu(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  const int op2 = FindModifiedNextRegister(op1);
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
-  if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
-    getHead(head_used).Set(getHead(target));
-    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_MoveHeadIfLess(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  const int op2 = FindModifiedNextRegister(op1);
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
-  if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
-    getHead(head_used).Set(getHead(target));
-    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
-  }
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_Goto(cAvidaContext&)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  getIP().Set(found_pos);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GotoIfNEqu(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  const int op2 = FindModifiedNextRegister(op1);
-  ReadLabel();
-  if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
-    cHeadCPU found_pos = FindLabelForward(true);
-    getIP().Set(found_pos);
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GotoIfLess(cAvidaContext&)
-{
-  const int op1 = FindModifiedRegister(rBX);
-  const int op2 = FindModifiedNextRegister(op1);
-  ReadLabel();
-  if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
-    cHeadCPU found_pos = FindLabelForward(true);
-    getIP().Set(found_pos);
-  }
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext&)
-{
-  if (BitCount(GetRegister(rBX)) < CONSENSUS) return true;
-  
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelForward(true);
-  getIP().Set(found_pos);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext&)
-{
-  if (BitCount(GetRegister(rBX) & MASK24) < CONSENSUS24) return true;
-  
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelForward(true);
-  getIP().Set(found_pos);
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_JumpHead(cAvidaContext&)
+bool cHardwareMBE::Inst_JumpHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
-  getHead(head_used).Jump(m_threads[m_cur_thread].reg[reg].value);
+  getHead(head_used).Jump(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg].value);
   if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetHead(cAvidaContext&)
+bool cHardwareMBE::Inst_GetHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int reg = FindModifiedRegister(rCX);
@@ -2217,7 +1815,7 @@ bool cHardwareExperimental::Inst_GetHead(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedCompLabel(cAvidaContext&)
+bool cHardwareMBE::Inst_IfCopiedCompLabel(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2225,14 +1823,14 @@ bool cHardwareExperimental::Inst_IfCopiedCompLabel(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedDirectLabel(cAvidaContext&)
+bool cHardwareMBE::Inst_IfCopiedDirectLabel(cAvidaContext&)
 {
   ReadLabel();
   if (GetLabel() != GetReadLabel())  getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedCompSeq(cAvidaContext&)
+bool cHardwareMBE::Inst_IfCopiedCompSeq(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2240,14 +1838,14 @@ bool cHardwareExperimental::Inst_IfCopiedCompSeq(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCopiedDirectSeq(cAvidaContext&)
+bool cHardwareMBE::Inst_IfCopiedDirectSeq(cAvidaContext&)
 {
   ReadLabel();
   if (GetLabel() != GetReadSequence())  getIP().Advance();
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_HeadDivide(cAvidaContext& ctx)
 {
   m_organism->GetPhenotype().SetDivideSex(false);
   m_organism->GetPhenotype().SetCrossNum(0);
@@ -2263,23 +1861,7 @@ bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
   return ret_val; 
 }
 
-bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)  
-{ 
-  m_organism->GetPhenotype().SetDivideSex(true);
-  m_organism->GetPhenotype().SetCrossNum(1);
-  
-  AdjustHeads();
-  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = m_memory.GetSize();
-  const int extra_lines = m_memory.GetSize() - child_end;
-  bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, 1.0);
-  // Re-adjust heads.
-  AdjustHeads();
-  return ret_val; 
-}
-
-bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_HeadRead(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   const int dst = FindModifiedRegister(rAX);  
@@ -2302,7 +1884,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_HeadWrite(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   const int src = FindModifiedRegister(rAX);
@@ -2310,7 +1892,7 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   
   active_head.Adjust();
   
-  int value = m_threads[m_cur_thread].reg[src].value;
+  int value = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[src].value;
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
   
   active_head.SetInst(Instruction(value));
@@ -2327,7 +1909,7 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
   cHeadCPU& read_head = getHead(nHardware::HEAD_READ);
@@ -2363,64 +1945,7 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Label_Comp_S(cAvidaContext&)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Search_Label_Comp_F(cAvidaContext&)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Search_Label_Comp_B(cAvidaContext&)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Search_Label_Direct_S(cAvidaContext&)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Search_Label_Direct_F(cAvidaContext&)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Search_Label_Direct_B(cAvidaContext&)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_Search_Seq_Comp_S(cAvidaContext&)
+bool cHardwareMBE::Inst_Search_Seq_Comp_S(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2430,7 +1955,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Comp_F(cAvidaContext&)
+bool cHardwareMBE::Inst_Search_Seq_Comp_F(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2440,7 +1965,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_F(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Comp_B(cAvidaContext&)
+bool cHardwareMBE::Inst_Search_Seq_Comp_B(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -2450,7 +1975,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Comp_B(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Direct_S(cAvidaContext&)
+bool cHardwareMBE::Inst_Search_Seq_Direct_S(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceStart(true);
@@ -2459,7 +1984,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_S(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Direct_F(cAvidaContext&)
+bool cHardwareMBE::Inst_Search_Seq_Direct_F(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceForward(true);
@@ -2468,7 +1993,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_F(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Search_Seq_Direct_B(cAvidaContext&)
+bool cHardwareMBE::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceBackward(true);
@@ -2477,17 +2002,7 @@ bool cHardwareExperimental::Inst_Search_Seq_Direct_B(cAvidaContext&)
   return true;
 }
 
-
-bool cHardwareExperimental::Inst_SetFlow(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rCX);
-  getHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
-  return true; 
-}
-
-
-
-bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext&)
+bool cHardwareMBE::Inst_WaitCondition_Equal(cAvidaContext&)
 {
   const int wait_value = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
@@ -2495,8 +2010,10 @@ bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext&)
   
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (i != m_cur_thread && m_threads[i].reg[check_reg].value == m_threads[m_cur_thread].reg[wait_value].value) {
-      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+    if (i != m_cur_thread && m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg].value ==
+          m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg].value,
+            m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg]);
       return true;
     }
   }  
@@ -2510,13 +2027,13 @@ bool cHardwareExperimental::Inst_WaitCondition_Equal(cAvidaContext&)
   m_threads[m_cur_thread].wait_less = false;
   m_threads[m_cur_thread].wait_greater = false;
   m_threads[m_cur_thread].wait_reg = check_reg;
-  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[wait_value].value;
   m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
 }
 
-bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext&)
+bool cHardwareMBE::Inst_WaitCondition_Less(cAvidaContext&)
 {
   const int wait_value = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
@@ -2524,8 +2041,10 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext&)
   
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (i != m_cur_thread && m_threads[i].reg[check_reg].value < m_threads[m_cur_thread].reg[wait_value].value) {
-      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+    if (i != m_cur_thread && m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg].value <
+            m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg].value,
+                m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg]);
       return true;
     }
   }
@@ -2540,13 +2059,13 @@ bool cHardwareExperimental::Inst_WaitCondition_Less(cAvidaContext&)
   m_threads[m_cur_thread].wait_less = true;
   m_threads[m_cur_thread].wait_greater = false;
   m_threads[m_cur_thread].wait_reg = check_reg;
-  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[wait_value].value;
   m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
 }
 
-bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
+bool cHardwareMBE::Inst_WaitCondition_Greater(cAvidaContext&)
 {
   const int wait_value = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
@@ -2554,8 +2073,10 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
   
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (i != m_cur_thread && m_threads[i].reg[check_reg].value > m_threads[m_cur_thread].reg[wait_value].value) {
-      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
+    if (i != m_cur_thread && m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg].value >
+            m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg].value,
+              m_threads[i].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[check_reg]);
       return true;
     }
   }
@@ -2570,310 +2091,13 @@ bool cHardwareExperimental::Inst_WaitCondition_Greater(cAvidaContext&)
   m_threads[m_cur_thread].wait_less = false;
   m_threads[m_cur_thread].wait_greater = true;
   m_threads[m_cur_thread].wait_reg = check_reg;
-  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_value].value;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[wait_value].value;
   m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
 }
 
-
-// --------  Promoter Model  --------
-
-bool cHardwareExperimental::Inst_Promoter(cAvidaContext&)
-{
-  // Promoters don't do anything themselves
-  return true;
-}
-
-
-// Move the instruction ptr to the next active promoter
-bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
-{
-  PromoterTerminate(ctx);
-  return true;
-}
-
-// Move the instruction ptr to the next active promoter
-bool cHardwareExperimental::Inst_TerminateConsensus(cAvidaContext& ctx)
-{
-  const int op1 = FindModifiedRegister(rDX);
-  if (BitCount(GetRegister(op1)) <  CONSENSUS)  PromoterTerminate(ctx);
-  return true;
-}
-
-// Move the instruction ptr to the next active promoter
-bool cHardwareExperimental::Inst_TerminateConsensus24(cAvidaContext& ctx)
-{
-  const int op1 = FindModifiedRegister(rDX);
-  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  PromoterTerminate(ctx);
-  return true;
-}
-
-// Set a new regulation code (which is XOR'ed with ALL promoter codes).
-bool cHardwareExperimental::Inst_Regulate(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  int regulation_code = GetRegister(reg_used);
-  
-  for (int i = 0; i < m_promoters.GetSize(); i++) m_promoters[i].regulation = regulation_code;
-  
-  return true;
-}
-
-// Set a new regulation code, but only on a subset of promoters.
-bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  const int reg_promoter = FindModifiedNextRegister(reg_used);
-  
-  int regulation_code = GetRegister(reg_used);
-  int regulation_promoter = GetRegister(reg_promoter);
-  
-  for (int i = 0; i < m_promoters.GetSize(); i++) {
-    
-    // @DMB - should this always be using the low order bits?
-    
-    // Look for consensus bit matches over the length of the promoter code
-    int test_p_code = m_promoters[i].bit_code;    
-    int test_r_code = regulation_promoter;
-    int bit_count = 0;
-    for (int j = 0; j < m_world->GetConfig().PROMOTER_EXE_LENGTH.Get(); j++) {      
-      if ((test_p_code & 1) == (test_r_code & 1)) bit_count++;
-      test_p_code >>= 1;
-      test_r_code >>= 1;
-    }
-    
-    if (bit_count >= m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() / 2) m_promoters[i].regulation = regulation_code;
-  }
-  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
-{
-  unsigned int bits = 0;
-  const Apto::Array<double> & res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  assert (res_count.GetSize() != 0);
-  for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
-  {
-    int b = i % res_count.GetSize();
-    bits <<= 1;
-    bits += (res_count[b] != 0);
-  }  
-  
-  for (int i=0; i< m_promoters.GetSize();i++)
-  {
-    m_promoters[i].regulation = bits;
-  }
-  return true;
-}
-
-// Create a number from inst bit codes
-bool cHardwareExperimental::Do_Numberate(cAvidaContext&, int num_bits)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  
-  // advance the IP now, so that it rests on the beginning of our number
-  getIP().Advance();
-  m_advance_ip = false;
-  
-  int num = Numberate(getIP().GetPosition(), +1, num_bits);
-  setInternalValue(reg_used, num);
-  return true;
-}
-
-void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
-{
-  // Optionally,
-  // Reset the thread.
-  if (m_world->GetConfig().TERMINATION_RESETS.Get())
-  {
-    m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-    
-    //Setting this makes it harder to do things. You have to be modular.
-    m_organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
-    m_organism->ClearInput();                         // Also clear their input buffers, or they can still claim
-                                                      // rewards for numbers no longer in their environment!
-  }
-  
-  // Reset our count
-  m_threads[m_cur_thread].ResetPromoterInstExecuted();
-  m_advance_ip = false;
-  const int promoter_reg_used = rDX; // register to put chosen promoter code in, default to DX
-  
-  
-  // @DMB - should the promoter index and offset be stored in cLocalThread to allow multiple threads?
-  
-  // Search for an active promoter  
-  int start_offset = m_promoter_offset;
-  int start_index  = m_promoter_index;
-  
-  
-  bool no_promoter_found = true;
-  if (m_promoters.GetSize() > 0) {
-    const int promoter_exe_length = m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
-    const int promoter_code_size = m_world->GetConfig().PROMOTER_CODE_SIZE.Get();
-    const int promoter_exe_threshold = m_world->GetConfig().PROMOTER_EXE_THRESHOLD.Get();
-    
-    while (true) {
-      // If the next promoter is active, then break out
-      
-      // Move promoter index, rolling over if necessary
-      m_promoter_index++;
-      
-      if (m_promoter_index == m_promoters.GetSize()) {
-        m_promoter_index = 0;
-        
-        // Move offset, rolling over when there are not enough bits before we would have to wrap around left
-        m_promoter_offset += promoter_exe_length;
-        if (m_promoter_offset + promoter_exe_length > promoter_code_size) m_promoter_offset = 0;
-      }
-      
-      
-      int count = 0;
-      unsigned int code = m_promoters[m_promoter_index].GetRegulatedBitCode();
-      for (int i = 0; i < promoter_exe_length; i++) {
-        // @DMB - changed the following to avoid integer division. We should only ever need to circle around once
-        //int offset = (m_promoter_offset + i) % promoter_code_size;
-        int offset = m_promoter_offset + i;
-        if (offset >= promoter_code_size) offset -= promoter_code_size;
-        int state = code >> offset;
-        count += (state & 1);
-      }
-      
-      if (count >= promoter_exe_threshold) {
-        no_promoter_found = false;
-        break;
-      }
-      
-      // If we just checked the promoter that we were originally on, then there
-      // are no active promoters.
-      if ((start_offset == m_promoter_offset) && (start_index == m_promoter_index)) break;
-      
-      // If we originally were not on a promoter, then stop once we check the
-      // first promoter and an offset of zero
-      if (start_index == -1) start_index = 0;
-    } 
-  }
-  
-  if (no_promoter_found) {
-    switch (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get()) {
-      case 0:
-      case 2:
-        // Set defaults for when no active promoter is found
-        m_promoter_index = -1;
-        getIP().Set(0);
-        setInternalValue(promoter_reg_used, 0);
-        break;
-        
-      case 1: // Death to organisms that refuse to use promoters!
-        m_organism->Die(ctx);
-        break;
-        
-      default:
-        cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
-        exit(1);
-        break;
-    }
-  } else {
-    // We found an active match, offset to just after it.
-    // cHeadCPU will do the mod genome size for us
-    getIP().Set(m_promoters[m_promoter_index].pos + 1);
-    
-    // Put its bit code in BX for the organism to have if option is set
-    if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
-      setInternalValue(promoter_reg_used, m_promoters[m_promoter_index].bit_code);
-  }  
-}
-
-// Construct a promoter bit code from instruction bit codes
-int cHardwareExperimental::Numberate(int _pos, int _dir, int _num_bits)
-{  
-  int code_size = 0;
-  unsigned int code = 0;
-  unsigned int max_bits = sizeof(code) * 8;
-  assert(_num_bits <= (int)max_bits);
-  if (_num_bits == 0) _num_bits = max_bits;
-  
-  // Enforce a boundary, sometimes -1 can be passed for _pos
-  int j = _pos + m_memory.GetSize();
-  j %= m_memory.GetSize();
-  assert(j >=0);
-  assert(j < m_memory.GetSize());
-  while (code_size < _num_bits)
-  {
-    unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode(m_memory[j]);
-    // shift bits in, one by one ... excuse the counter variable pun
-    for (int code_on = 0; (code_size < _num_bits) && (code_on < m_world->GetConfig().INST_CODE_LENGTH.Get()); code_on++)
-    {
-      if (_dir < 0)
-      {
-        code >>= 1; // shift first so we don't go one too far at the end
-        code += (1 << (_num_bits - 1)) * (inst_code & 1);
-        inst_code >>= 1; 
-      }
-      else
-      {
-        code <<= 1; // shift first so we don't go one too far at the end;        
-        code += (inst_code >> (m_world->GetConfig().INST_CODE_LENGTH.Get() - 1)) & 1;
-        inst_code <<= 1; 
-      }
-      code_size++;
-    }
-    
-    // move back one inst
-    j += m_memory.GetSize() + _dir;
-    j %= m_memory.GetSize();
-    
-  }
-  
-  return code;
-}
-
-/*! 
- Sets BX to 1 if >=50% of the bits in the specified register places
- are 1's and zero otherwise.
- */
-
-bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  const int op1 = FindModifiedNextRegister(reg_used);
-  sInternalValue& val = m_threads[m_cur_thread].reg[op1];
-  
-  setInternalValue(reg_used, (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
-  return true; 
-}
-
-// Looks at only the lower 24 bits
-bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  const int op1 = FindModifiedNextRegister(reg_used);
-  sInternalValue& val = m_threads[m_cur_thread].reg[op1];
-  
-  setInternalValue(reg_used, (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
-  return true; 
-}
-
-// Create a number from inst bit codes of the previously executed instructions
-bool cHardwareExperimental::Inst_Execurate(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_threads[m_cur_thread].GetExecurate());
-  return true;
-}
-
-// Create a number from inst bit codes of the previously executed instructions, truncated to 24 bits
-bool cHardwareExperimental::Inst_Execurate24(cAvidaContext&)
-{
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, (MASK24 & m_threads[m_cur_thread].GetExecurate()));
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_Repro(cAvidaContext& ctx)
 {
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
@@ -2944,98 +2168,14 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_Die(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die(ctx);
   
   return true;
 }
 
-
-bool cHardwareExperimental::Inst_SGMove(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  
-  const cStateGrid& sg = m_organism->GetStateGrid();
-  
-  int& x = m_ext_mem[0];
-  int& y = m_ext_mem[1];
-  
-  const int facing = m_ext_mem[2];
-  
-  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
-  switch (facing) {
-    case 0: // N
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    case 1: // NE
-      if (++x == sg.GetWidth()) x = 0;
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    case 2: // E
-      if (++x == sg.GetWidth()) x = 0;
-      break;
-      
-    case 3: // SE
-      if (++x == sg.GetWidth()) x = 0;
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 4: // S
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 5: // SW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (--y == -1) y = sg.GetHeight() - 1;
-      break;
-      
-    case 6: // W
-      if (--x == -1) x = sg.GetWidth() - 1;
-      break;
-      
-    case 7: // NW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (++y == sg.GetHeight()) y = 0;
-      break;
-      
-    default:
-      assert(facing >= 0 && facing <= 7);
-  }
-  
-  // Increment state observed count
-  m_ext_mem[3 + sg.GetStateAt(x, y)]++;
-  
-  // Save this location in the movement history
-  m_ext_mem.Push(sg.GetIDFor(x, y));
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SGRotateL(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  if (--m_ext_mem[2] < 0) m_ext_mem[2] = 7;
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SGRotateR(cAvidaContext&)
-{
-  assert(m_ext_mem.GetSize() > 3);
-  if (++m_ext_mem[2] > 7) m_ext_mem[2] = 0;
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SGSense(cAvidaContext&)
-{
-  const cStateGrid& sg = m_organism->GetStateGrid();
-  const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
-  return true; 
-}
-
-bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_Move(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
@@ -3048,7 +2188,7 @@ bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_JuvMove(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
@@ -3065,104 +2205,7 @@ bool cHardwareExperimental::Inst_JuvMove(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RangeMove(cAvidaContext& ctx)
-{
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  // In TestCPU, movement fails...
-  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
-  assert(m_organism != 0);
-  
-  bool safe_passage = true;
-  bool move_success = false;
-  int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_use_avatar == 2) faced_range = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
-  int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_use_avatar == 2) marked_update = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  if (faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
-      ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
-        safe_passage = false;
-      }
-  
-  if (safe_passage) {
-    if (!m_use_avatar) move_success = m_organism->Move(ctx);
-    else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
-  }
-  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, move_success, true);  
-  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
-{
-  if (m_use_avatar && m_use_avatar != 2) return false;
-  // In TestCPU, movement fails...
-  if (m_organism->GetOrgInterface().GetCellID() == -1) return false;
-  assert(m_organism != 0);
-  
-  bool safe_passage = true;
-  bool move_success = false;
-  int faced_range = m_organism->GetOrgInterface().GetFacedCellDataTerritory();
-  if (m_use_avatar == 2) faced_range = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
-  int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
-  if (m_use_avatar == 2) marked_update = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  if (m_organism->GetForageTarget() == -2 && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
-      ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
-    safe_passage = false;
-  }
-  
-  if (safe_passage) {
-    if (!m_use_avatar) move_success = m_organism->Move(ctx);
-    else if (m_use_avatar) move_success = m_organism->MoveAV(ctx);
-  }
-  
-  const int out_reg = FindModifiedRegister(rBX);   
-  setInternalValue(out_reg, move_success, true);  
-  setInternalValue(FindModifiedNextRegister(rBX), safe_passage, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetCellPosition(cAvidaContext& ctx)
-{
-  int x = m_organism->GetOrgInterface().GetCellXPosition();
-  int y = m_organism->GetOrgInterface().GetCellYPosition();
-  // Fail if we're running in the test CPU
-  if (x == -1 || y == -1) return false;
-
-  const int xreg = FindModifiedRegister(rBX);
-  const int yreg = FindNextRegister(xreg);
-  setInternalValue(xreg, x, true);
-  setInternalValue(yreg, y, true);
-
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetCellPositionX(cAvidaContext& ctx)
-{
-  int x = m_organism->GetOrgInterface().GetCellXPosition();
-  // Fail if we're running in the test CPU
-  if (x == -1) return false;
-
-  const int xreg = FindModifiedRegister(rBX);
-  setInternalValue(xreg, x, true);
-
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetCellPositionY(cAvidaContext& ctx)
-{
-  int y = m_organism->GetOrgInterface().GetCellYPosition();
-  // Fail if we're running in the test CPU
-  if (y == -1) return false;
-
-  const int yreg = FindModifiedRegister(rBX);
-  setInternalValue(yreg, y, true);
-
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
+bool cHardwareMBE::Inst_GetNorthOffset(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(rBX);
   int compass_dir = m_organism->GetOrgInterface().GetFacedDir();
   if (m_use_avatar) compass_dir = m_organism->GetOrgInterface().GetAVFacing();
@@ -3170,36 +2213,36 @@ bool cHardwareExperimental::Inst_GetNorthOffset(cAvidaContext& ctx) {
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetPositionOffset(cAvidaContext&) {
+bool cHardwareMBE::Inst_GetPositionOffset(cAvidaContext&) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetNortherly(), true);
   setInternalValue(FindModifiedNextRegister(out_reg), m_organism->GetEasterly(), true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetNortherly(cAvidaContext&) {
+bool cHardwareMBE::Inst_GetNortherly(cAvidaContext&) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetNortherly(), true);
   return true;  
 }
 
-bool cHardwareExperimental::Inst_GetEasterly(cAvidaContext&) {
+bool cHardwareMBE::Inst_GetEasterly(cAvidaContext&) {
   const int out_reg = FindModifiedRegister(rBX);
   setInternalValue(out_reg, m_organism->GetEasterly(), true);
   return true;  
 }
 
-bool cHardwareExperimental::Inst_ZeroEasterly(cAvidaContext&) {
+bool cHardwareMBE::Inst_ZeroEasterly(cAvidaContext&) {
   m_organism->ClearEasterly();
   return true;
 }
 
-bool cHardwareExperimental::Inst_ZeroNortherly(cAvidaContext&) {
+bool cHardwareMBE::Inst_ZeroNortherly(cAvidaContext&) {
   m_organism->ClearNortherly();
   return true;
 }
 
-bool cHardwareExperimental::Inst_ZeroPosOffset(cAvidaContext&) {
+bool cHardwareMBE::Inst_ZeroPosOffset(cAvidaContext&) {
   const int offset = GetRegister(FindModifiedRegister(rBX)) % 3;
   if (offset == 0) {
     m_organism->ClearEasterly();
@@ -3210,92 +2253,7 @@ bool cHardwareExperimental::Inst_ZeroPosOffset(cAvidaContext&) {
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext&)
-{
-  m_organism->Rotate(1);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext&)
-{
-  m_organism->Rotate(-1);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
-{
-  Apto::Array<double> current_res;
-  if (!m_use_avatar) current_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) current_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  
-  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-  if (m_use_avatar) actualNeighborhoodSize = m_organism->GetOrgInterface().GetAVNumNeighbors();
-  
-  int group = 0;  
-  if(m_organism->HasOpinion()) group = m_organism->GetOpinion().first; 
-  
-  double max_res = 0;
-  for(int i = 0; i < actualNeighborhoodSize; i++) {
-    m_organism->Rotate(1);
-    Apto::Array<double> faced_res;
-    if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-    else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-    if (faced_res[group] > max_res) max_res = faced_res[group];
-  } 
-  
-  if (max_res > current_res[group]) {
-    for(int i = 0; i < actualNeighborhoodSize; i++) {
-      Apto::Array<double> faced_res;
-      if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-      else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-      if (faced_res[group] != max_res) m_organism->Rotate(1);
-    }
-  }
-  int res_diff = 0;
-  if (current_res[group] == 0) res_diff = (int) max_res;
-  else res_diff = (int) (((max_res - current_res[group])/current_res[group]) * 100 + 0.5);
-  int reg_to_set = FindModifiedRegister(rBX);
-  setInternalValue(reg_to_set, res_diff, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RotateUpFtHill(cAvidaContext& ctx)
-{
-  Apto::Array<double> current_res;
-  if (!m_use_avatar) current_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) current_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  
-  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
-  if (m_use_avatar) actualNeighborhoodSize = m_organism->GetOrgInterface().GetAVNumNeighbors();
-  
-  int ft = m_organism->GetForageTarget(); 
-  
-  double max_res = 0;
-  for(int i = 0; i < actualNeighborhoodSize; i++) {
-    m_organism->Rotate(1);
-    Apto::Array<double> faced_res;
-    if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-    else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-    if (faced_res[ft] > max_res) max_res = faced_res[ft];
-  } 
-  
-  if (max_res > current_res[ft]) {
-    for(int i = 0; i < actualNeighborhoodSize; i++) {
-      Apto::Array<double> faced_res;
-      if (!m_use_avatar) faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
-      else if (m_use_avatar) faced_res = m_organism->GetOrgInterface().GetAVFacedResources(ctx);
-      if (faced_res[ft] != max_res) m_organism->Rotate(1);
-    }
-  }
-  int res_diff = 0;
-  if (current_res[ft] == 0) res_diff = (int) max_res;
-  else res_diff = (int) (((max_res - current_res[ft])/current_res[ft]) * 100 + 0.5);
-  int reg_to_set = FindModifiedRegister(rBX);
-  setInternalValue(reg_to_set, res_diff, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_RotateHome(cAvidaContext&)
+bool cHardwareMBE::Inst_RotateHome(cAvidaContext&)
 {
   // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
@@ -3321,7 +2279,7 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext&)
+bool cHardwareMBE::Inst_RotateUnoccupiedCell(cAvidaContext&)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int reg_used = FindModifiedRegister(rBX);
@@ -3339,7 +2297,7 @@ bool cHardwareExperimental::Inst_RotateUnoccupiedCell(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateX(cAvidaContext&)
+bool cHardwareMBE::Inst_RotateX(cAvidaContext&)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
@@ -3348,7 +2306,7 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext&)
   if (num_neighbors == 0) return false;
   
   const int reg_used = FindModifiedRegister(rBX);
-  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
+  int rot_num = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value;
   // rotate the nop number of times in the appropriate direction
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
@@ -3358,7 +2316,7 @@ bool cHardwareExperimental::Inst_RotateX(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_RotateDir(cAvidaContext& ctx)
 {
   int num_neighbors = m_organism->GetNeighborhoodSize();
   if (m_use_avatar) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
@@ -3366,7 +2324,7 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
   if (num_neighbors == 0) return false;
   
   const int reg_used = FindModifiedRegister(rBX);
-  int rot_dir = abs(m_threads[m_cur_thread].reg[reg_used].value) % 8;
+  int rot_dir = abs(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value) % 8;
   // rotate to the appropriate direction
   for (int i = 0; i < num_neighbors + 1; i++) {
     m_organism->Rotate(-1);
@@ -3380,12 +2338,12 @@ bool cHardwareExperimental::Inst_RotateDir(cAvidaContext& ctx)
 }
 
 // Will rotate organism to face a specified other org
-bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
+bool cHardwareMBE::Inst_RotateOrgID(cAvidaContext&)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
-  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int id_sought = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[id_sought_reg].value;
   const int worldx = m_world->GetPopulation().GetWorldX();
   const int worldy = m_world->GetPopulation().GetWorldY();
   int max_dist = 0;
@@ -3472,12 +2430,12 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
 }
 
 // Will rotate organism to face away from a specificied other org
-bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
+bool cHardwareMBE::Inst_RotateAwayOrgID(cAvidaContext&)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   // Will rotate organism to face a specificied other org
   const int id_sought_reg = FindModifiedRegister(rBX);
-  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  const int id_sought = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[id_sought_reg].value;
   const int worldx = m_world->GetPopulation().GetWorldX();
   const int worldy = m_world->GetPopulation().GetWorldY();
   int max_dist = 0;
@@ -3563,114 +2521,7 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
   }
 }
 
-// -------- Neural networking -------- @JJB
-// All only linked to input avatars for now
-
-// Rotate the register-value-selected avatar, left by one
-bool cHardwareExperimental::Inst_RotateNeuronAVLeft(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().RotateAV(-1, avatar_num);
-}
-
-// Rotate the register-value-selected avatar, right by one
-bool cHardwareExperimental::Inst_RotateNeuronAVRight(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().RotateAV(1, avatar_num);
-}
-
-// Rotate the register-value-selected avatar, by the register set amount
-bool cHardwareExperimental::Inst_RotateNeuronAVbyX(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  const int rotate_reg = FindModifiedNextRegister(avatar_reg);
-
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-  const int rotate = m_threads[m_cur_thread].reg[rotate_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().RotateAV(rotate, avatar_num);
-}
-
-// Move the register-value-selected avatar forward into its faced cell
-bool cHardwareExperimental::Inst_MoveNeuronAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  return m_organism->GetOrgInterface().MoveAV(ctx, avatar_num);
-}
-
-// If the register-value-selected input avatar occupies a cell that also has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (!m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-// If the register-value-selected input avatar does not occupy a cell that has an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (m_organism->GetOrgInterface().HasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-// If the register-value-selected input avatar is facing a cell with an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (!m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-// If the register-value-selected input avatar is facing a cell without an output avatar, execute next
-bool cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx)
-{
-  const int avatar_reg = FindModifiedRegister(rBX);
-  int avatar_num = m_threads[m_cur_thread].reg[avatar_reg].value;
-
-  avatar_num = m_organism->GetOrgInterface().FindAV(true, false, avatar_num);
-
-  if (m_organism->GetOrgInterface().FacedHasOutputAV(avatar_num)) {
-    getIP().Advance();
-  }
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_SenseResourceID(cAvidaContext& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
@@ -3687,51 +2538,7 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
-{
-  Apto::Array<double> cell_res;
-  if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  
-  const int req_reg = FindModifiedRegister(rBX);
-  int res_sought = -1;
-  // are you trying to sense a valid, non-hidden nest resource?
-  const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (res_req < cell_res.GetSize() && res_req > 0 && resource_lib.GetResource(res_req)->GetHabitat() != 3) {  
-    res_sought = res_req; 
-  }
-  
-  int res_amount = 0;
-  int faced_res = 0;
-  // if you requested a valid resource, we return values for that res
-  if (res_sought != -1) {
-    if (!m_use_avatar) faced_res = (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[res_sought]);
-    else if (m_use_avatar)  faced_res = (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[res_sought]); 
-  }
-  // otherwise, we sum across all the food resources in the cell
-  else {
-    for (int i = 0; i < cell_res.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5) {
-        if (!m_use_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
-        else if (m_use_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i]); 
-      }
-    }
-  }
-  
-  // return % change
-  int res_diff = 0;
-  if (res_amount == 0) res_diff = (int) faced_res;
-  else res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
-  
-  setInternalValue(req_reg, res_sought, true);
-  const int res_tot_reg = FindModifiedNextRegister(req_reg);
-  setInternalValue(res_tot_reg, res_amount, true);
-  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_SenseNest(cAvidaContext& ctx)
 {
   Apto::Array<double> cell_res;
   if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
@@ -3740,7 +2547,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
   
-  int nest_id = m_threads[m_cur_thread].reg[reg_used].value;
+  int nest_id = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used].value;
   int nest_val = 0;
   
   // if invalid nop value, return the id of the first nest in the cell with val >= 1
@@ -3761,41 +2568,7 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx) 
-{
-  Apto::Array<double> cell_res;
-  if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  const int req_reg = FindModifiedRegister(rBX);
-  int res_sought = -1;
-  // are you trying to sense a valid resource?
-  const int res_req = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (res_req < cell_res.GetSize() && res_req > 0) {  
-    res_sought = res_req; 
-  }
-  
-  int res_amount = 0;
-  int faced_res = 0;
-  if (res_sought != -1) {
-    res_amount = (int) (cell_res[res_sought]);
-    if (!m_use_avatar) faced_res = (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[res_sought]);
-    else if (m_use_avatar)  faced_res = (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[res_sought]); 
-  }
-  else {
-    for (int i = 0; i < cell_res.GetSize(); i++ ) {
-      res_amount += (int) (cell_res[i]);
-      if (!m_use_avatar) faced_res += (int) (m_organism->GetOrgInterface().GetFacedCellResources(ctx)[i]);
-      else if (m_use_avatar)  faced_res += (int) (m_organism->GetOrgInterface().GetAVFacedResources(ctx)[i]); 
-    }
-  }
-  
-  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
-  const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
-  setInternalValue(res_tot_reg, res_amount - faced_res, true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LookAhead(cAvidaContext& ctx)
 {
   int cell = m_organism->GetOrgInterface().GetCellID();
   int facing = m_organism->GetOrgInterface().GetFacedDir();
@@ -3807,13 +2580,13 @@ bool cHardwareExperimental::Inst_LookAhead(cAvidaContext& ctx)
 }
 
 // Will return relative org facing (rotations to intercept) rather than group info for sighted org
-bool cHardwareExperimental::Inst_LookAheadIntercept(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LookAheadIntercept(cAvidaContext& ctx)
 {
   m_sensor.SetReturnRelativeFacing(true);
   return Inst_LookAhead(ctx);
 }
 
-bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LookAround(cAvidaContext& ctx)
 {
   // dir register is 5th mod (will be count reg)
   int hab_reg = FindModifiedRegister(rBX);
@@ -3822,7 +2595,7 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   int id_reg = FindModifiedNextRegister(st_reg);
   int dir_reg = FindModifiedNextRegister(id_reg);
   
-  int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  int search_dir = abs(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[dir_reg].value) % 3;
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -3851,13 +2624,13 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell);
 }
 
-bool cHardwareExperimental::Inst_LookAroundIntercept(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LookAroundIntercept(cAvidaContext& ctx)
 {
   m_sensor.SetReturnRelativeFacing(true);
   return Inst_LookAround(ctx);
 }
 
-bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LookFT(cAvidaContext& ctx)
 {
   // override any org inputs and just let this org see the food resource that matches it's forage target (not designed for predators)
   int cell = m_organism->GetOrgInterface().GetCellID();
@@ -3869,7 +2642,7 @@ bool cHardwareExperimental::Inst_LookFT(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell, true);
 }
 
-bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LookAroundFT(cAvidaContext& ctx)
 {
   // dir register is 5th mod (will be count reg)
   int hab_reg = FindModifiedRegister(rBX);
@@ -3878,7 +2651,7 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   int id_reg = FindModifiedNextRegister(st_reg);
   int dir_reg = FindModifiedNextRegister(id_reg);
   
-  int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
+  int search_dir = abs(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[dir_reg].value) % 3;
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -3907,7 +2680,7 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   return GoLook(ctx, facing, cell, true);
 }
 
-bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft) 
+bool cHardwareMBE::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft) 
 {
   // temp check on world geometry until code can handle other geometries
   if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
@@ -3922,7 +2695,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   sLookRegAssign reg_defs;
   reg_defs.habitat = FindModifiedRegister(rBX);
   // fail if the org is trying to sense a nest/hidden habitat
-  int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
+  int habitat_used = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_defs.habitat].value;
   if (habitat_used == 3) return false;
   reg_defs.distance = FindModifiedNextRegister(reg_defs.habitat);
   reg_defs.search_type = FindModifiedNextRegister(reg_defs.distance);
@@ -3948,7 +2721,7 @@ bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const
   return true;
 }
 
-cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
+cOrgSensor::sLookOut cHardwareMBE::InitLooking(cAvidaContext& ctx, sLookRegAssign& in_defs, int facing, int cell_id, bool use_ft)
 {
   const int habitat_reg = in_defs.habitat;
   const int distance_reg = in_defs.distance;
@@ -3956,15 +2729,15 @@ cOrgSensor::sLookOut cHardwareExperimental::InitLooking(cAvidaContext& ctx, sLoo
   const int id_reg = in_defs.id_sought;
   
   cOrgSensor::sLookInit reg_init;
-  reg_init.habitat = m_threads[m_cur_thread].reg[habitat_reg].value;
-  reg_init.distance = m_threads[m_cur_thread].reg[distance_reg].value;
-  reg_init.search_type = m_threads[m_cur_thread].reg[search_reg].value;
-  reg_init.id_sought = m_threads[m_cur_thread].reg[id_reg].value;
+  reg_init.habitat = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[habitat_reg].value;
+  reg_init.distance = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[distance_reg].value;
+  reg_init.search_type = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[search_reg].value;
+  reg_init.id_sought = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[id_reg].value;
 
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    
 
-void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& results)
+void cHardwareMBE::LookResults(sLookRegAssign& regs, cOrgSensor::sLookOut& results)
 {
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
@@ -4015,7 +2788,7 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
   return;
 }
 
-bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
+bool cHardwareMBE::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
 {
   int reg_to_set = FindModifiedRegister(rBX);
   
@@ -4054,7 +2827,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
+bool cHardwareMBE::Inst_SetForageTarget(cAvidaContext&)
 {
   assert(m_organism != 0);
   int prop_target = GetRegister(FindModifiedRegister(rBX));
@@ -4106,14 +2879,14 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_SetForageTargetOnce(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
 }
 
-bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_GetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int target_reg = FindModifiedRegister(rBX);
@@ -4121,7 +2894,7 @@ bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx) 
+bool cHardwareMBE::Inst_GetLocOrgDensity(cAvidaContext& ctx) 
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -4181,7 +2954,7 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
   return true;  
 }
 
-bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&) 
+bool cHardwareMBE::Inst_GetFacedOrgDensity(cAvidaContext&) 
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   const int worldx = m_world->GetConfig().WORLD_X.Get();
@@ -4269,7 +3042,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&)
   return true;  
 }
 
-bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
+bool cHardwareMBE::DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit)
 {
   // Set up res_change and max total
   Apto::Array<double> res_count;
@@ -4312,7 +3085,7 @@ bool cHardwareExperimental::DoActualCollect(cAvidaContext& ctx, int bin_used, bo
   return false;
 }
 
-bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_CollectEdible(cAvidaContext& ctx)
 {
   int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
   Apto::Array<double> res_count;
@@ -4343,7 +3116,7 @@ bool cHardwareExperimental::Inst_CollectEdible(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_CollectSpecific(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_CollectSpecific(cAvidaContext& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
@@ -4355,7 +3128,7 @@ bool cHardwareExperimental::Inst_CollectSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_DepositResource(cAvidaContext& ctx)
 {
   int resource_amount = abs(GetRegister(FindModifiedNextRegister(rBX)));
   int resource_id = GetRegister(FindModifiedRegister(rBX));
@@ -4390,7 +3163,7 @@ bool cHardwareExperimental::Inst_DepositResource(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_DepositSpecific(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_DepositSpecific(cAvidaContext& ctx)
 {
   int resource_amount = GetRegister(FindModifiedRegister(rBX));
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
@@ -4424,7 +3197,7 @@ bool cHardwareExperimental::Inst_DepositSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
 {
   const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();    
   bool success = false;
@@ -4460,123 +3233,7 @@ bool cHardwareExperimental::Inst_DepositAllAsSpecific(cAvidaContext& ctx)
   return success;
 }
 
-bool cHardwareExperimental::Inst_NopDepositSpecific(cAvidaContext& ctx)
-{
-  int resource_amount = GetRegister(FindModifiedRegister(rBX));
-  const int spec_res = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-  const double stored_spec = m_organism->GetRBins()[spec_res];
-
-  if (resource_amount > stored_spec) resource_amount = (int)(stored_spec);
-  bool success = false;
-  if (stored_spec >= resource_amount && resource_amount > 0) {
-    Apto::Array<double> res_count;
-    if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-    else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    // only allow deposits on dens
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 4 && res_count[i] > resource_lib.GetResource(i)->GetThreshold()) {
-        success = true;
-        break;
-      }
-    }
-  }
-  return success;
-}
-
-bool cHardwareExperimental::Inst_NopDepositResource(cAvidaContext& ctx)
-{
-  int resource_amount = abs(GetRegister(FindModifiedNextRegister(rBX)));
-  int resource_id = GetRegister(FindModifiedRegister(rBX));
-  resource_id %= m_organism->GetRBins().GetSize();
-  const double stored_res = m_organism->GetRBins()[resource_id];
-    
-  if (resource_amount > stored_res) resource_amount = (int)(stored_res);
-  bool success = false;
-  if (stored_res >= resource_amount && resource_amount > 0) {
-    Apto::Array<double> res_count;
-    if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-    else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    // only allow deposits on dens
-    for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 4 && res_count[i] > resource_lib.GetResource(i)->GetThreshold()) {
-        success = true;
-        break;
-      }
-    }
-  }
-  return success;
-}
-
-bool cHardwareExperimental::Inst_NopDepositAllAsSpecific(cAvidaContext& ctx)
-{
-  bool success = false;
-  Apto::Array<double> res_count;
-  if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  // only allow deposits on dens
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 4 && res_count[i] > resource_lib.GetResource(i)->GetThreshold()) {
-      double total_deposit = 0;
-      for (int j = 0; j < res_count.GetSize(); j++) {
-        double resource_amount = m_organism->GetRBins()[j];
-        total_deposit += resource_amount;
-      }  
-      if (total_deposit > 0) {  
-        success = true;
-      }
-      break;
-    }
-  }
-  return success;
-}
-
-bool cHardwareExperimental::Inst_NopCollectEdible(cAvidaContext& ctx)
-{
-  int absorb_type = m_world->GetConfig().MULTI_ABSORB_TYPE.Get();
-  Apto::Array<double> res_count;
-  if (!m_use_avatar) res_count = m_organism->GetOrgInterface().GetResources(ctx);
-  else if (m_use_avatar) res_count = m_organism->GetOrgInterface().GetAVResources(ctx); 
-  
-  int res_id = -1;
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  if (absorb_type == 1) {
-    for (int i = 0; i < res_count.GetSize(); i++) {
-      if (res_count[i] >= resource_lib.GetResource(i)->GetThreshold() && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) {
-        res_id = i;
-        break;
-      }
-    }
-  }
-  else if (absorb_type == 2) {
-    for (int i = res_count.GetSize(); i > 0 ; i--) {
-      if (res_count[i - 1] >= resource_lib.GetResource(i - 1)->GetThreshold() && (resource_lib.GetResource(i - 1)->GetHabitat() == 0 || resource_lib.GetResource(i - 1)->GetHabitat() > 5)) {
-        res_id = i - 1;
-        break;
-      }
-    }
-  }
-
-  if (res_id != -1) {
-    double total = m_organism->GetRBinsTotal();
-    double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
-    bool has_max = max > 0 ? true : false;
-    double res_consumed = 0.0;
-    
-    double threshold = resource_lib.GetResource(res_id)->GetThreshold();
-    if (res_count[res_id] >= threshold) res_consumed = threshold;
-    else return false;
-    
-    if (has_max && res_consumed + total >= max) res_consumed = max - total;
-    
-    if (res_consumed > 0) return true;
-  }
-  return false;
-}
-
-bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_GetResStored(cAvidaContext& ctx)
 {
   int resource_id = abs(GetRegister(FindModifiedRegister(rBX)));
   Apto::Array<double> bins = m_organism->GetRBins();
@@ -4586,7 +3243,7 @@ bool cHardwareExperimental::Inst_GetResStored(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetSpecificStored(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_GetSpecificStored(cAvidaContext& ctx)
 {
   Apto::Array<double> bins = m_organism->GetRBins();
   int out_reg = FindModifiedRegister(rBX);
@@ -4594,7 +3251,7 @@ bool cHardwareExperimental::Inst_GetSpecificStored(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_CollectCellData(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_CollectCellData(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int out_reg = FindModifiedRegister(rBX);
@@ -4606,7 +3263,7 @@ bool cHardwareExperimental::Inst_CollectCellData(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfCellDataChanged(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_IfCellDataChanged(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   // If cell data hasn't been collected, or it's the same as the current cell data, advance IP
@@ -4617,7 +3274,7 @@ bool cHardwareExperimental::Inst_IfCellDataChanged(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ReadCellData(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ReadCellData(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int out_reg = FindModifiedRegister(rBX);
@@ -4627,7 +3284,7 @@ bool cHardwareExperimental::Inst_ReadCellData(cAvidaContext& ctx)
 }
 
 // Sets organism's opinion to the value in ?BX?
-bool cHardwareExperimental::Inst_SetOpinion(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_SetOpinion(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(rBX)), m_organism);
@@ -4637,7 +3294,7 @@ bool cHardwareExperimental::Inst_SetOpinion(cAvidaContext& ctx)
 /* Gets the organism's current opinion, placing the opinion in register ?BX?
    and the age of the opinion in register !?BX?
  */
-bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_GetOpinion(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->GetOrgInterface().HasOpinion(m_organism)) {
@@ -4651,7 +3308,7 @@ bool cHardwareExperimental::Inst_GetOpinion(cAvidaContext& ctx)
 }
 
 //! An organism joins a group by setting it opinion to the group id. 
-bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext&)
+bool cHardwareMBE::Inst_JoinGroup(cAvidaContext&)
 {
   int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
   // Check if the org is currently part of a group
@@ -4703,7 +3360,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext&)
 }
 
 // A predator can establish a new group, attempt to immigrate into the group that marked the cell in front of them, or become a nomad. 
-bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ChangePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->GetForageTarget() != -2) return false;
@@ -4737,7 +3394,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 }
 
 // A predator establishes a new group. 
-bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_MakePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->GetForageTarget() != -2) return false;
@@ -4756,7 +3413,7 @@ bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 
 // A predator leaves their group to join the nomads in group -3.
 // Joining the nomads is always successful, they can not exclude others so there is no immigration test. 
-bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_LeavePredGroup(cAvidaContext& ctx)
 {
   // Predator nomad group id
   const int nomad_group = -3;
@@ -4781,7 +3438,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
 }
 
 // A predator attempts to join the existing, non-empty predator group associated with the cell marking in front of them. 
-bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_AdoptPredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_organism->GetForageTarget() != -2) return false;
@@ -4814,7 +3471,7 @@ bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext&)
+bool cHardwareMBE::Inst_GetGroupID(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_organism->HasOpinion()) {
@@ -4825,7 +3482,7 @@ bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext&)
+bool cHardwareMBE::Inst_GetPredGroupID(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_organism->GetForageTarget() != -2) return false;
@@ -4837,7 +3494,7 @@ bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext&)
+bool cHardwareMBE::Inst_GetFacedOrgID(cAvidaContext&)
 //Get ID of organism faced by this one, if there is an organism in front.
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -4855,7 +3512,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgID(cAvidaContext&)
 }
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
-bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_AttackPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (!TestAttack(ctx)) return false;
@@ -4928,13 +3585,13 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 } 		
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
-bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_AttackFTPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (!TestAttack(ctx)) return false;
 
   const int target_reg = FindModifiedRegister(rBX);
-  int target_org_type = m_threads[m_cur_thread].reg[target_reg].value;
+  int target_org_type = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[target_reg].value;
   cOrganism* target = NULL; 
   if (!m_use_avatar) { 
     target = m_organism->GetOrgInterface().GetNeighbor();
@@ -5028,7 +3685,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
 } 
 
 //Attack organism faced by this one if you are both predators or both prey. 
-bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_FightMeritOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5088,7 +3745,7 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
 } 	
 
 //Attack organism faced by this one if you are both predators or both prey. 
-bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_FightBonusOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5148,7 +3805,7 @@ bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
 } 	
 
 //Get odds of winning or tieing in a fight.
-bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext&)
+bool cHardwareMBE::Inst_GetMeritFightOdds(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5193,7 +3850,7 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext&)
 } 	
 
 //Attack organism faced by this one if you are both predators or both prey. 
-bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_FightOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5231,7 +3888,7 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
   return true;
 } 	
 
-bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_AttackPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (!TestAttack(ctx)) return false;
@@ -5295,7 +3952,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
 } 
 
 //Attack organism faced by this one if you are both predators. 
-bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_KillPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5321,7 +3978,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
 } 
 
 //Attack organism faced by this one if you are both predators or both prey. 
-bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_FightPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;
@@ -5366,138 +4023,15 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   return true;
 } 	
 
-bool cHardwareExperimental::Inst_MarkCell(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (!m_use_avatar) m_organism->SetCellData(marking);
-  else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());  
-  return true;
-}
-
-bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->GetForageTarget() != -2) return false;
-  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (!m_use_avatar) m_organism->SetCellData(marking);
-  else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());
-  return true;
-}
-
-bool cHardwareExperimental::Inst_MarkGroupCell(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
-  if (!m_use_avatar) m_organism->SetCellData(marking);
-  else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ReadGroupCell(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  bool success = true;
-  if (m_use_avatar && m_use_avatar != 2) success = false;  
-  if (success && !m_organism->HasOpinion()) success = false;
-  if (success && m_use_avatar == 2) if (m_organism->GetOrgInterface().GetAVDataTerritory() != m_organism->GetOpinion().first) success = false;
-  if (success && !m_use_avatar) if (m_organism->GetOrgInterface().GetCellDataTerritory() != m_organism->GetOpinion().first) success = false;
-  
-  if (success) {
-    const int marking_reg = FindModifiedRegister(rBX);
-    const int update_reg = FindModifiedNextRegister(rBX);
-    const int org_reg = FindModifiedNextRegister(update_reg);
-    if (!m_use_avatar) {
-      setInternalValue(marking_reg, m_organism->GetOrgInterface().GetCellData(), true);
-      setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetCellDataUpdate(), true);
-      setInternalValue(org_reg, m_organism->GetOrgInterface().GetCellDataOrgID(), true);
-      if (NUM_REGISTERS > 3) {
-        const int group_reg = FindModifiedNextRegister(org_reg);
-        setInternalValue(group_reg, m_organism->GetOrgInterface().GetCellDataTerritory(), true);    
-      }
-    }
-    else if (m_use_avatar == 2) {
-      setInternalValue(marking_reg, m_organism->GetOrgInterface().GetAVData(), true);
-      setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetAVDataUpdate(), true);
-      setInternalValue(org_reg, m_organism->GetOrgInterface().GetAVDataOrgID(), true);
-      if (NUM_REGISTERS > 3) {
-        const int group_reg = FindModifiedNextRegister(org_reg);
-        setInternalValue(group_reg, m_organism->GetOrgInterface().GetAVDataTerritory(), true);    
-      }
-    }
-  }
-  return success;
-}
-
-bool cHardwareExperimental::Inst_ReadFacedCell(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  const int marking_reg = FindModifiedRegister(rBX);
-  const int update_reg = FindModifiedNextRegister(rBX);
-  const int org_reg = FindModifiedNextRegister(update_reg);
-  if (!m_use_avatar) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
-    }
-  }
-  else if (m_use_avatar == 2) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetAVFacedData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetAVFacedDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetAVFacedDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetAVFacedDataTerritory(), true);    
-    }
-  }
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext&)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->GetForageTarget() != -2) return false;
-  const int marking_reg = FindModifiedRegister(rBX);
-  const int update_reg = FindModifiedNextRegister(rBX);
-  const int org_reg = FindModifiedNextRegister(update_reg);
-  if (!m_use_avatar) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetFacedCellData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetFacedCellDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetFacedCellDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetFacedCellDataTerritory(), true);    
-    }
-  }
-  else if (m_use_avatar == 2) {
-    setInternalValue(marking_reg, m_organism->GetOrgInterface().GetAVFacedData(), true);
-    setInternalValue(update_reg, m_world->GetStats().GetUpdate() - m_organism->GetOrgInterface().GetAVFacedDataUpdate(), true);
-    setInternalValue(org_reg, m_organism->GetOrgInterface().GetAVFacedDataOrgID(), true);
-    if (NUM_REGISTERS > 3) {
-      const int group_reg = FindModifiedNextRegister(org_reg);
-      setInternalValue(group_reg, m_organism->GetOrgInterface().GetAVFacedDataTerritory(), true);    
-    }
-  }
-  return true;
-}
-
 //Teach offspring learned targeting/foraging behavior
-bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext&)
+bool cHardwareMBE::Inst_TeachOffspring(cAvidaContext&)
 {
   assert(m_organism != 0);
   m_organism->Teach(true);
   return true;
 }
 
-bool cHardwareExperimental::Inst_LearnParent(cAvidaContext&)
+bool cHardwareMBE::Inst_LearnParent(cAvidaContext&)
 {
   assert(m_organism != 0);
   bool halt = false;
@@ -5519,141 +4053,19 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext&)
   return !halt;
 }
 
-bool cHardwareExperimental::Inst_SetGuard(cAvidaContext& ctx)
-{
-  bool set_ok = false;
-  if (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().JUV_PERIOD.Get()) {
-    Apto::Array<double> cell_res;
-    if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-    else if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx); 
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    for (int i = 0; i < cell_res.GetSize(); i++) {
-      if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) set_ok = true;;
-    }
-  }
-    if (set_ok){
-        m_organism->SetGuard();
-        m_organism->IncGuard();
-    }
-  setInternalValue(FindModifiedRegister(rBX), (int) m_organism->IsGuard(), true);    
-  return set_ok;
-}
-
-bool cHardwareExperimental::Inst_GetNumGuards(cAvidaContext& ctx)
-{
-  int num_guards = 0;
-  bool on_den = false;
-  Apto::Array<double> cell_res;
-  if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
-  else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < cell_res.GetSize(); i++) {
-    if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) on_den = true;
-  }
-  
-  if (on_den){
-    if (m_use_avatar) {
-      int cell_id = m_organism->GetOrgInterface().GetAVCellID();
-      Apto::Array<cOrganism*> cell_avs = m_organism->GetOrgInterface().GetCellAVs(cell_id);
-      for (int k = 0; k < cell_avs.GetSize(); k++) {
-        if( cell_avs[k]->IsGuard()) num_guards++;
-      }
-    } else if (!m_use_avatar){
-      if (m_organism->IsGuard()) num_guards ++;
-    }
-  }
-  setInternalValue(FindModifiedRegister(rBX), num_guards, true);
-  return on_den;
-}
-
-bool cHardwareExperimental::Inst_GetNumJuvs(cAvidaContext& ctx)
-{
-  int num_juvs = 0;
-  int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
-  bool on_den = false;
-  Apto::Array<double> cell_res;
-  if (m_use_avatar) cell_res = m_organism->GetOrgInterface().GetAVResources(ctx);
-  else if (!m_use_avatar) cell_res = m_organism->GetOrgInterface().GetResources(ctx);
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  for (int i = 0; i < cell_res.GetSize(); i++) {
-    if ((resource_lib.GetResource(i)->GetHabitat() == 3 || resource_lib.GetResource(i)->GetHabitat() == 4) && cell_res[i] > 0) on_den = true;
-  }
-  
-  if (on_den){
-    if (m_use_avatar) {
-      int cell_id = m_organism->GetOrgInterface().GetAVCellID();
-      Apto::Array<cOrganism*> cell_avs = m_organism->GetOrgInterface().GetCellAVs(cell_id);
-      
-      for (int k = 0; k < cell_avs.GetSize(); k++) {
-        if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) num_juvs++;
-      }
-    } else if (!m_use_avatar){
-      if (m_organism->GetPhenotype().GetTimeUsed() < juv_age) num_juvs++;
-    }
-  }
-  setInternalValue(FindModifiedRegister(rBX), num_juvs, true);
-  return on_den;
-}
-
-bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
-{
-  bool set_ok = false;
-  if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
-  setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
-  return set_ok;  
-}
-
-
-
-bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasAV()) return false;
-  
-  cOrganism* neighbor = NULL;
-  if (!m_use_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_use_avatar == 2) neighbor = m_organism->GetOrgInterface().GetRandFacedAV();
-  if (neighbor->IsDead())  return false;  
-  
-  // If there is no valid max genetic distance, go out to cousins.
-  int gen_dist = GetRegister(FindModifiedRegister(rBX));
-  if (gen_dist > 4 || gen_dist < 0) gen_dist = 4;
-  
-  bool is_kin = false;
-  
-  Systematics::GroupPtr bg = m_organism->SystematicsGroup("genotype");
-  if (!bg) return false;
-  Systematics::SexualAncestryPtr sa = bg->GetData<Systematics::SexualAncestry>();
-  if (!sa) {
-    sa = Systematics::SexualAncestryPtr(new Systematics::SexualAncestry(bg));
-    bg->AttachData(sa);
-  }
-  
-  Systematics::GroupPtr nbg = neighbor->SystematicsGroup("genotype");
-  assert(nbg);
-  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
-  
-  setInternalValue(FindModifiedRegister(rBX), gen_dist, true);
-  const int out_reg = FindModifiedNextRegister(rBX);   
-  setInternalValue(out_reg, (int) is_kin, true);    
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ActivateDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ActivateDisplay(cAvidaContext& ctx)
 {
   if (m_organism->GetOrgDisplayData() == NULL) return false;
   m_organism->ActivateDisplay();
   return true;
 }
 
-bool cHardwareExperimental::Inst_UpdateDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_UpdateDisplay(cAvidaContext& ctx)
 {
   return m_organism->UpdateOrgDisplay();
 }
 
-bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ModifyDisplay(cAvidaContext& ctx)
 {
   sOrgDisplay* this_display = m_organism->GetOrgDisplayData();
   if (this_display == NULL) return false;
@@ -5685,7 +4097,7 @@ bool cHardwareExperimental::Inst_ModifyDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
 {
   if (!m_sensor.HasSeenDisplay()) return false;
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
@@ -5716,7 +4128,7 @@ bool cHardwareExperimental::Inst_ReadLastSeenDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ModifySimpDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ModifySimpDisplay(cAvidaContext& ctx)
 {
   cCPUMemory& memory = m_memory;
   int pos = getIP().GetPosition();
@@ -5743,7 +4155,7 @@ bool cHardwareExperimental::Inst_ModifySimpDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
 {
   if (!m_sensor.HasSeenDisplay()) return false;
   sOrgDisplay& last_seen = m_sensor.GetLastSeenDisplay();
@@ -5779,234 +4191,14 @@ bool cHardwareExperimental::Inst_ReadLastSimpDisplay(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_KillDisplay(cAvidaContext& ctx)
 {
   if (!m_organism->IsDisplaying()) return false;
   m_organism->KillDisplay();
   return true;
 }
 
-/* Increases tolerance towards the addition of members to the group:
- nop-A: increases tolerance towards immigrants
- nop-B: increases tolerance towards own offspring
- nop-C: increases tolerance towards other offspring of the group.
- Removes the record of a previous update when dec-tolerance was executed,
- and places the modified tolerance total in the BX register. 
- */
-bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
-{
-   // Exit if the org is not a predator
-   if (m_organism->GetForageTarget() != -2) return false;
-   // Exit if tolerance is not enabled
-   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
-   // Exit if organism is not in a group
-   if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
-   // Exit if the instruction is not nop-modified
-   if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
-   
-  int toleranceType = 0;
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
-    const int tolerance_to_modify = FindModifiedRegister(rBX);
-    
-    toleranceType = -1;
-    if (tolerance_to_modify == rAX) toleranceType = 0;
-    else if (tolerance_to_modify == rBX) toleranceType = 1;
-    else if (tolerance_to_modify == rCX) toleranceType = 2;
-    
-    // Not a recognized register
-    if (toleranceType == -1) return false;
-  }
-   
-   // Update the tolerance and store the result in register B
-   int result = m_organism->GetOrgInterface().IncTolerance(toleranceType, ctx);   
-   if (result == -1) return false;
-  
-   setInternalValue(rBX, result, true);
-   return true;
-}
-
-/* Decreases tolerance towards the addition of members to the group,
- nop-A: decreases tolerance towards immigrants
- nop-B: decreases tolerance towards own offspring
- nop-C: decreases tolerance towards other offspring of the group.
- Adds to records the update during which dec-tolerance was executed,
- and places the modified tolerance total in the BX register. 
- */
-bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
-{
-  // Exit if the org is not a predator
-  if (m_organism->GetForageTarget() != -2) return false;
-  // Exit if tolerance is not enabled
-  if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
-  if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
-  // Exit if organism is not in a group
-  if (!m_organism->GetOrgInterface().HasOpinion(m_organism)) return false;
-  // Exit if the instruction is not nop-modified
-  if (!m_inst_set->IsNop(getIP().GetNextInst())) return false;
-  
-  int toleranceType = 0;
-  if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 0) {
-    const int tolerance_to_modify = FindModifiedRegister(rBX);
-    
-    toleranceType = -1;
-    if (tolerance_to_modify == rAX) toleranceType = 0;
-    else if (tolerance_to_modify == rBX) toleranceType = 1;
-    else if (tolerance_to_modify == rCX) toleranceType = 2;
-    
-    // Not a recognized register
-    if (toleranceType == -1) return false;
-  }
-  
-  // Update the tolerance and store the result in register B
-  setInternalValue(rBX, m_organism->GetOrgInterface().DecTolerance(toleranceType, ctx));
-  return true;
-}
-
-/* Retrieve current tolerance levels, placing each tolerance in a different register.
- Register AX: tolerance towards immigrants
- Register BX: tolerance towards own offspring
- Register CX: tolerance towards other offspring in the group 
- */
-bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
-{
-  bool exec_success = false;
-  if (m_organism->GetForageTarget() != -2) return false;
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      if (m_organism->GetOpinion().first == -1) return false;
-      m_organism->GetOrgInterface().PushToleranceInstExe(6, ctx);
-      
-      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
-      int tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-      setInternalValue(rAX, tolerance_immigrants, true);
-      setInternalValue(rBX, tolerance_own, true);
-      setInternalValue(rCX, tolerance_others, true);  
-      exec_success = true;
-    }
-  }
-  return exec_success;
-}  
-
-/* Retrieve group tolerances placing each in a different register.
- Register AX: group tolerance towards immigrants
- Register BX: group tolerance towards own offspring
- Register CX: group tolerance towards offspring 
- */
-bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
-{
-  bool exec_success = false;
-  // If not a predator in a group, return false
-  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
-  // If groups are used and tolerances are on...
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
-    if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
-      m_organism->GetOrgInterface().PushToleranceInstExe(7, ctx);
-      
-      const int group_id = m_organism->GetOpinion().first;
-      if (group_id == -1) return false;
-      
-      int mating_type = -1;
-      if (m_world->GetConfig().TOLERANCE_VARIATIONS.Get() == 2) {
-        if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_FEMALE) mating_type = 0;
-        else if (m_organism->GetPhenotype().GetMatingType() == MATING_TYPE_MALE) mating_type = 1;
-        else mating_type = 2;
-      }
-      double immigrant_odds = m_organism->GetOrgInterface().CalcGroupOddsImmigrants(group_id, mating_type);
-      double offspring_own_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(m_organism);
-      double offspring_others_odds = m_organism->GetOrgInterface().CalcGroupOddsOffspring(group_id);
-      
-      // Convert all odds to percent
-      double percent_immigrants = immigrant_odds * 100 + 0.5;
-      double percent_offspring_own = offspring_own_odds * 100 + 0.5;
-      double percent_offspring_others = offspring_others_odds * 100 + 0.5;
-      
-      // Truncate percent to integer and place in registers
-      setInternalValue(rAX, (int) percent_immigrants, true);
-      setInternalValue(rBX, (int) percent_offspring_own, true);
-      setInternalValue(rCX, (int) percent_offspring_others, true);
-      exec_success = true;
-    }
-  }
-  return exec_success;
-}
-
-// Active messaging
-bool cHardwareExperimental::Inst_SendMessageInterruptType0(cAvidaContext& ctx) { return SendMessage(ctx, 0); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType1(cAvidaContext& ctx) { return SendMessage(ctx, 1); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType2(cAvidaContext& ctx) { return SendMessage(ctx, 2); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType3(cAvidaContext& ctx) { return SendMessage(ctx, 3); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType4(cAvidaContext& ctx) { return SendMessage(ctx, 4); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType5(cAvidaContext& ctx) { return SendMessage(ctx, 5); }
-
-// Jumps one instruction passed end-handler
-bool cHardwareExperimental::Inst_START_Handler(cAvidaContext& ctx)
-{
-  m_advance_ip = false;
-  // Jump 1 instruction passed msg-handler
-  Instruction label_inst = GetInstSet().GetInst("end-handler");
-
-  cHeadCPU search_head(IP());
-  int start_pos = search_head.GetPosition();
-  search_head++;
-
-  while (start_pos != search_head.GetPosition()) {
-    if (search_head.GetInst() == label_inst) {
-      // move IP to here
-      search_head++;
-      IP().Set(search_head.GetPosition());
-      return true;
-    }
-    search_head++;
-  }
-  return false;
-}
-
-bool cHardwareExperimental::Inst_End_Handler(cAvidaContext& ctx)
-{
-  bool exit_successful = ExitThread();
-  if (exit_successful == false) { // return false if one thread exists
-    m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-    // might need to set inst. advance to false
-    return false;
-  } // previous thread is now restored
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SendMessage(cAvidaContext& ctx)
-{
-  return SendMessage(ctx);
-}
-
-bool cHardwareExperimental::SendMessage(cAvidaContext& ctx, int messageType)
-{
-  const int label_reg = FindModifiedRegister(rBX);
-  const int data_reg = FindNextRegister(label_reg);
-
-  cOrgMessage msg = cOrgMessage(m_organism, messageType);
-  msg.SetLabel(GetRegister(label_reg));
-  msg.SetData(GetRegister(data_reg));
-
-  return m_organism->SendMessage(ctx, msg);
-}
-
-bool cHardwareExperimental::Inst_RetrieveMessage(cAvidaContext& ctx)
-{
-  std::pair<bool, cOrgMessage> retrieved = m_organism->RetrieveMessage();
-  if (!retrieved.first) {
-    return false;
-  }
-
-  const int label_reg = FindModifiedRegister(rBX);
-  const int data_reg = FindNextRegister(label_reg);
-
-  setInternalValue(label_reg, retrieved.second.GetLabel(), true);
-  setInternalValue(data_reg, retrieved.second.GetData(), true);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_ScrambleReg(cAvidaContext& ctx)
 {
   for (int i = 0; i < NUM_REGISTERS; i++) {
     setInternalValue(rAX + i, (int) (ctx.GetRandom().GetDouble()), true);
@@ -6014,7 +4206,7 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
   return true;
 }
 
-void cHardwareExperimental::InjureOrg(cOrganism* target, double injury)
+void cHardwareMBE::InjureOrg(cOrganism* target, double injury)
 {
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double target_merit = target->GetPhenotype().GetMerit().GetDouble();
@@ -6036,7 +4228,7 @@ void cHardwareExperimental::InjureOrg(cOrganism* target, double injury)
   }
 }
 
-void cHardwareExperimental::MakePred()
+void cHardwareMBE::MakePred()
 {
   if (m_organism->GetForageTarget() != -2) { 
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
@@ -6048,7 +4240,7 @@ void cHardwareExperimental::MakePred()
   }    
 }
 
-bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
+bool cHardwareMBE::TestAttack(cAvidaContext& ctx)
 {
   if (m_use_avatar && m_use_avatar != 2) return false;
   
