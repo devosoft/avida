@@ -6715,13 +6715,21 @@ void cPopulation::BuildTimeSlicer()
     case SLICE_INTEGRATED_MERIT:
       m_scheduler = new Apto::Scheduler::Integrated(cell_array.GetSize());
       break;
-    default:
-      cout << "warning: requested time slicer not found, defaulting to probabilistic." << endl;
     case SLICE_PROB_MERIT:
     {
       Apto::SmartPtr<Apto::Random> rng(new Apto::RNG::AvidaRNG(m_world->GetRandom().GetInt(0x7FFFFFFF)));
       m_scheduler = new Apto::Scheduler::Probabilistic(cell_array.GetSize(), rng);
     }
+      break;
+    case SLICE_PROB_INTEGRATED_MERIT:
+    {
+      Apto::SmartPtr<Apto::Random> rng(new Apto::RNG::AvidaRNG(m_world->GetRandom().GetInt(m_world->GetRandom().MaxSeed())));
+      m_scheduler = new Apto::Scheduler::ProbabilisticIntegrated(cell_array.GetSize(), rng);
+    }
+      break;
+    default:
+      cout << "error: requested time slicer not found." << endl;
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
       break;
   }
 }
