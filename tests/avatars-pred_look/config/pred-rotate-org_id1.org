@@ -69,20 +69,21 @@ zero
 nop-E		# id_sought: find org #1
 inc
 nop-E
-look-ahead
-nop-B
-nop-C
-nop-D
+rotate-org-id
 nop-E
-dec
-nop-G		# value output reg
+inc
+nop-F
+inc
+nop-F		# distance output reg (-2, if found)
 if-equ-0
-nop-G
-rotate-org-id	# rotate org, if seen
-nop-C
-if-equ-0
-nop-G
-move
+nop-F
+IO
+nop-A		# random number
+if-not-0
+nop-F
+rotate-x	# rotate randomly if not found
+nop-A
+move		# else move in that direction
 if-equ-0	# get out of way if collision
 nop-B
 IO
@@ -94,11 +95,3 @@ nop-A
 if-equ-0	
 nop-B
 move
-if-not-0
-nop-G
-IO			# if not seen, get random number
-nop-A
-if-not-0
-nop-G
-rotate-x	# rotate randomly
-nop-A

@@ -989,6 +989,8 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, do
     if (max_unused_idx <= 0 && loop_once) break;
     if (max_idx <= 0) break;
   }
+  // in case we couldn't fill the quota...
+  while (m_prob_res_cells.GetSize() > cells_used) m_prob_res_cells.Pop();
 }
 
 void cGradientCount::UpdateProbabilisticRes()

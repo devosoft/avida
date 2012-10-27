@@ -525,9 +525,8 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                          cContextPhenotype* context_phenotype)
 {  
   //Avatar output has to be seperate from doOutput to ensure avatars, not the true orgs, are triggering reactions
-//  const int deme_id = m_interface->GetDemeID();
-  const Apto::Array<double> & avatar_resource_count = m_interface->GetAVResources(ctx);
-//  const Apto::Array<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
+  //  const int deme_id = m_interface->GetDemeID();
+  //  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, ctx); //todo: DemeAVResources
   const Apto::Array< Apto::Array<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
@@ -560,10 +559,12 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
   }
   
   // Do the testing of tasks performed...
-  Apto::Array<double> avatar_res_change(avatar_resource_count.GetSize());
+  Apto::Array<double> avatar_res_change(m_world->GetEnvironment().GetResourceLib().GetSize());
   avatar_res_change.SetAll(0.0);
-//  Apto::Array<double> deme_res_change(deme_resource_count.GetSize());
-//  deme_res_change.SetAll(0.0);
+
+  //  tArray<double> deme_res_change(deme_resource_count.GetSize());
+  //  deme_res_change.SetAll(0.0);
+
   Apto::Array<cString> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
@@ -573,30 +574,31 @@ void cOrganism::doAVOutput(cAvidaContext& ctx,
                        m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
   
   //combine global and deme resource counts
-  Apto::Array<double> avatarAndDeme_resource_count = avatar_resource_count; // + deme_resource_count;
+  const Apto::Array<double>& av_res_count = m_interface->GetAVResources(ctx);
+  Apto::Array<double> avatarAndDeme_res_count = av_res_count; // + deme_resource_count;
   Apto::Array<double> avatarAndDeme_res_change = avatar_res_change; // + deme_res_change;
   
   // set any resource amount to 0 if a cell cannot access this resource
   int cell_id = m_interface->GetAVCellID();
   if (cell_id_lists.GetSize())
   {
-	  for (int i=0; i<cell_id_lists.GetSize(); i++)
+	  for (int i = 0; i < cell_id_lists.GetSize(); i++)
 	  {
 		  // if cell_id_lists have been set then we have to check if this cell is in the list
 		  if (cell_id_lists[i].GetSize()) {
-			  int j;
-			  for (j=0; j<cell_id_lists[i].GetSize(); j++)
+			  int j = 0;
+			  for (j = 0; j < cell_id_lists[i].GetSize(); j++)
 			  {
-				  if (cell_id==cell_id_lists[i][j])
+				  if (cell_id == cell_id_lists[i][j])
 					  break;
 			  }
-			  if (j==cell_id_lists[i].GetSize())
-				  avatarAndDeme_resource_count[i]=0;
+			  if (j == cell_id_lists[i].GetSize())
+				  avatarAndDeme_res_count[i] = 0;
 		  }
 	  }
   }
   
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, avatarAndDeme_resource_count, 
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, avatarAndDeme_res_count, 
                                                m_phenotype.GetCurRBinsAvail(), avatarAndDeme_res_change, 
                                                insts_triggered, is_parasite, context_phenotype);
   
@@ -802,13 +804,15 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     if (habitat_required != -1) {
       bool has_req_res = false;
       const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-      Apto::Array<double> resource_count;
-      if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResources(ctx);
-      else resource_count = m_interface->GetAVResources(ctx);
-      for (int i = 0; i < resource_count.GetSize(); i ++) {
-        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required && resource_count[i] >= required_value) {
-          has_req_res = true;
-          break;
+      double resource_count = 0;
+      for (int i = 0; i < resource_lib.GetSize(); i ++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == habitat_required) {
+          if (!m_world->GetConfig().USE_AVATARS.Get()) resource_count = m_interface->GetResourceVal(ctx, i);
+          else resource_count = m_interface->GetAVResourceVal(ctx, i);
+          if (resource_count >= required_value) {
+            has_req_res = true;
+            break;
+          }
         }
       }
       if (!has_req_res) return false;
@@ -849,7 +853,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
     
     if (toFail)
     {
-      const Apto::Array<int> stolenReactions = m_phenotype.GetStolenReactionCount(); 
+      const Apto::Array<int>& stolenReactions = m_phenotype.GetStolenReactionCount();
       for (int i = 0; i < stolenReactions.GetSize(); i++)
       {
         if (stolenReactions[i] > 0) toFail = false;

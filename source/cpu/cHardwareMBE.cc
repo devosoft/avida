@@ -1740,7 +1740,7 @@ bool cHardwareMBE::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = FindModifiedRegister(rAX);
   const int cur_size = m_memory.GetSize();
-  const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
+  const int alloc_size = min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
                              MAX_GENOME_LENGTH - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
     setInternalValue(dst, cur_size);

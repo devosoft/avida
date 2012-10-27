@@ -1692,19 +1692,19 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   
   // get the resource library
   const cResourceLib& resource_lib = environment.GetResourceLib();
-  // get the destination cell resource levels
-  Apto::Array<double> dest_cell_resources = m_world->GetPopulation().GetCellResources(dest_cell_id, ctx);
-  // get the current cell resource levels
-  Apto::Array<double> src_cell_resources = m_world->GetPopulation().GetCellResources(src_cell_id, ctx);
   
   // test for death by predatory resource
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->IsPredatory() && dest_cell_resources[i] > 0) {
-      // if you step on a predatory resource, we're going to try to kill you regardless of whether there is a den there
-      if (ctx.GetRandom().P(resource_lib.GetResource(i)->GetPredatorResOdds())) {
-        if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
-        else if (true_cell == -1) KillOrganism(src_cell, ctx);
-        return false;
+    if (resource_lib.GetResource(i)->IsPredatory()) {
+      // get the destination cell resource levels
+      double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
+      if (dest_cell_resources > 0) {
+        // if you step on a predatory resource, we're going to try to kill you regardless of whether there is a den there
+        if (ctx.GetRandom().P(resource_lib.GetResource(i)->GetPredatorResOdds())) {
+          if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
+          else if (true_cell == -1) KillOrganism(src_cell, ctx);
+          return false;
+        }
       }
     }
   }
@@ -1713,16 +1713,19 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   // which would happen if we built a new barrier under an org and we need to let it get off)
   bool curr_is_barrier = false;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 && src_cell_resources[i] > 0) {
-      curr_is_barrier = true;
-      break;
+    // get the current cell resource levels
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 ) {
+      if (GetCellResVal(ctx, src_cell_id, i) > 0) {
+        curr_is_barrier = true;
+        break;
+      }
     }
   }
   if (!curr_is_barrier) {
     for (int i = 0; i < resource_lib.GetSize(); i++) {
       if (resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
         // fail if faced cell has this wall resource
-        if (dest_cell_resources[i] > 0) return false;
+        if (GetCellResVal(ctx, dest_cell_id, i) > 0) return false;
       }    
     }
   }
@@ -1730,19 +1733,23 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   int steepest_hill = 0;
   double curr_resistance = 1.0;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1 && src_cell_resources[i] != 0) {
-      if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
-        curr_resistance = resource_lib.GetResource(i)->GetResistance();
-        steepest_hill = i;
+    if (resource_lib.GetResource(i)->GetHabitat() == 1) {
+      if (GetCellResVal(ctx, src_cell_id, i) != 0) {
+        if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
+          curr_resistance = resource_lib.GetResource(i)->GetResistance();
+          steepest_hill = i;
+        }
       }
     }
   } 
   // apply the chance of move failing for the steepest hill in this cell, if there is a hill at all
-  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1 && src_cell_resources[steepest_hill] > 0) {
-    // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
-    int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
-    if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      
-  }      
+  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1) {
+    if (GetCellResVal(ctx, src_cell_id, steepest_hill) > 0) {
+      // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
+      int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
+      if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;
+    }
+  }
   
   // effects not applied to avatars:
   if (true_cell == -1) {
@@ -7759,14 +7766,13 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
-  Apto::Array<double> cell_res;
-  cell_res = GetCellResources(cell_id, ctx);
-  
   bool cell_has_den = false;
-  for (int j = 0; j < cell_res.GetSize(); j++) {
-    if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
-      cell_has_den = true;
-      break;  
+  for (int j = 0; j < resource_lib.GetSize(); j++) {
+    if (resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) {
+      if (GetCellResVal(ctx, cell_id, j) > 0) {
+        cell_has_den = true;
+        break;
+      }
     }
   }
   
@@ -8316,7 +8322,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
     const double prob_immigrate = ((double) m_world->GetConfig().TOLERANCE_WINDOW.Get() * -1.0) / 100.0;
     double rand = m_world->GetRandom().GetDouble();
     if (rand <= prob_immigrate) {
-      const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+      const int num_groups = GetResources(ctx).GetSize();
       int target_group; 
       do {
         target_group = m_world->GetRandom().GetUInt(num_groups);
@@ -8375,7 +8381,7 @@ bool cPopulation::AttemptOffspringParentGroup(cAvidaContext& ctx, cOrganism* par
     }
     
     // If the offspring is rejected by the parent group, and there are no other groups, the offspring is doomed
-    const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+    const int num_groups = GetResources(ctx).GetSize();
     if (!join_parent_group && num_groups == 1) {
       return false;
     }

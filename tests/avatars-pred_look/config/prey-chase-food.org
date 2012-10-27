@@ -13,7 +13,7 @@ look-ahead
 nop-B
 dec
 nop-F			# count output reg
-if-not-0	# if no edible found
+if-equ-0	# if no edible found
 nop-F
 IO
 nop-A
@@ -21,6 +21,7 @@ if-not-0
 nop-F
 rotate-x	# rotate randomly
 nop-A
+move 			# else move in that direction
 if-equ-0
 nop-F
 move

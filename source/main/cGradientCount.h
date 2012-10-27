@@ -28,7 +28,6 @@
 
 class cWorld;
 
-
 class cGradientCount : public cSpatialResCount
 {
 private:
