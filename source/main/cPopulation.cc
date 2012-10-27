@@ -35,32 +35,27 @@
 #include "avida/private/systematics/GenomeTestMetrics.h"
 #include "avida/private/systematics/Genotype.h"
 
-#include "apto/platform.h"
 #include "apto/rng.h"
+#include "apto/scheduler.h"
+#include "apto/stat/Accumulator.h"
 
 #include "AvidaTools.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cCodeLabel.h"
-#include "cConstBurstSchedule.h"
-#include "cConstSchedule.h"
 #include "cDataFile.h"
 #include "cDemePlaceholderUnit.h"
-#include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cIntegratedSchedule.h"
 #include "cMigrationMatrix.h"   
 #include "cOrganism.h"
 #include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
-#include "cProbSchedule.h"
-#include "cProbDemeProbSchedule.h"
 #include "cResource.h"
 #include "cResourceCount.h"
 #include "cStats.h"
@@ -93,7 +88,7 @@ class InstructionExecCountsProvider : public cPopulationOrgStatProvider
 {
 private:
   cWorld* m_world;
-  Apto::Map<Apto::String, Apto::Array<cIntSum>, Apto::DefaultHashBTree, Apto::ImplicitDefault> m_is_exe_inst_map;
+  Apto::Map<Apto::String, Apto::Array<Apto::Stat::Accumulator<int> >, Apto::DefaultHashBTree, Apto::ImplicitDefault> m_is_exe_inst_map;
   Data::DataSetPtr m_provides;
 
 public:
@@ -142,7 +137,7 @@ public:
   {
     Apto::SmartPtr<Data::ArrayPackage, Apto::InternalRCObject> pkg(new Data::ArrayPackage);
     
-    const Apto::Array<cIntSum>& inst_exe_counts = m_is_exe_inst_map[arg];
+    const Apto::Array<Apto::Stat::Accumulator<int> >& inst_exe_counts = m_is_exe_inst_map[arg];
     for (int i = 0; i < inst_exe_counts.GetSize(); i++) {
       pkg->AddComponent(Data::PackagePtr(new Data::Wrap<int>(inst_exe_counts[i].Sum())));
     }
@@ -153,8 +148,8 @@ public:
   
   void UpdateReset()
   {
-    for (Apto::Map<Apto::String, Apto::Array<cIntSum> >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
-      Apto::Array<cIntSum>& inst_counts = (*it.Get());
+    for (Apto::Map<Apto::String, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_exe_inst_map.Values(); it.Next();) {
+      Apto::Array<Apto::Stat::Accumulator<int> >& inst_counts = (*it.Get());
       for (int i = 0; i < inst_counts.GetSize(); i++) inst_counts[i].Clear();
     }
   }
@@ -162,7 +157,7 @@ public:
   void HandleOrganism(cOrganism* organism)
   {
     Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
-    Apto::Array<cIntSum>& inst_exe_counts = m_is_exe_inst_map[inst_set];
+    Apto::Array<Apto::Stat::Accumulator<int> >& inst_exe_counts = m_is_exe_inst_map[inst_set];
     for (int j = 0; j < organism->GetPhenotype().GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
@@ -183,7 +178,7 @@ public:
 
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
-, schedule(NULL)
+, m_scheduler(NULL)
 , birth_chamber(world)
 , print_mini_trace_genomes(false)
 , use_micro_traces(false)
@@ -231,7 +226,7 @@ void cPopulation::ClearCellGrid()
 {
   delete sleep_log; sleep_log = NULL;
   reaper_queue.Clear();
-  delete schedule; schedule = NULL;
+  delete m_scheduler; m_scheduler = NULL;
 }
 
 
@@ -519,7 +514,7 @@ bool cPopulation::IsValidArgument(const Data::DataID& data_id, Data::Argument ar
 cPopulation::~cPopulation()
 {
   for (int i = 0; i < cell_array.GetSize(); i++) delete cell_array[i].GetOrganism(); 
-  delete schedule;
+  delete m_scheduler;
 }
 
 
@@ -527,7 +522,7 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 {
   const int deme_id = cell.GetDemeID();
   const cDeme& deme = deme_array[deme_id];
-  schedule->Adjust(cell.GetID(), deme.HasDemeMerit() ? (merit * deme.GetDemeMerit()) : merit, cell.GetDemeID());
+  m_scheduler->AdjustPriority(cell.GetID(), deme.HasDemeMerit() ? (merit.GetDouble() * deme.GetDemeMerit().GetDouble()) : merit.GetDouble());
 }
 
 
@@ -1041,7 +1036,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, Systematics::UnitPtr parent,
       newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
       
     }
-    parasite->SetVirulence(Max(Min(newVir, 1.0), 0.0));
+    parasite->SetVirulence(Apto::Max(Apto::Min(newVir, 1.0), 0.0));
   }
   else
   {
@@ -4351,7 +4346,7 @@ void cPopulation::PrintDemeInstructions()
       df_inst.WriteTimeStamp();
       df_inst.Write(stats.GetUpdate(), "update");
       
-      Apto::Array<cIntSum> single_deme_inst(num_inst);
+      Apto::Array<Apto::Stat::Accumulator<int> > single_deme_inst(num_inst);
       
       const cDeme& cur_deme = deme_array[deme_id];
       for (int i = 0; i < cur_deme.GetSize(); i++) {
@@ -4634,7 +4629,7 @@ void cPopulation::PrintDemeTasks() {
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
     const cDeme & cur_deme = deme_array[deme_id];
-    Apto::Array<cIntSum> single_deme_task(num_task);
+    Apto::Array<Apto::Stat::Accumulator<int> > single_deme_task(num_task);
     
     for (int i = 0; i < cur_deme.GetSize(); i++) {
       int cur_cell = cur_deme.GetCellID(i);
@@ -5223,7 +5218,7 @@ int cPopulation::UpdateEmptyCellIDArray(int deme_id)
 
 int cPopulation::ScheduleOrganism()
 {
-  return schedule->GetNextID();
+  return m_scheduler->Next();
 }
 
 void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
@@ -5444,12 +5439,6 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     
-//    Apto::String inst_set = organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue();
-//    Apto::Array<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet(inst_set);
-//    for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
-//      inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
-//    }
-    
     if (cur_merit > max_merit) max_merit = cur_merit;
     if (cur_fitness > max_fitness) max_fitness = cur_fitness;
     if (cur_gestation_time > max_gestation_time) max_gestation_time = cur_gestation_time;
@@ -5595,7 +5584,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPreyCreatureAge().Add(phenotype.GetAge());
       stats.SumPreyGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      Apto::Array<Apto::Stat::Accumulator<int> >& prey_inst_exe_counts = stats.InstPreyExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5607,7 +5596,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       stats.SumPredCreatureAge().Add(phenotype.GetAge());
       stats.SumPredGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      Apto::Array<Apto::Stat::Accumulator<int> >& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5663,7 +5652,7 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
       stats.SumMaleCreatureAge().Add(phenotype.GetAge());
       stats.SumMaleGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      Apto::Array<Apto::Stat::Accumulator<int> >& male_inst_exe_counts = stats.InstMaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         male_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -5675,7 +5664,7 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
       stats.SumFemaleCreatureAge().Add(phenotype.GetAge());
       stats.SumFemaleGeneration().Add(phenotype.GetGeneration());
       
-      Apto::Array<cIntSum>& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      Apto::Array<Apto::Stat::Accumulator<int> >& female_inst_exe_counts = stats.InstFemaleExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         female_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
@@ -6715,25 +6704,24 @@ void cPopulation::BuildTimeSlicer()
 {
   switch (m_world->GetConfig().SLICING_METHOD.Get()) {
     case SLICE_CONSTANT:
-      schedule = new cConstSchedule(cell_array.GetSize());
+      m_scheduler = new Apto::Scheduler::RoundRobin(cell_array.GetSize());
       break;
-    case SLICE_PROB_MERIT:
-      schedule = new cProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF));
-      break;
-    case SLICE_DEME_PROB_MERIT:
-      schedule = new cDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
-      break;
-    case SLICE_PROB_DEMESIZE_PROB_MERIT:
-      schedule = new cProbDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
-      break;
+//    case SLICE_DEME_PROB_MERIT:
+//      schedule = new cDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
+//      break;
+//    case SLICE_PROB_DEMESIZE_PROB_MERIT:
+//      schedule = new cProbDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
+//      break;
     case SLICE_INTEGRATED_MERIT:
-      schedule = new cIntegratedSchedule(cell_array.GetSize());
+      m_scheduler = new Apto::Scheduler::Integrated(cell_array.GetSize());
       break;
-    case SLICE_CONSTANT_BURST:
-      schedule = new cConstBurstSchedule(cell_array.GetSize(), m_world->GetConfig().SLICING_BURST_SIZE.Get());
     default:
-      cout << "Warning: Requested Time Slicer not found, defaulting to Integrated." << endl;
-      schedule = new cIntegratedSchedule(cell_array.GetSize());
+      cout << "warning: requested time slicer not found, defaulting to probabilistic." << endl;
+    case SLICE_PROB_MERIT:
+    {
+      Apto::SmartPtr<Apto::Random> rng(new Apto::RNG::AvidaRNG(m_world->GetRandom().GetInt(0x7FFFFFFF)));
+      m_scheduler = new Apto::Scheduler::Probabilistic(cell_array.GetSize(), rng);
+    }
       break;
   }
 }

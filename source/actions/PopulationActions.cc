@@ -31,13 +31,14 @@
 
 #include "avida/private/util/GenomeLoader.h"
 
+#include "apto/stat/Accumulator.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cDoubleSum.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
-#include "cIntSum.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -1462,8 +1463,8 @@ private:
 	double m_exprWeight;
 	double m_exponent;
 	int m_printUpdate;
-	cIntSum m_instCount;
-	cIntSum m_totalkilled;
+	Apto::Stat::Accumulator<int> m_instCount;
+	Apto::Stat::Accumulator<int> m_totalkilled;
 	cDoubleSum m_killProd;
   
 public:
@@ -1484,7 +1485,7 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
-		cIntSum currentInstCount;
+		Apto::Stat::Accumulator<int> currentInstCount;
 		cDoubleSum currentKillProb;
 		currentInstCount.Clear();
 		currentKillProb.Clear();
@@ -1528,7 +1529,7 @@ public:
 				}
 			}
 		}
-		m_instCount.Add(currentInstCount.Average());
+		m_instCount.Add(currentInstCount.Mean());
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
     
@@ -1537,8 +1538,8 @@ public:
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralNumInst_kill.dat");
 			df.WriteComment("Number of organisms killed by structural therapy NumInst");
 			df.Write(update, "Update");
-			df.Write(m_instCount.Average(), "Mean organisms instruction count update since last print");
-			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
+			df.Write(m_instCount.Mean(), "Mean organisms instruction count update since last print");
+			df.Write(m_totalkilled.Mean(), "Mean organisms killed per update since last print");
 			df.Write(m_killProd.Average(), "Mean organism kill probablity");
 			df.Endl();
 			m_instCount.Clear();
@@ -1564,8 +1565,8 @@ private:
 	double m_exprWeight;
 	double m_exponent;
 	int m_printUpdate;
-	cIntSum m_minDist;
-	cIntSum m_totalkilled;
+	Apto::Stat::Accumulator<int> m_minDist;
+	Apto::Stat::Accumulator<int> m_totalkilled;
 	cDoubleSum m_killProd;
 	
 public:
@@ -1586,7 +1587,7 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
-		cIntSum currentMinDist;
+		Apto::Stat::Accumulator<int> currentMinDist;
 		cDoubleSum currentKillProb;
 		currentMinDist.Clear();
 		currentKillProb.Clear();
@@ -1628,7 +1629,7 @@ public:
 				}
 			}
 		}
-		m_minDist.Add(int(currentMinDist.Average()));
+		m_minDist.Add(int(currentMinDist.Mean()));
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 		
@@ -1637,8 +1638,8 @@ public:
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralRatioDistBetweenNearest_kill.dat");
 			df.WriteComment("Number of organisms killed by structural therapy RatioDistBetweenNearest");
 			df.Write(update, "Update");
-			df.Write(m_minDist.Average(), "Mean minimum distance between instructions organism genome per update since last print");
-			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
+			df.Write(m_minDist.Mean(), "Mean minimum distance between instructions organism genome per update since last print");
+			df.Write(m_totalkilled.Mean(), "Mean organisms killed per update since last print");
 			df.Write(m_killProd.Average(), "Mean organism kill probablity");
 			df.Endl();
 			m_minDist.Clear();

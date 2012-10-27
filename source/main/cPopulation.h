@@ -44,7 +44,6 @@ class cEnvironment;
 class cLineage;
 class cOrganism;
 class cPopulationCell;
-class cSchedule;
 
 using namespace Avida;
 
@@ -66,7 +65,7 @@ class cPopulation : public Data::ArgumentedProvider
 private:
   // Components...
   cWorld* m_world;
-  cSchedule* schedule;                // Handles allocation of CPU cycles
+  Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
   cResourceCount resource_count;       // Global resources available

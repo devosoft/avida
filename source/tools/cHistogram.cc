@@ -22,13 +22,12 @@
 
 #include "cHistogram.h"
 
-#include "AvidaTools.h"
+#include "apto/core/Algorithms.h"
 
 #include <cstdio>
 #include <iostream>
 
 using namespace std;
-using namespace AvidaTools;
 
 
 cHistogram::cHistogram(int in_max, int in_min)
@@ -57,8 +56,8 @@ void cHistogram::Resize(int new_max, int new_min)
 
   // Setup new bins, copying over information...
   int cur_bin = 0;
-  int overlap_min = Max(min_bin, new_min);
-  int overlap_max = Min(max_bin, new_max);
+  int overlap_min = Apto::Max(min_bin, new_min);
+  int overlap_max = Apto::Min(max_bin, new_max);
 
   int * new_bins = new int[new_num_bins];
   for (cur_bin = new_min; cur_bin < min_bin; cur_bin++)

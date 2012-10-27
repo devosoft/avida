@@ -287,29 +287,19 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cArgContainer.cc
   ${TOOLS_DIR}/cArgSchema.cc
   ${TOOLS_DIR}/cBitArray.cc
-  ${TOOLS_DIR}/cConstBurstSchedule.cc
-  ${TOOLS_DIR}/cConstSchedule.cc
   ${TOOLS_DIR}/cDataFile.cc
   ${TOOLS_DIR}/cDataFileManager.cc
   ${TOOLS_DIR}/cDataManager_Base.cc
-  ${TOOLS_DIR}/cDemeProbSchedule.cc
   ${TOOLS_DIR}/cFile.cc
   ${TOOLS_DIR}/cHistogram.cc
   ${TOOLS_DIR}/cInitFile.cc
-  ${TOOLS_DIR}/cIntSum.cc
-  ${TOOLS_DIR}/cIntegratedSchedule.cc
-  ${TOOLS_DIR}/cIntegratedScheduleNode.cc
   ${TOOLS_DIR}/cMerit.cc
   ${TOOLS_DIR}/cOrderedWeightedIndex.cc
-  ${TOOLS_DIR}/cProbDemeProbSchedule.cc
-  ${TOOLS_DIR}/cProbSchedule.cc
   ${TOOLS_DIR}/cRunningAverage.cc
-  ${TOOLS_DIR}/cSchedule.cc
   ${TOOLS_DIR}/cString.cc
   ${TOOLS_DIR}/cStringIterator.cc
   ${TOOLS_DIR}/cStringList.cc
   ${TOOLS_DIR}/cStringUtil.cc
-  ${TOOLS_DIR}/cWeightedIndex.cc
 )
 SOURCE_GROUP(tools FILES ${TOOLS_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${TOOLS_SOURCES})

@@ -30,6 +30,7 @@
 #include "avida/private/util/GenomeLoader.h"
 
 #include "apto/rng.h"
+#include "apto/scheduler.h"
 
 #include "cActionLibrary.h"
 #include "cAnalyzeCommand.h"
@@ -56,12 +57,10 @@
 #include "cPhenotype.h"
 #include "cPhenPlastGenotype.h"
 #include "cPlasticPhenotype.h"
-#include "cProbSchedule.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
 #include "cResource.h"
 #include "cResourceHistory.h"
-#include "cSchedule.h"
 #include "cStringIterator.h"
 #include "cTestCPU.h"
 #include "cUserFeedback.h"
@@ -6724,7 +6723,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
     org_count_B += genotype->GetNumCPUs();
   }
   
-  int max_count = Max(org_count_A, org_count_B);
+  int max_count = Apto::Max(org_count_A, org_count_B);
   if (max_count > 10000) {
     cout << "Warning: more than 10,000 organisms in sub-population!" << endl;
   }
@@ -9155,10 +9154,8 @@ void cAnalyze::BatchCompete(cString cur_string)
   const int parent_batch_size = batch[batch_from].List().GetSize();
   
   /* Create scheduler. */
-  cSchedule* schedule = new cProbSchedule(
-                                          parent_batch_size,
-                                          m_world->GetRandom().GetInt(0x7FFFFFFF)
-                                          );
+  Apto::SmartPtr<Apto::Random> rng(new Apto::RNG::AvidaRNG(m_world->GetRandom().GetInt(m_world->GetRandom().MaxSeed())));
+  Apto::PriorityScheduler* schedule = new Apto::Scheduler::Probabilistic(parent_batch_size, rng);
   
   /* Initialize scheduler with fitness values per-organism. */
   Apto::Array<cAnalyzeGenotype*> genotype_array(parent_batch_size);
@@ -9195,14 +9192,14 @@ void cAnalyze::BatchCompete(cString cur_string)
     } else {
       fitness_array[array_pos] = 0.0;
     }
-    schedule->Adjust(array_pos, fitness_array[array_pos]);
+    schedule->AdjustPriority(array_pos, fitness_array[array_pos].GetDouble());
     array_pos++;
   }
   
   /* Use scheduler to sample organisms in "from" batch. */
   for(int i=0; i<batch_size; /* don't increment i yet */){
     /* Sample an organism. */
-    array_pos = schedule->GetNextID();
+    array_pos = schedule->Next();
     if(array_pos < 0){
       cout << "Warning: No organisms in origin batch have positive fitness, cannot sample to destination batch." << endl; 
       break;

@@ -468,20 +468,20 @@ void cStats::ZeroReactions()
 
 void cStats::ZeroFTInst()
 {
-  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_prey_exe_inst_map.Values(); it.Next();) {
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
-  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
 }
 
 void cStats::ZeroMTInst()
 {
-  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_male_exe_inst_map.Values(); it.Next();) {
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_male_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < it.Get()->GetSize(); i++) it.Get()->Get(i).Clear();
   }
-  for (Apto::Map<cString, Apto::Array<cIntSum> >::ValueIterator it = m_is_female_exe_inst_map.Values(); it.Next();) {
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_female_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < it.Get()->GetSize(); i++) it.Get()->Get(i).Clear();
   }
 }
@@ -621,18 +621,18 @@ void cStats::PrintDemeAverageData(const cString& filename)
 
   df.Write(m_update,                                        "Update");
   df.Write(m_num_occupied_demes,                            "Count");
-  df.Write(sum_deme_age.Average(),                          "Age");
-  df.Write(sum_deme_birth_count.Average(),                  "Births");
-  df.Write(sum_deme_org_count.Average(),                    "Organisms");
-  df.Write(sum_deme_generation.Average(),                   "Generation");
-  df.Write(sum_deme_last_birth_count.Average(),                  "Births (at last replication)");
-  df.Write(sum_deme_last_org_count.Average(),                    "Organisms (at last replication)");
+  df.Write(sum_deme_age.Mean(),                          "Age");
+  df.Write(sum_deme_birth_count.Mean(),                  "Births");
+  df.Write(sum_deme_org_count.Mean(),                    "Organisms");
+  df.Write(sum_deme_generation.Mean(),                   "Generation");
+  df.Write(sum_deme_last_birth_count.Mean(),                  "Births (at last replication)");
+  df.Write(sum_deme_last_org_count.Mean(),                    "Organisms (at last replication)");
   df.Write(sum_deme_merit.Average(),                        "Merit");
-  df.Write(sum_deme_gestation_time.Average(),               "Gestation Time");
+  df.Write(sum_deme_gestation_time.Mean(),               "Gestation Time");
   df.Write(sum_deme_normalized_time_used.Average(),         "Time Used (normalized by org fitness)");
   df.Write(sum_deme_generations_per_lifetime.Average(),     "Generations between current and last founders");
-  df.Write(sum_deme_events_killed.Average(),                "Events killed");
-  df.Write(sum_deme_events_kill_attempts.Average(),         "Attempts to kill event");
+  df.Write(sum_deme_events_killed.Mean(),                "Events killed");
+  df.Write(sum_deme_events_kill_attempts.Mean(),         "Attempts to kill event");
 
   df.Endl();
 }
@@ -657,12 +657,12 @@ void cStats::PrintFlowRateTuples(const cString& filename) {
     string flow_rate_total_sleeping_str(flow_rate_str+" total sleeping");
 
     df.Write((*iter).first, flow_rate_str.c_str());
-    df.Write((*iter).second.orgCount.Average(), flow_rate_pop_size_str.c_str());
-    df.Write((*iter).second.eventsKilled.Average(), flow_rate_events_killed_str.c_str());
-    df.Write((*iter).second.attemptsToKillEvents.Average(), flow_rate_events_attempted_to_kill_str.c_str());
+    df.Write((*iter).second.orgCount.Mean(), flow_rate_pop_size_str.c_str());
+    df.Write((*iter).second.eventsKilled.Mean(), flow_rate_events_killed_str.c_str());
+    df.Write((*iter).second.attemptsToKillEvents.Mean(), flow_rate_events_attempted_to_kill_str.c_str());
     df.Write((*iter).second.AvgEnergyUsageRatio.Average(), flow_rate_exe_ratio_str.c_str());
-    df.Write((*iter).second.totalBirths.Average(), flow_rate_total_births_str.c_str());
-    df.Write((*iter).second.currentSleeping.Average(), flow_rate_total_sleeping_str.c_str());
+    df.Write((*iter).second.totalBirths.Mean(), flow_rate_total_births_str.c_str());
+    df.Write((*iter).second.currentSleeping.Mean(), flow_rate_total_sleeping_str.c_str());
 
   }
   df.Endl();
@@ -2133,7 +2133,7 @@ void cStats::PrintAvgDemeTasksExeData(const cString& filename)
   cDataFile& df = m_world->GetDataFile(filename);
   const int num_demes = m_world->GetPopulation().GetNumDemes();
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-  cIntSum tasksum;
+  Apto::Stat::Accumulator<int> tasksum;
 
   df.WriteComment("Avida average deme tasks data");
   df.WriteTimeStamp();
@@ -2150,7 +2150,7 @@ void cStats::PrintAvgDemeTasksExeData(const cString& filename)
       cDeme& deme = m_world->GetPopulation().GetDeme(d);
       tasksum.Add(deme.GetLastTaskExeCount()[t]);
     }
-    df.Write(tasksum.Average(), task_names[t]);
+    df.Write(tasksum.Mean(), task_names[t]);
   }
   df.Endl();
 }
@@ -2161,7 +2161,7 @@ void cStats::PrintAvgTreatableDemeTasksExeData(const cString& filename)
   cDataFile& df = m_world->GetDataFile(filename);
   const int num_demes = m_world->GetPopulation().GetNumDemes();
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-  cIntSum tasksum;
+  Apto::Stat::Accumulator<int> tasksum;
 
   df.WriteComment("Avida average tasks data for treatable demes");
   df.WriteTimeStamp();
@@ -2180,7 +2180,7 @@ void cStats::PrintAvgTreatableDemeTasksExeData(const cString& filename)
         tasksum.Add(deme.GetLastTaskExeCount()[t]);
       }
     }
-    df.Write(tasksum.Average(), task_names[t]);
+    df.Write(tasksum.Mean(), task_names[t]);
   }
   df.Endl();
 }
@@ -2190,7 +2190,7 @@ void cStats::PrintAvgUntreatableDemeTasksExeData(const cString& filename) {
   cDataFile& df = m_world->GetDataFile(filename);
   const int num_demes = m_world->GetPopulation().GetNumDemes();
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-  cIntSum tasksum;
+  Apto::Stat::Accumulator<int> tasksum;
 
   df.WriteComment("Avida average tasks data for untreatable demes");
   df.WriteTimeStamp();
@@ -2209,7 +2209,7 @@ void cStats::PrintAvgUntreatableDemeTasksExeData(const cString& filename) {
         tasksum.Add(deme.GetLastTaskExeCount()[t]);
       }
     }
-    df.Write(tasksum.Average(), task_names[t]);
+    df.Write(tasksum.Mean(), task_names[t]);
   }
   df.Endl();
 }
@@ -2668,7 +2668,7 @@ void cStats::PrintOpinionsSetPerDeme(const cString& filename) {
 	df.WriteComment("This files shows data for both treatable and untreatable demes.");
 	df.WriteTimeStamp();
 
-	cIntSum    treatableOpinionCounts, untreatableOpinionCounts;
+	Apto::Stat::Accumulator<int>    treatableOpinionCounts, untreatableOpinionCounts;
 	cDoubleSum treatableDensityCounts, untreatableDensityCounts;
 	treatableOpinionCounts.Clear();
 	untreatableOpinionCounts.Clear();
@@ -2695,13 +2695,13 @@ void cStats::PrintOpinionsSetPerDeme(const cString& filename) {
 
 	df.Write(GetUpdate(), "Update [update]");
 
-	if(treatableOpinionCounts.N() > 0 && untreatableOpinionCounts.N() > 0) {
-		df.Write(treatableOpinionCounts.Average(), "Average number of opinions set in Treatable demes");
-		df.Write(untreatableOpinionCounts.Average(), "Average number of opinions set in Unreatable demes");
+	if(treatableOpinionCounts.Count() > 0 && untreatableOpinionCounts.Count() > 0) {
+		df.Write(treatableOpinionCounts.Mean(), "Average number of opinions set in Treatable demes");
+		df.Write(untreatableOpinionCounts.Mean(), "Average number of opinions set in Unreatable demes");
 		df.Write(treatableDensityCounts.Average(), "Average density of Treatable demes");
 		df.Write(untreatableDensityCounts.Average(), "Average density of Unreatable demes");
 	} else {
-		df.Write(untreatableOpinionCounts.Average(), "Average number of opinions set in demes");
+		df.Write(untreatableOpinionCounts.Mean(), "Average number of opinions set in demes");
 		df.Write(untreatableDensityCounts.Average(), "Average density of demes");
 	}
 	df.Endl();
@@ -2828,9 +2828,9 @@ void cStats::PrintNumOrgsKilledData(const cString& filename)
   df.WriteComment("First column is the current update and the second column lists the number of organisms killed");
 
   df.Write(m_update,   "Update");
-  df.Write(sum_orgs_killed.Average(), "Avg Num Orgs Killed");
-  df.Write(sum_unoccupied_cell_kill_attempts.Average(), "Avg Num Unoccupied Cell Kill Attempts");
-  df.Write(sum_cells_scanned_at_kill.Average(), "Avg Num Cells Scanned By Kill Event");
+  df.Write(sum_orgs_killed.Mean(), "Avg Num Orgs Killed");
+  df.Write(sum_unoccupied_cell_kill_attempts.Mean(), "Avg Num Unoccupied Cell Kill Attempts");
+  df.Write(sum_cells_scanned_at_kill.Mean(), "Avg Num Cells Scanned By Kill Event");
   df.Endl();
 
   sum_orgs_killed.Clear();

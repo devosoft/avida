@@ -30,10 +30,11 @@
 #include "avida/core/InstructionSequence.h"
 #include "avida/data/Provider.h"
 
+#include "apto/stat/Accumulator.h"
+
 #include "cBirthEntry.h"
 #include "cDoubleSum.h"
 #include "cGenomeUtil.h"
-#include "cIntSum.h"
 #include "cOrganism.h"
 #include "cRunningAverage.h"
 #include "cRunningStats.h"
@@ -61,12 +62,12 @@ using namespace Avida;
 
 
 struct flow_rate_tuple {
-  cIntSum orgCount;
-  cIntSum eventsKilled;
-  cIntSum attemptsToKillEvents;
+  Apto::Stat::Accumulator<int> orgCount;
+  Apto::Stat::Accumulator<int> eventsKilled;
+  Apto::Stat::Accumulator<int> attemptsToKillEvents;
   cDoubleSum AvgEnergyUsageRatio;
-  cIntSum totalBirths;
-  cIntSum currentSleeping;
+  Apto::Stat::Accumulator<int> totalBirths;
+  Apto::Stat::Accumulator<int> currentSleeping;
 };
 
 struct s_inst_circumstances {
@@ -146,10 +147,10 @@ private:
   Apto::Map<cString, Apto::Array<cString> > m_is_inst_names_map;
   Apto::Array<pair<int,int> > m_is_tolerance_exe_counts;
   Apto::Array<s_inst_circumstances, Apto::Smart> m_is_tolerance_exe_insts;
-  Apto::Map<cString, Apto::Array<cIntSum> > m_is_prey_exe_inst_map;
-  Apto::Map<cString, Apto::Array<cIntSum> > m_is_pred_exe_inst_map;
-  Apto::Map<cString, Apto::Array<cIntSum> > m_is_male_exe_inst_map;
-  Apto::Map<cString, Apto::Array<cIntSum> > m_is_female_exe_inst_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_prey_exe_inst_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_exe_inst_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_male_exe_inst_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_female_exe_inst_map;
   
   // --------  Calculated Stats  ---------
 
@@ -264,20 +265,20 @@ private:
 
 
   // --------  Deme Stats  ---------
-  cIntSum sum_deme_age;
-  cIntSum sum_deme_birth_count;
-  cIntSum sum_deme_last_birth_count;
-  cIntSum sum_deme_org_count;
-  cIntSum sum_deme_last_org_count;
-  cIntSum sum_deme_generation;
-  cIntSum sum_deme_gestation_time;
+  Apto::Stat::Accumulator<int> sum_deme_age;
+  Apto::Stat::Accumulator<int> sum_deme_birth_count;
+  Apto::Stat::Accumulator<int> sum_deme_last_birth_count;
+  Apto::Stat::Accumulator<int> sum_deme_org_count;
+  Apto::Stat::Accumulator<int> sum_deme_last_org_count;
+  Apto::Stat::Accumulator<int> sum_deme_generation;
+  Apto::Stat::Accumulator<int> sum_deme_gestation_time;
   cDoubleSum sum_deme_normalized_time_used;
   cDoubleSum sum_deme_merit;
   cDoubleSum sum_deme_generations_per_lifetime;
   int m_num_occupied_demes;
 
-  cIntSum sum_deme_events_killed;
-  cIntSum sum_deme_events_kill_attempts;
+  Apto::Stat::Accumulator<int> sum_deme_events_killed;
+  Apto::Stat::Accumulator<int> sum_deme_events_kill_attempts;
 
   cDoubleSum EnergyTestamentToFutureDeme;
   cDoubleSum EnergyTestamentToNeighborOrganisms;
@@ -296,9 +297,9 @@ private:
 
 
   // --------  Organism Kill Stats  ---------
-  cIntSum sum_orgs_killed;
-  cIntSum sum_unoccupied_cell_kill_attempts;
-  cIntSum sum_cells_scanned_at_kill;
+  Apto::Stat::Accumulator<int> sum_orgs_killed;
+  Apto::Stat::Accumulator<int> sum_unoccupied_cell_kill_attempts;
+  Apto::Stat::Accumulator<int> sum_cells_scanned_at_kill;
 
 
   // --------  Migration Stats  ---------
@@ -433,19 +434,19 @@ public:
   cDoubleSum& SumMemSize()       { return sum_mem_size; }
 
   //deme
-  cIntSum& SumDemeAge()          { return sum_deme_age; }
-  cIntSum& SumDemeBirthCount()   { return sum_deme_birth_count; }
-  cIntSum& SumDemeLastBirthCount()   { return sum_deme_last_birth_count; }
-  cIntSum& SumDemeOrgCount()     { return sum_deme_org_count; }
-  cIntSum& SumDemeLastOrgCount()     { return sum_deme_last_org_count; }
-  cIntSum& SumDemeGeneration()   { return sum_deme_generation; }
-  cIntSum& SumDemeGestationTime()   { return sum_deme_gestation_time; }
+  Apto::Stat::Accumulator<int>& SumDemeAge()          { return sum_deme_age; }
+  Apto::Stat::Accumulator<int>& SumDemeBirthCount()   { return sum_deme_birth_count; }
+  Apto::Stat::Accumulator<int>& SumDemeLastBirthCount()   { return sum_deme_last_birth_count; }
+  Apto::Stat::Accumulator<int>& SumDemeOrgCount()     { return sum_deme_org_count; }
+  Apto::Stat::Accumulator<int>& SumDemeLastOrgCount()     { return sum_deme_last_org_count; }
+  Apto::Stat::Accumulator<int>& SumDemeGeneration()   { return sum_deme_generation; }
+  Apto::Stat::Accumulator<int>& SumDemeGestationTime()   { return sum_deme_gestation_time; }
   cDoubleSum& SumDemeNormalizedTimeUsed()   { return sum_deme_normalized_time_used; }
   cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
   cDoubleSum& SumDemeGenerationsPerLifetime()   { return sum_deme_generations_per_lifetime; }
 
-  cIntSum& SumDemeEventsKilled()          { return sum_deme_events_killed; }
-  cIntSum& SumDemeAttemptsToKillEvents()          { return sum_deme_events_kill_attempts; }
+  Apto::Stat::Accumulator<int>& SumDemeEventsKilled()          { return sum_deme_events_killed; }
+  Apto::Stat::Accumulator<int>& SumDemeAttemptsToKillEvents()          { return sum_deme_events_kill_attempts; }
 
   cDoubleSum& SumEnergyTestamentToFutureDeme() { return EnergyTestamentToFutureDeme;}
   cDoubleSum& SumEnergyTestamentToNeighborOrganisms() { return EnergyTestamentToNeighborOrganisms; }
@@ -460,7 +461,7 @@ public:
   cDoubleSum& SumPreyCreatureAge()   { return sum_prey_creature_age; }
   cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
   cDoubleSum& SumPreySize()          { return sum_prey_size; }
-  Apto::Array<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
 
   cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
   cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
@@ -468,7 +469,7 @@ public:
   cDoubleSum& SumPredCreatureAge()   { return sum_pred_creature_age; }
   cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
-  Apto::Array<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   void ZeroFTInst();
   
   //mating type/male-female accessors
@@ -478,7 +479,7 @@ public:
   cDoubleSum& SumMaleCreatureAge()   { return sum_male_creature_age; }
   cDoubleSum& SumMaleGeneration()    { return sum_male_generation; }
   cDoubleSum& SumMaleSize()          { return sum_male_size; }
-  Apto::Array<cIntSum>& InstMaleExeCountsForInstSet(const cString& inst_set) { return m_is_male_exe_inst_map[inst_set]; }
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstMaleExeCountsForInstSet(const cString& inst_set) { return m_is_male_exe_inst_map[inst_set]; }
   
   cDoubleSum& SumFemaleFitness()       { return sum_female_fitness; }
   cDoubleSum& SumFemaleGestation()     { return sum_female_gestation; }
@@ -486,7 +487,7 @@ public:
   cDoubleSum& SumFemaleCreatureAge()   { return sum_female_creature_age; }
   cDoubleSum& SumFemaleGeneration()    { return sum_female_generation; }
   cDoubleSum& SumFemaleSize()          { return sum_female_size; }
-  Apto::Array<cIntSum>& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstFemaleExeCountsForInstSet(const cString& inst_set) { return m_is_female_exe_inst_map[inst_set]; }
   void ZeroMTInst();
   
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
@@ -513,19 +514,19 @@ public:
   const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
 
   //deme
-  const cIntSum& SumDemeAge() const          { return sum_deme_age; }
-  const cIntSum& SumDemeBirthCount() const   { return sum_deme_birth_count; }
-  const cIntSum& SumDemeLastBirthCount() const   { return sum_deme_last_birth_count; }
-  const cIntSum& SumDemeOrgCount() const     { return sum_deme_org_count; }
-  const cIntSum& SumDemeLastOrgCount() const     { return sum_deme_last_org_count; }
-  const cIntSum& SumDemeGeneration() const   { return sum_deme_generation; }
-  const cIntSum& SumDemeGestationTime() const  { return sum_deme_generation; }
+  const Apto::Stat::Accumulator<int>& SumDemeAge() const          { return sum_deme_age; }
+  const Apto::Stat::Accumulator<int>& SumDemeBirthCount() const   { return sum_deme_birth_count; }
+  const Apto::Stat::Accumulator<int>& SumDemeLastBirthCount() const   { return sum_deme_last_birth_count; }
+  const Apto::Stat::Accumulator<int>& SumDemeOrgCount() const     { return sum_deme_org_count; }
+  const Apto::Stat::Accumulator<int>& SumDemeLastOrgCount() const     { return sum_deme_last_org_count; }
+  const Apto::Stat::Accumulator<int>& SumDemeGeneration() const   { return sum_deme_generation; }
+  const Apto::Stat::Accumulator<int>& SumDemeGestationTime() const  { return sum_deme_generation; }
   const cDoubleSum& SumDemeNormalizedTimeUsed() const  { return sum_deme_normalized_time_used; }
   const cDoubleSum& SumDemeMerit()  const  { return sum_deme_merit; }
   const cDoubleSum& SumDemeGenerationsPerLifetime() const  { return sum_deme_generations_per_lifetime; }
 
-  const cIntSum& SumDemeEventsKilled() const          { return sum_deme_events_killed; }
-  const cIntSum& SumDemeAttemptsToKillEvents() const  { return sum_deme_events_kill_attempts; }
+  const Apto::Stat::Accumulator<int>& SumDemeEventsKilled() const          { return sum_deme_events_killed; }
+  const Apto::Stat::Accumulator<int>& SumDemeAttemptsToKillEvents() const  { return sum_deme_events_kill_attempts; }
 
   const cDoubleSum& SumEnergyTestamentToFutureDeme() const { return EnergyTestamentToFutureDeme;}
   const cDoubleSum& SumEnergyTestamentToNeighborOrganisms() const { return EnergyTestamentToNeighborOrganisms; }
@@ -713,8 +714,8 @@ public:
   double GetAveSpeculative() const { return (m_spec_num) ? ((double)m_spec_total / (double)m_spec_num) : 0.0; }
   int GetSpeculativeWaste() const { return m_spec_waste; }
 
-  double GetAvgNumOrgsKilled() const { return sum_orgs_killed.Average(); }
-  double GetAvgNumCellsScannedAtKill() const { return sum_cells_scanned_at_kill.Average(); }
+  double GetAvgNumOrgsKilled() const { return sum_orgs_killed.Mean(); }
+  double GetAvgNumCellsScannedAtKill() const { return sum_cells_scanned_at_kill.Mean(); }
   int GetNumMigrations() const { return num_migrations; }
   
   // Pred-Prey

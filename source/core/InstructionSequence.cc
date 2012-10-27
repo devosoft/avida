@@ -297,7 +297,7 @@ void Avida::InstructionSequence::Replace(const InstructionSequence& g, int begin
 		// replacement wraps around the end.  two different replacements to do now: [begin, size) and [0, end).
 		
 		// first, replace the [begin, size) region of this sequence with as much of g as we can get.
-		int tail_size = Min(m_active_size - begin, g.GetSize());
+		int tail_size = Apto::Min(m_active_size - begin, g.GetSize());
 		InstructionSequence tail = g.Crop(0, tail_size);
 		Replace(begin, (m_active_size - begin), tail);
 
@@ -417,7 +417,7 @@ int Avida::InstructionSequence::MinDistBetween(const Instruction& inst) const
 		}			
     
 		if (firstInstance != secondInstance) {
-			minDist = Min(Min(Abs(firstInstance - secondInstance), secondInstance + m_active_size - firstInstance), minDist);
+			minDist = Apto::Min(Apto::Min(Abs(firstInstance - secondInstance), secondInstance + m_active_size - firstInstance), minDist);
 			assert(minDist > 0);
 		} else { // they are equal, so there is only one instance of inst
 			return 0;
@@ -479,9 +479,9 @@ int Avida::InstructionSequence::FindOverlap(const InstructionSequence& seq1, con
   assert(offset < seq1.GetSize());
   assert(-offset < seq2.GetSize());
   
-  if (offset > 0) return Min(seq1.GetSize() - offset, seq2.GetSize());
+  if (offset > 0) return Apto::Min(seq1.GetSize() - offset, seq2.GetSize());
 
-  return Min(seq2.GetSize() + offset, seq1.GetSize());
+  return Apto::Min(seq2.GetSize() + offset, seq1.GetSize());
 }
 
 

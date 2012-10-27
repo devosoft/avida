@@ -397,7 +397,7 @@ void cSpatialResCount::Sink(double decay) const {
   for (i = outflowY1; i <= outflowY2; i++) {
     for (j = outflowX1; j <= outflowX2; j++) {
       elem = (Mod(i,world_y) * world_x) + Mod(j,world_x);
-      deltaamount = Max((GetAmount(elem) * (1.0 - decay)), 0.0);
+      deltaamount = Apto::Max((GetAmount(elem) * (1.0 - decay)), 0.0);
       Rate(elem,-deltaamount); 
     }
   }
@@ -416,8 +416,7 @@ void cSpatialResCount::CellOutflow() const {
        the resource for the testCPU that does not have a grid set up */
        
     if (cell_id >= 0 && cell_id < grid.GetSize()) {
-      deltaamount = Max((GetAmount(cell_id) *
-                         (*cell_list_ptr)[i].GetOutflow()), 0.0);
+      deltaamount = Apto::Max((GetAmount(cell_id) * (*cell_list_ptr)[i].GetOutflow()), 0.0);
     }                     
     Rate((*cell_list_ptr)[i].GetId(), -deltaamount); 
   }
