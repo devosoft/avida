@@ -347,7 +347,6 @@ void cHardwareMBE::internalReset()
   m_thread_id_chart = 1; // Mark only the first thread as taken...
   m_cur_thread = 0;
   m_waiting_threads = 0;
-  m_threads[0].SetCurrBehav(1);
   
   m_mal_active = false;
   m_executedmatchstrings = false;
@@ -366,10 +365,17 @@ void cHardwareMBE::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
   
-  for (int i = 0; i < NUM_REGISTERS; i++) { for (int j = 0; j < NUM_BEHAVIORS; j++) behav[j].reg[i] = in_thread.behav[j].reg[i]; }
+  bcs_used = in_thread.bcs_used;
+  for (int i = 0; i < NUM_BEHAVIORS; i++) {
+    bcs_used[i] = false;
+    behav[i].stack = in_thread.behav[i].stack;
+    behav[i].cur_stack = in_thread.behav[i].cur_stack;
+    for (int j = 0; j < NUM_REGISTERS; j++) {
+      behav[i].reg[j] = in_thread.behav[i].reg[j];
+    }
+  }
+  
   for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
-  stack = in_thread.stack;
-  cur_stack = in_thread.cur_stack;
   cur_head = in_thread.cur_head;
   reading_label = in_thread.reading_label;
   reading_seq = in_thread.reading_seq;
@@ -384,18 +390,26 @@ void cHardwareMBE::cLocalThread::operator=(const cLocalThread& in_thread)
   read_label = in_thread.read_label;
   read_seq = in_thread.read_seq;
   next_label = in_thread.next_label;
-  m_curr_behav = in_thread.m_curr_behav;
+  curr_behav = in_thread.curr_behav;
+  next_behav = in_thread.next_behav;
+  bc_used_count = 0;
 }
 
 void cHardwareMBE::cLocalThread::Reset(cHardwareMBE* in_hardware, int in_id)
 {
   m_id = in_id;
   
-  for (int i = 0; i < NUM_REGISTERS; i++)  { for (int j = 0; j < NUM_BEHAVIORS; j++) behav[j].reg[i].Clear(); }
+  bcs_used.Resize(NUM_BEHAVIORS);
+  for (int i = 0; i < NUM_BEHAVIORS; i++) {
+    bcs_used[i] = false;
+    behav[i].stack.Clear();
+    behav[i].cur_stack = 0;
+    for (int j = 0; j < NUM_REGISTERS; j++) {
+      behav[i].reg[j].Clear();
+    }
+  }
   for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
   
-  stack.Clear();
-  cur_stack = 0;
   cur_head = nHardware::HEAD_IP;
   
   reading_label = false;
@@ -403,7 +417,9 @@ void cHardwareMBE::cLocalThread::Reset(cHardwareMBE* in_hardware, int in_id)
   active = true;
   read_label.Clear();
   next_label.Clear();
-  m_curr_behav = 0;
+  curr_behav = 0;
+  next_behav = -1;
+  bc_used_count = 0;
 
   m_messageTriggerType = -1;
 }
@@ -454,31 +470,35 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (num_thrd_exec == 1) i--;  // When running in non-parallel mode, adjust i so that we will continue to loop
       continue;
     }
-    
-    // per inst execution type (aka thread classes):
-    int types_used = 0;
-    int type_exec_count = 0;
-    Apto::Array<bool> classes_used(NUM_BEHAVIORS);
-    classes_used.SetAll(false);
-    
-    while (types_used < NUM_BEHAVIORS) {
-      type_exec_count++;
-      if (type_exec_count >= 0x8000) break;   // APW
-      assert(type_exec_count < 0x8000);
+        
+    m_threads[m_cur_thread].ClearBCStats();
+    int bc_exec_count = 0;
+    // per inst execution type (aka behavioral process classes):
+    while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS) {
+      bc_exec_count++;
+      if (bc_exec_count >= 0x8000) break;   // APW
+      assert(bc_exec_count < 0x8000);
 
       m_advance_ip = true;
       cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
       ip.Adjust();
     
       // execute all no-class instructions, exiting if we hit an instruction from the current class and 'jumping'
-      // to a new class if we hit an instruction from a different classthre)
+      // to a new class if we hit an instruction from a different class or org has used BREAK instruction
+      
+      // allow orgs to do preprocessing (CLASS_NONE) before hitting an instruction in the intended class
+      if (m_threads[m_cur_thread].GetNextBehav() > -1) {
+        m_threads[m_cur_thread].SetCurrBehav(m_threads[m_cur_thread].GetNextBehav());
+        m_threads[m_cur_thread].SetNextBehav(-1);
+      }
+
       BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
-      // if we have already used this class in this cycle in this thread you're done
+      // if we have already used this class in this cycle in this thread you're done      
       if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
-        if (classes_used[BEHAV_CLASS]) break;
-        if (BEHAV_CLASS != m_threads[m_cur_thread].GetCurrBehav()) {
-          m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
-        }
+        if (m_threads[m_cur_thread].GetBCsUsed()[BEHAV_CLASS]) break;
+        if (BEHAV_CLASS != m_threads[m_cur_thread].GetCurrBehav()) m_threads[m_cur_thread].SetBCUsedCount(m_threads[m_cur_thread].GetBCUsedCount() + 1);
+        m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
+        m_threads[m_cur_thread].SetBCsUsed(BEHAV_CLASS, true);
       }
       
       // Print the status of this CPU at each step...
@@ -563,10 +583,6 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
           RecordMicroTrace(cur_inst);
           if (m_topnavtrace) RecordNavTrace(m_use_avatar);
         }
-      }
-      // when you switch classes, increment type counter--ignoring BEHAV_CLASS_NONE instructions
-      if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
-        if (!classes_used[BEHAV_CLASS]) { classes_used[BEHAV_CLASS] = true; types_used++; }
       }
     } // end per execution type
   } // Previous was executed once for each thread...
@@ -662,7 +678,7 @@ void cHardwareMBE::PrintStatus(ostream& fp)
   
   int number_of_stacks = GetNumStacks();
   for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
-    fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
+    fp << ((m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
     for (int i = 0; i < nHardware::STACK_SIZE; i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
     fp << setfill(' ') << setbase(10) << endl;
   }
@@ -1447,10 +1463,10 @@ bool cHardwareMBE::Inst_SetBehavior(cAvidaContext&)
   const int reg_used = FindModifiedRegister(rAX);
   int behavior = (reg_used % NUM_BEHAVIORS) % NUM_REGISTERS;
   
-  if (m_inst_set->IsNop(getIP().GetNextInst())) m_threads[m_cur_thread].SetCurrBehav(behavior);
-  else m_threads[m_cur_thread].SetCurrBehav((m_threads[m_cur_thread].GetCurrBehav() + 1) % NUM_BEHAVIORS);
+  if (m_inst_set->IsNop(getIP().GetNextInst())) m_threads[m_cur_thread].SetNextBehav(behavior);
+  else m_threads[m_cur_thread].SetNextBehav((m_threads[m_cur_thread].GetCurrBehav() + 1) % NUM_BEHAVIORS);
   
-  setInternalValue(reg_used, m_threads[m_cur_thread].GetCurrBehav(), false);
+  setInternalValue(reg_used, m_threads[m_cur_thread].GetNextBehav(), false);
   return true;
 }
 
@@ -1560,7 +1576,7 @@ bool cHardwareMBE::Inst_Pop(cAvidaContext&)
 bool cHardwareMBE::Inst_Push(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
+  getStack(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack).Push(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
   return true;
 }
 
@@ -1580,7 +1596,7 @@ bool cHardwareMBE::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
+    getStack(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack).Push(m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_used]);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }

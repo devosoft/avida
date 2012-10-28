@@ -73,7 +73,6 @@ private:
   static tInstLib<cHardwareMBE::tMethod>* s_inst_slib;
   static tInstLib<cHardwareMBE::tMethod>* initInstLib(void);
   
-  
   // --------  Define Internal Data Structures  --------
   struct sInternalValue
   {
@@ -116,14 +115,14 @@ private:
 #undef SIZE
   };
   
-  struct cBehavCat
+  struct cBehavProc
   {
   private:
   public:
     sInternalValue reg[NUM_REGISTERS];
-/*    cLocalStack stack;
+    cLocalStack stack;
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
-    unsigned char cur_head;
+/*    unsigned char cur_head;
     
     struct {
       bool active:1;
@@ -135,11 +134,11 @@ private:
     };
     int wait_value;
 */
-    inline cBehavCat() { ; }
-    cBehavCat(cHardwareMBE* in_hardware) { Reset(in_hardware); }
-    ~cBehavCat() { ; }
+    inline cBehavProc() { ; }
+    cBehavProc(cHardwareMBE* in_hardware) { Reset(in_hardware); }
+    ~cBehavProc() { ; }
     
-    void operator=(const cBehavCat& in_cat);
+    void operator=(const cBehavProc& in_proc);
     void Reset(cHardwareMBE* in_hardware);
   };
 
@@ -148,12 +147,14 @@ private:
   private:
     int m_id;
     int m_messageTriggerType;
-    int m_curr_behav;
+    int curr_behav;
+    int next_behav;
+    int bc_used_count;
+    Apto::Array<bool> bcs_used;
+  
   public:
-    cBehavCat behav[NUM_BEHAVIORS];
+    cBehavProc behav[NUM_BEHAVIORS];
     cHeadCPU heads[NUM_HEADS];
-    cLocalStack stack;
-    unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
     
     struct {
@@ -183,8 +184,19 @@ private:
     // multi-thread control
     inline void setMessageTriggerType(int value) { m_messageTriggerType = value; }
     inline int getMessageTriggerType() { return m_messageTriggerType; }
-    inline void SetCurrBehav(int behav) { m_curr_behav = behav; }
-    inline int GetCurrBehav() const { return m_curr_behav; }
+    
+    inline void SetCurrBehav(int behav) { curr_behav = behav; }
+    inline int GetCurrBehav() const { return curr_behav; }
+    inline void SetNextBehav(int behav) { next_behav = behav; }
+    inline int GetNextBehav() const { return next_behav; }
+    
+    inline void ClearBCStats() { bc_used_count = 0; for (int i = 0; i < NUM_BEHAVIORS; i++) bcs_used[i] = false; }
+    
+    inline Apto::Array<bool>& GetBCsUsed() { return bcs_used; }
+    inline void SetBCsUsed(int idx, bool val) { bcs_used[idx] = val; }
+
+    inline int GetBCUsedCount() const { return bc_used_count; }
+    inline void SetBCUsedCount(int count) { bc_used_count = count; }
   };
   
   // --------  Member Variables  --------
@@ -290,7 +302,7 @@ public:
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
   // --------  Non-Standard Methods  --------
-  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
+  int GetActiveStack() const { return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack; }
   bool GetMalActive() const   { return m_mal_active; }
 
 
@@ -607,8 +619,8 @@ inline void cHardwareMBE::ThreadPrev()
 
 inline cHardwareMBE::sInternalValue cHardwareMBE::stackPop()
 {
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    return m_threads[m_cur_thread].stack.Pop();
+  if (m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack == 0) {
+    return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack.Pop();
   } else {
     return m_global_stack.Pop();
   }
@@ -617,7 +629,7 @@ inline cHardwareMBE::sInternalValue cHardwareMBE::stackPop()
 inline cHardwareMBE::cLocalStack& cHardwareMBE::getStack(int stack_id)
 {
   if (stack_id == 0) {
-    return m_threads[m_cur_thread].stack;
+    return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack;
   } else {
     return m_global_stack;
   }
@@ -625,8 +637,8 @@ inline cHardwareMBE::cLocalStack& cHardwareMBE::getStack(int stack_id)
 
 inline void cHardwareMBE::switchStack()
 {
-  m_threads[m_cur_thread].cur_stack++;
-  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
+  m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack++;
+  if (m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack > 1) m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack = 0;
 }
 
 
@@ -636,9 +648,9 @@ inline int cHardwareMBE::GetStack(int depth, int stack_id, int in_thread) const
 
   if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 
-  if (stack_id == -1) stack_id = m_threads[in_thread].cur_stack;
+  if (stack_id == -1) stack_id = m_threads[in_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack;
 
-  if (stack_id == 0) value = m_threads[in_thread].stack.Get(depth);
+  if (stack_id == 0) value = m_threads[in_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack.Get(depth);
   else if (stack_id == 1) value = m_global_stack.Get(depth);
 
   return value.value;
