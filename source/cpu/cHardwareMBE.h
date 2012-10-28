@@ -122,9 +122,7 @@ private:
     sInternalValue reg[NUM_REGISTERS];
     cLocalStack stack;
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
-/*    unsigned char cur_head;
-    
-    struct {
+/*  struct {
       bool active:1;
       bool wait_greater:1;
       bool wait_equal:1;

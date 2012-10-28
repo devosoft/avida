@@ -475,6 +475,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
     int bc_exec_count = 0;
     // per inst execution type (aka behavioral process classes):
     while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS) {
+      if (!m_threads[m_cur_thread].active) break;
       bc_exec_count++;
       if (bc_exec_count >= 0x8000) break;   // APW
       assert(bc_exec_count < 0x8000);
@@ -585,6 +586,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
         }
       }
     } // end per execution type
+    if (phenotype.GetToDelete()) break;
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed
