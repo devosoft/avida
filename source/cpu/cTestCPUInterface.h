@@ -201,7 +201,6 @@ public:
   void DecNumPredOrganisms() { ; }
   void IncNumPreyOrganisms() { ; }
   void IncNumPredOrganisms() { ; }
-  void RecordMinPreyFailedAttack() { ; }
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }

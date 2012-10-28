@@ -913,7 +913,6 @@ public:
   void PrintPredatorErrorData(const cString& filename);
   void PrintPreyVarianceData(const cString& filename);
   void PrintPredatorVarianceData(const cString& filename);
-  void PrintMinPreyFailedAttacks(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
   void PrintStatsData(const cString& filename);

@@ -114,7 +114,6 @@ STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
 STATS_OUT_FILE(PrintPredatorErrorData,      predator_error.dat   );
 STATS_OUT_FILE(PrintPreyVarianceData,       prey_variance.dat   );
 STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
-STATS_OUT_FILE(PrintMinPreyFailedAttacks,   failed_attacks.dat   );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
@@ -4873,7 +4872,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorErrorData>("PrintPredatorErrorData");
   action_lib->Register<cActionPrintPreyVarianceData>("PrintPreyVarianceData");
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
-  action_lib->Register<cActionPrintMinPreyFailedAttacks>("PrintMinPreyFailedAttacks");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");

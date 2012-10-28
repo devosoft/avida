@@ -4913,7 +4913,6 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
       (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();  
     double injury = m_world->GetConfig().PRED_INJURY.Get();
     if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   
@@ -5016,7 +5015,6 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
     
     if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
         (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
       double injury = m_world->GetConfig().PRED_INJURY.Get();
       if (injury > 0) InjureOrg(target, injury);
       setInternalValue(success_reg, -1, true);
@@ -5113,7 +5111,7 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
   else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
   
   if (friend_count == 0) return false;
-  double odds = m_world->GetConfig().PRED_ODDS.Get() * (friend_count * 2) + 1;
+  double odds = 0.4 + (0.1 * friend_count); // 1 friend = 50%, 5 friends = 100%
   
   const int success_reg = FindModifiedRegister(rBX);
   const int bonus_reg = FindModifiedNextRegister(success_reg);
@@ -5121,7 +5119,6 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
   
   if (m_world->GetRandom().GetDouble() >= odds ||
       (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
     double injury = m_world->GetConfig().PRED_INJURY.Get();
     if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);
@@ -5208,7 +5205,6 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
   
   if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();
     double injury = m_world->GetConfig().PRED_INJURY.Get();
     if (injury > 0) InjureOrg(target_org, injury);
     setInternalValue(success_reg, -1, true);
@@ -5307,7 +5303,6 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
       (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();  
     double injury = m_world->GetConfig().PRED_INJURY.Get();
     if (injury > 0) InjureOrg(target, injury);
     setInternalValue(success_reg, -1, true);   

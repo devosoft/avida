@@ -204,7 +204,6 @@ public:
   virtual void DecNumPredOrganisms() = 0;
   virtual void IncNumPreyOrganisms() = 0;
   virtual void IncNumPredOrganisms() = 0;
-  virtual void RecordMinPreyFailedAttack() = 0;
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;

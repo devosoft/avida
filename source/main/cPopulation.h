@@ -322,9 +322,6 @@ public:
   void DecNumPredOrganisms() { num_pred_organisms--; }
   void IncNumPreyOrganisms() { num_prey_organisms++; }
   void IncNumPredOrganisms() { num_pred_organisms++; }
-  void RecordMinPreyFailedAttack() { min_prey_failures.Push(m_world->GetStats().GetUpdate()); }
-  void ClearMinPreyFailedAttacks() { min_prey_failures.Resize(0); }
-  tArray<int> GetMinPreyFailedAttacks() { return min_prey_failures; }
   
   void RemovePredators(cAvidaContext& ctx);
    

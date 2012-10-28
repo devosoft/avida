@@ -1622,11 +1622,6 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
   m_world->GetPopulation().AttackFacedOrg(ctx, loser);
 }
 
-void cPopulationInterface::RecordMinPreyFailedAttack()
-{
-  m_world->GetPopulation().RecordMinPreyFailedAttack();
-}
-
 // -------- Avatar support --------
 /* Each organism carries an array of avatars linking the organism to any cells it is occupying.
  * Each cell contains an array of the organisms with avatars in that cell, linking the cells back to
