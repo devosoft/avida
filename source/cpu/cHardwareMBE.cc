@@ -474,7 +474,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_threads[m_cur_thread].ClearBCStats();
     int bc_exec_count = 0;
     // per inst execution type (aka behavioral process classes):
-    while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS) {
+    while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS + 1) {
       if (!m_threads[m_cur_thread].active) break;
       bc_exec_count++;
       if (bc_exec_count >= 0x8000) break;   // APW
@@ -491,15 +491,14 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (m_threads[m_cur_thread].GetNextBehav() > -1) {
         m_threads[m_cur_thread].SetCurrBehav(m_threads[m_cur_thread].GetNextBehav());
         m_threads[m_cur_thread].SetNextBehav(-1);
+        if (m_threads[m_cur_thread].GetBCsUsed()[m_threads[m_cur_thread].GetCurrBehav()]) break;
       }
 
       BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
       // if we have already used this class in this cycle in this thread you're done      
       if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
         if (m_threads[m_cur_thread].GetBCsUsed()[BEHAV_CLASS]) break;
-        if (BEHAV_CLASS != m_threads[m_cur_thread].GetCurrBehav()) m_threads[m_cur_thread].SetBCUsedCount(m_threads[m_cur_thread].GetBCUsedCount() + 1);
-        m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
-        m_threads[m_cur_thread].SetBCsUsed(BEHAV_CLASS, true);
+        else m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
       }
       
       // Print the status of this CPU at each step...
@@ -585,10 +584,14 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
           if (m_topnavtrace) RecordNavTrace(m_use_avatar);
         }
       }
+      if (!m_threads[m_cur_thread].GetBCsUsed()[m_threads[m_cur_thread].GetCurrBehav()]) {
+        assert(m_threads[m_cur_thread].GetBCUsedCount() < 3);
+        m_threads[m_cur_thread].SetBCsUsed(m_threads[m_cur_thread].GetCurrBehav(), true);
+        m_threads[m_cur_thread].SetBCUsedCount(m_threads[m_cur_thread].GetBCUsedCount() + 1);
+      }
     } // end per execution type
     if (phenotype.GetToDelete()) break;
   } // Previous was executed once for each thread...
-  
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
