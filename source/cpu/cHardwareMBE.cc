@@ -473,11 +473,17 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
         
     m_threads[m_cur_thread].ClearBCStats();
     int bc_exec_count = 0;
+    int max_exec_count = 20;                                                  // min tot num for equ from Nature '03  = 19
+//    int max_exec_count = 0x8000;
+//    int max_exec_count = m_organism->GetPhenotype().GetGenomeLength();
+//    int max_exec_count = nHardware::MAX_LABEL_SIZE;
+//    int max_exec_count = m_world->GetConfig().AVE_TIME_SLICE.Get();
+
     // per inst execution type (aka behavioral process classes):
     while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS + 1) {
       if (!m_threads[m_cur_thread].active) break;
       bc_exec_count++;
-      if (bc_exec_count >= 0x8000) break;   // APW
+      if (bc_exec_count >= max_exec_count) break;
       assert(bc_exec_count < 0x8000);
 
       m_advance_ip = true;
