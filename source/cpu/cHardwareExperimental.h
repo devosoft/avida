@@ -621,6 +621,7 @@ private:
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackPrey(cAvidaContext& ctx); 
   bool Inst_AttackPreyGroup(cAvidaContext& ctx);
+  bool Inst_AttackPreyShare(cAvidaContext& ctx);
   bool Inst_AttackSpecPrey(cAvidaContext& ctx);
   bool Inst_AttackPreyArea(cAvidaContext& ctx);
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 

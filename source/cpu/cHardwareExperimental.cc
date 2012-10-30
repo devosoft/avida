@@ -351,6 +351,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, nInstFlag::STALL), 
@@ -5159,6 +5160,119 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
+    MakePred();
+    target->Die(ctx);
+    
+    setInternalValue(success_reg, 1, true);
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+  }
+  return true;
+}
+
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
+bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!TestAttack(ctx)) return false;
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  int num_neighbors = 0;
+  if (!m_use_avatar) num_neighbors = m_organism->GetNeighborhoodSize();
+  else if (m_use_avatar == 2) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  if (num_neighbors == 0) return false;
+  
+  cOrganism* target = NULL;
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+  
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() == -2) return false;
+  
+  if (target->IsDead()) return false;
+  
+  tArray<int> neighborhood;
+  tArray<cOrganism*> pack;
+  pack.Push(m_organism);
+  if (!m_use_avatar) {
+    m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
+          !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
+        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() == -2) {
+          pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism());
+        }
+      }
+    }
+  }
+  else {
+    m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
+      pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetRandPredAV());
+      }
+    }
+  }
+  
+  if (!m_use_avatar) assert(m_organism->IsNeighborCellOccupied());
+  else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
+  
+  double odds = m_world->GetConfig().PRED_ODDS.Get();
+  int pred_count = pack.GetSize();
+  if (pred_count == 1) return false;
+  if (pred_count > 1) odds = 0.4 + (m_world->GetConfig().PRED_ODDS.Get() * pred_count); // 1 friend = 50%, 5 friends = 100%
+  
+  const int success_reg = FindModifiedRegister(rBX);
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+  
+  if (m_world->GetRandom().GetDouble() >= odds ||
+      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    double injury = m_world->GetConfig().PRED_INJURY.Get();
+    if (injury > 0) InjureOrg(target, injury);
+    setInternalValue(success_reg, -1, true);
+    setInternalValue(bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
+  }
+  else {
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble() / pred_count;
+      for (int i = 0; i < pred_count; i++) {
+        double attacker_merit = pack[i]->GetPhenotype().GetMerit().GetDouble();
+        attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+        pack[i]->UpdateMerit(attacker_merit);
+      }
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...this can't be divided up among the pack
+    const tArray<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const tArray<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus() / pred_count;
+    for (int i = 0; i < pred_count; i++) {
+      double bonus = pack[i]->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get());
+      pack[i]->GetPhenotype().SetCurBonus(bonus);
+    }
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      tArray<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        double bin_amt = target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get();
+        for (int j = 0; j < pred_count; j++) {
+          pack[j]->AddToRBin(i, bin_amt / pred_count);
+        }
+        target->AddToRBin(i, -1 * bin_amt);
+      }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
+    }
+
+    // if you weren't a predator before, you are now (all of your pack mates already are)!
     MakePred();
     target->Die(ctx);
     
