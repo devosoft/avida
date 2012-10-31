@@ -3933,7 +3933,7 @@ void cStats::PrintTargets(const cString& filename)
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     int this_target = org->GetForageTarget();
-
+    if (this_target < -2) this_target = -2;
     int this_index = this_target;
     for (int i = 0; i < target_list.GetSize(); i++) {
       if (target_list[i] == this_target) {

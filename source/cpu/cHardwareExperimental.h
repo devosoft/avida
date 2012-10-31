@@ -686,6 +686,7 @@ public:
   
   void InjureOrg(cOrganism* target, double injury);
   void MakePred();
+  void MakeTopPred();
   bool TestAttack(cAvidaContext& ctx);
 };
 

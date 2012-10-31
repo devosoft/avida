@@ -1335,11 +1335,14 @@ tSmartArray<int> cPopulation::SetTraceQ(int save_dominants, int save_groups, int
   tSmartArray<int> ft_check_counts;
   ft_check_counts.Resize(0);
   if (save_foragers) {
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) fts_to_use.Push(-2);
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
+      fts_to_use.Push(-3);
+      fts_to_use.Push(-2);
+    }
     fts_to_use.Push(-1);  // account for -1 default's
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
-    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) fts_to_use.Push(*itr);
+    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) fts_to_use.Push(*itr);
     ft_check_counts.Resize(fts_to_use.GetSize());
     ft_check_counts.SetAll(orgs_per);
     fts_left = orgs_per * fts_to_use.GetSize();
