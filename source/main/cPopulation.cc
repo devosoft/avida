@@ -5505,6 +5505,10 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
+      tArray<cIntSum>& prey_inst_fail_exe_counts = stats.InstPreyFailedExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastFailedInstCount().GetSize(); j++) {
+        prey_inst_fail_exe_counts[j].Add(organism->GetPhenotype().GetLastFailedInstCount()[j]);
+      }
     }
     else {
       stats.SumPredFitness().Add(cur_fitness);
@@ -5516,6 +5520,10 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       tArray<cIntSum>& pred_inst_exe_counts = stats.InstPredExeCountsForInstSet(organism->GetGenome().GetInstSet());
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+      tArray<cIntSum>& pred_inst_fail_exe_counts = stats.InstPredFailedExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastFailedInstCount().GetSize(); j++) {
+        pred_inst_fail_exe_counts[j].Add(organism->GetPhenotype().GetLastFailedInstCount()[j]);
       }
     }
     

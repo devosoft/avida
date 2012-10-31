@@ -171,6 +171,8 @@ private:
   tSmartArray<sDonateSpecificCircumstances> m_donate_specific; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_prey_fail_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_pred_fail_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_female_exe_inst_map;
   
@@ -583,6 +585,7 @@ public:
   cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
   cDoubleSum& SumPreySize()          { return sum_prey_size; }
   tArray<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
+  tArray<cIntSum>& InstPreyFailedExeCountsForInstSet(const cString& inst_set) { return m_is_prey_fail_exe_inst_map[inst_set]; }
 
   cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
   cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
@@ -591,6 +594,7 @@ public:
   cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
   tArray<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
+  tArray<cIntSum>& InstPredFailedExeCountsForInstSet(const cString& inst_set) { return m_is_pred_fail_exe_inst_map[inst_set]; }
   void ZeroFTInst();
   
   //mating type/male-female accessors
@@ -915,6 +919,8 @@ public:
   void PrintPredatorVarianceData(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set);
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);

@@ -432,6 +432,64 @@ public:
   }
 };
 
+class cActionPrintPreyFailedInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPreyFailedInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "prey_failed_instruction.dat";
+    }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    
+    if (m_filename == "") m_filename.Set("prey_failed_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"prey_failed_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPreyFailedInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintPredatorFailedInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPredatorFailedInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "predator_failed_instruction.dat";
+    }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    
+    if (m_filename == "") m_filename.Set("predator_failed_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"predator_failed_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPredatorFailedInstructionData(m_filename, m_inst_set);
+  }
+};
+
 class cActionPrintMaleInstructionData : public cAction
 {
 private:
@@ -4874,6 +4932,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
+  action_lib->Register<cActionPrintPreyFailedInstructionData>("PrintPreyFailedInstructionData");
+  action_lib->Register<cActionPrintPredatorFailedInstructionData>("PrintPredatorFailedInstructionData");
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");

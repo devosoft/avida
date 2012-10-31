@@ -764,6 +764,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
+    m_organism->GetPhenotype().IncCurFailedInstCount(actual_inst.GetOp());
   }
   
   return exec_success;

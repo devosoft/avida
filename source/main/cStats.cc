@@ -527,6 +527,12 @@ void cStats::ZeroFTInst()
   for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_exe_inst_map.begin(); it != m_is_pred_exe_inst_map.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
   }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_prey_fail_exe_inst_map.begin(); it != m_is_prey_fail_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_fail_exe_inst_map.begin(); it != m_is_pred_fail_exe_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
 }
 
 void cStats::ZeroMTInst()
@@ -1046,6 +1052,36 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
   
   for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey org instruction execution failure data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_prey_fail_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_prey_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator org instruction execution failure data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_fail_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_pred_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
   df.Endl();
 }
