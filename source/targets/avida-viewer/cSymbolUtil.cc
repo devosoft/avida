@@ -125,7 +125,11 @@ char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
 char cSymbolUtil::GetAVForagerSymbol(const cPopulationCell & cell)
 {
   if (cell.HasAV() == false) return ' ';
-  if (cell.HasPredAV()) return 'P';
+  if (cell.HasPredAV()) {
+    const int org_target = cell.GetRandPredAV()->GetForageTarget();
+    if (org_target == -2) return 'P';
+    else if (org_target == -3) return 'T';
+  }
 
   const int org_target = cell.GetRandPreyAV()->GetForageTarget();
   if (org_target == -1) return '-';
