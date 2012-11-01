@@ -6633,13 +6633,10 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource s
     new_organism->MutationRates().Copy(orig_org.MutationRates());
   }
   
-  // If groups are used, put the offspring in the parents' group,
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
-    if (orig_org.HasOpinion()) new_organism->SetParentGroup(orig_org.GetOpinion().first);
-  }
-  // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
-  if (orig_org.IsTeacher()) new_organism->SetParentTeacher(true);
-  new_organism->SetParentFT(orig_org.GetForageTarget());
+  // since this is a clone, we want some of the parent data from the genome source (the source is not the parent, the source's parent is)
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get()) new_organism->SetParentGroup(orig_org.GetParentGroup());
+  if (orig_org.HadParentTeacher()) new_organism->SetParentTeacher(true);
+  new_organism->SetParentFT(orig_org.GetParentFT());
   
   // Activate the organism in the population...
   bool org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
