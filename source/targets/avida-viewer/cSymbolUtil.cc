@@ -93,7 +93,7 @@ char cSymbolUtil::GetForagerColor(const cPopulationCell & cell)
   if (cell.IsOccupied() == false) return ' ';
   const int org_target = cell.GetOrganism()->GetForageTarget();
   
-  if (org_target == -2) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
+  if (org_target == -2 || org_target == -3) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
   else if (org_target == -1) return '1';              //no target = bold-white
   else return 'B' + org_target;                       //other valid targets = colors -> white
 }

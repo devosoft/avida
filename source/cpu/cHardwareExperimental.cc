@@ -4914,9 +4914,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -4956,6 +4955,9 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     MakePred();
     target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5016,9 +5018,8 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
     const int bin_reg = FindModifiedNextRegister(bonus_reg);
     
     if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
-        (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-      double injury = m_world->GetConfig().PRED_INJURY.Get();
-      if (injury > 0) InjureOrg(target, injury);
+        (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+      InjureOrg(target);
       setInternalValue(success_reg, -1, true);
       setInternalValue(bonus_reg, -1, true);
       if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5057,8 +5058,11 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
       }
       
       // if you weren't a predator before, you are now!
-      MakePred();
-      target->Die(ctx);
+    MakePred();
+    target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
       
       setInternalValue(success_reg, 1, true);
       setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5120,9 +5124,8 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
   
   if (m_world->GetRandom().GetDouble() >= odds ||
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5163,6 +5166,9 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     MakePred();
     target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5226,9 +5232,8 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
   
   if (m_world->GetRandom().GetDouble() >= odds ||
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5276,6 +5281,9 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
     // if you weren't a predator before, you are now (all of your pack mates already are)!
     MakePred();
     target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5319,9 +5327,8 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
   
-  if (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target_org, injury);
+  if (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) {
+    InjureOrg(target_org);
     setInternalValue(success_reg, -1, true);
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5361,6 +5368,9 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     MakePred();
     target_org->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5417,9 +5427,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5459,6 +5468,9 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     MakePred();
     target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5690,8 +5702,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -6464,8 +6475,10 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
   return true;
 }
 
-void cHardwareExperimental::InjureOrg(cOrganism* target, double injury)
+void cHardwareExperimental::InjureOrg(cOrganism* target)
 {
+  double injury = m_world->GetConfig().PRED_INJURY.Get();
+  if (injury == 0) return;
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     target_merit -= target_merit * injury;

@@ -258,6 +258,7 @@ public:
   void IncNumPreyOrganisms();
   void IncNumPredOrganisms();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  void InjectPreyClone(cAvidaContext& ctx);
   
 // --------Donate Specific support ----
   void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int kin); 

@@ -684,7 +684,7 @@ public:
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
   
-  void InjureOrg(cOrganism* target, double injury);
+  void InjureOrg(cOrganism* target);
   void MakePred();
   void MakeTopPred();
   bool TestAttack(cAvidaContext& ctx);

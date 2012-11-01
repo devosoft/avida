@@ -202,6 +202,7 @@ public:
   void IncNumPreyOrganisms() { ; }
   void IncNumPredOrganisms() { ; }
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
+  void InjectPreyClone(cAvidaContext& ctx) { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }
   bool FacedHasOutputAV(int av_num = 0) { return false; }

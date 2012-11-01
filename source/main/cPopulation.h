@@ -324,7 +324,8 @@ public:
   void IncNumPredOrganisms() { num_pred_organisms++; }
   
   void RemovePredators(cAvidaContext& ctx);
-   
+  void InjectPreyClone(cAvidaContext& ctx, cOrganism* org_to_clone);
+  
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
   void PrintPhenotypeData(const cString& filename);

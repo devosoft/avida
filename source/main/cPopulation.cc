@@ -6633,8 +6633,29 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource s
     new_organism->MutationRates().Copy(orig_org.MutationRates());
   }
   
+  // If groups are used, put the offspring in the parents' group,
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
+    if (orig_org.HasOpinion()) new_organism->SetParentGroup(orig_org.GetOpinion().first);
+  }
+  // if parent org has executed teach_offspring intruction, allow the offspring to learn parent's foraging/targeting behavior
+  if (orig_org.IsTeacher()) new_organism->SetParentTeacher(true);
+  new_organism->SetParentFT(orig_org.GetForageTarget());
+  
   // Activate the organism in the population...
-  ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
+  bool org_survived = ActivateOrganism(ctx, new_organism, cell_array[cell_id], true, true);
+  // only assign an avatar cell if the org lived through birth
+  if (m_world->GetConfig().USE_AVATARS.Get() && org_survived) {
+    int avatar_target_cell = PlaceAvatar(&orig_org);
+    if (avatar_target_cell != -1) {
+      new_organism->GetPhenotype().SetAVBirthCellID(avatar_target_cell);
+      new_organism->GetOrgInterface().AddPredPreyAV(avatar_target_cell);
+      if (m_world->GetConfig().AVATAR_BIRTH_FACING.Get() == 1) {
+        const int rots = m_world->GetRandom().GetUInt(0,8);
+        for (int j = 0; j < rots; j++) new_organism->Rotate(rots);
+      }
+    }
+    else KillOrganism(GetCell(cell_id), ctx);
+  }
 }
 
 // This function injects the offspring genome of an organism into the population at cell_id.
@@ -6760,7 +6781,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaCon
     for (int i = 0; i < GetSize(); i++) {
       cPopulationCell & cell = cell_array[i];
       if (cell.IsOccupied() && cell.GetOrganism()->GetTestFitness(m_world->GetDefaultContext()) == 0.0) {
-        KillOrganism(cell, ctx); 
+        KillOrganism(cell, ctx);
       }
     }
   }
@@ -6790,6 +6811,11 @@ void cPopulation::RemovePredators(cAvidaContext& ctx)
   for (int i = 0; i < live_org_list.GetSize(); i++) {
     if (live_org_list[i]->GetForageTarget() <= -2) live_org_list[i]->Die(ctx);
   }
+}
+
+void cPopulation::InjectPreyClone(cAvidaContext& ctx, cOrganism* org_to_clone) {
+  int target_cell = PositionOffspring(GetCell(org_to_clone->GetCellID()), ctx, 0).GetID();
+  InjectClone(target_cell, *org_to_clone, SRC_ORGANISM_RANDOM);
 }
 
 void cPopulation::PrintPhenotypeData(const cString& filename)
@@ -8428,7 +8454,6 @@ int cPopulation::PlaceAvatar(cOrganism* parent)
     if (dest_x == 0 || dest_y == 0 || dest_x == m_world->GetConfig().WORLD_X.Get() - 1 || dest_y == m_world->GetConfig().WORLD_Y.Get() - 1) {
       return -1;
     }
-  } 
-
+  }
   return avatar_target_cell;
 }
