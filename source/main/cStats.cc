@@ -474,6 +474,12 @@ void cStats::ZeroFTInst()
   for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_fail_exe_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_fail_exe_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
 }
 
 void cStats::ZeroMTInst()
@@ -853,26 +859,6 @@ void cStats::PrintPredatorVarianceData(const cString& filename)
   df.Endl();
 }
 
-void cStats::PrintMinPreyFailedAttacks(const cString& filename)
-{
-  cDataFile& df = m_world->GetDataFile(filename);
-  
-  if (!df.HeaderDone()) {
-    df.WriteComment("Updates of individual attack that failed due to MIN_PREY config setting");
-    df.WriteTimeStamp();
-    df.Endl();
-  }
-  
-  Apto::Array<int> failure_events = m_world->GetPopulation().GetMinPreyFailedAttacks();
-  if (failure_events.GetSize() > 0) {
-    for (int i = 0; i < failure_events.GetSize(); i++) {
-      df.WriteAnonymous(failure_events[i]);
-      df.Endl();
-    }
-    m_world->GetPopulation().ClearMinPreyFailedAttacks();
-  }
-}
-
 void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
 {
   cDataFile& df = m_world->GetDataFile(filename);
@@ -899,6 +885,36 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
   
   for (int i = 0; i < m_is_pred_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey org instruction execution failure data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_prey_fail_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_prey_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator org instruction execution failure data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_fail_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_pred_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
   df.Endl();
 }
@@ -3580,7 +3596,7 @@ void cStats::PrintTargets(const cString& filename)
   for (int i = 0; i < live_orgs.GetSize(); i++) {  
     cOrganism* org = live_orgs[i];
     int this_target = org->GetForageTarget();
-
+    if (this_target < -2) this_target = -2;
     int this_index = this_target;
     for (int i = 0; i < target_list.GetSize(); i++) {
       if (target_list[i] == this_target) {

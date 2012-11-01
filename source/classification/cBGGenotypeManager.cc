@@ -119,7 +119,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
       stats.SumSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
       
       if(m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-        if (bg->GetLastForagerType() !=-2) stats.SumPreySize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+        if (bg->GetLastForagerType() >-2) stats.SumPreySize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
         else stats.SumPredSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
       }      
       

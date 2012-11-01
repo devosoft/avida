@@ -346,8 +346,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Org Interaction instructions
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareExperimental::Inst_GetFacedOrgID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("attack-prey", &cHardwareExperimental::Inst_AttackPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-ft-prey", &cHardwareExperimental::Inst_AttackFTPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-prey-group", &cHardwareExperimental::Inst_AttackPreyGroup, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-prey-share", &cHardwareExperimental::Inst_AttackPreyShare, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-spec-prey", &cHardwareExperimental::Inst_AttackSpecPrey, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("attack-prey-area", &cHardwareExperimental::Inst_AttackPreyArea, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("fight-merit-org", &cHardwareExperimental::Inst_FightMeritOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("fight-bonus-org", &cHardwareExperimental::Inst_FightBonusOrg, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-cell", &cHardwareExperimental::Inst_MarkCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-group-cell", &cHardwareExperimental::Inst_MarkGroupCell, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -361,7 +365,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("fight-pred", &cHardwareExperimental::Inst_FightPred, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("teach-offspring", &cHardwareExperimental::Inst_TeachOffspring, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("learn-parent", &cHardwareExperimental::Inst_LearnParent, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-    tInstLibEntry<tMethod>("check-faced-kin", &cHardwareExperimental::Inst_CheckFacedKin, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
 
     tInstLibEntry<tMethod>("set-guard", &cHardwareExperimental::Inst_SetGuard, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-guard-once", &cHardwareExperimental::Inst_SetGuardOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -751,6 +754,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
+    m_organism->GetPhenotype().IncCurFailedInstCount(actual_inst.GetOp());
   }
   
   return exec_success;
@@ -3125,7 +3129,7 @@ bool cHardwareExperimental::Inst_RangePredMove(cAvidaContext& ctx)
   if (m_use_avatar == 2) faced_range = m_organism->GetOrgInterface().GetAVFacedDataTerritory();
   int marked_update = m_organism->GetOrgInterface().GetFacedCellDataUpdate();
   if (m_use_avatar == 2) marked_update = m_organism->GetOrgInterface().GetAVFacedDataUpdate();
-  if (m_organism->GetForageTarget() == -2 && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) && 
+  if (m_organism->GetForageTarget() <= -2 && faced_range != -1 && (faced_range != m_organism->GetOpinion().first) &&
       ((m_world->GetStats().GetUpdate() - marked_update) <= m_world->GetConfig().MARKING_EXPIRE_DATE.Get())) {
     safe_passage = false;
   }
@@ -3853,8 +3857,8 @@ bool cHardwareExperimental::Inst_LookAround(cAvidaContext& ctx)
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -3909,8 +3913,8 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -3936,11 +3940,12 @@ bool cHardwareExperimental::Inst_LookAroundFT(cAvidaContext& ctx)
 bool cHardwareExperimental::GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft) 
 {
   // temp check on world geometry until code can handle other geometries
-  if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
+  /*if (m_world->GetConfig().WORLD_GEOMETRY.Get() != 1) {
     // Instruction sense-diff-ahead only written to work in bounded grids
     return false;
-  }  
+  }  */
   if (NUM_REGISTERS < 8) m_world->GetDriver().Feedback().Error("Instruction look-ahead requires at least 8 registers");
+
   if (!m_use_avatar && m_organism->GetNeighborhoodSize() == 0) return false;
   else if (m_use_avatar && m_organism->GetOrgInterface().GetAVNumNeighbors() == 0) return false;
   
@@ -4019,8 +4024,8 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
     bool is_target_type = false;
-    if (org_type == 0 && m_organism->GetForageTarget() == -2) is_target_type = true;
-    else if (org_type == 1 && m_organism->GetForageTarget() != -2) is_target_type = true;
+    if (org_type == 0 && m_organism->GetForageTarget() <= -2) is_target_type = true;
+    else if (org_type == 1 && m_organism->GetForageTarget() > -2) is_target_type = true;
     else if (org_type == 2) is_target_type = true;
     
     if (is_target_type) {
@@ -4090,20 +4095,20 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
   if (old_target == prop_target) return false;
 
   // return false if predator trying to become prey and this has been disallowed
-  if (old_target == -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
+  if (old_target <= -2 && prop_target > -2 && (m_world->GetConfig().PRED_PREY_SWITCH.Get() == 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2)) return false;
   
   // return false if trying to become predator and there are none in the experiment
-  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  if (prop_target <= -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
   // return false if trying to become predator this has been disallowed via setforagetarget
-  if (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
+  if (prop_target <= -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
-  // a little mod help...can't set to -1, that's for juevniles only...so only exception to mod help is -2
-  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2) {
+  // a little mod help...can't set to -1, that's for juevniles only...so only exception to mod help is -2 or -3
+  if (!m_world->GetEnvironment().IsTargetID(prop_target) && prop_target != -2 && prop_target != -3) {
     int num_fts = 0;
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
-    for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+    for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
     if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
     else {
       // ft's may not be sequentially numbered
@@ -4119,7 +4124,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
   // if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
 
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-  if (m_use_avatar && ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2)) && 
+  if (m_use_avatar && ((prop_target <= -2 && old_target > -2) || (prop_target > -2 && old_target <= -2)) &&
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
     m_organism->GetOrgInterface().SwitchPredPrey();
     m_organism->SetForageTarget(prop_target);
@@ -4188,7 +4193,7 @@ bool cHardwareExperimental::Inst_GetLocOrgDensity(cAvidaContext& ctx)
       const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
       if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) { 
         if (cell->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (cell->GetOrganism()->GetForageTarget() == -2) pred_count++;
+        if (cell->GetOrganism()->GetForageTarget() <= -2) pred_count++;
       }
       else if (m_use_avatar == 2) { 
         prey_count += cell->GetNumPreyAV();
@@ -4276,7 +4281,7 @@ bool cHardwareExperimental::Inst_GetFacedOrgDensity(cAvidaContext&)
       const cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(cellid);
       if (!m_use_avatar && cell->IsOccupied() && !cell->GetOrganism()->IsDead() && cellid != m_organism->GetOrgInterface().GetCellID()) { 
         if (cell->GetOrganism()->GetForageTarget() > -2) prey_count++;
-        if (cell->GetOrganism()->GetForageTarget() == -2) pred_count++;
+        if (cell->GetOrganism()->GetForageTarget() <= -2) pred_count++;
       }
       else if (m_use_avatar == 2) { 
         prey_count += cell->GetNumPreyAV();
@@ -4756,7 +4761,7 @@ bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext&)
 bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // If not nop-modified, fails to execute.
@@ -4790,7 +4795,7 @@ bool cHardwareExperimental::Inst_ChangePredGroup(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_MakePredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // If in a group, leave it.
@@ -4813,7 +4818,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
   
   // Confirm the org is a pred and groups are on.
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // If in a group, leave it.
@@ -4834,7 +4839,7 @@ bool cHardwareExperimental::Inst_LeavePredGroup(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AdoptPredGroup(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() != 1) return false;
   
   // Read target group from the faced marked cell.
@@ -4878,7 +4883,7 @@ bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext&)
 bool cHardwareExperimental::Inst_GetPredGroupID(cAvidaContext&)
 {
   assert(m_organism != 0);
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   if (m_organism->HasOpinion()) {
     const int group_reg = FindModifiedRegister(rBX);
     
@@ -4917,7 +4922,7 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
 
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target->GetForageTarget() == -2) return false;
+  if (target->GetForageTarget() <= -2) return false;
   
   if (target->IsDead()) return false;  
   
@@ -4926,10 +4931,8 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();  
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -4969,6 +4972,9 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     MakePred();
     target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -4977,6 +4983,419 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
 } 		
 
 //Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
+bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!TestAttack(ctx)) return false;
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  int num_neighbors = 0;
+  if (!m_use_avatar) num_neighbors = m_organism->GetNeighborhoodSize();
+  else if (m_use_avatar == 2) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  if (num_neighbors == 0) return false;
+  
+  int prey_count = 0;
+  int pred_count = 0;
+  Apto::Array<int> neighborhood;
+  if (!m_use_avatar) {
+    m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
+          !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
+        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() > -2) prey_count++;
+        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() <= -2) pred_count++;
+      }
+    }
+  }
+  else {
+    m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPreyAV()) prey_count++;
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) pred_count++;
+    }
+  }
+  
+  double odds = 1.0 / ((double) (prey_count * 2));
+  odds = odds * (double) ((pred_count + 1) * 4);
+  
+  if (!m_use_avatar) assert(m_organism->IsNeighborCellOccupied());
+  else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
+  
+  if (m_world->GetRandom().P(odds)) {
+    cOrganism* target = NULL;
+    if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+    else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+    
+    // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+    if (target->GetForageTarget() <= -2) return false;
+    
+    if (target->IsDead()) return false;
+    
+    const int success_reg = FindModifiedRegister(rBX);
+    const int bonus_reg = FindModifiedNextRegister(success_reg);
+    const int bin_reg = FindModifiedNextRegister(bonus_reg);
+    
+    if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() ||
+        (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+      InjureOrg(target);
+      setInternalValue(success_reg, -1, true);
+      setInternalValue(bonus_reg, -1, true);
+      if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+      return false;
+    }
+    else {
+      // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+      if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+        const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+        double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+        attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+        m_organism->UpdateMerit(attacker_merit);
+      }
+      
+      // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+      const Apto::Array<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+      const Apto::Array<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+      for (int i = 0; i < org_reactions.GetSize(); i++) {
+        m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+      }
+      
+      // and add current merit bonus after adjusting for conversion efficiency
+      const double target_bonus = target->GetPhenotype().GetCurBonus();
+      double bonus = m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get());
+      m_organism->GetPhenotype().SetCurBonus(bonus);
+      
+      // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+      if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+        Apto::Array<double> target_bins = target->GetRBins();
+        for (int i = 0; i < target_bins.GetSize(); i++) {
+          m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+          target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+        }
+        const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+        setInternalValue(bin_reg, spec_bin, true);
+      }
+      
+      // if you weren't a predator before, you are now!
+    MakePred();
+    target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
+      
+      setInternalValue(success_reg, 1, true);
+      setInternalValue(bonus_reg, (int) (target_bonus), true);
+    }
+  }
+  return true;
+}
+
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
+bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->HasOpinion()) return false;
+  int opinion = m_organism->GetOpinion().first;
+  if (!TestAttack(ctx)) return false;
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  int num_neighbors = 0;
+  if (!m_use_avatar) num_neighbors = m_organism->GetNeighborhoodSize();
+  else if (m_use_avatar == 2) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  if (num_neighbors == 0) return false;
+  
+  cOrganism* target = NULL;
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+  
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() <= -2) return false;
+  
+  if (target->IsDead()) return false;
+  
+  int facing = m_organism->GetOrgInterface().GetFacedDir();
+  if (m_use_avatar) facing = m_organism->GetOrgInterface().GetAVFacing();
+  int friend_count = 0;
+  for (int i = 0; i < num_neighbors; i++) {
+    m_organism->Rotate(-1);
+    if (!m_use_avatar) {
+      if (!m_organism->IsNeighborCellOccupied() || m_organism->GetOrgInterface().GetNeighbor()->IsDead()) continue;
+      cOrganism* neighbor = m_organism->GetOrgInterface().GetNeighbor();
+      if (neighbor->GetForageTarget() <= -2 && neighbor->HasOpinion() && neighbor->GetOpinion().first == opinion) friend_count++;
+    }
+    else if (m_use_avatar == 2) {
+      cPopulationCell* cell = m_organism->GetOrgInterface().GetCell(m_organism->GetOrgInterface().GetAVFacedCellID());
+      Apto::Array<cOrganism*> predators = cell->GetCellInputAVs();
+      for (int i = 0; i < predators.GetSize(); i++) {
+        if (!predators[i]->IsDead() && predators[i]->GetForageTarget() <= -2 && predators[i]->HasOpinion() &&
+            predators[i]->GetOpinion().first == opinion) friend_count++;
+      }
+    }
+  }
+  
+  if (!m_use_avatar) assert(m_organism->IsNeighborCellOccupied());
+  else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
+  
+  if (friend_count == 0) return false;
+  double odds = 0.5 + (m_world->GetConfig().PRED_ODDS.Get() * friend_count); // 1 friend = 60%, 5 friends = 100%
+  
+  const int success_reg = FindModifiedRegister(rBX);
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+  
+  if (m_world->GetRandom().GetDouble() >= odds ||
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
+    setInternalValue(success_reg, -1, true);
+    setInternalValue(bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
+  }
+  else {
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    const Apto::Array<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const Apto::Array<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
+    double bonus = m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get());
+    m_organism->GetPhenotype().SetCurBonus(bonus);
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      Apto::Array<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+      }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
+    }
+    
+    // if you weren't a predator before, you are now!
+    MakePred();
+    target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
+    
+    setInternalValue(success_reg, 1, true);
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+  }
+  return true;
+}
+
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions. 
+bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!TestAttack(ctx)) return false;
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  int num_neighbors = 0;
+  if (!m_use_avatar) num_neighbors = m_organism->GetNeighborhoodSize();
+  else if (m_use_avatar == 2) num_neighbors = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  if (num_neighbors == 0) return false;
+  
+  cOrganism* target = NULL;
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+  
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target->GetForageTarget() <= -2) return false;
+  
+  if (target->IsDead()) return false;
+  
+  Apto::Array<int> neighborhood;
+  Apto::Array<cOrganism*> pack;
+  pack.Push(m_organism);
+  if (!m_use_avatar) {
+    m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
+          !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
+        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() <= -2) {
+          pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism());
+        }
+      }
+    }
+  }
+  else {
+    m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
+      pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetRandPredAV());
+      }
+    }
+  }
+  
+  if (!m_use_avatar) assert(m_organism->IsNeighborCellOccupied());
+  else assert(m_organism->GetOrgInterface().FacedHasPreyAV());
+  
+  double odds = m_world->GetConfig().PRED_ODDS.Get();
+  int pred_count = pack.GetSize();
+  if (pred_count == 1) return false;
+  if (pred_count > 1) odds = 0.4 + (m_world->GetConfig().PRED_ODDS.Get() * pred_count); // 1 friend = 60%, 5 friends = 100%
+  
+  const int success_reg = FindModifiedRegister(rBX);
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+  
+  if (m_world->GetRandom().GetDouble() >= odds ||
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
+    setInternalValue(success_reg, -1, true);
+    setInternalValue(bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
+  }
+  else {
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble() / pred_count;
+      for (int i = 0; i < pred_count; i++) {
+        double attacker_merit = pack[i]->GetPhenotype().GetMerit().GetDouble();
+        attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+        pack[i]->UpdateMerit(attacker_merit);
+      }
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...this can't be divided up among the pack
+    const Apto::Array<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
+    const Apto::Array<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target->GetPhenotype().GetCurBonus() / pred_count;
+    for (int i = 0; i < pred_count; i++) {
+      double bonus = pack[i]->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get());
+      pack[i]->GetPhenotype().SetCurBonus(bonus);
+    }
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      Apto::Array<double> target_bins = target->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        double bin_amt = target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get();
+        for (int j = 0; j < pred_count; j++) {
+          pack[j]->AddToRBin(i, bin_amt / pred_count);
+        }
+        target->AddToRBin(i, -1 * bin_amt);
+      }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
+    }
+
+    // if you weren't a predator before, you are now (all of your pack mates already are)!
+    MakePred();
+    target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
+    
+    setInternalValue(success_reg, 1, true);
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  const int id_sought_reg = FindModifiedRegister(rBX);
+  const int id_sought = m_threads[m_cur_thread].reg[id_sought_reg].value;
+  bool have_org2use = false;
+  
+  // return false if invalid number or self
+  if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
+  
+  // if valid number, does the value represent a living organism?
+  cOrganism* target_org  = NULL;
+  const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {
+    cOrganism* org = live_orgs[i];
+    if (id_sought == org->GetID()) {
+      target_org = org;
+      have_org2use = true;
+      break;
+    }
+  }
+  if (!have_org2use) return false;
+
+  if (!m_use_avatar) { if (target_org != m_organism->GetOrgInterface().GetNeighbor())  return false; }
+  else if (m_use_avatar == 2) { if (target_org->GetCellID() != m_organism->GetOrgInterface().GetAVFacedCellID())  return false; }
+
+  // attacking other carnivores is handled differently (e.g. using fights or tolerance)
+  if (target_org->GetForageTarget() <= -2) return false;
+  
+  if (target_org->IsDead()) return false;
+  
+  const int success_reg = FindModifiedRegister(rBX);
+  const int bonus_reg = FindModifiedNextRegister(success_reg);
+  const int bin_reg = FindModifiedNextRegister(bonus_reg);
+  
+  if (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) {
+    InjureOrg(target_org);
+    setInternalValue(success_reg, -1, true);
+    setInternalValue(bonus_reg, -1, true);
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
+    return false;
+  }
+  else {
+    // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
+      const double target_merit = target_org->GetPhenotype().GetMerit().GetDouble();
+      double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
+      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+      m_organism->UpdateMerit(attacker_merit);
+    }
+    
+    // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
+    const Apto::Array<int>& target_reactions = target_org->GetPhenotype().GetLastReactionCount();
+    const Apto::Array<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
+    for (int i = 0; i < org_reactions.GetSize(); i++) {
+      m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
+    }
+    
+    // and add current merit bonus after adjusting for conversion efficiency
+    const double target_bonus = target_org->GetPhenotype().GetCurBonus();
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+    
+    // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
+    if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+      Apto::Array<double> target_bins = target_org->GetRBins();
+      for (int i = 0; i < target_bins.GetSize(); i++) {
+        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
+        target_org->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+      }
+      const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
+      setInternalValue(bin_reg, spec_bin, true);
+    }
+    
+    // if you weren't a predator before, you are now!
+    MakePred();
+    target_org->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
+    
+    setInternalValue(success_reg, 1, true);
+    setInternalValue(bonus_reg, (int) (target_bonus), true);
+  }
+  return true;  
+}
+
+//Attack organism faced by this one, if there is non-predator target in front, and steal it's merit, current bonus, and reactions.
 bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -4989,7 +5408,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     target = m_organism->GetOrgInterface().GetNeighbor();
     if (target_org_type != target->GetForageTarget()) return false;
     // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-    if (target->GetForageTarget() == -2) return false;
+    if (target->GetForageTarget() <= -2) return false;
   }    
   else if (m_use_avatar == 2) {
     const Apto::Array<cOrganism*>& av_neighbors = m_organism->GetOrgInterface().GetFacedPreyAVs();
@@ -5016,7 +5435,7 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     if (!target_match) return false;
   } 
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target->GetForageTarget() == -2) return false;
+  if (target->GetForageTarget() <= -2) return false;
   
   if (target->IsDead()) return false;  
   
@@ -5025,10 +5444,8 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get() || 
-      (m_world->GetConfig().MIN_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
-    m_organism->GetOrgInterface().RecordMinPreyFailedAttack();  
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+      (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get())) {
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5068,6 +5485,9 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     // if you weren't a predator before, you are now!
     MakePred();
     target->Die(ctx);
+    if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+    }
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5086,18 +5506,18 @@ bool cHardwareExperimental::Inst_FightMeritOrg(cAvidaContext& ctx)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
-        (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
+        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() != -2) { 
+    if (m_organism->GetForageTarget() > -2) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() == -2) { 
+    else if (m_organism->GetForageTarget() <= -2) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5146,18 +5566,18 @@ bool cHardwareExperimental::Inst_FightBonusOrg(cAvidaContext& ctx)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
-        (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
+        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() != -2) { 
+    if (m_organism->GetForageTarget() > -2) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() == -2) { 
+    else if (m_organism->GetForageTarget() <= -2) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5206,18 +5626,18 @@ bool cHardwareExperimental::Inst_GetMeritFightOdds(cAvidaContext&)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
-        (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
+        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() != -2) { 
+    if (m_organism->GetForageTarget() > -2) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() == -2) { 
+    else if (m_organism->GetForageTarget() <= -2) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5251,18 +5671,18 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
     if (!m_organism->IsNeighborCellOccupied()) return false;
     target = m_organism->GetOrgInterface().GetNeighbor();
     // allow only for predator vs predator or prey vs prey
-    if ((target->GetForageTarget() == -2 && m_organism->GetForageTarget() != -2) || 
-        (target->GetForageTarget() != -2 && m_organism->GetForageTarget() == -2)) {
+    if ((target->GetForageTarget() <= -2 && m_organism->GetForageTarget() > -2) ||
+        (target->GetForageTarget() > -2 && m_organism->GetForageTarget() <= -2)) {
       return false;
     }
   }
   else if (m_use_avatar == 2) {
     if (!m_organism->GetOrgInterface().FacedHasAV()) return false;
-    if (m_organism->GetForageTarget() != -2) { 
+    if (m_organism->GetForageTarget() > -2) {
       if (!m_organism->GetOrgInterface().FacedHasPreyAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
     }
-    else if (m_organism->GetForageTarget() == -2) { 
+    else if (m_organism->GetForageTarget() <= -2) {
       if (!m_organism->GetOrgInterface().FacedHasPredAV()) return false;
       else target = m_organism->GetOrgInterface().GetRandFacedPredAV();
     }
@@ -5290,7 +5710,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   }
   else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
 
-  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
+  if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
 
   if (target->IsDead()) return false;  
   
@@ -5299,8 +5719,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
 
   if (m_world->GetRandom().GetDouble() >= m_world->GetConfig().PRED_ODDS.Get()) {
-    double injury = m_world->GetConfig().PRED_INJURY.Get();
-    if (injury > 0) InjureOrg(target, injury);
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);   
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5334,6 +5753,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
     }
     
     target->Die(ctx);
+    MakeTopPred();
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5356,7 +5776,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
-  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
+  if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
   
   int target_cell = target->GetOrgInterface().GetCellID();  
   m_organism->GetOrgInterface().AttackFacedOrg(ctx, target_cell); 
@@ -5364,6 +5784,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
   
+  MakeTopPred();
   return true;
 } 
 
@@ -5382,7 +5803,7 @@ bool cHardwareExperimental::Inst_FightPred(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   // allow only for predator vs predator
-  if (target->GetForageTarget() != -2 || m_organism->GetForageTarget() != -2) return false;
+  if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
   
   //Use merit to decide who wins this battle.
   bool kill_attacker = true;
@@ -5427,7 +5848,7 @@ bool cHardwareExperimental::Inst_MarkPredCell(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   const int marking = m_threads[m_cur_thread].reg[FindModifiedRegister(rBX)].value;
   if (!m_use_avatar) m_organism->SetCellData(marking);
   else if (m_use_avatar == 2) m_organism->GetOrgInterface().SetAVCellData(marking, m_organism->GetID());
@@ -5511,7 +5932,7 @@ bool cHardwareExperimental::Inst_ReadFacedPredCell(cAvidaContext&)
 {
   assert(m_organism != 0);
   if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   const int marking_reg = FindModifiedRegister(rBX);
   const int update_reg = FindModifiedNextRegister(rBX);
   const int org_reg = FindModifiedNextRegister(update_reg);
@@ -5553,10 +5974,11 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext&)
     int prop_target = -1;
     prop_target = m_organism->GetParentFT();
 
-    halt = (prop_target == -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0);
+    halt = ((prop_target == -2 || prop_target == -3) && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0);
     if (!halt) {
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 && 
-          ((prop_target == -2 && old_target != -2) || (prop_target != -2 && old_target == -2))) {
+          ((( prop_target == -2  || prop_target == -3) && old_target != -2 && old_target != -3) ||
+          (prop_target != -2  && prop_target != -3 && (old_target == -2 || old_target == -3)))) {
         m_organism->GetOrgInterface().SwitchPredPrey();
         m_organism->CopyParentFT();
       }
@@ -5652,44 +6074,6 @@ bool cHardwareExperimental::Inst_SetGuardOnce(cAvidaContext& ctx)
   if (!m_organism->IsGuard()) set_ok = Inst_SetGuard(ctx);
   setInternalValue(FindModifiedRegister(rBX), set_ok, true);    
   return set_ok;  
-}
-
-
-
-bool cHardwareExperimental::Inst_CheckFacedKin(cAvidaContext& ctx)
-{
-  assert(m_organism != 0);
-  if (m_use_avatar && m_use_avatar != 2) return false;  
-  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
-  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasAV()) return false;
-  
-  cOrganism* neighbor = NULL;
-  if (!m_use_avatar) neighbor = m_organism->GetOrgInterface().GetNeighbor();
-  else if (m_use_avatar == 2) neighbor = m_organism->GetOrgInterface().GetRandFacedAV();
-  if (neighbor->IsDead())  return false;  
-  
-  // If there is no valid max genetic distance, go out to cousins.
-  int gen_dist = GetRegister(FindModifiedRegister(rBX));
-  if (gen_dist > 4 || gen_dist < 0) gen_dist = 4;
-  
-  bool is_kin = false;
-  
-  Systematics::GroupPtr bg = m_organism->SystematicsGroup("genotype");
-  if (!bg) return false;
-  Systematics::SexualAncestryPtr sa = bg->GetData<Systematics::SexualAncestry>();
-  if (!sa) {
-    sa = Systematics::SexualAncestryPtr(new Systematics::SexualAncestry(bg));
-    bg->AttachData(sa);
-  }
-  
-  Systematics::GroupPtr nbg = neighbor->SystematicsGroup("genotype");
-  assert(nbg);
-  if (sa->GetPhyloDistance(nbg) <= gen_dist) is_kin = true;
-  
-  setInternalValue(FindModifiedRegister(rBX), gen_dist, true);
-  const int out_reg = FindModifiedNextRegister(rBX);   
-  setInternalValue(out_reg, (int) is_kin, true);    
-  return true;
 }
 
 bool cHardwareExperimental::Inst_ActivateDisplay(cAvidaContext& ctx)
@@ -5847,7 +6231,7 @@ bool cHardwareExperimental::Inst_KillDisplay(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 {
    // Exit if the org is not a predator
-   if (m_organism->GetForageTarget() != -2) return false;
+   if (m_organism->GetForageTarget() > -2) return false;
    // Exit if tolerance is not enabled
    if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
    if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
@@ -5887,7 +6271,7 @@ bool cHardwareExperimental::Inst_IncPredTolerance(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 {
   // Exit if the org is not a predator
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   // Exit if tolerance is not enabled
   if (!m_world->GetConfig().USE_FORM_GROUPS.Get()) return false;
   if (m_world->GetConfig().TOLERANCE_WINDOW.Get() <= 0) return false;
@@ -5922,7 +6306,7 @@ bool cHardwareExperimental::Inst_DecPredTolerance(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_GetPredTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
-  if (m_organism->GetForageTarget() != -2) return false;
+  if (m_organism->GetForageTarget() > -2) return false;
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
       if (m_organism->GetOpinion().first == -1) return false;
@@ -5949,7 +6333,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
 {
   bool exec_success = false;
   // If not a predator in a group, return false
-  if (m_organism->GetForageTarget() != -2 || m_organism->GetOpinion().first < 0) return false;
+  if (m_organism->GetForageTarget() > -2 || m_organism->GetOpinion().first < 0) return false;
   // If groups are used and tolerances are on...
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
     if(m_organism->GetOrgInterface().HasOpinion(m_organism)) {
@@ -6065,8 +6449,10 @@ bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
   return true;
 }
 
-void cHardwareExperimental::InjureOrg(cOrganism* target, double injury)
+void cHardwareExperimental::InjureOrg(cOrganism* target)
 {
+  double injury = m_world->GetConfig().PRED_INJURY.Get();
+  if (injury == 0) return;
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double target_merit = target->GetPhenotype().GetMerit().GetDouble();
     target_merit -= target_merit * injury;
@@ -6089,7 +6475,7 @@ void cHardwareExperimental::InjureOrg(cOrganism* target, double injury)
 
 void cHardwareExperimental::MakePred()
 {
-  if (m_organism->GetForageTarget() != -2) { 
+  if (m_organism->GetForageTarget() > -2) {
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
@@ -6097,6 +6483,19 @@ void cHardwareExperimental::MakePred()
     }
     else m_organism->SetForageTarget(-2);
   }    
+}
+
+void cHardwareExperimental::MakeTopPred()
+{
+  if (m_organism->GetForageTarget() > -2) {
+    // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
+    if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
+      m_organism->GetOrgInterface().SwitchPredPrey();
+      m_organism->SetForageTarget(-3);
+    }
+    else m_organism->SetForageTarget(-3);
+  }
+  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(-3);
 }
 
 bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)

@@ -130,7 +130,7 @@ char cSymbolUtil::GetAVForagerSymbol(const cPopulationCell & cell)
     if (org_target == -2) return 'P';
     else if (org_target == -3) return 'T';
   }
-  
+
   const int org_target = cell.GetRandPreyAV()->GetForageTarget();
   if (org_target == -1) return '-';
   else if (org_target < 10) return '0' + org_target;
@@ -170,7 +170,7 @@ char cSymbolUtil::GetMarkedCellSymbol(const cPopulationCell & cell)
 char cSymbolUtil::GetMarkedCellColor(const cPopulationCell & cell)
 {
   if (cell.GetCellData() != 0) {
-    if (cell.GetCellDataForagerType() == -2) return 'A';
+    if (cell.GetCellDataForagerType() <= -2) return 'A';
     else if (cell.GetCellDataForagerType() == -1) return '1';
     else return 'B' + cell.GetCellDataForagerType();
   }

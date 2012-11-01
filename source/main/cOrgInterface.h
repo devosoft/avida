@@ -95,6 +95,8 @@ public:
   virtual bool IsNeighborCellOccupied() = 0;
   virtual int GetNumNeighbors() = 0;
   virtual void GetNeighborhoodCellIDs(Apto::Array<int>& list) = 0;
+  virtual void GetAVNeighborhoodCellIDs(Apto::Array<int>& list, int av_num = 0) = 0;
+
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetFacedCellID() = 0;
   virtual int GetFacedDir() = 0; // Returns the human interpretable facing of this org.
@@ -194,8 +196,8 @@ public:
   virtual void DecNumPredOrganisms() = 0;
   virtual void IncNumPreyOrganisms() = 0;
   virtual void IncNumPredOrganisms() = 0;
-  virtual void RecordMinPreyFailedAttack() = 0;
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
+  virtual void InjectPreyClone(cAvidaContext& ctx) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasOutputAV(int av_num = 0) = 0;

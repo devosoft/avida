@@ -116,7 +116,6 @@ STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
 STATS_OUT_FILE(PrintPredatorErrorData,      predator_error.dat   );
 STATS_OUT_FILE(PrintPreyVarianceData,       prey_variance.dat   );
 STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
-STATS_OUT_FILE(PrintMinPreyFailedAttacks,   failed_attacks.dat   );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
@@ -462,6 +461,64 @@ public:
   void Process(cAvidaContext&)
   {
     m_world->GetStats().PrintPredatorInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintPreyFailedInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPreyFailedInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "prey_failed_instruction.dat";
+    }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    
+    if (m_filename == "") m_filename.Set("prey_failed_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"prey_failed_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPreyFailedInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintPredatorFailedInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintPredatorFailedInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "predator_failed_instruction.dat";
+    }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    
+    if (m_filename == "") m_filename.Set("predator_failed_instruction-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"predator_failed_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintPredatorFailedInstructionData(m_filename, m_inst_set);
   }
 };
 
@@ -4120,6 +4177,70 @@ public:
   }
 };
 
+class cActionPrintPreyFlockingData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintPreyFlockingData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    /*Print data on prey neighborhood */
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_dumps/prey_flocking.%d.dat", m_world->GetStats().GetUpdate());    
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    bool use_av = m_world->GetConfig().USE_AVATARS.Get();
+    if (!use_av) fp << "# org_id,org_cellx,org_celly,num_prey_neighbors,num_prey_this_cell" << endl;
+    else fp << "# org_id,org_av_cellx,org_av_celly,num_neighbor_cells_with_prey,num_prey_this_cell" << endl;
+    
+    const int worldx = m_world->GetConfig().WORLD_X.Get();
+    
+    Apto::Array<int> neighborhood;
+    const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      cOrganism* org = live_orgs[i];
+      if (org->GetForageTarget() <= -2) continue;
+      const int id = org->GetID();
+      int num_neighbors = 0;
+      neighborhood.Resize(0);
+      if (!use_av) {
+        const int loc = org->GetCellID();
+        const int locx = loc % worldx;
+        const int locy = loc / worldx;
+        org->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+        for (int j = 0; j < neighborhood.GetSize(); j++) {
+          if (m_world->GetPopulation().GetCell(neighborhood[j]).IsOccupied()) {
+            if (m_world->GetPopulation().GetCell(neighborhood[j]).GetOrganism()->GetForageTarget() > -2) {
+              num_neighbors++;
+            }
+          }
+        }
+        fp << id << "," << locx << "," << locy << "," << num_neighbors << "," << "1";
+      }
+      else {
+        const int avloc = org->GetOrgInterface().GetAVCellID();
+        const int num_prey_this_cell = m_world->GetPopulation().GetCell(avloc).GetNumPreyAV();
+        const int avlocx = avloc % worldx;
+        const int avlocy = avloc / worldx;
+        org->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+        for (int j = 0; j < neighborhood.GetSize(); j++) {
+          if (m_world->GetPopulation().GetCell(neighborhood[j]).HasPreyAV()) num_neighbors++;
+        }
+        fp << id << "," << avlocx << "," << avlocy << "," << num_neighbors << "," << num_prey_this_cell;
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 class cActionPrintOrgGuardData : public cAction
 {
 private:
@@ -4805,9 +4926,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorErrorData>("PrintPredatorErrorData");
   action_lib->Register<cActionPrintPreyVarianceData>("PrintPreyVarianceData");
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
-  action_lib->Register<cActionPrintMinPreyFailedAttacks>("PrintMinPreyFailedAttacks");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
+  action_lib->Register<cActionPrintPreyFailedInstructionData>("PrintPreyFailedInstructionData");
+  action_lib->Register<cActionPrintPredatorFailedInstructionData>("PrintPredatorFailedInstructionData");
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
@@ -4917,6 +5039,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintProfilingData>("PrintProfilingData");
   action_lib->Register<cActionPrintOrganismLocation>("PrintOrganismLocation");
   action_lib->Register<cActionPrintOrgLocData>("PrintOrgLocData");
+  action_lib->Register<cActionPrintPreyFlockingData>("PrintPreyFlockingData");
   action_lib->Register<cActionPrintOrgGuardData>("PrintOrgGuardData");
   action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
   action_lib->Register<cActionPrintIntrinsicTaskSwitchingCostData>("PrintIntrinsicTaskSwitchingCostData");

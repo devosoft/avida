@@ -102,6 +102,7 @@ public:
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
   void GetNeighborhoodCellIDs(Apto::Array<int>& list);
+  void GetAVNeighborhoodCellIDs(Apto::Array<int>& list, int av_num = 0);
   int GetFacing(); // Returns the facing of this organism.
   int GetFacedCellID();
   int GetFacedDir(); // Returns the human interpretable facing of this org.
@@ -250,8 +251,8 @@ public:
   void DecNumPredOrganisms();
   void IncNumPreyOrganisms();
   void IncNumPredOrganisms();
-  void RecordMinPreyFailedAttack();
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  void InjectPreyClone(cAvidaContext& ctx);
   
 // -------- Avatar support -------- @JJB
 private:

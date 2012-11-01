@@ -619,6 +619,10 @@ private:
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
   bool Inst_AttackPrey(cAvidaContext& ctx); 
+  bool Inst_AttackPreyGroup(cAvidaContext& ctx);
+  bool Inst_AttackPreyShare(cAvidaContext& ctx);
+  bool Inst_AttackSpecPrey(cAvidaContext& ctx);
+  bool Inst_AttackPreyArea(cAvidaContext& ctx);
   bool Inst_AttackFTPrey(cAvidaContext& ctx); 
   bool Inst_FightMeritOrg(cAvidaContext& ctx); 
   bool Inst_FightBonusOrg(cAvidaContext& ctx); 
@@ -639,8 +643,6 @@ private:
   bool Inst_SetGuardOnce(cAvidaContext& ctx);
   bool Inst_GetNumGuards(cAvidaContext& ctx);
   bool Inst_GetNumJuvs(cAvidaContext& ctx);
-  
-  bool Inst_CheckFacedKin(cAvidaContext& ctx);
   
   bool Inst_ActivateDisplay(cAvidaContext& ctx);
   bool Inst_UpdateDisplay(cAvidaContext& ctx);
@@ -679,8 +681,9 @@ public:
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
   
-  void InjureOrg(cOrganism* target, double injury);
+  void InjureOrg(cOrganism* target);
   void MakePred();
+  void MakeTopPred();
   bool TestAttack(cAvidaContext& ctx);
 };
 

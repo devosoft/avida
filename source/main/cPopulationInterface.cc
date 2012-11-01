@@ -275,6 +275,17 @@ void cPopulationInterface::GetNeighborhoodCellIDs(Apto::Array<int>& list)
   while (it.Next() != NULL) list[i++] = it.Get()->GetID();
 }
 
+void cPopulationInterface::GetAVNeighborhoodCellIDs(Apto::Array<int>& list, int av_num)
+{
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_avatars[av_num].av_cell_id);
+  assert(cell.HasAV());
+  
+  list.Resize(cell.ConnectionList().GetSize());
+  tConstListIterator<cPopulationCell> it(cell.ConnectionList());
+  int i = 0;
+  while (it.Next() != NULL) list[i++] = it.Get()->GetID();
+}
+
 int cPopulationInterface::GetFacing()
 {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
@@ -1559,9 +1570,24 @@ void cPopulationInterface::AttackFacedOrg(cAvidaContext& ctx, int loser)
   m_world->GetPopulation().AttackFacedOrg(ctx, loser);
 }
 
-void cPopulationInterface::RecordMinPreyFailedAttack()
+void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
 {
-  m_world->GetPopulation().RecordMinPreyFailedAttack();
+  cOrganism* org_to_clone = NULL;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_clone == NULL) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude pred and juvs
+    if (org_at->GetParentFT() > -1) org_to_clone = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_clone != NULL) m_world->GetPopulation().InjectPreyClone(ctx, org_to_clone);
 }
 
 // -------- Avatar support --------
@@ -1652,7 +1678,7 @@ void cPopulationInterface::AddIOAV(int av_cell_id, int av_facing, bool input, bo
 void cPopulationInterface::AddPredPreyAV(int av_cell_id)
 {
   // Add predator (saved as input avatar)
-  if (GetOrganism()->GetForageTarget() == -2) {
+  if (GetOrganism()->GetForageTarget() <= -2) {
     sIO_avatar predAV(av_cell_id, 0, -1, true, false);
     m_avatars.Push(predAV);
     m_world->GetPopulation().GetCell(av_cell_id).AddInputAV(GetOrganism());
@@ -2203,7 +2229,8 @@ bool cPopulationInterface::RotateAV(int increment, int av_num)
       increment = -increment;
     }
     // Adjust facing by increment
-    SetAVFacing((m_avatars[av_num].av_facing + increment + 8) % 8);
+    int new_facing = (m_avatars[av_num].av_facing + increment + 8) % 8;
+    SetAVFacing(new_facing);
     return true;
   }
   return false;

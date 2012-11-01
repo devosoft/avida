@@ -793,7 +793,7 @@ bool cOrganism::Divide_CheckViable(cAvidaContext& ctx)
   if (m_world->GetConfig().REQUIRED_PRED_HABITAT.Get() != -1 || m_world->GetConfig().REQUIRED_PREY_HABITAT.Get() != -1) {
     int habitat_required = -1;
     double required_value = 0;
-    if (m_forage_target == -2) {
+    if (m_forage_target <= -2) {
       habitat_required = m_world->GetConfig().REQUIRED_PRED_HABITAT.Get();
       required_value = m_world->GetConfig().REQUIRED_PRED_HABITAT_VALUE.Get();
     }
@@ -1227,7 +1227,7 @@ void cOrganism::CopyParentFT() {
   // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
   // switch ft to pred, and then copy parent to become prey again.
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() <= 0 || m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) {
-    if (m_parent_ft != -2 && m_forage_target < -1) {
+    if (m_parent_ft > -2 && m_forage_target < -1) {
       copy_ft = false;
     }
   }

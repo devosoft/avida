@@ -108,6 +108,7 @@ private:
   int num_energy_applications;                // Number of times organism has applied donated energy to its energy store
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
+
   Apto::Array<int> cur_task_count;                 // Total times each task was performed
   Apto::Array<int> cur_para_tasks;                 // Total times each task was performed by the parasite @LZ
   Apto::Array<int> cur_host_tasks;                 // Total times each task was done by JUST the host @LZ
@@ -125,6 +126,7 @@ private:
   Apto::Array<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.
   Apto::Array<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   Apto::Array<int> cur_inst_count;                 // Instruction exection counter
+  Apto::Array<int> cur_failed_inst_count;          // Failed instruction exection counter (returned false -- not for counting 'paused' exec due to cpu cost)
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
   Apto::Array<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
@@ -132,6 +134,7 @@ private:
   Apto::Array<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   Apto::Array<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
   Apto::Array<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
+
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
   tList<int> m_tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants 
@@ -156,6 +159,7 @@ private:
   double last_energy_bonus;
   int last_num_errors;
   int last_num_donates;
+
   Apto::Array<int> last_task_count;
   Apto::Array<int> last_para_tasks;
   Apto::Array<int> last_host_tasks;                // Last task counts from hosts only, before last divide @LZ
@@ -169,7 +173,9 @@ private:
   Apto::Array<int> last_reaction_count;
   Apto::Array<double> last_reaction_add_reward;
   Apto::Array<int> last_inst_count;	  // Instruction exection counter
+  Apto::Array<int> last_failed_inst_count;	  // Instruction exection counter
   Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
+
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
@@ -416,6 +422,7 @@ public:
   const Apto::Array<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const Apto::Array<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const Apto::Array<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
+  const Apto::Array<int>& GetCurFailedInstCount() const { assert(initialized == true); return cur_failed_inst_count; }
   const Apto::Array<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
 
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
@@ -443,6 +450,7 @@ public:
   double GetLastMerit() const { assert(initialized == true); return last_merit_base*last_bonus; }
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
+
   int GetLastCountForTask(int idx) const { assert(initialized == true); return last_task_count[idx]; }
   const Apto::Array<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
   void SetLastTaskCount(Apto::Array<int> tasks) { assert(initialized == true); last_task_count = tasks; }
@@ -458,7 +466,9 @@ public:
   const Apto::Array<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
+  const Apto::Array<int>& GetLastFailedInstCount() const { assert(initialized == true); return last_failed_inst_count; }
   const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
+
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
   const Apto::Array<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
@@ -635,6 +645,7 @@ public:
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
+  void IncCurFailedInstCount(int _inst_num)  { assert(initialized == true); cur_failed_inst_count[_inst_num]++; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
@@ -706,7 +717,9 @@ public:
 inline void cPhenotype::SetInstSetSize(int inst_set_size)
 {
   cur_inst_count.Resize(inst_set_size, 0);
+  cur_failed_inst_count.Resize(inst_set_size, 0);
   last_inst_count.Resize(inst_set_size, 0);
+  last_failed_inst_count.Resize(inst_set_size, 0);
 }
 
 inline void cPhenotype::SetBirthCellID(int birth_cell) { birth_cell_id = birth_cell; }

@@ -94,6 +94,7 @@ public:
   bool IsNeighborCellOccupied() { return false; }
   int GetNumNeighbors() { return 0; }
   void GetNeighborhoodCellIDs(Apto::Array<int>& list) { ; }
+  void GetAVNeighborhoodCellIDs(Apto::Array<int>& list, int av_num = 0) { ; }
   int GetNeighborCellContents() { return 0; }
   void Rotate(int direction = 1) { ; }
   
@@ -211,13 +212,12 @@ public:
   void PushToleranceInstExe(int, cAvidaContext&) { ; }
   int& GetGroupIntolerances(int, int, int) { return *(new int(0)); }
 
-  void AttackFacedOrg(cAvidaContext&, int) { ; }
-    
   void DecNumPreyOrganisms() { ; }
   void DecNumPredOrganisms() { ; }
   void IncNumPreyOrganisms() { ; }
   void IncNumPredOrganisms() { ; }
-  void RecordMinPreyFailedAttack() { ; }
+  void AttackFacedOrg(cAvidaContext& ctx, int) { ; }
+  void InjectPreyClone(cAvidaContext& ctx) { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }
   bool FacedHasOutputAV(int av_num = 0) { return false; }
