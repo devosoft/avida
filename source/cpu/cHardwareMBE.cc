@@ -441,9 +441,6 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
     // per inst execution type (aka behavioral process classes):
     while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS + 1) {
       if (!m_threads[m_cur_thread].active) break;
-      bc_exec_count++;
-      if (bc_exec_count >= max_exec_count) break;
-      assert(bc_exec_count < 0x8000);
 
       m_advance_ip = true;
       cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
@@ -463,8 +460,14 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
       // if we have already used this class in this cycle in this thread you're done      
       if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
         if (m_threads[m_cur_thread].GetBCsUsed()[BEHAV_CLASS]) break;
-        else m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
+        else {
+          m_threads[m_cur_thread].SetCurrBehav(BEHAV_CLASS);
+          bc_exec_count = 0;
+        }
       }
+      bc_exec_count++;
+      if (bc_exec_count >= max_exec_count) break;
+      assert(bc_exec_count < 0x8000);
       
       // Print the status of this CPU at each step...
       if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
