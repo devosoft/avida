@@ -1,6 +1,6 @@
-# Wed Oct 24 15:18:17 2012
-# Filename........: minitraces/trace_genomes/org48-ud501-grp-1_ft1-gt1.trcgeno
-# Update Output...: 501
+# Thu Nov  1 17:10:32 2012
+# Filename........: archive/ft1_grp-1_109-aaaaj.org
+# Update Output...: 750
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
@@ -13,6 +13,9 @@
 # Genome Size.....: 109
 # Copied Size.....: 109
 # Executed Size...: 109
+# Last Birth Group ID........: -1
+# Last Birth Forager Type....: 1
+# Last Birth Cell............: 35
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -34,17 +37,7 @@ nop-A
 set-ft-once
 nop-A
 nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-IO
-nop-C
-nop-C
+move
 nop-C
 nop-C
 nop-C
@@ -103,6 +96,16 @@ nop-C
 nop-C
 nop-C
 IO
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+if-not-0
 nop-C
 nop-C
 nop-C

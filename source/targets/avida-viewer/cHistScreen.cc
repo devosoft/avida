@@ -23,10 +23,10 @@ using namespace std;
 void cHistScreen::PrintGenotype(Systematics::GroupPtr in_gen, int in_pos, int max_stars, int star_size)
 {
   SetBoldColor(COLOR_CYAN);
-  PrintDouble(in_pos, 0, Apto::StrAs(in_gen->Properties().Get("fitness").Value()));
+  PrintDouble(in_pos, 0, Apto::StrAs(in_gen->Properties().Get("fitness").StringValue()));
   
   SetBoldColor(COLOR_WHITE);
-  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->Properties().Get("name").Value()));
+  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->Properties().Get("name").StringValue()));
   
   int cur_num = in_gen->NumUnits();
   int cur_stars = cur_num / star_size;

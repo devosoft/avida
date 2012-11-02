@@ -581,6 +581,15 @@ const Apto::Array<double> & cResourceCount::GetFrozenResources(cAvidaContext&, i
 double cResourceCount::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
 // This differs from GetFrozenCellResources by only pulling for res of interest.
 {
+  if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) return resource_count[res_id];
+  else return spatial_resource_count[res_id]->GetAmount(cell_id);
+}
+
+double cResourceCount::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const
+// This differs from GetCellResources by only pulling for res of interest.
+{
+  DoUpdates(ctx);
+
   double res_val = 0;
   if (geometry[res_id] == nGeometry::GLOBAL || geometry[res_id]==nGeometry::PARTIAL) {
     res_val = resource_count[res_id];
@@ -653,7 +662,7 @@ void cResourceCount::ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & 
       if(spatial_resource_count[i]->Element(cell_id).GetAmount() != temp){
         spatial_resource_count[i]->SetModified(true);
       }
-      assert(spatial_resource_count[i]->Element(cell_id).GetAmount() >= 0.0); //APW
+      assert(spatial_resource_count[i]->Element(cell_id).GetAmount() >= 0.0);
     }
   }
 }

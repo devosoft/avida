@@ -70,7 +70,7 @@ void cOptionsScreen::Draw(cAvidaContext& ctx)
   SetBoldColor(COLOR_CYAN);
   Print(6, 15, "%dx%d", info.GetPopulation().GetWorldX(),
 	info.GetPopulation().GetWorldY());
-  Print(7, 15, "%d", info.GetRandom().GetSeed());
+  Print(7, 15, "%d", info.GetRandom().Seed());
   Print(8, 15, "%d", info.GetConfig().THRESHOLD.Get());
 
   Print(11, 15, "%s", static_cast<const char*>(info.GetConfig().INST_SET.Get()));

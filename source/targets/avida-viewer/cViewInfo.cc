@@ -153,7 +153,7 @@ void cViewInfo::UpdateSymbols()
 
       if (pos < 0) genotype_chart[i] = Systematics::GroupPtr(NULL);
       if (pos >= NUM_SYMBOLS) {
-        if (Apto::StrAs(genotype_chart[i]->Properties().Get("threshold").Value()))
+        if (Apto::StrAs(genotype_chart[i]->Properties().Get("threshold").StringValue()))
           getViewInfo(genotype_chart[i])->symbol = '+';
         else getViewInfo(genotype_chart[i])->symbol = '.';
         genotype_chart[i] = Systematics::GroupPtr(NULL);
@@ -199,7 +199,7 @@ Systematics::GroupPtr cViewInfo::GetActiveGenotype()
 cString cViewInfo::GetActiveName()
 {
   if (GetActiveGenotype() == NULL) return cString("");
-  return (const char*)GetActiveGenotype()->Properties().Get("name").Value();
+  return (const char*)GetActiveGenotype()->Properties().Get("name").StringValue();
 }
 
 int cViewInfo::GetActiveID()

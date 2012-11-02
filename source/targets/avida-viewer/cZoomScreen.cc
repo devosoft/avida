@@ -422,7 +422,7 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   PrintDouble(8, 14, phenotype.GetEnergyBonus());
   PrintDouble(9, 14, phenotype.GetMerit().GetDouble());
   PrintDouble(10, 14, cur_merit.GetDouble());
-  Genome gen(genotype->Properties().Get("genome").Value());
+  Genome gen(genotype->Properties().Get("genome").StringValue());
   InstructionSequencePtr seq;
   seq.DynamicCastFrom(gen.Representation());
   Print(11, 15, "%6d ", genotype ? seq->GetSize() : 0);
@@ -931,7 +931,7 @@ void cZoomScreen::UpdateGenotype(cAvidaContext& ctx)
     Systematics::GroupPtr genotype = info.GetActiveGenotype();
     Systematics::GenomeTestMetricsPtr metrics = Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, genotype);
     Print(5, 12, "%9d", genotype->NumUnits());
-    Genome gen(genotype->Properties().Get("genome").Value());
+    Genome gen(genotype->Properties().Get("genome").StringValue());
     InstructionSequencePtr seq;
     seq.DynamicCastFrom(gen.Representation());
     Print(6, 12, "%9d", seq->GetSize());
@@ -941,24 +941,24 @@ void cZoomScreen::UpdateGenotype(cAvidaContext& ctx)
     PrintDouble(10, 14, metrics->GetFitness());
     PrintDouble(11, 14, metrics->GetGestationTime());
     PrintDouble(12, 14, metrics->GetMerit());
-    PrintDouble(13, 14, Apto::StrAs(genotype->Properties().Get("repro_rate").Value()));
+    PrintDouble(13, 14, Apto::StrAs(genotype->Properties().Get("repro_rate").StringValue()));
     
     // Column 2
-    Print(1, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("update_born").Value()));
-    Print(2, 40, "%9s", (const char*)(genotype->Properties().Get("parents").Value()));
+    Print(1, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("update_born").StringValue()));
+    Print(2, 40, "%9s", (const char*)(genotype->Properties().Get("parents").StringValue()));
     Print(3, 40, "%9d", genotype->Depth());
     
-    Print(7, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_deaths").Value()));
-    Print(8, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_births").Value()));
-    Print(9, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_breed_true").Value()));
-    Print(10, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_breed_in").Value()));
-    Print(11, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_births").Value()) - (int)Apto::StrAs(genotype->Properties().Get("recent_breed_true").Value()));
+    Print(7, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_deaths").StringValue()));
+    Print(8, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_births").StringValue()));
+    Print(9, 40,  "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_breed_true").StringValue()));
+    Print(10, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_breed_in").StringValue()));
+    Print(11, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("recent_births").StringValue()) - (int)Apto::StrAs(genotype->Properties().Get("recent_breed_true").StringValue()));
     
-    Print(14, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("total_organisms").Value()));
-    Print(15, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_births").Value()));
-    Print(16, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_breed_true").Value()));
-    Print(17, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_breed_in").Value()));
-    Print(18, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_births").Value()) - (int)Apto::StrAs(genotype->Properties().Get("last_breed_true").Value()));
+    Print(14, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("total_organisms").StringValue()));
+    Print(15, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_births").StringValue()));
+    Print(16, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_breed_true").StringValue()));
+    Print(17, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_breed_in").StringValue()));
+    Print(18, 40, "%9d", (int)Apto::StrAs(genotype->Properties().Get("last_births").StringValue()) - (int)Apto::StrAs(genotype->Properties().Get("last_breed_true").StringValue()));
   }
   else {
     Print(5, 12, "  -------");
@@ -1390,20 +1390,27 @@ const char* cZoomScreen::GetSectionName(int in_section)
 
 void cZoomScreen::SetActiveSection(int in_section)
 {
+  Apto::Coord<int> init;
+  init.Set(2,1);
   if (in_section != active_section) {
     // Set the old section to be normal white
     Apto::Coord<int> sect_coords(GetSectionCoords(active_section));
-    sect_coords.Translate(2, 1);
+    // sect_coords.Translate(2, 1);
+    // void Translate(int _x, int _y) { m_x += _x, m_y += _y; }
+    // inline Coord operator+(const Coord& rhs) const { return Coord(m_v1 + rhs.m_v1, m_v2 + rhs.m_v2); }
+    sect_coords + init;
+    
     SetColor(COLOR_WHITE);
-    Print(sect_coords.GetY(), sect_coords.GetX(), "%s",
+    Print(sect_coords.Y(), sect_coords.X(), "%s",
           GetSectionName(active_section));
     active_section = in_section;
   }
   
   Apto::Coord<int> sect_coords(GetSectionCoords(active_section));
-  sect_coords.Translate(2, 1);
+//  sect_coords.Translate(2, 1);
+  sect_coords + init;
   SetBoldColor(COLOR_BLUE);
-  Print(sect_coords.GetY(), sect_coords.GetX(), "%s",
+  Print(sect_coords.Y(), sect_coords.X(), "%s",
         GetSectionName(active_section));
   SetColor(COLOR_WHITE);
 }

@@ -96,13 +96,18 @@ public:
 
   inline int GetReceiveValue();
   inline const Apto::Array<double>& GetResources(cAvidaContext& ctx);
-  inline const Apto::Array<double>& GetAvatarResources(cAvidaContext& ctx);
-  inline const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx);
-  inline const Apto::Array<double>& GetFacedAvatarResources(cAvidaContext& ctx);
-  inline const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx);
-  inline const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx);
-  inline const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id);
+  inline double GetResourceVal(cAvidaContext& ctx, int res_id);
+  inline const Apto::Array<double>& GetAVResources(cAvidaContext& ctx);
+  inline double GetAVResourceVal(cAvidaContext& ctx, int res_id);
+  inline const Apto::Array<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  inline double GetFacedResourceVal(cAvidaContext& ctx, int res_id);
+  inline const Apto::Array<double>& GetAVFacedResources(cAvidaContext& ctx);
+  double GetAVFacedResourceVal(cAvidaContext& ctx, int res_id);
+  inline const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
+  inline const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx); 
+  inline const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id); 
   inline double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
+  inline double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id);
   inline const Apto::Array< Apto::Array<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -136,17 +141,35 @@ inline const Apto::Array<double>& cTestCPU::GetResources(cAvidaContext& ctx)
   return m_resource_count.GetResources(ctx); 
 }
 
+inline double cTestCPU::GetResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
+}
+
 inline const Apto::Array<double>& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)
 {
   return m_faced_cell_resource_count.GetResources(ctx); 
 }
  
-inline const Apto::Array<double>& cTestCPU::GetFacedAvatarResources(cAvidaContext& ctx)
+inline double cTestCPU::GetFacedResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const Apto::Array<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
+  return faced_res[res_id];
+}
+
+inline const Apto::Array<double>& cTestCPU::GetAVFacedResources(cAvidaContext& ctx)
 {
   return m_faced_cell_resource_count.GetResources(ctx); 
 }
 
-inline const Apto::Array<double>& cTestCPU::GetDemeResources(int, cAvidaContext& ctx)
+inline double cTestCPU::GetAVFacedResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const Apto::Array<double>& faced_res = m_faced_cell_resource_count.GetResources(ctx);
+  return faced_res[res_id];
+}
+
+inline const Apto::Array<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)
 {
     return m_deme_resource_count.GetResources(ctx); 
 }
@@ -156,17 +179,29 @@ inline const Apto::Array<double>& cTestCPU::GetCellResources(int, cAvidaContext&
   return m_cell_resource_count.GetResources(ctx); 
 }
 
-inline const Apto::Array<double>& cTestCPU::GetAvatarResources(cAvidaContext& ctx)
+inline const Apto::Array<double>& cTestCPU::GetAVResources(cAvidaContext& ctx)
 {
   return m_cell_resource_count.GetResources(ctx); 
 }
 
-inline const Apto::Array<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int)
+inline double cTestCPU::GetAVResourceVal(cAvidaContext& ctx, int res_id)
+{
+  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
+}
+
+inline const Apto::Array<double>& cTestCPU::GetFrozenResources(cAvidaContext& ctx, int cell_id)   
 {
   return m_cell_resource_count.GetResources(ctx); 
 }
 
 inline double cTestCPU::GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
+{
+  const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
+  return cell_res[res_id];
+}
+
+inline double cTestCPU::GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id)
 {
   const Apto::Array<double>& cell_res = m_cell_resource_count.GetResources(ctx);
   return cell_res[res_id];

@@ -106,9 +106,9 @@ void cStatsScreen::Update(cAvidaContext& ctx)
 //  Print(10, 13, "%5d", stats.GetNumGenotypes());
 //  Print(11, 13, "%5d", stats.GetNumThreshold());
 
-  Print(2, 37, "%s",  static_cast<const char*>(best_gen->Properties().Get("name").Value()));
+  Print(2, 37, "%s",  static_cast<const char*>(best_gen->Properties().Get("name").StringValue()));
   Print(3, 37, "%9d", best_gen->ID());
-  Print(4, 37, "%9d", stats.GetUpdate() - (int)Apto::StrAs(best_gen->Properties().Get("update_born").Value()));
+  Print(4, 37, "%9d", stats.GetUpdate() - (int)Apto::StrAs(best_gen->Properties().Get("update_born").StringValue()));
 
   PrintDouble(9,  20, (double) stats.GetTotCreatures());
 //  PrintDouble(10, 20, (double) stats.GetTotGenotypes());
@@ -126,14 +126,14 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(2, 62, metrics->GetFitness());
   PrintDouble(3, 62, metrics->GetMerit());
   PrintDouble(4, 62, metrics->GetGestationTime());
-  Genome gen(best_gen->Properties().Get("genome").Value());
+  Genome gen(best_gen->Properties().Get("genome").StringValue());
   InstructionSequencePtr seq;
   seq.DynamicCastFrom(gen.Representation());
   Print(5, 62, "%7d", seq->GetSize());
   PrintDouble(6, 62, metrics->GetLinesCopied());
   PrintDouble(7, 62, metrics->GetLinesExecuted());
   Print(8, 62, "%7d", best_gen->NumUnits());
-  Print(9, 62, "%7d", (int)Apto::StrAs(best_gen->Properties().Get("recent_births").Value()));
+  Print(9, 62, "%7d", (int)Apto::StrAs(best_gen->Properties().Get("recent_births").StringValue()));
   if (stats.GetAveMerit() == 0) {
     PrintDouble(10, 62, 0.0);
   } else {

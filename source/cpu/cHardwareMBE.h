@@ -1,8 +1,8 @@
 /*
- *  cHardwareExperimental.h
+ *  cHardwareMBE.h
  *  Avida
  *
- *  Created by David on 2/10/07 based on cHardwareCPU.h
+ *  Created by APWagner on 10/26/2012 based on cHardwareMBE.h
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef cHardwareExperimental_h
-#define cHardwareExperimental_h
+#ifndef cHardwareMBE_h
+#define cHardwareMBE_h
 
 #include "avida/Avida.h"
 
@@ -45,7 +45,7 @@
 #include <iomanip>
 
 /**
- * Each organism may have a cHardwareExperimental structure which keeps track of the
+ * Each organism may have a cHardwareMBE structure which keeps track of the
  * current status of all the components of the simulated hardware.
  *
  * @see cCPUMemory, cInstSet
@@ -56,23 +56,22 @@ class cInstSet;
 class cMutation;
 class cOrganism;
 
-class cHardwareExperimental : public cHardwareBase
+class cHardwareMBE : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareExperimental::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareMBE::*tMethod)(cAvidaContext& ctx);
 
 private:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 8;
+  static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX};
   static const int NUM_NOPS = NUM_REGISTERS;
   
-  
   // --------  Static Variables  --------
-  static tInstLib<cHardwareExperimental::tMethod>* s_inst_slib;
-  static tInstLib<cHardwareExperimental::tMethod>* initInstLib(void);
-  
+  static tInstLib<cHardwareMBE::tMethod>* s_inst_slib;
+  static tInstLib<cHardwareMBE::tMethod>* initInstLib(void);
   
   // --------  Define Internal Data Structures  --------
   struct sInternalValue
@@ -116,19 +115,44 @@ private:
 #undef SIZE
   };
   
-  
+  struct cBehavProc
+  {
+  private:
+  public:
+    sInternalValue reg[NUM_REGISTERS];
+    cLocalStack stack;
+    unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
+/*  struct {
+      bool active:1;
+      bool wait_greater:1;
+      bool wait_equal:1;
+      bool wait_less:1;
+      unsigned int wait_reg:4;
+      unsigned int wait_dst:4;
+    };
+    int wait_value;
+*/
+    inline cBehavProc() { ; }
+    cBehavProc(cHardwareMBE* in_hardware) { Reset(in_hardware); }
+    ~cBehavProc() { ; }
+    
+    void operator=(const cBehavProc& in_proc);
+    void Reset(cHardwareMBE* in_hardware);
+  };
+
   struct cLocalThread
   {
   private:
     int m_id;
-    int m_promoter_inst_executed;
-    unsigned int m_execurate;
     int m_messageTriggerType;
+    int curr_behav;
+    int next_behav;
+    int bc_used_count;
+    Apto::Array<bool> bcs_used;
+  
   public:
-    sInternalValue reg[NUM_REGISTERS];
+    cBehavProc behav[NUM_BEHAVIORS];
     cHeadCPU heads[NUM_HEADS];
-    cLocalStack stack;
-    unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
     
     struct {
@@ -148,37 +172,30 @@ private:
     cCodeLabel next_label;
     
     inline cLocalThread() { ; }
-    cLocalThread(cHardwareExperimental* in_hardware, int in_id = -1) { Reset(in_hardware, in_id); }
+    cLocalThread(cHardwareMBE* in_hardware, int in_id = -1) { Reset(in_hardware, in_id); }
     ~cLocalThread() { ; }
     
     void operator=(const cLocalThread& in_thread);
-    void Reset(cHardwareExperimental* in_hardware, int in_id);
+    void Reset(cHardwareMBE* in_hardware, int in_id);
     inline int GetID() const { return m_id; }
     inline void SetID(int in_id) { m_id = in_id; }
-    
-    inline unsigned int GetExecurate() const { return m_execurate; }
-    inline void UpdateExecurate(int code_len, unsigned int inst_code) { m_execurate <<= code_len; m_execurate |= inst_code; }      
-    
-    inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
-    inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
-    inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
+    // multi-thread control
     inline void setMessageTriggerType(int value) { m_messageTriggerType = value; }
     inline int getMessageTriggerType() { return m_messageTriggerType; }
-  };
-  
-  
-  struct cPromoter 
-  {
-  public:
-    int pos;        // position within genome
-    int bit_code;   // bit code of promoter
-    int regulation;
     
-    inline cPromoter(int p = 0, int bc = 0, int reg = 0) : pos(p), bit_code(bc), regulation(reg) { ; }
-    inline int GetRegulatedBitCode() { return bit_code ^ regulation; }
-    inline ~cPromoter() { ; }
+    inline void SetCurrBehav(int behav) { curr_behav = behav; }
+    inline int GetCurrBehav() const { return curr_behav; }
+    inline void SetNextBehav(int behav) { next_behav = behav; }
+    inline int GetNextBehav() const { return next_behav; }
+    
+    inline void ClearBCStats() { bc_used_count = 0; for (int i = 0; i < NUM_BEHAVIORS; i++) bcs_used[i] = false; }
+    
+    inline Apto::Array<bool>& GetBCsUsed() { return bcs_used; }
+    inline void SetBCsUsed(int idx, bool val) { bcs_used[idx] = val; }
+
+    inline int GetBCUsedCount() const { return bc_used_count; }
+    inline void SetBCUsedCount(int count) { bc_used_count = count; }
   };
-  
   
   // --------  Member Variables  --------
   const tMethod* m_functions;
@@ -208,34 +225,21 @@ private:
     bool m_thread_slicing_parallel:1;
     bool m_no_cpu_cycle_time:1;
     
-    bool m_promoters_enabled:1;
-    bool m_constitutive_regulation:1;
-    bool m_no_active_promoter_halt:1;
-    
     bool m_slip_read_head:1;
-    
-    bool m_io_expire:1;
     
     unsigned int m_waiting_threads:4;
   };
   
-  
-  // Promoter model
-  int m_promoter_index;       // site to begin looking for the next active promoter from
-  int m_promoter_offset;      // bit offset when testing whether a promoter is on
-  Apto::Array<cPromoter, Apto::ManagedPointer> m_promoters;
-  
-  
-  cHardwareExperimental(const cHardwareExperimental&); // @not_implemented
-  cHardwareExperimental& operator=(const cHardwareExperimental&); // @not_implemented
+  cHardwareMBE(const cHardwareMBE&); // @not_implemented
+  cHardwareMBE& operator=(const cHardwareMBE&); // @not_implemented
   
   
 public:
-  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  ~cHardwareExperimental() { ; }
+  cHardwareMBE(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  ~cHardwareMBE() { ; }
   
-  static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }
+  static tInstLib<cHardwareMBE::tMethod>* GetInstLib() { return s_inst_slib; }
+  static cString GetDefaultInstFilename() { return "instset-MBE.cfg"; }
   
   
   // --------  Core Execution Methods  --------
@@ -244,7 +248,7 @@ public:
 
   
   // --------  Helper Methods  --------
-  int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
+  int GetType() const { return HARDWARE_TYPE_CPU_MBE; }
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
   void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype);
@@ -280,7 +284,7 @@ public:
   
   
   // --------  Register Manipulation  --------
-  int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
+  int GetRegister(int reg_id) const { return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
   
   
@@ -295,19 +299,18 @@ public:
   int GetCurThread() const      { return m_cur_thread; }
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
-  // interrupt current thread
-  bool InterruptThread(int interruptType);
+  // --------  Non-Standard Methods  --------
+  int GetActiveStack() const { return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack; }
+  bool GetMalActive() const   { return m_mal_active; }
+
+
+  // interrupt current thread @ not implemented
+  bool InterruptThread(int interruptType) { return false; }
   int GetThreadMessageTriggerType(int _index) { return -1; }
   
-  // --------  Parasite Stuff  --------
+  // --------  Parasite Stuff  -------- @ not implemented
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
-  
-  // --------  Non-Standard Methods  --------  
-  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
-  bool GetMalActive() const   { return m_mal_active; }
-  
-  
 private:
   
   // --------  Core Execution Methods  --------
@@ -320,13 +323,11 @@ private:
   inline sInternalValue stackPop();
   inline cLocalStack& getStack(int stack_id);
   inline void switchStack();
-  
-  
+    
   // --------  Head Manipulation (including IP)  --------
   cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
   void AdjustHeads();
-  
-  
+    
   // --------  Label Manipulation  -------
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
@@ -346,7 +347,6 @@ private:
   // --------  Thread Manipulation  -------
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
   bool ExitThread(); // Kill the current thread!
-  
   
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
@@ -386,17 +386,14 @@ private:
   void ReadInst(Instruction in_inst);
   
   
-  // ---------- Promoter Helper Functions -----------
-  void PromoterTerminate(cAvidaContext& ctx);
-  int  Numberate(int _pos, int _dir, int _num_bits = 0);
-  bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
-  
-  
   // ---------- Instruction Library -----------
   // Multi-threading
   bool Inst_ForkThread(cAvidaContext& ctx);
   bool Inst_ExitThread(cAvidaContext& ctx);
   bool Inst_IdThread(cAvidaContext& ctx);
+  
+  // --------  Behavior Execution  --------
+  bool Inst_SetBehavior(cAvidaContext& ctx);
   
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
@@ -407,12 +404,6 @@ private:
   bool Inst_IfLessThanZero(cAvidaContext& ctx);
   bool Inst_IfGtrX(cAvidaContext& ctx);
   bool Inst_IfEquX(cAvidaContext& ctx);
-  bool Inst_IfConsensus(cAvidaContext& ctx);
-  bool Inst_IfConsensus24(cAvidaContext& ctx);
-  bool Inst_IfLessConsensus(cAvidaContext& ctx);
-  bool Inst_IfLessConsensus24(cAvidaContext& ctx);
-  bool Inst_IfStackGreater(cAvidaContext& ctx);
-  bool Inst_Label(cAvidaContext& ctx);
 
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);
@@ -430,8 +421,6 @@ private:
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
   bool Inst_One(cAvidaContext& ctx);
-  bool Inst_Rand(cAvidaContext& ctx);
-  bool Inst_Mult100(cAvidaContext& ctx);
   
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
@@ -443,89 +432,42 @@ private:
 
   // I/O and Sensory
   bool Inst_TaskIO(cAvidaContext& ctx);
-  bool Inst_TaskIOExpire(cAvidaContext& ctx);
   bool Inst_TaskInput(cAvidaContext& ctx);
   bool Inst_TaskOutput(cAvidaContext& ctx);
-  bool Inst_TaskOutputZero(cAvidaContext& ctx);
-  bool Inst_TaskOutputExpire(cAvidaContext& ctx);
-  bool Inst_DemeIO(cAvidaContext& ctx);
 
   // Head-based Instructions
   bool Inst_HeadAlloc(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
-  bool Inst_MoveHeadIfNEqu(cAvidaContext& ctx);
-  bool Inst_MoveHeadIfLess(cAvidaContext& ctx);
-  bool Inst_Goto(cAvidaContext& ctx);
-  bool Inst_GotoIfNEqu(cAvidaContext& ctx);
-  bool Inst_GotoIfLess(cAvidaContext& ctx);
-  bool Inst_GotoConsensus(cAvidaContext& ctx);
-  bool Inst_GotoConsensus24(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
-  bool Inst_IfCopiedCompLabel(cAvidaContext& ctx);
-  bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
-  bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
-  bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
-  bool Inst_HeadDivideSex(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
-  bool Inst_Search_Label_Comp_S(cAvidaContext& ctx);
-  bool Inst_Search_Label_Comp_F(cAvidaContext& ctx);
-  bool Inst_Search_Label_Comp_B(cAvidaContext& ctx);
-  bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
-  bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);
-  bool Inst_Search_Label_Direct_B(cAvidaContext& ctx);
+  
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_B(cAvidaContext& ctx);
   bool Inst_Search_Seq_Direct_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Direct_F(cAvidaContext& ctx);
   bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
-  bool Inst_SetFlow(cAvidaContext& ctx);
-  
+
   // Thread Execution Control
   bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
   bool Inst_WaitCondition_Less(cAvidaContext& ctx);
   bool Inst_WaitCondition_Greater(cAvidaContext& ctx);
   
-  // Promoter Model
-  bool Inst_Promoter(cAvidaContext& ctx);
-  bool Inst_Terminate(cAvidaContext& ctx);
-  bool Inst_TerminateConsensus(cAvidaContext& ctx);
-  bool Inst_TerminateConsensus24(cAvidaContext& ctx);
-  bool Inst_Regulate(cAvidaContext& ctx);
-  bool Inst_RegulateSpecificPromoters(cAvidaContext& ctx);
-  bool Inst_SenseRegulate(cAvidaContext& ctx);
-  bool Inst_Numberate(cAvidaContext& ctx) { return Do_Numberate(ctx); };
-  bool Inst_Numberate24(cAvidaContext& ctx) { return Do_Numberate(ctx, 24); };
-  bool Inst_Execurate(cAvidaContext& ctx);
-  bool Inst_Execurate24(cAvidaContext& ctx);  
-
-  // Bit Consensus
-  bool Inst_BitConsensus(cAvidaContext& ctx);
-  bool Inst_BitConsensus24(cAvidaContext& ctx);
-  
   // Replication
+  bool Inst_IfCopiedCompLabel(cAvidaContext& ctx);
+  bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
+  bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
+  bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   
-  // State Grid Navigation
-  bool Inst_SGMove(cAvidaContext& ctx);
-  bool Inst_SGRotateL(cAvidaContext& ctx);
-  bool Inst_SGRotateR(cAvidaContext& ctx);
-  bool Inst_SGSense(cAvidaContext& ctx);
-
-  // Movement and Navigation 
+  // Movement and Navigation
   bool Inst_Move(cAvidaContext& ctx);
-  bool Inst_JuvMove(cAvidaContext& ctx);
-  bool Inst_RangeMove(cAvidaContext& ctx);
-  bool Inst_RangePredMove(cAvidaContext& ctx);
-  bool Inst_GetCellPosition(cAvidaContext& ctx);
-  bool Inst_GetCellPositionX(cAvidaContext& ctx);
-  bool Inst_GetCellPositionY(cAvidaContext& ctx);
-  bool Inst_GetNorthOffset(cAvidaContext& ctx);  
+  bool Inst_GetNorthOffset(cAvidaContext& ctx);
   bool Inst_GetPositionOffset(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
   bool Inst_GetEasterly(cAvidaContext& ctx);
@@ -534,32 +476,13 @@ private:
   bool Inst_ZeroPosOffset(cAvidaContext& ctx);
   
   // Rotation
-  bool Inst_RotateLeftOne(cAvidaContext& ctx);
-  bool Inst_RotateRightOne(cAvidaContext& ctx);
-  bool Inst_RotateUphill(cAvidaContext& ctx);
-  bool Inst_RotateUpFtHill(cAvidaContext& ctx);
   bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateX(cAvidaContext& ctx);
-  bool Inst_RotateDir(cAvidaContext& ctx);
-  bool Inst_RotateOrgID(cAvidaContext& ctx);
-  bool Inst_RotateAwayOrgID(cAvidaContext& ctx);
 
-  // Neural networking 
-  bool Inst_RotateNeuronAVLeft(cAvidaContext& ctx);
-  bool Inst_RotateNeuronAVRight(cAvidaContext& ctx);
-  bool Inst_RotateNeuronAVbyX(cAvidaContext& ctx);
-  bool Inst_MoveNeuronAV(cAvidaContext& ctx);
-  bool Inst_IfNeuronInputHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotNeuronInputHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
-  bool Inst_IfNotNeuronInputFacedHasOutputAV(cAvidaContext& ctx);
-  
   // Resource and Topography Sensing
   bool Inst_SenseResourceID(cAvidaContext& ctx); 
-  bool Inst_SenseResQuant(cAvidaContext& ctx); 
-  bool Inst_SenseNest(cAvidaContext& ctx); 
-  bool Inst_SenseResDiff(cAvidaContext& ctx); 
+  bool Inst_SenseNest(cAvidaContext& ctx);
   bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
   bool Inst_LookAhead(cAvidaContext& ctx);
   bool Inst_LookAheadIntercept(cAvidaContext& ctx);
@@ -567,92 +490,29 @@ private:
   bool Inst_LookAroundIntercept(cAvidaContext& ctx);
   bool Inst_LookFT(cAvidaContext& ctx);
   bool Inst_LookAroundFT(cAvidaContext& ctx);
+
+  // Foraging
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
-  bool Inst_GetLocOrgDensity(cAvidaContext& ctx);
-  bool Inst_GetFacedOrgDensity(cAvidaContext& ctx);
   
+  // Collection
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool unit);
-  bool Inst_CollectEdible(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
-  bool Inst_DepositResource(cAvidaContext& ctx);
-  bool Inst_DepositSpecific(cAvidaContext& ctx);
-  bool Inst_DepositAllAsSpecific(cAvidaContext& ctx);
-  bool Inst_NopDepositResource(cAvidaContext& ctx);
-  bool Inst_NopDepositSpecific(cAvidaContext& ctx);    
-  bool Inst_NopDepositAllAsSpecific(cAvidaContext& ctx);
-  bool Inst_NopCollectEdible(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
-  bool Inst_GetSpecificStored(cAvidaContext& ctx);
 
   // Groups 
   bool Inst_SetOpinion(cAvidaContext& ctx);
   bool Inst_GetOpinion(cAvidaContext& ctx);
   bool Inst_JoinGroup(cAvidaContext& ctx);
-  bool Inst_ChangePredGroup(cAvidaContext& ctx); 
-  bool Inst_MakePredGroup(cAvidaContext& ctx); 
-  bool Inst_LeavePredGroup(cAvidaContext& ctx); 
-  bool Inst_AdoptPredGroup(cAvidaContext& ctx); 
   bool Inst_GetGroupID(cAvidaContext& ctx);
-  bool Inst_GetPredGroupID(cAvidaContext& ctx);
-  bool Inst_IncPredTolerance(cAvidaContext& ctx);  
-  bool Inst_DecPredTolerance(cAvidaContext& ctx);  
-  bool Inst_GetPredTolerance(cAvidaContext& ctx);     
-  bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
-
-  // Active messaging
-  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
-
-  bool Inst_START_Handler(cAvidaContext& ctx);
-  bool Inst_End_Handler(cAvidaContext& ctx);
-
-  bool Inst_SendMessage(cAvidaContext& ctx);
-  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
-  bool Inst_RetrieveMessage(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);
-  bool Inst_AttackPrey(cAvidaContext& ctx); 
-  bool Inst_AttackPreyGroup(cAvidaContext& ctx);
-  bool Inst_AttackPreyShare(cAvidaContext& ctx);
-  bool Inst_AttackSpecPrey(cAvidaContext& ctx);
-  bool Inst_AttackPreyArea(cAvidaContext& ctx);
-  bool Inst_AttackFTPrey(cAvidaContext& ctx); 
-  bool Inst_FightMeritOrg(cAvidaContext& ctx); 
-  bool Inst_FightBonusOrg(cAvidaContext& ctx); 
-  bool Inst_GetMeritFightOdds(cAvidaContext& ctx); 
-  bool Inst_FightOrg(cAvidaContext& ctx); 
-  bool Inst_AttackPred(cAvidaContext& ctx); 
-  bool Inst_KillPred(cAvidaContext& ctx); 
-  bool Inst_FightPred(cAvidaContext& ctx); 
-  bool Inst_MarkCell(cAvidaContext& ctx); 
-  bool Inst_MarkGroupCell(cAvidaContext& ctx); 
-  bool Inst_MarkPredCell(cAvidaContext& ctx); 
-  bool Inst_ReadFacedCell(cAvidaContext& ctx); 
-  bool Inst_ReadFacedPredCell(cAvidaContext& ctx); 
+
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
   
-  bool Inst_SetGuard(cAvidaContext& ctx);
-  bool Inst_SetGuardOnce(cAvidaContext& ctx);
-  bool Inst_GetNumGuards(cAvidaContext& ctx);
-  bool Inst_GetNumJuvs(cAvidaContext& ctx);
-  
-  bool Inst_ActivateDisplay(cAvidaContext& ctx);
-  bool Inst_UpdateDisplay(cAvidaContext& ctx);
-  bool Inst_ModifyDisplay(cAvidaContext& ctx);
-  bool Inst_ReadLastSeenDisplay(cAvidaContext& ctx);
-  bool Inst_KillDisplay(cAvidaContext& ctx);
-  
-  bool Inst_ModifySimpDisplay(cAvidaContext& ctx);
-  bool Inst_ReadLastSimpDisplay(cAvidaContext& ctx);
-
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
   
@@ -680,15 +540,10 @@ public:
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
-  
-  void InjureOrg(cOrganism* target);
-  void MakePred();
-  void MakeTopPred();
-  bool TestAttack(cAvidaContext& ctx);
 };
 
 
-inline cHardwareExperimental::sInternalValue& cHardwareExperimental::sInternalValue::operator=(const sInternalValue& i)
+inline cHardwareMBE::sInternalValue& cHardwareMBE::sInternalValue::operator=(const sInternalValue& i)
 {
   value = i.value;
   originated = i.originated;
@@ -698,7 +553,7 @@ inline cHardwareExperimental::sInternalValue& cHardwareExperimental::sInternalVa
   return *this;
 }
 
-inline bool cHardwareExperimental::ThreadSelect(const int thread_num)
+inline bool cHardwareMBE::ThreadSelect(const int thread_num)
 {
   if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
     m_cur_thread = thread_num;
@@ -708,62 +563,60 @@ inline bool cHardwareExperimental::ThreadSelect(const int thread_num)
   return false;
 }
 
-inline void cHardwareExperimental::ThreadNext()
+inline void cHardwareMBE::ThreadNext()
 {
   m_cur_thread++;
   if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
 }
 
-inline void cHardwareExperimental::ThreadPrev()
+inline void cHardwareMBE::ThreadPrev()
 {
   if (m_cur_thread == 0) m_cur_thread = m_threads.GetSize() - 1;
   else m_cur_thread--;
 }
 
-inline cHardwareExperimental::sInternalValue cHardwareExperimental::stackPop()
+inline cHardwareMBE::sInternalValue cHardwareMBE::stackPop()
 {
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    return m_threads[m_cur_thread].stack.Pop();
+  if (m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack == 0) {
+    return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack.Pop();
   } else {
     return m_global_stack.Pop();
   }
 }
 
-
-inline cHardwareExperimental::cLocalStack& cHardwareExperimental::getStack(int stack_id)
+inline cHardwareMBE::cLocalStack& cHardwareMBE::getStack(int stack_id)
 {
   if (stack_id == 0) {
-    return m_threads[m_cur_thread].stack;
+    return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack;
   } else {
     return m_global_stack;
   }
 }
 
-
-inline void cHardwareExperimental::switchStack()
+inline void cHardwareMBE::switchStack()
 {
-  m_threads[m_cur_thread].cur_stack++;
-  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
+  m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack++;
+  if (m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack > 1) m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack = 0;
 }
 
 
-inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_thread) const
+inline int cHardwareMBE::GetStack(int depth, int stack_id, int in_thread) const
 {
   sInternalValue value;
 
   if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 
-  if (stack_id == -1) stack_id = m_threads[in_thread].cur_stack;
+  if (stack_id == -1) stack_id = m_threads[in_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack;
 
-  if (stack_id == 0) value = m_threads[in_thread].stack.Get(depth);
+  if (stack_id == 0) value = m_threads[in_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack.Get(depth);
   else if (stack_id == 1) value = m_global_stack.Get(depth);
 
   return value.value;
 }
 
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env)
+inline void cHardwareMBE::setInternalValue(int reg_num, int value, bool from_env)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
+  sInternalValue& dest = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
   dest.originated = m_cycle_count;
@@ -772,10 +625,9 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& src)
+inline void cHardwareMBE::setInternalValue(int reg_num, int value, const sInternalValue& src)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
+  sInternalValue& dest = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
@@ -784,10 +636,9 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, cons
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
+inline void cHardwareMBE::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
+  sInternalValue& dest = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;

@@ -149,6 +149,7 @@ public:
   bool ShouldSleep(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
   
   unsigned int GetFlags(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).GetFlags(); }
+  
 
   // Insertion of new instructions...
   Instruction ActivateNullInst();

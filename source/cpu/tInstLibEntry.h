@@ -35,8 +35,9 @@ private:
   tInstLibEntry(); // @not_implemented
   
 public:
-  tInstLibEntry(const cString& name, FUN function, InstructionClass _class = INST_CLASS_OTHER, unsigned int flags = 0, const cString& desc = "")
-    : cInstLibEntry(name, _class, flags, desc), m_function(function) { ; }
+  tInstLibEntry(const cString& name, FUN function, InstructionClass _class = INST_CLASS_OTHER, unsigned int flags = 0,
+    const cString& desc = "", BehavClass _bclass = BEHAV_CLASS_NONE)
+    : cInstLibEntry(name, _class, flags, desc, _bclass), m_function(function) { ; }
   
   const FUN GetFunction() const { return m_function; }
 };

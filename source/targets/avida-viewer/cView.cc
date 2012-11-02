@@ -334,9 +334,9 @@ void cView::CloneSoup()
 void cView::ExtractCreature(cAvidaContext& ctx)
 {
   Systematics::GroupPtr cur_gen = info.GetActiveGenotype();
-  cString gen_name = (const char*)cur_gen->Properties().Get("name").Value();
+  cString gen_name = (const char*)cur_gen->Properties().Get("name").StringValue();
 
-  Genome mg = Genome(cur_gen->Properties().Get("genome").Value());
+  Genome mg = Genome(cur_gen->Properties().Get("genome").StringValue());
   ConstInstructionSequencePtr seq;
   seq.DynamicCastFrom(mg.Representation());
   if (gen_name == "(no name)") gen_name.Set("%03d-unnamed", seq->GetSize());

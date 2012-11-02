@@ -93,7 +93,7 @@ char cSymbolUtil::GetForagerColor(const cPopulationCell & cell)
   if (cell.IsOccupied() == false) return ' ';
   const int org_target = cell.GetOrganism()->GetForageTarget();
   
-  if (org_target == -2) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
+  if (org_target == -2 || org_target == -3) return 'A';                   //we just want to color the predators red, the symbol used will still be a 'P'
   else if (org_target == -1) return '1';              //no target = bold-white
   else return 'B' + org_target;                       //other valid targets = colors -> white
 }
@@ -104,6 +104,7 @@ char cSymbolUtil::GetForagerSymbol(const cPopulationCell & cell)
   const int org_target = cell.GetOrganism()->GetForageTarget();
   
   if (org_target == -2) return 'P';
+  else if (org_target == -3) return 'T';
   else if (org_target == -1) return '-';
   else if (org_target < 10) return '0' + org_target;
   // switch to lower case letters after digits
@@ -124,7 +125,11 @@ char cSymbolUtil::GetAVForagerColor(const cPopulationCell & cell)
 char cSymbolUtil::GetAVForagerSymbol(const cPopulationCell & cell)
 {
   if (cell.HasAV() == false) return ' ';
-  if (cell.HasPredAV()) return 'P';
+  if (cell.HasPredAV()) {
+    const int org_target = cell.GetRandPredAV()->GetForageTarget();
+    if (org_target == -2) return 'P';
+    else if (org_target == -3) return 'T';
+  }
 
   const int org_target = cell.GetRandPreyAV()->GetForageTarget();
   if (org_target == -1) return '-';
@@ -165,7 +170,7 @@ char cSymbolUtil::GetMarkedCellSymbol(const cPopulationCell & cell)
 char cSymbolUtil::GetMarkedCellColor(const cPopulationCell & cell)
 {
   if (cell.GetCellData() != 0) {
-    if (cell.GetCellDataForagerType() == -2) return 'A';
+    if (cell.GetCellDataForagerType() <= -2) return 'A';
     else if (cell.GetCellDataForagerType() == -1) return '1';
     else return 'B' + cell.GetCellDataForagerType();
   }

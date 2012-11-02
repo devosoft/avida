@@ -1,25 +1,25 @@
-# Avida instruction execution data
+# Predator org instruction execution data
 # Sat Oct 27 16:04:19 2012
 #  1: Update
-#  2: inst 0
-#  3: inst 1
-#  4: inst 2
-#  5: inst 3
-#  6: inst 4
-#  7: inst 5
-#  8: inst 6
-#  9: inst 7
-# 10: inst 8
-# 11: inst 9
-# 12: inst 10
-# 13: inst 11
-# 14: inst 12
-# 15: inst 13
-# 16: inst 14
-# 17: inst 15
-# 18: inst 16
-# 19: inst 17
-# 20: inst 18
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: nop-D
+#  6: nop-E
+#  7: nop-F
+#  8: nop-G
+#  9: nop-H
+# 10: inc
+# 11: dec
+# 12: IO
+# 13: if-not-0
+# 14: if-equ-0
+# 15: move
+# 16: rotate-x
+# 17: rotate-org-id
+# 18: look-ahead
+# 19: zero
+# 20: set-forage-target
 
 100 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 200 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

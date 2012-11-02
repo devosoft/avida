@@ -3063,13 +3063,13 @@ double cTaskLib::Task_MoveToLeftSide(cTaskContext& ctx) const
 
 double cTaskLib::Task_Move(cTaskContext& ctx) const
 {
-  if (ctx.GetOrganism()->GetCellID() != ctx.GetOrganism()->GetPrevSeenCellID()) {
-    ctx.GetOrganism()->SetPrevSeenCellID(ctx.GetOrganism()->GetCellID());
+  int cell_id = ctx.GetOrganism()->GetCellID();
+  if (m_world->GetConfig().USE_AVATARS.Get()) cell_id = ctx.GetOrganism()->GetAVCellID();
+  if (cell_id != ctx.GetOrganism()->GetPrevSeenCellID()) {
+    ctx.GetOrganism()->SetPrevSeenCellID(cell_id);
     return 1.0;
   }
-  
   return 0.0;
-
 } //End cTaskLib::Task_Move()
 
 

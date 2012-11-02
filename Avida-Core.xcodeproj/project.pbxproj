@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A4A7026163B01E000C07E82 /* cHardwareMBE.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */; };
 		4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7038918C13BBA88800606079 /* Avida2Driver.cc */; };
 		4A9B676515404DD1005AE9B9 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
 		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
@@ -252,6 +253,8 @@
 		42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetworkUtils.h; sourceTree = "<group>"; };
 		42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeTopologyNetwork.cc; sourceTree = "<group>"; };
 		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
+		4A4A7023163B01AF00C07E82 /* cHardwareMBE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cHardwareMBE.h; sourceTree = "<group>"; };
+		4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareMBE.cc; sourceTree = "<group>"; };
 		4A587EEA1332B6590037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = cGradientCount.cc; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		4A587EEB1332B6590037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cGradientCount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4ABC70211350AF3000EB56AA /* gradient.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = gradient.html; sourceTree = "<group>"; };
@@ -1553,6 +1556,8 @@
 				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
 				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
 				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
+				4A4A7023163B01AF00C07E82 /* cHardwareMBE.h */,
+				4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */,
 				70B1A6530B7E238F00067486 /* cHardwareExperimental.h */,
 				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
 				70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */,
@@ -2094,6 +2099,7 @@
 			files = (
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
 				4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */,
+				4A4A7026163B01E000C07E82 /* cHardwareMBE.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
