@@ -1432,8 +1432,8 @@ bool cHardwareMBE::Inst_SetBehavior(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rAX);
   int behavior = (reg_used % NUM_BEHAVIORS) % NUM_REGISTERS;
-  
-  if (m_inst_set->IsNop(getIP().GetNextInst())) m_threads[m_cur_thread].SetNextBehav(behavior);
+  // after findmodified, ip will be at the trailing nop, if any.
+  if (m_inst_set->IsNop(getIP().GetInst())) m_threads[m_cur_thread].SetNextBehav(behavior);
   else m_threads[m_cur_thread].SetNextBehav((m_threads[m_cur_thread].GetCurrBehav() + 1) % NUM_BEHAVIORS);
   
   setInternalValue(reg_used, m_threads[m_cur_thread].GetNextBehav(), false);
