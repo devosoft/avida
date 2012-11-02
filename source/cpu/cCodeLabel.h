@@ -35,11 +35,14 @@
 
 class cCodeLabel
 {
+public:
+  static const int MAX_LENGTH;
+  
 private:
   Apto::Array<char, Apto::Smart> m_nops;
 
 public:
-  inline cCodeLabel() { m_nops.SetReserve(nHardware::MAX_LABEL_SIZE); }
+  inline cCodeLabel() { m_nops.SetReserve(MAX_LENGTH); }
   inline cCodeLabel(const cCodeLabel& in_label) : m_nops(in_label.m_nops) { ; }
   ~cCodeLabel() { ; }
 
@@ -72,7 +75,7 @@ public:
 
 inline void cCodeLabel::AddNop(int nop_num)
 {
-  if (m_nops.GetSize() < nHardware::MAX_LABEL_SIZE) {
+  if (m_nops.GetSize() < MAX_LENGTH) {
     m_nops.Push((char)nop_num);
   }
 }

@@ -26,6 +26,7 @@
 
 #include "cArgContainer.h"
 #include "cArgSchema.h"
+#include "cHardwareBCR.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
 #include "cHardwareTransSMT.h"
@@ -133,6 +134,9 @@ bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, cStrin
       break;
     case HARDWARE_TYPE_CPU_MBE:
       inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareMBE::GetInstLib());
+      break;
+    case HARDWARE_TYPE_CPU_BCR:
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareBCR::GetInstLib());
       break;
     default:
       if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);
@@ -248,6 +252,9 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       break;
     case HARDWARE_TYPE_CPU_MBE:
       hw = new cHardwareMBE(ctx, m_world, org, inst_set);
+      break;
+    case HARDWARE_TYPE_CPU_BCR:
+      hw = new cHardwareBCR(ctx, m_world, org, inst_set);
       break;
     default:
       assert(false);

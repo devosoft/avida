@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4A4A7026163B01E000C07E82 /* cHardwareMBE.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */; };
 		4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7038918C13BBA88800606079 /* Avida2Driver.cc */; };
 		4A9B676515404DD1005AE9B9 /* Types.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0588314CF106200AB38C5 /* Types.cc */; };
 		4A9B676615404DFC005AE9B9 /* GenomeLoader.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708D3E3214A429DF00204169 /* GenomeLoader.cc */; };
@@ -181,6 +180,9 @@
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 		70DF729013BE20130085F85E /* World.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* World.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
+		70FA3F7F164423120003971F /* cHardwareMBE.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A4A7025163B01E000C07E82 /* cHardwareMBE.cc */; };
+		70FA3F83164425EB0003971F /* cHardwareBCR.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FA3F81164425EA0003971F /* cHardwareBCR.cc */; };
+		70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FA3F82164425EA0003971F /* cHardwareBCR.h */; };
 		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 /* End PBXBuildFile section */
@@ -786,6 +788,8 @@
 		70F962BF135AA2E7008EDD1C /* Genome.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Genome.cc; sourceTree = "<group>"; };
 		70F962C0135AA2E7008EDD1C /* Sequence.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Sequence.cc; sourceTree = "<group>"; };
 		70F962C1135AA2E7008EDD1C /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
+		70FA3F81164425EA0003971F /* cHardwareBCR.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareBCR.cc; sourceTree = "<group>"; };
+		70FA3F82164425EA0003971F /* cHardwareBCR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cHardwareBCR.h; sourceTree = "<group>"; };
 		70FB4E6D138435D500D8F6F0 /* Package.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Package.h; sourceTree = "<group>"; };
 		70FB4E821386B62500D8F6F0 /* TimeSeriesRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeSeriesRecorder.h; sourceTree = "<group>"; };
 		70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimeSeriesRecorder.cc; sourceTree = "<group>"; };
@@ -1554,6 +1558,8 @@
 				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
 				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
 				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
+				70FA3F82164425EA0003971F /* cHardwareBCR.h */,
+				70FA3F81164425EA0003971F /* cHardwareBCR.cc */,
 				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
 				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
 				4A4A7023163B01AF00C07E82 /* cHardwareMBE.h */,
@@ -1783,6 +1789,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70FA3F84164425EB0003971F /* cHardwareBCR.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2041,6 +2048,8 @@
 				7000B64E15C6E90D00EE3F14 /* Clade.cc in Sources */,
 				7000B64F15C6E90D00EE3F14 /* CladeArbiter.cc in Sources */,
 				704C6298160CA62F004E9B25 /* cMigrationMatrix.cc in Sources */,
+				70FA3F7F164423120003971F /* cHardwareMBE.cc in Sources */,
+				70FA3F83164425EB0003971F /* cHardwareBCR.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2099,7 +2108,6 @@
 			files = (
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
 				4A9B676315404DBD005AE9B9 /* Avida2Driver.cc in Sources */,
-				4A4A7026163B01E000C07E82 /* cHardwareMBE.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

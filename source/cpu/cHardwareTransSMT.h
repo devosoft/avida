@@ -127,7 +127,7 @@ protected:
   // --------  Label Manipulation  -------
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
+  void ReadLabel(int max_size = cCodeLabel::MAX_LENGTH);
   cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel& search_label, const InstructionSequence& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel& search_label, const InstructionSequence& search_genome, int pos);

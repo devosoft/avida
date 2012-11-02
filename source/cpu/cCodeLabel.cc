@@ -31,6 +31,9 @@
 using namespace std;
 
 
+const int cCodeLabel::MAX_LENGTH = 10;
+
+
 void cCodeLabel::ReadString(const cString& label_str)
 {
   cString lbl(label_str);

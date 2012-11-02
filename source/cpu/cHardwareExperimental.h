@@ -330,7 +330,7 @@ private:
   // --------  Label Manipulation  -------
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
+  void ReadLabel(int max_size=cCodeLabel::MAX_LENGTH);
   cHeadCPU FindLabelStart(bool mark_executed);
   cHeadCPU FindLabelForward(bool mark_executed);
   cHeadCPU FindLabelBackward(bool mark_executed);

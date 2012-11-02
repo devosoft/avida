@@ -1,10 +1,9 @@
 /*
- *  cHardwareMBE.h
+ *  cHardwareBCR.h
  *  Avida
  *
- *  Created by APWagner on 10/26/2012 based on cHardwareMBE.h
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
- *  Copyright 1999-2003 California Institute of Technology.
+ *  Created by David on 11/2/2012 based on cHardwareMBE.h
+ *  Copyright 2012 Michigan State University. All rights reserved.
  *
  *
  *  This file is part of Avida.
@@ -18,10 +17,12 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>, Aaron P. Wagner <apwagner@msu.edu>
+ *
  */
 
-#ifndef cHardwareMBE_h
-#define cHardwareMBE_h
+#ifndef cHardwareBCR_h
+#define cHardwareBCR_h
 
 #include "avida/Avida.h"
 
@@ -35,8 +36,6 @@
 #include "cStats.h"
 #include "cString.h"
 
-#include "nHardware.h"
-
 #include "tInstLib.h"
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
@@ -45,7 +44,7 @@
 #include <iomanip>
 
 /**
- * Each organism may have a cHardwareMBE structure which keeps track of the
+ * Each organism may have a cHardwareBCR structure which keeps track of the
  * current status of all the components of the simulated hardware.
  *
  * @see cCPUMemory, cInstSet
@@ -56,25 +55,30 @@ class cInstSet;
 class cMutation;
 class cOrganism;
 
-class cHardwareMBE : public cHardwareBase
+class cHardwareBCR : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareMBE::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareBCR::*tMethod)(cAvidaContext& ctx);
 
 private:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 8;
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
-  static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
-  enum tRegisters { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX};
+  static const int NUM_HEADS = NUM_REGISTERS;
+  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX };
+  enum { hIP, hR, hW, hF, hF2, hF3, hF4, hF5 };
   static const int NUM_NOPS = NUM_REGISTERS;
+  static const int STACK_SIZE = 10;
+  static const int MAX_THREADS = NUM_NOPS;
+  static const int MAX_MEM_SPACES = NUM_NOPS;
+  
   
   // --------  Static Variables  --------
-  static tInstLib<cHardwareMBE::tMethod>* s_inst_slib;
-  static tInstLib<cHardwareMBE::tMethod>* initInstLib(void);
+  static tInstLib<cHardwareBCR::tMethod>* s_inst_slib;
+  
   
   // --------  Define Internal Data Structures  --------
-  struct sInternalValue
+  struct DataValue
   {
     int value;
     
@@ -86,83 +90,55 @@ private:
     unsigned int oldest_component:15;
     unsigned int env_component:1;
     
-    inline sInternalValue() : value(0) { ; }
+    inline DataValue() : value(0) { ; }
     inline void Clear() { value = 0; originated = 0; from_env = 0, oldest_component = 0; env_component = 0; }
-    inline sInternalValue& operator=(const sInternalValue& i);
+    inline DataValue& operator=(const DataValue& i);
   };
   
   
-  class cLocalStack
+  class Stack
   {
-#define SIZE nHardware::STACK_SIZE
   private:
-    sInternalValue m_stack[SIZE];
+    DataValue m_stack[STACK_SIZE];
     char m_sp;
     
   public:
-    cLocalStack() : m_sp(0) { Clear(); }
-    inline cLocalStack(const cLocalStack& is) : m_sp(is.m_sp) { for (int i = 0; i < SIZE; i++) m_stack[i] = is.m_stack[i]; }
-    ~cLocalStack() { ; }
+    Stack() : m_sp(0) { Clear(); }
+    inline Stack(const Stack& is) : m_sp(is.m_sp) { for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    ~Stack() { ; }
     
-    inline void operator=(const cLocalStack& is) { m_sp = is.m_sp; for (int i = 0; i < SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    inline void operator=(const Stack& is) { m_sp = is.m_sp; for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
     
-    inline void Push(const sInternalValue& value) { if (--m_sp < 0) m_sp = SIZE - 1; m_stack[(int)m_sp] = value; }
-    inline sInternalValue Pop() { sInternalValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == SIZE) m_sp = 0; return v; }
-    inline sInternalValue& Peek() { return m_stack[(int)m_sp]; }
-    inline const sInternalValue& Peek() const { return m_stack[(int)m_sp]; }
-    inline const sInternalValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= SIZE) ? (p - SIZE) : p]; }
-    inline void Clear() { for (int i = 0; i < SIZE; i++) m_stack[i].Clear(); }
-#undef SIZE
+    inline void Push(const DataValue& value) { if (--m_sp < 0) m_sp = STACK_SIZE - 1; m_stack[(int)m_sp] = value; }
+    inline DataValue Pop() { DataValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == STACK_SIZE) m_sp = 0; return v; }
+    inline DataValue& Peek() { return m_stack[(int)m_sp]; }
+    inline const DataValue& Peek() const { return m_stack[(int)m_sp]; }
+    inline const DataValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= STACK_SIZE) ? (p - STACK_SIZE) : p]; }
+    inline void Clear() { for (int i = 0; i < STACK_SIZE; i++) m_stack[i].Clear(); }
   };
   
-  struct cBehavProc
-  {
-  private:
-  public:
-    sInternalValue reg[NUM_REGISTERS];
-    cLocalStack stack;
-    unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
-/*  struct {
-      bool active:1;
-      bool wait_greater:1;
-      bool wait_equal:1;
-      bool wait_less:1;
-      unsigned int wait_reg:4;
-      unsigned int wait_dst:4;
-    };
-    int wait_value;
-*/
-    inline cBehavProc() { ; }
-    cBehavProc(cHardwareMBE* in_hardware) { Reset(in_hardware); }
-    ~cBehavProc() { ; }
-    
-    void operator=(const cBehavProc& in_proc);
-    void Reset(cHardwareMBE* in_hardware);
-  };
 
-  struct cLocalThread
+  struct Thread
   {
-  private:
-    int m_id;
-    int m_messageTriggerType;
-    int curr_behav;
-    int next_behav;
-    int bc_used_count;
-    Apto::Array<bool> bcs_used;
-  
   public:
-    cBehavProc behav[NUM_BEHAVIORS];
+    int thread_id;
+
+    DataValue reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
-    unsigned char cur_head;
+    Stack stack;
     
     struct {
+      BehavClass b_class:3;
+      unsigned int cur_stack:1;
+      unsigned int cur_head:3;
       bool reading_label:1;
       bool reading_seq:1;
+      bool running:1;
       bool active:1;
       bool wait_greater:1;
       bool wait_equal:1;
       bool wait_less:1;
-      unsigned int wait_reg:4;
+      int wait_reg:4;
       unsigned int wait_dst:4;
     };
     int wait_value;
@@ -171,41 +147,30 @@ private:
     cCodeLabel read_seq;
     cCodeLabel next_label;
     
-    inline cLocalThread() { ; }
-    cLocalThread(cHardwareMBE* in_hardware, int in_id = -1) { Reset(in_hardware, in_id); }
-    ~cLocalThread() { ; }
+    inline Thread() { ; }
+    ~Thread() { ; }
     
-    void operator=(const cLocalThread& in_thread);
-    void Reset(cHardwareMBE* in_hardware, int in_id);
-    inline int GetID() const { return m_id; }
-    inline void SetID(int in_id) { m_id = in_id; }
-    // multi-thread control
-    inline void setMessageTriggerType(int value) { m_messageTriggerType = value; }
-    inline int getMessageTriggerType() { return m_messageTriggerType; }
-    
-    inline void SetCurrBehav(int behav) { curr_behav = behav; }
-    inline int GetCurrBehav() const { return curr_behav; }
-    inline void SetNextBehav(int behav) { next_behav = behav; }
-    inline int GetNextBehav() const { return next_behav; }
-    
-    inline void ClearBCStats() { bc_used_count = 0; for (int i = 0; i < NUM_BEHAVIORS; i++) bcs_used[i] = false; }
-    
-    inline Apto::Array<bool>& GetBCsUsed() { return bcs_used; }
-    inline void SetBCsUsed(int idx, bool val) { bcs_used[idx] = val; }
-
-    inline int GetBCUsedCount() const { return bc_used_count; }
-    inline void SetBCUsedCount(int count) { bc_used_count = count; }
+    void operator=(const Thread& in_thread);
+    void Reset(cHardwareBCR* in_hardware, int in_id);
   };
+  
   
   // --------  Member Variables  --------
   const tMethod* m_functions;
+
+  // Memory
+  Apto::Array<cCPUMemory, Apto::ManagedPointer> m_mem_array;
+  char m_mem_ids[MAX_MEM_SPACES];
   
-  cCPUMemory m_memory;          // Memory...
-  cLocalStack m_global_stack;     // A stack that all threads share.
+  // Stacks
+  Stack m_global_stack;     // A stack that all threads share.
   
-  Apto::Array<cLocalThread> m_threads;
-  int m_thread_id_chart;
+  // Threads
+  Apto::Array<Thread, Apto::ManagedPointer> m_threads;
+  char m_thread_ids[MAX_THREADS];
   int m_cur_thread;
+  
+  int m_cur_offspring;
   
   int m_use_avatar;
   cOrgSensor m_sensor;
@@ -219,7 +184,6 @@ private:
   struct {
     bool m_mal_active:1;         // Has an allocate occured since last divide?
     bool m_advance_ip:1;         // Should the IP advance after this instruction?
-    bool m_executedmatchstrings:1;	// Have we already executed the match strings instruction?
     bool m_spec_die:1;
     
     bool m_thread_slicing_parallel:1;
@@ -230,16 +194,16 @@ private:
     unsigned int m_waiting_threads:4;
   };
   
-  cHardwareMBE(const cHardwareMBE&); // @not_implemented
-  cHardwareMBE& operator=(const cHardwareMBE&); // @not_implemented
+  cHardwareBCR(const cHardwareBCR&); // @not_implemented
+  cHardwareBCR& operator=(const cHardwareBCR&); // @not_implemented
   
   
 public:
-  cHardwareMBE(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  ~cHardwareMBE() { ; }
+  cHardwareBCR(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  ~cHardwareBCR() { ; }
   
-  static tInstLib<cHardwareMBE::tMethod>* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "instset-MBE.cfg"; }
+  static tInstLib<cHardwareBCR::tMethod>* GetInstLib() { return s_inst_slib; }
+  static cString GetDefaultInstFilename() { return "instset-BCR.cfg"; }
   
   
   // --------  Core Execution Methods  --------
@@ -248,7 +212,7 @@ public:
 
   
   // --------  Helper Methods  --------
-  int GetType() const { return HARDWARE_TYPE_CPU_MBE; }
+  int GetType() const { return HARDWARE_TYPE_CPU_BCR; }
   bool SupportsSpeculative() const { return true; }
   void PrintStatus(std::ostream& fp);
   void SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype);
@@ -267,24 +231,24 @@ public:
   cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
   int GetNumHeads() const { return NUM_HEADS; }
   
-  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[hIP]; }
+  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[hIP]; }
+  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[hIP]; }
+  cHeadCPU& IP(int thread) { return m_threads[thread].heads[hIP]; }
   
   
   // --------  Memory Manipulation  --------
-  const cCPUMemory& GetMemory() const { return m_memory; }
-  cCPUMemory& GetMemory() { return m_memory; }
-  int GetMemSize() const { return m_memory.GetSize(); }
-  const cCPUMemory& GetMemory(int) const { return m_memory; }
-  cCPUMemory& GetMemory(int) { return m_memory; }
-  int GetMemSize(int) const { return  m_memory.GetSize(); }
-  int GetNumMemSpaces() const { return 1; }
+  const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
+  cCPUMemory& GetMemory() { return m_mem_array[0]; }
+  int GetMemSize() const { return m_mem_array[0].GetSize(); }
+  const cCPUMemory& GetMemory(int idx) const { return m_mem_array[idx]; }
+  cCPUMemory& GetMemory(int idx) { return m_mem_array[idx]; }
+  int GetMemSize(int idx) const { return  m_mem_array[idx].GetSize(); }
+  int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
   
   
   // --------  Register Manipulation  --------
-  int GetRegister(int reg_id) const { return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_id].value; }
+  int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
   
   
@@ -297,10 +261,10 @@ public:
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
-  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
+  int GetCurThreadID() const    { return m_threads[m_cur_thread].thread_id; }
   
   // --------  Non-Standard Methods  --------
-  int GetActiveStack() const { return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack; }
+  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
   bool GetMalActive() const   { return m_mal_active; }
 
 
@@ -311,8 +275,8 @@ public:
   // --------  Parasite Stuff  -------- @ not implemented
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
-private:
   
+private:
   // --------  Core Execution Methods  --------
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst);
   void internalReset();
@@ -320,8 +284,8 @@ private:
   
   
   // --------  Stack Manipulation  --------
-  inline sInternalValue stackPop();
-  inline cLocalStack& getStack(int stack_id);
+  inline DataValue stackPop();
+  inline Stack& getStack(int stack_id);
   inline void switchStack();
     
   // --------  Head Manipulation (including IP)  --------
@@ -345,8 +309,8 @@ private:
   
   
   // --------  Thread Manipulation  -------
-  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
-  bool ExitThread(); // Kill the current thread!
+  bool ThreadCreate(int thread_label, const cHeadCPU& start_pos);
+  
   
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
@@ -355,11 +319,6 @@ private:
   int FindModifiedHead(int default_head);
   int FindNextRegister(int base_reg);
   
-  bool Allocate_Necro(const int new_size);
-  bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
-  bool Allocate_Default(const int new_size);
-  bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
-  
   int calcCopiedSize(const int parent_size, const int child_size);
   
   inline const cHeadCPU& getHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
@@ -367,20 +326,19 @@ private:
   inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
   inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
   
-  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[hIP]; }
+  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[hIP]; }
+  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[hIP]; }
+  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[hIP]; }
 
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
   
 
   // ---------- Utility Functions -----------
-  inline unsigned int BitCount(unsigned int value) const;
   inline void setInternalValue(int reg_num, int value, bool from_env = false);
-  inline void setInternalValue(int reg_num, int value, const sInternalValue& src);
-  inline void setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2);
+  inline void setInternalValue(int reg_num, int value, const DataValue& src);
+  inline void setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2);
   void checkWaitingThreads(int cur_thread, int reg_num);
 
   void ReadInst(Instruction in_inst);
@@ -388,14 +346,13 @@ private:
   
   // ---------- Instruction Library -----------
   // Multi-threading
-  bool Inst_ForkThread(cAvidaContext& ctx);
-  bool Inst_ExitThread(cAvidaContext& ctx);
-  bool Inst_IdThread(cAvidaContext& ctx);
-  
-  // --------  Behavior Execution  --------
-  bool Inst_SetBehavior(cAvidaContext& ctx);
+  bool Inst_ThreadCreate(cAvidaContext& ctx);
+  bool Inst_ThreadCancel(cAvidaContext& ctx);
+  bool Inst_ThreadID(cAvidaContext& ctx);
+  bool Inst_Yield(cAvidaContext& ctx);
   
   // Flow Control
+  bool Inst_Label(cAvidaContext& ctx);
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
   bool Inst_IfNotZero(cAvidaContext& ctx);
@@ -421,6 +378,7 @@ private:
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
   bool Inst_One(cAvidaContext& ctx);
+  bool Inst_Rand(cAvidaContext& ctx);
   
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
@@ -436,15 +394,21 @@ private:
   bool Inst_TaskOutput(cAvidaContext& ctx);
 
   // Head-based Instructions
-  bool Inst_HeadAlloc(cAvidaContext& ctx);
+  bool Inst_SetMemory(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
-  bool Inst_HeadDivide(cAvidaContext& ctx);
+  bool Inst_Divide(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
   
+  bool Inst_Search_Label_Comp_S(cAvidaContext& ctx);
+  bool Inst_Search_Label_Comp_F(cAvidaContext& ctx);
+  bool Inst_Search_Label_Comp_B(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_B(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_B(cAvidaContext& ctx);
@@ -515,15 +479,7 @@ private:
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
-  
 
-private:
-  std::pair<bool, int> m_last_cell_data; // If cell data has been previously collected, and it's value
-public:
-  bool Inst_CollectCellData(cAvidaContext& ctx);
-  bool Inst_IfCellDataChanged(cAvidaContext& ctx);
-  bool Inst_ReadCellData(cAvidaContext& ctx);
-  bool Inst_ReadGroupCell(cAvidaContext& ctx);
 
   // ---------- Some Instruction Helpers -----------
   struct sLookRegAssign {
@@ -540,10 +496,13 @@ public:
   bool GoLook(cAvidaContext& ctx, const int look_dir, const int cell_id, bool use_ft = false);
   cOrgSensor::sLookOut InitLooking(cAvidaContext& ctx, sLookRegAssign& lookin_defs, int facing, int cell_id, bool use_ft = false);
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
+  
+private:
+  static tInstLib<cHardwareBCR::tMethod>* initInstLib();
 };
 
 
-inline cHardwareMBE::sInternalValue& cHardwareMBE::sInternalValue::operator=(const sInternalValue& i)
+inline cHardwareBCR::DataValue& cHardwareBCR::DataValue::operator=(const DataValue& i)
 {
   value = i.value;
   originated = i.originated;
@@ -553,7 +512,7 @@ inline cHardwareMBE::sInternalValue& cHardwareMBE::sInternalValue::operator=(con
   return *this;
 }
 
-inline bool cHardwareMBE::ThreadSelect(const int thread_num)
+inline bool cHardwareBCR::ThreadSelect(const int thread_num)
 {
   if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
     m_cur_thread = thread_num;
@@ -563,60 +522,60 @@ inline bool cHardwareMBE::ThreadSelect(const int thread_num)
   return false;
 }
 
-inline void cHardwareMBE::ThreadNext()
+inline void cHardwareBCR::ThreadNext()
 {
   m_cur_thread++;
   if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
 }
 
-inline void cHardwareMBE::ThreadPrev()
+inline void cHardwareBCR::ThreadPrev()
 {
   if (m_cur_thread == 0) m_cur_thread = m_threads.GetSize() - 1;
   else m_cur_thread--;
 }
 
-inline cHardwareMBE::sInternalValue cHardwareMBE::stackPop()
+inline cHardwareBCR::DataValue cHardwareBCR::stackPop()
 {
-  if (m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack == 0) {
-    return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack.Pop();
+  if (m_threads[m_cur_thread].cur_stack == 0) {
+    return m_threads[m_cur_thread].stack.Pop();
   } else {
     return m_global_stack.Pop();
   }
 }
 
-inline cHardwareMBE::cLocalStack& cHardwareMBE::getStack(int stack_id)
+inline cHardwareBCR::Stack& cHardwareBCR::getStack(int stack_id)
 {
   if (stack_id == 0) {
-    return m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack;
+    return m_threads[m_cur_thread].stack;
   } else {
     return m_global_stack;
   }
 }
 
-inline void cHardwareMBE::switchStack()
+inline void cHardwareBCR::switchStack()
 {
-  m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack++;
-  if (m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack > 1) m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack = 0;
+  m_threads[m_cur_thread].cur_stack++;
+  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
 }
 
 
-inline int cHardwareMBE::GetStack(int depth, int stack_id, int in_thread) const
+inline int cHardwareBCR::GetStack(int depth, int stack_id, int in_thread) const
 {
-  sInternalValue value;
+  DataValue value;
 
   if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 
-  if (stack_id == -1) stack_id = m_threads[in_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].cur_stack;
+  if (stack_id == -1) stack_id = m_threads[in_thread].cur_stack;
 
-  if (stack_id == 0) value = m_threads[in_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].stack.Get(depth);
+  if (stack_id == 0) value = m_threads[in_thread].stack.Get(depth);
   else if (stack_id == 1) value = m_global_stack.Get(depth);
 
   return value.value;
 }
 
-inline void cHardwareMBE::setInternalValue(int reg_num, int value, bool from_env)
+inline void cHardwareBCR::setInternalValue(int reg_num, int value, bool from_env)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num];
+  DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
   dest.originated = m_cycle_count;
@@ -625,9 +584,9 @@ inline void cHardwareMBE::setInternalValue(int reg_num, int value, bool from_env
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-inline void cHardwareMBE::setInternalValue(int reg_num, int value, const sInternalValue& src)
+inline void cHardwareBCR::setInternalValue(int reg_num, int value, const DataValue& src)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num];
+  DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
@@ -636,9 +595,9 @@ inline void cHardwareMBE::setInternalValue(int reg_num, int value, const sIntern
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-inline void cHardwareMBE::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
+inline void cHardwareBCR::setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].behav[m_threads[m_cur_thread].GetCurrBehav()].reg[reg_num];
+  DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
