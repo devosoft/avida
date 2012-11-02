@@ -1643,6 +1643,26 @@ void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
   if (org_to_clone != NULL) m_world->GetPopulation().InjectPreyClone(ctx, org_to_clone);
 }
 
+void cPopulationInterface::KillRandPred(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* org_to_kill = org;
+  const tSmartArray<cOrganism*>& live_org_list = GetLiveOrgList();
+  tArray<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_kill == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude prey and juvs
+    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
 // -------- Avatar support --------
 /* Each organism carries an array of avatars linking the organism to any cells it is occupying.
  * Each cell contains an array of the organisms with avatars in that cell, linking the cells back to

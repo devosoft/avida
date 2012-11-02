@@ -685,8 +685,8 @@ public:
   void LookResults(sLookRegAssign& lookin_defs, cOrgSensor::sLookOut& look_results);
   
   void InjureOrg(cOrganism* target);
-  void MakePred();
-  void MakeTopPred();
+  void MakePred(cAvidaContext& ctx);
+  void MakeTopPred(cAvidaContext& ctx);
   bool TestAttack(cAvidaContext& ctx);
 };
 

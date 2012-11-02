@@ -4107,8 +4107,9 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
 
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-  if (m_use_avatar && ((prop_target <= -2 && old_target > -2) || (prop_target > -2 && old_target <= -2)) &&
-      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
+  if (prop_target == -2 && old_target > -2) MakePred(ctx);
+  else if (prop_target == -3 && old_target > -2) MakeTopPred(ctx);
+  else if (m_use_avatar && prop_target > -2 && old_target <= -2 && m_organism->GetOrgInterface().GetAVCellID() != -1) {
     m_organism->GetOrgInterface().SwitchPredPrey();
     m_organism->SetForageTarget(prop_target);
   }
@@ -4953,12 +4954,10 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
+    MakePred(ctx);
     target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);   
@@ -5060,12 +5059,10 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
       }
       
       // if you weren't a predator before, you are now!
-    MakePred();
+    MakePred(ctx);
     target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
       
       setInternalValue(success_reg, 1, true);
@@ -5168,12 +5165,10 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
+    MakePred(ctx);
     target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);
@@ -5285,12 +5280,10 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
     }
 
     // if you weren't a predator before, you are now (all of your pack mates already are)!
-    MakePred();
+    MakePred(ctx);
     target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);
@@ -5374,12 +5367,10 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
+    MakePred(ctx);
     target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);
@@ -5476,12 +5467,10 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
+    MakePred(ctx);
     target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
-      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);   
@@ -5748,7 +5737,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
     }
     
     target->Die(ctx);
-    MakeTopPred();
+    MakeTopPred(ctx);
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5779,7 +5768,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
   
-  MakeTopPred();
+  MakeTopPred(ctx);
   return true;
 } 
 
@@ -5975,9 +5964,9 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
           ((( prop_target == -2  || prop_target == -3) && old_target != -2 && old_target != -3) ||
           (prop_target != -2  && prop_target != -3 && (old_target == -2 || old_target == -3)))) {
         m_organism->GetOrgInterface().SwitchPredPrey();
-        m_organism->CopyParentFT();
+        m_organism->CopyParentFT(ctx);
       }
-      else m_organism->CopyParentFT();
+      else m_organism->CopyParentFT(ctx);
     }
   }
   return !halt;
@@ -6511,9 +6500,10 @@ void cHardwareExperimental::InjureOrg(cOrganism* target)
   }
 }
 
-void cHardwareExperimental::MakePred()
+void cHardwareExperimental::MakePred(cAvidaContext& ctx)
 {
   if (m_organism->GetForageTarget() > -2) {
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
@@ -6523,9 +6513,10 @@ void cHardwareExperimental::MakePred()
   }    
 }
 
-void cHardwareExperimental::MakeTopPred()
+void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
 {
   if (m_organism->GetForageTarget() > -2) {
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
