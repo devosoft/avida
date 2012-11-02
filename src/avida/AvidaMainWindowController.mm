@@ -132,7 +132,7 @@
     [currentRun end];
     currentRun = nil;
   }
-  [app removeWindow:self];
+//  [app removeWindow:self];
 }
 
 

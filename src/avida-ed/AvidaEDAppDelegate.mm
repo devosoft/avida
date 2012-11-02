@@ -1,5 +1,5 @@
 //
-//  AvidaAppDelegate.mm
+//  AvidaEDAppDelegate.mm
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 10/20/10.
@@ -27,14 +27,13 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "AvidaAppDelegate.h"
+#import "AvidaEDAppDelegate.h"
 
-#import "AvidaMainWindowController.h"
 #import "AvidaEDAboutController.h"
 #import "AvidaEDController.h"
 
 
-@implementation AvidaAppDelegate
+@implementation AvidaEDAppDelegate
 
 - (void) applicationDidFinishLaunching:(NSNotification*)aNotification {
   windows = [[NSMutableSet alloc] init];
@@ -46,7 +45,7 @@
   NSURL* fileURL = [NSURL fileURLWithPath:filename];
   AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
   if (ctrl == nil) {
-    NSLog(@"Error loading Avida-ED-MainWindow NIB");
+    NSLog(@"Error loading AvidaED-MainWindow NIB");
     return NO;
   } else {
     [windows addObject:ctrl];
@@ -57,21 +56,11 @@
 
 
 
-- (IBAction) newAvida:(id)sender {
-  AvidaMainWindowController* ctrl = [[AvidaMainWindowController alloc] initWithAppDelegate:self];
-  if (ctrl == nil) {
-    NSLog(@"Error loading Avida-MainWindow NIB");
-  } else {
-    [windows addObject:ctrl];
-  }
-}
-
-
 - (IBAction) newAvidaED:(id)sender {
   
   AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self];
   if (ctrl == nil) {
-    NSLog(@"Error loading Avida-ED-MainWindow NIB");
+    NSLog(@"Error loading AvidaED-MainWindow NIB");
   } else {
     [windows addObject:ctrl];
   }
@@ -92,7 +81,7 @@
     if (![self isWorkspaceOpenForURL:freezerURL]) {
       AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:freezerURL];
       if (ctrl == nil) {
-        NSLog(@"Error loading Avida-ED-MainWindow NIB");
+        NSLog(@"Error loading AvidaED-MainWindow NIB");
       } else {
         [windows addObject:ctrl];
       }
@@ -116,7 +105,7 @@
     
     AvidaEDController* new_ctrl = [[AvidaEDController alloc] initWithAppDelegate:self inWorkspace:fileURL];
     if (new_ctrl == nil) {
-      NSLog(@"Error loading Avida-ED-MainWindow NIB");
+      NSLog(@"Error loading AvidaED-MainWindow NIB");
     } else {
       [windows addObject:new_ctrl];
     }

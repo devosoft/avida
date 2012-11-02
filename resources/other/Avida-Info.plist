@@ -4,47 +4,10 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>avidaedworkspace</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>petri128</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>org.devosoft.avida.avida-ed-workspace</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Avida-ED Workspace</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>avidaedfreezeritem</string>
-			</array>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>org.devosoft.avida.avida-ed-freezer-item</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Avida-ED Freezer Item</string>
-			<key>CFBundleTypeRole</key>
-			<string>None</string>
-			<key>LSTypeIsPackage</key>
-			<true/>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>petri.icns</string>
+	<string></string>
 	<key>CFBundleIdentifier</key>
 	<string>org.devosoft.avida.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -54,49 +17,20 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0</string>
+	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>26</string>
+	<string>1</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2012 Michigan State University. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeDescription</key>
-			<string>Avida-ED Workspace</string>
-			<key>UTTypeIconFile</key>
-			<string>petri128</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.devosoft.avida.avida-ed-workspace</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>avidaedworkspace</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeDescription</key>
-			<string>Avida-ED Freezer Item</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.devosoft.avida.avida-ed-freezer-item</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>avidaedfreezeritem</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
 </dict>
 </plist>

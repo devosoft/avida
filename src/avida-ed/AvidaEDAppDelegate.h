@@ -1,5 +1,5 @@
 //
-//  AvidaAppDelegate.h
+//  AvidaEDAppDelegate.h
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 10/20/10.
@@ -29,13 +29,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AvidaAppDelegate : NSObject <NSApplicationDelegate> {
+@interface AvidaEDAppDelegate : NSObject <NSApplicationDelegate> {
   NSMutableSet* windows;
   
   IBOutlet NSMenuItem* toggleRunMenuItem;
 }
 
-- (IBAction) newAvida:(id)sender;
 - (IBAction) newAvidaED:(id)sender;
 - (IBAction) openAvidaEDWorkspace:(id)sender;
 - (IBAction) duplicateAvidaEDWorkspace:(id)sender;

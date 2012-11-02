@@ -38,7 +38,7 @@
 #import "ViewerListener.h"
 
 
-@class AvidaAppDelegate;
+@class AvidaEDAppDelegate;
 @class AvidaRun;
 @class FlipView;
 @class MapScaleView;
@@ -129,7 +129,7 @@
 
   AvidaEDExportAccessoryController* exportAccessoryViewCtlr;
 
-  AvidaAppDelegate* app;
+  AvidaEDAppDelegate* app;
   
   AvidaRun* currentRun;
   Avida::Viewer::Listener* listener;
@@ -140,8 +140,8 @@
 }
 
 // Init and Dealloc Methods
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate;
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir;
+- (id) initWithAppDelegate:(AvidaEDAppDelegate*)delegate;
+- (id) initWithAppDelegate:(AvidaEDAppDelegate*)delegate inWorkspace:(NSURL*)dir;
 
 - (void) dealloc;
 - (void) finalize;

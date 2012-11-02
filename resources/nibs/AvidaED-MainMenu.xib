@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">12B19</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
-		<string key="IBDocument.AppKitVersion">1187</string>
-		<string key="IBDocument.HIToolboxVersion">624.00</string>
+		<string key="IBDocument.SystemVersion">12C60</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2843</string>
+		<string key="IBDocument.AppKitVersion">1187.34</string>
+		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2549</string>
+			<string key="NS.object.0">2843</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSCollectionViewItem</string>
@@ -903,7 +903,7 @@
 				<string key="NSName">_NSMainMenu</string>
 			</object>
 			<object class="NSCustomObject" id="976324537">
-				<string key="NSClassName">AvidaAppDelegate</string>
+				<string key="NSClassName">AvidaEDAppDelegate</string>
 			</object>
 			<object class="NSCustomObject" id="755631768">
 				<string key="NSClassName">NSFontManager</string>
@@ -2164,49 +2164,6 @@
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
-					<string key="className">AvidaAppDelegate</string>
-					<string key="superclassName">NSObject</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="duplicateAvidaEDWorkspace:">id</string>
-						<string key="newAvida:">id</string>
-						<string key="newAvidaED:">id</string>
-						<string key="openAvidaEDWorkspace:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="duplicateAvidaEDWorkspace:">
-							<string key="name">duplicateAvidaEDWorkspace:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="newAvida:">
-							<string key="name">newAvida:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="newAvidaED:">
-							<string key="name">newAvidaED:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="openAvidaEDWorkspace:">
-							<string key="name">openAvidaEDWorkspace:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">toggleRunMenuItem</string>
-						<string key="NS.object.0">NSMenuItem</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">toggleRunMenuItem</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">toggleRunMenuItem</string>
-							<string key="candidateClassName">NSMenuItem</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/AvidaAppDelegate.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">AvidaEDAnalyzeViewController</string>
 					<string key="superclassName">NSViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -2247,6 +2204,54 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/AvidaEDAnalyzeViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">AvidaEDAppDelegate</string>
+					<string key="superclassName">NSObject</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="duplicateAvidaEDWorkspace:">id</string>
+						<string key="newAvida:">id</string>
+						<string key="newAvidaED:">id</string>
+						<string key="openAvidaEDWorkspace:">id</string>
+						<string key="orderFrontCustomAboutPanel:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="duplicateAvidaEDWorkspace:">
+							<string key="name">duplicateAvidaEDWorkspace:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="newAvida:">
+							<string key="name">newAvida:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="newAvidaED:">
+							<string key="name">newAvidaED:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="openAvidaEDWorkspace:">
+							<string key="name">openAvidaEDWorkspace:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="orderFrontCustomAboutPanel:">
+							<string key="name">orderFrontCustomAboutPanel:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">toggleRunMenuItem</string>
+						<string key="NS.object.0">NSMenuItem</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">toggleRunMenuItem</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">toggleRunMenuItem</string>
+							<string key="candidateClassName">NSMenuItem</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/AvidaEDAppDelegate.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -2366,6 +2371,7 @@
 						<string key="btnRunState">NSButton</string>
 						<string key="btnTogglePopViewStatView">NSButton</string>
 						<string key="cvAncestors">NSCollectionView</string>
+						<string key="imgAnalyze">DraggableImageView</string>
 						<string key="imgOrg">DraggableImageView</string>
 						<string key="imgTrash">DraggableImageView</string>
 						<string key="mainSplitView">NSSplitView</string>
@@ -2431,6 +2437,10 @@
 						<object class="IBToOneOutletInfo" key="cvAncestors">
 							<string key="name">cvAncestors</string>
 							<string key="candidateClassName">NSCollectionView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="imgAnalyze">
+							<string key="name">imgAnalyze</string>
+							<string key="candidateClassName">DraggableImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="imgOrg">
 							<string key="name">imgOrg</string>
@@ -2553,6 +2563,36 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">AvidaEDOrganismSettingsViewController</string>
 					<string key="superclassName">NSViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">changeMutRate:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">changeMutRate:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">changeMutRate:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="delegate">id</string>
+						<string key="sldMutRate">NSSlider</string>
+						<string key="txtMutRate">NSTextField</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="delegate">
+							<string key="name">delegate</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="sldMutRate">
+							<string key="name">sldMutRate</string>
+							<string key="candidateClassName">NSSlider</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="txtMutRate">
+							<string key="name">txtMutRate</string>
+							<string key="candidateClassName">NSTextField</string>
+						</object>
+					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/AvidaEDOrganismSettingsViewController.h</string>
@@ -2562,6 +2602,7 @@
 					<string key="className">AvidaEDOrganismViewController</string>
 					<string key="superclassName">NSViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="changeMutRate:">id</string>
 						<string key="firstSnapshot:">id</string>
 						<string key="lastSnapshot:">id</string>
 						<string key="nextSnapshot:">id</string>
@@ -2570,8 +2611,13 @@
 						<string key="showSettings:">id</string>
 						<string key="toggleAnimation:">id</string>
 						<string key="toggleInstInfo:">id</string>
+						<string key="toggleStatView:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="changeMutRate:">
+							<string key="name">changeMutRate:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="firstSnapshot:">
 							<string key="name">firstSnapshot:</string>
 							<string key="candidateClassName">id</string>
@@ -2604,6 +2650,10 @@
 							<string key="name">toggleInstInfo:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="toggleStatView:">
+							<string key="name">toggleStatView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="arrctlrCurStack">NSArrayController</string>
@@ -2617,18 +2667,26 @@
 						<string key="btnForward">NSButton</string>
 						<string key="btnGo">NSButton</string>
 						<string key="btnToggleInstInfo">NSButton</string>
+						<string key="btnToggleStatView">NSButton</string>
 						<string key="ctlrSettings">AvidaEDOrganismSettingsViewController</string>
 						<string key="fullView">NSView</string>
+						<string key="imgOffspring">DraggableImageView</string>
+						<string key="imgOrg">DraggableImageView</string>
+						<string key="mainView">NSView</string>
 						<string key="orgView">OrganismView</string>
 						<string key="panelSettings">NSPanel</string>
 						<string key="sldStatus">NSSlider</string>
+						<string key="statSplitView">NSSplitView</string>
+						<string key="statView">NSView</string>
 						<string key="tblTaskCounts">NSTableView</string>
 						<string key="timelineView">TaskTimelineView</string>
+						<string key="txtCycle">NSTextField</string>
 						<string key="txtJustExec">NSTextView</string>
 						<string key="txtOrgName">NSTextField</string>
 						<string key="txtWillExec">NSTextView</string>
 						<string key="viewInstInfo">NSView</string>
 						<string key="viewInstInfoContainer">NSView</string>
+						<string key="viewOffspringDrag">NSView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="arrctlrCurStack">
@@ -2675,12 +2733,28 @@
 							<string key="name">btnToggleInstInfo</string>
 							<string key="candidateClassName">NSButton</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="btnToggleStatView">
+							<string key="name">btnToggleStatView</string>
+							<string key="candidateClassName">NSButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="ctlrSettings">
 							<string key="name">ctlrSettings</string>
 							<string key="candidateClassName">AvidaEDOrganismSettingsViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="fullView">
 							<string key="name">fullView</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="imgOffspring">
+							<string key="name">imgOffspring</string>
+							<string key="candidateClassName">DraggableImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="imgOrg">
+							<string key="name">imgOrg</string>
+							<string key="candidateClassName">DraggableImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mainView">
+							<string key="name">mainView</string>
 							<string key="candidateClassName">NSView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="orgView">
@@ -2695,6 +2769,14 @@
 							<string key="name">sldStatus</string>
 							<string key="candidateClassName">NSSlider</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="statSplitView">
+							<string key="name">statSplitView</string>
+							<string key="candidateClassName">NSSplitView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="statView">
+							<string key="name">statView</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="tblTaskCounts">
 							<string key="name">tblTaskCounts</string>
 							<string key="candidateClassName">NSTableView</string>
@@ -2702,6 +2784,10 @@
 						<object class="IBToOneOutletInfo" key="timelineView">
 							<string key="name">timelineView</string>
 							<string key="candidateClassName">TaskTimelineView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="txtCycle">
+							<string key="name">txtCycle</string>
+							<string key="candidateClassName">NSTextField</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="txtJustExec">
 							<string key="name">txtJustExec</string>
@@ -2721,6 +2807,10 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="viewInstInfoContainer">
 							<string key="name">viewInstInfoContainer</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="viewOffspringDrag">
+							<string key="name">viewOffspringDrag</string>
 							<string key="candidateClassName">NSView</string>
 						</object>
 					</dictionary>
@@ -2997,47 +3087,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/MapScaleView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSDocument</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="printDocument:">id</string>
-						<string key="revertDocumentToSaved:">id</string>
-						<string key="runPageLayout:">id</string>
-						<string key="saveDocument:">id</string>
-						<string key="saveDocumentAs:">id</string>
-						<string key="saveDocumentTo:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="printDocument:">
-							<string key="name">printDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="revertDocumentToSaved:">
-							<string key="name">revertDocumentToSaved:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="runPageLayout:">
-							<string key="name">runPageLayout:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocument:">
-							<string key="name">saveDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocumentAs:">
-							<string key="name">saveDocumentAs:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocumentTo:">
-							<string key="name">saveDocumentTo:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSDocument.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

@@ -31,7 +31,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "AvidaAppDelegate.h"
+#import "AvidaEDAppDelegate.h"
 #import "AvidaRun.h"
 #import "CenteringClipView.h"
 #import "FlipView.h"
@@ -565,10 +565,14 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   }
 
   if (count == 4) {
-    if ((orgIndex % 2) == 0)
-      return NSMakePoint(round(worldSize.width / 3.0) * orgIndex, round(worldSize.height / 3.0));
+    if (orgIndex == 0)
+      return NSMakePoint(round(worldSize.width / 3.0), round(worldSize.height / 3.0));
+    else if (orgIndex == 1)
+      return NSMakePoint(round(worldSize.width / 3.0) * 2.0, round(worldSize.height / 3.0));
+    else if (orgIndex == 2)
+      return NSMakePoint(round(worldSize.width / 3.0), round(worldSize.height / 3.0) * 2.0);
     else
-      return NSMakePoint(round(worldSize.width / 3.0) * (orgIndex - 1), round(worldSize.height / 3.0) * 2.0);
+      return NSMakePoint(round(worldSize.width / 3.0) * 2.0, round(worldSize.height / 3.0) * 2.0);
   }
   
   if (count == 5) {
@@ -606,8 +610,86 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     }
   }
   
+  if (count == 10) {
+    switch (orgIndex) {
+      case 0:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.2));
+      case 1:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height / 3.0));
+      case 2:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.2));
+      case 3:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.4));
+      case 4:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.4));
+      case 5:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.6));
+      case 6:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.6));
+      case 7:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.8));
+      case 8:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height / 3.0 * 2.0));
+      case 9:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.8));
+    }
+  }
+
+  if (count == 11) {
+    switch (orgIndex) {
+      case 0:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.2));
+      case 1:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.25));
+      case 2:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.2));
+      case 3:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.4));
+      case 4:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.4));
+      case 5:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.6));
+      case 6:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.6));
+      case 7:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.8));
+      case 8:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.75));
+      case 9:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.8));
+      case 10:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.5));
+    }
+  }
   
-  
+  if (count == 12) {
+    switch (orgIndex) {
+      case 0:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.2));
+      case 1:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.2));
+      case 2:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.2));
+      case 3:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.4));
+      case 4:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.4));
+      case 5:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.4));
+      case 6:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.6));
+      case 7:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.6));
+      case 8:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.6));
+      case 9:
+        return NSMakePoint(round(worldSize.width * 0.25), round(worldSize.height * 0.8));
+      case 10:
+        return NSMakePoint(round(worldSize.width * 0.50), round(worldSize.height * 0.8));
+      case 11:
+        return NSMakePoint(round(worldSize.width * 0.75), round(worldSize.height * 0.8));
+    }
+  }
   
   
   
@@ -852,8 +934,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 @implementation AvidaEDController
 
 
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate {
-  self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
+- (id) initWithAppDelegate:(AvidaEDAppDelegate*)delegate {
+  self = [super initWithWindowNibName:@"AvidaED-MainWindow"];
   
   if (self != nil) {
     app = delegate;
@@ -877,8 +959,8 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
 }
 
 
-- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate inWorkspace:(NSURL*)dir {
-  self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
+- (id) initWithAppDelegate:(AvidaEDAppDelegate*)delegate inWorkspace:(NSURL*)dir {
+  self = [super initWithWindowNibName:@"AvidaED-MainWindow"];
   
   if (self != nil) {
     app = delegate;
