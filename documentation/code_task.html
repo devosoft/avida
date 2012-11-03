@@ -66,7 +66,7 @@ immediately after it.
 double <span class="class">cTaskLib</span>::<span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>& <span class="object">ctx</span>) const
 {
   const <span class="class">tBuffer</span><<span class="class">int</span>>& <span class="method">input_buffer</span> = <span class="object">ctx.</span><span class="method">GetInputBuffer</span>();
-  const <span class="class">int </span><span class="object">test_output</span> = <span class="object">ctx</span>.<span class="method">GetInputBuffer</span>()[0];
+  const <span class="class">int </span><span class="object">test_output</span> = <span class="object">ctx</span>.<span class="method">GetOutputBuffer</span>()[0];
   const <span class="class">int</span> <span class="object">input_size</span> = <span class="object">ctx</span>.<span class="method">GetInputBuffer</span>().<span class="method">GetNumStored</span>();
   for (<span class="class">int</span> <span class="object">i</span> = 0; <span class="object">i</span> < <span class="object">input_size</span> ; <span class="object">i</span>++)
   {
