@@ -879,6 +879,15 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const int res_id)
     if (min_y >= 0 && min_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.min_y = min_y;
     if (max_x >= 0 && max_x < m_world->GetConfig().WORLD_X.Get()) res_bounds.max_x = max_x;
     if (max_y >= 0 && max_y < m_world->GetConfig().WORLD_Y.Get()) res_bounds.max_y = max_y;
+    
+    // no edible drawn in world
+    if (min_x == -1 && min_y == -1 && max_x == -1 && max_y == -1) {
+      const int this_cell = m_organism->GetCellID();
+      res_bounds.min_x = this_cell % m_world->GetConfig().WORLD_X.Get();
+      res_bounds.max_x = res_bounds.min_x;
+      res_bounds.min_y = this_cell / m_world->GetConfig().WORLD_X.Get();
+      res_bounds.max_y = res_bounds.min_y;
+    }
   }
   m_soloBounds[res_id] = res_bounds;
   return res_bounds;
