@@ -4135,7 +4135,7 @@ bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
   int cap = 0;
   if (m_world->GetConfig().POPULATION_CAP.Get()) cap = m_world->GetConfig().POPULATION_CAP.Get();
   else if (m_world->GetConfig().POP_CAP_ELDEST.Get()) cap = m_world->GetConfig().POP_CAP_ELDEST.Get();
-  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5))) {
+  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5)) && m_world->GetRandom().P(0.5)) {
     if (m_organism->HasSetFT()) return false;
     else {
       int num_fts = 0;
