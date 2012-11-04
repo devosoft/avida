@@ -308,6 +308,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-rand-ft-once", &cHardwareExperimental::Inst_SetRandForageTargetOnce, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget),
     tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, nInstFlag::STALL),    
@@ -4126,6 +4127,32 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
+}
+
+bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (m_organism->HasSetFT()) return false;
+  else {
+    int num_fts = 0;
+    std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+    set <int>::iterator itr;
+    for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
+    int prop_target = m_world->GetRandom().GetUInt(num_fts);
+    if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
+    else {
+      // ft's may not be sequentially numbered
+      int ft_num = abs(prop_target) % num_fts;
+      itr = fts_avail.begin();
+      for (int i = 0; i < ft_num; i++) itr++;
+      prop_target = *itr;
+    }
+    // Set the new target and return the value
+    m_organism->SetForageTarget(prop_target);
+    m_organism->RecordFTSet();
+    setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+    return true;
+  }
 }
 
 bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
