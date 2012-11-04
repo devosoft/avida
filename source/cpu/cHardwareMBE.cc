@@ -2647,7 +2647,7 @@ bool cHardwareMBE::Inst_SetForageTarget(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetRandForageTarget(cAvidaContext& ctx)
+bool cHardwareMBE::Inst_SetRandForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int cap = 0;
