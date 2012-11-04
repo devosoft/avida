@@ -493,6 +493,7 @@ private:
 
   // Foraging
   bool Inst_SetForageTarget(cAvidaContext& ctx);
+  bool Inst_SetRandForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   
