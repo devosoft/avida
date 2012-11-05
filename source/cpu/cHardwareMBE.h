@@ -462,6 +462,8 @@ private:
   bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
   bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
   bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
+  bool Inst_IfNotCopiedCompSeq(cAvidaContext& ctx);
+
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   
@@ -494,6 +496,7 @@ private:
   // Foraging
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
+  bool Inst_SetRandForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   
   // Collection

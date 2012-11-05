@@ -71,6 +71,14 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     cNOPEntry("nop-F", rFX),
     cNOPEntry("nop-G", rGX),
     cNOPEntry("nop-H", rHX),
+    cNOPEntry("nop-I", rIX),
+    cNOPEntry("nop-J", rJX),
+    cNOPEntry("nop-K", rKX),
+    cNOPEntry("nop-L", rLX),
+    cNOPEntry("nop-M", rMX),
+    cNOPEntry("nop-N", rNX),
+    cNOPEntry("nop-O", rOX),
+    cNOPEntry("nop-P", rPX),
   };
   
   static const tInstLibEntry<tMethod> s_f_array[] = {
@@ -87,6 +95,14 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("nop-F", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-G", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-H", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-I", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-J", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-K", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-L", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-M", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-N", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-O", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-P", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     
     tInstLibEntry<tMethod>("NULL", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
@@ -242,7 +258,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
   
   const int def = 0;
-  const int null_inst = 8;
+  const int null_inst = 16;
   
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
@@ -295,7 +311,6 @@ void cHardwareBCR::internalReset()
   for (int i = 1; i < MAX_THREADS; i++) m_thread_ids[i] = -1;
   
   m_threads[0].Reset(this, 0);
-  m_threads[0].b_class = BEHAV_CLASS_NONE;
   m_thread_ids[0] = 0;
   m_cur_thread = 0;
   m_waiting_threads = 0;
@@ -354,6 +369,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
   }
 
   bool speculative_stall = false;
+  bool behav_class_used[3] = { false, false, false };
   
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
   int uop_ratio = 20;
@@ -373,6 +389,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       // Find the instruction to be executed
       const Instruction& cur_inst = ip.GetInst();
+      
       if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
         // Speculative instruction stall, flag it and halt the thread
         speculative_stall = true;
@@ -387,12 +404,12 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       bool exec = true;
       int exec_success = 0;
 
-      BehavClass thread_class = m_threads[m_cur_thread].b_class;
       BehavClass behav_class = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
       
-      // Check if this instruction should be skipped as a nop?
-      if (behav_class != BEHAV_CLASS_NONE && behav_class != thread_class) {
-        ip.Advance();
+      // Check if this instruction class has been used and should cause the thread to stall?
+      if (behav_class < BEHAV_CLASS_NONE && behav_class_used[behav_class]) {
+        m_threads[m_cur_thread].active = false;
+        m_threads[m_cur_thread].wait_reg = -1;
         continue;
       }
 
@@ -442,7 +459,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 
         // Check if the behavior class should put this thread to sleep
-        if (thread_class != BEHAV_CLASS_NONE && thread_class == behav_class) {
+        if (behav_class < BEHAV_CLASS_NONE) {
+          behav_class_used[behav_class] = true;
           m_threads[m_cur_thread].active = false;
           m_threads[m_cur_thread].wait_reg = -1;
         }
@@ -472,6 +490,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (phenotype.GetToDelete()) break;
     }
+    
+    if (phenotype.GetToDelete()) break;
   }
 
   // Kill creatures who have reached their max num of instructions executed
@@ -1076,13 +1096,6 @@ bool cHardwareBCR::ThreadCreate(int thread_label, const cHeadCPU& start_pos)
   m_threads[thread_id].Reset(this, thread_id);
   m_threads[thread_id].heads[hIP] = start_pos;
   
-  switch (thread_id) {
-    case 1: m_threads[thread_id].b_class = BEHAV_CLASS_ACTION; break;
-    case 2: m_threads[thread_id].b_class = BEHAV_CLASS_INPUT; break;
-    case 3: m_threads[thread_id].b_class = BEHAV_CLASS_COPY; break;
-    default: m_threads[thread_id].b_class = BEHAV_CLASS_NONE; break;
-  }
-	
   return thread_id;
 }
 
@@ -1162,7 +1175,7 @@ int cHardwareBCR::calcCopiedSize(const int parent_size, const int child_size)
   return copied_size;
 }
 
-bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, const int div_point, const int extra_lines, double mut_multiplier)
+bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 {
   const int mem_space_used = GetHead(hW).GetMemSpace();
   const int write_head_pos = GetHead(hW).GetPosition();
