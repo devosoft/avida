@@ -62,10 +62,10 @@ public:
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 8;
+  static const int NUM_REGISTERS = 16;
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = NUM_REGISTERS;
-  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX };
+  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX };
   enum { hIP, hR, hW, hF, hF2, hF3, hF4, hF5 };
   static const int NUM_NOPS = NUM_REGISTERS;
   static const int STACK_SIZE = 10;
@@ -128,7 +128,6 @@ private:
     Stack stack;
     
     struct {
-      BehavClass b_class:3;
       unsigned int cur_stack:1;
       unsigned int cur_head:3;
       bool reading_label:1;
