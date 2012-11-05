@@ -97,9 +97,9 @@ Apto::String Avida::Instruction::GetSymbol() const
         break;
     }
     
-    if (m_operand < 26) symbol[idx] = offset + 'a';
-    else if (m_operand < 52) symbol[idx] = offset - 26 + 'A';
-    else if (m_operand < 62) symbol[idx] = offset - 52 + '0';
+    if (offset < 26) symbol[idx] = offset + 'a';
+    else if (offset < 52) symbol[idx] = offset - 26 + 'A';
+    else if (offset < 62) symbol[idx] = offset - 52 + '0';
   }
   
   return  Apto::String(symbol); 
