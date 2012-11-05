@@ -188,6 +188,8 @@ tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::initInstLib(void)
     tInstLibEntry<tMethod>("if-copied-seq-comp", &cHardwareMBE::Inst_IfCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached sequence"),
     tInstLibEntry<tMethod>("if-copied-seq-direct", &cHardwareMBE::Inst_IfCopiedDirectSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached sequence"),
     
+    tInstLibEntry<tMethod>("if-not-copied-seq-comp", &cHardwareMBE::Inst_IfNotCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Do not execute next if we copied complement of attached sequence"),
+
     tInstLibEntry<tMethod>("repro", &cHardwareMBE::Inst_Repro, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly reproduces the organism", BEHAV_CLASS_COPY),
     
     tInstLibEntry<tMethod>("die", &cHardwareMBE::Inst_Die, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly kills the organism", BEHAV_CLASS_COPY),
@@ -1832,6 +1834,14 @@ bool cHardwareMBE::Inst_IfCopiedDirectSeq(cAvidaContext&)
 {
   ReadLabel();
   if (GetLabel() != GetReadSequence())  getIP().Advance();
+  return true;
+}
+
+bool cHardwareMBE::Inst_IfNotCopiedCompSeq(cAvidaContext&)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  if (GetLabel() == GetReadSequence())  getIP().Advance();
   return true;
 }
 

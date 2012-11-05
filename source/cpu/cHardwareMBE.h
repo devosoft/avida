@@ -462,6 +462,8 @@ private:
   bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
   bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
   bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
+  bool Inst_IfNotCopiedCompSeq(cAvidaContext& ctx);
+
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   
