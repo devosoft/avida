@@ -490,6 +490,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (phenotype.GetToDelete()) break;
     }
+    
+    if (phenotype.GetToDelete()) break;
   }
 
   // Kill creatures who have reached their max num of instructions executed
