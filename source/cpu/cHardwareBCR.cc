@@ -220,6 +220,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareBCR::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareBCR::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("set-rand-ft-once", &cHardwareBCR::Inst_SetRandForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareBCR::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
     
     tInstLibEntry<tMethod>("collect-specific", &cHardwareBCR::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
@@ -2603,6 +2604,38 @@ bool cHardwareBCR::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
+}
+
+bool cHardwareBCR::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  int cap = 0;
+  if (m_world->GetConfig().POPULATION_CAP.Get()) cap = m_world->GetConfig().POPULATION_CAP.Get();
+  else if (m_world->GetConfig().POP_CAP_ELDEST.Get()) cap = m_world->GetConfig().POP_CAP_ELDEST.Get();
+  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5)) && m_world->GetRandom().P(0.5)) {
+    if (m_organism->HasSetFT()) return false;
+    else {
+      int num_fts = 0;
+      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+      set <int>::iterator itr;
+      for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
+      int prop_target = m_world->GetRandom().GetUInt(num_fts);
+      if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
+      else {
+        // ft's may not be sequentially numbered
+        int ft_num = abs(prop_target) % num_fts;
+        itr = fts_avail.begin();
+        for (int i = 0; i < ft_num; i++) itr++;
+        prop_target = *itr;
+      }
+      // Set the new target and return the value
+      m_organism->SetForageTarget(prop_target);
+      m_organism->RecordFTSet();
+      setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+      return true;
+    }
+  }
+  else return Inst_SetForageTargetOnce(ctx);
 }
 
 bool cHardwareBCR::Inst_GetForageTarget(cAvidaContext& ctx)
