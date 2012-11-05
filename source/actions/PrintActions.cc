@@ -347,7 +347,7 @@ class cActionPrintInstructionData : public cAction, public Data::Recorder
 {
 private:
   cString m_filename;
-  cString m_inst_set;
+  Apto::String m_inst_set;
   Data::DataID m_data_id;
   Data::PackagePtr m_data;
   
@@ -361,7 +361,7 @@ public:
     else {
       if (m_filename == "") m_filename = "instruction.dat";
     }
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    if (largs.GetSize()) m_inst_set = (const char*)largs.PopWord();
     
     if (m_filename == "") m_filename.Set("instruction-%s.dat", (const char*)m_inst_set);
     
@@ -389,6 +389,7 @@ public:
   
   void Process(cAvidaContext&)
   {
+    const cInstSet& is = m_world->GetHardwareManager().GetInstSet(m_inst_set);
     cDataFile& df = m_world->GetDataFile(m_filename);
     
     df.WriteComment("Avida instruction execution data");
@@ -398,7 +399,7 @@ public:
     
     if (m_data) {
       for (int i = 0; i < m_data->NumComponents(); i++) {
-        df.Write(m_data->GetComponent(i)->IntValue(), cStringUtil::Stringf("inst %d", i));
+        df.Write(m_data->GetComponent(i)->IntValue(), is.GetName(i));
       }
     }
     
