@@ -331,7 +331,7 @@ private:
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[hIP]; }
 
   // --------  Division Support  -------
-  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+  bool Divide_Main(cAvidaContext& ctx, double mut_multiplier=1);
   
 
   // ---------- Utility Functions -----------

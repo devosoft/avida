@@ -1175,7 +1175,7 @@ int cHardwareBCR::calcCopiedSize(const int parent_size, const int child_size)
   return copied_size;
 }
 
-bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, const int div_point, const int extra_lines, double mut_multiplier)
+bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 {
   const int mem_space_used = GetHead(hW).GetMemSpace();
   const int write_head_pos = GetHead(hW).GetPosition();
