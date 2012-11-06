@@ -75,7 +75,7 @@ private:
   
   
   // --------  Define Internal Data Structures  --------
-  struct sInternalValue
+  struct DataValue
   {
     int value;
     
@@ -87,33 +87,32 @@ private:
     unsigned int oldest_component:15;
     unsigned int env_component:1;
     
-    inline sInternalValue() : value(0) { ; }
+    inline DataValue() : value(0) { ; }
     inline void Clear() { value = 0; originated = 0; from_env = 0, oldest_component = 0; env_component = 0; }
-    inline sInternalValue& operator=(const sInternalValue& i);
+    inline DataValue& operator=(const DataValue& i);
   };
   
   
-  class cLocalStack
+  class Stack
   {
-#define SIZE nHardware::STACK_SIZE
   private:
-    sInternalValue m_stack[SIZE];
+    int m_sz;
+    DataValue* m_stack;
     char m_sp;
     
   public:
-    cLocalStack() : m_sp(0) { Clear(); }
-    inline cLocalStack(const cLocalStack& is) : m_sp(is.m_sp) { for (int i = 0; i < SIZE; i++) m_stack[i] = is.m_stack[i]; }
-    ~cLocalStack() { ; }
+    Stack() : m_sz(0), m_stack(NULL), m_sp(0) { ; }
+    inline Stack(const Stack& is) : m_sp(is.m_sp) { for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
+    ~Stack() { delete [] m_stack; }
     
-    inline void operator=(const cLocalStack& is) { m_sp = is.m_sp; for (int i = 0; i < SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    inline void operator=(const Stack& is) { m_sp = is.m_sp; for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
     
-    inline void Push(const sInternalValue& value) { if (--m_sp < 0) m_sp = SIZE - 1; m_stack[(int)m_sp] = value; }
-    inline sInternalValue Pop() { sInternalValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == SIZE) m_sp = 0; return v; }
-    inline sInternalValue& Peek() { return m_stack[(int)m_sp]; }
-    inline const sInternalValue& Peek() const { return m_stack[(int)m_sp]; }
-    inline const sInternalValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= SIZE) ? (p - SIZE) : p]; }
-    inline void Clear() { for (int i = 0; i < SIZE; i++) m_stack[i].Clear(); }
-#undef SIZE
+    inline void Push(const DataValue& value) { if (--m_sp < 0) m_sp = m_sz - 1; m_stack[(int)m_sp] = value; }
+    inline DataValue Pop() { DataValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == m_sz) m_sp = 0; return v; }
+    inline DataValue& Peek() { return m_stack[(int)m_sp]; }
+    inline const DataValue& Peek() const { return m_stack[(int)m_sp]; }
+    inline const DataValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= m_sz) ? (p - m_sz) : p]; }
+    inline void Clear(int sz) { delete [] m_stack; m_sz = sz; m_stack = new DataValue[sz]; }
   };
   
   
@@ -125,9 +124,9 @@ private:
     unsigned int m_execurate;
     int m_messageTriggerType;
   public:
-    sInternalValue reg[NUM_REGISTERS];
+    DataValue reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
-    cLocalStack stack;
+    Stack stack;
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
     
@@ -184,7 +183,7 @@ private:
   const tMethod* m_functions;
   
   cCPUMemory m_memory;          // Memory...
-  cLocalStack m_global_stack;     // A stack that all threads share.
+  Stack m_global_stack;     // A stack that all threads share.
   
   Apto::Array<cLocalThread> m_threads;
   int m_thread_id_chart;
@@ -314,8 +313,8 @@ private:
   
   
   // --------  Stack Manipulation  --------
-  inline sInternalValue stackPop();
-  inline cLocalStack& getStack(int stack_id);
+  inline DataValue stackPop();
+  inline Stack& getStack(int stack_id);
   inline void switchStack();
   
   
@@ -377,8 +376,8 @@ private:
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
   inline void setInternalValue(int reg_num, int value, bool from_env = false);
-  inline void setInternalValue(int reg_num, int value, const sInternalValue& src);
-  inline void setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2);
+  inline void setInternalValue(int reg_num, int value, const DataValue& src);
+  inline void setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2);
   void checkWaitingThreads(int cur_thread, int reg_num);
 
   void ReadInst(Instruction in_inst);
@@ -672,7 +671,7 @@ public:
 };
 
 
-inline cHardwareExperimental::sInternalValue& cHardwareExperimental::sInternalValue::operator=(const sInternalValue& i)
+inline cHardwareExperimental::DataValue& cHardwareExperimental::DataValue::operator=(const DataValue& i)
 {
   value = i.value;
   originated = i.originated;
@@ -704,7 +703,7 @@ inline void cHardwareExperimental::ThreadPrev()
   else m_cur_thread--;
 }
 
-inline cHardwareExperimental::sInternalValue cHardwareExperimental::stackPop()
+inline cHardwareExperimental::DataValue cHardwareExperimental::stackPop()
 {
   if (m_threads[m_cur_thread].cur_stack == 0) {
     return m_threads[m_cur_thread].stack.Pop();
@@ -714,7 +713,7 @@ inline cHardwareExperimental::sInternalValue cHardwareExperimental::stackPop()
 }
 
 
-inline cHardwareExperimental::cLocalStack& cHardwareExperimental::getStack(int stack_id)
+inline cHardwareExperimental::Stack& cHardwareExperimental::getStack(int stack_id)
 {
   if (stack_id == 0) {
     return m_threads[m_cur_thread].stack;
@@ -733,7 +732,7 @@ inline void cHardwareExperimental::switchStack()
 
 inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_thread) const
 {
-  sInternalValue value;
+  DataValue value;
 
   if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 
@@ -747,7 +746,7 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
 
 inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
+  DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
   dest.originated = m_cycle_count;
@@ -757,9 +756,9 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool
 }
 
 
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& src)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const DataValue& src)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
+  DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
@@ -769,9 +768,9 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, cons
 }
 
 
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2)
 {
-  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
+  DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;

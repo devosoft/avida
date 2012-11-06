@@ -164,6 +164,9 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareBCR::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareBCR::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
+    tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareBCR::Inst_MoveHeadIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    tInstLibEntry<tMethod>("mov-head-if-less", &cHardwareBCR::Inst_MoveHeadIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    
     tInstLibEntry<tMethod>("jmp-head", &cHardwareBCR::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareBCR::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
 
@@ -300,7 +303,7 @@ void cHardwareBCR::internalReset()
   
   
   // Stack
-  m_global_stack.Clear();
+  m_global_stack.Clear(m_inst_set->GetStackSize());
   
   
   // Memory
@@ -330,8 +333,11 @@ void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, int in_id)
 {
   thread_id = in_id;
   
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
   for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
+  stack.Clear(in_hardware->GetInstSet().GetStackSize());
   
+  cur_stack = 0;
   cur_head = hIP;
   
   reading_label = false;
@@ -375,7 +381,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
   bool behav_class_used[3] = { false, false, false };
   
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
-  int uop_ratio = 20;
+  const int uop_ratio = m_inst_set->GetUOpsPerCycle();
   for (int i = 0; i < uop_ratio; i++) {
     for (m_cur_thread = 0; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
       // Setup the hardware for the next instruction to be executed.
@@ -1761,6 +1767,33 @@ bool cHardwareBCR::Inst_MoveHead(cAvidaContext&)
   if (head_used == hIP) m_advance_ip = false;
   return true;
 }
+
+bool cHardwareBCR::Inst_MoveHeadIfNEqu(cAvidaContext&)
+{
+  const int op1 = FindModifiedRegister(rBX);
+  const int op2 = FindModifiedNextRegister(op1);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
+    getHead(head_used).Set(getHead(target));
+    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+  }
+  return true;
+}
+
+bool cHardwareBCR::Inst_MoveHeadIfLess(cAvidaContext&)
+{
+  const int op1 = FindModifiedRegister(rBX);
+  const int op2 = FindModifiedNextRegister(op1);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
+    getHead(head_used).Set(getHead(target));
+    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+  }
+  return true;
+}
+
 
 bool cHardwareBCR::Inst_JumpHead(cAvidaContext&)
 {

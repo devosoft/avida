@@ -1138,9 +1138,9 @@ bool cEnvironment::LoadLine(cString line, Feedback& feedback)
   return true;
 }
 
-bool cEnvironment::Load(const cString& filename, const cString& working_dir, Feedback& feedback)
+bool cEnvironment::Load(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Map<Apto::String, Apto::String>* defs)
 {
-  cInitFile infile(filename, working_dir);
+  cInitFile infile(filename, working_dir, NULL, defs);
   if (!infile.WasOpened()) {
     for (int i = 0; i < infile.GetFeedback().GetNumMessages(); i++) {
       switch (infile.GetFeedback().GetMessageType(i)) {

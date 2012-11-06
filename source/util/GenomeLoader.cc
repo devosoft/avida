@@ -32,7 +32,7 @@
 
 
 Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,
-                                                   Feedback& feedback)
+                                                   Feedback& feedback, Apto::String specified_instset)
 {
   bool success = true;
   
@@ -46,13 +46,14 @@ Avida::GenomePtr Avida::Util::LoadGenomeDetailFile(const cString& fname, const c
   
   const cInstSet* is = &hwm.GetDefaultInstSet();
   
-  if (input_file.GetCustomDirectives().Has("inst_set")) {
-    cString isname = (const char*)input_file.GetCustomDirectives().GetWithDefault("inst_set", "");
-    isname.Trim();
-    if (hwm.IsInstSet((const char*)isname)) {
-      is = &hwm.GetInstSet((const char*)isname);
+  if (specified_instset.GetSize() || input_file.GetCustomDirectives().Has("inst_set")) {
+    if (!specified_instset.GetSize()) specified_instset = input_file.GetCustomDirectives().GetWithDefault("inst_set", "");
+    
+    specified_instset.Trim();
+    if (hwm.IsInstSet(specified_instset)) {
+      is = &hwm.GetInstSet(specified_instset);
     } else {
-      feedback.Error("invalid instruction set '%s' defined in organism '%s'", (const char*)isname, (const char*)fname);
+      feedback.Error("invalid instruction set '%s' defined in organism '%s'", (const char*)specified_instset, (const char*)fname);
       return GenomePtr();
     }
   }

@@ -437,7 +437,7 @@ void cHardwareExperimental::internalReset()
 {
   m_cycle_count = 0;
   m_last_output = 0;
-  m_global_stack.Clear();
+  m_global_stack.Clear(m_inst_set->GetStackSize());
   
   // We want to reset to have a single thread.
   m_threads.Resize(1);
@@ -512,7 +512,7 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
   for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
   
-  stack.Clear();
+  stack.Clear(in_hardware->GetInstSet().GetStackSize());
   cur_stack = 0;
   cur_head = nHardware::HEAD_IP;
   
@@ -763,7 +763,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    DataValue& reg = m_threads[m_cur_thread].reg[i];
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
     fp << setbase(16) << "[0x" << reg.value <<  "] " << setbase(10);
     fp << "(" << reg.from_env << " " << reg.env_component << " " << reg.originated << " " << reg.oldest_component << ")  ";
@@ -860,7 +860,7 @@ void cHardwareExperimental::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp
   fp << m_cycle_count << " ";
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
+    DataValue& reg = m_threads[m_cur_thread].reg[i];
     fp << GetRegister(i) << " ";
     fp << "(" << reg.originated << ") ";
   }    
@@ -1580,7 +1580,7 @@ void cHardwareExperimental::checkWaitingThreads(int cur_thread, int reg_num)
         m_waiting_threads--;
         
         // Set destination register to be the check value
-        sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
+        DataValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
         dest.value = check_value;
         dest.from_env = false;
         dest.originated = m_cycle_count;
@@ -1770,7 +1770,7 @@ bool cHardwareExperimental::Inst_Label(cAvidaContext&)
 bool cHardwareExperimental::Inst_Pop(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue pop = stackPop();
+  DataValue pop = stackPop();
   setInternalValue(reg_used, pop.value, pop);
   return true;
 }
@@ -1786,7 +1786,7 @@ bool cHardwareExperimental::Inst_PopAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue pop = stackPop();
+    DataValue pop = stackPop();
     setInternalValue(reg_used, pop.value, pop);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
@@ -1809,8 +1809,8 @@ bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext&) { switchStack(); re
 
 bool cHardwareExperimental::Inst_SwapStackTop(cAvidaContext&)
 {
-  sInternalValue v0 = getStack(0).Pop();
-  sInternalValue v1 = getStack(1).Pop();
+  DataValue v0 = getStack(0).Pop();
+  DataValue v1 = getStack(1).Pop();
   getStack(0).Push(v1);
   getStack(1).Push(v0);
   return true;
@@ -1820,7 +1820,7 @@ bool cHardwareExperimental::Inst_Swap(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue v1 = m_threads[m_cur_thread].reg[op1];
+  DataValue v1 = m_threads[m_cur_thread].reg[op1];
   m_threads[m_cur_thread].reg[op1] = m_threads[m_cur_thread].reg[op2];
   m_threads[m_cur_thread].reg[op2] = v1;
   return true;
@@ -1889,8 +1889,8 @@ bool cHardwareExperimental::Inst_Add(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  DataValue& r1 = m_threads[m_cur_thread].reg[op1];
+  DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value + r2.value, r1, r2);
   return true;
 }
@@ -1900,8 +1900,8 @@ bool cHardwareExperimental::Inst_Sub(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  DataValue& r1 = m_threads[m_cur_thread].reg[op1];
+  DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value - r2.value, r1, r2);
   return true;
 }
@@ -1911,8 +1911,8 @@ bool cHardwareExperimental::Inst_Mult(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  DataValue& r1 = m_threads[m_cur_thread].reg[op1];
+  DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value * r2.value, r1, r2);
   return true;
 }
@@ -1922,8 +1922,8 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  DataValue& r1 = m_threads[m_cur_thread].reg[op1];
+  DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     if (0 - INT_MAX > r1.value && r2.value == -1)
       m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
@@ -1941,8 +1941,8 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  DataValue& r1 = m_threads[m_cur_thread].reg[op1];
+  DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     setInternalValue(dst, r1.value % r2.value, r1, r2);
   } else {
@@ -1958,8 +1958,8 @@ bool cHardwareExperimental::Inst_Nand(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
-  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
+  DataValue& r1 = m_threads[m_cur_thread].reg[op1];
+  DataValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
   return true;
 }
@@ -1978,7 +1978,7 @@ bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate max
 bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -1995,7 +1995,7 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
   
@@ -2027,7 +2027,7 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext&)
 bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -2039,7 +2039,7 @@ bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -2053,7 +2053,7 @@ bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
   
@@ -2067,7 +2067,7 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_DemeIO(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  DataValue& reg = m_threads[m_cur_thread].reg[reg_used];
 
   // Do deme output..
   m_organism->GetOrgInterface().DoDemeOutput(ctx, reg.value);
@@ -2813,7 +2813,7 @@ bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   const int op1 = FindModifiedNextRegister(reg_used);
-  sInternalValue& val = m_threads[m_cur_thread].reg[op1];
+  DataValue& val = m_threads[m_cur_thread].reg[op1];
   
   setInternalValue(reg_used, (BitCount(val.value) >= CONSENSUS) ? 1 : 0, val); 
   return true; 
@@ -2824,7 +2824,7 @@ bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   const int op1 = FindModifiedNextRegister(reg_used);
-  sInternalValue& val = m_threads[m_cur_thread].reg[op1];
+  DataValue& val = m_threads[m_cur_thread].reg[op1];
   
   setInternalValue(reg_used, (BitCount(val.value & MASK24) >= CONSENSUS24) ? 1 : 0, val); 
   return true; 

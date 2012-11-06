@@ -106,7 +106,7 @@ public:
   bool AddEventFileFormat(const cString& line, Feedback& feedback);
   
   
-  bool LoadEventFile(const cString& filename, const cString& working_dir, Feedback&  feedback);
+  bool LoadEventFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Map<Apto::String, Apto::String>* defs = NULL);
   
   void Process(cAvidaContext& ctx);
   void Sync(); // Get all events caught up.

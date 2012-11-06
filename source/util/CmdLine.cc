@@ -39,7 +39,7 @@
 using namespace std;
 
 
-static void processArgs(cStringList &argv, cAvidaConfig* cfg)
+static void processArgs(cStringList &argv, cAvidaConfig* cfg, Apto::Map<Apto::String, Apto::String>& defs)
 {
   int argc = argv.GetSize();
   int arg_num = 1;              // Argument number being looked at.
@@ -55,7 +55,6 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
   
   cString config_filename = "avida.cfg";
   Apto::Map<Apto::String, Apto::String> sets;
-  Apto::Map<Apto::String, Apto::String> defs;
   
   bool flag_analyze = false;
   bool flag_interactive = false;
@@ -202,11 +201,11 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
   }
 }
   
-void Avida::Util::ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
+void Avida::Util::ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg, Apto::Map<Apto::String, Apto::String>& defs)
 {
   cStringList sl;
   for(int i=0; i<argc; i++){
     sl.PushRear(argv[i]);
   }
-  processArgs(sl, cfg);
+  processArgs(sl, cfg, defs);
 }
