@@ -468,6 +468,8 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
           bc_exec_count = 0;
         }
       }
+      // if they exceed the per behavior per cycle max, break out of the cycle
+      // (allow these inst to be executed in the current behav class in the next cycle)
       bc_exec_count++;
       if (bc_exec_count >= max_exec_count) break;
       assert(bc_exec_count < 0x8000);
