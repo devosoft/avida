@@ -29,17 +29,14 @@
 #include "avida/private/systematics/SexualAncestry.h"
 
 #include "cAvidaContext.h"
-#include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
-#include "cOrgMessage.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
-#include "cTestCPU.h"
 #include "cWorld.h"
 
 #include "tInstLibEntry.h"
@@ -124,6 +121,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     
     // Threading 
     tInstLibEntry<tMethod>("fork-thread", &cHardwareExperimental::Inst_ForkThread),
+    tInstLibEntry<tMethod>("thread-create", &cHardwareExperimental::Inst_ThreadCreate),
     tInstLibEntry<tMethod>("exit-thread", &cHardwareExperimental::Inst_ExitThread),
     tInstLibEntry<tMethod>("id-thread", &cHardwareExperimental::Inst_IdThread),
     
@@ -378,24 +376,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("kill-display", &cHardwareExperimental::Inst_KillDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("modify-simp-display", &cHardwareExperimental::Inst_ModifySimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("read-simp-display", &cHardwareExperimental::Inst_ReadLastSimpDisplay, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
-
-    // Messaging
-    tInstLibEntry<tMethod>("send-msg", &cHardwareExperimental::Inst_SendMessage, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareExperimental::Inst_RetrieveMessage, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-
-    tInstLibEntry<tMethod>("send-msg-interrupt-type0", &cHardwareExperimental::Inst_SendMessageInterruptType0, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type1", &cHardwareExperimental::Inst_SendMessageInterruptType1, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareExperimental::Inst_SendMessageInterruptType2, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type3", &cHardwareExperimental::Inst_SendMessageInterruptType3, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type4", &cHardwareExperimental::Inst_SendMessageInterruptType4, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type5", &cHardwareExperimental::Inst_SendMessageInterruptType5, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("msg-handler-type0", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type3", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type4", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("msg-handler-type5", &cHardwareExperimental::Inst_START_Handler),
-    tInstLibEntry<tMethod>("end-handler", &cHardwareExperimental::Inst_End_Handler),
 
     // Control-type Instructions
     tInstLibEntry<tMethod>("scramble-registers", &cHardwareExperimental::Inst_ScrambleReg, INST_CLASS_DATA, nInstFlag::STALL),
@@ -1326,6 +1306,27 @@ bool cHardwareExperimental::ForkThread()
   return true;
 }
 
+bool cHardwareExperimental::ThreadCreate(const cHeadCPU& start_pos)
+{
+  const int thread_id = m_threads.GetSize();
+  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
+  
+  // Make room for the new thread.
+  m_threads.Resize(thread_id + 1);
+  
+  // Find the first free bit in m_thread_id_chart to determine the new
+  // thread id.
+  int new_id = 0;
+  while ((m_thread_id_chart >> new_id) & 1) new_id++;
+  m_thread_id_chart |= (1 << new_id);
+
+  m_threads[thread_id].Reset(this, new_id);
+  m_threads[thread_id].heads[nHardware::HEAD_IP] = start_pos;
+
+  return true;
+}
+
+
 bool cHardwareExperimental::ExitThread()
 {
   // Make sure that there is always at least one thread awake...
@@ -1605,68 +1606,19 @@ bool cHardwareExperimental::Inst_ForkThread(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::InterruptThread(int interruptType)
+// Multi-threading.
+bool cHardwareExperimental::Inst_ThreadCreate(cAvidaContext&)
 {
-  // Will interrupt be successful? i.e. is head instruction present
-  cString handlerHeadInstructionString;
-  int interruptMsgType = -1;
-
-  switch (interruptType) {
-  case MSG_INTERRUPT:
-    interruptMsgType = GetOrganism()->PeekAtNextMessageType();
-    handlerHeadInstructionString.Set("msg-handler-type%d", interruptMsgType);
-    break;
-  case MOVE_INTERRUPT:
-    handlerHeadInstructionString.Set("moved-handler");
-    break;
-  default:
-    cerr << "Unknown interrupt type " << interruptType << "  Exitting.\n\n";
-    exit(-1);
-    break;
-  }
-
-  const Instruction label_inst = GetInstSet().GetInst(handlerHeadInstructionString);
-
-  cHeadCPU search_head(IP());
-  int start_pos = search_head.GetPosition();
-  search_head++;
-
-  while (start_pos != search_head.GetPosition()) {
-    if (search_head.GetInst() == label_inst) { // found handlerHeadInstructionString
-      search_head++; // one instruction past instruction
-      break;
-    }
-    search_head++;
-  }
-
-  if (start_pos == search_head.GetPosition()) return false;
-
-  if (ForkThread()) {
-    const int num_threads = m_threads.GetSize() - 1;
-    m_threads[num_threads].setMessageTriggerType(interruptMsgType);
-
-    int old_thread = m_cur_thread;
-    m_cur_thread = num_threads;
-
-    // move all heads to one past beginning of interrupt
-    for (int i = 0; i < NUM_HEADS; i++) {
-      GetHead(i).Set(search_head.GetPosition());
-    }
-
-    switch (interruptType) {
-    case MSG_INTERRUPT:
-      IP().Retreat();
-      Inst_RetrieveMessage(m_world->GetDefaultContext());
-      IP().Advance();
-      break;
-    case MOVE_INTERRUPT:
-      break;
-    }
-    m_cur_thread = old_thread;
-    return true;
-  }
-  return false;
+  int head_used = FindModifiedHead(nHardware::HEAD_FLOW);
+  
+  bool success = ThreadCreate(m_threads[m_cur_thread].heads[head_used]);
+  if (!success) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+  
+  if (success) m_organism->GetPhenotype().SetIsMultiThread();
+  
+  return success;
 }
+
 
 bool cHardwareExperimental::Inst_ExitThread(cAvidaContext& ctx)
 {
@@ -6367,79 +6319,7 @@ bool cHardwareExperimental::Inst_GetPredGroupTolerance(cAvidaContext& ctx)
   return exec_success;
 }
 
-// Active messaging
-bool cHardwareExperimental::Inst_SendMessageInterruptType0(cAvidaContext& ctx) { return SendMessage(ctx, 0); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType1(cAvidaContext& ctx) { return SendMessage(ctx, 1); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType2(cAvidaContext& ctx) { return SendMessage(ctx, 2); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType3(cAvidaContext& ctx) { return SendMessage(ctx, 3); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType4(cAvidaContext& ctx) { return SendMessage(ctx, 4); }
-bool cHardwareExperimental::Inst_SendMessageInterruptType5(cAvidaContext& ctx) { return SendMessage(ctx, 5); }
 
-// Jumps one instruction passed end-handler
-bool cHardwareExperimental::Inst_START_Handler(cAvidaContext& ctx)
-{
-  m_advance_ip = false;
-  // Jump 1 instruction passed msg-handler
-  Instruction label_inst = GetInstSet().GetInst("end-handler");
-
-  cHeadCPU search_head(IP());
-  int start_pos = search_head.GetPosition();
-  search_head++;
-
-  while (start_pos != search_head.GetPosition()) {
-    if (search_head.GetInst() == label_inst) {
-      // move IP to here
-      search_head++;
-      IP().Set(search_head.GetPosition());
-      return true;
-    }
-    search_head++;
-  }
-  return false;
-}
-
-bool cHardwareExperimental::Inst_End_Handler(cAvidaContext& ctx)
-{
-  bool exit_successful = ExitThread();
-  if (exit_successful == false) { // return false if one thread exists
-    m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-    // might need to set inst. advance to false
-    return false;
-  } // previous thread is now restored
-  return true;
-}
-
-bool cHardwareExperimental::Inst_SendMessage(cAvidaContext& ctx)
-{
-  return SendMessage(ctx);
-}
-
-bool cHardwareExperimental::SendMessage(cAvidaContext& ctx, int messageType)
-{
-  const int label_reg = FindModifiedRegister(rBX);
-  const int data_reg = FindNextRegister(label_reg);
-
-  cOrgMessage msg = cOrgMessage(m_organism, messageType);
-  msg.SetLabel(GetRegister(label_reg));
-  msg.SetData(GetRegister(data_reg));
-
-  return m_organism->SendMessage(ctx, msg);
-}
-
-bool cHardwareExperimental::Inst_RetrieveMessage(cAvidaContext& ctx)
-{
-  std::pair<bool, cOrgMessage> retrieved = m_organism->RetrieveMessage();
-  if (!retrieved.first) {
-    return false;
-  }
-
-  const int label_reg = FindModifiedRegister(rBX);
-  const int data_reg = FindNextRegister(label_reg);
-
-  setInternalValue(label_reg, retrieved.second.GetLabel(), true);
-  setInternalValue(data_reg, retrieved.second.GetData(), true);
-  return true;
-}
 
 bool cHardwareExperimental::Inst_ScrambleReg(cAvidaContext& ctx)
 {

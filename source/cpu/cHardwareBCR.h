@@ -267,10 +267,6 @@ public:
   bool GetMalActive() const   { return m_mal_active; }
 
 
-  // interrupt current thread @ not implemented
-  bool InterruptThread(int interruptType) { return false; }
-  int GetThreadMessageTriggerType(int _index) { return -1; }
-  
   // --------  Parasite Stuff  -------- @ not implemented
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
@@ -427,6 +423,12 @@ private:
   bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
+  
+  // State Grid Navigation
+  bool Inst_SGMove(cAvidaContext& ctx);
+  bool Inst_SGRotateL(cAvidaContext& ctx);
+  bool Inst_SGRotateR(cAvidaContext& ctx);
+  bool Inst_SGSense(cAvidaContext& ctx);
   
   // Movement and Navigation
   bool Inst_Move(cAvidaContext& ctx);

@@ -295,10 +295,7 @@ public:
   int GetCurThread() const      { return m_cur_thread; }
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
-  // interrupt current thread
-  bool InterruptThread(int interruptType);
-  int GetThreadMessageTriggerType(int _index) { return -1; }
-  
+
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
@@ -345,6 +342,7 @@ private:
   
   // --------  Thread Manipulation  -------
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
+  bool ThreadCreate(const cHeadCPU& start_pos); // Adds a new thread starting at the flow head
   bool ExitThread(); // Kill the current thread!
   
   
@@ -395,6 +393,7 @@ private:
   // ---------- Instruction Library -----------
   // Multi-threading
   bool Inst_ForkThread(cAvidaContext& ctx);
+  bool Inst_ThreadCreate(cAvidaContext& ctx);
   bool Inst_ExitThread(cAvidaContext& ctx);
   bool Inst_IdThread(cAvidaContext& ctx);
   
@@ -600,21 +599,6 @@ private:
   bool Inst_DecPredTolerance(cAvidaContext& ctx);  
   bool Inst_GetPredTolerance(cAvidaContext& ctx);     
   bool Inst_GetPredGroupTolerance(cAvidaContext& ctx); 
-
-  // Active messaging
-  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
-  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
-
-  bool Inst_START_Handler(cAvidaContext& ctx);
-  bool Inst_End_Handler(cAvidaContext& ctx);
-
-  bool Inst_SendMessage(cAvidaContext& ctx);
-  bool SendMessage(cAvidaContext& ctx, int messageType = 0);
-  bool Inst_RetrieveMessage(cAvidaContext& ctx);
 
   // Org Interactions
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);

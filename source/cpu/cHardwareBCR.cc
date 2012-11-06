@@ -28,17 +28,13 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
-#include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
-#include "cOrgMessage.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cStateGrid.h"
-#include "cStringUtil.h"
-#include "cTestCPU.h"
 #include "cWorld.h"
 
 #include "tInstLibEntry.h"
@@ -192,6 +188,12 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("wait-cond-less", &cHardwareBCR::Inst_WaitCondition_Less, INST_CLASS_OTHER, nInstFlag::STALL, ""),
     tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareBCR::Inst_WaitCondition_Greater, INST_CLASS_OTHER, nInstFlag::STALL, ""),
         
+    // State Grid instructions
+    tInstLibEntry<tMethod>("sg-move", &cHardwareBCR::Inst_SGMove, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("sg-rotate-l", &cHardwareBCR::Inst_SGRotateL, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareBCR::Inst_SGRotateR, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("sg-sense", &cHardwareBCR::Inst_SGSense, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareBCR::Inst_Move, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareBCR::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
@@ -1065,7 +1067,7 @@ bool cHardwareBCR::ThreadCreate(int thread_label, const cHeadCPU& start_pos)
   int thread_id = m_threads.GetSize();
   
   // Check for thread cap, base thread label (i.e. no label)
-  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return -1;
+  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   // Check for existing thread
   if (thread_label >= 0 && m_thread_ids[thread_label] >= 0) {
@@ -1664,6 +1666,89 @@ bool cHardwareBCR::Inst_TaskOutput(cAvidaContext& ctx)
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
   
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGMove(cAvidaContext&)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  
+  const cStateGrid& sg = m_organism->GetStateGrid();
+  
+  int& x = m_ext_mem[0];
+  int& y = m_ext_mem[1];
+  
+  const int facing = m_ext_mem[2];
+  
+  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
+  switch (facing) {
+    case 0: // N
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    case 1: // NE
+      if (++x == sg.GetWidth()) x = 0;
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    case 2: // E
+      if (++x == sg.GetWidth()) x = 0;
+      break;
+      
+    case 3: // SE
+      if (++x == sg.GetWidth()) x = 0;
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 4: // S
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 5: // SW
+      if (--x == -1) x = sg.GetWidth() - 1;
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 6: // W
+      if (--x == -1) x = sg.GetWidth() - 1;
+      break;
+      
+    case 7: // NW
+      if (--x == -1) x = sg.GetWidth() - 1;
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    default:
+      assert(facing >= 0 && facing <= 7);
+  }
+  
+  // Increment state observed count
+  m_ext_mem[3 + sg.GetStateAt(x, y)]++;
+  
+  // Save this location in the movement history
+  m_ext_mem.Push(sg.GetIDFor(x, y));
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGRotateL(cAvidaContext&)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  if (--m_ext_mem[2] < 0) m_ext_mem[2] = 7;
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGRotateR(cAvidaContext&)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  if (++m_ext_mem[2] > 7) m_ext_mem[2] = 0;
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGSense(cAvidaContext&)
+{
+  const cStateGrid& sg = m_organism->GetStateGrid();
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
   return true;
 }
 

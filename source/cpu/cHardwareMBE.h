@@ -304,10 +304,6 @@ public:
   bool GetMalActive() const   { return m_mal_active; }
 
 
-  // interrupt current thread @ not implemented
-  bool InterruptThread(int interruptType) { return false; }
-  int GetThreadMessageTriggerType(int _index) { return -1; }
-  
   // --------  Parasite Stuff  -------- @ not implemented
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
