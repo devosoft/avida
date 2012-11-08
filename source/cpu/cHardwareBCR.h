@@ -100,7 +100,7 @@ private:
   private:
     int m_sz;
     DataValue* m_stack;
-    char m_sp;
+    int m_sp;
     
   public:
     Stack() : m_sz(0), m_stack(NULL), m_sp(0) { ; }
