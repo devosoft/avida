@@ -82,8 +82,8 @@ cResource::cResource(const cString & _name, int _id)
   , cstepx(0.0) //JW
   , cstepy(0.0) //JW
   , update_dynamic(0) //JW
-  , m_peakx(0)
-  , m_peaky(0)
+  , m_peakx(-1)
+  , m_peaky(-1)
   , m_height(0)
   , m_spread(0)
   , m_plateau(-1.0)

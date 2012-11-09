@@ -3466,12 +3466,12 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext& ctx)
       int ft_reg = FindModifiedNextRegister(fat_reg); 
       int group_reg = FindModifiedNextRegister(ft_reg);
       
-      setInternalValue(dist_reg, -2, true);
-      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
-      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
-      setInternalValue(ft_reg, target_org->GetForageTarget(), true);  
+      setInternalValue(dist_reg, -2, true, true);
+      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true, true);
+      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true, true);
+      setInternalValue(ft_reg, target_org->GetForageTarget(), true, true);
       if (target_org->HasOpinion()) {
-        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+        setInternalValue(group_reg, target_org->GetOpinion().first, true, true);
       }
       if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
     }        
@@ -3558,12 +3558,12 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext& ctx)
       int ft_reg = FindModifiedNextRegister(fat_reg); 
       int group_reg = FindModifiedNextRegister(ft_reg);
       
-      setInternalValue(dist_reg, -2, true);
-      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
-      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
-      setInternalValue(ft_reg, target_org->GetForageTarget(), true);  
+      setInternalValue(dist_reg, -2, true, true);
+      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true, true);
+      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true, true);
+      setInternalValue(ft_reg, target_org->GetForageTarget(), true, true);  
       if (target_org->HasOpinion()) {
-        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+        setInternalValue(group_reg, target_org->GetOpinion().first, true, true);
       }
       if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
     }       
@@ -3689,7 +3689,7 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (cell_res[i] > max_resource) {
       max_resource = cell_res[i];
-      setInternalValue(reg_to_set, i, true);
+      setInternalValue(reg_to_set, i, true, true);
     }
   }    
   return true;
@@ -3729,10 +3729,10 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   if (res_amount == 0) res_diff = (int) faced_res;
   else res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
   
-  setInternalValue(req_reg, res_sought, true);
+  setInternalValue(req_reg, res_sought, true, true);
   const int res_tot_reg = FindModifiedNextRegister(req_reg);
-  setInternalValue(res_tot_reg, res_amount, true);
-  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true);
+  setInternalValue(res_tot_reg, res_amount, true, true);
+  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true, true);
   return true;
 }
 
@@ -3763,9 +3763,9 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
     if (m_use_avatar) nest_val = m_organism->GetOrgInterface().GetAVResourceVal(ctx, nest_id);
     else if (!m_use_avatar) nest_val = m_organism->GetOrgInterface().GetResourceVal(ctx, nest_id);
   }
-  setInternalValue(reg_used, nest_id, true);
+  setInternalValue(reg_used, nest_id, true, true);
   const int val_reg = FindModifiedNextRegister(reg_used);
-  setInternalValue(val_reg, nest_val, true);
+  setInternalValue(val_reg, nest_val, true, true);
   return true;
 }
 
@@ -3806,9 +3806,9 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
     }
   }
     
-  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
+  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true, true);
   const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
-  setInternalValue(res_tot_reg, res_amount - faced_res, true);
+  setInternalValue(res_tot_reg, res_amount - faced_res, true, true);
   return true;
 }
 
@@ -3984,25 +3984,25 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
   if (results.report_type == 0) {
-    setInternalValue(regs.habitat, results.habitat, true);
-    setInternalValue(regs.distance, -1, true);
-    setInternalValue(regs.search_type, results.search_type, true);
-    setInternalValue(regs.id_sought, results.id_sought, true);
-    setInternalValue(regs.count, 0, true);
-    setInternalValue(regs.value, 0, true);
-    setInternalValue(regs.group, -9, true);
-    setInternalValue(regs.ft, -9, true);  
+    setInternalValue(regs.habitat, results.habitat, true, true);
+    setInternalValue(regs.distance, -1, true, true);
+    setInternalValue(regs.search_type, results.search_type, true, true);
+    setInternalValue(regs.id_sought, results.id_sought, true, true);
+    setInternalValue(regs.count, 0, true, true);
+    setInternalValue(regs.value, 0, true, true);
+    setInternalValue(regs.group, -9, true, true);
+    setInternalValue(regs.ft, -9, true, true);  
   }
   // report results as sent
   else if (results.report_type == 1) {
-    setInternalValue(regs.habitat, results.habitat, true);
-    setInternalValue(regs.distance, results.distance, true);
-    setInternalValue(regs.search_type, results.search_type, true);
-    setInternalValue(regs.id_sought, results.id_sought, true);
-    setInternalValue(regs.count, results.count, true);
-    setInternalValue(regs.value, results.value, true);
-    setInternalValue(regs.group, results.group, true);
-    setInternalValue(regs.ft, results.forage, true);  
+    setInternalValue(regs.habitat, results.habitat, true, true);
+    setInternalValue(regs.distance, results.distance, true, true);
+    setInternalValue(regs.search_type, results.search_type, true, true);
+    setInternalValue(regs.id_sought, results.id_sought, true, true);
+    setInternalValue(regs.count, results.count, true, true);
+    setInternalValue(regs.value, results.value, true, true);
+    setInternalValue(regs.group, results.group, true, true);
+    setInternalValue(regs.ft, results.forage, true, true);  
   }
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
@@ -4017,14 +4017,14 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
       int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
       
-      if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
-      else if (target_reg == 7) setInternalValue(regs.distance, rand, true);
-      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true);
-      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true);
-      else if (target_reg == 10) setInternalValue(regs.count, rand, true);
-      else if (target_reg == 11) setInternalValue(regs.value, rand, true);
-      else if (target_reg == 12) setInternalValue(regs.group, rand, true);
-      else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
+      if (target_reg == 6) setInternalValue(regs.habitat, rand, true, true);
+      else if (target_reg == 7) setInternalValue(regs.distance, rand, true, true);
+      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true, true);
+      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true, true);
+      else if (target_reg == 10) setInternalValue(regs.count, rand, true, true);
+      else if (target_reg == 11) setInternalValue(regs.value, rand, true, true);
+      else if (target_reg == 12) setInternalValue(regs.group, rand, true, true);
+      else if (target_reg == 13) setInternalValue(regs.ft, rand, true, true);  
     }
   }
   return;

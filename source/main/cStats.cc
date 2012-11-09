@@ -527,6 +527,12 @@ void cStats::ZeroFTInst()
   for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_exe_inst_map.begin(); it != m_is_pred_exe_inst_map.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
   }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_prey_from_sensor_inst_map.begin(); it != m_is_prey_from_sensor_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+  for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_pred_from_sensor_inst_map.begin(); it != m_is_pred_from_sensor_inst_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
   for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_prey_fail_exe_inst_map.begin(); it != m_is_prey_fail_exe_inst_map.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
   }
@@ -1082,6 +1088,36 @@ void cStats::PrintPredatorFailedInstructionData(const cString& filename, const c
   
   for (int i = 0; i < m_is_pred_fail_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey org instruction execution data using values originating from sensory input");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_prey_from_sensor_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_prey_from_sensor_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator org instruction execution data using values originating from sensory input");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_from_sensor_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_pred_from_sensor_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
   df.Endl();
 }

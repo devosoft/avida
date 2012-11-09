@@ -81,15 +81,17 @@ private:
     int value;
     
     // Actual age of this value
-    unsigned int originated:15;
+    unsigned int originated:14;
     unsigned int from_env:1;
+    unsigned int from_sensor:1;
     
     // Age of the oldest component used to create this value
-    unsigned int oldest_component:15;
+    unsigned int oldest_component:14;
     unsigned int env_component:1;
+    unsigned int sensor_component:1;
     
     inline sInternalValue() : value(0) { ; }
-    inline void Clear() { value = 0; originated = 0; from_env = 0, oldest_component = 0; env_component = 0; }
+    inline void Clear() { value = 0; originated = 0; from_env = 0; from_sensor = 0; oldest_component = 0; env_component = 0; sensor_component = 0;}
     inline sInternalValue& operator=(const sInternalValue& i);
   };
   
@@ -379,7 +381,7 @@ private:
 
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
-  inline void setInternalValue(int reg_num, int value, bool from_env = false);
+  inline void setInternalValue(int reg_num, int value, bool from_env = false, bool from_sensor = false);
   inline void setInternalValue(int reg_num, int value, const sInternalValue& src);
   inline void setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2);
   void checkWaitingThreads(int cur_thread, int reg_num);
@@ -765,7 +767,7 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
   return value.value;
 }
 
-inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env)
+inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool from_env, bool from_sensor)
 {
   sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
@@ -773,6 +775,8 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, bool
   dest.originated = m_cycle_count;
   dest.oldest_component = m_cycle_count;
   dest.env_component = from_env;
+  dest.from_sensor = from_sensor;
+  dest.sensor_component = from_sensor;
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
@@ -782,9 +786,11 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, cons
   sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
+  dest.from_sensor = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = src.oldest_component;
   dest.env_component = src.env_component;
+  dest.sensor_component = src.sensor_component;
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
@@ -794,9 +800,11 @@ inline void cHardwareExperimental::setInternalValue(int reg_num, int value, cons
   sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
+  dest.from_sensor = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = (op1.oldest_component < op2.oldest_component) ? op1.oldest_component : op2.oldest_component;
   dest.env_component = (op1.env_component || op2.env_component);
+  dest.sensor_component = (op1.sensor_component || op2.sensor_component);
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 

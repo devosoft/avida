@@ -171,6 +171,8 @@ private:
   tSmartArray<sDonateSpecificCircumstances> m_donate_specific; 
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_prey_from_sensor_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_pred_from_sensor_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_fail_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_fail_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
@@ -585,6 +587,7 @@ public:
   cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
   cDoubleSum& SumPreySize()          { return sum_prey_size; }
   tArray<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
+  tArray<cIntSum>& InstPreyFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_prey_from_sensor_inst_map[inst_set]; }
   tArray<cIntSum>& InstPreyFailedExeCountsForInstSet(const cString& inst_set) { return m_is_prey_fail_exe_inst_map[inst_set]; }
 
   cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
@@ -594,6 +597,7 @@ public:
   cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
   tArray<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
+  tArray<cIntSum>& InstPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_pred_from_sensor_inst_map[inst_set]; }
   tArray<cIntSum>& InstPredFailedExeCountsForInstSet(const cString& inst_set) { return m_is_pred_fail_exe_inst_map[inst_set]; }
   void ZeroFTInst();
   
@@ -919,6 +923,8 @@ public:
   void PrintPredatorVarianceData(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set);
   void PrintStatsData(const cString& filename);

@@ -194,27 +194,28 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
-  // If we are not moving the resource we default to the config input m_peakx and m_peaky for 'normal' gradient resources
-  // for non-moving halo's we generate a random location on the orbit,
-  //   otherwise we get a random location and direction.
-  if (m_move_a_scaler > 1) {
-    if (!m_halo) {
-      m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
-      m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
-      // Get a random direction for movement on the x-axis  
+  // If no initial config set m_peakx and m_peaky, get a random location
+  if (!m_halo) {
+    if (m_peakx == -1) m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);
+    if (m_peaky == -1) m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
+
+    if (m_move_a_scaler > 1) {
+      // Get a random direction for movement on the x-axis
       m_movesignx = rng.GetInt(-1,2);
-      // If x-axis movement is 0, we want to make sure y-axis movement is not also 0  
+      // If x-axis movement direction is 0, we want to make sure y-axis movement is not also 0
       if (m_movesignx == 0) {
         m_movesigny = (rng.GetUInt(0,2) == 1) ? -1 : 1;
       } else {
         m_movesigny = rng.GetInt(-1,2);
       }
-    } else if (m_halo) {
+    }
+  } 
+  // for halo's we generate a random location on the orbit,
+  else if (m_halo) {
+    if (m_move_a_scaler > 1) {
       m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
       m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
     }
-  }
-  if (m_halo) {
     const int chooseUpDown = rng.GetUInt(0,2);
     if (chooseUpDown == 0) {
     int chooseEW = rng.GetUInt(0,2);
