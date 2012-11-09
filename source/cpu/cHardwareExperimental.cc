@@ -483,7 +483,6 @@ void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_threa
   m_id = in_thread.m_id;
   m_promoter_inst_executed = in_thread.m_promoter_inst_executed;
   m_execurate = in_thread.m_execurate;
-  m_messageTriggerType = in_thread.m_messageTriggerType;
   
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
   for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
@@ -525,8 +524,6 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardwa
   // Promoter model
   m_execurate = 0;
   m_promoter_inst_executed = 0;
-
-  m_messageTriggerType = -1;
 }
 
 

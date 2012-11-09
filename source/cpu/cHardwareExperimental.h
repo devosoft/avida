@@ -102,10 +102,10 @@ private:
     
   public:
     Stack() : m_sz(0), m_stack(NULL), m_sp(0) { ; }
-    inline Stack(const Stack& is) : m_sp(is.m_sp) { for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
+    inline Stack(const Stack& is) : m_sp(is.m_sp) { Clear(is.m_sz); for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
     ~Stack() { delete [] m_stack; }
     
-    inline void operator=(const Stack& is) { m_sp = is.m_sp; for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
+    inline void operator=(const Stack& is) { m_sp = is.m_sp; Clear(is.m_sz); for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
     
     inline void Push(const DataValue& value) { if (--m_sp < 0) m_sp = m_sz - 1; m_stack[(int)m_sp] = value; }
     inline DataValue Pop() { DataValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == m_sz) m_sp = 0; return v; }
@@ -122,7 +122,10 @@ private:
     int m_id;
     int m_promoter_inst_executed;
     unsigned int m_execurate;
-    int m_messageTriggerType;
+    
+
+    cLocalThread(const cLocalThread&);
+    
   public:
     DataValue reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -161,8 +164,6 @@ private:
     inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
     inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
-    inline void setMessageTriggerType(int value) { m_messageTriggerType = value; }
-    inline int getMessageTriggerType() { return m_messageTriggerType; }
   };
   
   
@@ -185,7 +186,7 @@ private:
   cCPUMemory m_memory;          // Memory...
   Stack m_global_stack;     // A stack that all threads share.
   
-  Apto::Array<cLocalThread> m_threads;
+  Apto::Array<cLocalThread, Apto::ManagedPointer> m_threads;
   int m_thread_id_chart;
   int m_cur_thread;
   

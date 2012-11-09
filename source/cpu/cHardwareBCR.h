@@ -104,10 +104,10 @@ private:
     
   public:
     Stack() : m_sz(0), m_stack(NULL), m_sp(0) { ; }
-    inline Stack(const Stack& is) : m_sp(is.m_sp) { for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
+    inline Stack(const Stack& is) : m_sp(is.m_sp) { Clear(is.m_sz); for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
     ~Stack() { delete [] m_stack; }
     
-    inline void operator=(const Stack& is) { m_sp = is.m_sp; for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
+    inline void operator=(const Stack& is) { m_sp = is.m_sp; Clear(is.m_sz); for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
     
     inline void Push(const DataValue& value) { if (--m_sp < 0) m_sp = m_sz - 1; m_stack[(int)m_sp] = value; }
     inline DataValue Pop() { DataValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == m_sz) m_sp = 0; return v; }
