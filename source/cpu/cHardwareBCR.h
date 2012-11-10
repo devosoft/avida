@@ -291,12 +291,12 @@ private:
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size = cCodeLabel::MAX_LENGTH);
-  cHeadCPU FindLabelStart(bool mark_executed);
-  cHeadCPU FindLabelForward(bool mark_executed);
-  cHeadCPU FindLabelBackward(bool mark_executed);
-  cHeadCPU FindNopSequenceStart(bool mark_executed);
-  cHeadCPU FindNopSequenceForward(bool mark_executed);
-  cHeadCPU FindNopSequenceBackward(bool mark_executed);
+  void FindLabelStart(cHeadCPU& head, bool mark_executed);
+  void FindLabelForward(cHeadCPU& head, bool mark_executed);
+  void FindLabelBackward(cHeadCPU& head, bool mark_executed);
+  void FindNopSequenceStart(cHeadCPU& head, bool mark_executed);
+  void FindNopSequenceForward(cHeadCPU& head, bool mark_executed);
+  void FindNopSequenceBackward(cHeadCPU& head, bool mark_executed);
   inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
   inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -327,7 +327,7 @@ private:
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[hIP]; }
 
   // --------  Division Support  -------
-  bool Divide_Main(cAvidaContext& ctx, double mut_multiplier=1);
+  bool Divide_Main(cAvidaContext& ctx, int mem_space, int position, double mut_multiplier=1);
   
 
   // ---------- Utility Functions -----------
@@ -396,6 +396,7 @@ private:
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_Divide(cAvidaContext& ctx);
+  bool Inst_DivideMemory(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
