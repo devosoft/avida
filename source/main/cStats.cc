@@ -4732,6 +4732,8 @@ void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
     topcycle = cycle;
     topgenid = org->GetBioGroup("genotype")->GetID();
     topid = org->GetID();
+    topbirthud = org->GetPhenotype().GetUpdateBorn();
+    topgenome = Genome(org->GetBioGroup("genotype")->GetProperty("genome").AsString());
     
     tSmartArray<char> trace = org->GetHardware().GetMicroTrace();
     tSmartArray<int> traceloc = org->GetHardware().GetNavTraceLoc();
@@ -4773,6 +4775,10 @@ void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
       topreactioncycles[i] = reaction_cycles[i];
       topreactionexecs[i] = reaction_execs[i];
     }
+    toptarget = org->GetParentFT();
+    topgroup = m_world->GetConfig().DEFAULT_GROUP.Get();
+    if (org->HasOpinion()) topgroup = org->GetOpinion().first;
+    else topgroup = org->GetParentGroup();
   }
   if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace();
 }
@@ -4845,6 +4851,15 @@ void cStats::PrintTopNavTrace()
       fp << toptrace[i];
     }
     fp << endl;
+    
+    // print the winning genome
+    cString genfile =  cStringUtil::Stringf("topnav_genome/org%d-ud%d-grp%d_ft%d-gt%d.navgeno", topid, topbirthud, topgroup, toptarget, topgenid);
+    // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+    cRandom rng(0);
+    cAvidaContext ctx2(m_world, rng);
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+    testcpu->PrintGenome(ctx2, topgenome, genfile, m_world->GetStats().GetUpdate());
+    delete testcpu;
   }
 }
 

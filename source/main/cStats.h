@@ -432,8 +432,10 @@ private:
   int topcycle;   
   int topid;
   int topgenid;
-    
-
+  int toptarget;
+  int topgroup;
+  int topbirthud;
+  Genome topgenome;
     
 public:
   cStats(cWorld* world);
