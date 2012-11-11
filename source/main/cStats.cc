@@ -4709,7 +4709,7 @@ void cStats::PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, i
   fp << endl;
 }
 
-void cStats::UpdateTopNavTrace(cOrganism* org)
+void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
 {
   // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
   // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
@@ -4727,7 +4727,7 @@ void cStats::UpdateTopNavTrace(cOrganism* org)
     if (best_reac == topreac && cycle < topcycle) new_winner = true;
     else if (best_reac > topreac) new_winner = true;      
   }
-  if (new_winner) {
+  if (new_winner || force_update) {
     topreac = best_reac;
     topcycle = cycle;
     topgenid = org->GetBioGroup("genotype")->GetID();
@@ -4797,6 +4797,15 @@ void cStats::PrintTopNavTrace()
   df.Endl();
 
   std::ofstream& fp = df.GetOFStream();
+  
+  // in case nobody has reproduced (e.g. in single org trial) print what we know to date
+  if (!topreactions.GetSize()) {
+    const tSmartArray <cOrganism*> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      UpdateTopNavTrace(live_orgs[i], true);
+      topcycle = -1;
+    }
+  }
 
   if (topreactions.GetSize()) {
     fp << topgenid << " " << topid << " " << topcycle << " ";

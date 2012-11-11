@@ -137,17 +137,18 @@ Predatory resources are gradient resources with teeth. See SetPredatoryResource 
 <tr>
   <td class="resall">peakx</td>
   <td>
-    Initial x-coordinate of cone peak cell. Only affects non-moving peaks. For moving peaks,
-    random coordinates within appropriate bounds will be used. 
+    Initial x-coordinate of cone peak cell. If not specified, random coordinates within appropriate bounds will be used 
+    (halo resource peak start always random). If using SetGradientResource events and random new starting point is desired,
+    peakx needs to be specified as -1 (otherwise the previous peak location will be inherited).
   </td>
-  <td>0</td>
+  <td>-1</td>
 </tr>
 <tr>
   <td class="resall">peaky</td>
   <td>
     Initial y-coordinate of cone peak cell. 
   </td>
-  <td>0</td>
+  <td>-1</td>
 </tr>
 <tr>
   <td class="resall">height</td>

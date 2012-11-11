@@ -985,7 +985,7 @@ public:
 
   void PrintMiniTraceReactions(cOrganism* org);
   void PrintMicroTraces(tSmartArray<char>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
-  void UpdateTopNavTrace(cOrganism* org);
+  void UpdateTopNavTrace(cOrganism* org, bool force_update = false);
   void PrintTopNavTrace();
   void PrintReproData(cOrganism* org);
     
