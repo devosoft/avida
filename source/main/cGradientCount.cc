@@ -260,10 +260,18 @@ void cGradientCount::fillinResourceValues()
 
   // if we are resetting a resource, we need to calculate new values for the whole world so we can wipe away any residue
   if (m_just_reset) {
-    max_pos_x = GetX() - 1;
-    min_pos_x = 0;
-    max_pos_y = GetY() - 1;
-    min_pos_y = 0;
+    if (m_min_usedx == -1 || m_min_usedy == -1 || m_max_usedx == -1 || m_max_usedy == -1) {
+      max_pos_x = GetX() - 1;
+      min_pos_x = 0;
+      max_pos_y = GetY() - 1;
+      min_pos_y = 0;
+    }
+    else {
+      max_pos_x = m_max_usedx;
+      min_pos_x = m_min_usedx;
+      max_pos_y = m_max_usedy;
+      min_pos_y = m_min_usedy;
+    }
   } else {
     // otherwise we only need to update values within the possible range of the peak 
     // we check all the way back to move_speed to make sure we're not leaving any old residue behind
@@ -596,9 +604,16 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
     // reset counter
     m_topo_counter = 1;
     // clear any old resource
-    for (int ii = 0; ii < GetX(); ii++) {
-      for (int jj = 0; jj < GetY(); jj++) {
-        Element(jj * GetX() + ii).SetAmount(0);
+    if (m_wall_cells.GetSize()) {
+      for (int i = 0; i < m_wall_cells.GetSize(); i++) {
+        Element(m_wall_cells[i]).SetAmount(0);
+      }
+    }
+    else {
+      for (int ii = 0; ii < GetX(); ii++) {
+        for (int jj = 0; jj < GetY(); jj++) {
+          Element(jj * GetX() + ii).SetAmount(0);
+        }
       }
     }
     m_wall_cells.Resize(0);
@@ -758,9 +773,18 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
     // reset counter
     m_topo_counter = 1;
     // since we are potentially plotting more than one hill per resource, we need to wipe the world before we start
-    for (int ii = 0; ii < GetX(); ii++) {
-      for (int jj = 0; jj < GetY(); jj++) {
-        Element(jj * GetX() + ii).SetAmount(0);
+    if (m_min_usedx == -1 || m_min_usedy == -1 || m_max_usedx == -1 || m_max_usedy == -1) {
+      for (int ii = 0; ii < GetX(); ii++) {
+        for (int jj = 0; jj < GetY(); jj++) {
+          Element(jj * GetX() + ii).SetAmount(0);
+        }
+      }
+    }
+    else {
+      for (int ii = m_min_usedx; ii < m_max_usedx + 1; ii++) {
+        for (int jj = m_min_usedy; jj < m_max_usedy + 1; jj++) {
+          Element(jj * GetX() + ii).SetAmount(0);
+        }
       }
     }
 
