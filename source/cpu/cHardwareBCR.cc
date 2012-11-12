@@ -28,17 +28,13 @@
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
-#include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
-#include "cOrgMessage.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cStateGrid.h"
-#include "cStringUtil.h"
-#include "cTestCPU.h"
 #include "cWorld.h"
 
 #include "tInstLibEntry.h"
@@ -71,6 +67,14 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     cNOPEntry("nop-F", rFX),
     cNOPEntry("nop-G", rGX),
     cNOPEntry("nop-H", rHX),
+    cNOPEntry("nop-I", rIX),
+    cNOPEntry("nop-J", rJX),
+    cNOPEntry("nop-K", rKX),
+    cNOPEntry("nop-L", rLX),
+    cNOPEntry("nop-M", rMX),
+    cNOPEntry("nop-N", rNX),
+    cNOPEntry("nop-O", rOX),
+    cNOPEntry("nop-P", rPX),
   };
   
   static const tInstLibEntry<tMethod> s_f_array[] = {
@@ -87,6 +91,14 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("nop-F", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-G", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-H", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-I", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-J", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-K", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-L", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-M", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-N", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-O", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-P", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     
     tInstLibEntry<tMethod>("NULL", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
@@ -152,6 +164,9 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareBCR::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareBCR::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
+    tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareBCR::Inst_MoveHeadIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    tInstLibEntry<tMethod>("mov-head-if-less", &cHardwareBCR::Inst_MoveHeadIfLess, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    
     tInstLibEntry<tMethod>("jmp-head", &cHardwareBCR::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareBCR::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
 
@@ -159,6 +174,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     
     // Replication Instructions
     tInstLibEntry<tMethod>("divide", &cHardwareBCR::Inst_Divide, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Divide code between read and write heads.", BEHAV_CLASS_COPY),
+    tInstLibEntry<tMethod>("divide-memory", &cHardwareBCR::Inst_DivideMemory, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Divide memory space.", BEHAV_CLASS_COPY),
     tInstLibEntry<tMethod>("h-copy", &cHardwareBCR::Inst_HeadCopy, INST_CLASS_LIFECYCLE, 0, "Copy from read-head to write-head; advance both", BEHAV_CLASS_COPY),
     tInstLibEntry<tMethod>("h-read", &cHardwareBCR::Inst_HeadRead, INST_CLASS_LIFECYCLE, 0, "Read instruction from ?read-head? to ?AX?; advance the head.", BEHAV_CLASS_COPY),
     tInstLibEntry<tMethod>("h-write", &cHardwareBCR::Inst_HeadWrite, INST_CLASS_LIFECYCLE, 0, "Write to ?write-head? instruction from ?AX?; advance the head.", BEHAV_CLASS_COPY),
@@ -176,6 +192,12 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("wait-cond-less", &cHardwareBCR::Inst_WaitCondition_Less, INST_CLASS_OTHER, nInstFlag::STALL, ""),
     tInstLibEntry<tMethod>("wait-cond-gtr", &cHardwareBCR::Inst_WaitCondition_Greater, INST_CLASS_OTHER, nInstFlag::STALL, ""),
         
+    // State Grid instructions
+    tInstLibEntry<tMethod>("sg-move", &cHardwareBCR::Inst_SGMove, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("sg-rotate-l", &cHardwareBCR::Inst_SGRotateL, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareBCR::Inst_SGRotateR, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("sg-sense", &cHardwareBCR::Inst_SGSense, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
+    
     // Movement and Navigation instructions
     tInstLibEntry<tMethod>("move", &cHardwareBCR::Inst_Move, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareBCR::Inst_GetNorthOffset, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
@@ -204,6 +226,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareBCR::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareBCR::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
+    tInstLibEntry<tMethod>("set-rand-ft-once", &cHardwareBCR::Inst_SetRandForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareBCR::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT, 0, "", BEHAV_CLASS_INPUT),
     
     tInstLibEntry<tMethod>("collect-specific", &cHardwareBCR::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL, "", BEHAV_CLASS_ACTION),
@@ -242,7 +265,7 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
   
   const int def = 0;
-  const int null_inst = 8;
+  const int null_inst = 16;
   
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
@@ -281,7 +304,7 @@ void cHardwareBCR::internalReset()
   
   
   // Stack
-  m_global_stack.Clear();
+  m_global_stack.Clear(m_inst_set->GetStackSize());
   
   
   // Memory
@@ -295,7 +318,6 @@ void cHardwareBCR::internalReset()
   for (int i = 1; i < MAX_THREADS; i++) m_thread_ids[i] = -1;
   
   m_threads[0].Reset(this, 0);
-  m_threads[0].b_class = BEHAV_CLASS_NONE;
   m_thread_ids[0] = 0;
   m_cur_thread = 0;
   m_waiting_threads = 0;
@@ -312,8 +334,11 @@ void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, int in_id)
 {
   thread_id = in_id;
   
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
   for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
+  stack.Clear(in_hardware->GetInstSet().GetStackSize());
   
+  cur_stack = 0;
   cur_head = hIP;
   
   reading_label = false;
@@ -354,9 +379,10 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
   }
 
   bool speculative_stall = false;
+  bool behav_class_used[3] = { false, false, false };
   
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
-  int uop_ratio = 20;
+  const int uop_ratio = m_inst_set->GetUOpsPerCycle();
   for (int i = 0; i < uop_ratio; i++) {
     for (m_cur_thread = 0; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
       // Setup the hardware for the next instruction to be executed.
@@ -373,6 +399,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       // Find the instruction to be executed
       const Instruction& cur_inst = ip.GetInst();
+      
       if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
         // Speculative instruction stall, flag it and halt the thread
         speculative_stall = true;
@@ -387,12 +414,12 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       bool exec = true;
       int exec_success = 0;
 
-      BehavClass thread_class = m_threads[m_cur_thread].b_class;
       BehavClass behav_class = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
       
-      // Check if this instruction should be skipped as a nop?
-      if (behav_class != BEHAV_CLASS_NONE && behav_class != thread_class) {
-        ip.Advance();
+      // Check if this instruction class has been used and should cause the thread to stall?
+      if (behav_class < BEHAV_CLASS_NONE && behav_class_used[behav_class]) {
+        m_threads[m_cur_thread].active = false;
+        m_threads[m_cur_thread].wait_reg = -1;
         continue;
       }
 
@@ -442,7 +469,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 
         // Check if the behavior class should put this thread to sleep
-        if (thread_class != BEHAV_CLASS_NONE && thread_class == behav_class) {
+        if (behav_class < BEHAV_CLASS_NONE) {
+          behav_class_used[behav_class] = true;
           m_threads[m_cur_thread].active = false;
           m_threads[m_cur_thread].wait_reg = -1;
         }
@@ -472,6 +500,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (phenotype.GetToDelete()) break;
     }
+    
+    if (phenotype.GetToDelete()) break;
   }
 
   // Kill creatures who have reached their max num of instructions executed
@@ -566,7 +596,7 @@ void cHardwareBCR::PrintStatus(ostream& fp)
   int number_of_stacks = GetNumStacks();
   for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
     fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
-    for (int i = 0; i < nHardware::STACK_SIZE; i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
+    for (int i = 0; i < m_inst_set->GetStackSize(); i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
     fp << setfill(' ') << setbase(10) << endl;
   }
   
@@ -692,15 +722,18 @@ void cHardwareBCR::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
   fp.flush();
 }
 
-cHeadCPU cHardwareBCR::FindLabelStart(bool mark_executed)
+void cHardwareBCR::FindLabelStart(cHeadCPU& head, bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  if (search_label.GetSize() == 0) return ip;
+  if (search_label.GetSize() == 0) {
+    head.Set(ip);
+    return;
+  }
   
-  cCPUMemory& memory = ip.GetMemory();
+  cCPUMemory& memory = head.GetMemory();
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -726,7 +759,8 @@ cHeadCPU cHardwareBCR::FindLabelStart(bool mark_executed)
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
           for (int i = 0; i < size_matched && i < max; i++) memory.SetFlagExecuted(start + i);
         }
-        return cHeadCPU(this, pos - 1, ip.GetMemSpace());
+        head.Set(pos - 1, head.GetMemSpace());
+        return;
       }
       
       continue; 
@@ -735,18 +769,21 @@ cHeadCPU cHardwareBCR::FindLabelStart(bool mark_executed)
   }
   
   // Return start point if not found
-  return ip;
+  head.Set(ip);
 }
 
-cHeadCPU cHardwareBCR::FindNopSequenceStart(bool mark_executed)
+void cHardwareBCR::FindNopSequenceStart(cHeadCPU& head, bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  if (search_label.GetSize() == 0) return ip;
+  if (search_label.GetSize() == 0) {
+    head.Set(ip);
+    return;
+  }
   
-  cCPUMemory& memory = ip.GetMemory();
+  cCPUMemory& memory = head.GetMemory();
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -770,29 +807,33 @@ cHeadCPU cHardwareBCR::FindNopSequenceStart(bool mark_executed)
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get();
           for (int i = 0; i < size_matched && i < max; i++) memory.SetFlagExecuted(start + i);
         }
-        return cHeadCPU(this, pos - 1, ip.GetMemSpace());
+        head.Set(pos - 1, head.GetMemSpace());
+        return;
       }
     }
     pos++;
   }
   
   // Return start point if not found
-  return ip;
+  head.Set(ip);
 }
 
 
-cHeadCPU cHardwareBCR::FindLabelForward(bool mark_executed)
+void cHardwareBCR::FindLabelForward(cHeadCPU& head, bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  if (search_label.GetSize() == 0) return ip;
+  if (search_label.GetSize() == 0) {
+    head.Set(ip);
+    return;
+  }
   
-  cHeadCPU pos(ip);
+  cHeadCPU pos(head);
   pos++;
   
-  while (pos.GetPosition() != ip.GetPosition()) {
+  while (pos.GetPosition() != head.GetPosition()) {
     if (m_inst_set->IsLabel(pos.GetInst())) { // starting label found
       const int label_start = pos.GetPosition();
       pos++;
@@ -801,7 +842,7 @@ cHeadCPU cHardwareBCR::FindLabelForward(bool mark_executed)
       // - must match all NOPs in search_label
       // - extra NOPs in 'label'ed target are ignored
       int size_matched = 0;
-      while (size_matched < search_label.GetSize() && pos.GetPosition() != ip.GetPosition()) {
+      while (size_matched < search_label.GetSize() && pos.GetPosition() != head.GetPosition()) {
         if (!m_inst_set->IsNop(pos.GetInst()) || search_label[size_matched] != m_inst_set->GetNopMod(pos.GetInst())) break;
         size_matched++;
         pos++;
@@ -819,7 +860,8 @@ cHeadCPU cHardwareBCR::FindLabelForward(bool mark_executed)
         }
         
         // Return Head pointed at last NOP of label sequence
-        return cHeadCPU(this, found_pos, ip.GetMemSpace());
+        head.Set(found_pos, head.GetMemSpace());
+        return;
       }
       
       continue; 
@@ -828,22 +870,25 @@ cHeadCPU cHardwareBCR::FindLabelForward(bool mark_executed)
   }
   
   // Return start point if not found
-  return ip;
+  head.Set(ip);
 }
 
-cHeadCPU cHardwareBCR::FindLabelBackward(bool mark_executed)
+void cHardwareBCR::FindLabelBackward(cHeadCPU& head, bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  if (search_label.GetSize() == 0) return ip;
+  if (search_label.GetSize() == 0) {
+    head.Set(ip);
+    return;
+  }
   
-  cHeadCPU lpos(ip);
-  cHeadCPU pos(ip);
+  cHeadCPU lpos(head);
+  cHeadCPU pos(head);
   lpos--;
   
-  while (pos.GetPosition() != ip.GetPosition()) {
+  while (pos.GetPosition() != head.GetPosition()) {
     if (m_inst_set->IsLabel(lpos.GetInst())) { // starting label found
       pos.Set(lpos.GetPosition());
       pos++;
@@ -852,7 +897,7 @@ cHeadCPU cHardwareBCR::FindLabelBackward(bool mark_executed)
       // - must match all NOPs in search_label
       // - extra NOPs in 'label'ed target are ignored
       int size_matched = 0;
-      while (size_matched < search_label.GetSize() && pos.GetPosition() != ip.GetPosition()) {
+      while (size_matched < search_label.GetSize() && pos.GetPosition() != head.GetPosition()) {
         if (!m_inst_set->IsNop(pos.GetInst()) || search_label[size_matched] != m_inst_set->GetNopMod(pos.GetInst())) break;
         size_matched++;
         pos++;
@@ -869,31 +914,35 @@ cHeadCPU cHardwareBCR::FindLabelBackward(bool mark_executed)
         }
         
         // Return Head pointed at last NOP of label sequence
-        return cHeadCPU(this, found_pos, ip.GetMemSpace());
+        head.Set(found_pos, head.GetMemSpace());
+        return;
       }
     }
     lpos--;
   }
   
   // Return start point if not found
-  return ip;
+  head.Set(ip);
 }
 
 
 
 
-cHeadCPU cHardwareBCR::FindNopSequenceForward(bool mark_executed)
+void cHardwareBCR::FindNopSequenceForward(cHeadCPU& head, bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  if (search_label.GetSize() == 0) return ip;
+  if (search_label.GetSize() == 0) {
+    head.Set(ip);
+    return;
+  }
   
-  cHeadCPU pos(ip);
+  cHeadCPU pos(head);
   pos++;
   
-  while (pos.GetPosition() != ip.GetPosition()) {
+  while (pos.GetPosition() != head.GetPosition()) {
     if (m_inst_set->IsNop(pos.GetInst())) { // starting label found
       const int label_start = pos.GetPosition();
       
@@ -901,7 +950,7 @@ cHeadCPU cHardwareBCR::FindNopSequenceForward(bool mark_executed)
       // - must match all NOPs in search_label
       // - extra NOPs in target are ignored
       int size_matched = 0;
-      while (size_matched < search_label.GetSize() && pos.GetPosition() != ip.GetPosition()) {
+      while (size_matched < search_label.GetSize() && pos.GetPosition() != head.GetPosition()) {
         if (!m_inst_set->IsNop(pos.GetInst()) || search_label[size_matched] != m_inst_set->GetNopMod(pos.GetInst())) break;
         size_matched++;
         pos++;
@@ -919,32 +968,36 @@ cHeadCPU cHardwareBCR::FindNopSequenceForward(bool mark_executed)
         }
         
         // Return Head pointed at last NOP of label sequence
-        return cHeadCPU(this, found_pos, ip.GetMemSpace());
+        head.Set(found_pos, head.GetMemSpace());
+        return;
       }
     }
     
-    if (pos.GetPosition() == ip.GetPosition()) break;
+    if (pos.GetPosition() == head.GetPosition()) break;
     pos++;
   }
   
   // Return start point if not found
-  return ip;
+  head.Set(ip);
 }
 
 
-cHeadCPU cHardwareBCR::FindNopSequenceBackward(bool mark_executed)
+void cHardwareBCR::FindNopSequenceBackward(cHeadCPU& head, bool mark_executed)
 {
   cHeadCPU& ip = getIP();
   const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  if (search_label.GetSize() == 0) return ip;
+  if (search_label.GetSize() == 0) {
+    head.Set(ip);
+    return;
+  }
   
-  cHeadCPU lpos(ip);
-  cHeadCPU pos(ip);
+  cHeadCPU lpos(head);
+  cHeadCPU pos(head);
   lpos--;
   
-  while (pos.GetPosition() != ip.GetPosition()) {
+  while (pos.GetPosition() != head.GetPosition()) {
     if (m_inst_set->IsNop(pos.GetInst())) { // starting label found
       pos.Set(lpos.GetPosition());
       
@@ -952,7 +1005,7 @@ cHeadCPU cHardwareBCR::FindNopSequenceBackward(bool mark_executed)
       // - must match all NOPs in search_label
       // - extra NOPs in target are ignored
       int size_matched = 0;
-      while (size_matched < search_label.GetSize() && pos.GetPosition() != ip.GetPosition()) {
+      while (size_matched < search_label.GetSize() && pos.GetPosition() != head.GetPosition()) {
         if (!m_inst_set->IsNop(pos.GetInst()) || search_label[size_matched] != m_inst_set->GetNopMod(pos.GetInst())) break;
         size_matched++;
         pos++;
@@ -969,7 +1022,8 @@ cHeadCPU cHardwareBCR::FindNopSequenceBackward(bool mark_executed)
         }
         
         // Return Head pointed at last NOP of label sequence
-        return cHeadCPU(this, found_pos, ip.GetMemSpace());
+        head.Set(found_pos, head.GetMemSpace());
+        return;
       }
       
       continue; 
@@ -978,7 +1032,7 @@ cHeadCPU cHardwareBCR::FindNopSequenceBackward(bool mark_executed)
   }
   
   // Return start point if not found
-  return ip;
+  head.Set(ip);
 }
 
 void cHardwareBCR::ReadInst(Instruction in_inst)
@@ -1045,7 +1099,7 @@ bool cHardwareBCR::ThreadCreate(int thread_label, const cHeadCPU& start_pos)
   int thread_id = m_threads.GetSize();
   
   // Check for thread cap, base thread label (i.e. no label)
-  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return -1;
+  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   // Check for existing thread
   if (thread_label >= 0 && m_thread_ids[thread_label] >= 0) {
@@ -1076,13 +1130,6 @@ bool cHardwareBCR::ThreadCreate(int thread_label, const cHeadCPU& start_pos)
   m_threads[thread_id].Reset(this, thread_id);
   m_threads[thread_id].heads[hIP] = start_pos;
   
-  switch (thread_id) {
-    case 1: m_threads[thread_id].b_class = BEHAV_CLASS_ACTION; break;
-    case 2: m_threads[thread_id].b_class = BEHAV_CLASS_INPUT; break;
-    case 3: m_threads[thread_id].b_class = BEHAV_CLASS_COPY; break;
-    default: m_threads[thread_id].b_class = BEHAV_CLASS_NONE; break;
-  }
-	
   return thread_id;
 }
 
@@ -1162,11 +1209,8 @@ int cHardwareBCR::calcCopiedSize(const int parent_size, const int child_size)
   return copied_size;
 }
 
-bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, const int div_point, const int extra_lines, double mut_multiplier)
-{
-  const int mem_space_used = GetHead(hW).GetMemSpace();
-  const int write_head_pos = GetHead(hW).GetPosition();
-  
+bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write_head_pos, double mut_multiplier)
+{  
   // Make sure the memory space we're using exists
   if (m_mem_array.GetSize() <= mem_space_used) return false;
   
@@ -1215,7 +1259,7 @@ bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, const int div_point, const in
         
       case DIVIDE_METHOD_BIRTH:
         // Reset only the calling thread's state
-        for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
+        for(int x = 0; x < NUM_HEADS; x++) GetHead(x).Reset(this, 0);
         for(int x = 0; x < NUM_REGISTERS; x++) setInternalValue(x, 0, false);
         if(m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
           m_organism->GetPhenotype().ResetMerit();
@@ -1654,6 +1698,89 @@ bool cHardwareBCR::Inst_TaskOutput(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareBCR::Inst_SGMove(cAvidaContext&)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  
+  const cStateGrid& sg = m_organism->GetStateGrid();
+  
+  int& x = m_ext_mem[0];
+  int& y = m_ext_mem[1];
+  
+  const int facing = m_ext_mem[2];
+  
+  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
+  switch (facing) {
+    case 0: // N
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    case 1: // NE
+      if (++x == sg.GetWidth()) x = 0;
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    case 2: // E
+      if (++x == sg.GetWidth()) x = 0;
+      break;
+      
+    case 3: // SE
+      if (++x == sg.GetWidth()) x = 0;
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 4: // S
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 5: // SW
+      if (--x == -1) x = sg.GetWidth() - 1;
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 6: // W
+      if (--x == -1) x = sg.GetWidth() - 1;
+      break;
+      
+    case 7: // NW
+      if (--x == -1) x = sg.GetWidth() - 1;
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    default:
+      assert(facing >= 0 && facing <= 7);
+  }
+  
+  // Increment state observed count
+  m_ext_mem[3 + sg.GetStateAt(x, y)]++;
+  
+  // Save this location in the movement history
+  m_ext_mem.Push(sg.GetIDFor(x, y));
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGRotateL(cAvidaContext&)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  if (--m_ext_mem[2] < 0) m_ext_mem[2] = 7;
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGRotateR(cAvidaContext&)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  if (++m_ext_mem[2] > 7) m_ext_mem[2] = 0;
+  return true;
+}
+
+bool cHardwareBCR::Inst_SGSense(cAvidaContext&)
+{
+  const cStateGrid& sg = m_organism->GetStateGrid();
+  const int reg_used = FindModifiedRegister(rBX);
+  setInternalValue(reg_used, sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]));
+  return true;
+}
+
 bool cHardwareBCR::Inst_MoveHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(hIP);
@@ -1662,6 +1789,33 @@ bool cHardwareBCR::Inst_MoveHead(cAvidaContext&)
   if (head_used == hIP) m_advance_ip = false;
   return true;
 }
+
+bool cHardwareBCR::Inst_MoveHeadIfNEqu(cAvidaContext&)
+{
+  const int op1 = FindModifiedRegister(rBX);
+  const int op2 = FindModifiedNextRegister(op1);
+  const int head_used = FindModifiedHead(hIP);
+  const int target = FindModifiedHead(hF);
+  if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
+    getHead(head_used).Set(getHead(target));
+    if (head_used == hIP) m_advance_ip = false;
+  }
+  return true;
+}
+
+bool cHardwareBCR::Inst_MoveHeadIfLess(cAvidaContext&)
+{
+  const int op1 = FindModifiedRegister(rBX);
+  const int op2 = FindModifiedNextRegister(op1);
+  const int head_used = FindModifiedHead(hIP);
+  const int target = FindModifiedHead(hF);
+  if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
+    getHead(head_used).Set(getHead(target));
+    if (head_used == hIP) m_advance_ip = false;
+  }
+  return true;
+}
+
 
 bool cHardwareBCR::Inst_JumpHead(cAvidaContext&)
 {
@@ -1712,7 +1866,22 @@ bool cHardwareBCR::Inst_IfCopiedDirectSeq(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Divide(cAvidaContext& ctx)
 {
-  return Divide_Main(ctx, 1.0);
+  const int mem_space_used = GetHead(hW).GetMemSpace();
+  const int write_head_pos = GetHead(hW).GetPosition();
+
+  return Divide_Main(ctx, mem_space_used, write_head_pos, 1.0);
+}
+
+bool cHardwareBCR::Inst_DivideMemory(cAvidaContext& ctx)
+{
+  int mem_space_used = FindModifiedRegister(rBX);
+
+  if (mem_space_used < rBX || m_mem_ids[mem_space_used]  < 0) return false;
+  
+  mem_space_used = m_mem_ids[mem_space_used];
+  int end_of_memory = m_mem_array[mem_space_used].GetSize() - 1;
+
+  return Divide_Main(ctx, mem_space_used, end_of_memory, 1.0);
 }
 
 bool cHardwareBCR::Inst_HeadRead(cAvidaContext& ctx)
@@ -1818,9 +1987,8 @@ bool cHardwareBCR::Inst_Search_Label_Comp_S(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  FindLabelStart(getHead(hF), true);
+  getHead(hF).Advance();
   return true;
 }
 
@@ -1828,9 +1996,8 @@ bool cHardwareBCR::Inst_Search_Label_Comp_F(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  FindLabelForward(getHead(hF), true);
+  getHead(hF).Advance();
   return true;
 }
 
@@ -1838,36 +2005,32 @@ bool cHardwareBCR::Inst_Search_Label_Comp_B(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  FindLabelBackward(getHead(hF), true);
+  getHead(hF).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Label_Direct_S(cAvidaContext&)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindLabelStart(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  FindLabelStart(getHead(hF), true);
+  getHead(hF).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Label_Direct_F(cAvidaContext&)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  FindLabelForward(getHead(hF), true);
+  getHead(hF).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Label_Direct_B(cAvidaContext&)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindLabelBackward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
+  FindLabelBackward(getHead(hF), true);
+  getHead(hF).Advance();
   return true;
 }
 
@@ -1875,8 +2038,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_S(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindNopSequenceStart(true);
-  getHead(hF).Set(found_pos);
+  FindNopSequenceStart(getHead(hF), true);
   getHead(hF).Advance();
   return true;
 }
@@ -1885,8 +2047,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_F(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindNopSequenceForward(true);
-  getHead(hF).Set(found_pos);
+  FindNopSequenceForward(getHead(hF), true);
   getHead(hF).Advance();
   return true;
 }
@@ -1895,8 +2056,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_B(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindNopSequenceBackward(true);
-  getHead(hF).Set(found_pos);
+  FindNopSequenceBackward(getHead(hF), true);
   getHead(hF).Advance();
   return true;
 }
@@ -1904,8 +2064,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_B(cAvidaContext&)
 bool cHardwareBCR::Inst_Search_Seq_Direct_S(cAvidaContext&)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindNopSequenceStart(true);
-  getHead(hF).Set(found_pos);
+  FindNopSequenceStart(getHead(hF), true);
   getHead(hF).Advance();
   return true;
 }
@@ -1913,8 +2072,7 @@ bool cHardwareBCR::Inst_Search_Seq_Direct_S(cAvidaContext&)
 bool cHardwareBCR::Inst_Search_Seq_Direct_F(cAvidaContext&)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindNopSequenceForward(true);
-  getHead(hF).Set(found_pos);
+  FindNopSequenceForward(getHead(hF), true);
   getHead(hF).Advance();
   return true;
 }
@@ -1922,8 +2080,7 @@ bool cHardwareBCR::Inst_Search_Seq_Direct_F(cAvidaContext&)
 bool cHardwareBCR::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindNopSequenceBackward(true);
-  getHead(hF).Set(found_pos);
+  FindNopSequenceBackward(getHead(hF), true);
   getHead(hF).Advance();
   return true;
 }
@@ -2590,6 +2747,38 @@ bool cHardwareBCR::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
+}
+
+bool cHardwareBCR::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  int cap = 0;
+  if (m_world->GetConfig().POPULATION_CAP.Get()) cap = m_world->GetConfig().POPULATION_CAP.Get();
+  else if (m_world->GetConfig().POP_CAP_ELDEST.Get()) cap = m_world->GetConfig().POP_CAP_ELDEST.Get();
+  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5)) && m_world->GetRandom().P(0.5)) {
+    if (m_organism->HasSetFT()) return false;
+    else {
+      int num_fts = 0;
+      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+      set <int>::iterator itr;
+      for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
+      int prop_target = m_world->GetRandom().GetUInt(num_fts);
+      if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
+      else {
+        // ft's may not be sequentially numbered
+        int ft_num = abs(prop_target) % num_fts;
+        itr = fts_avail.begin();
+        for (int i = 0; i < ft_num; i++) itr++;
+        prop_target = *itr;
+      }
+      // Set the new target and return the value
+      m_organism->SetForageTarget(prop_target);
+      m_organism->RecordFTSet();
+      setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+      return true;
+    }
+  }
+  else return Inst_SetForageTargetOnce(ctx);
 }
 
 bool cHardwareBCR::Inst_GetForageTarget(cAvidaContext& ctx)

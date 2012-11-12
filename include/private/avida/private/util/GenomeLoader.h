@@ -32,7 +32,7 @@ class cString;
 
 namespace Avida {
   namespace Util {
-    GenomePtr LoadGenomeDetailFile(const cString& filename, const cString& working_dir, cHardwareManager& hwm, Feedback& feedback);
+    GenomePtr LoadGenomeDetailFile(const cString& filename, const cString& working_dir, cHardwareManager& hwm, Feedback& feedback, Apto::String instset = "");
   };
 };
 

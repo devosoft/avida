@@ -83,7 +83,7 @@ protected:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback = NULL); 
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
   virtual ~cWorld();
   
   void SetDriver(WorldDriver* driver, bool take_ownership = false);
@@ -147,7 +147,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(World* new_world, cUserFeedback* errors); 
+  bool setup(World* new_world, cUserFeedback* errors,  const Apto::Map<Apto::String, Apto::String>* mappings);
 
 };
 

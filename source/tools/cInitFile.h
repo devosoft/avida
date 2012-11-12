@@ -65,8 +65,8 @@ private:
   
 
 public:
-  cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Set<Apto::String>* custom_directives = NULL);
-  cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives = NULL);
+  cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Set<Apto::String>* custom_directives = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
+  cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives = NULL, const Apto::Map<Apto::String, Apto::String>* mappings = NULL);
   cInitFile(const cString& filename, const Apto::Map<Apto::String, Apto::String>& mappings, const cString& working_dir);
   cInitFile(std::istream& in_stream, const cString& working_dir);
   ~cInitFile();

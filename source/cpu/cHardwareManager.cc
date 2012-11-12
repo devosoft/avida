@@ -61,8 +61,15 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
   const cStringList& cfg_list = m_world->GetConfig().INSTSETS.Get();
   cStringList* cur_list = NULL;
   cString name;
-  int hw_type = -1;
   
+  // Build up schema to process instruction set parameters
+  cArgSchema is_schema(':');
+  is_schema.AddEntry("hw_type", 0, cArgSchema::SCHEMA_INT);
+  is_schema.AddEntry("stack_size", 1, 10);
+  is_schema.AddEntry("uops_per_cycle", 2, 20);
+  
+  cArgContainer* args = NULL;
+
   bool success = true;
   for (int line_id = 0; line_id < cfg_list.GetSize(); line_id++) {
     cString line_type = cfg_list.GetLine(line_id).PopWord();
@@ -75,14 +82,12 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
       }
     } else if (line_type == "INSTSET") {
       if (cur_list) {
-        if (!loadInstSet(hw_type, (const char*)name, *cur_list, feedback)) success = false;
+        if (!loadInstSet(args->GetInt(0), (const char*)name, args->GetInt(1), args->GetInt(2), *cur_list, feedback)) success = false;
         delete cur_list;
+        delete args;
         cur_list = NULL;
+        args = NULL;
       }
-      
-      // Build up schema to process instruction set parameters
-      cArgSchema schema(':');
-      schema.AddEntry("hw_type", 0, cArgSchema::SCHEMA_INT);
       
       
       // Process the INSTSET line
@@ -97,46 +102,45 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
       }
       
       // Process arguments on the INSTSET line
-      cArgContainer* args = cArgContainer::Load(is_def_str, schema, *feedback);
+      args = cArgContainer::Load(is_def_str, is_schema, *feedback);
       if (!args) {
         success = false;
         continue;
       }
       
-      hw_type = args->GetInt(0);
       cur_list = new cStringList;
-      delete args;
     }
   }
   
   if (cur_list) {
-    if (!loadInstSet(hw_type, (const char*)name, *cur_list, feedback)) success = false;
+    if (!loadInstSet(args->GetInt(0), (const char*)name, args->GetInt(1), args->GetInt(2), *cur_list, feedback)) success = false;
     delete cur_list;
+    delete args;
   }
   
   return success;
 }
 
-bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, cStringList& sl, cUserFeedback* feedback)
+bool cHardwareManager::loadInstSet(int hw_type, const Apto::String& name, int stack_size, int uops_per_cycle, cStringList& sl, cUserFeedback* feedback)
 {
   // Current list in progress, create actual cInstSet instance and process it
   cInstSet* inst_set = NULL;
   switch (hw_type)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareCPU::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareCPU::GetInstLib(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareTransSMT::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareTransSMT::GetInstLib(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareExperimental::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareExperimental::GetInstLib(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_MBE:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareMBE::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareMBE::GetInstLib(), stack_size, uops_per_cycle);
       break;
     case HARDWARE_TYPE_CPU_BCR:
-      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareBCR::GetInstLib());
+      inst_set = new cInstSet(m_world, (const char*)name, hw_type, cHardwareBCR::GetInstLib(), stack_size, uops_per_cycle);
       break;
     default:
       if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);

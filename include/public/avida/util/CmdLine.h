@@ -25,12 +25,14 @@
 #ifndef AvidaUtilCmdLine_h
 #define AvidaUtilCmdLine_h
 
+#include "apto/core.h"
+
 class cAvidaConfig;
 
 
 namespace Avida {
   namespace Util {
-    void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
+    void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg, Apto::Map<Apto::String, Apto::String>& defs);
   };
 };
 

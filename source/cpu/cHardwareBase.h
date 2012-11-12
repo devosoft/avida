@@ -204,8 +204,8 @@ public:
   virtual int GetCurThreadID() const = 0;
   
   // interrupt current thread
-  virtual bool InterruptThread(int interruptType) = 0; // only implemented in cHardwareCPU and cHardwareExperimental
-  virtual int GetThreadMessageTriggerType(int _index) = 0;
+  virtual bool InterruptThread(int interruptType) { return false; }
+  virtual int GetThreadMessageTriggerType(int _index) { return -1; }
   
   
   // --------  Parasite Stuff  --------

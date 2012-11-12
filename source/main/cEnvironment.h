@@ -88,7 +88,7 @@ public:
   cEnvironment(cWorld* world);
   ~cEnvironment();
 
-  bool Load(const cString& filename, const cString& working_dir, Feedback& feedback);
+  bool Load(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Map<Apto::String, Apto::String>* defs = NULL);
   bool LoadLine(cString line, Feedback& feedback);  // Reads in a single environment configuration line
 
   // Interaction with the organisms

@@ -55,10 +55,10 @@ cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
 {
 }
 
-cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback)
+cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* mappings)
 {
   cWorld* world = new cWorld(cfg, working_dir);
-  if (!world->setup(new_world, feedback)) { 
+  if (!world->setup(new_world, feedback, mappings)) {
     delete world;
     world = NULL;
   }
@@ -96,7 +96,7 @@ cWorld::~cWorld()
 }
 
 
-bool cWorld::setup(World* new_world, cUserFeedback* feedback)
+bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Apto::String, Apto::String>* defs)
 {
   m_new_world = new_world;
   
@@ -128,7 +128,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir, *feedback)) {
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir, *feedback, defs)) {
     success = false;
   }
     
@@ -198,7 +198,7 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback)
   
   // Setup Event List
   m_event_list = new cEventList(this);
-  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir, *feedback)) {
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir, *feedback, defs)) {
     if (feedback) feedback->Error("unable to load event file");
     success = false;
   }

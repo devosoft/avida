@@ -33,17 +33,19 @@ using namespace std;
 
 
 cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback,
-                     const Apto::Set<Apto::String>* custom_directives)
+                     const Apto::Set<Apto::String>* custom_directives, const Apto::Map<Apto::String, Apto::String>* mappings)
 : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
+  if (mappings) initMappings(*mappings);
   Apto::Array<sLine*, Apto::Smart> lines;
   m_opened = loadFile(filename, lines, working_dir, custom_directives, feedback);
   postProcess(lines);
 }
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives)
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, const Apto::Set<Apto::String>* custom_directives, const Apto::Map<Apto::String, Apto::String>* mappings)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
+  if (mappings) initMappings(*mappings);
   Apto::Array<sLine*, Apto::Smart> lines;
   m_opened = loadFile(filename, lines, working_dir, custom_directives, m_feedback);
   postProcess(lines);
@@ -115,7 +117,14 @@ bool cInitFile::loadFile(const cString& filename, Apto::Array<sLine*, Apto::Smar
   cString buf;
   while (!file.Eof() && file.ReadLine(buf)) {
     linenum++;
-
+    
+    // Perform variable substitution
+    for (Apto::Map<Apto::String, Apto::String>::Iterator it = m_mappings.Begin(); it.Next() != NULL;) {
+      Apto::String varname = Apto::FormatStr("$%s", (const char*)it.Get()->Value1());
+      buf.Replace((const char*)varname, (const char*)*it.Get()->Value2());
+    } 
+    
+    // Process the line
     if (buf.GetSize() && buf[0] == '#') {
       if (!processCommand(buf, lines, filename, linenum, working_dir, custom_directives, feedback)) return false;
     } else {
@@ -266,7 +275,7 @@ void cInitFile::postProcess(Apto::Array<sLine*, Apto::Smart>& lines)
   // Resize the internal line structure and move the line structs to it
   m_lines.Resize(next_id);
   for (int i = 0; i < next_id; i++) m_lines[i] = lines[i];
-  for (int i = next_id; i < num_lines; i++) delete lines[i];
+  for (int i = next_id; i < num_lines; i++) delete lines[i];  
 }
 
 

@@ -62,13 +62,12 @@ public:
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 8;
+  static const int NUM_REGISTERS = 16;
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = NUM_REGISTERS;
-  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX };
+  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX };
   enum { hIP, hR, hW, hF, hF2, hF3, hF4, hF5 };
   static const int NUM_NOPS = NUM_REGISTERS;
-  static const int STACK_SIZE = 10;
   static const int MAX_THREADS = NUM_NOPS;
   static const int MAX_MEM_SPACES = NUM_NOPS;
   
@@ -90,7 +89,7 @@ private:
     unsigned int oldest_component:15;
     unsigned int env_component:1;
     
-    inline DataValue() : value(0) { ; }
+    inline DataValue() { Clear(); }
     inline void Clear() { value = 0; originated = 0; from_env = 0, oldest_component = 0; env_component = 0; }
     inline DataValue& operator=(const DataValue& i);
   };
@@ -99,22 +98,23 @@ private:
   class Stack
   {
   private:
-    DataValue m_stack[STACK_SIZE];
-    char m_sp;
+    int m_sz;
+    DataValue* m_stack;
+    int m_sp;
     
   public:
-    Stack() : m_sp(0) { Clear(); }
-    inline Stack(const Stack& is) : m_sp(is.m_sp) { for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
-    ~Stack() { ; }
+    Stack() : m_sz(0), m_stack(NULL), m_sp(0) { ; }
+    inline Stack(const Stack& is) : m_sp(is.m_sp) { Clear(is.m_sz); for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
+    ~Stack() { delete [] m_stack; }
     
-    inline void operator=(const Stack& is) { m_sp = is.m_sp; for (int i = 0; i < STACK_SIZE; i++) m_stack[i] = is.m_stack[i]; }
+    inline void operator=(const Stack& is) { m_sp = is.m_sp; Clear(is.m_sz); for (int i = 0; i < m_sz; i++) m_stack[i] = is.m_stack[i]; }
     
-    inline void Push(const DataValue& value) { if (--m_sp < 0) m_sp = STACK_SIZE - 1; m_stack[(int)m_sp] = value; }
-    inline DataValue Pop() { DataValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == STACK_SIZE) m_sp = 0; return v; }
+    inline void Push(const DataValue& value) { if (--m_sp < 0) m_sp = m_sz - 1; m_stack[(int)m_sp] = value; }
+    inline DataValue Pop() { DataValue v = m_stack[(int)m_sp]; m_stack[(int)m_sp].Clear(); if (++m_sp == m_sz) m_sp = 0; return v; }
     inline DataValue& Peek() { return m_stack[(int)m_sp]; }
     inline const DataValue& Peek() const { return m_stack[(int)m_sp]; }
-    inline const DataValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= STACK_SIZE) ? (p - STACK_SIZE) : p]; }
-    inline void Clear() { for (int i = 0; i < STACK_SIZE; i++) m_stack[i].Clear(); }
+    inline const DataValue& Get(int d = 0) const { assert(d >= 0); int p = d + m_sp; return m_stack[(p >= m_sz) ? (p - m_sz) : p]; }
+    inline void Clear(int sz) { delete [] m_stack; m_sz = sz; m_stack = new DataValue[sz]; }
   };
   
 
@@ -128,7 +128,6 @@ private:
     Stack stack;
     
     struct {
-      BehavClass b_class:3;
       unsigned int cur_stack:1;
       unsigned int cur_head:3;
       bool reading_label:1;
@@ -268,10 +267,6 @@ public:
   bool GetMalActive() const   { return m_mal_active; }
 
 
-  // interrupt current thread @ not implemented
-  bool InterruptThread(int interruptType) { return false; }
-  int GetThreadMessageTriggerType(int _index) { return -1; }
-  
   // --------  Parasite Stuff  -------- @ not implemented
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
@@ -296,12 +291,12 @@ private:
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size = cCodeLabel::MAX_LENGTH);
-  cHeadCPU FindLabelStart(bool mark_executed);
-  cHeadCPU FindLabelForward(bool mark_executed);
-  cHeadCPU FindLabelBackward(bool mark_executed);
-  cHeadCPU FindNopSequenceStart(bool mark_executed);
-  cHeadCPU FindNopSequenceForward(bool mark_executed);
-  cHeadCPU FindNopSequenceBackward(bool mark_executed);
+  void FindLabelStart(cHeadCPU& head, bool mark_executed);
+  void FindLabelForward(cHeadCPU& head, bool mark_executed);
+  void FindLabelBackward(cHeadCPU& head, bool mark_executed);
+  void FindNopSequenceStart(cHeadCPU& head, bool mark_executed);
+  void FindNopSequenceForward(cHeadCPU& head, bool mark_executed);
+  void FindNopSequenceBackward(cHeadCPU& head, bool mark_executed);
   inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
   inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -332,7 +327,7 @@ private:
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[hIP]; }
 
   // --------  Division Support  -------
-  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+  bool Divide_Main(cAvidaContext& ctx, int mem_space, int position, double mut_multiplier=1);
   
 
   // ---------- Utility Functions -----------
@@ -396,9 +391,12 @@ private:
   // Head-based Instructions
   bool Inst_SetMemory(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
+  bool Inst_MoveHeadIfNEqu(cAvidaContext& ctx);
+  bool Inst_MoveHeadIfLess(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_Divide(cAvidaContext& ctx);
+  bool Inst_DivideMemory(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
@@ -429,6 +427,12 @@ private:
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   
+  // State Grid Navigation
+  bool Inst_SGMove(cAvidaContext& ctx);
+  bool Inst_SGRotateL(cAvidaContext& ctx);
+  bool Inst_SGRotateR(cAvidaContext& ctx);
+  bool Inst_SGSense(cAvidaContext& ctx);
+  
   // Movement and Navigation
   bool Inst_Move(cAvidaContext& ctx);
   bool Inst_GetNorthOffset(cAvidaContext& ctx);
@@ -458,6 +462,7 @@ private:
   // Foraging
   bool Inst_SetForageTarget(cAvidaContext& ctx);
   bool Inst_SetForageTargetOnce(cAvidaContext& ctx);
+  bool Inst_SetRandForageTargetOnce(cAvidaContext& ctx);
   bool Inst_GetForageTarget(cAvidaContext& ctx);
   
   // Collection

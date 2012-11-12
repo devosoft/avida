@@ -43,12 +43,13 @@ int main(int argc, char * argv[])
   cout << Avida::Version::Banner() << endl;
   
   // Initialize the configuration data...
+  Apto::Map<Apto::String, Apto::String> defs;
   cAvidaConfig* cfg = new cAvidaConfig();
-  Avida::Util::ProcessCmdLineArgs(argc, argv, cfg);
+  Avida::Util::ProcessCmdLineArgs(argc, argv, cfg, defs);
   
   cUserFeedback feedback;
   World* new_world = new World;
-  cWorld* world = cWorld::Initialize(cfg, cString(Apto::FileSystem::GetCWD()), new_world, &feedback);
+  cWorld* world = cWorld::Initialize(cfg, cString(Apto::FileSystem::GetCWD()), new_world, &feedback, &defs);
   
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {

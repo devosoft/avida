@@ -246,20 +246,41 @@ class cActionInjectAll : public cAction
 {
 private:
   cString m_filename;
+  Apto::String m_instset;
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
 public:
-  cActionInjectAll(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectAll(cWorld* world, const cString& args, Feedback& feedback) : cAction(world, args), m_merit(-1.0), m_lineage_label(0), m_neutral_metric(0)
   {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+
+    cArgSchema schema(':','=');
+    
+    // Entries
+    schema.AddEntry("filename", 0, cArgSchema::SCHEMA_STRING);
+    schema.AddEntry("instset", 1, "");
+    
+    schema.AddEntry("merit", 0, -1.0);
+    schema.AddEntry("neutral_metric", 1, 0.0);
+    
+    schema.AddEntry("lineage_label", 0, 0);
+    
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (argc) {
+      m_filename = argc->GetString(0);
+      m_instset = argc->GetString(1);
+      
+      m_merit = argc->GetDouble(0);
+      m_neutral_metric = argc->GetDouble(1);
+      
+      m_lineage_label = argc->GetInt(0);
+    }
+    
+    delete argc;
   }
   
-  static const cString GetDescription() { return "Arguments: <string fname> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string filename> [instset=""] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -269,7 +290,7 @@ public:
     }
     GenomePtr genome;
     cUserFeedback feedback;
-    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    genome = Util::LoadGenomeDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback, m_instset);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
         case cUserFeedback::UF_ERROR:    cerr << "error: "; break;

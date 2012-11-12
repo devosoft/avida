@@ -80,7 +80,7 @@ public:
   bool RegisterInstSet(const Apto::String& name, cInstSet* inst_set);
     
 private:
-  bool loadInstSet(int hw_type, const Apto::String& name, cStringList& sl, cUserFeedback* feedback);
+  bool loadInstSet(int hw_type, const Apto::String& name, int stack_size, int uops_per_cycle, cStringList& sl, cUserFeedback* feedback);
 };
 
 

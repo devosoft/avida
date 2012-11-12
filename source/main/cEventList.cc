@@ -87,9 +87,9 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
   return false;
 }
 
-bool cEventList::LoadEventFile(const cString& filename, const cString& working_dir, Feedback& feedback)
+bool cEventList::LoadEventFile(const cString& filename, const cString& working_dir, Feedback& feedback, const Apto::Map<Apto::String, Apto::String>* defs)
 {
-  cInitFile event_file(filename, working_dir);
+  cInitFile event_file(filename, working_dir, NULL, defs);
   
   if (!event_file.WasOpened()) return false;
 

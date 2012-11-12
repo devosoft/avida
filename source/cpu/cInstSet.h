@@ -87,13 +87,17 @@ public:
   bool m_has_choosy_female_costs;
   bool m_has_post_costs;
   
+  int m_stack_size;
+  int m_uops_per_cycle;
+  
   cInstSet(); // @not_implemented
 
 public:
-  inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib)
-    : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL), 
-      m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false), m_has_fem_res_costs(false),
-      m_has_female_costs(false), m_has_choosy_female_costs(false), m_has_post_costs(false) { ; }
+  inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib, int stack_size, int uops_per_cycle)
+    : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL)
+    , m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false), m_has_fem_res_costs(false)
+    , m_has_female_costs(false), m_has_choosy_female_costs(false), m_has_post_costs(false), m_stack_size(stack_size)
+    , m_uops_per_cycle(uops_per_cycle) { ; }
   cInstSet(const cInstSet&); 
   cInstSet& operator=(const cInstSet&); 
   inline ~cInstSet() { if (m_mutation_index != NULL) delete m_mutation_index; }
@@ -140,6 +144,9 @@ public:
   bool HasFemaleCosts() const { return m_has_female_costs; }
   bool HasChoosyFemaleCosts() const { return m_has_choosy_female_costs; }
   bool HasPostCosts() const { return m_has_post_costs; }
+  
+  int GetStackSize() const { return m_stack_size; }
+  int GetUOpsPerCycle() const { return m_uops_per_cycle; }
   
   // Instruction Analysis.
   int IsNop(const Instruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
