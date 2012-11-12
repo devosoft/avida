@@ -335,10 +335,13 @@ void cHardwareMBE::cLocalThread::operator=(const cLocalThread& in_thread)
     for (int j = 0; j < NUM_REGISTERS; j++) {
       behav[i].reg[j] = in_thread.behav[i].reg[j];
     }
+    behav[i].bpFH = in_thread.behav[i].bpFH;
+    for (int k = 0; k < 2; k++) {
+      behav[i].cpHEADs[k] = in_thread.behav[i].cpHEADs[k];
+    }
   }
+  thIP = in_thread.thIP;
   
-  for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
-  cur_head = in_thread.cur_head;
   reading_label = in_thread.reading_label;
   reading_seq = in_thread.reading_seq;
   active = in_thread.active;
@@ -369,10 +372,12 @@ void cHardwareMBE::cLocalThread::Reset(cHardwareMBE* in_hardware, int in_id)
     for (int j = 0; j < NUM_REGISTERS; j++) {
       behav[i].reg[j].Clear();
     }
+    behav[i].bpFH.Reset(in_hardware);
+    for (int k = 0; k < 2; k++) {
+      behav[i].cpHEADs[k].Reset(in_hardware);
+    }
   }
-  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
-  
-  cur_head = nHardware::HEAD_IP;
+  thIP.Reset(in_hardware);
   
   reading_label = false;
   reading_seq = false;
@@ -446,7 +451,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (!m_threads[m_cur_thread].active) break;
 
       m_advance_ip = true;
-      cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
+      cHeadCPU& ip = m_threads[m_cur_thread].thIP;
       ip.Adjust();
     
       // execute all no-class instructions, exiting if we hit an instruction from the current class and 'jumping'
@@ -1099,9 +1104,13 @@ void cHardwareMBE::ReadInst(Instruction in_inst)
 void cHardwareMBE::AdjustHeads()
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
-    for (int j = 0; j < NUM_HEADS; j++) {
-      m_threads[i].heads[j].Adjust();
+    for (int j = 0; j < NUM_BEHAVIORS; j++) {
+      m_threads[i].behav[j].bpFH.Adjust();
+      for (int k = 0; k < 2; k++) {
+        m_threads[i].behav[j].cpHEADs[k].Adjust();
+      }
     }
+    m_threads[i].thIP.Adjust();
   }
 }
 

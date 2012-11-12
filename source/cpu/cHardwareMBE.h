@@ -121,6 +121,8 @@ private:
   public:
     sInternalValue reg[NUM_REGISTERS];
     cLocalStack stack;
+    cHeadCPU cpHEADs[2];                  // read and write heads for behav_class_copy
+    cHeadCPU bpFH;                        // local flow head
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
 /*  struct {
       bool active:1;
@@ -152,8 +154,7 @@ private:
   
   public:
     cBehavProc behav[NUM_BEHAVIORS];
-    cHeadCPU heads[NUM_HEADS];
-    unsigned char cur_head;
+    cHeadCPU thIP;
     
     struct {
       bool reading_label:1;
@@ -261,16 +262,28 @@ public:
   
   
   // --------  Head Manipulation (including IP)  --------
-  const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id) const { return GetHead(head_id, m_cur_thread);  }
+  cHeadCPU& GetHead(int head_id) {  return GetHead(head_id, m_cur_thread);  }
+  const cHeadCPU& GetHead(int head_id, int thread) const {
+    if (head_id == 0) return m_threads[thread].thIP;
+    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    }
+    else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
+  }
+  cHeadCPU& GetHead(int head_id, int thread) {
+      if (head_id == 0) return m_threads[thread].thIP;
+    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    }
+    else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
+  }
   int GetNumHeads() const { return NUM_HEADS; }
   
-  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_threads[m_cur_thread].thIP; }
+  cHeadCPU& IP() { return m_threads[m_cur_thread].thIP; }
+  const cHeadCPU& IP(int thread) const { return m_threads[thread].thIP; }
+  cHeadCPU& IP(int thread) { return m_threads[thread].thIP; }
   
   
   // --------  Memory Manipulation  --------
@@ -321,7 +334,6 @@ private:
   inline void switchStack();
     
   // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
   void AdjustHeads();
     
   // --------  Label Manipulation  -------
@@ -358,15 +370,27 @@ private:
   
   int calcCopiedSize(const int parent_size, const int child_size);
   
-  inline const cHeadCPU& getHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
-  inline cHeadCPU& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
-  inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
-  
-  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  inline const cHeadCPU& getHead(int head_id) const { return GetHead(head_id, m_cur_thread);  }
+  inline cHeadCPU& getHead(int head_id) {  return GetHead(head_id, m_cur_thread);  }
+  inline const cHeadCPU& getHead(int head_id, int thread) const {
+    if (head_id == 0) return m_threads[thread].thIP;
+    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    }
+    else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
+  }
+  inline cHeadCPU& getHead(int head_id, int thread) {
+      if (head_id == 0) return m_threads[thread].thIP;
+    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    }
+    else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
+  }
+
+  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].thIP; }
+  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].thIP; }
+  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].thIP; }
+  inline cHeadCPU& getIP(int thread) { return m_threads[thread].thIP; }
 
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
