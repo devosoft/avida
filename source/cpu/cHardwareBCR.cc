@@ -182,6 +182,10 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("if-copied-lbl-direct", &cHardwareBCR::Inst_IfCopiedDirectLabel, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached label"),
     tInstLibEntry<tMethod>("if-copied-seq-comp", &cHardwareBCR::Inst_IfCopiedCompSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied complement of attached sequence"),
     tInstLibEntry<tMethod>("if-copied-seq-direct", &cHardwareBCR::Inst_IfCopiedDirectSeq, INST_CLASS_CONDITIONAL, 0, "Execute next if we copied direct match of the attached sequence"),
+    tInstLibEntry<tMethod>("did-copy-lbl-comp", &cHardwareBCR::Inst_DidCopyCompLabel, INST_CLASS_OTHER, 0, "Execute next if we copied complement of attached label"),
+    tInstLibEntry<tMethod>("did-copy-lbl-direct", &cHardwareBCR::Inst_DidCopyDirectLabel, INST_CLASS_OTHER, 0, "Execute next if we copied direct match of the attached label"),
+    tInstLibEntry<tMethod>("did-copy-seq-comp", &cHardwareBCR::Inst_DidCopyCompSeq, INST_CLASS_OTHER, 0, "Execute next if we copied complement of attached sequence"),
+    tInstLibEntry<tMethod>("did-copy-seq-direct", &cHardwareBCR::Inst_DidCopyDirectSeq, INST_CLASS_OTHER, 0, "Execute next if we copied direct match of the attached sequence"),
     
     tInstLibEntry<tMethod>("repro", &cHardwareBCR::Inst_Repro, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Instantly reproduces the organism", BEHAV_CLASS_COPY),
     
@@ -297,7 +301,6 @@ void cHardwareBCR::internalReset()
 {
   m_cycle_count = 0;
   m_last_output = 0;
-  m_mal_active = false;
   
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   m_sensor.Reset();
@@ -339,7 +342,6 @@ void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, int in_id)
   stack.Clear(in_hardware->GetInstSet().GetStackSize());
   
   cur_stack = 0;
-  cur_head = hIP;
   
   reading_label = false;
   reading_seq = false;
@@ -586,9 +588,9 @@ void cHardwareBCR::PrintStatus(ostream& fp)
   }
   fp << endl;
   
-  fp << "  R-Head:" << getHead(hR).GetPosition() << " "
-  << "W-Head:" << getHead(hW).GetPosition()  << " "
-  << "F-Head:" << getHead(hF).GetPosition()   << "  "
+  fp << "  R-Head:" << getHead(hREAD).GetPosition() << " "
+  << "W-Head:" << getHead(hWRITE).GetPosition()  << " "
+  << "F-Head:" << getHead(hFLOW).GetPosition()   << "  "
   << "RL:" << GetReadLabel().AsString() << "   "
   << "Ex:" << m_last_output
   << endl;
@@ -663,9 +665,9 @@ void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   // genome loc info
   fp << m_cur_thread << " ";
   fp << getIP().GetPosition() << " ";  
-  fp << getHead(hR).GetPosition() << " ";
-  fp << getHead(hW).GetPosition()  << " ";
-  fp << getHead(hF).GetPosition()   << " ";
+  fp << getHead(hREAD).GetPosition() << " ";
+  fp << getHead(hWRITE).GetPosition()  << " ";
+  fp << getHead(hFLOW).GetPosition()   << " ";
   // last output
   fp << m_last_output << " ";
   // phenotype/org status info
@@ -1060,15 +1062,6 @@ void cHardwareBCR::ReadInst(Instruction in_inst)
   }
 }
 
-void cHardwareBCR::AdjustHeads()
-{
-  for (int i = 0; i < m_threads.GetSize(); i++) {
-    for (int j = 0; j < NUM_HEADS; j++) {
-      m_threads[i].heads[j].Adjust();
-    }
-  }
-}
-
 // This function looks at the current position in the info of a creature,
 // and sets the next_label to be the sequence of nops which follows.  The
 // instruction pointer is left on the last line of the label found.
@@ -1314,7 +1307,7 @@ void cHardwareBCR::checkWaitingThreads(int cur_thread, int reg_num)
 bool cHardwareBCR::Inst_ThreadCreate(cAvidaContext&)
 {
   int thread_label = FindModifiedRegister(-1);
-  int head_used = FindModifiedHead(hF);
+  int head_used = FindModifiedHead(hFLOW);
   
   bool success = ThreadCreate(thread_label, m_threads[m_cur_thread].heads[head_used]);
   if (!success) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
@@ -1642,7 +1635,7 @@ bool cHardwareBCR::Inst_Nand(cAvidaContext&)
 bool cHardwareBCR::Inst_SetMemory(cAvidaContext& ctx)
 {
   int mem_label = FindModifiedRegister(rBX);
-  int head_used = FindModifiedHead(hF);
+  int head_used = FindModifiedHead(hFLOW);
   
   int mem_id = m_mem_ids[mem_label];
   
@@ -1784,7 +1777,7 @@ bool cHardwareBCR::Inst_SGSense(cAvidaContext&)
 bool cHardwareBCR::Inst_MoveHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(hIP);
-  const int target = FindModifiedHead(hF);
+  const int target = FindModifiedHead(hFLOW);
   getHead(head_used).Set(getHead(target));
   if (head_used == hIP) m_advance_ip = false;
   return true;
@@ -1795,7 +1788,7 @@ bool cHardwareBCR::Inst_MoveHeadIfNEqu(cAvidaContext&)
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
   const int head_used = FindModifiedHead(hIP);
-  const int target = FindModifiedHead(hF);
+  const int target = FindModifiedHead(hFLOW);
   if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
     getHead(head_used).Set(getHead(target));
     if (head_used == hIP) m_advance_ip = false;
@@ -1808,7 +1801,7 @@ bool cHardwareBCR::Inst_MoveHeadIfLess(cAvidaContext&)
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
   const int head_used = FindModifiedHead(hIP);
-  const int target = FindModifiedHead(hF);
+  const int target = FindModifiedHead(hFLOW);
   if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
     getHead(head_used).Set(getHead(target));
     if (head_used == hIP) m_advance_ip = false;
@@ -1864,10 +1857,42 @@ bool cHardwareBCR::Inst_IfCopiedDirectSeq(cAvidaContext&)
   return true;
 }
 
+
+bool cHardwareBCR::Inst_DidCopyCompLabel(cAvidaContext&)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  setInternalValue(rBX, (GetLabel() == GetReadLabel()), false);
+  return true;
+}
+
+bool cHardwareBCR::Inst_DidCopyDirectLabel(cAvidaContext&)
+{
+  ReadLabel();
+  setInternalValue(rBX, (GetLabel() == GetReadLabel()), false);
+  return true;
+}
+
+bool cHardwareBCR::Inst_DidCopyCompSeq(cAvidaContext&)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  setInternalValue(rBX, (GetLabel() == GetReadSequence()), false);
+  return true;
+}
+
+bool cHardwareBCR::Inst_DidCopyDirectSeq(cAvidaContext&)
+{
+  ReadLabel();
+  setInternalValue(rBX, (GetLabel() == GetReadSequence()), false);
+  return true;
+}
+
+
 bool cHardwareBCR::Inst_Divide(cAvidaContext& ctx)
 {
-  const int mem_space_used = GetHead(hW).GetMemSpace();
-  const int write_head_pos = GetHead(hW).GetPosition();
+  const int mem_space_used = GetHead(hWRITE).GetMemSpace();
+  const int write_head_pos = GetHead(hWRITE).GetPosition();
 
   return Divide_Main(ctx, mem_space_used, write_head_pos, 1.0);
 }
@@ -1886,7 +1911,7 @@ bool cHardwareBCR::Inst_DivideMemory(cAvidaContext& ctx)
 
 bool cHardwareBCR::Inst_HeadRead(cAvidaContext& ctx)
 {
-  const int head_id = FindModifiedHead(hR);
+  const int head_id = FindModifiedHead(hREAD);
   const int dst = FindModifiedRegister(rAX);  
   getHead(head_id).Adjust();
   
@@ -1909,7 +1934,7 @@ bool cHardwareBCR::Inst_HeadRead(cAvidaContext& ctx)
 
 bool cHardwareBCR::Inst_HeadWrite(cAvidaContext& ctx)
 {
-  const int head_id = FindModifiedHead(hW);
+  const int head_id = FindModifiedHead(hWRITE);
   const int src = FindModifiedRegister(rAX);
   cHeadCPU& active_head = getHead(head_id);
   
@@ -1942,8 +1967,8 @@ bool cHardwareBCR::Inst_HeadWrite(cAvidaContext& ctx)
 bool cHardwareBCR::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU& read_head = getHead(hR);
-  cHeadCPU& write_head = getHead(hW);
+  cHeadCPU& read_head = getHead(hREAD);
+  cHeadCPU& write_head = getHead(hWRITE);
   
   int mem_space_used = write_head.GetMemSpace();
   
@@ -1987,8 +2012,8 @@ bool cHardwareBCR::Inst_Search_Label_Comp_S(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  FindLabelStart(getHead(hF), true);
-  getHead(hF).Advance();
+  FindLabelStart(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
@@ -1996,8 +2021,8 @@ bool cHardwareBCR::Inst_Search_Label_Comp_F(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  FindLabelForward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindLabelForward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
@@ -2005,32 +2030,32 @@ bool cHardwareBCR::Inst_Search_Label_Comp_B(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  FindLabelBackward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindLabelBackward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Label_Direct_S(cAvidaContext&)
 {
   ReadLabel();
-  FindLabelStart(getHead(hF), true);
-  getHead(hF).Advance();
+  FindLabelStart(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Label_Direct_F(cAvidaContext&)
 {
   ReadLabel();
-  FindLabelForward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindLabelForward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Label_Direct_B(cAvidaContext&)
 {
   ReadLabel();
-  FindLabelBackward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindLabelBackward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
@@ -2038,8 +2063,8 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_S(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  FindNopSequenceStart(getHead(hF), true);
-  getHead(hF).Advance();
+  FindNopSequenceStart(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
@@ -2047,8 +2072,8 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_F(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  FindNopSequenceForward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindNopSequenceForward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
@@ -2056,32 +2081,32 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_B(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  FindNopSequenceBackward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindNopSequenceBackward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Seq_Direct_S(cAvidaContext&)
 {
   ReadLabel();
-  FindNopSequenceStart(getHead(hF), true);
-  getHead(hF).Advance();
+  FindNopSequenceStart(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Seq_Direct_F(cAvidaContext&)
 {
   ReadLabel();
-  FindNopSequenceForward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindNopSequenceForward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
-  FindNopSequenceBackward(getHead(hF), true);
-  getHead(hF).Advance();
+  FindNopSequenceBackward(getHead(hFLOW), true);
+  getHead(hFLOW).Advance();
   return true;
 }
 
@@ -2237,7 +2262,6 @@ bool cHardwareBCR::Inst_Repro(cAvidaContext& ctx)
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(Instruction(i));
   }
   
-  m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     m_advance_ip = false;
   }

@@ -66,7 +66,7 @@ private:
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = NUM_REGISTERS;
   enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX };
-  enum { hIP, hR, hW, hF, hF2, hF3, hF4, hF5 };
+  enum { hIP, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5, hFLOW6, hFLOW7, hFLOW8, hFLOW9, hFLOW10, hFLOW11, hFLOW12, hFLOW13 };
   static const int NUM_NOPS = NUM_REGISTERS;
   static const int MAX_THREADS = NUM_NOPS;
   static const int MAX_MEM_SPACES = NUM_NOPS;
@@ -129,7 +129,6 @@ private:
     
     struct {
       unsigned int cur_stack:1;
-      unsigned int cur_head:3;
       bool reading_label:1;
       bool reading_seq:1;
       bool running:1;
@@ -167,21 +166,19 @@ private:
   // Threads
   Apto::Array<Thread, Apto::ManagedPointer> m_threads;
   char m_thread_ids[MAX_THREADS];
-  int m_cur_thread;
   
-  int m_cur_offspring;
-  
-  int m_use_avatar;
   cOrgSensor m_sensor;
-  
-  struct {
-    unsigned int m_cycle_count:16;
-    unsigned int m_last_output:16;
-  };
   
   // Flags
   struct {
-    bool m_mal_active:1;         // Has an allocate occured since last divide?
+    unsigned int m_cycle_count:16;
+    unsigned int m_last_output:16;
+
+    int m_cur_thread:5;
+    int m_cur_offspring:5;
+    
+    int m_use_avatar:3;
+    
     bool m_advance_ip:1;         // Should the IP advance after this instruction?
     bool m_spec_die:1;
     
@@ -264,7 +261,7 @@ public:
   
   // --------  Non-Standard Methods  --------
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
-  bool GetMalActive() const   { return m_mal_active; }
+  bool GetMalActive() const   { return false; }
 
 
   // --------  Parasite Stuff  -------- @ not implemented
@@ -282,10 +279,6 @@ private:
   inline DataValue stackPop();
   inline Stack& getStack(int stack_id);
   inline void switchStack();
-    
-  // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
-  void AdjustHeads();
     
   // --------  Label Manipulation  -------
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
@@ -424,6 +417,10 @@ private:
   bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
   bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
   bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
+  bool Inst_DidCopyCompLabel(cAvidaContext& ctx);
+  bool Inst_DidCopyDirectLabel(cAvidaContext& ctx);
+  bool Inst_DidCopyCompSeq(cAvidaContext& ctx);
+  bool Inst_DidCopyDirectSeq(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
   

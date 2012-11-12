@@ -322,7 +322,6 @@ private:
   
   
   // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
   void AdjustHeads();
   
   
