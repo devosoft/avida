@@ -2734,7 +2734,7 @@ bool cHardwareBCR::Inst_TeachOffspring(cAvidaContext&)
   return true;
 }
 
-bool cHardwareBCR::Inst_LearnParent(cAvidaContext&)
+bool cHardwareBCR::Inst_LearnParent(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   bool halt = false;
@@ -2748,9 +2748,9 @@ bool cHardwareBCR::Inst_LearnParent(cAvidaContext&)
       if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1 && 
           (((prop_target == -2 || prop_target == -3) && old_target > -2) || (prop_target > -2 && (old_target == -2 || prop_target == -3)))) {
         m_organism->GetOrgInterface().SwitchPredPrey();
-        m_organism->CopyParentFT();
+        m_organism->CopyParentFT(ctx);
       }
-      else m_organism->CopyParentFT();
+      else m_organism->CopyParentFT(ctx);
     }
   }
   return !halt;

@@ -126,6 +126,7 @@ private:
   Apto::Array<int> cur_stolen_reaction_count;      // Total counts of reactions stolen by predators.
   Apto::Array<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   Apto::Array<int> cur_inst_count;                 // Instruction exection counter
+  Apto::Array<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
   Apto::Array<int> cur_failed_inst_count;          // Failed instruction exection counter (returned false -- not for counting 'paused' exec due to cpu cost)
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
@@ -174,6 +175,7 @@ private:
   Apto::Array<double> last_reaction_add_reward;
   Apto::Array<int> last_inst_count;	  // Instruction exection counter
   Apto::Array<int> last_failed_inst_count;	  // Instruction exection counter
+  Apto::Array<int> last_from_sensor_count;
   Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
 
   double last_fitness;            // Used to determine sterilization.
@@ -466,6 +468,7 @@ public:
   const Apto::Array<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
+  const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
   const Apto::Array<int>& GetLastFailedInstCount() const { assert(initialized == true); return last_failed_inst_count; }
   const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
 
@@ -719,6 +722,7 @@ inline void cPhenotype::SetInstSetSize(int inst_set_size)
   cur_inst_count.Resize(inst_set_size, 0);
   cur_failed_inst_count.Resize(inst_set_size, 0);
   last_inst_count.Resize(inst_set_size, 0);
+  last_from_sensor_count.Resize(inst_set_size, 0);
   last_failed_inst_count.Resize(inst_set_size, 0);
 }
 

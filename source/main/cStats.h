@@ -151,6 +151,8 @@ private:
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_exe_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_prey_fail_exe_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_fail_exe_inst_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_prey_from_sensor_inst_map;
+  Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_pred_from_sensor_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_male_exe_inst_map;
   Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > m_is_female_exe_inst_map;
   
@@ -359,8 +361,10 @@ private:
   int topcycle;   
   int topid;
   int topgenid;
-    
-
+  int toptarget;
+  int topgroup;
+  int topbirthud;
+  Genome topgenome;
     
 public:
   cStats(cWorld* world);
@@ -463,9 +467,9 @@ public:
   cDoubleSum& SumPreyCreatureAge()   { return sum_prey_creature_age; }
   cDoubleSum& SumPreyGeneration()    { return sum_prey_generation; }  
   cDoubleSum& SumPreySize()          { return sum_prey_size; }
-
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPreyFailedExeCountsForInstSet(const cString& inst_set) { return m_is_prey_fail_exe_inst_map[inst_set]; }
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstPreyFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_prey_from_sensor_inst_map[inst_set]; }
 
   cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
   cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
@@ -473,9 +477,9 @@ public:
   cDoubleSum& SumPredCreatureAge()   { return sum_pred_creature_age; }
   cDoubleSum& SumPredGeneration()    { return sum_pred_generation; }  
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
-
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   Apto::Array<Apto::Stat::Accumulator<int> >& InstPredFailedExeCountsForInstSet(const cString& inst_set) { return m_is_pred_fail_exe_inst_map[inst_set]; }
+  Apto::Array<Apto::Stat::Accumulator<int> >& InstPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_pred_from_sensor_inst_map[inst_set]; }
 
   void ZeroFTInst();
   
@@ -753,6 +757,8 @@ public:
   void PrintPredatorVarianceData(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set);
   void PrintCountData(const cString& filename);
@@ -809,7 +815,7 @@ public:
 
   void PrintMiniTraceReactions(cOrganism* org);
   void PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int birth_update, int org_id, int ft, int gen_id);
-  void UpdateTopNavTrace(cOrganism* org);
+  void UpdateTopNavTrace(cOrganism* org, bool force_update = false);
   void PrintTopNavTrace();
   void PrintReproData(cOrganism* org);
     

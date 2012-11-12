@@ -291,7 +291,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("if-not-neuron-input-faced-has-output-AV", &cHardwareExperimental::Inst_IfNotNeuronInputFacedHasOutputAV, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     
     // Resource and Topography Sensing
-    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-res-quant", &cHardwareExperimental::Inst_SenseResQuant, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-nest", &cHardwareExperimental::Inst_SenseNest, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-res-diff", &cHardwareExperimental::Inst_SenseResDiff, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
@@ -304,11 +304,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("look-around-ft", &cHardwareExperimental::Inst_LookAroundFT, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-forage-target", &cHardwareExperimental::Inst_SetForageTarget, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("set-ft-once", &cHardwareExperimental::Inst_SetForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("set-rand-ft-once", &cHardwareExperimental::Inst_SetRandForageTargetOnce, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-forage-target", &cHardwareExperimental::Inst_GetForageTarget, INST_CLASS_ENVIRONMENT),
     tInstLibEntry<tMethod>("get-loc-org-density", &cHardwareExperimental::Inst_GetLocOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("get-faced-org-density", &cHardwareExperimental::Inst_GetFacedOrgDensity, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
-    
-    tInstLibEntry<tMethod>("collect-edible", &cHardwareExperimental::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
+
+    tInstLibEntry<tMethod>("collect-edible", &cHardwareExperimental::Inst_CollectEdible, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareExperimental::Inst_CollectSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("deposit-resource", &cHardwareExperimental::Inst_DepositResource, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("deposit-specific", &cHardwareExperimental::Inst_DepositSpecific, INST_CLASS_ENVIRONMENT, nInstFlag::STALL),    
@@ -3479,12 +3480,12 @@ bool cHardwareExperimental::Inst_RotateOrgID(cAvidaContext&)
       int ft_reg = FindModifiedNextRegister(fat_reg); 
       int group_reg = FindModifiedNextRegister(ft_reg);
       
-      setInternalValue(dist_reg, -2, true);
-      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
-      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
-      setInternalValue(ft_reg, target_org->GetForageTarget(), true);  
+      setInternalValue(dist_reg, -2, true, true);
+      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true, true);
+      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true, true);
+      setInternalValue(ft_reg, target_org->GetForageTarget(), true, true);
       if (target_org->HasOpinion()) {
-        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+        setInternalValue(group_reg, target_org->GetOpinion().first, true, true);
       }
       if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());    
     }        
@@ -3571,12 +3572,12 @@ bool cHardwareExperimental::Inst_RotateAwayOrgID(cAvidaContext&)
       int ft_reg = FindModifiedNextRegister(fat_reg); 
       int group_reg = FindModifiedNextRegister(ft_reg);
       
-      setInternalValue(dist_reg, -2, true);
-      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true);
-      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true);
-      setInternalValue(ft_reg, target_org->GetForageTarget(), true);  
+      setInternalValue(dist_reg, -2, true, true);
+      setInternalValue(dir_reg, m_sensor.ReturnRelativeFacing(target_org), true, true);
+      setInternalValue(fat_reg, (int) target_org->GetPhenotype().GetCurBonus(), true, true);
+      setInternalValue(ft_reg, target_org->GetForageTarget(), true, true);  
       if (target_org->HasOpinion()) {
-        setInternalValue(group_reg, target_org->GetOpinion().first, true);
+        setInternalValue(group_reg, target_org->GetOpinion().first, true, true);
       }
       if ((target_org->IsDisplaying() || m_world->GetConfig().USE_DISPLAY.Get()) && target_org->GetOrgDisplayData() != NULL) m_sensor.SetLastSeenDisplay(target_org->GetOrgDisplayData());     
     }       
@@ -3702,7 +3703,7 @@ bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
   for (int i = 0; i < cell_res.GetSize(); i++) {
     if (cell_res[i] > max_resource) {
       max_resource = cell_res[i];
-      setInternalValue(reg_to_set, i, true);
+      setInternalValue(reg_to_set, i, true, true);
     }
   }    
   return true;
@@ -3742,10 +3743,10 @@ bool cHardwareExperimental::Inst_SenseResQuant(cAvidaContext& ctx)
   if (res_amount == 0) res_diff = (int) faced_res;
   else res_diff = (int) (((faced_res - res_amount) / res_amount) * 100 + 0.5);
   
-  setInternalValue(req_reg, res_sought, true);
+  setInternalValue(req_reg, res_sought, true, true);
   const int res_tot_reg = FindModifiedNextRegister(req_reg);
-  setInternalValue(res_tot_reg, res_amount, true);
-  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true);
+  setInternalValue(res_tot_reg, res_amount, true, true);
+  setInternalValue(FindModifiedNextRegister(res_tot_reg), res_diff, true, true);
   return true;
 }
 
@@ -3776,9 +3777,9 @@ bool cHardwareExperimental::Inst_SenseNest(cAvidaContext& ctx)
     if (m_use_avatar) nest_val = m_organism->GetOrgInterface().GetAVResourceVal(ctx, nest_id);
     else if (!m_use_avatar) nest_val = m_organism->GetOrgInterface().GetResourceVal(ctx, nest_id);
   }
-  setInternalValue(reg_used, nest_id, true);
+  setInternalValue(reg_used, nest_id, true, true);
   const int val_reg = FindModifiedNextRegister(reg_used);
-  setInternalValue(val_reg, nest_val, true);
+  setInternalValue(val_reg, nest_val, true, true);
   return true;
 }
 
@@ -3819,9 +3820,9 @@ bool cHardwareExperimental::Inst_SenseResDiff(cAvidaContext& ctx)
     }
   }
     
-  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true);
+  setInternalValue(FindModifiedNextRegister(req_reg), res_sought, true, true);
   const int res_tot_reg = FindModifiedNextRegister(FindModifiedNextRegister(req_reg));
-  setInternalValue(res_tot_reg, res_amount - faced_res, true);
+  setInternalValue(res_tot_reg, res_amount - faced_res, true, true);
   return true;
 }
 
@@ -4000,25 +4001,25 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
   // habitat_reg=0, distance_reg=1, search_type_reg=2, id_sought_reg=3, count_reg=4, value_reg=5, group_reg=6, forager_type_reg=7
   // return defaults for failed to find
   if (results.report_type == 0) {
-    setInternalValue(regs.habitat, results.habitat, true);
-    setInternalValue(regs.distance, -1, true);
-    setInternalValue(regs.search_type, results.search_type, true);
-    setInternalValue(regs.id_sought, results.id_sought, true);
-    setInternalValue(regs.count, 0, true);
-    setInternalValue(regs.value, 0, true);
-    setInternalValue(regs.group, -9, true);
-    setInternalValue(regs.ft, -9, true);  
+    setInternalValue(regs.habitat, results.habitat, true, true);
+    setInternalValue(regs.distance, -1, true, true);
+    setInternalValue(regs.search_type, results.search_type, true, true);
+    setInternalValue(regs.id_sought, results.id_sought, true, true);
+    setInternalValue(regs.count, 0, true, true);
+    setInternalValue(regs.value, 0, true, true);
+    setInternalValue(regs.group, -9, true, true);
+    setInternalValue(regs.ft, -9, true, true);  
   }
   // report results as sent
   else if (results.report_type == 1) {
-    setInternalValue(regs.habitat, results.habitat, true);
-    setInternalValue(regs.distance, results.distance, true);
-    setInternalValue(regs.search_type, results.search_type, true);
-    setInternalValue(regs.id_sought, results.id_sought, true);
-    setInternalValue(regs.count, results.count, true);
-    setInternalValue(regs.value, results.value, true);
-    setInternalValue(regs.group, results.group, true);
-    setInternalValue(regs.ft, results.forage, true);  
+    setInternalValue(regs.habitat, results.habitat, true, true);
+    setInternalValue(regs.distance, results.distance, true, true);
+    setInternalValue(regs.search_type, results.search_type, true, true);
+    setInternalValue(regs.id_sought, results.id_sought, true, true);
+    setInternalValue(regs.count, results.count, true, true);
+    setInternalValue(regs.value, results.value, true, true);
+    setInternalValue(regs.group, results.group, true, true);
+    setInternalValue(regs.ft, results.forage, true, true);  
   }
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() > 5) {
@@ -4033,14 +4034,14 @@ void cHardwareExperimental::LookResults(sLookRegAssign& regs, cOrgSensor::sLookO
       int rand = m_world->GetRandom().GetInt(INT_MAX) * randsign;
       int target_reg = m_world->GetConfig().LOOK_DISABLE.Get();
       
-      if (target_reg == 6) setInternalValue(regs.habitat, rand, true);
-      else if (target_reg == 7) setInternalValue(regs.distance, rand, true);
-      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true);
-      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true);
-      else if (target_reg == 10) setInternalValue(regs.count, rand, true);
-      else if (target_reg == 11) setInternalValue(regs.value, rand, true);
-      else if (target_reg == 12) setInternalValue(regs.group, rand, true);
-      else if (target_reg == 13) setInternalValue(regs.ft, rand, true);  
+      if (target_reg == 6) setInternalValue(regs.habitat, rand, true, true);
+      else if (target_reg == 7) setInternalValue(regs.distance, rand, true, true);
+      else if (target_reg == 8) setInternalValue(regs.search_type, rand, true, true);
+      else if (target_reg == 9) setInternalValue(regs.id_sought, rand, true, true);
+      else if (target_reg == 10) setInternalValue(regs.count, rand, true, true);
+      else if (target_reg == 11) setInternalValue(regs.value, rand, true, true);
+      else if (target_reg == 12) setInternalValue(regs.group, rand, true, true);
+      else if (target_reg == 13) setInternalValue(regs.ft, rand, true, true);  
     }
   }
   return;
@@ -4085,7 +4086,7 @@ bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
+bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int prop_target = GetRegister(FindModifiedRegister(rBX));
@@ -4124,8 +4125,9 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext&)
   // if (!m_world->GetEnvironment().IsTargetID(prop_target) && (prop_target != -2)) return false;
 
   // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
-  if (m_use_avatar && ((prop_target <= -2 && old_target > -2) || (prop_target > -2 && old_target <= -2)) &&
-      (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
+  if (prop_target == -2 && old_target > -2) MakePred(ctx);
+  else if (prop_target == -3 && old_target > -2) MakeTopPred(ctx);
+  else if (m_use_avatar && prop_target > -2 && old_target <= -2 && m_organism->GetOrgInterface().GetAVCellID() != -1) {
     m_organism->GetOrgInterface().SwitchPredPrey();
     m_organism->SetForageTarget(prop_target);
   }
@@ -4142,6 +4144,38 @@ bool cHardwareExperimental::Inst_SetForageTargetOnce(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (m_organism->HasSetFT()) return false;
   else return Inst_SetForageTarget(ctx);
+}
+
+bool cHardwareExperimental::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  int cap = 0;
+  if (m_world->GetConfig().POPULATION_CAP.Get()) cap = m_world->GetConfig().POPULATION_CAP.Get();
+  else if (m_world->GetConfig().POP_CAP_ELDEST.Get()) cap = m_world->GetConfig().POP_CAP_ELDEST.Get();
+  if (cap && (m_organism->GetOrgInterface().GetLiveOrgList().GetSize() >= (((double)(cap)) * 0.5)) && m_world->GetRandom().P(0.5)) {
+    if (m_organism->HasSetFT()) return false;
+    else {
+      int num_fts = 0;
+      std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+      set <int>::iterator itr;
+      for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
+      int prop_target = m_world->GetRandom().GetUInt(num_fts);
+      if (m_world->GetEnvironment().IsTargetID(-1) && num_fts == 0) prop_target = -1;
+      else {
+        // ft's may not be sequentially numbered
+        int ft_num = abs(prop_target) % num_fts;
+        itr = fts_avail.begin();
+        for (int i = 0; i < ft_num; i++) itr++;
+        prop_target = *itr;
+      }
+      // Set the new target and return the value
+      m_organism->SetForageTarget(prop_target);
+      m_organism->RecordFTSet();
+      setInternalValue(FindModifiedRegister(rBX), prop_target, false);
+      return true;
+    }
+  }
+  else return Inst_SetForageTargetOnce(ctx);
 }
 
 bool cHardwareExperimental::Inst_GetForageTarget(cAvidaContext& ctx)
@@ -4970,10 +5004,12 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
-    target->Die(ctx);
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);   
@@ -5075,10 +5111,12 @@ bool cHardwareExperimental::Inst_AttackPreyArea(cAvidaContext& ctx)
       }
       
       // if you weren't a predator before, you are now!
-    MakePred();
-    target->Die(ctx);
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
       
       setInternalValue(success_reg, 1, true);
@@ -5181,10 +5219,12 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
-    target->Die(ctx);
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);
@@ -5296,12 +5336,14 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
     }
 
     // if you weren't a predator before, you are now (all of your pack mates already are)!
-    MakePred();
-    target->Die(ctx);
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
-    
+
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
@@ -5320,32 +5362,32 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   if (id_sought < 0 || id_sought == m_organism->GetID()) return false;
   
   // if valid number, does the value represent a living organism?
-  cOrganism* target_org  = NULL;
+  cOrganism* target  = NULL;
   const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_organism->GetOrgInterface().GetLiveOrgList();
   for (int i = 0; i < live_orgs.GetSize(); i++) {
     cOrganism* org = live_orgs[i];
     if (id_sought == org->GetID()) {
-      target_org = org;
+      target = org;
       have_org2use = true;
       break;
     }
   }
   if (!have_org2use) return false;
 
-  if (!m_use_avatar) { if (target_org != m_organism->GetOrgInterface().GetNeighbor())  return false; }
-  else if (m_use_avatar == 2) { if (target_org->GetCellID() != m_organism->GetOrgInterface().GetAVFacedCellID())  return false; }
+  if (!m_use_avatar) { if (target != m_organism->GetOrgInterface().GetNeighbor())  return false; }
+  else if (m_use_avatar == 2) { if (target->GetCellID() != m_organism->GetOrgInterface().GetAVFacedCellID())  return false; }
 
   // attacking other carnivores is handled differently (e.g. using fights or tolerance)
-  if (target_org->GetForageTarget() <= -2) return false;
+  if (target->GetForageTarget() <= -2) return false;
   
-  if (target_org->IsDead()) return false;
+  if (target->IsDead()) return false;
   
   const int success_reg = FindModifiedRegister(rBX);
   const int bonus_reg = FindModifiedNextRegister(success_reg);
   const int bin_reg = FindModifiedNextRegister(bonus_reg);
   
   if (m_world->GetConfig().MIN_PREY.Get() > 0 && m_world->GetStats().GetNumPreyCreatures() <= m_world->GetConfig().MIN_PREY.Get()) {
-    InjureOrg(target_org);
+    InjureOrg(target);
     setInternalValue(success_reg, -1, true);
     setInternalValue(bonus_reg, -1, true);
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) setInternalValue(bin_reg, -1, true);
@@ -5354,39 +5396,41 @@ bool cHardwareExperimental::Inst_AttackSpecPrey(cAvidaContext& ctx)
   else {
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
-      const double target_merit = target_org->GetPhenotype().GetMerit().GetDouble();
+      const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
       double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
       attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
       m_organism->UpdateMerit(attacker_merit);
     }
     
     // now add on the victims reaction counts to your own, this will allow you to pass any reaction tests...
-    const Apto::Array<int>& target_reactions = target_org->GetPhenotype().GetLastReactionCount();
+    const Apto::Array<int>& target_reactions = target->GetPhenotype().GetLastReactionCount();
     const Apto::Array<int>& org_reactions = m_organism->GetPhenotype().GetStolenReactionCount();
     for (int i = 0; i < org_reactions.GetSize(); i++) {
       m_organism->GetPhenotype().SetStolenReactionCount(i, org_reactions[i] + target_reactions[i]);
     }
     
     // and add current merit bonus after adjusting for conversion efficiency
-    const double target_bonus = target_org->GetPhenotype().GetCurBonus();
+    const double target_bonus = target->GetPhenotype().GetCurBonus();
     m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
     
     // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
-      Apto::Array<double> target_bins = target_org->GetRBins();
+      Apto::Array<double> target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
         m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
-        target_org->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
       setInternalValue(bin_reg, spec_bin, true);
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
-    target_org->Die(ctx);
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
     setInternalValue(success_reg, 1, true);
@@ -5483,13 +5527,14 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
     }
     
     // if you weren't a predator before, you are now!
-    MakePred();
-    target->Die(ctx);
+    MakePred(ctx);
+    target->Die(ctx); // kill first -- could end up being killed by inject clone
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
-      m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
+      int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
+      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
-    
-    setInternalValue(success_reg, 1, true);   
+    setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
   return true;
@@ -5753,7 +5798,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
     }
     
     target->Die(ctx);
-    MakeTopPred();
+    MakeTopPred(ctx);
     
     setInternalValue(success_reg, 1, true);   
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5784,7 +5829,7 @@ bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
   const int out_reg = FindModifiedRegister(rBX);   
   setInternalValue(out_reg, 1, true);   
   
-  MakeTopPred();
+  MakeTopPred(ctx);
   return true;
 } 
 
@@ -5965,7 +6010,7 @@ bool cHardwareExperimental::Inst_TeachOffspring(cAvidaContext&)
   return true;
 }
 
-bool cHardwareExperimental::Inst_LearnParent(cAvidaContext&)
+bool cHardwareExperimental::Inst_LearnParent(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   bool halt = false;
@@ -5980,9 +6025,9 @@ bool cHardwareExperimental::Inst_LearnParent(cAvidaContext&)
           ((( prop_target == -2  || prop_target == -3) && old_target != -2 && old_target != -3) ||
           (prop_target != -2  && prop_target != -3 && (old_target == -2 || old_target == -3)))) {
         m_organism->GetOrgInterface().SwitchPredPrey();
-        m_organism->CopyParentFT();
+        m_organism->CopyParentFT(ctx);
       }
-      else m_organism->CopyParentFT();
+      else m_organism->CopyParentFT(ctx);
     }
   }
   return !halt;
@@ -6473,9 +6518,10 @@ void cHardwareExperimental::InjureOrg(cOrganism* target)
   }
 }
 
-void cHardwareExperimental::MakePred()
+void cHardwareExperimental::MakePred(cAvidaContext& ctx)
 {
   if (m_organism->GetForageTarget() > -2) {
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
@@ -6485,9 +6531,10 @@ void cHardwareExperimental::MakePred()
   }    
 }
 
-void cHardwareExperimental::MakeTopPred()
+void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
 {
   if (m_organism->GetForageTarget() > -2) {
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();

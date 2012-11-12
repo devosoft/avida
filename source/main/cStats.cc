@@ -480,6 +480,12 @@ void cStats::ZeroFTInst()
   for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_fail_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_from_sensor_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_from_sensor_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
 }
 
 void cStats::ZeroMTInst()
@@ -915,6 +921,36 @@ void cStats::PrintPredatorFailedInstructionData(const cString& filename, const c
   
   for (int i = 0; i < m_is_pred_fail_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Prey org instruction execution data using values originating from sensory input");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_prey_from_sensor_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_prey_from_sensor_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Predator org instruction execution data using values originating from sensory input");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_pred_from_sensor_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_pred_from_sensor_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
   df.Endl();
 }
@@ -4369,7 +4405,7 @@ void cStats::PrintMicroTraces(Apto::Array<char, Apto::Smart>& exec_trace, int bi
   fp << endl;
 }
 
-void cStats::UpdateTopNavTrace(cOrganism* org)
+void cStats::UpdateTopNavTrace(cOrganism* org, bool force_update)
 {
   // 'best' org is the one among the orgs with the highest reaction achieved that reproduced in the least number of cycles
   // using cycles, so any inst executions in parallel multi-threads are only counted as one exec
@@ -4387,11 +4423,13 @@ void cStats::UpdateTopNavTrace(cOrganism* org)
     if (best_reac == topreac && cycle < topcycle) new_winner = true;
     else if (best_reac > topreac) new_winner = true;      
   }
-  if (new_winner) {
+  if (new_winner || force_update) {
     topreac = best_reac;
     topcycle = cycle;
     topgenid = org->SystematicsGroup("genotype")->ID();
     topid = org->GetID();
+    topbirthud = org->GetPhenotype().GetUpdateBorn();
+    topgenome = Genome(org->SystematicsGroup("genotype")->Properties().Get("genome"));
     
     Apto::Array<char, Apto::Smart> trace = org->GetHardware().GetMicroTrace();
     Apto::Array<int, Apto::Smart> traceloc = org->GetHardware().GetNavTraceLoc();
@@ -4433,6 +4471,10 @@ void cStats::UpdateTopNavTrace(cOrganism* org)
       topreactioncycles[i] = reaction_cycles[i];
       topreactionexecs[i] = reaction_execs[i];
     }
+    toptarget = org->GetParentFT();
+    topgroup = m_world->GetConfig().DEFAULT_GROUP.Get();
+    if (org->HasOpinion()) topgroup = org->GetOpinion().first;
+    else topgroup = org->GetParentGroup();
   }
   if (m_world->GetPopulation().GetTopNavQ().GetSize() <= 1) PrintTopNavTrace();
 }
@@ -4457,6 +4499,15 @@ void cStats::PrintTopNavTrace()
   df.Endl();
 
   std::ofstream& fp = df.GetOFStream();
+  
+  // in case nobody has reproduced (e.g. in single org trial) print what we know to date
+  if (!topreactions.GetSize()) {
+    const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+    for (int i = 0; i < live_orgs.GetSize(); i++) {
+      UpdateTopNavTrace(live_orgs[i], true);
+      topcycle = -1;
+    }
+  }
 
   if (topreactions.GetSize()) {
     fp << topgenid << " " << topid << " " << topcycle << " ";
@@ -4496,6 +4547,15 @@ void cStats::PrintTopNavTrace()
       fp << toptrace[i];
     }
     fp << endl;
+    
+    // print the winning genome
+    cString genfile =  cStringUtil::Stringf("topnav_genome/org%d-ud%d-grp%d_ft%d-gt%d.navgeno", topid, topbirthud, topgroup, toptarget, topgenid);
+    // need a random number generator to pass to testcpu that does not affect any other random number pulls (since this is just for printing the genome)
+    Apto::RNG::AvidaRNG rng(0);
+    cAvidaContext ctx2(&m_world->GetDriver(), rng);
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx2);
+    testcpu->PrintGenome(ctx2, topgenome, genfile, m_world->GetStats().GetUpdate());
+    delete testcpu;
   }
 }
 

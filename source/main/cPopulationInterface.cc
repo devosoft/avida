@@ -1582,12 +1582,32 @@ void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
   while (org_to_clone == NULL) {
     cOrganism* org_at = TriedIdx[idx];
     // exclude pred and juvs
-    if (org_at->GetParentFT() > -1) org_to_clone = org_at;
+    if (org_at->GetForageTarget() > -1) org_to_clone = org_at;
     else TriedIdx.Swap(idx, --list_size);
     if (list_size == 1) break;
     idx = m_world->GetRandom().GetUInt(list_size);
   }
   if (org_to_clone != NULL) m_world->GetPopulation().InjectPreyClone(ctx, org_to_clone);
+}
+
+void cPopulationInterface::KillRandPred(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* org_to_kill = org;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_kill == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude prey and juvs
+    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
 }
 
 // -------- Avatar support --------

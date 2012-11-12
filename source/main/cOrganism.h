@@ -604,7 +604,7 @@ public:
   void SetParentTeacher(bool had_teacher) { m_parent_teacher = had_teacher; }
   void SetParentFT(int parent_ft) { m_parent_ft = parent_ft; }
   int GetParentFT() const { return m_parent_ft; } 
-  void CopyParentFT();
+  void CopyParentFT(cAvidaContext& ctx);
   void SetParentGroup(int parent_group) { m_parent_group = parent_group; }
   int GetParentGroup() const { return m_parent_group; } 
   void SetParentMerit(double parent_merit) { m_p_merit = parent_merit; }

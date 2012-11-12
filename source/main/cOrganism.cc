@@ -1222,7 +1222,7 @@ void cOrganism::SetForageTarget(int forage_target) {
   m_forage_target = forage_target;
 }
 
-void cOrganism::CopyParentFT() {
+void cOrganism::CopyParentFT(cAvidaContext& ctx) {
   bool copy_ft = true;
   // close potential loop-hole allowing orgs to switch ft to prey at birth, collect res,
   // switch ft to pred, and then copy parent to become prey again.
@@ -1231,7 +1231,10 @@ void cOrganism::CopyParentFT() {
       copy_ft = false;
     }
   }
-  if (copy_ft) SetForageTarget(m_parent_ft); 
+  if (copy_ft) {
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
+    SetForageTarget(m_parent_ft);
+  }
 }
 
 /*! Called when an organism receives a flash from a neighbor. */

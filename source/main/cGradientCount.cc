@@ -195,27 +195,28 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
-  // If we are not moving the resource we default to the config input m_peakx and m_peaky for 'normal' gradient resources
-  // for non-moving halo's we generate a random location on the orbit,
-  //   otherwise we get a random location and direction.
-  if (m_move_a_scaler > 1) {
-    if (!m_halo) {
-      m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
-      m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
-      // Get a random direction for movement on the x-axis  
+  // If no initial config set m_peakx and m_peaky, get a random location
+  if (!m_halo) {
+    if (m_peakx == -1) m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);
+    if (m_peaky == -1) m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
+
+    if (m_move_a_scaler > 1) {
+      // Get a random direction for movement on the x-axis
       m_movesignx = rng.GetInt(-1,2);
-      // If x-axis movement is 0, we want to make sure y-axis movement is not also 0  
+      // If x-axis movement direction is 0, we want to make sure y-axis movement is not also 0
       if (m_movesignx == 0) {
         m_movesigny = (rng.GetUInt(0,2) == 1) ? -1 : 1;
       } else {
         m_movesigny = rng.GetInt(-1,2);
       }
-    } else if (m_halo) {
+    }
+  } 
+  // for halo's we generate a random location on the orbit,
+  else if (m_halo) {
+    if (m_move_a_scaler > 1) {
       m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
       m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
     }
-  }
-  if (m_halo) {
     const int chooseUpDown = rng.GetUInt(0,2);
     if (chooseUpDown == 0) {
     int chooseEW = rng.GetUInt(0,2);
@@ -260,10 +261,18 @@ void cGradientCount::fillinResourceValues()
 
   // if we are resetting a resource, we need to calculate new values for the whole world so we can wipe away any residue
   if (m_just_reset) {
-    max_pos_x = GetX() - 1;
-    min_pos_x = 0;
-    max_pos_y = GetY() - 1;
-    min_pos_y = 0;
+    if (m_min_usedx == -1 || m_min_usedy == -1 || m_max_usedx == -1 || m_max_usedy == -1) {
+      max_pos_x = GetX() - 1;
+      min_pos_x = 0;
+      max_pos_y = GetY() - 1;
+      min_pos_y = 0;
+    }
+    else {
+      max_pos_x = m_max_usedx;
+      min_pos_x = m_min_usedx;
+      max_pos_y = m_max_usedy;
+      min_pos_y = m_min_usedy;
+    }
   } else {
     // otherwise we only need to update values within the possible range of the peak 
     // we check all the way back to move_speed to make sure we're not leaving any old residue behind
@@ -596,9 +605,16 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
     // reset counter
     m_topo_counter = 1;
     // clear any old resource
-    for (int ii = 0; ii < GetX(); ii++) {
-      for (int jj = 0; jj < GetY(); jj++) {
-        Element(jj * GetX() + ii).SetAmount(0);
+    if (m_wall_cells.GetSize()) {
+      for (int i = 0; i < m_wall_cells.GetSize(); i++) {
+        Element(m_wall_cells[i]).SetAmount(0);
+      }
+    }
+    else {
+      for (int ii = 0; ii < GetX(); ii++) {
+        for (int jj = 0; jj < GetY(); jj++) {
+          Element(jj * GetX() + ii).SetAmount(0);
+        }
       }
     }
     m_wall_cells.Resize(0);
@@ -758,9 +774,18 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
     // reset counter
     m_topo_counter = 1;
     // since we are potentially plotting more than one hill per resource, we need to wipe the world before we start
-    for (int ii = 0; ii < GetX(); ii++) {
-      for (int jj = 0; jj < GetY(); jj++) {
-        Element(jj * GetX() + ii).SetAmount(0);
+    if (m_min_usedx == -1 || m_min_usedy == -1 || m_max_usedx == -1 || m_max_usedy == -1) {
+      for (int ii = 0; ii < GetX(); ii++) {
+        for (int jj = 0; jj < GetY(); jj++) {
+          Element(jj * GetX() + ii).SetAmount(0);
+        }
+      }
+    }
+    else {
+      for (int ii = m_min_usedx; ii < m_max_usedx + 1; ii++) {
+        for (int jj = m_min_usedy; jj < m_max_usedy + 1; jj++) {
+          Element(jj * GetX() + ii).SetAmount(0);
+        }
       }
     }
 
