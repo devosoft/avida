@@ -470,12 +470,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
         phenotype.IncTimeUsed(addl_time_cost);
 
 
-        // Check if the behavior class should put this thread to sleep
-        if (behav_class < BEHAV_CLASS_NONE) {
-          behav_class_used[behav_class] = true;
-          m_threads[m_cur_thread].active = false;
-          m_threads[m_cur_thread].wait_reg = -1;
-        }
+        // mark behavior class as used, when appropriate
+        if (behav_class < BEHAV_CLASS_NONE) behav_class_used[behav_class] = true;
       }
       
       // if using mini traces, report success or failure of execution
