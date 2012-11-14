@@ -441,6 +441,7 @@ private:
   bool Inst_Dec(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
   bool Inst_One(cAvidaContext& ctx);
+  bool Inst_Rand(cAvidaContext& ctx);
   
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);

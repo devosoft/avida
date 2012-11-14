@@ -152,6 +152,7 @@ tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::initInstLib(void)
     tInstLibEntry<tMethod>("dec", &cHardwareMBE::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, 0, "Decrement ?BX? by one"),
     tInstLibEntry<tMethod>("zero", &cHardwareMBE::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
     tInstLibEntry<tMethod>("one", &cHardwareMBE::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
+    tInstLibEntry<tMethod>("rand", &cHardwareMBE::Inst_Rand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to rand number"),
     
     tInstLibEntry<tMethod>("add", &cHardwareMBE::Inst_Add, INST_CLASS_ARITHMETIC_LOGIC, 0, "Add BX to CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("sub", &cHardwareMBE::Inst_Sub, INST_CLASS_ARITHMETIC_LOGIC, 0, "Subtract CX from BX and place the result in ?BX?"),
@@ -1656,6 +1657,14 @@ bool cHardwareMBE::Inst_One(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 1, false);
+  return true;
+}
+
+bool cHardwareMBE::Inst_Rand(cAvidaContext&)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+  setInternalValue(reg_used, m_world->GetRandom().GetInt(INT_MAX) * randsign, false);
   return true;
 }
 
