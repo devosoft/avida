@@ -337,9 +337,8 @@ void cHardwareMBE::cLocalThread::operator=(const cLocalThread& in_thread)
       behav[i].reg[j] = in_thread.behav[i].reg[j];
     }
     behav[i].bpFH = in_thread.behav[i].bpFH;
-    for (int k = 0; k < 2; k++) {
-      behav[i].cpHEADs[k] = in_thread.behav[i].cpHEADs[k];
-    }
+    behav[i].cpRH = in_thread.behav[i].cpRH;
+    behav[i].cpWH = in_thread.behav[i].cpRH;
   }
   thIP = in_thread.thIP;
   
@@ -374,9 +373,8 @@ void cHardwareMBE::cLocalThread::Reset(cHardwareMBE* in_hardware, int in_id)
       behav[i].reg[j].Clear();
     }
     behav[i].bpFH.Reset(in_hardware);
-    for (int k = 0; k < 2; k++) {
-      behav[i].cpHEADs[k].Reset(in_hardware);
-    }
+    behav[i].cpRH.Reset(in_hardware);
+    behav[i].cpWH.Reset(in_hardware);
   }
   thIP.Reset(in_hardware);
   
@@ -442,11 +440,6 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_threads[m_cur_thread].ClearBCStats();
     int bc_exec_count = 0;
     int max_exec_count = 20;                                                  // min tot num for equ from Nature '03  = 19
-//    int max_exec_count = 0x8000;
-//    int max_exec_count = m_organism->GetPhenotype().GetGenomeLength();
-//    int max_exec_count = cCodeLabel::MAX_LENGTH;
-//    int max_exec_count = m_world->GetConfig().AVE_TIME_SLICE.Get();
-
     // per inst execution type (aka behavioral process classes):
     while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS + 1) {
       if (!m_threads[m_cur_thread].active) break;
@@ -465,8 +458,8 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
         if (m_threads[m_cur_thread].GetBCsUsed()[m_threads[m_cur_thread].GetCurrBehav()]) break;
       }
 
-      BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
-      // if we have already used this class in this cycle in this thread you're done      
+      BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass(); 
+      // if we have already used this class in this cycle in this thread you're done
       if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
         if (m_threads[m_cur_thread].GetBCsUsed()[BEHAV_CLASS]) break;
         else {
@@ -1107,9 +1100,8 @@ void cHardwareMBE::AdjustHeads()
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_BEHAVIORS; j++) {
       m_threads[i].behav[j].bpFH.Adjust();
-      for (int k = 0; k < 2; k++) {
-        m_threads[i].behav[j].cpHEADs[k].Adjust();
-      }
+      m_threads[i].behav[j].cpRH.Adjust();
+      m_threads[i].behav[j].cpWH.Adjust();
     }
     m_threads[i].thIP.Adjust();
   }

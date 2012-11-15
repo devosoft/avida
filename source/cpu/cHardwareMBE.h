@@ -121,7 +121,8 @@ private:
   public:
     sInternalValue reg[NUM_REGISTERS];
     cLocalStack stack;
-    cHeadCPU cpHEADs[2];                  // read and write heads for behav_class_copy
+    cHeadCPU cpRH;                  // read head for behav_class_copy
+    cHeadCPU cpWH;                  // write head for behav_class_copy
     cHeadCPU bpFH;                        // local flow head
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
 /*  struct {
@@ -266,15 +267,21 @@ public:
   cHeadCPU& GetHead(int head_id) {  return GetHead(head_id, m_cur_thread);  }
   const cHeadCPU& GetHead(int head_id, int thread) const {
     if (head_id == 0) return m_threads[thread].thIP;
-    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
-      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    else if (head_id == 1 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpRH;
+    }
+    else if (head_id == 2 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpWH;
     }
     else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
   }
   cHeadCPU& GetHead(int head_id, int thread) {
-      if (head_id == 0) return m_threads[thread].thIP;
-    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
-      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    if (head_id == 0) return m_threads[thread].thIP;
+    else if (head_id == 1 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpRH;
+    }
+    else if (head_id == 2 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpWH;
     }
     else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
   }
@@ -374,15 +381,21 @@ private:
   inline cHeadCPU& getHead(int head_id) {  return GetHead(head_id, m_cur_thread);  }
   inline const cHeadCPU& getHead(int head_id, int thread) const {
     if (head_id == 0) return m_threads[thread].thIP;
-    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
-      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    else if (head_id == 1 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpRH;
+    }
+    else if (head_id == 2 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpWH;
     }
     else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
   }
   inline cHeadCPU& getHead(int head_id, int thread) {
-      if (head_id == 0) return m_threads[thread].thIP;
-    else if ((head_id == 1 || head_id == 2) && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
-      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpHEADs[head_id];
+    if (head_id == 0) return m_threads[thread].thIP;
+    else if (head_id == 1 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpRH;
+    }
+    else if (head_id == 2 && m_threads[thread].GetCurrBehav() == BEHAV_CLASS_COPY) {
+      return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].cpWH;
     }
     else return m_threads[thread].behav[m_threads[thread].GetCurrBehav()].bpFH;
   }
