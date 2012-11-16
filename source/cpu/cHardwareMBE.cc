@@ -167,12 +167,14 @@ tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::initInstLib(void)
     tInstLibEntry<tMethod>("mod", &cHardwareMBE::Inst_Mod, INST_CLASS_ARITHMETIC_LOGIC),
         
     // Flow Control Instructions
+    tInstLibEntry<tMethod>("label", &cHardwareMBE::Inst_Label, INST_CLASS_FLOW_CONTROL, nInstFlag::LABEL),
     tInstLibEntry<tMethod>("search-seq-comp-s", &cHardwareMBE::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-f", &cHardwareMBE::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-b", &cHardwareMBE::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-s", &cHardwareMBE::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-f", &cHardwareMBE::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareMBE::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-lbl-direct-s", &cHardwareMBE::Inst_Search_Label_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct label from genome start and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareMBE::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
     tInstLibEntry<tMethod>("jmp-head", &cHardwareMBE::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
@@ -1450,6 +1452,12 @@ bool cHardwareMBE::Inst_SetBehavior(cAvidaContext&)
   return true;
 }
 
+bool cHardwareMBE::Inst_Label(cAvidaContext&)
+{
+  ReadLabel();
+  return true;
+}
+
 bool cHardwareMBE::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
@@ -2009,6 +2017,15 @@ bool cHardwareMBE::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceBackward(true);
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareMBE::Inst_Search_Label_Direct_S(cAvidaContext&)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelStart(true);
   getHead(nHardware::HEAD_FLOW).Set(found_pos);
   getHead(nHardware::HEAD_FLOW).Advance();
   return true;

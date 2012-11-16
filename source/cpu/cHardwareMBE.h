@@ -429,6 +429,7 @@ private:
   bool Inst_SetBehavior(cAvidaContext& ctx);
   
   // Flow Control
+  bool Inst_Label(cAvidaContext& ctx);
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
   bool Inst_IfNotZero(cAvidaContext& ctx);
@@ -485,6 +486,7 @@ private:
   bool Inst_Search_Seq_Direct_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Direct_F(cAvidaContext& ctx);
   bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
 
   // Thread Execution Control
   bool Inst_WaitCondition_Equal(cAvidaContext& ctx);
