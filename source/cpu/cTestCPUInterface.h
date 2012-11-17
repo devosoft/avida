@@ -204,6 +204,7 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser) { ; }
   void InjectPreyClone(cAvidaContext& ctx) { ; }
   void KillRandPred(cAvidaContext& ctx, cOrganism* org) { ; }
+  void KillRandPrey(cAvidaContext& ctx, cOrganism* org) { ; }
 
   bool HasOutputAV(int av_num = 0) { return false; }
   bool FacedHasOutputAV(int av_num = 0) { return false; }

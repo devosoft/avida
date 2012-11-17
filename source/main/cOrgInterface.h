@@ -207,6 +207,7 @@ public:
   virtual void AttackFacedOrg(cAvidaContext& ctx, int loser) = 0;
   virtual void InjectPreyClone(cAvidaContext& ctx) = 0;
   virtual void KillRandPred(cAvidaContext& ctx, cOrganism* org) = 0;
+  virtual void KillRandPrey(cAvidaContext& ctx, cOrganism* org) = 0;
   
   virtual bool HasOutputAV(int av_num = 0) = 0;
   virtual bool FacedHasOutputAV(int av_num = 0) = 0;

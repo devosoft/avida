@@ -1736,7 +1736,47 @@ void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
   KillOrganism(loser_cell, ctx); 
 }
 
-void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx) 
+void cPopulation::KillRandPred(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* org_to_kill = org;
+  const tSmartArray<cOrganism*>& live_org_list = GetLiveOrgList();
+  tArray<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_kill == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude prey
+    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
+void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* org_to_kill = org;
+  const tSmartArray<cOrganism*>& live_org_list = GetLiveOrgList();
+  tArray<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_kill == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
+    if (!org_at->GetForageTarget() <= -2 && !(org_at->GetForageTarget() == -1 && org_at->GetParentFT() <= -2)) org_to_kill = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
+void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 {
   // do we actually have something to kill?
   if (in_cell.IsOccupied() == false) return;
@@ -4682,6 +4722,11 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     }
   }
   
+  // for juvs with non-predatory parents...
+  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->GetForageTarget() > -2) {
+    KillRandPrey(ctx, parent_cell.GetOrganism());
+  }
+  
 	// increment the number of births in the **parent deme**.  in the case of a
 	// migration, only the origin has its birth count incremented.
   if (deme_array.GetSize() > 0) {
@@ -6220,7 +6265,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
           new_organism->SetOpinion(group_id);
           JoinGroup(new_organism, group_id);
-          new_organism->SetForageTarget(forager_type);  
+          new_organism->SetForageTarget(ctx, forager_type);
           new_organism->GetPhenotype().SetBirthCellID(cell_id);
           new_organism->GetPhenotype().SetBirthGroupID(group_id);
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
@@ -6374,7 +6419,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   if (inject_group) {
     cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
     cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
-    cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
+    cell_array[cell_id].GetOrganism()->SetForageTarget(ctx, forager_type);
     
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);

@@ -1645,22 +1645,12 @@ void cPopulationInterface::InjectPreyClone(cAvidaContext& ctx)
 
 void cPopulationInterface::KillRandPred(cAvidaContext& ctx, cOrganism* org)
 {
-  cOrganism* org_to_kill = org;
-  const tSmartArray<cOrganism*>& live_org_list = GetLiveOrgList();
-  tArray<cOrganism*> TriedIdx(live_org_list.GetSize());
-  int list_size = TriedIdx.GetSize();
-  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
-  
-  int idx = m_world->GetRandom().GetUInt(list_size);
-  while (org_to_kill == org) {
-    cOrganism* org_at = TriedIdx[idx];
-    // exclude prey and juvs
-    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
-    else TriedIdx.Swap(idx, --list_size);
-    if (list_size == 1) break;
-    idx = m_world->GetRandom().GetUInt(list_size);
-  }
-  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+  m_world->GetPopulation().KillRandPred(ctx, org);
+}
+
+void cPopulationInterface::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
+{
+  m_world->GetPopulation().KillRandPrey(ctx, org);
 }
 
 // -------- Avatar support --------

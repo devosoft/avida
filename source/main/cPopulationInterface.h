@@ -260,6 +260,7 @@ public:
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
   void InjectPreyClone(cAvidaContext& ctx);
   void KillRandPred(cAvidaContext& ctx, cOrganism* org);
+  void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   
 // --------Donate Specific support ----
   void PushDonateSpecInstExe(cAvidaContext& ctx, cOrganism* recipient_org, int kin); 

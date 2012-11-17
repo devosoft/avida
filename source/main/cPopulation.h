@@ -375,8 +375,9 @@ public:
 
   //Kill random member of the group (but not self!!!) 
   void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
-  //Attack organism faced by this one, if there is an organism in front.
   void AttackFacedOrg(cAvidaContext& ctx, int loser);
+  void KillRandPred(cAvidaContext& ctx, cOrganism* org);
+  void KillRandPrey(cAvidaContext& ctx, cOrganism* org);
   // Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
   int NumberGroupFemales(int group_id);
