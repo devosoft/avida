@@ -136,7 +136,7 @@ private:
       bool wait_greater:1;
       bool wait_equal:1;
       bool wait_less:1;
-      int wait_reg:4;
+      int wait_reg:5;
       unsigned int wait_dst:4;
     };
     int wait_value;
@@ -188,6 +188,7 @@ private:
     bool m_slip_read_head:1;
     
     unsigned int m_waiting_threads:4;
+    unsigned int m_running_threads:4;
   };
   
   cHardwareBCR(const cHardwareBCR&); // @not_implemented

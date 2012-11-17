@@ -324,6 +324,7 @@ void cHardwareBCR::internalReset()
   m_thread_ids[0] = 0;
   m_cur_thread = 0;
   m_waiting_threads = 0;
+  m_running_threads = 1;
 }
 
 
@@ -1097,6 +1098,8 @@ bool cHardwareBCR::ThreadCreate(int thread_label, const cHeadCPU& start_pos)
       return -1;  // Thread exists, and is running... call fails
     } else {
       m_threads[thread_id].Reset(this, thread_id);
+      m_threads[thread_id].heads[hIP] = start_pos;
+      m_running_threads++;
       return thread_id;
     }
   }
@@ -1118,7 +1121,7 @@ bool cHardwareBCR::ThreadCreate(int thread_label, const cHeadCPU& start_pos)
   // Setup this thread into the current selected memory space (Flow Head)
   m_threads[thread_id].Reset(this, thread_id);
   m_threads[thread_id].heads[hIP] = start_pos;
-  
+  m_running_threads++;
   return thread_id;
 }
 
@@ -1315,7 +1318,10 @@ bool cHardwareBCR::Inst_ThreadCreate(cAvidaContext&)
 
 bool cHardwareBCR::Inst_ThreadCancel(cAvidaContext& ctx)
 {
-  m_threads[m_cur_thread].running = false;
+  if (m_running_threads > 1) {
+    m_threads[m_cur_thread].running = false;
+    m_running_threads--;
+  }
   return true;
 }
 
@@ -2114,15 +2120,14 @@ bool cHardwareBCR::Inst_WaitCondition_Equal(cAvidaContext&)
   
   // Check if condition has already been met
   for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (i != m_cur_thread && m_threads[i].reg[check_reg].value ==
-          m_threads[m_cur_thread].reg[wait_value].value) {
-      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value,
-            m_threads[i].reg[check_reg]);
+    if (i != m_cur_thread && m_threads[i].reg[check_reg].value == m_threads[m_cur_thread].reg[wait_value].value) {
+      setInternalValue(wait_dst, m_threads[i].reg[check_reg].value, m_threads[i].reg[check_reg]);
       return true;
     }
-  }  
+  }
+  
   // Fail to sleep if this is the last thread awake
-  if (int(m_waiting_threads) == (m_threads.GetSize() - 1)) return false;
+  if (m_waiting_threads == m_running_threads) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2154,7 +2159,7 @@ bool cHardwareBCR::Inst_WaitCondition_Less(cAvidaContext&)
   }
   
   // Fail to sleep if this is the last thread awake
-  if (int(m_waiting_threads) == (m_threads.GetSize() - 1)) return false;
+  if (m_waiting_threads == m_running_threads) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
@@ -2186,7 +2191,7 @@ bool cHardwareBCR::Inst_WaitCondition_Greater(cAvidaContext&)
   }
   
   // Fail to sleep if this is the last thread awake
-  if (int(m_waiting_threads) == (m_threads.GetSize() - 1)) return false;
+  if (m_waiting_threads == m_running_threads) return false;
   
   // Put thread to sleep with appropriate wait condition
   m_threads[m_cur_thread].active = false;
