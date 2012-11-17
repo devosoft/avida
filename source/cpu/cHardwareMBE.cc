@@ -152,6 +152,7 @@ tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::initInstLib(void)
     tInstLibEntry<tMethod>("dec", &cHardwareMBE::Inst_Dec, INST_CLASS_ARITHMETIC_LOGIC, 0, "Decrement ?BX? by one"),
     tInstLibEntry<tMethod>("zero", &cHardwareMBE::Inst_Zero, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
     tInstLibEntry<tMethod>("one", &cHardwareMBE::Inst_One, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to 0"),
+    tInstLibEntry<tMethod>("rand", &cHardwareMBE::Inst_Rand, INST_CLASS_ARITHMETIC_LOGIC, 0, "Set ?BX? to rand number"),
     
     tInstLibEntry<tMethod>("add", &cHardwareMBE::Inst_Add, INST_CLASS_ARITHMETIC_LOGIC, 0, "Add BX to CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("sub", &cHardwareMBE::Inst_Sub, INST_CLASS_ARITHMETIC_LOGIC, 0, "Subtract CX from BX and place the result in ?BX?"),
@@ -166,12 +167,14 @@ tInstLib<cHardwareMBE::tMethod>* cHardwareMBE::initInstLib(void)
     tInstLibEntry<tMethod>("mod", &cHardwareMBE::Inst_Mod, INST_CLASS_ARITHMETIC_LOGIC),
         
     // Flow Control Instructions
+    tInstLibEntry<tMethod>("label", &cHardwareMBE::Inst_Label, INST_CLASS_FLOW_CONTROL, nInstFlag::LABEL),
     tInstLibEntry<tMethod>("search-seq-comp-s", &cHardwareMBE::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-f", &cHardwareMBE::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-b", &cHardwareMBE::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-s", &cHardwareMBE::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-f", &cHardwareMBE::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareMBE::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-lbl-direct-s", &cHardwareMBE::Inst_Search_Label_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct label from genome start and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareMBE::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
     tInstLibEntry<tMethod>("jmp-head", &cHardwareMBE::Inst_JumpHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?Flow? by amount in ?CX? register"),
@@ -336,9 +339,8 @@ void cHardwareMBE::cLocalThread::operator=(const cLocalThread& in_thread)
       behav[i].reg[j] = in_thread.behav[i].reg[j];
     }
     behav[i].bpFH = in_thread.behav[i].bpFH;
-    for (int k = 0; k < 2; k++) {
-      behav[i].cpHEADs[k] = in_thread.behav[i].cpHEADs[k];
-    }
+    behav[i].cpRH = in_thread.behav[i].cpRH;
+    behav[i].cpWH = in_thread.behav[i].cpRH;
   }
   thIP = in_thread.thIP;
   
@@ -373,9 +375,8 @@ void cHardwareMBE::cLocalThread::Reset(cHardwareMBE* in_hardware, int in_id)
       behav[i].reg[j].Clear();
     }
     behav[i].bpFH.Reset(in_hardware);
-    for (int k = 0; k < 2; k++) {
-      behav[i].cpHEADs[k].Reset(in_hardware);
-    }
+    behav[i].cpRH.Reset(in_hardware);
+    behav[i].cpWH.Reset(in_hardware);
   }
   thIP.Reset(in_hardware);
   
@@ -441,11 +442,6 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_threads[m_cur_thread].ClearBCStats();
     int bc_exec_count = 0;
     int max_exec_count = 20;                                                  // min tot num for equ from Nature '03  = 19
-//    int max_exec_count = 0x8000;
-//    int max_exec_count = m_organism->GetPhenotype().GetGenomeLength();
-//    int max_exec_count = cCodeLabel::MAX_LENGTH;
-//    int max_exec_count = m_world->GetConfig().AVE_TIME_SLICE.Get();
-
     // per inst execution type (aka behavioral process classes):
     while (m_threads[m_cur_thread].GetBCUsedCount() < NUM_BEHAVIORS + 1) {
       if (!m_threads[m_cur_thread].active) break;
@@ -464,8 +460,8 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
         if (m_threads[m_cur_thread].GetBCsUsed()[m_threads[m_cur_thread].GetCurrBehav()]) break;
       }
 
-      BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
-      // if we have already used this class in this cycle in this thread you're done      
+      BehavClass BEHAV_CLASS = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass(); 
+      // if we have already used this class in this cycle in this thread you're done
       if (BEHAV_CLASS != BEHAV_CLASS_NONE && BEHAV_CLASS != BEHAV_CLASS_BREAK) {
         if (m_threads[m_cur_thread].GetBCsUsed()[BEHAV_CLASS]) break;
         else {
@@ -1106,9 +1102,8 @@ void cHardwareMBE::AdjustHeads()
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_BEHAVIORS; j++) {
       m_threads[i].behav[j].bpFH.Adjust();
-      for (int k = 0; k < 2; k++) {
-        m_threads[i].behav[j].cpHEADs[k].Adjust();
-      }
+      m_threads[i].behav[j].cpRH.Adjust();
+      m_threads[i].behav[j].cpWH.Adjust();
     }
     m_threads[i].thIP.Adjust();
   }
@@ -1457,6 +1452,12 @@ bool cHardwareMBE::Inst_SetBehavior(cAvidaContext&)
   return true;
 }
 
+bool cHardwareMBE::Inst_Label(cAvidaContext&)
+{
+  ReadLabel();
+  return true;
+}
+
 bool cHardwareMBE::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
@@ -1656,6 +1657,14 @@ bool cHardwareMBE::Inst_One(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
   setInternalValue(reg_used, 1, false);
+  return true;
+}
+
+bool cHardwareMBE::Inst_Rand(cAvidaContext&)
+{
+  const int reg_used = FindModifiedRegister(rBX);
+  int randsign = m_world->GetRandom().GetUInt(0,2) ? -1 : 1;
+  setInternalValue(reg_used, m_world->GetRandom().GetInt(INT_MAX) * randsign, false);
   return true;
 }
 
@@ -2008,6 +2017,15 @@ bool cHardwareMBE::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceBackward(true);
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareMBE::Inst_Search_Label_Direct_S(cAvidaContext&)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelStart(true);
   getHead(nHardware::HEAD_FLOW).Set(found_pos);
   getHead(nHardware::HEAD_FLOW).Advance();
   return true;
