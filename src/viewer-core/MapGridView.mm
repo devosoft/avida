@@ -56,7 +56,6 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_height = 0;
   num_colors = 0;
   color_cache = [NSMutableArray arrayWithCapacity:255];
-  [color_cache retain];
   zoom = -1;
   selected_x = -1;
   selected_y = -1;
@@ -459,7 +458,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   if ([[pboard types] containsObject:AvidaPasteboardTypeGenome]) {
-    Genome* genome = [Genome genomeFromPasteboard:pboard];
+    ACGenome* genome = [ACGenome genomeFromPasteboard:pboard];
     if (genome != nil) {
       NSPoint location = [self convertPoint:[sender draggingLocation] fromView:nil];
       CGFloat block_size = zoom;

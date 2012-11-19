@@ -111,8 +111,6 @@
 - (void) dealloc {
 	glDeleteTextures(1, &texture1);
 	glDeleteTextures(1, &texture2);
-	
-	[super dealloc];
 }
 
 - (void) finalize {
@@ -330,7 +328,6 @@
 	RotateAnimation* animation = [[RotateAnimation alloc] initWithDuration:duration animationCurve:NSAnimationEaseInOut view:self forward:forward];
 	[animation setAnimationBlockingMode:NSAnimationBlocking];
 	[animation startAnimation];
-	[animation release];
 }
 
 - (void) setSlabWidth:(float)width {

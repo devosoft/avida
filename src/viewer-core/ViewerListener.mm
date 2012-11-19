@@ -52,32 +52,38 @@
 
 void MainThreadListener::NotifyMap(Avida::Viewer::Map* map)
 {
-  if ([m_target respondsToSelector:@selector(handleMap:)]) {
-    ViewerMap* cvm = [[ViewerMap alloc] initWithMap:map];
-    [m_target performSelectorOnMainThread:@selector(handleMap:) withObject:cvm waitUntilDone:NO];
+  @autoreleasepool {
+    if ([m_target respondsToSelector:@selector(handleMap:)]) {
+      ViewerMap* cvm = [[ViewerMap alloc] initWithMap:map];
+      [m_target performSelectorOnMainThread:@selector(handleMap:) withObject:cvm waitUntilDone:NO];
+    }
   }
 }
 
 void MainThreadListener::NotifyState(Avida::Viewer::DriverPauseState state)
 {
-  switch (state) {
-    case Avida::Viewer::DRIVER_PAUSED:
-      if ([m_target respondsToSelector:@selector(handleRunPaused:)]) {
-        [m_target performSelectorOnMainThread:@selector(handleRunPaused:) withObject:nil waitUntilDone:NO];
-      }
-      break;
-    case Avida::Viewer::DRIVER_SYNCING:
-      [m_target performSelectorOnMainThread:@selector(handleRunSync:) withObject:nil waitUntilDone:NO];
-      break;
-    case Avida::Viewer::DRIVER_UNPAUSED:
-      break;
+  @autoreleasepool {
+    switch (state) {
+      case Avida::Viewer::DRIVER_PAUSED:
+        if ([m_target respondsToSelector:@selector(handleRunPaused:)]) {
+          [m_target performSelectorOnMainThread:@selector(handleRunPaused:) withObject:nil waitUntilDone:NO];
+        }
+        break;
+      case Avida::Viewer::DRIVER_SYNCING:
+        [m_target performSelectorOnMainThread:@selector(handleRunSync:) withObject:nil waitUntilDone:NO];
+        break;
+      case Avida::Viewer::DRIVER_UNPAUSED:
+        break;
+    }
   }
 }
 
 void MainThreadListener::NotifyUpdate(int update)
 {
-  if ([m_target respondsToSelector:@selector(handleUpdate:)]) {
-    ViewerUpdate* cvu = [[ViewerUpdate alloc] initWithUpdate:update];
-    [m_target performSelectorOnMainThread:@selector(handleUpdate:) withObject:cvu waitUntilDone:NO];
+  @autoreleasepool {
+    if ([m_target respondsToSelector:@selector(handleUpdate:)]) {
+      ViewerUpdate* cvu = [[ViewerUpdate alloc] initWithUpdate:update];
+      [m_target performSelectorOnMainThread:@selector(handleUpdate:) withObject:cvu waitUntilDone:NO];
+    }
   }
 }

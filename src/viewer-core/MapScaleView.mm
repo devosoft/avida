@@ -60,11 +60,6 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 
-- (void) dealloc
-{
-  [super dealloc];
-}
-
 
 - (void) drawRect:(NSRect)dirtyRect
 {

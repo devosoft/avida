@@ -57,7 +57,6 @@
 - (void) dealloc {
   delete listener;
   listener = NULL;
-  [super dealloc];
 }
 
 

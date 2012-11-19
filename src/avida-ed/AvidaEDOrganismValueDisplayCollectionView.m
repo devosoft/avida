@@ -29,6 +29,7 @@
 
 #import "AvidaEDOrganismValueDisplayCollectionView.h"
 
+#import "AvidaEDGraphicalValueDisplay.h"
 #import "AvidaEDOrganismValueDisplayView.h"
 
 

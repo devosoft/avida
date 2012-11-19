@@ -235,8 +235,8 @@
   NSInteger secondarySelected = [btnGraphSelectRight indexOfSelectedItem];
   
   // Auto scale the plot space to fit the plot data
-  NSMutableArray* activePrimaryPlots = [[[NSMutableArray alloc] initWithCapacity:[popArray count]] autorelease];
-  NSMutableArray* activeSecondaryPlots = [[[NSMutableArray alloc] initWithCapacity:[popArray count]] autorelease];
+  NSMutableArray* activePrimaryPlots = [[NSMutableArray alloc] initWithCapacity:[popArray count]];
+  NSMutableArray* activeSecondaryPlots = [[NSMutableArray alloc] initWithCapacity:[popArray count]];
   for (int i = 0; i < [popArray count]; i++) {
     if (primarySelected) [activePrimaryPlots addObject:[[popArray objectAtIndex:i] primaryPlot]];
     if (secondarySelected) [activeSecondaryPlots addObject:[[popArray objectAtIndex:i] secondaryPlot]];
@@ -421,12 +421,13 @@
       // Write the appropriate file type
       if (format == EXPORT_GRAPHICS_JPEG) {
         CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
-        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, [NSNumber numberWithFloat:1.0]);	// set the compression quality here
-        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
+        NSNumber* compQual = [NSNumber numberWithFloat:1.0];
+        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, (__bridge void*)compQual);	// set the compression quality here
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((__bridge CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
         CGImageDestinationAddImage(dr, imgRef, mSaveMetaAndOpts);
         CGImageDestinationFinalize(dr);
       } else {
-        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((__bridge CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
         CGImageDestinationAddImage(dr, imgRef, NULL);
         CGImageDestinationFinalize(dr);
       }
@@ -441,7 +442,7 @@
     {
       // Create pdfContext
       NSMutableData *pdfData = [[NSMutableData alloc] init];
-      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((CFMutableDataRef)pdfData);
+      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((__bridge CFMutableDataRef)pdfData);
       const CGRect pdfMediaBox = [self.view bounds];
       CGContextRef pdfContext = CGPDFContextCreate(dataConsumer, &pdfMediaBox, NULL);
       CGContextBeginPage(pdfContext, &pdfMediaBox);
@@ -478,8 +479,6 @@
       // Clean up
       CGContextRelease(pdfContext);
       CGDataConsumerRelease(dataConsumer);
-      
-      [pdfData release];
     }
       break;
   }

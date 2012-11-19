@@ -29,6 +29,8 @@
 
 #import "AvidaEDOrganismViewController.h"
 
+#import <AvidaCore/AvidaCore.h>
+
 #import "AvidaEDController.h"
 #import "AvidaEDEnvActionsDataSource.h"
 #import "AvidaEDOrganismSettingsViewController.h"
@@ -37,7 +39,6 @@
 #import "AvidaRun.h"
 #import "Freezer.h"
 #import "NSFileManager+TemporaryDirectory.h"
-#import "NSString+Apto.h"
 #import "OrganismView.h"
 #import "TaskTimelineView.h"
 
@@ -483,13 +484,13 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
   
   if (!trace) return;
   
-  Genome* genome = nil;
+  ACGenome* genome = nil;
   
   if (imageView == imgOffspring) {
-    genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:trace->OffspringGenome()->AsString()]
+    genome = [[ACGenome alloc] initWithGenome:[NSString stringWithAptoString:trace->OffspringGenome()->AsString()]
                                        name:[NSString stringWithFormat:@"%@ offspring",[txtOrgName stringValue]]];
   } else {
-    genome = [[Genome alloc] initWithGenome:[NSString stringWithAptoString:trace->OrganismGenome()->AsString()]
+    genome = [[ACGenome alloc] initWithGenome:[NSString stringWithAptoString:trace->OrganismGenome()->AsString()]
                                        name:[txtOrgName stringValue]];
   }
   
@@ -628,12 +629,13 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
       // Write the appropriate file type
       if (format == EXPORT_GRAPHICS_JPEG) {
         CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
-        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, [NSNumber numberWithFloat:1.0]);	// set the compression quality here
-        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
+        NSNumber* compQual = [NSNumber numberWithFloat:1.0];
+        CFDictionarySetValue(mSaveMetaAndOpts, kCGImageDestinationLossyCompressionQuality, (__bridge void*)compQual);	// set the compression quality here
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((__bridge CFURLRef)url, (CFStringRef)@"public.jpeg" , 1, NULL);
         CGImageDestinationAddImage(dr, imgRef, mSaveMetaAndOpts);
         CGImageDestinationFinalize(dr);
       } else {
-        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
+        CGImageDestinationRef dr = CGImageDestinationCreateWithURL ((__bridge CFURLRef)url, (CFStringRef)@"public.png" , 1, NULL);
         CGImageDestinationAddImage(dr, imgRef, NULL);
         CGImageDestinationFinalize(dr);
       }
@@ -647,7 +649,7 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
     {
       // Create pdfContext
       NSMutableData *pdfData = [[NSMutableData alloc] init];
-      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((CFMutableDataRef)pdfData);
+      CGDataConsumerRef dataConsumer = CGDataConsumerCreateWithCFData((__bridge CFMutableDataRef)pdfData);
       CGContextRef pdfContext = CGPDFContextCreate(dataConsumer, &exportRect, NULL);
       CGContextBeginPage(pdfContext, &exportRect);
       
@@ -679,8 +681,6 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
       // Clean up
       CGContextRelease(pdfContext);
       CGDataConsumerRelease(dataConsumer);
-      
-      [pdfData release];
     }
       break;
     default:
@@ -730,7 +730,6 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
     }    
   }
   
-  [popoverSettings release];
   popoverSettings = nil;
 }
 

@@ -1,5 +1,5 @@
 //
-//  Genome.m
+//  ACGenome.m
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 1/24/12.
@@ -27,15 +27,15 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "Genome.h"
+#import "ACGenome.h"
 
 #import "NSString+Apto.h"
 
 NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
 
-@implementation Genome
+@implementation ACGenome
 
-- (Genome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName {
+- (ACGenome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName {
   genomeStr = genome;
   name = genomeName;
   return self;
@@ -45,33 +45,14 @@ NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
 @synthesize name;
 @synthesize location;
 
-+ (Genome*) genomeFromPasteboard:(NSPasteboard*)pboard {
-  NSArray* classes = [[NSArray alloc] initWithObjects:[Genome class], nil];
-  NSDictionary* options = [NSDictionary dictionary];
-  NSArray* copiedItems = [pboard readObjectsForClasses:classes options:options];
-  if (copiedItems != nil && [copiedItems count] > 0) {
-    return (Genome*)[copiedItems objectAtIndex:0];
-  }
-  
-  return nil;
-}
-
-+ (void) writeGenome:(Genome*)genome toPasteboard:(NSPasteboard*)pboard {
-  [pboard writeObjects:[NSArray arrayWithObject:genome]];
-}
-
-
-
-
-
 - (void) encodeWithCoder:(NSCoder*)encoder {
   [encoder encodeObject:genomeStr];
   [encoder encodeObject:name];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
-  genomeStr = [[decoder decodeObject] retain];
-  name = [[decoder decodeObject] retain];
+  genomeStr = [decoder decodeObject];
+  name = [decoder decodeObject];
   return self;
 }
 

@@ -29,11 +29,11 @@
 
 #import "AvidaEDPopViewStatView.h"
 
+#import <AvidaCore/AvidaCore.h>
+
 #import "AvidaRun.h"
 #import "AvidaEDController.h"
 #import "AvidaEDEnvActionsDataSource.h"
-#import "Genome.h"
-#import "NSString+Apto.h"
 
 #include "avida/core/Properties.h"
 #include "avida/data/Manager.h"
@@ -273,11 +273,11 @@ static const int MAX_GRAPH_POINTS = 1000;
   
  
   // Create plot that uses the graphData data source
-	CPTScatterPlot *dataSourceLinePlot = [[[CPTScatterPlot alloc] init] autorelease];
+	CPTScatterPlot *dataSourceLinePlot = [[CPTScatterPlot alloc] init];
   dataSourceLinePlot.identifier = @"graph";
 	dataSourceLinePlot.cachePrecision = CPTPlotCachePrecisionDouble;
   
-  CPTMutableLineStyle* lineStyle = [[dataSourceLinePlot.dataLineStyle mutableCopy] autorelease];
+  CPTMutableLineStyle* lineStyle = [dataSourceLinePlot.dataLineStyle mutableCopy];
 	lineStyle.miterLimit = 1.0;
 	lineStyle.lineWidth = 3.0;
 	lineStyle.lineColor = [CPTColor blueColor];
@@ -385,7 +385,6 @@ static const int MAX_GRAPH_POINTS = 1000;
 
 - (void)dealloc
 {
-  [super dealloc];
   if (recorder) {
     assert(run);
     [run detachRecorder:recorder];
@@ -554,7 +553,7 @@ static const int MAX_GRAPH_POINTS = 1000;
 - (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard {
   if (genome == "") return NO;
   
-  [Genome writeGenome:[[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome] name:[txtOrgName stringValue]] toPasteboard:pboard];
+  [ACGenome writeGenome:[[ACGenome alloc] initWithGenome:[NSString stringWithAptoString:genome] name:[txtOrgName stringValue]] toPasteboard:pboard];
   
   return YES;
 }
@@ -689,9 +688,9 @@ static const int MAX_GRAPH_POINTS = 1000;
 }
 
 
-- (Genome*) selectedOrgGenome {
+- (ACGenome*) selectedOrgGenome {
   if (genome == "") return nil;
-  return [[Genome alloc] initWithGenome:[NSString stringWithAptoString:genome] name:[txtOrgName stringValue]];
+  return [[ACGenome alloc] initWithGenome:[NSString stringWithAptoString:genome] name:[txtOrgName stringValue]];
 }
 
 
@@ -753,7 +752,7 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::RequestedData() con
     for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
       Apto::String data_id("core.environment.triggers.");
       data_id += [[m_view.envActions entryAtIndex:i] UTF8String];
-      data_id += ".organisms";
+      data_id += ".test_organisms";
       ds->Insert(data_id);
     }
     m_requested = ds;
@@ -764,24 +763,26 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::RequestedData() con
 
 void AvidaEDPopViewStatViewRecorder::NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data)
 {
-  AvidaEDPopViewStatViewValues* values = [[AvidaEDPopViewStatViewValues alloc] init];
-  
-  values->organisms = retrieve_data("core.world.organisms")->IntValue();
-  values->ave_fitness = retrieve_data("core.world.ave_fitness")->DoubleValue();
-  values->ave_metabolic_rate = retrieve_data("core.world.ave_metabolic_rate")->DoubleValue();
-  values->ave_gestation_time = retrieve_data("core.world.ave_gestation_time")->DoubleValue();
-  values->ave_age = retrieve_data("core.world.ave_age")->DoubleValue();
+  @autoreleasepool {
+    AvidaEDPopViewStatViewValues* values = [[AvidaEDPopViewStatViewValues alloc] init];
+    
+    values->organisms = retrieve_data("core.world.organisms")->IntValue();
+    values->ave_fitness = retrieve_data("core.world.ave_fitness")->DoubleValue();
+    values->ave_metabolic_rate = retrieve_data("core.world.ave_metabolic_rate")->DoubleValue();
+    values->ave_gestation_time = retrieve_data("core.world.ave_gestation_time")->DoubleValue();
+    values->ave_age = retrieve_data("core.world.ave_age")->DoubleValue();
 
-  for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
-    NSString* entry_name = [m_view.envActions entryAtIndex:i];
-    Apto::String data_id("core.environment.triggers.");
-    data_id += [entry_name UTF8String];
-    data_id += ".organisms";
-    int count = retrieve_data(data_id)->IntValue();
-    [m_view.envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
+    for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
+      NSString* entry_name = [m_view.envActions entryAtIndex:i];
+      Apto::String data_id("core.environment.triggers.");
+      data_id += [entry_name UTF8String];
+      data_id += ".test_organisms";
+      int count = retrieve_data(data_id)->IntValue();
+      [m_view.envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
+    }
+
+    [m_view performSelectorOnMainThread:@selector(handleData:) withObject:values waitUntilDone:NO];
   }
-
-  [m_view performSelectorOnMainThread:@selector(handleData:) withObject:values waitUntilDone:NO];
 }
 
 
@@ -799,28 +800,30 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewOrgRecorder::RequestedData() 
 
 void AvidaEDPopViewStatViewOrgRecorder::NotifyData(Avida::Update update, Avida::Data::DataRetrievalFunctor retrieve_data)
 {
-  if (m_genotype_data_id.GetSize() == 0) return;
-  
-  
-  AvidaEDPopViewStatViewOrgValues* values = [[AvidaEDPopViewStatViewOrgValues alloc] init];
-  
-  Avida::Data::PackagePtr package = retrieve_data(m_genotype_data_id);
-  if (package) {
-    values->genotype_id = package->IntValue();
-  } else {
-    values->genotype_id = -1;
+  @autoreleasepool {
+    if (m_genotype_data_id.GetSize() == 0) return;
+    
+    
+    AvidaEDPopViewStatViewOrgValues* values = [[AvidaEDPopViewStatViewOrgValues alloc] init];
+    
+    Avida::Data::PackagePtr package = retrieve_data(m_genotype_data_id);
+    if (package) {
+      values->genotype_id = package->IntValue();
+    } else {
+      values->genotype_id = -1;
+    }
+    package = retrieve_data(m_clade_data_id);
+    if (package) {
+      values->clade_id = package->IntValue();
+    } else {
+      values->clade_id = -1;
+    }
+    values->update = update;
+    values->x = m_x;
+    values->y = m_y;
+    
+    [m_view performSelectorOnMainThread:@selector(handleOrgData:) withObject:values waitUntilDone:NO];
   }
-  package = retrieve_data(m_clade_data_id);
-  if (package) {
-    values->clade_id = package->IntValue();
-  } else {
-    values->clade_id = -1;
-  }
-  values->update = update;
-  values->x = m_x;
-  values->y = m_y;
-  
-  [m_view performSelectorOnMainThread:@selector(handleOrgData:) withObject:values waitUntilDone:NO];
 }
 
 void AvidaEDPopViewStatViewOrgRecorder::SetCoords(int x, int y)
@@ -863,5 +866,7 @@ bool AvidaEDPopViewStatViewTimeRecorder::shouldRecordValue(Avida::Update update)
 void AvidaEDPopViewStatViewTimeRecorder::didRecordValue()
 {
   m_mutex.Unlock(); // release object lock for use on main thread
-  if (m_active) [m_view performSelectorOnMainThread:@selector(handleNewGraphData) withObject:nil waitUntilDone:NO];
+  @autoreleasepool {
+    if (m_active) [m_view performSelectorOnMainThread:@selector(handleNewGraphData) withObject:nil waitUntilDone:NO];
+  }
 }

@@ -29,7 +29,8 @@
 
 #import "AvidaEDAnalyzePopulation.h"
 
-#import "NSString+Apto.h"
+#import <AvidaCore/AvidaCore.h>
+
 
 @implementation AvidaEDAnalyzePopulation
 
@@ -56,11 +57,11 @@
     [yData addObject:values];
   }
   
-  primaryPlot = [[[CPTScatterPlot alloc] init] autorelease];
+  primaryPlot = [[CPTScatterPlot alloc] init];
   primaryPlot.identifier = [NSString stringWithFormat:@"p_fid%d", fid.identifier];
 	primaryPlot.cachePrecision = CPTPlotCachePrecisionDouble;
   
-  CPTMutableLineStyle* primaryPlotLineStyle = [[primaryPlot.dataLineStyle mutableCopy] autorelease];
+  CPTMutableLineStyle* primaryPlotLineStyle = [primaryPlot.dataLineStyle mutableCopy];
 	primaryPlotLineStyle.miterLimit = 1.0;
 	primaryPlotLineStyle.lineWidth = 3.0;
 	primaryPlotLineStyle.lineColor = [CPTColor redColor];
@@ -68,11 +69,11 @@
   primaryPlot.dataSource = self;
 
   
-  secondaryPlot = [[[CPTScatterPlot alloc] init] autorelease];
+  secondaryPlot = [[CPTScatterPlot alloc] init];
   secondaryPlot.identifier = [NSString stringWithFormat:@"s_fid%d", fid.identifier];
 	secondaryPlot.cachePrecision = CPTPlotCachePrecisionDouble;
   
-  CPTMutableLineStyle* secondaryPlotLineStyle = [[secondaryPlot.dataLineStyle mutableCopy] autorelease];
+  CPTMutableLineStyle* secondaryPlotLineStyle = [secondaryPlot.dataLineStyle mutableCopy];
 	secondaryPlotLineStyle.miterLimit = 1.0;
 	secondaryPlotLineStyle.lineWidth = 1.0;
 	secondaryPlotLineStyle.lineColor = [CPTColor redColor];
@@ -110,10 +111,10 @@
 
   colorIndex = _color;
   
-  CPTMutableLineStyle* primaryPlotLineStyle = [[primaryPlot.dataLineStyle mutableCopy] autorelease];
+  CPTMutableLineStyle* primaryPlotLineStyle = [primaryPlot.dataLineStyle mutableCopy];
   primaryPlotLineStyle.lineColor = color;
   primaryPlot.dataLineStyle = primaryPlotLineStyle;
-  CPTMutableLineStyle* secondaryPlotLineStyle = [[secondaryPlot.dataLineStyle mutableCopy] autorelease];
+  CPTMutableLineStyle* secondaryPlotLineStyle = [secondaryPlot.dataLineStyle mutableCopy];
 	secondaryPlotLineStyle.lineColor = color;
   secondaryPlot.dataLineStyle = secondaryPlotLineStyle;
 }

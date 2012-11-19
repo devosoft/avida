@@ -29,7 +29,7 @@
 
 #import "OrganismView.h"
 
-#import "NSString+Apto.h"
+#import <AvidaCore/AvidaCore.h>
 
 #include "avida/viewer/GraphicsContext.h"
 #include "avida/viewer/OrganismTrace.h"

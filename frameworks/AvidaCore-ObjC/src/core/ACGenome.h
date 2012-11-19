@@ -1,9 +1,9 @@
 //
-//  NSString+Apto.h
+//  ACGenome.h
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 7/7/11.
-//  Copyright 2011-2012 Michigan State University. All rights reserved.
+//  Created by David M. Bryson on 1/24/12.
+//  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -27,10 +27,22 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <Foundation/Foundation.h>
 
-#include "apto/core/String.h"
+#include "avida/core/Genome.h"
 
-@interface NSString (Apto)
-+ (NSString*) stringWithAptoString:(const Apto::String&)string;
+extern NSString* const AvidaPasteboardTypeGenome;
+
+
+@interface ACGenome : NSObject <NSCoding> {
+  NSString* name;
+  NSString* genomeStr;
+  
+  CGPoint location;
+}
+- (ACGenome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName;
+
+@property (readonly, nonatomic) NSString* genomeStr;
+@property (readwrite, copy, nonatomic) NSString* name;
+@property (readwrite, nonatomic) CGPoint location;
+
 @end

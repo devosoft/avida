@@ -29,9 +29,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import <AvidaCore/AvidaCore.h>
+
 #include "avida/viewer.h"
 
-#import "Genome.h"
 
 @class MapGridView;
 
@@ -47,7 +48,7 @@
 @required
 - (void) mapView:(MapGridView*)map handleDraggedConfig:(Avida::Viewer::FreezerID)fid;
 - (void) mapView:(MapGridView*)map handleDraggedFreezerGenome:(Avida::Viewer::FreezerID)fid atX:(int)x Y:(int)y;
-- (void) mapView:(MapGridView*)map handleDraggedGenome:(Genome*)genome atX:(int)x Y:(int)y;
+- (void) mapView:(MapGridView*)map handleDraggedGenome:(ACGenome*)genome atX:(int)x Y:(int)y;
 - (void) mapView:(MapGridView*)map handleDraggedWorld:(Avida::Viewer::FreezerID)fid;
 @end
 

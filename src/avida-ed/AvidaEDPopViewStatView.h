@@ -105,7 +105,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
 - (IBAction) changeGraph:(id)sender;
 - (void) handleNewGraphData;
 
-- (Genome*) selectedOrgGenome;
+- (ACGenome*) selectedOrgGenome;
 
 @property (readonly) CPTGraphHostingView* graphView;
 

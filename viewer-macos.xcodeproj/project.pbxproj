@@ -40,6 +40,12 @@
 		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
 		703ECC2C1513B14400AF9292 /* AvidaED-OrganismSettings.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */; };
+		7041AC5B16558F1D008413DB /* AvidaCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7041AC5C16558F38008413DB /* AvidaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7041AC5D16558F3C008413DB /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		7041AC5F16558F46008413DB /* AvidaCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
+		7041AC6016558F48008413DB /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		7041AC6116559245008413DB /* AvidaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC5916558EDF008413DB /* AvidaCore.framework */; };
 		7046CF7714D0B5320030F1DF /* petri.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7046CF7614D0B5320030F1DF /* petri.icns */; };
 		7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7046CFB714D9B7BA0030F1DF /* DroppableGraphHostingView.m */; };
 		7046CFBC14D9C55B0030F1DF /* graph-preview-dashed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7046CFBA14D9C55B0030F1DF /* graph-preview-dashed.png */; };
@@ -56,7 +62,6 @@
 		708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 708308F614B6ADEB0051B354 /* OpenGL.framework */; };
 		7083E58414BE1E2900E4023E /* Freezer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7083E58314BE1E2900E4023E /* Freezer.mm */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
-		709D24C714CF500400AB0425 /* Genome.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709D24C414CF4B8100AB0425 /* Genome.mm */; };
 		70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */; };
 		70A420CA15E6B97E002B2218 /* trash_can.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A420C915E6B97E002B2218 /* trash_can.png */; };
 		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
@@ -64,7 +69,6 @@
 		70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */; };
 		70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */; };
 		70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
-		70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
 		70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E60729156588A200E7AA82 /* OrgExecStateValue.m */; };
@@ -91,6 +95,18 @@
 			dstSubfolderSpec = 10;
 			files = (
 				70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */,
+				7041AC5B16558F1D008413DB /* AvidaCore.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7041AC5E16558F40008413DB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7041AC5F16558F46008413DB /* AvidaCore.framework in CopyFiles */,
+				7041AC6016558F48008413DB /* CorePlot.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +171,7 @@
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703ECC2B1513B14400AF9292 /* AvidaED-OrganismSettings.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-OrganismSettings.xib"; sourceTree = "<group>"; };
+		7041AC5916558EDF008413DB /* AvidaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AvidaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7046CF7414D0B4F80030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
 		7046CF7614D0B5320030F1DF /* petri.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = petri.icns; sourceTree = "<group>"; };
 		7046CFB614D9B7BA0030F1DF /* DroppableGraphHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DroppableGraphHostingView.h; sourceTree = "<group>"; };
@@ -181,8 +198,6 @@
 		7083E58214BE1E2900E4023E /* Freezer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Freezer.h; sourceTree = "<group>"; };
 		7083E58314BE1E2900E4023E /* Freezer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Freezer.mm; sourceTree = "<group>"; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		709D24C314CF4B8100AB0425 /* Genome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Genome.h; sourceTree = "<group>"; };
-		709D24C414CF4B8100AB0425 /* Genome.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Genome.mm; sourceTree = "<group>"; };
 		70A2A6E0156423000086456A /* AvidaEDExportAccessoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDExportAccessoryController.h; sourceTree = "<group>"; };
 		70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDExportAccessoryController.m; sourceTree = "<group>"; };
 		70A420C915E6B97E002B2218 /* trash_can.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash_can.png; sourceTree = "<group>"; };
@@ -192,8 +207,6 @@
 		70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AnaViewerIcon.png; sourceTree = "<group>"; };
 		70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OrgViewerIcon.png; sourceTree = "<group>"; };
 		70C2DB8515824EBA004B2423 /* PopViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PopViewerIcon.png; sourceTree = "<group>"; };
-		70D0455A13C6351D00E6E5AC /* NSString+Apto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Apto.h"; sourceTree = "<group>"; };
-		70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+Apto.mm"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -226,6 +239,7 @@
 				708308F714B6ADEB0051B354 /* OpenGL.framework in Frameworks */,
 				7047394814B65F19009D285C /* QuartzCore.framework in Frameworks */,
 				7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */,
+				7041AC6116559245008413DB /* AvidaCore.framework in Frameworks */,
 				70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */,
 				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
 				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
@@ -238,6 +252,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				70FA3F59164418570003971F /* Cocoa.framework in Frameworks */,
+				7041AC5C16558F38008413DB /* AvidaCore.framework in Frameworks */,
+				7041AC5D16558F3C008413DB /* CorePlot.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +285,7 @@
 		7035497413379FBD00D3865C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7041AC5916558EDF008413DB /* AvidaCore.framework */,
 				70E09DD7150AAC5400154C00 /* CorePlot.framework */,
 				7035497513379FBD00D3865C /* Cocoa.framework */,
 				708308F614B6ADEB0051B354 /* OpenGL.framework */,
@@ -428,14 +445,10 @@
 				703549BD1337AD4300D3865C /* AvidaRun.mm */,
 				7083E58214BE1E2900E4023E /* Freezer.h */,
 				7083E58314BE1E2900E4023E /* Freezer.mm */,
-				709D24C314CF4B8100AB0425 /* Genome.h */,
-				709D24C414CF4B8100AB0425 /* Genome.mm */,
 				703549C01337AD4300D3865C /* MapGridView.h */,
 				703549C11337AD4300D3865C /* MapGridView.mm */,
 				70D3C086135739E1008374E3 /* MapScaleView.h */,
 				70D3C087135739E1008374E3 /* MapScaleView.mm */,
-				70D0455A13C6351D00E6E5AC /* NSString+Apto.h */,
-				70D0455B13C6351D00E6E5AC /* NSString+Apto.mm */,
 				7032D0B515051F260090C93C /* OrganismView.h */,
 				7032D0B615051F260090C93C /* OrganismView.mm */,
 				705DE43B15EBFD2300B9D838 /* TaskTimelineView.h */,
@@ -525,6 +538,7 @@
 				70FA3F53164418570003971F /* Sources */,
 				70FA3F54164418570003971F /* Frameworks */,
 				70FA3F55164418570003971F /* Resources */,
+				7041AC5E16558F40008413DB /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -620,7 +634,6 @@
 				70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */,
 				7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */,
 				7029A49D1361CDBD0031433A /* CenteringClipView.m in Sources */,
-				70D0455C13C6351D00E6E5AC /* NSString+Apto.mm in Sources */,
 				701BFFF113CF305200838CC9 /* OrgColorBox.m in Sources */,
 				708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */,
 				708308EF14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m in Sources */,
@@ -629,7 +642,6 @@
 				7083E58414BE1E2900E4023E /* Freezer.mm in Sources */,
 				7015B89B14C87DB50031B60B /* DraggableImageView.m in Sources */,
 				7015B8A314C886820031B60B /* FreezerOutlineView.mm in Sources */,
-				709D24C714CF500400AB0425 /* Genome.mm in Sources */,
 				70178C7D14D84CB900C715D7 /* AvidaEDAnalyzePopulation.mm in Sources */,
 				7046CFB814D9B7BA0030F1DF /* DroppableGraphHostingView.m in Sources */,
 				7032D0B715051F260090C93C /* OrganismView.mm in Sources */,
@@ -666,10 +678,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_GC = required;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = "";
@@ -686,10 +698,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_GC = required;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_UNROLL_LOOPS = YES;
@@ -831,6 +843,7 @@
 				70FA3F6D164418570003971F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

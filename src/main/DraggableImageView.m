@@ -76,8 +76,7 @@
 }
 
 - (void) setDownEvent:(NSEvent*)event {
-  [downEvent autorelease];
-  downEvent = [event retain];
+  downEvent = event;
 }
 
 // NSDraggingDestination
