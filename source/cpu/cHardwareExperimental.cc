@@ -3320,7 +3320,7 @@ bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
   else if (northerly > 0 && easterly > 0) correct_facing = 7; // rotate NW  
   
   int rotates = m_organism->GetNeighborhoodSize();
-  if (m_use_avatar == 2) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
+  if (m_use_avatar) rotates = m_organism->GetOrgInterface().GetAVNumNeighbors();
   for (int i = 0; i < rotates; i++) {
     m_organism->Rotate(1);
     if (!m_use_avatar && m_organism->GetOrgInterface().GetFacedDir() == correct_facing) break;
