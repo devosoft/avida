@@ -119,6 +119,7 @@ cStats::cStats(cWorld* world)
 
   task_cur_count.Resize(num_tasks);
   task_last_count.Resize(num_tasks);
+  task_test_count.Resize(num_tasks);
 
   tasks_host_current.Resize(num_tasks);
   tasks_host_last.Resize(num_tasks);
@@ -140,6 +141,7 @@ cStats::cStats(cWorld* world)
   task_last_max_quality.SetAll(0);
   task_last_quality.SetAll(0);
   task_last_count.SetAll(0);
+  task_test_count.SetAll(0);
   task_cur_max_quality.SetAll(0);
   task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
@@ -419,11 +421,11 @@ void cStats::setupProvidedData()
       Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)(int) const, int> >(
         this, &cStats::packageArgData<int, int>
       ),
-      &cStats::GetTaskLastCount
+      &cStats::GetTaskTestCount
     )
   );
   for(int i = 0; i < task_names.GetSize(); i++) {
-    Apto::String task_id(Apto::FormatStr("core.environment.triggers.%s.organisms", (const char*)env.GetTask(i).GetName()));
+    Apto::String task_id(Apto::FormatStr("core.environment.triggers.%s.test_organisms", (const char*)env.GetTask(i).GetName()));
     Apto::String task_desc(task_names[i]);
 
     m_provided_data[task_id] = ProvidedData(task_desc, Apto::BindFirst(taskLastCount, i));
@@ -438,6 +440,7 @@ void cStats::ZeroTasks()
 {
   task_cur_count.SetAll(0);
   task_last_count.SetAll(0);
+  task_test_count.SetAll(0);
 
   tasks_host_current.SetAll(0);
   tasks_host_last.SetAll(0);
@@ -535,6 +538,7 @@ void cStats::ProcessUpdate()
 
   task_cur_count.SetAll(0);
   task_last_count.SetAll(0);
+  task_test_count.SetAll(0);
   task_cur_quality.SetAll(0);
   task_last_quality.SetAll(0);
   task_cur_max_quality.SetAll(0);
