@@ -208,6 +208,7 @@ private:
 
 
   // --------  Organism Task Stats  ---------
+  mutable bool m_collect_env_test_stats;
   Apto::Array<int> task_cur_count;
   Apto::Array<int> task_last_count;
   Apto::Array<int> task_test_count;
@@ -589,6 +590,8 @@ public:
   void AddTestTask(int task_num) { task_test_count[task_num]++; }
   void AddLastHostTask(int task_num) { tasks_host_last[task_num]++; }
   void AddLastParasiteTask(int task_num) { tasks_parasite_last[task_num]++; }
+  
+  bool ShouldCollectEnvTestStats() const { return m_collect_env_test_stats; }
 
   void AddLastTaskQuality(int task_num, double quality)
   {

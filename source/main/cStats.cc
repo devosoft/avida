@@ -120,7 +120,8 @@ cStats::cStats(cWorld* world)
   task_cur_count.Resize(num_tasks);
   task_last_count.Resize(num_tasks);
   task_test_count.Resize(num_tasks);
-
+  m_collect_env_test_stats = false;
+  
   tasks_host_current.Resize(num_tasks);
   tasks_host_last.Resize(num_tasks);
   tasks_parasite_current.Resize(num_tasks);
@@ -276,6 +277,9 @@ Data::PackagePtr cStats::GetProvidedValueForArgument(const Apto::String& data_id
 
   if (Data::IsStandardID(data_id)) {
     ProvidedData data_entry;
+    if (data_id.GetSize() > 16 && data_id.Substring(0, 16) == "core.environment") {
+      m_collect_env_test_stats = true;
+    }
     if (m_provided_data.Get(data_id, data_entry)) {
       rtn = data_entry.GetData();
     }
