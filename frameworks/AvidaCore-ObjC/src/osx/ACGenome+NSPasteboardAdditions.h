@@ -8,8 +8,18 @@
 
 #import <AvidaCore/ACGenome.h>
 
-@interface ACGenome (NSPasteboardAdditions)
+@interface ACGenome (NSPasteboardAdditions) <NSPasteboardReading, NSPasteboardWriting>
 
+// NSPasteboardReading
++ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard;
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString*)type pasteboard:(NSPasteboard*)pboard;
+
+// NSPasteboardWriting
+- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pasteboard;
+- (id) pasteboardPropertyListForType:(NSString*)type;
+
+
+// ACGenome utility methods
 + (ACGenome*) genomeFromPasteboard:(NSPasteboard*)pboard;
 + (void) writeGenome:(ACGenome*)genome toPasteboard:(NSPasteboard*)pboard;
 

@@ -57,36 +57,5 @@ NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
 }
 
 
-- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pboard {
-  static NSArray* writableTypes = nil;
-  if (!writableTypes) {
-    writableTypes = [[NSArray alloc] initWithObjects:AvidaPasteboardTypeGenome, nil];
-  }
-  return writableTypes;
-}
-
-- (id) pasteboardPropertyListForType:(NSString*)type {
-  if ([type isEqualToString:AvidaPasteboardTypeGenome]) {
-    return [NSKeyedArchiver archivedDataWithRootObject:self];
-  }
-  return nil;
-}
-
-
-+ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard {
-  static NSArray* readableTypes = nil;
-  if (!readableTypes) {
-    readableTypes = [[NSArray alloc] initWithObjects:AvidaPasteboardTypeGenome, nil];
-  }
-  return readableTypes;
-}
-
-+ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pboard {
-  if ([type isEqualToString:AvidaPasteboardTypeGenome]) {
-    return NSPasteboardReadingAsKeyedArchive;
-  }
-  return 0;
-}
-
 
 @end

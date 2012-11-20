@@ -10,6 +10,42 @@
 
 @implementation ACGenome (NSPasteboardAdditions)
 
++ (NSArray*) readableTypesForPasteboard:(NSPasteboard*)pboard {
+  static NSArray* readableTypes = nil;
+  if (!readableTypes) {
+    readableTypes = [[NSArray alloc] initWithObjects:AvidaPasteboardTypeGenome, nil];
+  }
+  return readableTypes;
+}
+
++ (NSPasteboardReadingOptions)readingOptionsForType:(NSString *)type pasteboard:(NSPasteboard *)pboard {
+  if ([type isEqualToString:AvidaPasteboardTypeGenome]) {
+    return NSPasteboardReadingAsKeyedArchive;
+  }
+  return 0;
+}
+
+
+
+
+- (NSArray*) writableTypesForPasteboard:(NSPasteboard*)pboard {
+  static NSArray* writableTypes = nil;
+  if (!writableTypes) {
+    writableTypes = [[NSArray alloc] initWithObjects:AvidaPasteboardTypeGenome, nil];
+  }
+  return writableTypes;
+}
+
+- (id) pasteboardPropertyListForType:(NSString*)type {
+  if ([type isEqualToString:AvidaPasteboardTypeGenome]) {
+    return [NSKeyedArchiver archivedDataWithRootObject:self];
+  }
+  return nil;
+}
+
+
+
+
 + (ACGenome*) genomeFromPasteboard:(NSPasteboard*)pboard {
   NSArray* classes = [[NSArray alloc] initWithObjects:[ACGenome class], nil];
   NSDictionary* options = [NSDictionary dictionary];
