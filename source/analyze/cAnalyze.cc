@@ -5908,8 +5908,8 @@ void cAnalyze::CommandHamming(cString cur_string)
   cAnalyzeGenotype * genotype1 = NULL;
   cAnalyzeGenotype * genotype2 = NULL;
 
-  int total_dist = 0;
-  int total_count = 0;
+  double total_dist = 0;
+  double total_count = 0;
   
   tListIterator<cAnalyzeGenotype> list1_it(batch[batch1].List());
   tListIterator<cAnalyzeGenotype> list2_it(batch[batch2].List());
@@ -5985,8 +5985,8 @@ void cAnalyze::CommandLevenstein(cString cur_string)
   // Setup some variables;
   cAnalyzeGenotype * genotype1 = NULL;
   cAnalyzeGenotype * genotype2 = NULL;
-  int total_dist = 0;
-  int total_count = 0;
+  double total_dist = 0;
+  double total_count = 0;
   
   tListIterator<cAnalyzeGenotype> list1_it(batch[batch1].List());
   tListIterator<cAnalyzeGenotype> list2_it(batch[batch2].List());
