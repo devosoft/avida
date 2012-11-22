@@ -240,6 +240,8 @@ public:
 	virtual void InsertGenomeFragment(const InstructionSequence& fragment);
   
 protected:
+  void ResizeCostArrays(int new_size);
+
   // --------  Core Execution Methods  --------
   bool SingleProcess_PayPreCosts(cAvidaContext& ctx, const Instruction& cur_inst, const int thread_id);
   void SingleProcess_PayPostResCosts(cAvidaContext& ctx, const Instruction& cur_inst);

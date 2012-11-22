@@ -1189,8 +1189,6 @@ inline int cHardwareBCR::FindNextRegister(int base_reg)
   return (base_reg + 1) % NUM_REGISTERS;
 }
 
-
-
 int cHardwareBCR::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;

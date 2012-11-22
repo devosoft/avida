@@ -125,16 +125,7 @@ private:
     cHeadCPU cpWH;                  // write head for behav_class_copy
     cHeadCPU bpFH;                        // local flow head
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
-/*  struct {
-      bool active:1;
-      bool wait_greater:1;
-      bool wait_equal:1;
-      bool wait_less:1;
-      unsigned int wait_reg:4;
-      unsigned int wait_dst:4;
-    };
-    int wait_value;
-*/
+
     inline cBehavProc() { ; }
     cBehavProc(cHardwareMBE* in_hardware) { Reset(in_hardware); }
     ~cBehavProc() { ; }

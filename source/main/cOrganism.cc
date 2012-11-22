@@ -728,7 +728,7 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
 {
   fp << "---------------------------" << endl;
 	fp << "U:" << m_world->GetStats().GetUpdate() << endl;
-  m_hardware->PrintStatus(fp);
+  if (m_hardware->GetType() != HARDWARE_TYPE_CPU_MGE && m_hardware->GetType() != HARDWARE_TYPE_CPU_MBE) m_hardware->PrintStatus(fp);
   m_phenotype.PrintStatus(fp);
   fp << endl;
   

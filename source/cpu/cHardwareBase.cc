@@ -76,10 +76,7 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   m_navtracefacing.Resize(0);
   m_navtraceupdate.Resize(0);
   m_inst_cost = 0;
-  m_active_thread_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
-  m_active_thread_costs.SetAll(0);
-  m_active_thread_post_costs.Resize(m_world->GetConfig().MAX_CPU_THREADS.Get());
-  m_active_thread_post_costs.SetAll(0);
+  ResizeCostArrays(m_world->GetConfig().MAX_CPU_THREADS.Get());
   m_female_cost = 0;
   
   const int num_inst_cost = m_inst_set->GetSize();
@@ -115,6 +112,14 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   }
 
   internalReset();
+}
+
+void cHardwareBase::ResizeCostArrays(int new_size)
+{
+  m_active_thread_costs.Resize(new_size);
+  m_active_thread_costs.SetAll(0);
+  m_active_thread_post_costs.Resize(new_size);
+  m_active_thread_post_costs.SetAll(0);
 }
 
 int cHardwareBase::calcExecutedSize(const int parent_size)

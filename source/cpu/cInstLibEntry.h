@@ -51,6 +51,7 @@ enum BehavClass {
   BEHAV_CLASS_COPY,
   BEHAV_CLASS_NONE,
   BEHAV_CLASS_BREAK,
+  BEHAV_CLASS_END_GENE,
 };
 
 class cInstLibEntry
