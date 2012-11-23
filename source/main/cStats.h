@@ -208,8 +208,10 @@ private:
 
 
   // --------  Organism Task Stats  ---------
+  mutable bool m_collect_env_test_stats;
   Apto::Array<int> task_cur_count;
   Apto::Array<int> task_last_count;
+  Apto::Array<int> task_test_count;
   Apto::Array<double> task_cur_quality;
   Apto::Array<double> task_last_quality;
   Apto::Array<double> task_cur_max_quality;
@@ -585,8 +587,11 @@ public:
 	  if (quality > task_cur_max_quality[task_num]) task_cur_max_quality[task_num] = quality;
   }
   void AddLastTask(int task_num) { task_last_count[task_num]++; }
+  void AddTestTask(int task_num) { task_test_count[task_num]++; }
   void AddLastHostTask(int task_num) { tasks_host_last[task_num]++; }
   void AddLastParasiteTask(int task_num) { tasks_parasite_last[task_num]++; }
+  
+  bool ShouldCollectEnvTestStats() const { return m_collect_env_test_stats; }
 
   void AddLastTaskQuality(int task_num, double quality)
   {
@@ -668,6 +673,8 @@ public:
   int GetTaskParasiteCurCount(int task_num) const { return tasks_parasite_current[task_num]; }
   double GetTaskCurQuality(int task_num) const { return task_cur_quality[task_num]/(double)task_cur_count[task_num]; }
 
+  int GetTaskTestCount(int task_num) const {return task_test_count[task_num];}
+  
   int GetTaskLastCount(int task_num) const {return task_last_count[task_num];}
   int GetTaskLastHostCount(int task_num) const {return tasks_host_last[task_num];}
   int GetTaskLastParasiteCount(int task_num) const {return tasks_parasite_last[task_num];}

@@ -5505,6 +5505,15 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
         stats.AddLastInternalTaskQuality(j, phenotype.GetLastInternalTaskQuality()[j]);
       }
     }
+
+    if (stats.ShouldCollectEnvTestStats()) {
+      Systematics::GroupPtr genotype = organism->SystematicsGroup("genotype");
+      Systematics::GenomeTestMetricsPtr metrics(Systematics::GenomeTestMetrics::GetMetrics(m_world, ctx, genotype));
+      const Apto::Array<int>& test_task_counts = metrics->GetTaskCounts();
+      
+      for (int j = 0; j < m_world->GetEnvironment().GetNumTasks(); j++) if (test_task_counts[j] > 0) stats.AddTestTask(j);
+    }
+    
     
     // Record what add bonuses this organism garnered for different reactions
     for (int j = 0; j < m_world->GetEnvironment().GetNumReactions(); j++) {
