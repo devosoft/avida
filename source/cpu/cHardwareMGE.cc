@@ -447,6 +447,9 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     }
     if (GENE_CLASS != prev_class) { SetBCsUsed(GENE_CLASS, true); prev_class = GENE_CLASS; }
     
+//    cout << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() << " " << m_cur_thread << endl;
+    // And proceed with standard execution...
+    
     // Print the status of this CPU at each step...
     if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
     
@@ -942,7 +945,7 @@ int cHardwareMGE::FindNopSequenceOrgStart(bool mark_executed)
       
       // Check that the label matches and has examined the full sequence of nops following the 'label' instruction
       if (size_matched == search_label.GetSize()) {
-        // Return Head pointed at last NOP of label sequence
+        // Return thread with the sequence
         if (mark_executed) {
           const int start = pos - size_matched;
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get();
@@ -950,7 +953,7 @@ int cHardwareMGE::FindNopSequenceOrgStart(bool mark_executed)
           for (int i = 0; i < size_matched && i < max; i++) main_memory.SetFlagExecuted(start + i);
         }
         for (int i = 0; i < m_threads.GetSize(); i++) {
-          if (m_threads[i].start <= pos && m_threads[i].end >= pos) return i;
+          if (m_threads[i].start <= pos - 1 && m_threads[i].end >= pos - 1) return i;
         }
       }
     }
