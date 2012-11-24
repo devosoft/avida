@@ -161,6 +161,8 @@ private:
     sInternalValue reg[NUM_REGISTERS];
     cLocalStack stack;
     unsigned char cur_stack;          // 0 = local stack, 1 = global stack.
+    Apto::Array<int> bp_thread_ids;
+    int bp_cur_thread;
   };
 
   // --------  Member Variables  --------
@@ -172,9 +174,9 @@ private:
   
   Apto::Array<cBehavThread> m_threads;          // The hardware is a collection of threads, each with a behavioral class type
   Apto::Array<cBehavProc> m_bps;                // The 3 behavioral proceses keep the registers and stacks.
-  Apto::Array<bool> m_bcs_used;
   unsigned int m_waiting_threads;
   unsigned int m_cur_thread;
+  bool m_gene_jump;
   
   int m_use_avatar;
   cOrgSensor m_sensor;
@@ -210,15 +212,10 @@ public:
   static cString GetDefaultInstFilename() { return "instset-MGE.cfg"; }
   
   // --------  Behavioral Processes
-  inline void ClearBCStats() { for (int i = 0; i < NUM_BEHAVIORS; i++) m_bcs_used[i] = false; }
-  
   inline int GetCurrBehav() const { return m_threads[m_cur_thread].thread_class; }
   int PreclassNewGeneBehavior(int cur_class, int pos);
   int GetNextGeneClass(int position, int seq_size, int cur_class);
   BehavClass GetBehavClass(int classid);
-
-  inline Apto::Array<bool>& GetBCsUsed() { return m_bcs_used; }
-  inline void SetBCsUsed(int idx, bool val) { m_bcs_used[idx] = val; }
 
   // --------  Core Execution Methods  --------
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);

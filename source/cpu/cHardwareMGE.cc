@@ -290,12 +290,10 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   mHeads[mWH].Reset(this, 1);
   
   m_threads.Resize(0);
+  m_cur_thread = 0;
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   
   m_bps.Resize(NUM_BEHAVIORS);
-  m_bcs_used.Resize(NUM_BEHAVIORS);
-
-  m_cur_thread = 0;
   CreateBPThreads();                     // classify the genome into genes
   Reset(ctx);                            // Setup the rest of the hardware...
   ResizeCostArrays(m_threads.GetSize());
@@ -303,18 +301,16 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 
 void cHardwareMGE::internalReset()
 {
-  m_bcs_used.SetAll(false);
-
   m_cycle_count = 0;
   m_last_output = 0;
   m_global_stack.Clear();
   m_waiting_threads = 0;
   m_cur_thread = 0;
+  m_gene_jump = false;
   
   for (int i = 0; i < NUM_BEHAVIORS; i++) {
     m_bps[i].stack.Clear();
     m_bps[i].cur_stack = 0;
-    for (int j = 0; j < NUM_REGISTERS; j++) m_bps[i].reg[j].Clear();
   }
   
   // associate each thread and it's heads with the appropriate memory space id
@@ -399,55 +395,63 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   assert(num_active > 0);
   
   int max_exec_count = 20;          // min tot num for equ from Nature '03  = 19
-  int max_gene_count = 20;          // min tot num for equ from Nature '03  = 19
   int max_tot = max_exec_count * NUM_BEHAVIORS;
   int tot_count = 0;
   Apto::Array<int> bp_exec_count(NUM_BEHAVIORS);
   bp_exec_count.SetAll(0);
+  Apto::Array<bool> bp_used(NUM_BEHAVIORS);
+  bp_used.SetAll(false);
   Apto::Array<int> gene_count(NUM_BEHAVIORS);
   gene_count.SetAll(0);
-  int prev_class = -1;
-  ClearBCStats();
+  Apto::Array<bool> checked_genes(m_threads.GetSize());
+  checked_genes.SetAll(false);
   
-  bool all_used = false;
-  while (!all_used) {
+  for (int i = 0; i < NUM_BEHAVIORS; i++) {
     tot_count++;
-    assert(tot_count <= max_tot);
-    if (tot_count > max_tot) break;
-    
-    // Setup the hardware for the next gene to be executed.
-    int this_thread = m_cur_thread;
+     
+    if (m_gene_jump) {
+      i = m_threads[m_cur_thread].thread_class;
+      for (int j = 0; j < m_bps[i].bp_thread_ids.GetSize(); j++) {
+        if (m_bps[i].bp_thread_ids[j] == (int) m_cur_thread) { m_bps[i].bp_cur_thread = j; break; }
+      }
+      m_gene_jump = false;
+    }
+    // i is the next behavior
+    // get the next thread for class i
+    if (m_bps[i].bp_thread_ids.GetSize() == 0) continue;
+    int thread_id = m_bps[i].bp_thread_ids[m_bps[i].bp_cur_thread];
+    m_cur_thread = thread_id;
+    bp_exec_count[i]++;
+
     m_advance_ip = true;
     cHeadCPU& ip = getThIP();
     Adjust(getThIP(), thIP);
     
-    BehavClass GENE_CLASS = GetBehavClass(m_threads[this_thread].thread_class);
-    if (prev_class == -1) prev_class = GENE_CLASS;
-
-    gene_count[GetCurrBehav()]++;
-    bp_exec_count[GENE_CLASS]++;
-
-    // if we have already used this class in this cycle, you're done
-    if (GetBCsUsed()[GENE_CLASS]) break;
-    // if you exceed the per behavior per cycle max, you're done
-    if (bp_exec_count[GENE_CLASS] > max_exec_count) break;
+    // if you exceed the per behavior per cycle (non-class inst) max, you're done
+    if (bp_exec_count[i] > max_exec_count) continue;
+    // only one 'designated' behavior instruction per class per cycle
+    BehavClass BEHAV = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
+    if (BEHAV == BEHAV_CLASS_ACTION || BEHAV == BEHAV_CLASS_COPY || BEHAV == BEHAV_CLASS_INPUT) {
+      if (bp_used[BEHAV]) continue;
+      bp_used[BEHAV] = true;
+    }
     // if you exceed max number of genes tried for this class per cycle, you're done
-    if (gene_count[GENE_CLASS] > max_gene_count) break;
-    // if you exceed total number of instructions per cycle, you're done
+    if (gene_count[i] > max_exec_count) continue;
+    // if you exceed total number of instructions per cycle, you're really done
     if (tot_count > max_tot) break;
-    assert(tot_count < 0x8000);
     
     bool inc_thread = false;
-    if (!m_threads[this_thread].active) inc_thread = true;
-    if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) inc_thread = true;
+    if (!m_threads[thread_id].active) inc_thread = true;
+    if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) { inc_thread = true; Advance(getThIP(), thIP); }
     if (inc_thread) {
-      m_cur_thread++;
-      if ((int) m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+      m_bps[i].bp_cur_thread++;
+      if ((int) m_bps[i].bp_cur_thread >= m_bps[i].bp_thread_ids.GetSize()) m_bps[i].bp_cur_thread = 0;
+      gene_count[i]++;
+      if (!checked_genes[thread_id]) { checked_genes[thread_id] = true; i--; }
       continue;
     }
-    if (GENE_CLASS != prev_class) { SetBCsUsed(GENE_CLASS, true); prev_class = GENE_CLASS; }
     
-//    cout << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() << " " << m_cur_thread << endl;
+//      cout << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() << " " << m_cur_thread << endl;
     // And proceed with standard execution...
     
     // Print the status of this CPU at each step...
@@ -511,9 +515,9 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       // Pay the additional death_cost of the instruction now
       phenotype.IncTimeUsed(addl_time_cost);
     }
+    
     // if using mini traces, report success or failure of execution
     if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
-    
     bool do_record = false;
     // record exec failed if the org just now started paying precosts
     if (exec_success == -1 && !on_pause) do_record = true;
@@ -531,15 +535,11 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
         RecordMicroTrace(cur_inst);
         if (m_topnavtrace) RecordNavTrace(m_use_avatar);
       }
-    }
-    
-    // record behavior used and check for exit
-    if (bp_exec_count[GENE_CLASS] >= max_exec_count) SetBCsUsed(GENE_CLASS, true); 
-    if (gene_count[GENE_CLASS] >= max_gene_count) SetBCsUsed(GENE_CLASS, true);  
-    all_used = GetBCsUsed()[0] && GetBCsUsed()[1] && GetBCsUsed()[2];
+    }    
+    // check for continued execution of the current gene class
+    if (bp_exec_count[i] < max_exec_count && gene_count[i] < max_exec_count) i--;
     if (phenotype.GetToDelete()) break;
-
-  }  // end while
+  }  // end per BEHAV exec
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
@@ -587,6 +587,11 @@ bool cHardwareMGE::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instructi
 
 void cHardwareMGE::CreateBPThreads()
 {
+  for (int i = 0; i < NUM_BEHAVIORS; i++) {
+    m_bps[i].bp_thread_ids.Resize(0);
+    m_bps[i].bp_cur_thread = 0;
+  }
+
   int prev_behav_class = -1;
   int cur_behav_class = 0;
   int next_class = 1;
@@ -619,12 +624,16 @@ void cHardwareMGE::CreateBPThreads()
         m_threads.Resize(1);
         m_threads[0].start = offset;
         m_threads[0].thread_class = 0;
+        m_bps[0].bp_thread_ids.Resize(1);
+        m_bps[0].bp_thread_ids[0] = 0;
         m_threads[0].end = offset;
         
         m_cur_thread++;
         m_threads.Resize(m_threads.GetSize() + 1);
         m_threads[m_cur_thread].start = offset;
         m_threads[m_cur_thread].thread_class = cur_behav_class;
+        m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.Resize(m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.GetSize() + 1);
+        m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids[m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.GetSize() - 1] = m_threads.GetSize() - 1;
 
         cur_behav_class = GetNextGeneClass(offset + 1, sequence.GetSize(), cur_behav_class);
         prev_behav_class = cur_behav_class;
@@ -645,11 +654,17 @@ void cHardwareMGE::CreateBPThreads()
       m_threads.Resize(m_threads.GetSize() + 1);
       m_threads[m_cur_thread].start = offset;
       m_threads[m_cur_thread].thread_class = cur_behav_class;
+      m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.Resize(m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.GetSize() + 1);
+      m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids[m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.GetSize() - 1] = m_threads.GetSize() - 1;
       prev_behav_class = cur_behav_class;
     }
     offset++;
   }
   m_threads[m_cur_thread].end = sequence.GetSize() - 1; // for very last gene
+  if (m_threads[m_cur_thread].start == sequence.GetSize()) {  // end_gene was last instruction in genome
+    m_bps[m_threads[m_cur_thread].thread_class].bp_thread_ids.Pop();
+    m_threads.Pop(); 
+  }
   
   // copy the appropriate instructions into the new thread memory spaces
   ip.Reset(this, 0);
@@ -671,8 +686,8 @@ int cHardwareMGE::PreclassNewGeneBehavior(int cur_class, int pos)
 {
   int next_behav = cur_class;  
   // can't use find modified register as that would move thIP
-  if (pos < main_memory.GetSize() && m_inst_set->IsNop(getIP().GetInst(pos))) {
-    next_behav = m_inst_set->IsNop(getIP().GetInst(pos));
+  if (pos < main_memory.GetSize() && m_inst_set->IsNop(main_memory[pos])) {
+    next_behav = m_inst_set->GetNopMod(main_memory[pos]);
     return (next_behav % NUM_BEHAVIORS) % NUM_REGISTERS;
   }
   return (cur_class + 1) % NUM_BEHAVIORS;
@@ -683,10 +698,11 @@ int cHardwareMGE::GetNextGeneClass(int pos, int seq_size, int cur_class)
   int gene_class = 3;
   int inst_checks = 0;
   while (gene_class > 2) {
+    if (pos >= seq_size) pos = 0;
     gene_class = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(getIP().GetInst(pos))).GetBehavClass();
+    if (gene_class == BEHAV_CLASS_BREAK) gene_class = PreclassNewGeneBehavior(cur_class, pos + 1);
     pos++;
     inst_checks++;
-    if (pos >= seq_size) pos = 0;
     if (inst_checks > seq_size) return cur_class;
   }
   return gene_class;
@@ -1824,6 +1840,9 @@ bool cHardwareMGE::Inst_Alloc(cAvidaContext& ctx)
 {
   // Create space for child, if it doesn't already exist
   if (m_has_alloc == false) {
+    const int cur_size = main_memory.GetSize();
+    const int alloc_size = Apto::Min((int)(m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size), MAX_GENOME_LENGTH - cur_size);
+    child_memory.Resize(alloc_size);
     m_has_alloc = true;
     return true;
   }
@@ -1835,10 +1854,6 @@ bool cHardwareMGE::Inst_Copy(cAvidaContext& ctx)
   cHeadCPU& read_head = getRH();
   cHeadCPU& write_head = getWH();
   
-  if (write_head.GetPosition() >= child_memory.GetSize() - 1) {
-		child_memory.Resize(child_memory.GetSize() + 1);
-		child_memory.Copy(child_memory.GetSize() - 1, child_memory.GetSize() - 2);
-	}
   read_head.Adjust();
   write_head.Adjust();
   
