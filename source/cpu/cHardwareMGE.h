@@ -176,6 +176,7 @@ private:
   Apto::Array<cBehavProc> m_bps;                // The 3 behavioral proceses keep the registers and stacks.
   unsigned int m_waiting_threads;
   unsigned int m_cur_thread;
+  unsigned int m_cur_behavior;
   bool m_gene_jump;
   
   int m_use_avatar;
@@ -441,6 +442,7 @@ private:
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_JumpGene(cAvidaContext& ctx);
+  bool Inst_JumpBehavior(cAvidaContext& ctx);
   
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
