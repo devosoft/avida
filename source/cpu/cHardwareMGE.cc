@@ -292,7 +292,6 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   
   m_threads.Resize(0);
   m_cur_thread = 0;
-  m_cur_behavior = 0;
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   
   m_bps.Resize(NUM_BEHAVIORS);
@@ -308,7 +307,7 @@ void cHardwareMGE::internalReset()
   m_global_stack.Clear();
   m_waiting_threads = 0;
   m_cur_thread = 0;
-  m_cur_behavior = 0;
+  m_behavior_jump = -1;
   m_gene_jump = false;
   
   for (int i = 0; i < NUM_BEHAVIORS; i++) {
@@ -419,10 +418,10 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       }
       m_gene_jump = false;
     }
+    if (m_behavior_jump != -1) { i = m_behavior_jump; m_behavior_jump = -1;} // for jump behavior
+    
     // i is the next behavior
     // get the next thread for class i
-    if ((int) m_cur_behavior != i) i = m_cur_behavior; // for jump behavior
-    m_cur_behavior = i;
     if (m_bps[i].bp_thread_ids.GetSize() == 0) continue;
     int thread_id = m_bps[i].bp_thread_ids[m_bps[i].bp_cur_thread];
     m_cur_thread = thread_id;
@@ -2048,10 +2047,10 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
   const int reg_used = FindModifiedRegister(rAX);
   int behavior = (reg_used % NUM_BEHAVIORS) % NUM_REGISTERS;
   // after findmodified, ip will be at the trailing nop, if any.
-  if (m_inst_set->IsNop(getIP().GetInst())) m_cur_behavior = behavior;
-  else m_cur_behavior = (m_cur_behavior + 1) % NUM_BEHAVIORS;
+  if (m_inst_set->IsNop(getIP().GetInst())) m_behavior_jump = behavior;
+  else m_behavior_jump = (GetCurrBehav() + 1) % NUM_BEHAVIORS;
   
-  setInternalValue(reg_used, m_cur_behavior, false);
+  setInternalValue(reg_used, m_behavior_jump, false);
   return true;
 }
 

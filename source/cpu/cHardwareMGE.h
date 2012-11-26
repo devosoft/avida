@@ -176,7 +176,7 @@ private:
   Apto::Array<cBehavProc> m_bps;                // The 3 behavioral proceses keep the registers and stacks.
   unsigned int m_waiting_threads;
   unsigned int m_cur_thread;
-  unsigned int m_cur_behavior;
+  int m_behavior_jump;
   bool m_gene_jump;
   
   int m_use_avatar;
