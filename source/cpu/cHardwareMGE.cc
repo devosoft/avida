@@ -308,6 +308,7 @@ void cHardwareMGE::internalReset()
   m_global_stack.Clear();
   m_waiting_threads = 0;
   m_cur_thread = 0;
+  m_cur_behavior = 0;
   m_gene_jump = false;
   
   for (int i = 0; i < NUM_BEHAVIORS; i++) {
@@ -421,6 +422,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     // i is the next behavior
     // get the next thread for class i
     if ((int) m_cur_behavior != i) i = m_cur_behavior; // for jump behavior
+    m_cur_behavior = i;
     if (m_bps[i].bp_thread_ids.GetSize() == 0) continue;
     int thread_id = m_bps[i].bp_thread_ids[m_bps[i].bp_cur_thread];
     m_cur_thread = thread_id;
