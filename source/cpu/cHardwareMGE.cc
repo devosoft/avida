@@ -386,11 +386,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   cPhenotype& phenotype = m_organism->GetPhenotype();
   
   m_cycle_count++;
-  if (m_cycle_count > 0x8000) {
-    bool nothing = false;
-    cout << "crap" << endl;
-  }
-//  assert(m_cycle_count < 0x8000);
+  assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
