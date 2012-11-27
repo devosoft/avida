@@ -430,7 +430,11 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     // only one 'designated' behavior instruction per class per cycle
     BehavClass BEHAV = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
     if (BEHAV == BEHAV_CLASS_ACTION || BEHAV == BEHAV_CLASS_COPY || BEHAV == BEHAV_CLASS_INPUT) {
-      if (bp_used[BEHAV]) { IncBehavior(); continue; }
+      if (bp_used[BEHAV]) {
+        bp_exec_count[m_cur_behavior] = max_exec_count;
+        IncBehavior();
+        continue;
+      }
       bp_used[BEHAV] = true;
     }
     // if you exceed max number of genes tried for this class per cycle, you're done
@@ -445,7 +449,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       IncThread();
       gene_count[m_cur_behavior]++;
       if (!checked_genes[thread_id]) checked_genes[thread_id] = true;
-      else IncBehavior();
+      else { bp_exec_count[m_cur_behavior] = max_exec_count; IncBehavior(); }   // all genes of this class already checked
       continue;
     }
     
@@ -1955,9 +1959,7 @@ bool cHardwareMGE::Inst_Repro(cAvidaContext& ctx)
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) { Reset(ctx); ResizeCostArrays(m_threads.GetSize()); }
-
   }
-  
   return true;
 }
 
