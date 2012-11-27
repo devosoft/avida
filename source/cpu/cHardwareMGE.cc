@@ -307,8 +307,7 @@ void cHardwareMGE::internalReset()
   m_global_stack.Clear();
   m_waiting_threads = 0;
   m_cur_thread = 0;
-  m_behavior_jump = -1;
-  m_gene_jump = false;
+  m_cur_behavior = 0;
   
   for (int i = 0; i < NUM_BEHAVIORS; i++) {
     m_bps[i].stack.Clear();
@@ -387,7 +386,11 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   cPhenotype& phenotype = m_organism->GetPhenotype();
   
   m_cycle_count++;
-  assert(m_cycle_count < 0x8000);
+  if (m_cycle_count > 0x8000) {
+    bool nothing = false;
+    cout << "crap" << endl;
+  }
+//  assert(m_cycle_count < 0x8000);
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
@@ -407,40 +410,31 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   gene_count.SetAll(0);
   Apto::Array<bool> checked_genes(m_threads.GetSize());
   checked_genes.SetAll(false);
+  bool all_used = false;
   
-  for (int i = 0; i < NUM_BEHAVIORS; i++) {
+  while (!all_used) {
     tot_count++;
-     
-    if (m_gene_jump) {
-      i = m_threads[m_cur_thread].thread_class;
-      for (int j = 0; j < m_bps[i].bp_thread_ids.GetSize(); j++) {
-        if (m_bps[i].bp_thread_ids[j] == (int) m_cur_thread) { m_bps[i].bp_cur_thread = j; break; }
-      }
-      m_gene_jump = false;
-    }
-    if (m_behavior_jump != -1) { i = m_behavior_jump; m_behavior_jump = -1;} // for jump behavior
+    all_used = AllUsed(bp_exec_count, gene_count, max_exec_count);
     
-    // i is the next behavior
-    // get the next thread for class i
-    if (m_bps[i].bp_thread_ids.GetSize() == 0) continue;
-    int thread_id = m_bps[i].bp_thread_ids[m_bps[i].bp_cur_thread];
+    // get the next thread for the class
+    if (m_bps[m_cur_behavior].bp_thread_ids.GetSize() == 0) { bp_exec_count[m_cur_behavior] = max_exec_count; IncBehavior(); continue; }
+    int thread_id = m_bps[m_cur_behavior].bp_thread_ids[m_bps[m_cur_behavior].bp_cur_thread];
     m_cur_thread = thread_id;
-    bp_exec_count[i]++;
-
     m_advance_ip = true;
     cHeadCPU& ip = getThIP();
     Adjust(getThIP(), thIP);
     
+    bp_exec_count[m_cur_behavior]++;
     // if you exceed the per behavior per cycle (non-class inst) max, you're done
-    if (bp_exec_count[i] > max_exec_count) continue;
+    if (bp_exec_count[m_cur_behavior] > max_exec_count) { IncBehavior(); continue; }
     // only one 'designated' behavior instruction per class per cycle
     BehavClass BEHAV = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
     if (BEHAV == BEHAV_CLASS_ACTION || BEHAV == BEHAV_CLASS_COPY || BEHAV == BEHAV_CLASS_INPUT) {
-      if (bp_used[BEHAV]) continue;
+      if (bp_used[BEHAV]) { IncBehavior(); continue; }
       bp_used[BEHAV] = true;
     }
     // if you exceed max number of genes tried for this class per cycle, you're done
-    if (gene_count[i] > max_exec_count) continue;
+    if (gene_count[m_cur_behavior] > max_exec_count) { IncBehavior(); continue; }
     // if you exceed total number of instructions per cycle, you're really done
     if (tot_count > max_tot) break;
     
@@ -448,10 +442,10 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (!m_threads[thread_id].active) inc_thread = true;
     if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) { inc_thread = true; Advance(getThIP(), thIP); }
     if (inc_thread) {
-      m_bps[i].bp_cur_thread++;
-      if ((int) m_bps[i].bp_cur_thread >= m_bps[i].bp_thread_ids.GetSize()) m_bps[i].bp_cur_thread = 0;
-      gene_count[i]++;
-      if (!checked_genes[thread_id]) { checked_genes[thread_id] = true; i--; }
+      IncThread();
+      gene_count[m_cur_behavior]++;
+      if (!checked_genes[thread_id]) checked_genes[thread_id] = true;
+      else IncBehavior();
       continue;
     }
     
@@ -540,9 +534,10 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
         if (m_topnavtrace) RecordNavTrace(m_use_avatar);
       }
     }    
-    // check for continued execution of the current gene class
-    if (bp_exec_count[i] < max_exec_count && gene_count[i] < max_exec_count) i--;
     if (phenotype.GetToDelete()) break;
+    // check for continued execution of the current gene class
+    if (bp_exec_count[m_cur_behavior] < max_exec_count && gene_count[m_cur_behavior] < max_exec_count) continue;
+    else IncBehavior();
   }  // end per BEHAV exec
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = m_organism->GetMaxExecuted();
@@ -2039,6 +2034,14 @@ bool cHardwareMGE::Inst_JumpGene(cAvidaContext&)
   getThIP().Set(found_pos);
   getIP(prev_thread).Advance();
   Advance(getHead(thIP), thIP);
+
+  m_cur_behavior = m_threads[m_cur_thread].thread_class;
+  for (int j = 0; j < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); j++) {
+    if (m_bps[m_cur_behavior].bp_thread_ids[j] == (int) m_cur_thread) {
+      m_bps[m_cur_behavior].bp_cur_thread = j;
+      break;
+    }
+  }
   return true;
 }
 
@@ -2047,10 +2050,10 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
   const int reg_used = FindModifiedRegister(rAX);
   int behavior = (reg_used % NUM_BEHAVIORS) % NUM_REGISTERS;
   // after findmodified, ip will be at the trailing nop, if any.
-  if (m_inst_set->IsNop(getIP().GetInst())) m_behavior_jump = behavior;
-  else m_behavior_jump = (GetCurrBehav() + 1) % NUM_BEHAVIORS;
+  if (m_inst_set->IsNop(getIP().GetInst())) m_cur_behavior = behavior;
+  else m_cur_behavior = (GetCurrBehav() + 1) % NUM_BEHAVIORS;
   
-  setInternalValue(reg_used, m_behavior_jump, false);
+  setInternalValue(reg_used, m_cur_behavior, false);
   return true;
 }
 

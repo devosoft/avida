@@ -176,8 +176,7 @@ private:
   Apto::Array<cBehavProc> m_bps;                // The 3 behavioral proceses keep the registers and stacks.
   unsigned int m_waiting_threads;
   unsigned int m_cur_thread;
-  int m_behavior_jump;
-  bool m_gene_jump;
+  unsigned int m_cur_behavior;
   
   int m_use_avatar;
   cOrgSensor m_sensor;
@@ -217,6 +216,18 @@ public:
   int PreclassNewGeneBehavior(int cur_class, int pos);
   int GetNextGeneClass(int position, int seq_size, int cur_class);
   BehavClass GetBehavClass(int classid);
+  inline void IncBehavior() {  m_cur_behavior = (m_cur_behavior + 1) % NUM_BEHAVIORS; }
+  inline void IncThread() {
+    m_bps[m_cur_behavior].bp_cur_thread++;
+    if ((int) m_bps[m_cur_behavior].bp_cur_thread >= m_bps[m_cur_behavior].bp_thread_ids.GetSize()) m_bps[m_cur_behavior].bp_cur_thread = 0;
+  }
+  inline bool AllUsed(Apto::Array <int>& bp_exec_count, Apto::Array <int>& gene_count, int max_exec_count) {
+    int num_used = 0;
+    for (int i = 0; i < NUM_BEHAVIORS; i ++) {
+      if (bp_exec_count[i] >= max_exec_count || gene_count[i] >= max_exec_count) num_used++;
+    }
+    return num_used >= NUM_BEHAVIORS;
+  }
 
   // --------  Core Execution Methods  --------
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
