@@ -139,8 +139,8 @@ private:
       bool wait_greater:1;
       bool wait_equal:1;
       bool wait_less:1;
-      unsigned int wait_reg:4;
-      unsigned int wait_dst:4;
+      unsigned int wait_reg:4;    // reg to watch for wait_value
+      unsigned int wait_dst:4;    // reg to place value in when woken
     };
     int wait_value;
     

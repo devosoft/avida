@@ -277,6 +277,7 @@ cHardwareMGE::cHardwareMGE(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   m_functions = s_inst_slib->GetFunctions();
   
   m_spec_die = false;
+  m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
   const Genome& in_genome = in_organism->GetGenome();
   ConstInstructionSequencePtr in_seq_p;
@@ -533,7 +534,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
         RecordMicroTrace(cur_inst);
         if (m_topnavtrace) RecordNavTrace(m_use_avatar);
       }
-    }    
+    }
     if (phenotype.GetToDelete()) break;
     // check for continued execution of the current gene class
     if (bp_exec_count[m_cur_behavior] < max_exec_count && gene_count[m_cur_behavior] < max_exec_count) continue;
@@ -2123,14 +2124,14 @@ bool cHardwareMGE::Inst_Search_Label_Direct_S(cAvidaContext&)
 
 bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
 {
-  const int wait_value = FindModifiedRegister(rBX);
+  const int wait_val_reg = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
-  const int wait_dst = FindModifiedRegister(wait_value);
+  const int wait_dst = FindModifiedRegister(wait_val_reg);
   
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value == m_bps[GetCurrBehav()].reg[wait_value].value) {
+      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value == m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
         setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
         return true;
       }
@@ -2145,7 +2146,7 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
   m_threads[GetCurThreadID()].wait_less = false;
   m_threads[GetCurThreadID()].wait_greater = false;
   m_threads[GetCurThreadID()].wait_reg = check_reg;
-  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_value].value;
+  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
   m_threads[GetCurThreadID()].wait_dst = wait_dst;
   
   return true;
@@ -2153,14 +2154,14 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
 
 bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
 {
-  const int wait_value = FindModifiedRegister(rBX);
+  const int wait_val_reg = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
-  const int wait_dst = FindModifiedRegister(wait_value);
+  const int wait_dst = FindModifiedRegister(wait_val_reg);
   
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value < m_bps[GetCurrBehav()].reg[wait_value].value) {
+      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value < m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
         setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
         return true;
       }
@@ -2175,7 +2176,7 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
   m_threads[GetCurThreadID()].wait_less = true;
   m_threads[GetCurThreadID()].wait_greater = false;
   m_threads[GetCurThreadID()].wait_reg = check_reg;
-  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_value].value;
+  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
   m_threads[GetCurThreadID()].wait_dst = wait_dst;
   
   return true;
@@ -2183,14 +2184,14 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
 
 bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
 {
-  const int wait_value = FindModifiedRegister(rBX);
+  const int wait_val_reg = FindModifiedRegister(rBX);
   const int check_reg = FindModifiedRegister(rDX);
-  const int wait_dst = FindModifiedRegister(wait_value);
+  const int wait_dst = FindModifiedRegister(wait_val_reg);
   
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value > m_bps[GetCurrBehav()].reg[wait_value].value) {
+      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value > m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
         setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
         return true;
       }
@@ -2205,7 +2206,7 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
   m_threads[GetCurThreadID()].wait_less = false;
   m_threads[GetCurThreadID()].wait_greater = true;
   m_threads[GetCurThreadID()].wait_reg = check_reg;
-  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_value].value;
+  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
   m_threads[GetCurThreadID()].wait_dst = wait_dst;
   
   return true;
