@@ -1709,6 +1709,13 @@ bool cHardwareBCR::Inst_CreateGeneH(cAvidaContext& ctx)
     m_gene_ids[gene_label] = gene_id;
   }
   
+  // Ensure that a valid copyable region exists between the heads
+  if (getHead(start_head).MemSpaceIndex() != getHead(end_head).MemSpaceIndex() ||
+      getHead(start_head).MemSpaceIsGene() != getHead(end_head).MemSpaceIsGene()) return false;
+
+  getHead(start_head).Adjust();
+  getHead(end_head).Adjust();
+  
   // Copy the specified genome segment
   Head seghead(getHead(start_head));
   int gene_idx = 0;
