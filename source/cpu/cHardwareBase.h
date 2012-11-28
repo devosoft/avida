@@ -53,6 +53,7 @@ protected:
   cWorld* m_world;
   cOrganism* m_organism;            // Organism using this hardware.
   cInstSet* m_inst_set;             // Instruction set being used.
+
   cHardwareTracer* m_tracer;        // Set this if you want execution traced.
   cHardwareTracer* m_minitracer;    // Set this if you want execution traced in a condensed and tractable format.
   cString& m_minitrace_file;
@@ -75,16 +76,20 @@ protected:
   Apto::Array<int> m_thread_inst_post_cost;
   Apto::Array<int> m_active_thread_costs;
   Apto::Array<int> m_active_thread_post_costs;
-  bool m_has_any_costs;
-  bool m_has_costs;
-  bool m_has_ft_costs;
-  bool m_has_energy_costs;
-  bool m_has_res_costs; 
-  bool m_has_fem_res_costs; 
+
+  struct {
+    bool m_has_any_costs:1;
+    bool m_has_costs:1;
+    bool m_has_ft_costs:1;
+    bool m_has_energy_costs:1;
+    bool m_has_res_costs:1;
+    bool m_has_fem_res_costs:1;
+    bool m_has_female_costs:1;
+    bool m_has_choosy_female_costs:1;
+    bool m_has_post_costs:1;
+  };
+  
   int m_task_switching_cost;
-  bool m_has_female_costs;
-  bool m_has_choosy_female_costs;
-  bool m_has_post_costs;
 
   // --------  Base Hardware Feature Support  ---------
   Apto::Array<int, Apto::Smart> m_ext_mem;
@@ -172,8 +177,6 @@ public:
   virtual const cHeadCPU& IP(int thread) const = 0;
   virtual cHeadCPU& IP(int thread) = 0;
   
-  cHeadCPU FindLabelFull(const cCodeLabel& label);
-  
   
   // --------  Memory Manipulation  --------
   virtual const cCPUMemory& GetMemory() const = 0;
@@ -193,15 +196,10 @@ public:
   
   
   // --------  Thread Manipulation  --------
-  virtual bool ThreadSelect(const int thread_id) = 0;
-  virtual bool ThreadSelect(const cCodeLabel& in_label) = 0;
-  virtual void ThreadNext() = 0;
-  virtual void ThreadPrev() = 0;
   virtual Systematics::UnitPtr ThreadGetOwner() = 0;
 
   virtual int GetNumThreads() const = 0;
   virtual int GetCurThread() const = 0;
-  virtual int GetCurThreadID() const = 0;
   
   // interrupt current thread
   virtual bool InterruptThread(int interruptType) { return false; }

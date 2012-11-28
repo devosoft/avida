@@ -50,10 +50,6 @@ protected:
   
   void fullAdjust(int mem_size = -1);
 
-  int FindLabel_Forward(const cCodeLabel& search_label, const InstructionSequence& search_mem, int pos);
-  int FindLabel_Backward(const cCodeLabel& search_label, const InstructionSequence& search_mem, int pos);
-  
-
 public:
   inline cHeadCPU(cHardwareBase* hw = NULL, int pos = 0, int ms = 0);
   inline cHeadCPU(const cHeadCPU& in_cpu_head);

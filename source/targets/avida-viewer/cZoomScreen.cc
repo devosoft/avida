@@ -538,8 +538,6 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase& hardware)
   }
   
   // Flags...
-  //  if (hardware.GetMalActive()) SetBoldColor(COLOR_CYAN);
-  //  else SetColor(COLOR_CYAN);
   SetColor(COLOR_CYAN);
   Print(CPU_FLAGS_Y + 1, CPU_FLAGS_X + 1, "Mem Allocated");
   

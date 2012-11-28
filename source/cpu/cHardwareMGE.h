@@ -289,15 +289,10 @@ public:
   int GetNumRegisters() const { return NUM_REGISTERS; }
   
   // --------  Thread Manipulation  --------
-  bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel&) { return false; } // Labeled threads not supported
-  inline void ThreadPrev(); // Shift the current thread in use.
-  inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
   
   int GetNumThreads() const     { return GetNumMemSpaces(); }
-  int GetCurThread() const      { return GetCurThreadID(); }
-  int GetCurThreadID() const    { return m_cur_thread; }
+  int GetCurThread() const      { return m_cur_thread; }
   
   // --------  Non-Standard Methods  --------
   int GetActiveStack() const { return m_bps[GetCurrBehav()].cur_stack; }
@@ -371,10 +366,10 @@ private:
   inline cHeadCPU& getHead(int head_id) { return mHeads[head_id];  }
 
   // thread memory...not to be used for mHeads!!!
-  inline const cHeadCPU& getThIP() const { return getHead(thIP, GetCurThreadID()); }
-  inline cHeadCPU& getThIP() { return getHead(thIP, GetCurThreadID()); }
-  inline const cHeadCPU& getThHead(int head_id) const { return getHead(head_id, GetCurThreadID()); }
-  inline cHeadCPU& getThHead(int head_id) { return getHead(head_id, GetCurThreadID());  }
+  inline const cHeadCPU& getThIP() const { return getHead(thIP, m_cur_thread); }
+  inline cHeadCPU& getThIP() { return getHead(thIP, m_cur_thread); }
+  inline const cHeadCPU& getThHead(int head_id) const { return getHead(head_id, m_cur_thread); }
+  inline cHeadCPU& getThHead(int head_id) { return getHead(head_id, m_cur_thread);  }
 
   inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].thHeads[thIP]; }
   inline cHeadCPU& getIP(int thread) { return m_threads[thread].thHeads[thIP]; }  
@@ -554,27 +549,6 @@ inline cHardwareMGE::sInternalValue& cHardwareMGE::sInternalValue::operator=(con
   oldest_component = i.oldest_component;
   env_component = i.env_component;
   return *this;
-}
-
-inline bool cHardwareMGE::ThreadSelect(const int thread_num)
-{
-  if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
-    m_cur_thread = thread_num;
-    return true;
-  }
-  return false;
-}
-
-inline void cHardwareMGE::ThreadNext()
-{
-  m_cur_thread++;
-  if ((int) m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
-}
-
-inline void cHardwareMGE::ThreadPrev()
-{
-  if (m_cur_thread == 0) m_cur_thread = m_threads.GetSize() - 1;
-  else m_cur_thread--;
 }
 
 inline cHardwareMGE::sInternalValue cHardwareMGE::stackPop()

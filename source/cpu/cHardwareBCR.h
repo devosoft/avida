@@ -40,20 +40,11 @@
 #include "cEnvReqs.h"
 #include "cEnvironment.h"
 
-#include <cstring>
-#include <iomanip>
-
-/**
- * Each organism may have a cHardwareBCR structure which keeps track of the
- * current status of all the components of the simulated hardware.
- *
- * @see cCPUMemory, cInstSet
- **/
 
 class cInstLib;
 class cInstSet;
-class cMutation;
 class cOrganism;
+
 
 class cHardwareBCR : public cHardwareBase
 {
@@ -94,6 +85,78 @@ private:
     inline DataValue& operator=(const DataValue& i);
   };
   
+  class Head
+  {
+  protected:
+    cHardwareBCR* m_hw;
+    int m_pos;
+    unsigned int m_ms:31;
+    bool m_is_gene:1;
+    
+    void fullAdjust(int mem_size = -1);
+    
+  public:
+    inline Head(cHardwareBCR* hw = NULL, int pos = 0, unsigned int ms = 0, bool is_gene = false)
+      : m_hw(hw), m_pos(pos), m_ms(ms), m_is_gene(is_gene) { ; }
+    
+    inline void Reset(cHardwareBCR* hw, int pos, unsigned int ms, bool is_gene)
+      { m_hw = hw; m_pos = pos; m_ms = ms; m_is_gene = is_gene; }
+    
+    inline cCPUMemory& GetMemory() { return ((m_is_gene) ? m_hw->m_gene_array : m_hw->m_mem_array)[m_ms]; }
+    
+    inline void Adjust();
+    
+    inline unsigned int MemSpaceIndex() const { return m_ms; }
+    inline bool MemSpaceIsGene() const { return m_is_gene; }
+    
+    inline int Position() const { return m_pos; }
+    
+    inline void SetPosition(int pos) { m_pos = pos; Adjust(); }
+    inline void Set(int pos, unsigned int ms, bool is_gene) { m_pos = pos; m_ms = ms; m_is_gene = is_gene; Adjust(); }
+    inline void Set(const Head& head) { m_pos = head.m_pos; m_ms = head.m_ms; m_is_gene = head.m_is_gene; }
+    inline void SetAbsPosition(int new_pos) { m_pos = new_pos; }
+    
+    inline void Jump(int jump) { m_pos += jump; Adjust(); }
+    inline void AbsJump(int jump) { m_pos += jump; }
+    
+    inline void Advance() { m_pos++; Adjust(); }
+    
+    inline const Instruction& GetInst() { return GetMemory()[m_pos]; }
+    inline const Instruction& GetInst(int offset) { return GetMemory()[m_pos + offset]; }
+    inline Instruction NextInst();
+    inline Instruction PrevInst();
+    
+    inline void SetInst(const Instruction& value) { GetMemory()[m_pos] = value; }
+    inline void InsertInst(const Instruction& inst) { GetMemory().Insert(m_pos, inst); }
+    inline void RemoveInst() { GetMemory().Remove(m_pos); }
+    
+    inline void SetFlagCopied() { return GetMemory().SetFlagCopied(m_pos); }
+    inline void SetFlagMutated() { return GetMemory().SetFlagMutated(m_pos); }
+    inline void SetFlagExecuted() { return GetMemory().SetFlagExecuted(m_pos); }
+    inline void SetFlagPointMut() { return GetMemory().SetFlagPointMut(m_pos); }
+    inline void SetFlagCopyMut() { return GetMemory().SetFlagCopyMut(m_pos); }
+    
+    inline void ClearFlagCopied() { return GetMemory().ClearFlagCopied(m_pos); }
+    inline void ClearFlagMutated() { return GetMemory().ClearFlagMutated(m_pos); }
+    inline void ClearFlagExecuted() { return GetMemory().ClearFlagExecuted(m_pos); }
+    inline void ClearFlagPointMut() { return GetMemory().ClearFlagPointMut(m_pos); }
+    inline void ClearFlagCopyMut() { return GetMemory().ClearFlagCopyMut(m_pos); }
+    
+    // Operator Overloading...
+    inline Head& operator++() { m_pos++; Adjust(); return *this; }
+    inline Head& operator--() { m_pos--; Adjust(); return *this; }
+    inline Head& operator++(int) { return operator++(); }
+    inline Head& operator--(int) { return operator--(); }
+    inline int operator-(const Head& rhs) { return m_pos - rhs.m_pos; }
+    inline bool operator==(const Head& rhs) const;
+    inline bool operator!=(const Head& rhs) const { return !operator==(rhs); }
+    
+    // Bool Tests...
+    inline bool AtFront() { return (m_pos == 0); }
+    inline bool AtEnd() { return (m_pos + 1 == GetMemory().GetSize()); }
+    inline bool InMemory() { return (m_pos >= 0 && m_pos < GetMemory().GetSize()); }
+  };
+  
   
   class Stack
   {
@@ -124,7 +187,7 @@ private:
     int thread_id;
 
     DataValue reg[NUM_REGISTERS];
-    cHeadCPU heads[NUM_HEADS];
+    Head heads[NUM_HEADS];
     Stack stack;
     
     struct {
@@ -155,6 +218,10 @@ private:
   
   // --------  Member Variables  --------
   const tMethod* m_functions;
+
+  // Genes
+  Apto::Array<cCPUMemory, Apto::ManagedPointer> m_gene_array;
+  char m_gene_ids[MAX_MEM_SPACES];
 
   // Memory
   Apto::Array<cCPUMemory, Apto::ManagedPointer> m_mem_array;
@@ -191,6 +258,8 @@ private:
     unsigned int m_running_threads:4;
   };
   
+  cHeadCPU m_placeholder_head;
+  
   cHardwareBCR(const cHardwareBCR&); // @not_implemented
   cHardwareBCR& operator=(const cHardwareBCR&); // @not_implemented
   
@@ -200,7 +269,6 @@ public:
   ~cHardwareBCR() { ; }
   
   static tInstLib<cHardwareBCR::tMethod>* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "instset-BCR.cfg"; }
   
   
   // --------  Core Execution Methods  --------
@@ -222,16 +290,16 @@ public:
   
   
   // --------  Head Manipulation (including IP)  --------
-  const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
-  int GetNumHeads() const { return NUM_HEADS; }
+  const cHeadCPU& GetHead(int head_id) const { return m_placeholder_head; }
+  cHeadCPU& GetHead(int head_id) { return m_placeholder_head; }
+  const cHeadCPU& GetHead(int head_id, int thread) const { return m_placeholder_head; }
+  cHeadCPU& GetHead(int head_id, int thread) { return m_placeholder_head; }
+  int GetNumHeads() const { return 0; }
   
-  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[hIP]; }
-  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[hIP]; }
-  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[hIP]; }
-  cHeadCPU& IP(int thread) { return m_threads[thread].heads[hIP]; }
+  const cHeadCPU& IP() const { return m_placeholder_head; }
+  cHeadCPU& IP() { return m_placeholder_head; }
+  const cHeadCPU& IP(int thread) const { return m_placeholder_head; }
+  cHeadCPU& IP(int thread) { return m_placeholder_head; }
   
   
   // --------  Memory Manipulation  --------
@@ -241,7 +309,7 @@ public:
   const cCPUMemory& GetMemory(int idx) const { return m_mem_array[idx]; }
   cCPUMemory& GetMemory(int idx) { return m_mem_array[idx]; }
   int GetMemSize(int idx) const { return  m_mem_array[idx].GetSize(); }
-  int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
+  int GetNumMemSpaces() const { return -1; }
   
   
   // --------  Register Manipulation  --------
@@ -250,21 +318,12 @@ public:
   
   
   // --------  Thread Manipulation  --------
-  bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel&) { return false; } // Labeled threads not supported
-  inline void ThreadPrev(); // Shift the current thread in use.
-  inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
-  int GetCurThreadID() const    { return m_threads[m_cur_thread].thread_id; }
   
-  // --------  Non-Standard Methods  --------
-  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
-  bool GetMalActive() const   { return false; }
-
-
+  
   // --------  Parasite Stuff  -------- @ not implemented
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
@@ -285,12 +344,12 @@ private:
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size = cCodeLabel::MAX_LENGTH);
-  void FindLabelStart(cHeadCPU& head, bool mark_executed);
-  void FindLabelForward(cHeadCPU& head, bool mark_executed);
-  void FindLabelBackward(cHeadCPU& head, bool mark_executed);
-  void FindNopSequenceStart(cHeadCPU& head, bool mark_executed);
-  void FindNopSequenceForward(cHeadCPU& head, bool mark_executed);
-  void FindNopSequenceBackward(cHeadCPU& head, bool mark_executed);
+  void FindLabelStart(Head& head, Head& default_pos, bool mark_executed);
+  void FindLabelForward(Head& head, Head& default_pos, bool mark_executed);
+  void FindLabelBackward(Head& head, Head& default_pos, bool mark_executed);
+  void FindNopSequenceStart(Head& head, Head& default_pos, bool mark_executed);
+  void FindNopSequenceForward(Head& head, Head& default_pos, bool mark_executed);
+  void FindNopSequenceBackward(Head& head, Head& default_pos, bool mark_executed);
   inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
   inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -298,7 +357,7 @@ private:
   
   
   // --------  Thread Manipulation  -------
-  bool ThreadCreate(int thread_label, const cHeadCPU& start_pos);
+  bool ThreadCreate(int thread_label, const Head& start_pos);
   
   
   // ---------- Instruction Helpers -----------
@@ -310,24 +369,20 @@ private:
   
   int calcCopiedSize(const int parent_size, const int child_size);
   
-  inline const cHeadCPU& getHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
-  inline cHeadCPU& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
-  inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  inline Head& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  inline Head& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
   
-  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[hIP]; }
-  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[hIP]; }
-  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[hIP]; }
-  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[hIP]; }
+  inline Head& getIP() { return m_threads[m_cur_thread].heads[hIP]; }
+  inline Head& getIP(int thread) { return m_threads[thread].heads[hIP]; }
 
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, int mem_space, int position, double mut_multiplier=1);
   
 
   // ---------- Utility Functions -----------
-  inline void setInternalValue(int reg_num, int value, bool from_env = false);
-  inline void setInternalValue(int reg_num, int value, const DataValue& src);
-  inline void setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2);
+  inline void setRegister(int reg_num, int value, bool from_env = false);
+  inline void setRegister(int reg_num, int value, const DataValue& src);
+  inline void setRegister(int reg_num, int value, const DataValue& op1, const DataValue& op2);
   void checkWaitingThreads(int cur_thread, int reg_num);
 
   void ReadInst(Instruction in_inst);
@@ -394,7 +449,12 @@ private:
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
-  
+
+  bool Inst_SetGene(cAvidaContext& ctx);
+  bool Inst_CreateGeneH(cAvidaContext& ctx);
+  bool Inst_CreateGeneL(cAvidaContext& ctx);
+  bool Inst_CreateGeneS(cAvidaContext& ctx);
+
   bool Inst_Search_Label_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Label_Comp_F(cAvidaContext& ctx);
   bool Inst_Search_Label_Comp_B(cAvidaContext& ctx);
@@ -515,27 +575,46 @@ inline cHardwareBCR::DataValue& cHardwareBCR::DataValue::operator=(const DataVal
   return *this;
 }
 
-inline bool cHardwareBCR::ThreadSelect(const int thread_num)
+
+
+
+inline void cHardwareBCR::Head::Adjust()
 {
-  if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
-    m_cur_thread = thread_num;
-    return true;
+  const int mem_size = GetMemory().GetSize();
+  
+  // If we are still in range, stop here!
+  if (m_pos >= 0 && m_pos < mem_size) return;
+  
+  // If the memory is gone, just stick it at the begining of its parent.
+  if (mem_size == 0 || m_pos < 0) {
+    m_pos = 0;
+    return;
   }
   
-  return false;
+  // position back at the begining of the memory as necessary.
+  if (m_pos < (2 * mem_size)) m_pos -= mem_size;
+  else m_pos %= mem_size;
 }
 
-inline void cHardwareBCR::ThreadNext()
+
+inline bool cHardwareBCR::Head::operator==(const Head& rhs) const
 {
-  m_cur_thread++;
-  if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+  return m_hw == rhs.m_hw && m_pos == rhs.m_pos && m_ms == rhs.m_ms && m_is_gene == rhs.m_is_gene;
 }
 
-inline void cHardwareBCR::ThreadPrev()
+inline Instruction cHardwareBCR::Head::PrevInst()
 {
-  if (m_cur_thread == 0) m_cur_thread = m_threads.GetSize() - 1;
-  else m_cur_thread--;
+  return (AtFront()) ? GetMemory()[GetMemory().GetSize() - 1] : GetMemory()[m_pos - 1];
 }
+
+inline Instruction cHardwareBCR::Head::NextInst()
+{
+  return (AtEnd()) ? m_hw->GetInstSet().GetInstError() : GetMemory()[m_pos + 1];
+}
+
+
+
+
 
 inline cHardwareBCR::DataValue cHardwareBCR::stackPop()
 {
@@ -576,7 +655,7 @@ inline int cHardwareBCR::GetStack(int depth, int stack_id, int in_thread) const
   return value.value;
 }
 
-inline void cHardwareBCR::setInternalValue(int reg_num, int value, bool from_env)
+inline void cHardwareBCR::setRegister(int reg_num, int value, bool from_env)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
@@ -587,7 +666,7 @@ inline void cHardwareBCR::setInternalValue(int reg_num, int value, bool from_env
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-inline void cHardwareBCR::setInternalValue(int reg_num, int value, const DataValue& src)
+inline void cHardwareBCR::setRegister(int reg_num, int value, const DataValue& src)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
@@ -598,7 +677,7 @@ inline void cHardwareBCR::setInternalValue(int reg_num, int value, const DataVal
   if (m_waiting_threads) checkWaitingThreads(m_cur_thread, reg_num);
 }
 
-inline void cHardwareBCR::setInternalValue(int reg_num, int value, const DataValue& op1, const DataValue& op2)
+inline void cHardwareBCR::setRegister(int reg_num, int value, const DataValue& op1, const DataValue& op2)
 {
   DataValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
