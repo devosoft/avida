@@ -455,18 +455,14 @@ private:
   bool Inst_CreateGeneL(cAvidaContext& ctx);
   bool Inst_CreateGeneS(cAvidaContext& ctx);
 
-  bool Inst_Search_Label_Comp_S(cAvidaContext& ctx);
-  bool Inst_Search_Label_Comp_F(cAvidaContext& ctx);
-  bool Inst_Search_Label_Comp_B(cAvidaContext& ctx);
   bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
   bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);
   bool Inst_Search_Label_Direct_B(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_D(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_B(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Direct_S(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Direct_F(cAvidaContext& ctx);
-  bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Comp_D(cAvidaContext& ctx);
 
   // Thread Execution Control
   bool Inst_WaitCondition_Equal(cAvidaContext& ctx);

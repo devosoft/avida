@@ -151,18 +151,14 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
         
     // Flow Control Instructions
     tInstLibEntry<tMethod>("label", &cHardwareBCR::Inst_Label, INST_CLASS_FLOW_CONTROL, nInstFlag::LABEL),
-    tInstLibEntry<tMethod>("search-lbl-comp-s", &cHardwareBCR::Inst_Search_Label_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement label from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-comp-f", &cHardwareBCR::Inst_Search_Label_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement label forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-lbl-comp-b", &cHardwareBCR::Inst_Search_Label_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement label backward and move the flow head"),
     tInstLibEntry<tMethod>("search-lbl-direct-s", &cHardwareBCR::Inst_Search_Label_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct label from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-lbl-direct-f", &cHardwareBCR::Inst_Search_Label_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct label forward and move the flow head"),
     tInstLibEntry<tMethod>("search-lbl-direct-b", &cHardwareBCR::Inst_Search_Label_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct label backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-lbl-direct-d", &cHardwareBCR::Inst_Search_Label_Direct_D, INST_CLASS_FLOW_CONTROL, 0, "Find direct label backward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-s", &cHardwareBCR::Inst_Search_Seq_Comp_S, INST_CLASS_FLOW_CONTROL, 0, "Find complement template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-f", &cHardwareBCR::Inst_Search_Seq_Comp_F, INST_CLASS_FLOW_CONTROL, 0, "Find complement template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-seq-comp-b", &cHardwareBCR::Inst_Search_Seq_Comp_B, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-direct-s", &cHardwareBCR::Inst_Search_Seq_Direct_S, INST_CLASS_FLOW_CONTROL, 0, "Find direct template from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-direct-f", &cHardwareBCR::Inst_Search_Seq_Direct_F, INST_CLASS_FLOW_CONTROL, 0, "Find direct template forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-seq-direct-b", &cHardwareBCR::Inst_Search_Seq_Direct_B, INST_CLASS_FLOW_CONTROL, 0, "Find direct template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-seq-comp-d", &cHardwareBCR::Inst_Search_Seq_Comp_D, INST_CLASS_FLOW_CONTROL, 0, "Find complement template backward and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareBCR::Inst_MoveHead, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head"),
     tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareBCR::Inst_MoveHeadIfNEqu, INST_CLASS_FLOW_CONTROL, 0, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
@@ -1822,11 +1818,11 @@ bool cHardwareBCR::Inst_CreateGeneS(cAvidaContext& ctx)
   cCPUMemory& gene = m_gene_array[gene_id];
   
   // Find the starting nop sequence
-  GetLabel().Rotate(1, NUM_NOPS);
   ReadLabel();
   FindNopSequenceStart(seghead, getIP(), true);
   
   // Find the complementary nop sequence
+  GetLabel().Rotate(1, NUM_NOPS);
   Head endhead(seghead);
   FindNopSequenceForward(endhead, seghead, true);
   
@@ -2214,33 +2210,6 @@ bool cHardwareBCR::Inst_HeadCopy(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareBCR::Inst_Search_Label_Comp_S(cAvidaContext&)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  FindLabelStart(getHead(hFLOW), getIP(), true);
-  getHead(hFLOW).Advance();
-  return true;
-}
-
-bool cHardwareBCR::Inst_Search_Label_Comp_F(cAvidaContext&)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  FindLabelForward(getHead(hFLOW), getIP(), true);
-  getHead(hFLOW).Advance();
-  return true;
-}
-
-bool cHardwareBCR::Inst_Search_Label_Comp_B(cAvidaContext&)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  FindLabelBackward(getHead(hFLOW), getIP(), true);
-  getHead(hFLOW).Advance();
-  return true;
-}
-
 bool cHardwareBCR::Inst_Search_Label_Direct_S(cAvidaContext&)
 {
   ReadLabel();
@@ -2261,6 +2230,21 @@ bool cHardwareBCR::Inst_Search_Label_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   FindLabelBackward(getHead(hFLOW), getIP(), true);
+  getHead(hFLOW).Advance();
+  return true;
+}
+
+bool cHardwareBCR::Inst_Search_Label_Direct_D(cAvidaContext&)
+{
+  ReadLabel();
+  int direction = m_threads[m_cur_thread].reg[rBX].value;
+  if (direction == 0) {
+    FindLabelStart(getHead(hFLOW), getIP(), true);
+  } else if (direction < 0) {
+    FindLabelBackward(getHead(hFLOW), getIP(), true);
+  } else {
+    FindLabelForward(getHead(hFLOW), getIP(), true);
+  }
   getHead(hFLOW).Advance();
   return true;
 }
@@ -2292,29 +2276,22 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_B(cAvidaContext&)
   return true;
 }
 
-bool cHardwareBCR::Inst_Search_Seq_Direct_S(cAvidaContext&)
+bool cHardwareBCR::Inst_Search_Seq_Comp_D(cAvidaContext&)
 {
   ReadLabel();
-  FindNopSequenceStart(getHead(hFLOW), getIP(), true);
+  GetLabel().Rotate(1, NUM_NOPS);
+  int direction = m_threads[m_cur_thread].reg[rBX].value;
+  if (direction == 0) {
+    FindNopSequenceStart(getHead(hFLOW), getIP(), true);
+  } else if (direction < 0) {
+    FindNopSequenceBackward(getHead(hFLOW), getIP(), true);
+  } else {
+    FindNopSequenceForward(getHead(hFLOW), getIP(), true);
+  }
   getHead(hFLOW).Advance();
   return true;
 }
 
-bool cHardwareBCR::Inst_Search_Seq_Direct_F(cAvidaContext&)
-{
-  ReadLabel();
-  FindNopSequenceForward(getHead(hFLOW), getIP(), true);
-  getHead(hFLOW).Advance();
-  return true;
-}
-
-bool cHardwareBCR::Inst_Search_Seq_Direct_B(cAvidaContext&)
-{
-  ReadLabel();
-  FindNopSequenceBackward(getHead(hFLOW), getIP(), true);
-  getHead(hFLOW).Advance();
-  return true;
-}
 
 bool cHardwareBCR::Inst_WaitCondition_Equal(cAvidaContext&)
 {
