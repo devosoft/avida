@@ -133,6 +133,8 @@ private:
     int end;
     
     struct {
+      bool loop_gene:1;
+    
       bool reading_label:1;
       bool reading_seq:1;
       bool active:1;
@@ -291,8 +293,9 @@ public:
   // --------  Thread Manipulation  --------
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
   
-  int GetNumThreads() const     { return GetNumMemSpaces(); }
-  int GetCurThread() const      { return m_cur_thread; }
+  int GetNumThreads() const     { return m_threads.GetSize(); }
+  int GetCurThread() const      { return GetCurThreadID(); }
+  int GetCurThreadID() const    { return m_cur_thread; }
   
   // --------  Non-Standard Methods  --------
   int GetActiveStack() const { return m_bps[GetCurrBehav()].cur_stack; }
@@ -394,6 +397,7 @@ private:
   // --------  Behavior Execution  --------
   bool Inst_StartGene(cAvidaContext& ctx);
   bool Inst_EndGene(cAvidaContext& ctx);
+  bool Inst_LoopGene(cAvidaContext& ctx);
   
   // Flow Control
   bool Inst_Label(cAvidaContext& ctx);
