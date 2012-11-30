@@ -48,7 +48,6 @@ using namespace Avida;
 using namespace AvidaTools;
 
 
-
 tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::s_inst_slib = cHardwareBCR::initInstLib();
 
 tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
@@ -72,17 +71,12 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     cNOPEntry("nop-J", rJX),
     cNOPEntry("nop-K", rKX),
     cNOPEntry("nop-L", rLX),
-    cNOPEntry("nop-M", rMX),
-    cNOPEntry("nop-N", rNX),
-    cNOPEntry("nop-O", rOX),
-    cNOPEntry("nop-P", rPX),
   };
   
   static const tInstLibEntry<tMethod> s_f_array[] = {
     /*
-     Note: all entries of cNOPEntryCPU s_n_array must have corresponding
-     in the same order in tInstLibEntry<tMethod> s_f_array, and these entries must
-     be the first elements of s_f_array.
+     Note: all entries of cNOPEntryCPU s_n_array must have corresponding in the same order in
+     tInstLibEntry<tMethod> s_f_array, and these entries must be the first elements of s_f_array.
      */
     tInstLibEntry<tMethod>("nop-A", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-B", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
@@ -96,10 +90,6 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
     tInstLibEntry<tMethod>("nop-J", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-K", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-L", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-M", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-N", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-O", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-P", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, nInstFlag::NOP, "No-operation; modifies other instructions"),
     
     tInstLibEntry<tMethod>("NULL", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareBCR::Inst_Nop, INST_CLASS_NOP, 0, "True no-operation instruction: does nothing"),
@@ -169,10 +159,8 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
 
     tInstLibEntry<tMethod>("set-memory", &cHardwareBCR::Inst_SetMemory, INST_CLASS_FLOW_CONTROL, 0, "Set ?mem_space_label? of the ?Flow? head."),
 
-    tInstLibEntry<tMethod>("set-gene", &cHardwareBCR::Inst_SetGene, INST_CLASS_FLOW_CONTROL, 0, "Set ?mem_space_label? of the ?Flow2? head."),
-    tInstLibEntry<tMethod>("create-gene-h", &cHardwareBCR::Inst_CreateGeneH, INST_CLASS_FLOW_CONTROL, 0, ""),
-    tInstLibEntry<tMethod>("create-gene-l", &cHardwareBCR::Inst_CreateGeneL, INST_CLASS_FLOW_CONTROL, 0, ""),
-    tInstLibEntry<tMethod>("create-gene-s", &cHardwareBCR::Inst_CreateGeneS, INST_CLASS_FLOW_CONTROL, 0, ""),
+    tInstLibEntry<tMethod>("promoter", &cHardwareBCR::Inst_Nop, INST_CLASS_FLOW_CONTROL, nInstFlag::PROMOTER, "True no-operation instruction: does nothing"),
+    tInstLibEntry<tMethod>("terminator", &cHardwareBCR::Inst_Nop, INST_CLASS_FLOW_CONTROL, nInstFlag::TERMINATOR, "True no-operation instruction: does nothing"),
 
     // Replication Instructions
     tInstLibEntry<tMethod>("divide", &cHardwareBCR::Inst_Divide, INST_CLASS_LIFECYCLE, nInstFlag::STALL, "Divide code between read and write heads.", BEHAV_CLASS_COPY),
@@ -271,13 +259,16 @@ tInstLib<cHardwareBCR::tMethod>* cHardwareBCR::initInstLib(void)
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
   
   const int def = 0;
-  const int null_inst = 16;
+  const int null_inst = 12;
   
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
+
+
+
 cHardwareBCR::cHardwareBCR(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-: cHardwareBase(world, in_organism, in_inst_set), m_gene_array(0), m_mem_array(1), m_sensor(world, in_organism)
+: cHardwareBase(world, in_organism, in_inst_set), m_genes(0), m_mem_array(1), m_sensor(world, in_organism)
 {
   m_functions = s_inst_slib->GetFunctions();
   
@@ -304,7 +295,6 @@ void cHardwareBCR::internalReset()
   m_cycle_count = 0;
   m_last_output = 0;
   
-  m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   m_sensor.Reset();
   
   
@@ -312,26 +302,20 @@ void cHardwareBCR::internalReset()
   m_global_stack.Clear(m_inst_set->GetStackSize());
   
   
-  // Genes
-  m_gene_array.Resize(0);
-  for (int i = 0; i < MAX_MEM_SPACES; i++) m_gene_ids[i] = -1;
-  
+  // Threads
+  m_threads.Resize(0);
+  m_cur_thread = 0;
+  m_waiting_threads = 0;
+  m_running_threads = 0;
   
   // Memory
   m_mem_array.Resize(1);
   for (int i = 1; i < MAX_MEM_SPACES; i++) m_mem_ids[i] = -1;
   m_mem_ids[0] = 0;
-  
-  
-  // Threads
-  m_threads.Resize(1);
-  for (int i = 1; i < MAX_THREADS; i++) m_thread_ids[i] = -1;
-  
-  m_threads[0].Reset(this, 0);
-  m_thread_ids[0] = 0;
-  m_cur_thread = 0;
-  m_waiting_threads = 0;
-  m_running_threads = 1;
+
+  // Genes
+  m_genes.Resize(0);
+  setupGenes();
 }
 
 
@@ -341,16 +325,83 @@ void cHardwareBCR::internalResetOnFailedDivide()
 }
 
 
-void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, int in_id)
+void cHardwareBCR::setupGenes()
 {
-  thread_id = in_id;
+  Head cur_promoter(this, 0, 0, false);
   
+  do {
+    if (m_inst_set->IsPromoter(cur_promoter.GetInst())) {
+      // Flag the promoter as executed
+      cur_promoter.SetFlagExecuted();
+      
+      // Create the gene data structure
+      int gene_id = m_genes.GetSize();
+      m_genes.Resize(gene_id + 1);
+      
+      // Start reading gene content, including the label if specified
+      Head gene_content_start(cur_promoter);
+      readLabel(gene_content_start, m_genes[gene_id].label);
+      
+      
+      // Copy the specified genome segment
+      Head seghead(gene_content_start);
+      seghead.Advance();
+
+      int gene_idx = 0;
+      cCPUMemory& gene = m_genes[gene_id].memory;
+      
+      while (!m_inst_set->IsTerminator(seghead.GetInst()) && seghead != gene_content_start) {
+        if (gene.GetSize() <= gene_idx) gene.Resize(gene.GetSize() + 1);
+        gene[gene_idx] = seghead.GetInst();
+        seghead.SetFlagExecuted();
+        gene_idx++;
+        seghead.Advance();
+      }
+      
+      // Ignore zero length genes
+      if (gene.GetSize() == 0) {
+        m_genes.Resize(gene_id);
+        continue;
+      }
+      
+      // Create the gene thread
+      Head thread_start(this, 0, gene_id, true);
+      threadCreate(m_genes[gene_id].label, thread_start);
+    }
+    
+    cur_promoter.Advance();
+  } while (!cur_promoter.AtEnd());
+  
+
+  // If no valid genes where identified, create default gene from the whole genome
+  if (m_genes.GetSize() == 0) {
+    m_genes.Resize(1);
+    m_genes[0].memory = m_mem_array[0];
+    for (int i = 0; i < m_mem_array[0].GetSize(); i++) m_mem_array[0].SetFlagExecuted(i);
+    Head thread_start(this, 0, 0, true);
+    threadCreate(m_genes[0].label, thread_start);
+  }
+
+  ResizeCostArrays(m_threads.GetSize());
+}
+
+
+void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, const Head& start_pos)
+{
+  // Clear registers
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
-  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware, 0, 0, false);
-  stack.Clear(in_hardware->GetInstSet().GetStackSize());
   
+  // Reset the heads (read/write in genome, others at start_pos)
+  heads[hREAD].Reset(in_hardware, 0, 0, false);
+  heads[hWRITE].Reset(in_hardware, 0, 0, false);
+  heads[hIP] = start_pos;
+  for (int i = hFLOW; i < NUM_HEADS; i++) heads[i] = start_pos;
+
+  // Clear the stack
+  stack.Clear(in_hardware->GetInstSet().GetStackSize());
   cur_stack = 0;
   
+  // Clear other flags and values
   reading_label = false;
   reading_seq = false;
   running = true;
@@ -359,9 +410,6 @@ void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, int in_id)
   next_label.Clear();
 }
 
-
-// This function processes the very next command in the genome, and is made
-// to be as optimized as possible.  This is the heart of avida.
 
 bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
@@ -524,9 +572,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
   return !m_spec_die && !speculative_stall;
 }
 
-// This method will handle the actuall execution of an instruction
-// within single process, once that function has been finalized.
-bool cHardwareBCR::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst) 
+
+bool cHardwareBCR::SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst)
 {
   // Copy Instruction locally to handle stochastic effects
   Instruction actual_inst = cur_inst;
@@ -579,7 +626,7 @@ void cHardwareBCR::PrintStatus(ostream& fp)
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
     DataValue& reg = m_threads[m_cur_thread].reg[i];
-    fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
+    fp << static_cast<char>('A' + i) << "X:" << getRegister(i) << " ";
     fp << setbase(16) << "[0x" << reg.value <<  "] " << setbase(10);
     fp << "(" << reg.from_env << " " << reg.env_component << " " << reg.originated << " " << reg.oldest_component << ")  ";
   }
@@ -611,8 +658,8 @@ void cHardwareBCR::PrintStatus(ostream& fp)
     fp << "  Mem " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
-  for (int i = 0; i < m_gene_array.GetSize(); i++) {
-    const cCPUMemory& mem = m_gene_array[i];
+  for (int i = 0; i < m_genes.GetSize(); i++) {
+    const cCPUMemory& mem = m_genes[i].memory;
     fp << "  Gene " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
@@ -668,7 +715,7 @@ void cHardwareBCR::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
     DataValue& reg = m_threads[m_cur_thread].reg[i];
-    fp << GetRegister(i) << " ";
+    fp << getRegister(i) << " ";
     fp << "(" << reg.originated << ") ";
   }    
   // genome loc info
@@ -732,6 +779,8 @@ void cHardwareBCR::PrintMiniTraceSuccess(ostream& fp, const int exec_sucess)
   fp << endl;
   fp.flush();
 }
+
+
 
 void cHardwareBCR::FindLabelStart(Head& head, Head& default_pos, bool mark_executed)
 {
@@ -1073,75 +1122,55 @@ void cHardwareBCR::ReadInst(Instruction in_inst)
   }
 }
 
-// This function looks at the current position in the info of a creature,
-// and sets the next_label to be the sequence of nops which follows.  The
-// instruction pointer is left on the last line of the label found.
 
-void cHardwareBCR::ReadLabel(int max_size)
+// This function looks at the current position in the info of the organism and sets the next_label to be the sequence of nops
+// which follows.  The instruction pointer is left on the last line of the label found.
+
+void cHardwareBCR::readLabel(Head& head, cCodeLabel& label, int max_size)
 {
   int count = 0;
-  Head& inst_ptr = getIP();
   
-  GetLabel().Clear();
+  label.Clear();
   
-  while (m_inst_set->IsNop(inst_ptr.NextInst()) &&
-         (count < max_size)) {
+  while (m_inst_set->IsNop(head.NextInst()) && (count < max_size)) {
     count++;
-    inst_ptr.Advance();
-    GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr.GetInst()));
+    head.Advance();
+    label.AddNop(m_inst_set->GetNopMod(head.GetInst()));
     
     // If this is the first line of the template, mark it executed.
-    if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
-      inst_ptr.SetFlagExecuted();
-    }
+    if (label.GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) head.SetFlagExecuted();
   }
 }
 
-bool cHardwareBCR::ThreadCreate(int thread_label, const Head& start_pos)
+void cHardwareBCR::threadCreate(const cCodeLabel& thread_label, const Head& start_pos)
 {
-  int thread_id = m_threads.GetSize();
-  
-  // Check for thread cap, base thread label (i.e. no label)
-  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
-  
   // Check for existing thread
-  if (thread_label >= 0 && m_thread_ids[thread_label] >= 0) {
-    thread_id = m_thread_ids[thread_label];
-    if (m_threads[thread_id].running) {
-      return -1;  // Thread exists, and is running... call fails
-    } else {
-      m_threads[thread_id].Reset(this, thread_id);
-      m_threads[thread_id].heads[hIP] = start_pos;
-      m_running_threads++;
-      return thread_id;
-    }
-  }
-  
-  // Add new thread entry
-  m_threads.Resize(thread_id + 1);
-
-  if (thread_label >= 0) {
-    m_thread_ids[thread_label] = thread_id;
-  } else {
-    for (int i = 0; i < MAX_THREADS; i++) {
-      if (m_thread_ids[i] < 0) {
-        m_thread_ids[i] = thread_id;
-        break;
+  if (thread_label.GetSize() > 0) {
+    for (int thread_idx = 0; thread_idx < m_threads.GetSize(); thread_idx++) {
+      if (m_threads[thread_idx].thread_label == thread_label) {
+        if (!m_threads[thread_idx].running) {
+          m_threads[thread_idx].Reset(this, start_pos);
+          m_running_threads++;
+        }
+        return;
       }
     }
   }
   
-  // Setup this thread into the current selected memory space (Flow Head)
-  m_threads[thread_id].Reset(this, thread_id);
-  m_threads[thread_id].heads[hIP] = start_pos;
+  
+  // Create new thread
+  int thread_id = m_threads.GetSize();
+  m_threads.Resize(thread_id + 1);
+  m_threads[thread_id].thread_label = thread_label;
+  m_threads[thread_id].Reset(this, start_pos);
   m_running_threads++;
-  return thread_id;
+  
+  m_organism->GetPhenotype().SetIsMultiThread();
 }
 
 
-////////////////////////////
-//  Instruction Helpers...
-////////////////////////////
+// Instruction Helpers
+// --------------------------------------------------------------------------------------------------------------
 
 inline int cHardwareBCR::FindModifiedRegister(int default_register)
 {
@@ -1202,6 +1231,7 @@ inline int cHardwareBCR::FindNextRegister(int base_reg)
   return (base_reg + 1) % NUM_REGISTERS;
 }
 
+
 int cHardwareBCR::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
@@ -1211,6 +1241,7 @@ int cHardwareBCR::calcCopiedSize(const int parent_size, const int child_size)
 	}
   return copied_size;
 }
+
 
 bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write_head_pos, double mut_multiplier)
 {  
@@ -1264,9 +1295,7 @@ bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write
         // Reset only the calling thread's state
         for(int x = 0; x < NUM_HEADS; x++) getHead(x).Reset(this, 0, 0, false);
         for(int x = 0; x < NUM_REGISTERS; x++) setRegister(x, 0, false);
-        if(m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
-          m_organism->GetPhenotype().ResetMerit();
-        }
+        if (m_world->GetConfig().INHERIT_MERIT.Get() == 0) m_organism->GetPhenotype().ResetMerit();
         break;
         
       case DIVIDE_METHOD_OFFSPRING:
@@ -1278,6 +1307,7 @@ bool cHardwareBCR::Divide_Main(cAvidaContext& ctx, int mem_space_used, int write
 	
   return true;
 }
+
 
 void cHardwareBCR::checkWaitingThreads(int cur_thread, int reg_num)
 {
@@ -1308,23 +1338,21 @@ void cHardwareBCR::checkWaitingThreads(int cur_thread, int reg_num)
   }
 }
 
-//////////////////////////
-// And the instructions...
-//////////////////////////
 
+// Instructions
+// --------------------------------------------------------------------------------------------------------------
 
 // Multi-threading.
 bool cHardwareBCR::Inst_ThreadCreate(cAvidaContext&)
 {
-  int thread_label = FindModifiedRegister(-1);
-  int head_used = FindModifiedHead(hFLOW2);
-  
-  bool success = ThreadCreate(thread_label, m_threads[m_cur_thread].heads[head_used]);
-  if (!success) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
-  
-  if (success) m_organism->GetPhenotype().SetIsMultiThread();
-  
-  return success;
+  if (m_threads.GetSize() >= m_world->GetConfig().MAX_CPU_THREADS.Get()) {
+    m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+    return false;
+  }
+
+  readLabel(getIP(), GetLabel());
+  threadCreate(GetLabel(), m_threads[m_cur_thread].heads[hFLOW]);
+  return true;
 }
 
 bool cHardwareBCR::Inst_ThreadCancel(cAvidaContext& ctx)
@@ -1339,7 +1367,7 @@ bool cHardwareBCR::Inst_ThreadCancel(cAvidaContext& ctx)
 bool cHardwareBCR::Inst_ThreadID(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setRegister(reg_used, m_threads[m_cur_thread].thread_id, false);
+  setRegister(reg_used, m_cur_thread, false);
   return true;
 }
 
@@ -1352,7 +1380,7 @@ bool cHardwareBCR::Inst_Yield(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Label(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   return true;
 }
 
@@ -1360,7 +1388,7 @@ bool cHardwareBCR::Inst_IfNEqu(cAvidaContext&) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  if (GetRegister(op1) == GetRegister(op2))  getIP().Advance();
+  if (getRegister(op1) == getRegister(op2))  getIP().Advance();
   return true;
 }
 
@@ -1368,33 +1396,33 @@ bool cHardwareBCR::Inst_IfLess(cAvidaContext&) // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  if (GetRegister(op1) >=  GetRegister(op2))  getIP().Advance();
+  if (getRegister(op1) >=  getRegister(op2))  getIP().Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_IfNotZero(cAvidaContext&)  // Execute next if ?bx? != 0
 {
   const int op1 = FindModifiedRegister(rBX);
-  if (GetRegister(op1) == 0)  getIP().Advance();
+  if (getRegister(op1) == 0)  getIP().Advance();
   return true;
 }
 bool cHardwareBCR::Inst_IfEqualZero(cAvidaContext&)  // Execute next if ?bx? == 0
 {
   const int op1 = FindModifiedRegister(rBX);
-  if (GetRegister(op1) != 0)  getIP().Advance();
+  if (getRegister(op1) != 0)  getIP().Advance();
   return true;
 }
 bool cHardwareBCR::Inst_IfGreaterThanZero(cAvidaContext&)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(rBX);
-  if (GetRegister(op1) <= 0)  getIP().Advance();
+  if (getRegister(op1) <= 0)  getIP().Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_IfLessThanZero(cAvidaContext&)  // Execute next if ?bx? < 0
 {
   const int op1 = FindModifiedRegister(rBX);
-  if (GetRegister(op1) >= 0)  getIP().Advance();
+  if (getRegister(op1) >= 0)  getIP().Advance();
   return true;
 }
 
@@ -1410,7 +1438,7 @@ bool cHardwareBCR::Inst_IfGtrX(cAvidaContext&)       // Execute next if BX > X; 
   
   int valueToCompare = 1;
   
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   const cCodeLabel& shift_label = GetLabel();
   for (int i = 0; i < shift_label.GetSize(); i++) {
     if (shift_label[i] == rAX) {
@@ -1420,7 +1448,7 @@ bool cHardwareBCR::Inst_IfGtrX(cAvidaContext&)       // Execute next if BX > X; 
     }
   }
   
-  if (GetRegister(rBX) <= valueToCompare)  getIP().Advance();
+  if (getRegister(rBX) <= valueToCompare)  getIP().Advance();
   
   return true;
 }
@@ -1436,7 +1464,7 @@ bool cHardwareBCR::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X;
   
   int valueToCompare = 1;
   
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   const cCodeLabel& shift_label = GetLabel();
   for (int i = 0; i < shift_label.GetSize(); i++) {
     if (shift_label[i] == rAX) {
@@ -1446,7 +1474,7 @@ bool cHardwareBCR::Inst_IfEquX(cAvidaContext&)       // Execute next if BX == X;
     }
   }
   
-  if (GetRegister(rBX) != valueToCompare)  getIP().Advance();
+  if (getRegister(rBX) != valueToCompare)  getIP().Advance();
   
   return true;
 }
@@ -1648,7 +1676,6 @@ bool cHardwareBCR::Inst_Nand(cAvidaContext&)
 bool cHardwareBCR::Inst_SetMemory(cAvidaContext& ctx)
 {
   int mem_label = FindModifiedRegister(rBX);
-  int head_used = FindModifiedHead(hFLOW);
   
   int mem_id = m_mem_ids[mem_label];
   
@@ -1659,191 +1686,7 @@ bool cHardwareBCR::Inst_SetMemory(cAvidaContext& ctx)
     m_mem_ids[mem_label] = mem_id;
   }
   
-  m_threads[m_cur_thread].heads[head_used].Set(0, mem_id, false);
-  return true;
-}
-
-bool cHardwareBCR::Inst_SetGene(cAvidaContext& ctx)
-{
-  int gene_label = FindModifiedRegister(rAX);
-  int head_used = FindModifiedHead(hFLOW2);
-  
-  int gene_id = m_gene_ids[gene_label];
-  
-  // Check for existing mem_space
-  if (gene_id < 0) {
-    gene_id = m_gene_array.GetSize();
-    m_gene_array.Resize(gene_id + 1);
-    m_gene_ids[gene_label] = gene_id;
-  }
-  
-  m_threads[m_cur_thread].heads[head_used].Set(0, gene_id, true);
-  return true;
-}
-
-
-bool cHardwareBCR::Inst_CreateGeneH(cAvidaContext& ctx)
-{
-  int gene_label = FindModifiedRegister(-1);
-  int start_head = FindModifiedHead(hFLOW3);
-  int end_head = FindModifiedHead(hFLOW);
-  int head_used = FindModifiedHead(hFLOW2);
-
-  if (gene_label == -1) {
-    for (gene_label = 0; gene_label < MAX_MEM_SPACES; gene_label++) {
-      if (m_gene_ids[gene_label] == -1) break;
-    }
-    if (gene_label == MAX_MEM_SPACES) return false;
-  }
-  
-  int gene_id = m_gene_ids[gene_label];
-  
-  // Check for existing mem_space
-  if (gene_id < 0) {
-    gene_id = m_gene_array.GetSize();
-    m_gene_array.Resize(gene_id + 1);
-    m_gene_ids[gene_label] = gene_id;
-  }
-  
-  // Ensure that a valid copyable region exists between the heads
-  if (getHead(start_head).MemSpaceIndex() != getHead(end_head).MemSpaceIndex() ||
-      getHead(start_head).MemSpaceIsGene() != getHead(end_head).MemSpaceIsGene()) return false;
-
-  getHead(start_head).Adjust();
-  getHead(end_head).Adjust();
-  
-  // Copy the specified genome segment
-  Head seghead(getHead(start_head));
-  int gene_idx = 0;
-  cCPUMemory& gene = m_gene_array[gene_id];
-  
-  while (seghead != getHead(end_head)) {
-    if (gene.GetSize() <= gene_idx) gene.Resize(gene.GetSize() + 1);
-    gene[gene_idx] = seghead.GetInst();
-    gene_idx++;
-    seghead.Advance();
-  }
-
-  // If this is a zero length segment, make sure the memory space is the default 1 instruction
-  if (gene_idx == 0) {
-    gene_idx = 1;
-    gene[0] = Instruction(0);
-  }
-  
-  // Resize the gene to the new length, in case it is now shorter
-  gene.Resize(gene_idx);
-  
-  m_threads[m_cur_thread].heads[head_used].Set(0, gene_id, true);
-  return true;
-}
-
-bool cHardwareBCR::Inst_CreateGeneL(cAvidaContext& ctx)
-{
-  int gene_label = FindModifiedRegister(-1);
-  
-  if (gene_label == -1) {
-    for (gene_label = 0; gene_label < MAX_MEM_SPACES; gene_label++) {
-      if (m_gene_ids[gene_label] == -1) break;
-    }
-    if (gene_label == MAX_MEM_SPACES) return false;
-  }
-
-  int gene_id = m_gene_ids[gene_label];
-  
-  // Check for existing mem_space
-  if (gene_id < 0) {
-    gene_id = m_gene_array.GetSize();
-    m_gene_array.Resize(gene_id + 1);
-    m_gene_ids[gene_label] = gene_id;
-  }
-  
-  
-  Head seghead(this);
-  int gene_idx = 0;
-  cCPUMemory& gene = m_gene_array[gene_id];
-
-  // Find the starting label
-  ReadLabel();
-  FindLabelStart(seghead, getIP(), true);
-  
-  // Find the matching end label
-  Head endhead(seghead);
-  FindLabelForward(endhead, seghead, true);
-  
-  // Copy the specified genome segment
-  while (seghead != endhead) {
-    if (gene.GetSize() <= gene_idx) gene.Resize(gene.GetSize() + 1);
-    gene[gene_idx] = seghead.GetInst();
-    gene_idx++;
-    seghead.Advance();
-  }
-  
-  // If this is a zero length segment, make sure the memory space is the default 1 instruction
-  if (gene_idx == 0) {
-    gene_idx = 1;
-    gene[0] = Instruction(0);
-  }
-
-  // Resize the gene to the new length, in case it is now shorter
-  gene.Resize(gene_idx);
-  
-  m_threads[m_cur_thread].heads[hFLOW2].Set(0, gene_id, true);
-  return true;
-}
-
-
-bool cHardwareBCR::Inst_CreateGeneS(cAvidaContext& ctx)
-{
-  int gene_label = FindModifiedRegister(-1);
-  
-  if (gene_label == -1) {
-    for (gene_label = 0; gene_label < MAX_MEM_SPACES; gene_label++) {
-      if (m_gene_ids[gene_label] == -1) break;
-    }
-    if (gene_label == MAX_MEM_SPACES) return false;
-  }
-  
-  int gene_id = m_gene_ids[gene_label];
-  
-  // Check for existing mem_space
-  if (gene_id < 0) {
-    gene_id = m_gene_array.GetSize();
-    m_gene_array.Resize(gene_id + 1);
-    m_gene_ids[gene_label] = gene_id;
-  }
-  
-  
-  Head seghead(this);
-  int gene_idx = 0;
-  cCPUMemory& gene = m_gene_array[gene_id];
-  
-  // Find the starting nop sequence
-  ReadLabel();
-  FindNopSequenceStart(seghead, getIP(), true);
-  
-  // Find the complementary nop sequence
-  GetLabel().Rotate(1, NUM_NOPS);
-  Head endhead(seghead);
-  FindNopSequenceForward(endhead, seghead, true);
-  
-  // Copy the specified genome segment
-  while (seghead != endhead) {
-    if (gene.GetSize() <= gene_idx) gene.Resize(gene.GetSize() + 1);
-    gene[gene_idx] = seghead.GetInst();
-    gene_idx++;
-    seghead.Advance();
-  }
-  
-  // If this is a zero length segment, make sure the memory space is the default 1 instruction
-  if (gene_idx == 0) {
-    gene_idx = 1;
-    gene[0] = Instruction(0);
-  }
-  
-  // Resize the gene to the new length, in case it is now shorter
-  gene.Resize(gene_idx);
-  
-  m_threads[m_cur_thread].heads[hFLOW2].Set(0, gene_id, true);
+  m_threads[m_cur_thread].heads[hWRITE].Set(0, mem_id, false);
   return true;
 }
 
@@ -1975,7 +1818,12 @@ bool cHardwareBCR::Inst_SGSense(cAvidaContext&)
 bool cHardwareBCR::Inst_MoveHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(hIP);
-  const int target = FindModifiedHead(hFLOW);
+  int target = FindModifiedHead(hFLOW);
+  
+  // Cannot move to the read/write heads, acts as move to flow head instead
+  if (target == hWRITE && head_used != hREAD) target = hFLOW;
+  if (target == hREAD && head_used != hWRITE) target = hFLOW;
+  
   getHead(head_used).Set(getHead(target));
   if (head_used == hIP) m_advance_ip = false;
   return true;
@@ -1986,7 +1834,13 @@ bool cHardwareBCR::Inst_MoveHeadIfNEqu(cAvidaContext&)
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
   const int head_used = FindModifiedHead(hIP);
-  const int target = FindModifiedHead(hFLOW);
+  int target = FindModifiedHead(hFLOW);
+
+  // Cannot move to the read/write heads, acts as move to flow head instead
+  if (target == hWRITE && head_used != hREAD) target = hFLOW;
+  if (target == hREAD && head_used != hWRITE) target = hFLOW;
+
+  
   if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
     getHead(head_used).Set(getHead(target));
     if (head_used == hIP) m_advance_ip = false;
@@ -1999,7 +1853,13 @@ bool cHardwareBCR::Inst_MoveHeadIfLess(cAvidaContext&)
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
   const int head_used = FindModifiedHead(hIP);
-  const int target = FindModifiedHead(hFLOW);
+  int target = FindModifiedHead(hFLOW);
+
+  // Cannot move to the read/write heads, acts as move to flow head instead
+  if (target == hWRITE && head_used != hREAD) target = hFLOW;
+  if (target == hREAD && head_used != hWRITE) target = hFLOW;
+  
+  
   if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
     getHead(head_used).Set(getHead(target));
     if (head_used == hIP) m_advance_ip = false;
@@ -2027,7 +1887,7 @@ bool cHardwareBCR::Inst_GetHead(cAvidaContext&)
 
 bool cHardwareBCR::Inst_IfCopiedCompLabel(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   if (GetLabel() != GetReadLabel())  getIP().Advance();
   return true;
@@ -2035,14 +1895,14 @@ bool cHardwareBCR::Inst_IfCopiedCompLabel(cAvidaContext&)
 
 bool cHardwareBCR::Inst_IfCopiedDirectLabel(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   if (GetLabel() != GetReadLabel())  getIP().Advance();
   return true;
 }
 
 bool cHardwareBCR::Inst_IfCopiedCompSeq(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   if (GetLabel() != GetReadSequence())  getIP().Advance();
   return true;
@@ -2050,7 +1910,7 @@ bool cHardwareBCR::Inst_IfCopiedCompSeq(cAvidaContext&)
 
 bool cHardwareBCR::Inst_IfCopiedDirectSeq(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   if (GetLabel() != GetReadSequence())  getIP().Advance();
   return true;
 }
@@ -2058,7 +1918,7 @@ bool cHardwareBCR::Inst_IfCopiedDirectSeq(cAvidaContext&)
 
 bool cHardwareBCR::Inst_DidCopyCompLabel(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   setRegister(rBX, (GetLabel() == GetReadLabel()), false);
   return true;
@@ -2066,14 +1926,14 @@ bool cHardwareBCR::Inst_DidCopyCompLabel(cAvidaContext&)
 
 bool cHardwareBCR::Inst_DidCopyDirectLabel(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   setRegister(rBX, (GetLabel() == GetReadLabel()), false);
   return true;
 }
 
 bool cHardwareBCR::Inst_DidCopyCompSeq(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   setRegister(rBX, (GetLabel() == GetReadSequence()), false);
   return true;
@@ -2081,7 +1941,7 @@ bool cHardwareBCR::Inst_DidCopyCompSeq(cAvidaContext&)
 
 bool cHardwareBCR::Inst_DidCopyDirectSeq(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   setRegister(rBX, (GetLabel() == GetReadSequence()), false);
   return true;
 }
@@ -2212,7 +2072,7 @@ bool cHardwareBCR::Inst_HeadCopy(cAvidaContext& ctx)
 
 bool cHardwareBCR::Inst_Search_Label_Direct_S(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   FindLabelStart(getHead(hFLOW), getIP(), true);
   getHead(hFLOW).Advance();
   return true;
@@ -2220,7 +2080,7 @@ bool cHardwareBCR::Inst_Search_Label_Direct_S(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Label_Direct_F(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   FindLabelForward(getHead(hFLOW), getIP(), true);
   getHead(hFLOW).Advance();
   return true;
@@ -2228,7 +2088,7 @@ bool cHardwareBCR::Inst_Search_Label_Direct_F(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Label_Direct_B(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   FindLabelBackward(getHead(hFLOW), getIP(), true);
   getHead(hFLOW).Advance();
   return true;
@@ -2236,7 +2096,7 @@ bool cHardwareBCR::Inst_Search_Label_Direct_B(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Label_Direct_D(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   int direction = m_threads[m_cur_thread].reg[rBX].value;
   if (direction == 0) {
     FindLabelStart(getHead(hFLOW), getIP(), true);
@@ -2251,7 +2111,7 @@ bool cHardwareBCR::Inst_Search_Label_Direct_D(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Seq_Comp_S(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   FindNopSequenceStart(getHead(hFLOW), getIP(), true);
   getHead(hFLOW).Advance();
@@ -2260,7 +2120,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_S(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Seq_Comp_F(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   FindNopSequenceForward(getHead(hFLOW), getIP(), true);
   getHead(hFLOW).Advance();
@@ -2269,7 +2129,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_F(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Seq_Comp_B(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   FindNopSequenceBackward(getHead(hFLOW), getIP(), true);
   getHead(hFLOW).Advance();
@@ -2278,7 +2138,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_B(cAvidaContext&)
 
 bool cHardwareBCR::Inst_Search_Seq_Comp_D(cAvidaContext&)
 {
-  ReadLabel();
+  readLabel(getIP(), GetLabel());
   GetLabel().Rotate(1, NUM_NOPS);
   int direction = m_threads[m_cur_thread].reg[rBX].value;
   if (direction == 0) {
@@ -2296,7 +2156,7 @@ bool cHardwareBCR::Inst_Search_Seq_Comp_D(cAvidaContext&)
 bool cHardwareBCR::Inst_WaitCondition_Equal(cAvidaContext&)
 {
   const int wait_value = FindModifiedRegister(rBX);
-  const int check_reg = FindModifiedRegister(rDX);
+  const int check_reg = FindModifiedRegister(rLX);
   const int wait_dst = FindModifiedRegister(wait_value);
   
   // Check if condition has already been met
@@ -2326,7 +2186,7 @@ bool cHardwareBCR::Inst_WaitCondition_Equal(cAvidaContext&)
 bool cHardwareBCR::Inst_WaitCondition_Less(cAvidaContext&)
 {
   const int wait_value = FindModifiedRegister(rBX);
-  const int check_reg = FindModifiedRegister(rDX);
+  const int check_reg = FindModifiedRegister(rLX);
   const int wait_dst = FindModifiedRegister(wait_value);
   
   // Check if condition has already been met
@@ -2358,7 +2218,7 @@ bool cHardwareBCR::Inst_WaitCondition_Less(cAvidaContext&)
 bool cHardwareBCR::Inst_WaitCondition_Greater(cAvidaContext&)
 {
   const int wait_value = FindModifiedRegister(rBX);
-  const int check_reg = FindModifiedRegister(rDX);
+  const int check_reg = FindModifiedRegister(rLX);
   const int wait_dst = FindModifiedRegister(wait_value);
   
   // Check if condition has already been met
@@ -2517,7 +2377,7 @@ bool cHardwareBCR::Inst_ZeroNortherly(cAvidaContext&) {
 }
 
 bool cHardwareBCR::Inst_ZeroPosOffset(cAvidaContext&) {
-  const int offset = GetRegister(FindModifiedRegister(rBX)) % 3;
+  const int offset = getRegister(FindModifiedRegister(rBX)) % 3;
   if (offset == 0) {
     m_organism->ClearEasterly();
     m_organism->ClearNortherly();    
@@ -2899,7 +2759,7 @@ bool cHardwareBCR::Inst_SenseFacedHabitat(cAvidaContext& ctx)
 bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext&)
 {
   assert(m_organism != 0);
-  int prop_target = GetRegister(FindModifiedRegister(rBX));
+  int prop_target = getRegister(FindModifiedRegister(rBX));
   
   //return false if org setting target to current one (avoid paying costs for not switching)
   const int old_target = m_organism->GetForageTarget();
@@ -3009,7 +2869,7 @@ bool cHardwareBCR::Inst_CollectSpecific(cAvidaContext& ctx)
 
 bool cHardwareBCR::Inst_GetResStored(cAvidaContext& ctx)
 {
-  int resource_id = abs(GetRegister(FindModifiedRegister(rBX)));
+  int resource_id = abs(getRegister(FindModifiedRegister(rBX)));
   Apto::Array<double> bins = m_organism->GetRBins();
   resource_id %= bins.GetSize();
   int out_reg = FindModifiedRegister(rBX);
@@ -3021,7 +2881,7 @@ bool cHardwareBCR::Inst_GetResStored(cAvidaContext& ctx)
 bool cHardwareBCR::Inst_SetOpinion(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  m_organism->GetOrgInterface().SetOpinion(GetRegister(FindModifiedRegister(rBX)), m_organism);
+  m_organism->GetOrgInterface().SetOpinion(getRegister(FindModifiedRegister(rBX)), m_organism);
   return true;
 }
 
@@ -3048,7 +2908,7 @@ bool cHardwareBCR::Inst_JoinGroup(cAvidaContext&)
   // Check if the org is currently part of a group
   assert(m_organism != 0);
 	
-  int prop_group_id = GetRegister(FindModifiedRegister(rBX));
+  int prop_group_id = getRegister(FindModifiedRegister(rBX));
   
   // check if this is a valid group
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&

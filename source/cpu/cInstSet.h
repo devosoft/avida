@@ -152,6 +152,7 @@ public:
   int IsNop(const Instruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
   bool IsLabel(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
   bool IsPromoter(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsPromoter(); }
+  bool IsTerminator(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsTerminator(); }
   bool ShouldStall(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldStall(); }
   bool ShouldSleep(const Instruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
   
