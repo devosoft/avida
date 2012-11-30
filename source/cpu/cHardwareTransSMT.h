@@ -229,15 +229,12 @@ public:
   
   
   // --------  Thread Manipulation  --------
-  inline bool ThreadSelect(const int thread_id);
-  inline bool ThreadSelect(const cCodeLabel& in_label);
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner();
 
   int GetNumThreads() const { return m_threads.GetSize(); }
   int GetCurThread() const { return m_cur_thread; }
-  int GetCurThreadID() const { return m_cur_thread; }
   
 
   // --------  Parasite Stuff  --------
@@ -307,20 +304,6 @@ inline bool cHardwareTransSMT::ThreadKill(const cCodeLabel& in_label)
   return ThreadKill(FindThreadLabel(in_label));
 }
 
-inline bool cHardwareTransSMT::ThreadSelect(const int thread_id)
-{
-  if (thread_id >= 0 && thread_id < m_threads.GetSize()) {
-    m_cur_thread = thread_id;
-    return true;
-  }
-  
-  return false;
-}
-
-inline bool cHardwareTransSMT::ThreadSelect(const cCodeLabel& in_label)
-{
-  return ThreadSelect(FindThreadLabel(in_label));
-}
 
 inline void cHardwareTransSMT::ThreadNext()
 {

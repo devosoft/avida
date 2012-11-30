@@ -287,25 +287,16 @@ public:
   
   
   // --------  Thread Manipulation  --------
-  bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel&) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
-  inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
-  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(Systematics::UnitPtr) { return false; }
 
-  
-  // --------  Non-Standard Methods  --------  
-  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
-  bool GetMalActive() const   { return m_mal_active; }
-  
   
 private:
   
@@ -682,22 +673,6 @@ inline cHardwareExperimental::DataValue& cHardwareExperimental::DataValue::opera
   oldest_component = i.oldest_component;
   env_component = i.env_component;
   return *this;
-}
-
-inline bool cHardwareExperimental::ThreadSelect(const int thread_num)
-{
-  if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
-    m_cur_thread = thread_num;
-    return true;
-  }
-  
-  return false;
-}
-
-inline void cHardwareExperimental::ThreadNext()
-{
-  m_cur_thread++;
-  if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
 }
 
 inline void cHardwareExperimental::ThreadPrev()

@@ -1384,6 +1384,51 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
   return temp_head;
 }
 
+void cHardwareCPU::FindLabelInMemory(const cCodeLabel& label, cHeadCPU& search_head)
+{
+  assert(label.GetSize() > 0); // Trying to find label of 0 size!
+  
+  
+  while (search_head.InMemory()) {
+    // If we are not in a label, jump to the next checkpoint...
+    if (!m_inst_set->IsNop(search_head.GetInst())) {
+      search_head.AbsJump(label.GetSize());
+      continue;
+    }
+    
+    // Otherwise, rewind to the begining of this label...
+    
+    while (!(search_head.AtFront()) && m_inst_set->IsNop(search_head.GetInst(-1)))
+      search_head.AbsJump(-1);
+    
+    // Calculate the size of the label being checked, and make sure they
+    // are equal.
+    
+    int size = 0;
+    bool label_match = true;
+    do {
+      // Check if the nop matches
+      if (size < label.GetSize() && label[size] != m_inst_set->GetNopMod(search_head.GetInst()))
+        label_match = false;
+      
+      // Increment the current position and length calculation
+      search_head.AbsJump(1);
+      size++;
+      
+      // While still within memory and the instruction is a nop
+    } while (search_head.InMemory() && m_inst_set->IsNop(search_head.GetInst()));
+    
+    if (size != label.GetSize()) continue;
+    
+    // temp_head will point to the first non-nop instruction after the label, or the end of the memory space
+    //   if this is a match, return this position
+    if (label_match) return;
+  }
+  
+  // The label does not exist in this creature.
+  
+  search_head.AbsSet(-1);
+}
 
 
 void cHardwareCPU::ReadInst(const int in_inst)
@@ -5652,8 +5697,11 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext&)
   GetLabel().Rotate(1, NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism* neighbor = m_organism->GetNeighbor();
-    
-    if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
+    if (neighbor != NULL) {
+      cHeadCPU search_head(&neighbor->GetHardware());
+      FindLabelInMemory(GetLabel(), search_head);
+      if (search_head.InMemory()) return true;
+    }
     
     // Otherwise keep rotating...
     m_organism->Rotate(1);
@@ -5680,8 +5728,11 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext&)
   GetLabel().Rotate(1, NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism* neighbor = m_organism->GetNeighbor();
-    
-    if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
+    if (neighbor != NULL) {
+      cHeadCPU search_head(&neighbor->GetHardware());
+      FindLabelInMemory(GetLabel(), search_head);
+      if (search_head.InMemory()) return true;
+    }
     
     // Otherwise keep rotating...
     m_organism->Rotate(-1);
@@ -6081,7 +6132,7 @@ bool cHardwareCPU::Inst_KillThread(cAvidaContext&)
 bool cHardwareCPU::Inst_ThreadID(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  GetRegister(reg_used) = GetCurThreadID();
+  GetRegister(reg_used) = m_threads[m_cur_thread].GetID();
   return true;
 }
 

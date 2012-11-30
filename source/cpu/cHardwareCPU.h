@@ -176,6 +176,8 @@ protected:
   int FindLabel_Forward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label, const InstructionSequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
+  void FindLabelInMemory(const cCodeLabel& label, cHeadCPU& search_head);
+
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
 
@@ -287,16 +289,12 @@ public:
 
 
   // --------  Thread Manipulation  --------
-  bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel&) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
-  inline void ThreadNext();
   Systematics::UnitPtr ThreadGetOwner() { m_organism->AddReference(); return Systematics::UnitPtr(m_organism); }
   
 
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
-  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   const cLocalThread& GetThread(int _index) const { return m_threads[_index]; }
   int GetThreadMessageTriggerType(int _index) { return m_threads[_index].getMessageTriggerType(); }
 
@@ -310,7 +308,6 @@ public:
   // Non-Standard Methods
 
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
-  bool GetMalActive() const   { return m_mal_active; }
 
 
 private:
@@ -1032,22 +1029,6 @@ public:
   bool Inst_SetMatePreferenceHighestMerit(cAvidaContext& ctx);
 };
 
-
-inline bool cHardwareCPU::ThreadSelect(const int thread_num)
-{
-  if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
-    m_cur_thread = thread_num;
-    return true;
-  }
-
-  return false;
-}
-
-inline void cHardwareCPU::ThreadNext()
-{
-  m_cur_thread++;
-  if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
-}
 
 inline void cHardwareCPU::ThreadPrev()
 {

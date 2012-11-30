@@ -487,8 +487,8 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     // record any failure due to costs being paid
     // before we try to execute the instruction, is this org currently paying precosts for it
-    bool on_pause = IsPayingActiveCost(ctx, GetCurThreadID());
-    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, GetCurThreadID());
+    bool on_pause = IsPayingActiveCost(ctx, m_cur_thread);
+    if (m_has_any_costs) exec = SingleProcess_PayPreCosts(ctx, cur_inst, m_cur_thread);
     if (!exec) exec_success = -1;
     
     // Now execute the instruction...
@@ -508,7 +508,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (exec == true) {
         if (SingleProcess_ExecuteInst(ctx, cur_inst)) {
           SingleProcess_PayPostResCosts(ctx, cur_inst);
-          SingleProcess_SetPostCPUCosts(ctx, cur_inst, GetCurThreadID());
+          SingleProcess_SetPostCPUCosts(ctx, cur_inst, m_cur_thread);
           // record execution success
           exec_success = 1;
         }
@@ -746,7 +746,7 @@ void cHardwareMGE::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 void cHardwareMGE::PrintStatus(ostream& fp)
 {
   fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
-  fp << "THREAD:" << GetCurThreadID() << "  ";
+  fp << "THREAD:" << m_cur_thread << "  ";
   fp << "IP:" << getIP().GetPosition() << "    ";
   
   
@@ -839,7 +839,7 @@ void cHardwareMGE::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
     fp << "(" << reg.originated << ") ";
   }    
   // genome loc info
-  fp << GetCurThreadID() << " ";
+  fp << m_cur_thread << " ";
   fp << getIP().GetPosition() << " ";
   fp << getRH().GetPosition() << " ";
   fp << getWH().GetPosition()  << " ";
@@ -933,7 +933,7 @@ cHeadCPU cHardwareMGE::FindLabelStart(bool mark_executed)
           const int start = pos - size_matched;
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
           // mark executed in the main memory space
-          const int true_start = m_threads[GetCurThreadID()].start + start;
+          const int true_start = m_threads[m_cur_thread].start + start;
           for (int i = 0; i < size_matched && i < max; i++) main_memory.SetFlagExecuted(true_start + i);
         }
         return cHeadCPU(this, pos - 1, ip.GetMemSpace());
@@ -1000,7 +1000,7 @@ cHeadCPU cHardwareMGE::FindNopSequenceStart(bool mark_executed)
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
   
-  cCPUMemory& memory = m_threads[GetCurThreadID()].thread_mem;
+  cCPUMemory& memory = m_threads[m_cur_thread].thread_mem;
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -1023,7 +1023,7 @@ cHeadCPU cHardwareMGE::FindNopSequenceStart(bool mark_executed)
           const int start = pos - size_matched;
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get();
           // mark executed in the main memory space
-          const int true_start = m_threads[GetCurThreadID()].start + start;
+          const int true_start = m_threads[m_cur_thread].start + start;
           for (int i = 0; i < size_matched && i < max; i++) main_memory.SetFlagExecuted(true_start + i);
         }
         return cHeadCPU(this, pos - 1, ip.GetMemSpace());
@@ -1072,7 +1072,7 @@ cHeadCPU cHardwareMGE::FindLabelForward(bool mark_executed)
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
           // mark executed in the main memory space
           for (int i = 0; i < size_matched && i < max; i++, pos++) {
-          const int true_start = m_threads[GetCurThreadID()].start;
+          const int true_start = m_threads[m_cur_thread].start;
             main_memory.SetFlagExecuted(true_start + pos.GetPosition());
           }
         }        
@@ -1125,7 +1125,7 @@ cHeadCPU cHardwareMGE::FindLabelBackward(bool mark_executed)
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
           // mark executed in the main memory space
           for (int i = 0; i < size_matched && i < max; i++, lpos++) {
-          const int true_start = m_threads[GetCurThreadID()].start;
+          const int true_start = m_threads[m_cur_thread].start;
             main_memory.SetFlagExecuted(true_start + lpos.GetPosition());
           }
         }
@@ -1176,7 +1176,7 @@ cHeadCPU cHardwareMGE::FindNopSequenceForward(bool mark_executed)
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get();
           // mark executed in the main memory space
           for (int i = 0; i < size_matched && i < max; i++, pos++) {
-          const int true_start = m_threads[GetCurThreadID()].start;
+          const int true_start = m_threads[m_cur_thread].start;
             main_memory.SetFlagExecuted(true_start + pos.GetPosition());
           }
         }
@@ -1229,7 +1229,7 @@ cHeadCPU cHardwareMGE::FindNopSequenceBackward(bool mark_executed)
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get();
           // mark executed in the main memory space
           for (int i = 0; i < size_matched && i < max; i++, lpos++) {
-          const int true_start = m_threads[GetCurThreadID()].start;
+          const int true_start = m_threads[m_cur_thread].start;
             main_memory.SetFlagExecuted(true_start + lpos.GetPosition());
           }
         }
@@ -1253,22 +1253,22 @@ void cHardwareMGE::ReadInst(Instruction in_inst)
   
   if (m_inst_set->IsLabel(in_inst)) {
     GetReadLabel().Clear();
-    m_threads[GetCurThreadID()].reading_label = true;
-  } else if (m_threads[GetCurThreadID()].reading_label && is_nop) {
+    m_threads[m_cur_thread].reading_label = true;
+  } else if (m_threads[m_cur_thread].reading_label && is_nop) {
     GetReadLabel().AddNop(in_inst.GetOp());
   } else {
     GetReadLabel().Clear();
-    m_threads[GetCurThreadID()].reading_label = false;
+    m_threads[m_cur_thread].reading_label = false;
   }
   
-  if (!m_threads[GetCurThreadID()].reading_seq && is_nop) {
+  if (!m_threads[m_cur_thread].reading_seq && is_nop) {
     GetReadSequence().AddNop(in_inst.GetOp());
-    m_threads[GetCurThreadID()].reading_seq = true;
-  } else if (m_threads[GetCurThreadID()].reading_seq && is_nop) {
+    m_threads[m_cur_thread].reading_seq = true;
+  } else if (m_threads[m_cur_thread].reading_seq && is_nop) {
     GetReadSequence().AddNop(in_inst.GetOp());
   } else {
     GetReadSequence().Clear();
-    m_threads[GetCurThreadID()].reading_seq = false;
+    m_threads[m_cur_thread].reading_seq = false;
   }
 }
 
@@ -1291,7 +1291,7 @@ void cHardwareMGE::ReadLabel(int max_size)
     
     // If this is the first line of the template, mark it executed in the main memory space
     if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
-      const int true_start = m_threads[GetCurThreadID()].start;
+      const int true_start = m_threads[m_cur_thread].start;
       main_memory.SetFlagExecuted(true_start + inst_ptr->GetPosition());
     }
   }
@@ -1420,8 +1420,8 @@ bool cHardwareMGE::Divide_Main(cAvidaContext& ctx, int child_mem_space, int writ
         
       case DIVIDE_METHOD_BIRTH:
         // Reset only the calling thread's state
-        m_threads[GetCurThreadID()].thHeads[thFH].Reset(this, 0);
-        m_threads[GetCurThreadID()].thHeads[thIP].Reset(this, 0);
+        m_threads[m_cur_thread].thHeads[thFH].Reset(this, 0);
+        m_threads[m_cur_thread].thHeads[thIP].Reset(this, 0);
        for(int x = 0; x < NUM_REGISTERS; x++) setInternalValue(x, 0, false);
         if (m_world->GetConfig().INHERIT_MERIT.Get() == 0) m_organism->GetPhenotype().ResetMerit();
         break;
@@ -1472,7 +1472,7 @@ void cHardwareMGE::checkWaitingThreads(int cur_thread, int reg_num)
 bool cHardwareMGE::Inst_IdThread(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, GetCurThreadID(), false);
+  setInternalValue(reg_used, m_cur_thread, false);
   return true;
 }
 
@@ -2149,7 +2149,7 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value == m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
+      if (!i == m_cur_thread && m_bps[m_threads[i].thread_class].reg[check_reg].value == m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
         setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
         return true;
       }
@@ -2158,14 +2158,14 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
   if ((int) m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
-  m_threads[GetCurThreadID()].active = false;
+  m_threads[m_cur_thread].active = false;
   m_waiting_threads++;
-  m_threads[GetCurThreadID()].wait_equal = true;
-  m_threads[GetCurThreadID()].wait_less = false;
-  m_threads[GetCurThreadID()].wait_greater = false;
-  m_threads[GetCurThreadID()].wait_reg = check_reg;
-  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
-  m_threads[GetCurThreadID()].wait_dst = wait_dst;
+  m_threads[m_cur_thread].wait_equal = true;
+  m_threads[m_cur_thread].wait_less = false;
+  m_threads[m_cur_thread].wait_greater = false;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
 }
@@ -2179,7 +2179,7 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value < m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
+      if (!i == m_cur_thread && m_bps[m_threads[i].thread_class].reg[check_reg].value < m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
         setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
         return true;
       }
@@ -2188,14 +2188,14 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
   if ((int) m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
-  m_threads[GetCurThreadID()].active = false;
+  m_threads[m_cur_thread].active = false;
   m_waiting_threads++;
-  m_threads[GetCurThreadID()].wait_equal = false;
-  m_threads[GetCurThreadID()].wait_less = true;
-  m_threads[GetCurThreadID()].wait_greater = false;
-  m_threads[GetCurThreadID()].wait_reg = check_reg;
-  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
-  m_threads[GetCurThreadID()].wait_dst = wait_dst;
+  m_threads[m_cur_thread].wait_equal = false;
+  m_threads[m_cur_thread].wait_less = true;
+  m_threads[m_cur_thread].wait_greater = false;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
 }
@@ -2209,7 +2209,7 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == GetCurThreadID() && m_bps[m_threads[i].thread_class].reg[check_reg].value > m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
+      if (!i == m_cur_thread && m_bps[m_threads[i].thread_class].reg[check_reg].value > m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
         setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
         return true;
       }
@@ -2218,14 +2218,14 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
   if ((int) m_waiting_threads == (m_threads.GetSize() - 1)) return false;
   
   // Put thread to sleep with appropriate wait condition
-  m_threads[GetCurThreadID()].active = false;
+  m_threads[m_cur_thread].active = false;
   m_waiting_threads++;
-  m_threads[GetCurThreadID()].wait_equal = false;
-  m_threads[GetCurThreadID()].wait_less = false;
-  m_threads[GetCurThreadID()].wait_greater = true;
-  m_threads[GetCurThreadID()].wait_reg = check_reg;
-  m_threads[GetCurThreadID()].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
-  m_threads[GetCurThreadID()].wait_dst = wait_dst;
+  m_threads[m_cur_thread].wait_equal = false;
+  m_threads[m_cur_thread].wait_less = false;
+  m_threads[m_cur_thread].wait_greater = true;
+  m_threads[m_cur_thread].wait_reg = check_reg;
+  m_threads[m_cur_thread].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
+  m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
 }

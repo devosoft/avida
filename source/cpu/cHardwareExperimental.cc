@@ -1354,7 +1354,7 @@ bool cHardwareExperimental::ExitThread()
 bool cHardwareExperimental::Inst_IdThread(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, GetCurThreadID(), false);
+  setInternalValue(reg_used, m_threads[m_cur_thread].GetID(), false);
   return true;
 }
 
