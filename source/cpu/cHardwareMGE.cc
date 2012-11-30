@@ -125,6 +125,7 @@ tInstLib<cHardwareMGE::tMethod>* cHardwareMGE::initInstLib(void)
     // Behavioral Execution
     tInstLibEntry<tMethod>("start-gene", &cHardwareMGE::Inst_StartGene, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_BREAK),
     tInstLibEntry<tMethod>("end-gene", &cHardwareMGE::Inst_EndGene, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_END_GENE),
+    tInstLibEntry<tMethod>("loop-gene", &cHardwareMGE::Inst_LoopGene, INST_CLASS_OTHER, 0, ""),
 
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareMGE::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
@@ -336,6 +337,7 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   thread_class = in_thread.thread_class;
   start = in_thread.start;
   end = in_thread.end;
+  loop_gene = in_thread.loop_gene;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i] = in_thread.thHeads[i];
   
   reading_label = in_thread.reading_label;
@@ -350,7 +352,7 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   
   read_label = in_thread.read_label;
   read_seq = in_thread.read_seq;
-  next_label = in_thread.next_label;  
+  next_label = in_thread.next_label;
 }
 
 void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
@@ -366,6 +368,7 @@ void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
   reading_label = false;
   reading_seq = false;
   active = true;
+  loop_gene = false;
 }
 
 // This function processes the very next command in the genome, and is made
@@ -441,7 +444,16 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     bool inc_thread = false;
     if (!m_threads[thread_id].active) inc_thread = true;
-    if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) { inc_thread = true; Advance(getThIP(), thIP); }
+    else if (getThIP().GetPosition() >= m_threads[thread_id].end && !m_threads[m_cur_thread].loop_gene && num_active > 1) {
+      m_threads[m_cur_thread].active = false;
+      m_threads[m_cur_thread].wait_reg = -1;
+      m_waiting_threads++;
+      inc_thread = true;
+    }
+    if (m_threads[thread_id].active && BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) {
+      inc_thread = true;
+      Advance(getThIP(), thIP);
+    } 
     if (inc_thread) {
       IncThread();
       gene_count[m_cur_behavior]++;
@@ -1472,6 +1484,12 @@ bool cHardwareMGE::Inst_StartGene(cAvidaContext& ctx)
 
 bool cHardwareMGE::Inst_EndGene(cAvidaContext& ctx)
 {
+  return true;
+}
+
+bool cHardwareMGE::Inst_LoopGene(cAvidaContext& ctx)
+{
+  m_threads[m_cur_thread].loop_gene = true;
   return true;
 }
 
