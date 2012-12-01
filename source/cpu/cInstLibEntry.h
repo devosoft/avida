@@ -27,9 +27,10 @@ namespace nInstFlag {
   const unsigned int DEFAULT = 0x1;
   const unsigned int NOP = 0x2;
   const unsigned int LABEL = 0x4;
-  const unsigned int PROMOTER = 0x8;
-  const unsigned int STALL = 0x10;
-  const unsigned int SLEEP = 0x20;
+  const unsigned int STALL = 0x8;
+  const unsigned int SLEEP = 0x10;
+  const unsigned int PROMOTER = 0x20;
+  const unsigned int TERMINATOR = 0x40;
 }
 
 enum InstructionClass {
@@ -80,6 +81,7 @@ public:
   inline bool IsNop() const { return (m_flags & nInstFlag::NOP) != 0; }
   inline bool IsLabel() const { return (m_flags & nInstFlag::LABEL) != 0; }
   inline bool IsPromoter() const { return (m_flags & nInstFlag::PROMOTER) != 0; }
+  inline bool IsTerminator() const { return (m_flags & nInstFlag::TERMINATOR) != 0; }
   inline bool ShouldStall() const { return (m_flags & nInstFlag::STALL) != 0; }
   inline bool ShouldSleep() const { return (m_flags & nInstFlag::SLEEP) != 0; }
 };

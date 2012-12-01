@@ -53,11 +53,11 @@ public:
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 16;
+  static const int NUM_REGISTERS = 12;
   static const int NUM_BEHAVIORS = 3; // num inst types capable of storing their own data
   static const int NUM_HEADS = NUM_REGISTERS;
-  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX };
-  enum { hIP, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5, hFLOW6, hFLOW7, hFLOW8, hFLOW9, hFLOW10, hFLOW11, hFLOW12, hFLOW13 };
+  enum { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX };
+  enum { hIP, hREAD, hWRITE, hFLOW, hFLOW2, hFLOW3, hFLOW4, hFLOW5, hFLOW6, hFLOW7, hFLOW8, hFLOW9 };
   static const int NUM_NOPS = NUM_REGISTERS;
   static const int MAX_THREADS = NUM_NOPS;
   static const int MAX_MEM_SPACES = NUM_NOPS;
@@ -66,7 +66,8 @@ private:
   // --------  Static Variables  --------
   static tInstLib<cHardwareBCR::tMethod>* s_inst_slib;
   
-  
+
+private:
   // --------  Define Internal Data Structures  --------
   struct DataValue
   {
@@ -102,7 +103,7 @@ private:
     inline void Reset(cHardwareBCR* hw, int pos, unsigned int ms, bool is_gene)
       { m_hw = hw; m_pos = pos; m_ms = ms; m_is_gene = is_gene; }
     
-    inline cCPUMemory& GetMemory() { return ((m_is_gene) ? m_hw->m_gene_array : m_hw->m_mem_array)[m_ms]; }
+    inline cCPUMemory& GetMemory() { return (m_is_gene) ? m_hw->m_genes[m_ms].memory : m_hw->m_mem_array[m_ms]; }
     
     inline void Adjust();
     
@@ -184,7 +185,7 @@ private:
   struct Thread
   {
   public:
-    int thread_id;
+    cCodeLabel thread_label;
 
     DataValue reg[NUM_REGISTERS];
     Head heads[NUM_HEADS];
@@ -209,19 +210,29 @@ private:
     cCodeLabel next_label;
     
     inline Thread() { ; }
-    ~Thread() { ; }
+    inline ~Thread() { ; }
     
-    void operator=(const Thread& in_thread);
-    void Reset(cHardwareBCR* in_hardware, int in_id);
+    void Reset(cHardwareBCR* in_hardware, const Head& start_pos);
+    
+  private:
+    Thread(const Thread& thread);
+    void operator=(const Thread& thread);
+  };
+  
+  struct Gene
+  {
+    cCPUMemory memory;
+    cCodeLabel label;
+    int thread_id;
   };
   
   
+private:
   // --------  Member Variables  --------
   const tMethod* m_functions;
 
   // Genes
-  Apto::Array<cCPUMemory, Apto::ManagedPointer> m_gene_array;
-  char m_gene_ids[MAX_MEM_SPACES];
+  Apto::Array<Gene> m_genes;
 
   // Memory
   Apto::Array<cCPUMemory, Apto::ManagedPointer> m_mem_array;
@@ -232,8 +243,8 @@ private:
   
   // Threads
   Apto::Array<Thread, Apto::ManagedPointer> m_threads;
-  char m_thread_ids[MAX_THREADS];
   
+
   cOrgSensor m_sensor;
   
   // Flags
@@ -260,6 +271,8 @@ private:
   
   cHeadCPU m_placeholder_head;
   
+  
+private:
   cHardwareBCR(const cHardwareBCR&); // @not_implemented
   cHardwareBCR& operator=(const cHardwareBCR&); // @not_implemented
   
@@ -333,17 +346,20 @@ private:
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const Instruction& cur_inst);
   void internalReset();
   void internalResetOnFailedDivide();
+  void setupGenes();
   
   
   // --------  Stack Manipulation  --------
   inline DataValue stackPop();
   inline Stack& getStack(int stack_id);
   inline void switchStack();
-    
+
+  
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size = cCodeLabel::MAX_LENGTH);
+  inline const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  inline cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  void readLabel(Head& head, cCodeLabel& label, int max_size = cCodeLabel::MAX_LENGTH);
+  
   void FindLabelStart(Head& head, Head& default_pos, bool mark_executed);
   void FindLabelForward(Head& head, Head& default_pos, bool mark_executed);
   void FindLabelBackward(Head& head, Head& default_pos, bool mark_executed);
@@ -357,7 +373,7 @@ private:
   
   
   // --------  Thread Manipulation  -------
-  bool ThreadCreate(int thread_label, const Head& start_pos);
+  void threadCreate(const cCodeLabel& thread_label, const Head& start_pos);
   
   
   // ---------- Instruction Helpers -----------
@@ -370,11 +386,11 @@ private:
   int calcCopiedSize(const int parent_size, const int child_size);
   
   inline Head& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  inline Head& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
-  
   inline Head& getIP() { return m_threads[m_cur_thread].heads[hIP]; }
-  inline Head& getIP(int thread) { return m_threads[thread].heads[hIP]; }
 
+  int getRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
+
+  
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, int mem_space, int position, double mut_multiplier=1);
   
@@ -449,11 +465,6 @@ private:
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
-
-  bool Inst_SetGene(cAvidaContext& ctx);
-  bool Inst_CreateGeneH(cAvidaContext& ctx);
-  bool Inst_CreateGeneL(cAvidaContext& ctx);
-  bool Inst_CreateGeneS(cAvidaContext& ctx);
 
   bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
   bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);

@@ -263,7 +263,7 @@ void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& n
   if (verbosity > VERBOSE_NORMAL) {
     cout << "Setting up resource " << name
          << "(" << geo_name 
-         << ") with initial quatity=" << initial
+         << ") with initial quantity=" << initial
          << ", decay=" << decay
          << ", inflow=" << inflow
          << endl;
