@@ -133,10 +133,6 @@ private:
     int end;
     
     struct {
-      bool loop_gene:1;
-    
-      bool reading_label:1;
-      bool reading_seq:1;
       bool active:1;
       bool wait_greater:1;
       bool wait_equal:1;
@@ -146,8 +142,6 @@ private:
     };
     int wait_value;
     
-    cCodeLabel read_label;
-    cCodeLabel read_seq;
     cCodeLabel next_label;
   
     inline cBehavThread() { ; }
@@ -188,11 +182,18 @@ private:
     unsigned int m_last_output:16;
   };
   
+  cCodeLabel m_read_label;
+  cCodeLabel m_read_seq;
+
   // Flags
   struct {
-    bool m_has_alloc:1;         // Has an allocate occured since last divide?
-    bool m_advance_ip:1;         // Should the IP advance after this instruction?
-    bool m_executedmatchstrings:1;	// Have we already executed the match strings instruction?
+    bool m_has_alloc:1;                       // Has an allocate occured since last divide?
+    bool m_has_copied_end:1;
+    bool m_reading_label:1;
+    bool m_reading_seq:1;
+
+    bool m_advance_ip:1;                      // Should the IP advance after this instruction?
+    bool m_executedmatchstrings:1;             // Have we already executed the match strings instruction?
     bool m_spec_die:1;
     
     int m_cur_offspring:5;
@@ -341,10 +342,10 @@ private:
   cHeadCPU FindNopSequenceStart(bool mark_executed);
   cHeadCPU FindNopSequenceForward(bool mark_executed);
   cHeadCPU FindNopSequenceBackward(bool mark_executed);
-  inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
-  inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
-  inline cCodeLabel& GetReadSequence() { return m_threads[m_cur_thread].read_seq; }  
+  inline const cCodeLabel& GetReadLabel() const { return m_read_label; }
+  inline const cCodeLabel& GetReadSequence() const { return m_read_seq; }
+  inline cCodeLabel& GetReadLabel() { return m_read_label; }
+  inline cCodeLabel& GetReadSequence() { return m_read_seq; }
   
   // --------  Thread Manipulation  -------
   void CreateBPThreads();   // Create a new thread for this behavioral process.
@@ -397,7 +398,7 @@ private:
   // --------  Behavior Execution  --------
   bool Inst_StartGene(cAvidaContext& ctx);
   bool Inst_EndGene(cAvidaContext& ctx);
-  bool Inst_LoopGene(cAvidaContext& ctx);
+  bool Inst_KillGene(cAvidaContext& ctx);
   
   // Flow Control
   bool Inst_Label(cAvidaContext& ctx);
@@ -453,6 +454,7 @@ private:
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_JumpGene(cAvidaContext& ctx);
   bool Inst_JumpBehavior(cAvidaContext& ctx);
+  bool Inst_LoopGene(cAvidaContext& ctx);
   
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
