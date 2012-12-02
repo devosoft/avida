@@ -125,7 +125,7 @@ tInstLib<cHardwareMGE::tMethod>* cHardwareMGE::initInstLib(void)
     // Behavioral Execution
     tInstLibEntry<tMethod>("start-gene", &cHardwareMGE::Inst_StartGene, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_BREAK),
     tInstLibEntry<tMethod>("end-gene", &cHardwareMGE::Inst_EndGene, INST_CLASS_OTHER, 0, "", BEHAV_CLASS_END_GENE),
-    tInstLibEntry<tMethod>("loop-gene", &cHardwareMGE::Inst_LoopGene, INST_CLASS_OTHER, 0, ""),
+    tInstLibEntry<tMethod>("kill-gene", &cHardwareMGE::Inst_KillGene, INST_CLASS_OTHER, 0, ""),
 
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareMGE::Inst_IfNEqu, INST_CLASS_CONDITIONAL, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
@@ -181,6 +181,7 @@ tInstLib<cHardwareMGE::tMethod>* cHardwareMGE::initInstLib(void)
     tInstLibEntry<tMethod>("get-head", &cHardwareMGE::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
     tInstLibEntry<tMethod>("jump-gene", &cHardwareMGE::Inst_JumpGene, INST_CLASS_FLOW_CONTROL, 0, "Move execution to the specified nop sequence in whatever thread it's in"),
     tInstLibEntry<tMethod>("jump-behavior", &cHardwareMGE::Inst_JumpBehavior, INST_CLASS_FLOW_CONTROL, 0, "End execution of this behavior and jump to a new gene class."),
+    tInstLibEntry<tMethod>("loop-gene", &cHardwareMGE::Inst_LoopGene, INST_CLASS_FLOW_CONTROL, 0, "Jump to the start of the gene thread."),
     
     // Replication Instructions
     tInstLibEntry<tMethod>("alloc", &cHardwareMGE::Inst_Alloc, INST_CLASS_LIFECYCLE, 0, "Allocate maximum allowed space", BEHAV_CLASS_COPY),
@@ -307,19 +308,29 @@ void cHardwareMGE::internalReset()
   m_cycle_count = 0;
   m_last_output = 0;
   m_global_stack.Clear();
-  m_waiting_threads = 0;
   m_cur_thread = 0;
   m_cur_behavior = 0;
+  m_read_label.Clear();
+  m_reading_label = false;
+  m_reading_seq = false;
+  
+  m_waiting_threads = 0;
+  m_cur_thread = 0;
   
   for (int i = 0; i < NUM_BEHAVIORS; i++) {
+    m_bps[i].bp_cur_thread = 0;
     m_bps[i].stack.Clear();
     m_bps[i].cur_stack = 0;
+    for (int j = 0; j < NUM_REGISTERS; j++) {
+      m_bps[i].reg[j].Clear();
+    }
   }
   
   // associate each thread and it's heads with the appropriate memory space id
   for (int i = 0; i < m_threads.GetSize(); i++) m_threads[i].Reset(this, i + 2);
   
   m_has_alloc = false;
+  m_has_copied_end = false;
   m_executedmatchstrings = false;
   
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
@@ -337,11 +348,8 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   thread_class = in_thread.thread_class;
   start = in_thread.start;
   end = in_thread.end;
-  loop_gene = in_thread.loop_gene;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i] = in_thread.thHeads[i];
   
-  reading_label = in_thread.reading_label;
-  reading_seq = in_thread.reading_seq;
   active = in_thread.active;
   wait_greater = in_thread.wait_greater;
   wait_equal = in_thread.wait_equal;
@@ -350,8 +358,6 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   wait_dst = in_thread.wait_dst;
   wait_value = in_thread.wait_value;
   
-  read_label = in_thread.read_label;
-  read_seq = in_thread.read_seq;
   next_label = in_thread.next_label;
 }
 
@@ -359,16 +365,9 @@ void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
 {
   mem_id = in_id;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id); 
-  reading_label = false;
-  reading_seq = false;
   active = true;
-  read_label.Clear();
-  next_label.Clear();
-  
-  reading_label = false;
-  reading_seq = false;
+  next_label.Clear();  
   active = true;
-  loop_gene = false;
 }
 
 // This function processes the very next command in the genome, and is made
@@ -395,7 +394,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
   int num_active = 0;
-  for (int i = 0; i < m_threads.GetSize(); i++) if (m_threads[i].active) num_active++;
+  for (int i = 0; i < m_threads.GetSize(); i++) if (m_threads[i].active) num_active++; 
   assert(num_active == (m_threads.GetSize() - (int) m_waiting_threads));
   assert(num_active > 0);
   
@@ -418,6 +417,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     // get the next thread for the class
     if (m_bps[m_cur_behavior].bp_thread_ids.GetSize() == 0) { bp_exec_count[m_cur_behavior] = max_exec_count; IncBehavior(); continue; }
+    
     int thread_id = m_bps[m_cur_behavior].bp_thread_ids[m_bps[m_cur_behavior].bp_cur_thread];
     m_cur_thread = thread_id;
     m_advance_ip = true;
@@ -444,13 +444,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     bool inc_thread = false;
     if (!m_threads[thread_id].active) inc_thread = true;
-    else if (getThIP().GetPosition() >= m_threads[thread_id].end && !m_threads[m_cur_thread].loop_gene && num_active > 1) {
-      m_threads[m_cur_thread].active = false;
-      m_threads[m_cur_thread].wait_reg = -1;
-      m_waiting_threads++;
-      inc_thread = true;
-    }
-    if (m_threads[thread_id].active && BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) {
+    else if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) {
       inc_thread = true;
       Advance(getThIP(), thIP);
     } 
@@ -458,11 +452,14 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       IncThread();
       gene_count[m_cur_behavior]++;
       if (!checked_genes[thread_id]) checked_genes[thread_id] = true;
-      else { bp_exec_count[m_cur_behavior] = max_exec_count; IncBehavior(); }   // all genes of this class already checked
+      else {
+        bp_exec_count[m_cur_behavior] = max_exec_count;
+        IncBehavior();
+      }   // all genes of this class already checked
       continue;
     }
-    
-//      cout << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() << " " << m_cur_thread << endl;
+//    cout << m_organism->GetID() << " " << m_cur_thread << " " << ip.GetMemSpace() << " " << ip.GetMemSize() << " " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  endl;
+
     // And proceed with standard execution...
     
     // Print the status of this CPU at each step...
@@ -1103,7 +1100,7 @@ cHeadCPU cHardwareMGE::FindLabelBackward(bool mark_executed)
   
   while (pos.GetPosition() != ip.GetPosition()) {
     if (m_inst_set->IsLabel(lpos.GetInst())) { // starting label found
-      pos.Set(lpos.GetPosition());
+      pos.Set(lpos.GetPosition(), ip.GetMemSpace());
       pos++;
       
       // Check for direct matched label pattern, can be substring of 'label'ed target
@@ -1172,7 +1169,7 @@ cHeadCPU cHardwareMGE::FindNopSequenceForward(bool mark_executed)
         const int found_pos = pos.GetPosition();
         
         if (mark_executed) {
-          pos.Set(label_start);
+          pos.Set(label_start, ip.GetMemSpace());
           const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get();
           // mark executed in the main memory space
           for (int i = 0; i < size_matched && i < max; i++, pos++) {
@@ -1208,7 +1205,7 @@ cHeadCPU cHardwareMGE::FindNopSequenceBackward(bool mark_executed)
   
   while (pos.GetPosition() != ip.GetPosition()) {
     if (m_inst_set->IsNop(pos.GetInst())) { // starting label found
-      pos.Set(lpos.GetPosition());
+      pos.Set(lpos.GetPosition(), ip.GetMemSpace());
       
       // Check for direct matched nop sequence, can be substring of target
       // - must match all NOPs in search_label
@@ -1253,22 +1250,22 @@ void cHardwareMGE::ReadInst(Instruction in_inst)
   
   if (m_inst_set->IsLabel(in_inst)) {
     GetReadLabel().Clear();
-    m_threads[m_cur_thread].reading_label = true;
-  } else if (m_threads[m_cur_thread].reading_label && is_nop) {
+    m_reading_label = true;
+  } else if (m_reading_label && is_nop) {
     GetReadLabel().AddNop(in_inst.GetOp());
   } else {
     GetReadLabel().Clear();
-    m_threads[m_cur_thread].reading_label = false;
+    m_reading_label = false;
   }
   
-  if (!m_threads[m_cur_thread].reading_seq && is_nop) {
+  if (!m_reading_seq && is_nop) {
     GetReadSequence().AddNop(in_inst.GetOp());
-    m_threads[m_cur_thread].reading_seq = true;
-  } else if (m_threads[m_cur_thread].reading_seq && is_nop) {
+    m_reading_seq = true;
+  } else if (m_reading_seq && is_nop) {
     GetReadSequence().AddNop(in_inst.GetOp());
   } else {
     GetReadSequence().Clear();
-    m_threads[m_cur_thread].reading_seq = false;
+    m_reading_seq = false;
   }
 }
 
@@ -1478,7 +1475,6 @@ bool cHardwareMGE::Inst_IdThread(cAvidaContext&)
 
 bool cHardwareMGE::Inst_StartGene(cAvidaContext& ctx)
 {
-  // set behavior doesn't do much in this hardware because preprocess already caused trailing instructions to swap behaviors
   return true;
 }
 
@@ -1487,9 +1483,13 @@ bool cHardwareMGE::Inst_EndGene(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareMGE::Inst_LoopGene(cAvidaContext& ctx)
+bool cHardwareMGE::Inst_KillGene(cAvidaContext& ctx)
 {
-  m_threads[m_cur_thread].loop_gene = true;
+  if ((int) m_waiting_threads < m_threads.GetSize() - 1) {
+    m_threads[m_cur_thread].active = false;
+    m_threads[m_cur_thread].wait_reg = -1;
+    m_waiting_threads++;
+  }
   return true;
 }
 
@@ -1827,30 +1827,42 @@ bool cHardwareMGE::Inst_TaskOutput(cAvidaContext& ctx)
 bool cHardwareMGE::Inst_IfCopiedCompLabel(cAvidaContext&)
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  if (GetLabel() != GetReadLabel()) Advance(getThIP(), thIP);
+  if (!m_has_copied_end) {
+    GetLabel().Rotate(1, NUM_NOPS);
+    if (GetLabel() != GetReadLabel()) Advance(getThIP(), thIP);
+    else m_has_copied_end = true;
+  }
   return true;
 }
 
 bool cHardwareMGE::Inst_IfCopiedDirectLabel(cAvidaContext&)
 {
   ReadLabel();
-  if (GetLabel() != GetReadLabel()) Advance(getIP(), thIP);
+  if (!m_has_copied_end) {
+    if (GetLabel() != GetReadLabel()) Advance(getIP(), thIP);
+    else m_has_copied_end = true;
+  }
   return true;
 }
 
 bool cHardwareMGE::Inst_IfCopiedCompSeq(cAvidaContext&)
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  if (GetLabel() != GetReadSequence()) Advance(getThIP(), thIP);
+  if (!m_has_copied_end) {
+    GetLabel().Rotate(1, NUM_NOPS);
+    if (GetLabel() != GetReadSequence()) Advance(getThIP(), thIP);
+    else m_has_copied_end = true;
+  }
   return true;
 }
 
 bool cHardwareMGE::Inst_IfCopiedDirectSeq(cAvidaContext&)
 {
   ReadLabel();
-  if (GetLabel() != GetReadSequence()) Advance(getThIP(), thIP);
+  if (!m_has_copied_end) {
+    if (GetLabel() != GetReadSequence()) Advance(getThIP(), thIP);
+    else m_has_copied_end = true;
+  }
   return true;
 }
 
@@ -1892,7 +1904,7 @@ bool cHardwareMGE::Inst_Copy(cAvidaContext& ctx)
   if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, write_head);
   if (m_organism->TestCopySlip(ctx)) {
     if (m_slip_read_head) {
-      read_head.Set(ctx.GetRandom().GetInt(read_head.GetMemory().GetSize()));
+      read_head.Set(ctx.GetRandom().GetInt(read_head.GetMemory().GetSize()), read_head.GetMemSpace());
     } else 
       doSlipMutation(ctx, write_head.GetMemory(), write_head.GetPosition());
   }
@@ -2050,7 +2062,7 @@ bool cHardwareMGE::Inst_JumpGene(cAvidaContext&)
   cHeadCPU found_pos = FindNopSequenceStart(true);
   getThIP().Set(found_pos);
   getIP(prev_thread).Advance();
-  Advance(getHead(thIP), thIP);
+  Advance(getThHead(thIP), thIP);
 
   m_cur_behavior = m_threads[m_cur_thread].thread_class;
   for (int j = 0; j < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); j++) {
@@ -2074,13 +2086,21 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
   return true;
 }
 
+bool cHardwareMGE::Inst_LoopGene(cAvidaContext&)
+{
+  getThHead(thIP).Set(0, getIP(m_cur_thread).GetMemSpace());
+  Adjust(getThHead(thIP), thIP);
+  m_advance_ip = false;
+  return true;
+}
+
 bool cHardwareMGE::Inst_Search_Seq_Comp_S(cAvidaContext&)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindNopSequenceStart(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
@@ -2089,8 +2109,8 @@ bool cHardwareMGE::Inst_Search_Seq_Comp_F(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindNopSequenceForward(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
@@ -2099,8 +2119,8 @@ bool cHardwareMGE::Inst_Search_Seq_Comp_B(cAvidaContext&)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindNopSequenceBackward(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
@@ -2108,8 +2128,8 @@ bool cHardwareMGE::Inst_Search_Seq_Direct_S(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceStart(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
@@ -2117,8 +2137,8 @@ bool cHardwareMGE::Inst_Search_Seq_Direct_F(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceForward(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
@@ -2126,8 +2146,8 @@ bool cHardwareMGE::Inst_Search_Seq_Direct_B(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindNopSequenceBackward(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
@@ -2135,8 +2155,8 @@ bool cHardwareMGE::Inst_Search_Label_Direct_S(cAvidaContext&)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelStart(true);
-  getHead(thFH).Set(found_pos);
-  Advance(getHead(thFH), thFH);
+  getThHead(thFH).Set(found_pos);
+  Advance(getThHead(thFH), thFH);
   return true;
 }
 
