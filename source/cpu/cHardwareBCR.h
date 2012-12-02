@@ -243,6 +243,7 @@ private:
   
   // Threads
   Apto::Array<Thread, Apto::ManagedPointer> m_threads;
+  int m_cur_thread;
   
 
   cOrgSensor m_sensor;
@@ -252,7 +253,6 @@ private:
     unsigned int m_cycle_count:16;
     unsigned int m_last_output:16;
 
-    int m_cur_thread:5;
     int m_cur_offspring:5;
     
     int m_use_avatar:3;
