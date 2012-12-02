@@ -348,6 +348,7 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   thread_class = in_thread.thread_class;
   start = in_thread.start;
   end = in_thread.end;
+  loop_gene = in_thread.loop_gene;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i] = in_thread.thHeads[i];
   
   active = in_thread.active;
@@ -367,7 +368,7 @@ void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id); 
   active = true;
   next_label.Clear();  
-  active = true;
+  loop_gene = false;
 }
 
 // This function processes the very next command in the genome, and is made
@@ -394,7 +395,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
   
   int num_active = 0;
-  for (int i = 0; i < m_threads.GetSize(); i++) if (m_threads[i].active) num_active++; 
+  for (int i = 0; i < m_threads.GetSize(); i++) if (m_threads[i].active) num_active++;
   assert(num_active == (m_threads.GetSize() - (int) m_waiting_threads));
   assert(num_active > 0);
   
@@ -442,6 +443,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     // if you exceed total number of instructions per cycle, you're really done
     if (tot_count > max_tot) break;
     
+    TestLoop(ip, ip.GetPosition());
     bool inc_thread = false;
     if (!m_threads[thread_id].active) inc_thread = true;
     else if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) {
@@ -458,7 +460,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       }   // all genes of this class already checked
       continue;
     }
-//    cout << m_organism->GetID() << " " << m_cur_thread << " " << ip.GetMemSpace() << " " << ip.GetMemSize() << " " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  endl;
+//    cout << "org: " << m_organism->GetID() << " thread: " << m_cur_thread << " mem_space: " << ip.GetMemSpace() << " ip_position: " << ip.GetPosition() << " thread_end: " << m_threads[m_cur_thread].end << " thread_size: " << ip.GetMemSize() << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  endl;
 
     // And proceed with standard execution...
     
@@ -2088,9 +2090,10 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
 
 bool cHardwareMGE::Inst_LoopGene(cAvidaContext&)
 {
-  getThHead(thIP).Set(0, getIP(m_cur_thread).GetMemSpace());
+/*  getThHead(thIP).Set(0, getIP(m_cur_thread).GetMemSpace());
   Adjust(getThHead(thIP), thIP);
-  m_advance_ip = false;
+  m_advance_ip = false; */
+  m_threads[m_cur_thread].loop_gene = true;
   return true;
 }
 

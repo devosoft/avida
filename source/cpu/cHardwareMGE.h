@@ -133,6 +133,8 @@ private:
     int end;
     
     struct {
+      bool loop_gene:1;
+
       bool active:1;
       bool wait_greater:1;
       bool wait_equal:1;
@@ -297,7 +299,13 @@ public:
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return GetCurThreadID(); }
   int GetCurThreadID() const    { return m_cur_thread; }
-  
+  inline void KillThread() {
+    if (m_threads[m_cur_thread].active) m_waiting_threads++;
+    m_threads[m_cur_thread].active = false;
+    m_threads[m_cur_thread].wait_reg = -1;
+  }
+  inline bool SpareThreads() { return (m_threads.GetSize() - (int) m_waiting_threads) > 1; }
+
   // --------  Non-Standard Methods  --------
   int GetActiveStack() const { return m_bps[GetCurrBehav()].cur_stack; }
   bool GetMalActive() const   { return m_has_alloc; }
@@ -321,12 +329,19 @@ private:
   // --------  Head Manipulation (including IP)  --------
   // for tracking reasons, movement of main flow and ip heads to mirror that of thread heads
   inline void Adjust(cHeadCPU& head, int head_id) {
-    head.Adjust();
+    if (TestLoop(head, head.GetPosition())) head.Adjust();
     MirrorHeads(head, head_id);
   }
   inline void Advance(cHeadCPU& head, int head_id) {
-    head.Advance();
+    if (TestLoop(head, head.GetPosition() + 1)) head.Advance();
     MirrorHeads(head, head_id);
+  }
+  inline bool TestLoop(cHeadCPU& head, int pos) {
+    if (!m_threads[m_cur_thread].loop_gene && pos > m_threads[m_cur_thread].end) {
+      if (SpareThreads()) KillThread();
+      return false;
+    }
+    return true;
   }
   // move the main memory head to the correct position in this mem_space to match the location in the thread mem space
   inline void MirrorHeads(cHeadCPU& head, int head_id) { mHeads[head_id].Set(head.GetPosition() + m_threads[m_cur_thread].start); }
