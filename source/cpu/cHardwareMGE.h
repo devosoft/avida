@@ -133,13 +133,13 @@ private:
     int end;
     
     struct {
-      bool loop_gene:1;
+//      bool loop_gene:1;
 
       bool active:1;
       bool wait_greater:1;
       bool wait_equal:1;
       bool wait_less:1;
-      unsigned int wait_reg:4;    // reg to watch for wait_value
+      unsigned int wait_reg:5;    // reg to watch for wait_value
       unsigned int wait_dst:4;    // reg to place value in when woken
     };
     int wait_value;
@@ -337,7 +337,8 @@ private:
     MirrorHeads(head, head_id);
   }
   inline bool TestLoop(cHeadCPU& head, int pos) {
-    if (!m_threads[m_cur_thread].loop_gene && pos > m_threads[m_cur_thread].end) {
+//    if (!m_threads[m_cur_thread].loop_gene && pos > m_threads[m_cur_thread].end) {
+    if (pos > m_threads[m_cur_thread].end) {
       if (SpareThreads()) KillThread();
       return false;
     }
