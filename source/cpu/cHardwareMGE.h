@@ -152,6 +152,8 @@ private:
     
     void operator=(const cBehavThread& in_proc);
     void Reset(cHardwareMGE* in_hardware, int in_id);
+    
+    inline int GetSize() { return end - start + 1; }
   };
 
  struct cBehavProc
@@ -337,8 +339,8 @@ private:
     MirrorHeads(head, head_id);
   }
   inline bool TestLoop(cHeadCPU& head, int pos) {
-//    if (!m_threads[m_cur_thread].loop_gene && pos > m_threads[m_cur_thread].end) {
-    if (pos > m_threads[m_cur_thread].end) {
+//    if (!m_threads[m_cur_thread].loop_gene && pos >= m_threads[m_cur_thread].GetSize()) {
+    if (pos >= m_threads[m_cur_thread].GetSize()) {
       if (SpareThreads()) KillThread();
       return false;
     }
