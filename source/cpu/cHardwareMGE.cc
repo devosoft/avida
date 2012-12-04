@@ -312,6 +312,7 @@ void cHardwareMGE::internalReset()
   m_cur_behavior = 0;
   m_read_label.Clear();
   m_reading_label = false;
+  m_read_seq.Clear();
   m_reading_seq = false;
   
   m_waiting_threads = 0;
@@ -1841,7 +1842,7 @@ bool cHardwareMGE::Inst_IfCopiedDirectLabel(cAvidaContext&)
 {
   ReadLabel();
   if (!m_has_copied_end) {
-    if (GetLabel() != GetReadLabel()) Advance(getIP(), thIP);
+    if (GetLabel() != GetReadLabel()) Advance(getThIP(), thIP);
     else m_has_copied_end = true;
   }
   return true;
