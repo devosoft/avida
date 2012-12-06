@@ -472,6 +472,7 @@ private:
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_JumpGene(cAvidaContext& ctx);
   bool Inst_JumpBehavior(cAvidaContext& ctx);
+  bool Inst_JumpThread(cAvidaContext& ctx);
   bool Inst_LoopGene(cAvidaContext& ctx);
   
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);

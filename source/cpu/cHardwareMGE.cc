@@ -181,6 +181,7 @@ tInstLib<cHardwareMGE::tMethod>* cHardwareMGE::initInstLib(void)
     tInstLibEntry<tMethod>("get-head", &cHardwareMGE::Inst_GetHead, INST_CLASS_FLOW_CONTROL, 0, "Copy the position of the ?IP? head into ?CX?"),
     tInstLibEntry<tMethod>("jump-gene", &cHardwareMGE::Inst_JumpGene, INST_CLASS_FLOW_CONTROL, 0, "Move execution to the specified nop sequence in whatever thread it's in"),
     tInstLibEntry<tMethod>("jump-behavior", &cHardwareMGE::Inst_JumpBehavior, INST_CLASS_FLOW_CONTROL, 0, "End execution of this behavior and jump to a new gene class."),
+    tInstLibEntry<tMethod>("jump-thread", &cHardwareMGE::Inst_JumpThread, INST_CLASS_FLOW_CONTROL, 0, "End execution of this thread and jump to a new gene."),
     tInstLibEntry<tMethod>("loop-gene", &cHardwareMGE::Inst_LoopGene, INST_CLASS_FLOW_CONTROL, 0, "Jump to the start of the gene thread."),
     
     // Replication Instructions
@@ -1350,10 +1351,10 @@ inline int cHardwareMGE::FindModifiedHead(int default_head)
     getIP().SetFlagExecuted();
   }
   int max_heads = 2;
-  if (GetCurrBehav() == BEHAV_CLASS_COPY) max_heads = 4;
+  if (GetCurrBehav() == BEHAV_CLASS_COPY) max_heads = 6;
 
   if (max_heads == 2 && default_head > 0) return 1;
-  if (max_heads == 4 && default_head > 3) return 1;
+  if (max_heads == 6 && default_head > 5) return 1;
   return default_head;
 }
 
@@ -2005,27 +2006,41 @@ bool cHardwareMGE::Inst_MoveHead(cAvidaContext&)
   const int head_used = FindModifiedHead(thIP);
   const int target = FindModifiedHead(thFH);
   
-  // only the copy process will get head ids > 1, which will mean doing things with heads in different mem spaces
-  // there are combinations which will fail (e.g. moving mIP or mFH)
+  // only the copy process will get head ids > 1, which can mean doing things with heads in different mem spaces
+  // there are combinations which will fail (e.g. moving mIP)
   if (head_used > 1 || target > 1) {
     // child only 'has' a write head that can be used
-    if (head_used == mWH && target == mRH) {
-      getHead(mWH).Set(getHead(mRH).GetPosition(), getHead(mWH).GetMemSpace());
-    }
-    else if (head_used == mWH && target == mIP) {
-      getHead(mWH).Set(getHead(mIP).GetPosition(), getHead(mWH).GetMemSpace());
-    }
-    else if (head_used == mWH && target == mFH) {
-      getHead(mWH).Set(getHead(mFH).GetPosition(), getHead(mWH).GetMemSpace());
-    }
-    else if (head_used == mRH && target == mWH) {
-      getHead(mRH).Set(getHead(mWH).GetPosition(), getHead(mRH).GetMemSpace());
-    }
-    else if (head_used == mRH && target == mIP) {
-      getHead(mRH).Set(getHead(mIP));
-    }
-    else if (head_used == mRH && target == mFH) {
-      getHead(mRH).Set(getHead(mFH));
+    switch (head_used - 2) {
+      case mWH:
+        if (target == mRH) {
+          getHead(mWH).Set(getHead(mRH).GetPosition(), getHead(mWH).GetMemSpace());
+        }
+        else if (target == mIP) {
+          getHead(mWH).Set(getHead(mIP).GetPosition(), getHead(mWH).GetMemSpace());
+        }
+        else if (target == mFH) {
+          getHead(mWH).Set(getHead(mFH).GetPosition(), getHead(mWH).GetMemSpace());
+        }
+      case mRH:
+        if (target == mWH) {
+          getHead(mRH).Set(getHead(mWH).GetPosition());
+        }
+        else if (target == mIP) {
+          getHead(mRH).Set(getHead(mIP));
+        }
+        else if (target == mFH) {
+          getHead(mRH).Set(getHead(mFH));
+        }
+      case mFH:
+        if (target == mRH) {
+          getHead(mFH).Set(getHead(mRH).GetPosition());
+        }
+        else if (target == mIP) {
+          getHead(mFH).Set(getHead(mIP).GetPosition());
+        }
+        else if (target == mWH) {
+          getHead(mFH).Set(getHead(mWH).GetPosition());
+        }
     }
   }
   else {
@@ -2042,7 +2057,7 @@ bool cHardwareMGE::Inst_JumpHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(thIP);
   const int reg = FindModifiedRegister(rCX);
-  if (head_used > 1) getHead(head_used).Jump(m_bps[GetCurrBehav()].reg[reg].value);
+  if (head_used > 1) getHead(head_used - 2).Jump(m_bps[GetCurrBehav()].reg[reg].value);
   else getThHead(head_used).Jump(m_bps[GetCurrBehav()].reg[reg].value);
   if (head_used == thIP) {
     m_advance_ip = false;
@@ -2056,7 +2071,7 @@ bool cHardwareMGE::Inst_GetHead(cAvidaContext&)
   const int head_used = FindModifiedHead(thIP);
   const int reg = FindModifiedRegister(rCX);
   int pos = 0;
-  if (head_used > 1) pos = getHead(head_used).GetPosition();
+  if (head_used > 1) pos = getHead(head_used - 2).GetPosition();
   else pos = getThHead(head_used).GetPosition();
   setInternalValue(reg, pos);
   return true;
@@ -2074,9 +2089,9 @@ bool cHardwareMGE::Inst_JumpGene(cAvidaContext&)
   Advance(getThHead(thIP), thIP);
 
   m_cur_behavior = m_threads[m_cur_thread].thread_class;
-  for (int j = 0; j < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); j++) {
-    if (m_bps[m_cur_behavior].bp_thread_ids[j] == (int) m_cur_thread) {
-      m_bps[m_cur_behavior].bp_cur_thread = j;
+  for (int i = 0; i < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); i++) {
+    if (m_bps[m_cur_behavior].bp_thread_ids[i] == (int) m_cur_thread) {
+      m_bps[m_cur_behavior].bp_cur_thread = i;
       break;
     }
   }
@@ -2092,6 +2107,21 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
   else m_cur_behavior = (GetCurrBehav() + 1) % NUM_BEHAVIORS;
   
   setInternalValue(reg_used, m_cur_behavior, false);
+  return true;
+}
+
+bool cHardwareMGE::Inst_JumpThread(cAvidaContext&)
+{
+  getIP(m_cur_thread).Advance();
+  Advance(getThHead(thIP), thIP);
+  m_cur_thread = GetRegVal(FindModifiedRegister(rBX)) % m_threads.GetSize();
+  m_cur_behavior = m_threads[m_cur_thread].thread_class;
+  for (int i = 0; i < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); i++) {
+    if (m_bps[m_cur_behavior].bp_thread_ids[i] == (int) m_cur_thread) {
+      m_bps[m_cur_behavior].bp_cur_thread = i;
+      break;
+    }
+  }
   return true;
 }
 
