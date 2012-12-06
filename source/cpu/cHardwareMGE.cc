@@ -349,7 +349,7 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   thread_class = in_thread.thread_class;
   start = in_thread.start;
   end = in_thread.end;
-//  loop_gene = in_thread.loop_gene;
+  loop_gene = in_thread.loop_gene;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i] = in_thread.thHeads[i];
   
   active = in_thread.active;
@@ -369,7 +369,7 @@ void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id); 
   active = true;
   next_label.Clear();  
-//  loop_gene = false;
+  loop_gene = false;
 }
 
 // This function processes the very next command in the genome, and is made
@@ -2097,10 +2097,10 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
 
 bool cHardwareMGE::Inst_LoopGene(cAvidaContext&)
 {
-  getThHead(thIP).Set(0, getIP(m_cur_thread).GetMemSpace());
+/*  getThHead(thIP).Set(0, getIP(m_cur_thread).GetMemSpace());
   Adjust(getThHead(thIP), thIP);
-  m_advance_ip = false; 
-//  m_threads[m_cur_thread].loop_gene = true;
+  m_advance_ip = false; */
+  m_threads[m_cur_thread].loop_gene = true;
   return true;
 }
 
