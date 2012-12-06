@@ -133,8 +133,6 @@ private:
     int end;
     
     struct {
-      bool loop_gene:1;
-
       bool active:1;
       bool wait_greater:1;
       bool wait_equal:1;
@@ -153,7 +151,7 @@ private:
     void operator=(const cBehavThread& in_proc);
     void Reset(cHardwareMGE* in_hardware, int in_id);
     
-    inline int GetSize() { return end - start + 1; }
+    inline int GetSize() { return thread_mem.GetSize(); }
   };
 
  struct cBehavProc
@@ -223,7 +221,7 @@ public:
   int PreclassNewGeneBehavior(int cur_class, int pos);
   int GetNextGeneClass(int position, int seq_size, int cur_class);
   BehavClass GetBehavClass(int classid);
-  inline void IncBehavior() {  m_cur_behavior = (m_cur_behavior + 1) % NUM_BEHAVIORS; }
+  inline void IncBehavior() { m_cur_behavior = (m_cur_behavior + 1) % NUM_BEHAVIORS; }
   inline void IncThread() {
     m_bps[m_cur_behavior].bp_cur_thread++;
     if ((int) m_bps[m_cur_behavior].bp_cur_thread >= m_bps[m_cur_behavior].bp_thread_ids.GetSize()) m_bps[m_cur_behavior].bp_cur_thread = 0;
@@ -331,20 +329,12 @@ private:
   // --------  Head Manipulation (including IP)  --------
   // for tracking reasons, movement of main flow and ip heads to mirror that of thread heads
   inline void Adjust(cHeadCPU& head, int head_id) {
-    if (TestLoop(head, head.GetPosition())) head.Adjust();
+    head.Adjust();
     MirrorHeads(head, head_id);
   }
   inline void Advance(cHeadCPU& head, int head_id) {
-    if (TestLoop(head, head.GetPosition() + 1)) head.Advance();
+    head.Advance();
     MirrorHeads(head, head_id);
-  }
-  inline bool TestLoop(cHeadCPU& head, int pos) {
-    if (!m_threads[m_cur_thread].loop_gene && pos >= m_threads[m_cur_thread].GetSize()) {
-//    if (pos >= m_threads[m_cur_thread].GetSize()) {
-      if (SpareThreads()) KillThread();
-      return false;
-    }
-    return true;
   }
   // move the main memory head to the correct position in this mem_space to match the location in the thread mem space
   inline void MirrorHeads(cHeadCPU& head, int head_id) { mHeads[head_id].Set(head.GetPosition() + m_threads[m_cur_thread].start); }
@@ -473,7 +463,6 @@ private:
   bool Inst_JumpGene(cAvidaContext& ctx);
   bool Inst_JumpBehavior(cAvidaContext& ctx);
   bool Inst_JumpThread(cAvidaContext& ctx);
-  bool Inst_LoopGene(cAvidaContext& ctx);
   
   bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
   bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);

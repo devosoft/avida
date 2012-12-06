@@ -182,7 +182,6 @@ tInstLib<cHardwareMGE::tMethod>* cHardwareMGE::initInstLib(void)
     tInstLibEntry<tMethod>("jump-gene", &cHardwareMGE::Inst_JumpGene, INST_CLASS_FLOW_CONTROL, 0, "Move execution to the specified nop sequence in whatever thread it's in"),
     tInstLibEntry<tMethod>("jump-behavior", &cHardwareMGE::Inst_JumpBehavior, INST_CLASS_FLOW_CONTROL, 0, "End execution of this behavior and jump to a new gene class."),
     tInstLibEntry<tMethod>("jump-thread", &cHardwareMGE::Inst_JumpThread, INST_CLASS_FLOW_CONTROL, 0, "End execution of this thread and jump to a new gene."),
-    tInstLibEntry<tMethod>("loop-gene", &cHardwareMGE::Inst_LoopGene, INST_CLASS_FLOW_CONTROL, 0, "Jump to the start of the gene thread."),
     
     // Replication Instructions
     tInstLibEntry<tMethod>("alloc", &cHardwareMGE::Inst_Alloc, INST_CLASS_LIFECYCLE, 0, "Allocate maximum allowed space", BEHAV_CLASS_COPY),
@@ -350,7 +349,6 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   thread_class = in_thread.thread_class;
   start = in_thread.start;
   end = in_thread.end;
-  loop_gene = in_thread.loop_gene;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i] = in_thread.thHeads[i];
   
   active = in_thread.active;
@@ -370,7 +368,6 @@ void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id); 
   active = true;
   next_label.Clear();  
-  loop_gene = false;
 }
 
 // This function processes the very next command in the genome, and is made
@@ -445,14 +442,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
     // if you exceed total number of instructions per cycle, you're really done
     if (tot_count > max_tot) break;
     
-    TestLoop(ip, ip.GetPosition());
-    bool inc_thread = false;
-    if (!m_threads[thread_id].active) inc_thread = true;
-    else if (BEHAV_CLASS_END_GENE == m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass()) {
-      inc_thread = true;
-      Advance(getThIP(), thIP);
-    } 
-    if (inc_thread) {
+    if (!m_threads[thread_id].active) {
       IncThread();
       gene_count[m_cur_behavior]++;
       if (!checked_genes[thread_id]) checked_genes[thread_id] = true;
@@ -1489,11 +1479,7 @@ bool cHardwareMGE::Inst_EndGene(cAvidaContext& ctx)
 
 bool cHardwareMGE::Inst_KillGene(cAvidaContext& ctx)
 {
-  if ((int) m_waiting_threads < m_threads.GetSize() - 1) {
-    m_threads[m_cur_thread].active = false;
-    m_threads[m_cur_thread].wait_reg = -1;
-    m_waiting_threads++;
-  }
+  if (SpareThreads()) KillThread();
   return true;
 }
 
@@ -2012,35 +1998,19 @@ bool cHardwareMGE::Inst_MoveHead(cAvidaContext&)
     // child only 'has' a write head that can be used
     switch (head_used - 2) {
       case mWH:
-        if (target == mRH) {
-          getHead(mWH).Set(getHead(mRH).GetPosition(), getHead(mWH).GetMemSpace());
-        }
-        else if (target == mIP) {
-          getHead(mWH).Set(getHead(mIP).GetPosition(), getHead(mWH).GetMemSpace());
-        }
-        else if (target == mFH) {
-          getHead(mWH).Set(getHead(mFH).GetPosition(), getHead(mWH).GetMemSpace());
-        }
+        if (target == mRH) getHead(mWH).Set(getHead(mRH).GetPosition(), getHead(mWH).GetMemSpace());
+        else if (target == mIP) getHead(mWH).Set(getHead(mIP).GetPosition(), getHead(mWH).GetMemSpace());
+        else if (target == mFH) getHead(mWH).Set(getHead(mFH).GetPosition(), getHead(mWH).GetMemSpace());
       case mRH:
-        if (target == mWH) {
-          getHead(mRH).Set(getHead(mWH).GetPosition());
-        }
-        else if (target == mIP) {
-          getHead(mRH).Set(getHead(mIP));
-        }
-        else if (target == mFH) {
-          getHead(mRH).Set(getHead(mFH));
-        }
+        if (target == mWH) getHead(mRH).Set(getHead(mWH).GetPosition());
+        else if (target == mIP) getHead(mRH).Set(getHead(mIP));
+        else if (target == mFH) getHead(mRH).Set(getHead(mFH));
       case mFH:
-        if (target == mRH) {
-          getHead(mFH).Set(getHead(mRH).GetPosition());
-        }
-        else if (target == mIP) {
-          getHead(mFH).Set(getHead(mIP).GetPosition());
-        }
-        else if (target == mWH) {
-          getHead(mFH).Set(getHead(mWH).GetPosition());
-        }
+        if (target == mRH) getHead(mFH).Set(getHead(mRH).GetPosition());
+        else if (target == mIP) getHead(mFH).Set(getHead(mIP).GetPosition());
+        else if (target == mWH) getHead(mFH).Set(getHead(mWH).GetPosition());
+      default:
+        return true;
     }
   }
   else {
@@ -2112,9 +2082,10 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
 
 bool cHardwareMGE::Inst_JumpThread(cAvidaContext&)
 {
-  getIP(m_cur_thread).Advance();
   Advance(getThHead(thIP), thIP);
-  m_cur_thread = GetRegVal(FindModifiedRegister(rBX)) % m_threads.GetSize();
+
+  m_cur_thread = Apto::Abs(GetRegVal(FindModifiedRegister(rBX))) % m_threads.GetSize();
+
   m_cur_behavior = m_threads[m_cur_thread].thread_class;
   for (int i = 0; i < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); i++) {
     if (m_bps[m_cur_behavior].bp_thread_ids[i] == (int) m_cur_thread) {
@@ -2122,15 +2093,10 @@ bool cHardwareMGE::Inst_JumpThread(cAvidaContext&)
       break;
     }
   }
-  return true;
-}
-
-bool cHardwareMGE::Inst_LoopGene(cAvidaContext&)
-{
-/*  getThHead(thIP).Set(0, getIP(m_cur_thread).GetMemSpace());
-  Adjust(getThHead(thIP), thIP);
-  m_advance_ip = false; */
-  m_threads[m_cur_thread].loop_gene = true;
+  if (!m_threads[m_cur_thread].active) {
+    m_threads[m_cur_thread].active = true;
+    m_waiting_threads--;
+  }
   return true;
 }
 
