@@ -1,6 +1,6 @@
 //
 //  NSString+Apto.h
-//  avida/apps/viewer-macos
+//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
 //  Created by David M. Bryson on 7/7/11.
 //  Copyright 2011-2012 Michigan State University. All rights reserved.

@@ -69,6 +69,8 @@
 		70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */; };
 		70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */; };
 		70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
+		70C99135167299B5004823A2 /* AvidaWorkspaceSelectWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C99133167299B5004823A2 /* AvidaWorkspaceSelectWindowController.m */; };
+		70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */; };
 		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 		70E09DD8150AAC5400154C00 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
 		70E6072A156588A200E7AA82 /* OrgExecStateValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E60729156588A200E7AA82 /* OrgExecStateValue.m */; };
@@ -139,6 +141,7 @@
 		702837EA155C5C8E00C733D2 /* AvidaED-ExportGraphics-Analysis.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "AvidaED-ExportGraphics-Analysis.xib"; sourceTree = "<group>"; };
 		7029A49B1361CDBD0031433A /* CenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CenteringClipView.h; sourceTree = "<group>"; };
 		7029A49C1361CDBD0031433A /* CenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CenteringClipView.m; sourceTree = "<group>"; };
+		703023381672556C008C60A2 /* Avida.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Avida.entitlements; path = ../../Avida.entitlements; sourceTree = "<group>"; };
 		7032D0B515051F260090C93C /* OrganismView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrganismView.h; sourceTree = "<group>"; };
 		7032D0B615051F260090C93C /* OrganismView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OrganismView.mm; sourceTree = "<group>"; };
 		7032D0B8150528C30090C93C /* DropDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DropDelegate.h; sourceTree = "<group>"; };
@@ -207,6 +210,9 @@
 		70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AnaViewerIcon.png; sourceTree = "<group>"; };
 		70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OrgViewerIcon.png; sourceTree = "<group>"; };
 		70C2DB8515824EBA004B2423 /* PopViewerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PopViewerIcon.png; sourceTree = "<group>"; };
+		70C99132167299B5004823A2 /* AvidaWorkspaceSelectWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaWorkspaceSelectWindowController.h; sourceTree = "<group>"; };
+		70C99133167299B5004823A2 /* AvidaWorkspaceSelectWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaWorkspaceSelectWindowController.m; sourceTree = "<group>"; };
+		70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-WorkspaceSelectWindow.xib"; sourceTree = "<group>"; };
 		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
 		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 		70E09DD7150AAC5400154C00 /* CorePlot.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CorePlot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -320,6 +326,7 @@
 			children = (
 				70FA3F73164421730003971F /* Avida-MainMenu.xib */,
 				703549A71337A4B100D3865C /* Avida-MainWindow.xib */,
+				70C99138167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib */,
 				703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */,
 				70FA09C615FFD4DE006DF5DF /* AvidaED-AboutPanel.xib */,
 				70E6072F15658B0600E7AA82 /* AvidaED-AnalyzeView.xib */,
@@ -376,6 +383,8 @@
 				70FA3F7B164422750003971F /* AvidaAppDelegate.mm */,
 				703549AE1337AD0500D3865C /* AvidaMainWindowController.h */,
 				703549AF1337AD0500D3865C /* AvidaMainWindowController.mm */,
+				70C99132167299B5004823A2 /* AvidaWorkspaceSelectWindowController.h */,
+				70C99133167299B5004823A2 /* AvidaWorkspaceSelectWindowController.m */,
 			);
 			name = Avida;
 			path = avida;
@@ -463,6 +472,7 @@
 		7035499E1337A3A200D3865C /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				703023381672556C008C60A2 /* Avida.entitlements */,
 				70FA3F7016441FA70003971F /* Avida-Info.plist */,
 				704B83961600E3C100D40AEA /* AvidaED-credits.rtf */,
 				703549AC1337A54700D3865C /* AvidaED-Info.plist */,
@@ -615,6 +625,7 @@
 			files = (
 				70FA3F74164421730003971F /* Avida-MainMenu.xib in Resources */,
 				70FA3F751644217E0003971F /* Avida-MainWindow.xib in Resources */,
+				70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -668,6 +679,7 @@
 			files = (
 				70FA3F7C164422750003971F /* Avida-main.mm in Sources */,
 				70FA3F7D164422750003971F /* AvidaAppDelegate.mm in Sources */,
+				70C99135167299B5004823A2 /* AvidaWorkspaceSelectWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -765,24 +777,19 @@
 		70FA3F6C164418570003971F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = Avida.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Avida/Avida-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -795,17 +802,14 @@
 		70FA3F6D164418570003971F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = Avida.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Avida/Avida-Prefix.pch";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;

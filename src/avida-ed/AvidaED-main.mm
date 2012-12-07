@@ -1,5 +1,5 @@
 //
-//  main.mm
+//  AvidaED-main.mm
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 10/20/10.
@@ -29,20 +29,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "AvidaEDOrganismValueDisplayView.h"
-#import "OrgExecStateValue.h"
-
-namespace Avida {
-  void Initialize();
-};
+#impore <AvidaCore/AvidaCore.h>
 
 
 int main(int argc, char *argv[])
 {
-  Avida::Initialize();
-  
-  [OrgExecStateValue initialize];
-  [AvidaEDOrganismValueDisplayView initialize];
+  // Initialize the AvidaCore framework. Avida-ED accesses a variety of things in libavida-core and libviewer-core directly,
+  // so it needs to be sure that the framework initializes them, while also not double initializing things. Calling an
+  // innocuous method on ACFramework will do the work for us.
+  [ACFramework self];
   
   
   return NSApplicationMain(argc, (const char **)argv);

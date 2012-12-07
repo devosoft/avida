@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7030233F1672909B008C60A2 /* ACFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 7030233D1672909B008C60A2 /* ACFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		703023401672909B008C60A2 /* ACFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 7030233D1672909B008C60A2 /* ACFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		703023411672909B008C60A2 /* ACFramework.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7030233E1672909B008C60A2 /* ACFramework.mm */; };
+		703023421672909B008C60A2 /* ACFramework.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7030233E1672909B008C60A2 /* ACFramework.mm */; };
+		7030234516729522008C60A2 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC3C165586A0008413DB /* libavida-core.a */; };
+		703023461672952E008C60A2 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC3F165586D0008413DB /* libviewer-core.a */; };
+		7030234716729538008C60A2 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC41165586D9008413DB /* libapto.a */; };
 		7041AC041655825A008413DB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC031655825A008413DB /* Cocoa.framework */; };
 		7041AC1C1655829A008413DB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7041AC1B1655829A008413DB /* Foundation.framework */; };
 		7041AC3716558644008413DB /* ACGenome.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC32165585D0008413DB /* ACGenome.mm */; };
@@ -41,6 +48,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7030233D1672909B008C60A2 /* ACFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACFramework.h; sourceTree = "<group>"; };
+		7030233E1672909B008C60A2 /* ACFramework.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACFramework.mm; sourceTree = "<group>"; };
 		7041AC001655825A008413DB /* AvidaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AvidaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7041AC031655825A008413DB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7041AC061655825A008413DB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -82,6 +91,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7041AC1C1655829A008413DB /* Foundation.framework in Frameworks */,
+				7030234516729522008C60A2 /* libavida-core.a in Frameworks */,
+				703023461672952E008C60A2 /* libviewer-core.a in Frameworks */,
+				7030234716729538008C60A2 /* libapto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +163,8 @@
 			isa = PBXGroup;
 			children = (
 				7041AC5416558DF1008413DB /* AvidaCore_Core.h */,
+				7030233D1672909B008C60A2 /* ACFramework.h */,
+				7030233E1672909B008C60A2 /* ACFramework.mm */,
 				7041AC31165585D0008413DB /* ACGenome.h */,
 				7041AC32165585D0008413DB /* ACGenome.mm */,
 				7041AC43165587F3008413DB /* NSString+Apto.h */,
@@ -204,6 +218,7 @@
 				7041AC4916558ADD008413DB /* AvidaCore.h in Headers */,
 				7041AC5116558B98008413DB /* ACGenome+NSPasteboardAdditions.h in Headers */,
 				7041AC5516558DF1008413DB /* AvidaCore_Core.h in Headers */,
+				7030233F1672909B008C60A2 /* ACFramework.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +230,7 @@
 				7041AC4D16558B3E008413DB /* NSString+Apto.h in Headers */,
 				7041AC4E16558B48008413DB /* ACGenome.h in Headers */,
 				7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */,
+				703023401672909B008C60A2 /* ACFramework.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,6 +317,7 @@
 				7041AC3816558645008413DB /* ACGenome.mm in Sources */,
 				7041AC46165587F3008413DB /* NSString+Apto.mm in Sources */,
 				7041AC5216558B98008413DB /* ACGenome+NSPasteboardAdditions.mm in Sources */,
+				703023411672909B008C60A2 /* ACFramework.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +327,7 @@
 			files = (
 				7041AC3716558644008413DB /* ACGenome.mm in Sources */,
 				7041AC47165587F3008413DB /* NSString+Apto.mm in Sources */,
+				703023421672909B008C60A2 /* ACFramework.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,8 +353,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -345,7 +361,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -362,12 +377,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "resources/AvidaCore-OSX-Info.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = AvidaCore;
 				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "../../../../avida-core/include/public/ ../../../../libs/apto/include/";
@@ -380,8 +390,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -391,7 +399,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/osx/Prefix.pch;
@@ -401,10 +408,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "resources/AvidaCore-OSX-Info.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
 				SDKROOT = macosx10.7;
@@ -417,14 +420,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/AvidaCore_iOS.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -438,6 +438,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = AvidaCore;
@@ -451,20 +455,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DSTROOT = /tmp/AvidaCore_iOS.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/ios/Prefix.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../../Library/Developer/Xcode/DerivedData/Avida-erkyibleqpjktofbblmkfuehtmqd/Build/Products/Debug\"",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = AvidaCore;
 				SDKROOT = iphoneos;

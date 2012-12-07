@@ -1,6 +1,6 @@
 //
 //  ACGenome.h
-//  avida/apps/viewer-macos
+//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
 //  Created by David M. Bryson on 1/24/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
@@ -39,6 +39,9 @@ extern NSString* const AvidaPasteboardTypeGenome;
   
   CGPoint location;
 }
+
++ (void) initialize;
+
 - (ACGenome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName;
 
 @property (readonly, nonatomic) NSString* genomeStr;

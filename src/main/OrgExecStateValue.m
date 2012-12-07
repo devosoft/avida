@@ -32,8 +32,10 @@
 @implementation OrgExecStateValue
 
 + (void) initialize {
-  [self exposeBinding:@"prefix"];
-  [self exposeBinding:@"value"];
+  if (self == [OrgExecStateValue class]) {
+    [self exposeBinding:@"prefix"];
+    [self exposeBinding:@"value"];
+  }
 }
 
 - (id) initWithPrefix:(NSString*)in_prefix {

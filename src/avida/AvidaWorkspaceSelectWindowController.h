@@ -1,8 +1,8 @@
 //
-//  AvidaCore_Core.h
-//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
+//  AvidaWorkspaceSelectWindowController.h
+//  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 11/15/12.
+//  Created by David M. Bryson on 12/7/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -27,6 +27,8 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import <AvidaCore/ACFramework.h>
-#import <AvidaCore/ACGenome.h>
-#import <AvidaCore/NSString+Apto.h>
+#import <Cocoa/Cocoa.h>
+
+@interface AvidaWorkspaceSelectWindowController : NSWindowController
+
+@end

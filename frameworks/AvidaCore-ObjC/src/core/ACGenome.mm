@@ -1,6 +1,6 @@
 //
-//  ACGenome.m
-//  avida/apps/viewer-macos
+//  ACGenome.mm
+//  avida/apps/viewer-macos/frameworks/AvidaCore-ObjC
 //
 //  Created by David M. Bryson on 1/24/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
@@ -29,11 +29,21 @@
 
 #import "ACGenome.h"
 
+#import "ACFramework.h"
 #import "NSString+Apto.h"
+
 
 NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
 
+
 @implementation ACGenome
+
++ (void) initialize {
+  if (self == [ACGenome class]) {
+    [ACFramework self];
+  }
+}
+
 
 - (ACGenome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName {
   genomeStr = genome;

@@ -36,16 +36,9 @@
 @class MapGridView;
 
 
-@interface AvidaMainWindowController : NSWindowController <ViewerListener, NSPathControlDelegate, NSWindowDelegate> {
-  IBOutlet NSPathControl* runDirControl;
-  IBOutlet NSButton* btnRunState;
-  IBOutlet NSTextField* txtUpdate;
-  IBOutlet MapGridView* mapView;
-  
+@interface AvidaMainWindowController : NSWindowController <NSWindowDelegate>
+{
   AvidaAppDelegate* app;
-  
-  AvidaRun* currentRun;
-  Avida::Viewer::Listener* listener;
 }
 
 // Init and Dealloc Methods
@@ -59,24 +52,8 @@
 -(void)windowDidLoad;
 
 
-// Actions
--(IBAction)setRunDir:(id)sender;
--(IBAction)toggleRunState:(id)sender;
-
-
-// NSPathControlDelegate Protocol
--(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel;
-
-
 // NSWindowDelegate Protocol
 -(void)windowWillClose:(NSNotification*)notification;
-
-
-// Listener Methods
-@property (readonly) Avida::Viewer::Listener* listener;
-
--(void)handleMap:(ViewerMap*)object;
--(void)handleUpdate:(ViewerUpdate*)object;
 
 
 @end
