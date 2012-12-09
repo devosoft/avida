@@ -2083,9 +2083,7 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
 bool cHardwareMGE::Inst_JumpThread(cAvidaContext&)
 {
   Advance(getThHead(thIP), thIP);
-
-  m_cur_thread = Apto::Abs(GetRegVal(FindModifiedRegister(rBX))) % m_threads.GetSize();
-
+  m_cur_thread = Apto::UAbs(GetRegVal(FindModifiedRegister(rBX))) % static_cast<unsigned int>(m_threads.GetSize());
   m_cur_behavior = m_threads[m_cur_thread].thread_class;
   for (int i = 0; i < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); i++) {
     if (m_bps[m_cur_behavior].bp_thread_ids[i] == (int) m_cur_thread) {
