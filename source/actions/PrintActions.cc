@@ -3889,7 +3889,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_reactions_comma.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_task_hosts_comma.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     cPopulation* pop = &m_world->GetPopulation();
   
@@ -3936,7 +3936,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_reactions_comma.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_task_parasites_comma.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     cPopulation* pop = &m_world->GetPopulation();
     
