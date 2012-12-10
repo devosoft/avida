@@ -504,14 +504,14 @@ public:
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
     else {
-      if (m_filename == "") m_filename = "prey_from_sesnor_exec.dat";
+      if (m_filename == "") m_filename = "prey_from_sensor_exec.dat";
     }
     if (largs.GetSize()) m_inst_set = largs.PopWord();
     
-    if (m_filename == "") m_filename.Set("prey_from_sesnor_exec-%s.dat", (const char*)m_inst_set);
+    if (m_filename == "") m_filename.Set("prey_from_sensor_exec-%s.dat", (const char*)m_inst_set);
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"prey_from_sesnor_exec-${inst_set}.dat\"] [string inst_set]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"prey_from_sensor_exec-${inst_set}.dat\"] [string inst_set]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -519,28 +519,28 @@ public:
   }
 };
 
-class cActionPrintPredFromSensorInstructionData : public cAction
+class cActionPrintPredatorFromSensorInstructionData : public cAction
 {
 private:
   cString m_filename;
   cString m_inst_set;
   
 public:
-  cActionPrintPredFromSensorInstructionData(cWorld* world, const cString& args, Feedback&)
+  cActionPrintPredatorFromSensorInstructionData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
   {
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
     else {
-      if (m_filename == "") m_filename = "predator_from_sesnor_exec.dat";
+      if (m_filename == "") m_filename = "predator_from_sensor_exec.dat";
     }
     if (largs.GetSize()) m_inst_set = largs.PopWord();
     
-    if (m_filename == "") m_filename.Set("predator_from_sesnor_exec-%s.dat", (const char*)m_inst_set);
+    if (m_filename == "") m_filename.Set("predator_from_sensor_exec-%s.dat", (const char*)m_inst_set);
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"predator_from_sesnor_exec-${inst_set}.dat\"] [string inst_set]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"predator_from_sensor_exec-${inst_set}.dat\"] [string inst_set]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -4992,6 +4992,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
   action_lib->Register<cActionPrintPreyFailedInstructionData>("PrintPreyFailedInstructionData");
   action_lib->Register<cActionPrintPredatorFailedInstructionData>("PrintPredatorFailedInstructionData");
+  action_lib->Register<cActionPrintPreyFromSensorInstructionData>("PrintPreyFromSensorInstructionData");
+  action_lib->Register<cActionPrintPredatorFromSensorInstructionData>("PrintPredatorFromSensorInstructionData");
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");

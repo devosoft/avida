@@ -195,6 +195,7 @@ private:
   
   int m_use_avatar;
   cOrgSensor m_sensor;
+  bool m_from_sensor;
   
   struct {
     unsigned int m_cycle_count:16;
@@ -285,6 +286,7 @@ public:
   // --------  Register Manipulation  --------
   int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
+  bool FromSensor(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].from_sensor; }
   
   
   // --------  Thread Manipulation  --------

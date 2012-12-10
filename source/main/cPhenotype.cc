@@ -164,8 +164,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   first_reaction_execs     = first_reaction_execs;            
   cur_reaction_add_reward  = in_phen.cur_reaction_add_reward;     
   cur_inst_count           = in_phen.cur_inst_count;                 
+  cur_from_sensor_count    = in_phen.cur_from_sensor_count;
   cur_failed_inst_count    = in_phen.cur_failed_inst_count;
-  cur_sense_count          = in_phen.cur_sense_count;                 
+  cur_sense_count          = in_phen.cur_sense_count;
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;
   m_tolerance_immigrants          = in_phen.m_tolerance_immigrants;
@@ -212,8 +213,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_reaction_count      = in_phen.last_reaction_count;
   last_reaction_add_reward = in_phen.last_reaction_add_reward; 
   last_inst_count          = in_phen.last_inst_count;	  
-  last_from_sensor_count     = in_phen.last_from_sensor_count;
-  last_failed_inst_count     = in_phen.last_failed_inst_count;
+  last_from_sensor_count   = in_phen.last_from_sensor_count;
+  last_failed_inst_count   = in_phen.last_failed_inst_count;
   last_sense_count         = in_phen.last_sense_count;   
   last_fitness             = in_phen.last_fitness;            
   last_child_germline_propensity = in_phen.last_child_germline_propensity;
@@ -397,8 +398,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
+  cur_from_sensor_count.SetAll(0);
   cur_failed_inst_count.SetAll(0);
-  cur_sense_count.SetAll(0);  
+  cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
   for (int j = 0; j < sensed_resources.GetSize(); j++) {
     sensed_resources[j] =  parent_phenotype.sensed_resources[j];
@@ -440,7 +442,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Sequen
   last_reaction_count       = parent_phenotype.last_reaction_count;
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
-  last_from_sensor_count     = parent_phenotype.last_from_sensor_count;
+  last_from_sensor_count    = parent_phenotype.last_from_sensor_count;
   last_failed_inst_count    = parent_phenotype.last_failed_inst_count;
   last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
@@ -613,6 +615,7 @@ void cPhenotype::SetupInject(const Sequence& _genome)
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
+  cur_from_sensor_count.SetAll(0);
   cur_failed_inst_count.SetAll(0);
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
@@ -826,7 +829,7 @@ void cPhenotype::DivideReset(const Sequence& _genome)
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
-  last_from_sensor_count           = cur_from_sensor_count;
+  last_from_sensor_count    = cur_from_sensor_count;
   last_failed_inst_count    = cur_failed_inst_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -872,6 +875,7 @@ void cPhenotype::DivideReset(const Sequence& _genome)
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
+  cur_from_sensor_count.SetAll(0);
   cur_failed_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
@@ -1040,7 +1044,7 @@ void cPhenotype::TestDivideReset(const Sequence& _genome)
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
-  last_from_sensor_count           = cur_from_sensor_count;
+  last_from_sensor_count    = cur_from_sensor_count;
   last_failed_inst_count    = cur_failed_inst_count;
   last_sense_count          = cur_sense_count;  
   last_child_germline_propensity = cur_child_germline_propensity;
@@ -1076,8 +1080,9 @@ void cPhenotype::TestDivideReset(const Sequence& _genome)
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
+  cur_from_sensor_count.SetAll(0);
   cur_failed_inst_count.SetAll(0);
-  cur_sense_count.SetAll(0); 
+  cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   sensed_resources.SetAll(-1.0);
   cur_trial_fitnesses.Resize(0); 
@@ -1236,8 +1241,9 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
+  cur_from_sensor_count.SetAll(0);
   cur_failed_inst_count.SetAll(0);
-  cur_sense_count.SetAll(0);  
+  cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   for (int j = 0; j < sensed_resources.GetSize(); j++) {
     sensed_resources[j] = clone_phenotype.sensed_resources[j];
@@ -1271,7 +1277,7 @@ void cPhenotype::SetupClone(const cPhenotype& clone_phenotype)
   last_reaction_count      = clone_phenotype.last_reaction_count;
   last_reaction_add_reward = clone_phenotype.last_reaction_add_reward;
   last_inst_count          = clone_phenotype.last_inst_count;
-  last_from_sensor_count          = clone_phenotype.last_from_sensor_count;
+  last_from_sensor_count   = clone_phenotype.last_from_sensor_count;
   last_failed_inst_count   = clone_phenotype.last_failed_inst_count;
   last_sense_count         = clone_phenotype.last_sense_count;  
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
@@ -2026,7 +2032,7 @@ void cPhenotype::NewTrial()
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
-  last_from_sensor_count           = cur_from_sensor_count;
+  last_from_sensor_count    = cur_from_sensor_count;
   last_failed_inst_count    = cur_failed_inst_count;
   last_sense_count          = cur_sense_count;
   
@@ -2053,6 +2059,7 @@ void cPhenotype::NewTrial()
   cur_stolen_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
+  cur_from_sensor_count.SetAll(0);
   cur_failed_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
   //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB

@@ -433,6 +433,7 @@ public:
   const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
+  const tArray<int>& GetCurFromSensorInstCount() const { assert(initialized == true); return cur_from_sensor_count; }
   const tArray<int>& GetCurFailedInstCount() const { assert(initialized == true); return cur_failed_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
@@ -654,6 +655,7 @@ public:
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
   void IncCurFailedInstCount(int _inst_num)  { assert(initialized == true); cur_failed_inst_count[_inst_num]++; }
+  void IncCurFromSensorInstCount(int _inst_num)  { assert(initialized == true); cur_from_sensor_count[_inst_num]++; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
@@ -725,6 +727,7 @@ public:
 inline void cPhenotype::SetInstSetSize(int inst_set_size)
 {
   cur_inst_count.Resize(inst_set_size, 0);
+  cur_from_sensor_count.Resize(inst_set_size, 0);
   cur_failed_inst_count.Resize(inst_set_size, 0);
   last_inst_count.Resize(inst_set_size, 0);
   last_from_sensor_count.Resize(inst_set_size, 0);
