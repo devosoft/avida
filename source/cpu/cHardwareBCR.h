@@ -404,6 +404,13 @@ private:
   void ReadInst(Instruction in_inst);
   
   
+  // ---------- Predator-Prey Support Functions -----------
+  void injureOrg(cOrganism* target);
+  void makePred(cAvidaContext& ctx);
+  void makeTopPred(cAvidaContext& ctx);
+  bool testAttack(cAvidaContext& ctx);
+  
+  
   // ---------- Instruction Library -----------
   // Multi-threading
   bool Inst_ThreadCreate(cAvidaContext& ctx);
@@ -546,6 +553,10 @@ private:
 
   bool Inst_TeachOffspring(cAvidaContext& ctx);
   bool Inst_LearnParent(cAvidaContext& ctx);
+  
+  // Predator-Prey Instructions
+  bool Inst_AttackPrey(cAvidaContext& ctx);
+
   
   // Control-type Instructions
   bool Inst_ScrambleReg(cAvidaContext& ctx);
