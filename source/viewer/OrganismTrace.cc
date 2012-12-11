@@ -157,7 +157,7 @@ private:
 public:
   LIB_LOCAL inline SnapshotTracer(cWorld* world) : m_world(world), m_snapshots(NULL) { ; }
   
-  LIB_LOCAL void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots, double mut_rate);
+  LIB_LOCAL void TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots, double mut_rate, int seed);
   
   LIB_LOCAL GenomePtr OffspringGenome() { return m_offspring_genome; }
   
@@ -182,7 +182,7 @@ public:
 // Private::SnapshotTracer Implementation
 // --------------------------------------------------------------------------------------------------------------  
 
-void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots, double mut_rate)
+void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<HardwareSnapshot*>& snapshots, double mut_rate, int seed)
 {
   // Create internal reference to the snapshot array so that the tracing methods can create snapshots
   m_snapshots = &snapshots;
@@ -203,7 +203,7 @@ void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<Hardware
   
   
   // Setup context
-  Apto::RNG::AvidaRNG rng;
+  Apto::RNG::AvidaRNG rng(seed);
   cAvidaContext ctx(this, rng);
   
   // Create a test cpu
@@ -695,11 +695,11 @@ const Apto::Array<bool>& Avida::Viewer::HardwareSnapshot::MutatedStateOfMemSpace
 // OrganismTrace Implementation
 // --------------------------------------------------------------------------------------------------------------  
 
-OrganismTrace::OrganismTrace(cWorld* world, GenomePtr genome, double mut_rate)
+OrganismTrace::OrganismTrace(cWorld* world, GenomePtr genome, double mut_rate, int seed)
   : m_genome(genome)
 {
   Private::SnapshotTracer tracer(world);
-  tracer.TraceGenome(genome, m_snapshots, mut_rate);
+  tracer.TraceGenome(genome, m_snapshots, mut_rate, seed);
   m_offspring_genome = tracer.OffspringGenome();
 }
 
