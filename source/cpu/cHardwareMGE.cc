@@ -318,14 +318,7 @@ void cHardwareMGE::internalReset()
   m_waiting_threads = 0;
   m_cur_thread = 0;
   
-  for (int i = 0; i < NUM_BEHAVIORS; i++) {
-    m_bps[i].bp_cur_thread = 0;
-    m_bps[i].stack.Clear();
-    m_bps[i].cur_stack = 0;
-    for (int j = 0; j < NUM_REGISTERS; j++) {
-      m_bps[i].reg[j].Clear();
-    }
-  }
+  for (int i = 0; i < NUM_BEHAVIORS; i++) m_bps[i].bp_cur_thread = 0;
   
   // associate each thread and it's heads with the appropriate memory space id
   for (int i = 0; i < m_threads.GetSize(); i++) m_threads[i].Reset(this, i + 2);
@@ -351,6 +344,10 @@ void cHardwareMGE::cBehavThread::operator=(const cBehavThread& in_thread)
   end = in_thread.end;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i] = in_thread.thHeads[i];
   
+  stack.Clear();
+  cur_stack = 0;
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
+
   active = in_thread.active;
   wait_greater = in_thread.wait_greater;
   wait_equal = in_thread.wait_equal;
@@ -742,7 +739,7 @@ void cHardwareMGE::PrintStatus(ostream& fp)
   
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue& reg = m_bps[GetCurrBehav()].reg[i];
+    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
     fp << setbase(16) << "[0x" << reg.value <<  "] " << setbase(10);
     fp << "(" << reg.from_env << " " << reg.env_component << " " << reg.originated << " " << reg.oldest_component << ")  ";
@@ -765,7 +762,7 @@ void cHardwareMGE::PrintStatus(ostream& fp)
   
   int number_of_stacks = GetNumStacks();
   for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
-    fp << ((m_bps[GetCurrBehav()].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
+    fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
     for (int i = 0; i < nHardware::STACK_SIZE; i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
     fp << setfill(' ') << setbase(10) << endl;
   }
@@ -825,7 +822,7 @@ void cHardwareMGE::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   fp << m_cycle_count << " ";
   fp << m_world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    sInternalValue& reg = m_bps[GetCurrBehav()].reg[i];
+    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
     fp << GetRegVal(i) << " ";
     fp << "(" << reg.originated << ") ";
   }    
@@ -1432,7 +1429,7 @@ void cHardwareMGE::checkWaitingThreads(int cur_thread, int reg_num)
       // if not current thread...and not active...and has a wait condition in current reg...
       if (!(i == cur_thread) && !m_threads[i].active && int(m_threads[i].wait_reg) == reg_num) {
         int wait_value = m_threads[i].wait_value;            // ...the value we're waiting for
-        int check_value = m_bps[m_threads[i].thread_class].reg[reg_num].value;      // ...the value in this register for the current behavior
+        int check_value = m_threads[m_cur_thread].reg[reg_num].value;      
         if ((m_threads[i].wait_greater && check_value > wait_value) ||
             (m_threads[i].wait_equal && check_value == wait_value) ||
             (m_threads[i].wait_less && check_value < wait_value)) {
@@ -1442,12 +1439,12 @@ void cHardwareMGE::checkWaitingThreads(int cur_thread, int reg_num)
           m_waiting_threads--;
           
           // Set register in the behavioral process with the woken thread to be the check value
-          sInternalValue& dest = m_bps[m_threads[i].thread_class].reg[m_threads[i].wait_dst];
+          sInternalValue& dest = m_threads[i].reg[m_threads[i].wait_dst];
           dest.value = check_value;
           dest.from_env = false;
           dest.originated = m_cycle_count;
-          dest.oldest_component = m_bps[m_threads[i].thread_class].reg[reg_num].oldest_component;
-          dest.env_component = m_bps[m_threads[i].thread_class].reg[reg_num].env_component;
+          dest.oldest_component = m_threads[i].reg[reg_num].oldest_component;
+          dest.env_component = m_threads[i].reg[reg_num].env_component;
           
           // Cascade check
           if (m_waiting_threads) checkWaitingThreads(i, m_threads[i].wait_dst);
@@ -1595,7 +1592,7 @@ bool cHardwareMGE::Inst_Pop(cAvidaContext&)
 bool cHardwareMGE::Inst_Push(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  getStack(m_bps[GetCurrBehav()].cur_stack).Push(m_bps[GetCurrBehav()].reg[reg_used]);
+  getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
@@ -1615,7 +1612,7 @@ bool cHardwareMGE::Inst_PushAll(cAvidaContext&)
 {
   int reg_used = FindModifiedRegister(rBX);
   for (int i = 0; i < NUM_REGISTERS; i++) {
-    getStack(m_bps[GetCurrBehav()].cur_stack).Push(m_bps[GetCurrBehav()].reg[reg_used]);
+    getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
     reg_used++;
     if (reg_used == NUM_REGISTERS) reg_used = 0;
   }
@@ -1637,23 +1634,23 @@ bool cHardwareMGE::Inst_Swap(cAvidaContext&)
 {
   const int op1 = FindModifiedRegister(rBX);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue v1 = m_bps[GetCurrBehav()].reg[op1];
-  m_bps[GetCurrBehav()].reg[op1] = m_bps[GetCurrBehav()].reg[op2];
-  m_bps[GetCurrBehav()].reg[op2] = v1;
+  sInternalValue v1 = m_threads[m_cur_thread].reg[op1];
+  m_threads[m_cur_thread].reg[op1] = m_threads[m_cur_thread].reg[op2];
+  m_threads[m_cur_thread].reg[op2] = v1;
   return true;
 }
 
 bool cHardwareMGE::Inst_ShiftR(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_bps[GetCurrBehav()].reg[reg_used].value >> 1, m_bps[GetCurrBehav()].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value >> 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 bool cHardwareMGE::Inst_ShiftL(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_bps[GetCurrBehav()].reg[reg_used].value << 1, m_bps[GetCurrBehav()].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value << 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
@@ -1661,14 +1658,14 @@ bool cHardwareMGE::Inst_ShiftL(cAvidaContext&)
 bool cHardwareMGE::Inst_Inc(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_bps[GetCurrBehav()].reg[reg_used].value + 1, m_bps[GetCurrBehav()].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value + 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 bool cHardwareMGE::Inst_Dec(cAvidaContext&)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  setInternalValue(reg_used, m_bps[GetCurrBehav()].reg[reg_used].value - 1, m_bps[GetCurrBehav()].reg[reg_used]);
+  setInternalValue(reg_used, m_threads[m_cur_thread].reg[reg_used].value - 1, m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
@@ -1699,8 +1696,8 @@ bool cHardwareMGE::Inst_Add(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_bps[GetCurrBehav()].reg[op1];
-  sInternalValue& r2 = m_bps[GetCurrBehav()].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value + r2.value, r1, r2);
   return true;
 }
@@ -1710,8 +1707,8 @@ bool cHardwareMGE::Inst_Sub(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_bps[GetCurrBehav()].reg[op1];
-  sInternalValue& r2 = m_bps[GetCurrBehav()].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value - r2.value, r1, r2);
   return true;
 }
@@ -1721,8 +1718,8 @@ bool cHardwareMGE::Inst_Mult(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_bps[GetCurrBehav()].reg[op1];
-  sInternalValue& r2 = m_bps[GetCurrBehav()].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, r1.value * r2.value, r1, r2);
   return true;
 }
@@ -1732,8 +1729,8 @@ bool cHardwareMGE::Inst_Div(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_bps[GetCurrBehav()].reg[op1];
-  sInternalValue& r2 = m_bps[GetCurrBehav()].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     if (0 - INT_MAX > r1.value && r2.value == -1)
       m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
@@ -1751,8 +1748,8 @@ bool cHardwareMGE::Inst_Mod(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_bps[GetCurrBehav()].reg[op1];
-  sInternalValue& r2 = m_bps[GetCurrBehav()].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     setInternalValue(dst, r1.value % r2.value, r1, r2);
   } else {
@@ -1767,8 +1764,8 @@ bool cHardwareMGE::Inst_Nand(cAvidaContext&)
   const int dst = FindModifiedRegister(rBX);
   const int op1 = FindModifiedRegister(dst);
   const int op2 = FindModifiedNextRegister(op1);
-  sInternalValue& r1 = m_bps[GetCurrBehav()].reg[op1];
-  sInternalValue& r2 = m_bps[GetCurrBehav()].reg[op2];
+  sInternalValue& r1 = m_threads[m_cur_thread].reg[op1];
+  sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   setInternalValue(dst, ~(r1.value & r2.value), r1, r2);
   return true;
 }
@@ -1776,7 +1773,7 @@ bool cHardwareMGE::Inst_Nand(cAvidaContext&)
 bool cHardwareMGE::Inst_TaskIO(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_bps[GetCurrBehav()].reg[reg_used];
+  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -1805,7 +1802,7 @@ bool cHardwareMGE::Inst_TaskInput(cAvidaContext&)
 bool cHardwareMGE::Inst_TaskOutput(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(rBX);
-  sInternalValue& reg = m_bps[GetCurrBehav()].reg[reg_used];
+  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
@@ -2027,8 +2024,8 @@ bool cHardwareMGE::Inst_JumpHead(cAvidaContext&)
 {
   const int head_used = FindModifiedHead(thIP);
   const int reg = FindModifiedRegister(rCX);
-  if (head_used > 1) getHead(head_used - 2).Jump(m_bps[GetCurrBehav()].reg[reg].value);
-  else getThHead(head_used).Jump(m_bps[GetCurrBehav()].reg[reg].value);
+  if (head_used > 1) getHead(head_used - 2).Jump(m_threads[m_cur_thread].reg[reg].value);
+  else getThHead(head_used).Jump(m_threads[m_cur_thread].reg[reg].value);
   if (head_used == thIP) {
     m_advance_ip = false;
     Adjust(getThIP(), thIP);
@@ -2083,9 +2080,7 @@ bool cHardwareMGE::Inst_JumpBehavior(cAvidaContext&)
 bool cHardwareMGE::Inst_JumpThread(cAvidaContext&)
 {
   Advance(getThHead(thIP), thIP);
-
-  m_cur_thread = Apto::Abs(GetRegVal(FindModifiedRegister(rBX))) % m_threads.GetSize();
-
+  m_cur_thread = Apto::UAbs(GetRegVal(FindModifiedRegister(rBX))) % static_cast<unsigned int>(m_threads.GetSize());
   m_cur_behavior = m_threads[m_cur_thread].thread_class;
   for (int i = 0; i < m_bps[m_cur_behavior].bp_thread_ids.GetSize(); i++) {
     if (m_bps[m_cur_behavior].bp_thread_ids[i] == (int) m_cur_thread) {
@@ -2175,8 +2170,8 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == m_cur_thread && m_bps[m_threads[i].thread_class].reg[check_reg].value == m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
-        setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
+      if (!i == m_cur_thread && m_threads[i].reg[check_reg].value == m_threads[m_cur_thread].reg[wait_val_reg].value) {
+        setInternalValue(wait_dst, m_threads[m_cur_thread].reg[check_reg].value, m_threads[m_cur_thread].reg[check_reg]);
         return true;
       }
     }
@@ -2190,7 +2185,7 @@ bool cHardwareMGE::Inst_WaitCondition_Equal(cAvidaContext&)
   m_threads[m_cur_thread].wait_less = false;
   m_threads[m_cur_thread].wait_greater = false;
   m_threads[m_cur_thread].wait_reg = check_reg;
-  m_threads[m_cur_thread].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_val_reg].value;
   m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
@@ -2205,8 +2200,8 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == m_cur_thread && m_bps[m_threads[i].thread_class].reg[check_reg].value < m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
-        setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
+      if (!i == m_cur_thread && m_threads[i].reg[check_reg].value < m_threads[m_cur_thread].reg[wait_val_reg].value) {
+        setInternalValue(wait_dst, m_threads[m_cur_thread].reg[check_reg].value, m_threads[m_cur_thread].reg[check_reg]);
         return true;
       }
     }
@@ -2220,7 +2215,7 @@ bool cHardwareMGE::Inst_WaitCondition_Less(cAvidaContext&)
   m_threads[m_cur_thread].wait_less = true;
   m_threads[m_cur_thread].wait_greater = false;
   m_threads[m_cur_thread].wait_reg = check_reg;
-  m_threads[m_cur_thread].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_val_reg].value;
   m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
@@ -2235,8 +2230,8 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
   // Check if condition has already been met
     for (int i = 0; i < m_threads.GetSize(); i++) {
       // if not current thread in current behavioral process...and not active...and has a wait condition in current reg...
-      if (!i == m_cur_thread && m_bps[m_threads[i].thread_class].reg[check_reg].value > m_bps[GetCurrBehav()].reg[wait_val_reg].value) {
-        setInternalValue(wait_dst, m_bps[GetCurrBehav()].reg[check_reg].value, m_bps[GetCurrBehav()].reg[check_reg]);
+      if (!i == m_cur_thread && m_threads[i].reg[check_reg].value > m_threads[m_cur_thread].reg[wait_val_reg].value) {
+        setInternalValue(wait_dst, m_threads[m_cur_thread].reg[check_reg].value, m_threads[m_cur_thread].reg[check_reg]);
         return true;
       }
     }
@@ -2250,7 +2245,7 @@ bool cHardwareMGE::Inst_WaitCondition_Greater(cAvidaContext&)
   m_threads[m_cur_thread].wait_less = false;
   m_threads[m_cur_thread].wait_greater = true;
   m_threads[m_cur_thread].wait_reg = check_reg;
-  m_threads[m_cur_thread].wait_value = m_bps[GetCurrBehav()].reg[wait_val_reg].value;
+  m_threads[m_cur_thread].wait_value = m_threads[m_cur_thread].reg[wait_val_reg].value;
   m_threads[m_cur_thread].wait_dst = wait_dst;
   
   return true;
@@ -2370,7 +2365,7 @@ bool cHardwareMGE::Inst_RotateX(cAvidaContext&)
   if (num_neighbors == 0) return false;
   
   const int reg_used = FindModifiedRegister(rBX);
-  int rot_num = m_bps[GetCurrBehav()].reg[reg_used].value;
+  int rot_num = m_threads[m_cur_thread].reg[reg_used].value;
   // rotate the nop nuMGEr of times in the appropriate direction
   rot_num < 0 ? rot_dir = -1 : rot_dir = 1;
   rot_num = abs(rot_num);
@@ -2406,7 +2401,7 @@ bool cHardwareMGE::Inst_SenseNest(cAvidaContext& ctx)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   const int reg_used = FindModifiedRegister(rBX);
   
-  int nest_id = m_bps[GetCurrBehav()].reg[reg_used].value;
+  int nest_id = m_threads[m_cur_thread].reg[reg_used].value;
   int nest_val = 0;
   
   // if invalid nop value, return the id of the first nest in the cell with val >= 1
@@ -2454,7 +2449,7 @@ bool cHardwareMGE::Inst_LookAround(cAvidaContext& ctx)
   int id_reg = FindModifiedNextRegister(st_reg);
   int dir_reg = FindModifiedNextRegister(id_reg);
   
-  int search_dir = abs(m_bps[GetCurrBehav()].reg[dir_reg].value) % 3;
+  int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -2510,7 +2505,7 @@ bool cHardwareMGE::Inst_LookAroundFT(cAvidaContext& ctx)
   int id_reg = FindModifiedNextRegister(st_reg);
   int dir_reg = FindModifiedNextRegister(id_reg);
   
-  int search_dir = abs(m_bps[GetCurrBehav()].reg[dir_reg].value) % 3;
+  int search_dir = abs(m_threads[m_cur_thread].reg[dir_reg].value) % 3;
   
   if (m_world->GetConfig().LOOK_DISABLE.Get() == 5) {
     int org_type = m_world->GetConfig().LOOK_DISABLE_TYPE.Get();
@@ -2554,7 +2549,7 @@ bool cHardwareMGE::GoLook(cAvidaContext& ctx, const int look_dir, const int cell
   sLookRegAssign reg_defs;
   reg_defs.habitat = FindModifiedRegister(rBX);
   // fail if the org is trying to sense a nest/hidden habitat
-  int habitat_used = m_bps[GetCurrBehav()].reg[reg_defs.habitat].value;
+  int habitat_used = m_threads[m_cur_thread].reg[reg_defs.habitat].value;
   if (habitat_used == 3) return false;
   reg_defs.distance = FindModifiedNextRegister(reg_defs.habitat);
   reg_defs.search_type = FindModifiedNextRegister(reg_defs.distance);
@@ -2588,10 +2583,10 @@ cOrgSensor::sLookOut cHardwareMGE::InitLooking(cAvidaContext& ctx, sLookRegAssig
   const int id_reg = in_defs.id_sought;
   
   cOrgSensor::sLookInit reg_init;
-  reg_init.habitat = m_bps[GetCurrBehav()].reg[habitat_reg].value;
-  reg_init.distance = m_bps[GetCurrBehav()].reg[distance_reg].value;
-  reg_init.search_type = m_bps[GetCurrBehav()].reg[search_reg].value;
-  reg_init.id_sought = m_bps[GetCurrBehav()].reg[id_reg].value;
+  reg_init.habitat = m_threads[m_cur_thread].reg[habitat_reg].value;
+  reg_init.distance = m_threads[m_cur_thread].reg[distance_reg].value;
+  reg_init.search_type = m_threads[m_cur_thread].reg[search_reg].value;
+  reg_init.id_sought = m_threads[m_cur_thread].reg[id_reg].value;
 
   return m_sensor.SetLooking(ctx, reg_init, facing, cell_id, use_ft);
 }    

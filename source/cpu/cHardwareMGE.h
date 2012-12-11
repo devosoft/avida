@@ -127,6 +127,10 @@ private:
   public:
     cHeadCPU thHeads[NUM_TH_HEADS];
     cCPUMemory thread_mem;
+    sInternalValue reg[NUM_REGISTERS];
+    cLocalStack stack;
+    unsigned char cur_stack;          // 0 = local stack, 1 = global stack.
+
     int mem_id;
     int thread_class;
     int start;
@@ -156,9 +160,6 @@ private:
 
  struct cBehavProc
   {
-    sInternalValue reg[NUM_REGISTERS];
-    cLocalStack stack;
-    unsigned char cur_stack;          // 0 = local stack, 1 = global stack.
     Apto::Array<int> bp_thread_ids;
     int bp_cur_thread;
   };
@@ -290,7 +291,7 @@ public:
   
   // --------  Register Manipulation  --------
   int GetRegVal(int reg_id) const { return GetRegister(reg_id); }
-  int GetRegister(int reg_id) const { return m_bps[GetCurrBehav()].reg[reg_id].value; }
+  int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id].value; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
   
   // --------  Thread Manipulation  --------
@@ -307,7 +308,7 @@ public:
   inline bool SpareThreads() { return (m_threads.GetSize() - (int) m_waiting_threads) > 1; }
 
   // --------  Non-Standard Methods  --------
-  int GetActiveStack() const { return m_bps[GetCurrBehav()].cur_stack; }
+  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
   bool GetMalActive() const   { return m_has_alloc; }
 
 
@@ -567,8 +568,8 @@ inline cHardwareMGE::sInternalValue& cHardwareMGE::sInternalValue::operator=(con
 
 inline cHardwareMGE::sInternalValue cHardwareMGE::stackPop()
 {
-  if (m_bps[GetCurrBehav()].cur_stack == 0) {
-    return m_bps[GetCurrBehav()].stack.Pop();
+  if (m_threads[m_cur_thread].cur_stack == 0) {
+    return m_threads[m_cur_thread].stack.Pop();
   } else {
     return m_global_stack.Pop();
   }
@@ -577,7 +578,7 @@ inline cHardwareMGE::sInternalValue cHardwareMGE::stackPop()
 inline cHardwareMGE::cLocalStack& cHardwareMGE::getStack(int stack_id)
 {
   if (stack_id == 0) {
-    return m_bps[GetCurrBehav()].stack;
+    return m_threads[m_cur_thread].stack;
   } else {
     return m_global_stack;
   }
@@ -585,8 +586,8 @@ inline cHardwareMGE::cLocalStack& cHardwareMGE::getStack(int stack_id)
 
 inline void cHardwareMGE::switchStack()
 {
-  m_bps[GetCurrBehav()].cur_stack++;
-  if (m_bps[GetCurrBehav()].cur_stack > 1) m_bps[GetCurrBehav()].cur_stack = 0;
+  m_threads[m_cur_thread].cur_stack++;
+  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
 }
 
 
@@ -594,9 +595,9 @@ inline int cHardwareMGE::GetStack(int depth, int stack_id, int in_thread) const
 {
   sInternalValue value;
 
-  if (stack_id == -1) stack_id = m_bps[GetCurrBehav()].cur_stack;
+  if (stack_id == -1) stack_id = m_threads[m_cur_thread].cur_stack;
 
-  if (stack_id == 0) value = m_bps[GetCurrBehav()].stack.Get(depth);
+  if (stack_id == 0) value = m_threads[m_cur_thread].stack.Get(depth);
   else if (stack_id == 1) value = m_global_stack.Get(depth);
 
   return value.value;
@@ -604,7 +605,7 @@ inline int cHardwareMGE::GetStack(int depth, int stack_id, int in_thread) const
 
 inline void cHardwareMGE::setInternalValue(int reg_num, int value, bool from_env)
 {
-  sInternalValue& dest = m_bps[GetCurrBehav()].reg[reg_num];
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = from_env;
   dest.originated = m_cycle_count;
@@ -615,7 +616,7 @@ inline void cHardwareMGE::setInternalValue(int reg_num, int value, bool from_env
 
 inline void cHardwareMGE::setInternalValue(int reg_num, int value, const sInternalValue& src)
 {
-  sInternalValue& dest = m_bps[GetCurrBehav()].reg[reg_num];
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;
@@ -626,7 +627,7 @@ inline void cHardwareMGE::setInternalValue(int reg_num, int value, const sIntern
 
 inline void cHardwareMGE::setInternalValue(int reg_num, int value, const sInternalValue& op1, const sInternalValue& op2)
 {
-  sInternalValue& dest = m_bps[GetCurrBehav()].reg[reg_num];
+  sInternalValue& dest = m_threads[m_cur_thread].reg[reg_num];
   dest.value = value;
   dest.from_env = false;
   dest.originated = m_cycle_count;

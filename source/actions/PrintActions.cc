@@ -3872,6 +3872,103 @@ public:
   }
 };
 
+class cActionDumpHostTaskGridComma : public cAction
+{
+private:
+  cString m_filename;
+
+public:
+  cActionDumpHostTaskGridComma(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_task_hosts_comma.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    cPopulation* pop = &m_world->GetPopulation();
+  
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        cString task_list = "";
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          cPhenotype& test_phenotype = organism->GetPhenotype();
+          
+          for (int k = 0; k < num_tasks; k++) {
+            cString task_count_string = cStringUtil::Stringf("%d", test_phenotype.GetLastHostTaskCount()[k]);
+            task_list += task_count_string;
+            if (k != num_tasks -1)
+              task_list += ",";            
+          }
+        }
+        else { task_list = "-1"; }
+        fp << task_list << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionDumpParasiteTaskGridComma : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpParasiteTaskGridComma(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_task_parasites_comma.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        cString task_list = "";
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          if(organism->GetNumParasites() > 0)
+          {
+            cPhenotype& test_phenotype = organism->GetPhenotype();
+          
+            for (int k = 0; k < num_tasks; k++) {
+              cString task_count_string = cStringUtil::Stringf("%d", test_phenotype.GetLastParasiteTaskCount()[k]);
+              task_list += task_count_string;
+              if (k != num_tasks -1)
+                task_list += ",";
+            }
+          }
+          else { task_list = "-1"; }
+        }
+        else { task_list = "-1"; }
+        fp << task_list << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 
 //LZ - dump the parasite virulence grid
 class cActionDumpParasiteVirulenceGrid : public cAction
@@ -5154,6 +5251,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
   action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
   action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
+  action_lib->Register<cActionDumpHostTaskGridComma>("DumpHostTaskGridComma");
+  action_lib->Register<cActionDumpParasiteTaskGridComma>("DumpParasiteTaskGridComma");
   action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
   action_lib->Register<cActionDumpOffspringMigrationCounts>("DumpOffspringMigrationCounts"); 
   action_lib->Register<cActionDumpParasiteMigrationCounts>("DumpParasiteMigrationCounts"); 
