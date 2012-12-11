@@ -132,7 +132,7 @@ namespace Avida {
       GenomePtr m_offspring_genome;
       
     public:
-      LIB_EXPORT OrganismTrace(cWorld* world, GenomePtr genome, double mut_rate = 0.0);
+      LIB_EXPORT OrganismTrace(cWorld* world, GenomePtr genome, double mut_rate = 0.0, int seed = -1);
       LIB_EXPORT ~OrganismTrace();
       
       LIB_EXPORT inline ConstGenomePtr OrganismGenome() const { return m_genome; }
