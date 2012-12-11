@@ -39,6 +39,25 @@
   mutRate = 0.0;
   [sldMutRate setFloatValue:sldMutRate.minValue];
   [txtMutRate setFloatValue:mutRate];
+  [matRepeatability selectCellWithTag:0];
+  
+  for (int i = 0; i < 2; i++) {
+    NSButtonCell* cell = [matRepeatability cellWithTag:i];
+    NSMutableAttributedString *attrTitle = [[NSMutableAttributedString alloc] initWithAttributedString:[cell attributedTitle]];
+    unsigned long len = [attrTitle length];
+    NSRange range = NSMakeRange(0, len);
+    [attrTitle addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:range];
+    [attrTitle fixAttributesInRange:range];
+    [cell setAttributedTitle:attrTitle];
+  }
+}
+
+- (IBAction) changeRandomSeed:(id)sender {
+  if ([[matRepeatability selectedCell] tag] == 0) {
+    randomSeed = -1;
+  } else {
+    randomSeed = 100;
+  }
 }
 
 - (IBAction) changeMutRate:(id)sender {
@@ -67,6 +86,7 @@
 
 
 @synthesize mutRate;
+@synthesize randomSeed;
 @synthesize delegate;
 
 @end

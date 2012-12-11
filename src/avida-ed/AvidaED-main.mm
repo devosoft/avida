@@ -29,7 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#impore <AvidaCore/AvidaCore.h>
+#import <AvidaCore/AvidaCore.h>
 
 
 int main(int argc, char *argv[])

@@ -129,6 +129,14 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
   
   for (NSUInteger i = 0; i < [envActions entryCount]; i++) {
     NSString* entry_name = [envActions entryAtIndex:i];
+    if ([entry_name isEqual:@"oro"]) {
+      entry_name = @"or";
+    } else if ([entry_name isEqual:@"ant"]) {
+      entry_name = @"andn";
+    } else if ([entry_name isEqual:@"nan"]) {
+      entry_name = @"nand";
+    }
+
     [envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:snapshot.FunctionCount([entry_name UTF8String])]];
   }
   [tblTaskCounts reloadData];
@@ -377,6 +385,13 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
   for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next();) {
     Avida::Environment::ConstActionTriggerPtr action = env->GetActionTrigger(*it.Get());
     NSString* entryName = [NSString stringWithAptoString:action->GetID()];
+    if (action->GetID() == "or") {
+      entryName = @"oro";
+    } else if (action->GetID() == "andn") {
+      entryName = @"ant";
+    } else if (action->GetID() == "nand") {
+      entryName = @"nan";
+    }
     NSString* entryDesc = [NSString stringWithAptoString:action->GetDescription()];
     [envActions addNewEntry:entryName withDescription:entryDesc withOrder:action->TempOrdering()];
   }
@@ -502,7 +517,7 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name {
   // Trace genome
-  trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([testWorld oldworld], genome, ctlrSettings.mutRate));
+  trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([testWorld oldworld], genome, ctlrSettings.mutRate, ctlrSettings.randomSeed));
   
   [txtOrgName setStringValue:name];
   [txtOrgName setEnabled:YES];

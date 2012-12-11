@@ -30,7 +30,6 @@
 		7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
 		703549A91337A4B100D3865C /* AvidaED-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A61337A4B100D3865C /* AvidaED-MainWindow.xib */; };
 		703549AB1337A4B100D3865C /* AvidaED-MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A81337A4B100D3865C /* AvidaED-MainMenu.xib */; };
-		703549B01337AD0500D3865C /* AvidaMainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549AF1337AD0500D3865C /* AvidaMainWindowController.mm */; };
 		703549B31337AD1600D3865C /* AvidaEDController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549B21337AD1600D3865C /* AvidaEDController.mm */; };
 		703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 703549B81337AD2600D3865C /* SubtleSplitView.m */; };
 		703549C21337AD4300D3865C /* AvidaRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BD1337AD4300D3865C /* AvidaRun.mm */; };
@@ -66,6 +65,7 @@
 		70A420CA15E6B97E002B2218 /* trash_can.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A420C915E6B97E002B2218 /* trash_can.png */; };
 		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
 		70A5E00B15221E9800FA2D73 /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70E09DD7150AAC5400154C00 /* CorePlot.framework */; };
+		70A671881677A1BB0087D2FC /* AvidaMainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549AF1337AD0500D3865C /* AvidaMainWindowController.mm */; };
 		70C2DB8615824EBA004B2423 /* AnaViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8315824EBA004B2423 /* AnaViewerIcon.png */; };
 		70C2DB8715824EBA004B2423 /* OrgViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8415824EBA004B2423 /* OrgViewerIcon.png */; };
 		70C2DB8815824EBA004B2423 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
@@ -636,7 +636,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				703549B01337AD0500D3865C /* AvidaMainWindowController.mm in Sources */,
 				703549B31337AD1600D3865C /* AvidaEDController.mm in Sources */,
 				703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */,
 				703549C21337AD4300D3865C /* AvidaRun.mm in Sources */,
@@ -680,6 +679,7 @@
 				70FA3F7C164422750003971F /* Avida-main.mm in Sources */,
 				70FA3F7D164422750003971F /* AvidaAppDelegate.mm in Sources */,
 				70C99135167299B5004823A2 /* AvidaWorkspaceSelectWindowController.m in Sources */,
+				70A671881677A1BB0087D2FC /* AvidaMainWindowController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -454,6 +454,13 @@ static const int MAX_GRAPH_POINTS = 1000;
   for (Avida::Environment::ConstActionTriggerIDSetIterator it = trigger_ids->Begin(); it.Next();) {
     Avida::Environment::ConstActionTriggerPtr action = env->GetActionTrigger(*it.Get());
     NSString* entryName = [NSString stringWithAptoString:action->GetID()];
+    if (action->GetID() == "or") {
+      entryName = @"oro";
+    } else if (action->GetID() == "andn") {
+      entryName = @"ant";
+    } else if (action->GetID() == "nand") {
+      entryName = @"nan";
+    }
     NSString* entryDesc = [NSString stringWithAptoString:action->GetDescription()];
     [envActions addNewEntry:entryName withDescription:entryDesc withOrder:action->TempOrdering()];
     [orgEnvActions addNewEntry:entryName withDescription:entryDesc withOrder:action->TempOrdering()];
@@ -658,6 +665,13 @@ static const int MAX_GRAPH_POINTS = 1000;
 //    double count = genotype->Properties().Get(data_id);
 //    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
     NSString* entry_name = [orgEnvActions entryAtIndex:i];
+    if ([entry_name isEqual:@"oro"]) {
+      entry_name = @"or";
+    } else if ([entry_name isEqual:@"ant"]) {
+      entry_name = @"andn";
+    } else if ([entry_name isEqual:@"nan"]) {
+      entry_name = @"nand";
+    }
     int count = [run testEnvironmentTriggerCountFor:entry_name ofGroup:genotype];
     [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
   }

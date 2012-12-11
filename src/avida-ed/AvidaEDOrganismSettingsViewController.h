@@ -32,7 +32,9 @@
 @interface AvidaEDOrganismSettingsViewController : NSViewController {
   IBOutlet NSSlider* sldMutRate;
   IBOutlet NSTextField* txtMutRate;
+  IBOutlet NSMatrix* matRepeatability;
   double mutRate;
+  int randomSeed;
   
   IBOutlet id delegate;
 }
@@ -42,6 +44,7 @@
 - (IBAction) changeMutRate:(id)sender;
 
 @property (readonly, nonatomic) double mutRate;
+@property (readonly, nonatomic) int randomSeed;
 @property (readwrite) id delegate;
 
 @end
