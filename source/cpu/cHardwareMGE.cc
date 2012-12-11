@@ -364,7 +364,12 @@ void cHardwareMGE::cBehavThread::Reset(cHardwareMGE* in_hardware, int in_id)
   mem_id = in_id;
   for (int i = 0; i < NUM_TH_HEADS; i++) thHeads[i].Reset(in_hardware, mem_id); 
   active = true;
-  next_label.Clear();  
+  next_label.Clear();
+  
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i].Clear();
+  stack.Clear();
+  cur_stack = 0;
+  
 }
 
 // This function processes the very next command in the genome, and is made
@@ -449,7 +454,7 @@ bool cHardwareMGE::SingleProcess(cAvidaContext& ctx, bool speculative)
       }   // all genes of this class already checked
       continue;
     }
-//    cout << m_waiting_threads << " org: " << m_organism->GetID() << " thread: " << m_cur_thread << " mem_space: " << ip.GetMemSpace() << " ip_position: " << ip.GetPosition() << " thread_end: " << m_threads[m_cur_thread].end << " thread_size: " << ip.GetMemSize() << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  endl;
+//    if (m_organism->GetID() == 0) cout << " org: " << m_organism->GetID() << " thread: " << m_cur_thread << " mem_space: " << ip.GetMemSpace() << " ip_position: " << ip.GetPosition() << " thread_end: " << m_threads[m_cur_thread].end << " thread_size: " << ip.GetMemSize() << " inst: " << m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetName() <<  endl;
 
     // And proceed with standard execution...
     
