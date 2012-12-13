@@ -5781,16 +5781,13 @@ bool cHardwareExperimental::Inst_FightOrg(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  if (!TestAttack(ctx)) return false;
+  if (!TestAttackPred(ctx)) return false;
 
   cOrganism* target = NULL;
-  if (!m_use_avatar) { 
-    target = m_organism->GetOrgInterface().GetNeighbor();
-  }
-  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPreyAV();
+  if (!m_use_avatar) target = m_organism->GetOrgInterface().GetNeighbor();
+  else if (m_use_avatar == 2) target = m_organism->GetOrgInterface().GetRandFacedPredAV();
 
   if (target->GetForageTarget() > -2 || m_organism->GetForageTarget() > -2) return false;
-
   if (target->IsDead()) return false;  
   
   const int success_reg = FindModifiedRegister(rBX);   
@@ -5840,7 +5837,7 @@ bool cHardwareExperimental::Inst_AttackPred(cAvidaContext& ctx)
   return true;
 } 
 
-//Attack organism faced by this one if you are both predators. 
+//Attack organism faced by this one if you are both predators.
 bool cHardwareExperimental::Inst_KillPred(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -6639,5 +6636,17 @@ bool cHardwareExperimental::TestAttack(cAvidaContext& ctx)
     else if (m_use_avatar == 2 && m_organism->GetOrgInterface().GetAVFacedResourceVal(ctx, i) > 0) return false;
     }
   }
+  return true;
+}
+
+bool cHardwareExperimental::TestAttackPred(cAvidaContext& ctx)
+{
+  if (m_use_avatar && m_use_avatar != 2) return false;
+  
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
+  
+  if (!m_use_avatar && !m_organism->IsNeighborCellOccupied()) return false;
+  else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPredAV()) return false;
+  
   return true;
 }

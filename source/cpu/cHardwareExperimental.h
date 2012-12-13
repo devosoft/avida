@@ -693,6 +693,7 @@ public:
   void MakePred(cAvidaContext& ctx);
   void MakeTopPred(cAvidaContext& ctx);
   bool TestAttack(cAvidaContext& ctx);
+  bool TestAttackPred(cAvidaContext& ctx);
 };
 
 
