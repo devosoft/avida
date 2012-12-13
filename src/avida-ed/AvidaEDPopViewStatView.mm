@@ -665,6 +665,7 @@ static const int MAX_GRAPH_POINTS = 1000;
 //    double count = genotype->Properties().Get(data_id);
 //    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:round(count)]];
     NSString* entry_name = [orgEnvActions entryAtIndex:i];
+    NSString* local_name = entry_name;
     if ([entry_name isEqual:@"oro"]) {
       entry_name = @"or";
     } else if ([entry_name isEqual:@"ant"]) {
@@ -673,7 +674,7 @@ static const int MAX_GRAPH_POINTS = 1000;
       entry_name = @"nand";
     }
     int count = [run testEnvironmentTriggerCountFor:entry_name ofGroup:genotype];
-    [orgEnvActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
+    [orgEnvActions updateEntry:local_name withValue:[NSNumber numberWithInt:count]];
   }
   [tblOrgEnvActions reloadData];
   
@@ -765,7 +766,15 @@ Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::RequestedData() con
     
     for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
       Apto::String data_id("core.environment.triggers.");
-      data_id += [[m_view.envActions entryAtIndex:i] UTF8String];
+      NSString* entry_name = [m_view.envActions entryAtIndex:i];
+      if ([entry_name isEqual:@"oro"]) {
+        entry_name = @"or";
+      } else if ([entry_name isEqual:@"ant"]) {
+        entry_name = @"andn";
+      } else if ([entry_name isEqual:@"nan"]) {
+        entry_name = @"nand";
+      }
+      data_id += [entry_name UTF8String];
       data_id += ".test_organisms";
       ds->Insert(data_id);
     }
@@ -788,11 +797,19 @@ void AvidaEDPopViewStatViewRecorder::NotifyData(Avida::Update, Avida::Data::Data
 
     for (NSUInteger i = 0; i < [m_view.envActions entryCount]; i++) {
       NSString* entry_name = [m_view.envActions entryAtIndex:i];
+      NSString* local_name = entry_name;
+      if ([entry_name isEqual:@"oro"]) {
+        entry_name = @"or";
+      } else if ([entry_name isEqual:@"ant"]) {
+        entry_name = @"andn";
+      } else if ([entry_name isEqual:@"nan"]) {
+        entry_name = @"nand";
+      }
       Apto::String data_id("core.environment.triggers.");
       data_id += [entry_name UTF8String];
       data_id += ".test_organisms";
       int count = retrieve_data(data_id)->IntValue();
-      [m_view.envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:count]];
+      [m_view.envActions updateEntry:local_name withValue:[NSNumber numberWithInt:count]];
     }
 
     [m_view performSelectorOnMainThread:@selector(handleData:) withObject:values waitUntilDone:NO];

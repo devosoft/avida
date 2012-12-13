@@ -1661,6 +1661,13 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
   while ((key = [enumerator nextObject])) {
     if ([[newState objectForKey:key] unsignedIntValue] == NSOnState) {
       if (enabled_actions.GetSize()) enabled_actions += ",";
+      if ([key isEqual:@"oro"]) {
+        key = @"or";
+      } else if ([key isEqual:@"ant"]) {
+        key = @"andn";
+      } else if ([key isEqual:@"nan"]) {
+        key = @"nand";
+      }
       enabled_actions += [key UTF8String];
     }
   }
