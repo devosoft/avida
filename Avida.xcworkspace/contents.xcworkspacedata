@@ -15,10 +15,16 @@
       location = "container:"
       name = "Libraries">
       <FileRef
+         location = "group:apps/viewer-macos/frameworks/AvidaCore-ObjC/AvidaCore-ObjC.xcodeproj">
+      </FileRef>
+      <FileRef
          location = "group:libs/apto/Apto.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:apps/viewer-macos/frameworks/CorePlot/CorePlot.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:apps/viewer-macos/frameworks/CorePlot/CorePlot-CocoaTouch.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:libs/tcmalloc-1.4/TCMalloc-1.4.xcodeproj">
