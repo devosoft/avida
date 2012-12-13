@@ -765,11 +765,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   }
   
   // decremenet if the instruction was not executed successfully
-  if (exec_success == false) {
-    m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
-    m_organism->GetPhenotype().IncCurFailedInstCount(actual_inst.GetOp());
-  }
-  
+  if (exec_success == false) m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   return exec_success;
 }
 
@@ -6595,7 +6591,7 @@ void cHardwareExperimental::InjureOrg(cOrganism* target)
 void cHardwareExperimental::MakePred(cAvidaContext& ctx)
 {
   if (m_organism->GetForageTarget() > -2) {
-    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
@@ -6608,7 +6604,7 @@ void cHardwareExperimental::MakePred(cAvidaContext& ctx)
 void cHardwareExperimental::MakeTopPred(cAvidaContext& ctx)
 {
   if (m_organism->GetForageTarget() > -2) {
-    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
+    if (m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_organism->GetOrgInterface().KillRandPred(ctx, m_organism);
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();

@@ -5639,38 +5639,6 @@ public:
   }
 };
 
-class cActionSetPopCapEnforcement : public cAction
-{
-private:
-  cString m_cap;
-  int m_rate;
-public:
-  cActionSetPopCapEnforcement(cWorld* world, const cString& args, Feedback& feedback)
-  : cAction(world, args), m_cap("0"), m_rate(1)
-  {
-    cArgSchema schema(':','=');
-    
-    // Entries
-    schema.AddEntry("cap", 0, "0");
-    schema.AddEntry("rate", 0, 1);
-
-    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
-    
-    if (args) {
-      m_cap = argc->GetString(0);
-      m_rate = argc->GetInt(0);
-    }
-  }
-  
-  static const cString GetDescription() { return "Arguments: [int cap=0] [int rate=1]"; }
-
-  void Process(cAvidaContext& ctx)
-  { 
-    m_world->GetPopulation().SetPopCapEnforcement(m_rate);
-    m_world->GetConfig().Set("POPULATION_CAP", m_cap);
-  }
-};
-
 /*
  Modifies an instruction's redundancy during a run 
  Parameters:
@@ -5831,5 +5799,4 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionFlushTopNavTrace>("FlushTopNavTrace");
 
   action_lib->Register<cActionRemovePredators>("RemovePredators");
-  action_lib->Register<cActionSetPopCapEnforcement>("SetPopCapEnforcement");
 }

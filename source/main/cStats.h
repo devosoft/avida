@@ -168,13 +168,15 @@ private:
   tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
   tArray<pair<int,int> > m_is_tolerance_exe_counts;
   tSmartArray<s_inst_circumstances> m_is_tolerance_exe_insts;
-  tSmartArray<sDonateSpecificCircumstances> m_donate_specific; 
+  tSmartArray<sDonateSpecificCircumstances> m_donate_specific;
+  
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_tpred_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_prey_from_sensor_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_from_sensor_inst_map;
-  tArrayMap<cString, tArray<cIntSum> > m_is_prey_fail_exe_inst_map;
-  tArrayMap<cString, tArray<cIntSum> > m_is_pred_fail_exe_inst_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_tpred_from_sensor_inst_map;
+  
   tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_female_exe_inst_map;
   
@@ -402,8 +404,16 @@ private:
   cDoubleSum sum_pred_generation;  
   cDoubleSum sum_pred_size;
 
+  cDoubleSum sum_tpred_fitness;
+  cDoubleSum sum_tpred_gestation;
+  cDoubleSum sum_tpred_merit;
+  cDoubleSum sum_tpred_creature_age;
+  cDoubleSum sum_tpred_generation;
+  cDoubleSum sum_tpred_size;
+
   double prey_entropy;
   double pred_entropy;
+  double tpred_entropy;
 
   // --------  Mating type (male/female) Stats  ---------
   cDoubleSum sum_male_fitness;
@@ -533,6 +543,7 @@ public:
   void SetEntropy(double in_entropy) { entropy = in_entropy; }
   void SetPreyEntropy(double in_prey_entropy) { prey_entropy = in_prey_entropy; }
   void SetPredEntropy(double in_pred_entropy) { pred_entropy = in_pred_entropy; }
+  void SetTopPredEntropy(double in_tpred_entropy) { tpred_entropy = in_tpred_entropy; }
   
   void SetSpeciesEntropy(double in_ent) { species_entropy = in_ent; }
 
@@ -590,7 +601,6 @@ public:
   cDoubleSum& SumPreySize()          { return sum_prey_size; }
   tArray<cIntSum>& InstPreyExeCountsForInstSet(const cString& inst_set) { return m_is_prey_exe_inst_map[inst_set]; }
   tArray<cIntSum>& InstPreyFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_prey_from_sensor_inst_map[inst_set]; }
-  tArray<cIntSum>& InstPreyFailedExeCountsForInstSet(const cString& inst_set) { return m_is_prey_fail_exe_inst_map[inst_set]; }
 
   cDoubleSum& SumPredFitness()       { return sum_pred_fitness; }
   cDoubleSum& SumPredGestation()     { return sum_pred_gestation; }
@@ -600,7 +610,16 @@ public:
   cDoubleSum& SumPredSize()          { return sum_pred_size; }
   tArray<cIntSum>& InstPredExeCountsForInstSet(const cString& inst_set) { return m_is_pred_exe_inst_map[inst_set]; }
   tArray<cIntSum>& InstPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_pred_from_sensor_inst_map[inst_set]; }
-  tArray<cIntSum>& InstPredFailedExeCountsForInstSet(const cString& inst_set) { return m_is_pred_fail_exe_inst_map[inst_set]; }
+
+  cDoubleSum& SumTopPredFitness()       { return sum_tpred_fitness; }
+  cDoubleSum& SumTopPredGestation()     { return sum_tpred_gestation; }
+  cDoubleSum& SumTopPredMerit()         { return sum_tpred_merit; }
+  cDoubleSum& SumTopPredCreatureAge()   { return sum_tpred_creature_age; }
+  cDoubleSum& SumTopPredGeneration()    { return sum_tpred_generation; }
+  cDoubleSum& SumTopPredSize()          { return sum_tpred_size; }
+  tArray<cIntSum>& InstTopPredExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_exe_inst_map[inst_set]; }
+  tArray<cIntSum>& InstTopPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_from_sensor_inst_map[inst_set]; }
+
   void ZeroFTInst();
   
   //mating type/male-female accessors
@@ -686,6 +705,13 @@ public:
   const cDoubleSum& SumPredCreatureAge() const   { return sum_pred_creature_age; }
   const cDoubleSum& SumPredGeneration() const    { return sum_pred_generation; }  
   const cDoubleSum& SumPredSize() const          { return sum_pred_size; }
+
+  const cDoubleSum& SumTopPredFitness() const       { return sum_tpred_fitness; }
+  const cDoubleSum& SumTopPredGestation() const     { return sum_tpred_gestation; }
+  const cDoubleSum& SumTopPredMerit() const         { return sum_tpred_merit; }
+  const cDoubleSum& SumTopPredCreatureAge() const   { return sum_tpred_creature_age; }
+  const cDoubleSum& SumTopPredGeneration() const    { return sum_tpred_generation; }
+  const cDoubleSum& SumTopPredSize() const          { return sum_tpred_size; }
 
   const std::map<int, flow_rate_tuple >&  FlowRateTuples() const { return flow_rate_tuples; }
 
@@ -899,6 +925,8 @@ public:
   // Pred-Prey
   int GetNumPreyCreatures() const;
   int GetNumPredCreatures() const;
+  int GetNumTopPredCreatures() const;
+  int GetNumTotalPredCreatures() const;
   
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -917,18 +945,23 @@ public:
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
   void PrintParasiteData(const cString& filename);
+  
   void PrintPreyAverageData(const cString& filename);
   void PrintPredatorAverageData(const cString& filename);
+  void PrintTopPredatorAverageData(const cString& filename);
   void PrintPreyErrorData(const cString& filename);
   void PrintPredatorErrorData(const cString& filename);
+  void PrintTopPredatorErrorData(const cString& filename);
   void PrintPreyVarianceData(const cString& filename);
   void PrintPredatorVarianceData(const cString& filename);
+  void PrintTopPredatorVarianceData(const cString& filename);
   void PrintPreyInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintTopPredatorInstructionData(const cString& filename, const cString& inst_set);
   void PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
-  void PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set);
-  void PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set);
+  void PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
+
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);
@@ -971,6 +1004,7 @@ public:
   void PrintGroupsFormedData(const cString& filename);
   void PrintGroupIds(const cString& filename);
   void PrintTargets(const cString& filename);
+  void PrintTopPredTargets(const cString& filename);
   void PrintGroupTolerance(const cString& filename); 
   void PrintGroupMTTolerance(const cString& filename); 
   void PrintToleranceInstructionData(const cString& filename); 

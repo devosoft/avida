@@ -1323,13 +1323,32 @@ void cOrganism::SetForageTarget(cAvidaContext& ctx, int forage_target) {
   if (forage_target > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
   // if using avatars, make sure you swap avatar lists if the org type changes!
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    if (forage_target <= -2 && m_forage_target > -2) {
+    // change to pred
+    if (forage_target == -2 && m_forage_target > -2) {
       m_interface->DecNumPreyOrganisms();
       m_interface->IncNumPredOrganisms();
     }
-    else if (forage_target > -2 && m_forage_target <= -2) {
+    else if (forage_target == -2 && m_forage_target < -2) {
+      m_interface->DecNumTopPredOrganisms();
+      m_interface->IncNumPredOrganisms();
+    }
+    // change to top pred
+    else if (forage_target < -2 && m_forage_target > -2) {
+      m_interface->DecNumPreyOrganisms();
+      m_interface->IncNumTopPredOrganisms();
+    }
+    else if (forage_target < -2 && m_forage_target == -2) {
+      m_interface->DecNumPredOrganisms();
+      m_interface->IncNumTopPredOrganisms();
+    }
+    // change to prey
+    else if (forage_target > -2 && m_forage_target == -2) {
       m_interface->IncNumPreyOrganisms();
       m_interface->DecNumPredOrganisms();
+    }
+    else if (forage_target > -2 && m_forage_target < -2) {
+      m_interface->IncNumPreyOrganisms();
+      m_interface->DecNumTopPredOrganisms();
     }
   }
   m_forage_target = forage_target;
@@ -1345,7 +1364,7 @@ void cOrganism::CopyParentFT(cAvidaContext& ctx) {
     }
   }
   if (copy_ft) {
-    if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
+    if (m_parent_ft <= -2 && m_world->GetConfig().MAX_PRED.Get() && m_world->GetStats().GetNumTotalPredCreatures() >= m_world->GetConfig().MAX_PRED.Get()) m_interface->KillRandPred(ctx, this);
     else if (m_parent_ft > -2 && m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get()) m_interface->KillRandPrey(ctx, this);
     SetForageTarget(ctx, m_parent_ft);
   }

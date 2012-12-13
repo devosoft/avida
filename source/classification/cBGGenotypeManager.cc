@@ -98,11 +98,13 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   if(m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     stats.SumPreySize().Clear();
     stats.SumPredSize().Clear();
+    stats.SumTopPredSize().Clear();
   }
   
   double entropy = 0.0;
   double prey_entropy = 0.0;
   double pred_entropy = 0.0;
+  double tpred_entropy = 0.0;
   int active_count = 0;
   for (int i = 1; i < m_active_sz.GetSize(); i++) {
     active_count += m_active_sz[i].GetSize();
@@ -120,7 +122,8 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
       
       if(m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
         if (bg->GetLastForagerType() >-2) stats.SumPreySize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
-        else stats.SumPredSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+        else if (bg->GetLastForagerType() == -2) stats.SumPredSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
+        else stats.SumTopPredSize().Add(bg->GetGenome().GetSequence().GetSize(), abundance);
       }      
       
       // Calculate this genotype's contribution to entropy
@@ -137,10 +140,15 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
           const double prey_partial_ent = (abundance == stats.GetNumPreyCreatures()) ? 0.0 : -(prey_p * Log(prey_p)); 
           prey_entropy += prey_partial_ent;
         }
-        else {
+        else if (bg->GetLastForagerType() == -2) {
           const double pred_p = ((double) abundance) / (double) stats.GetNumPredCreatures();
           const double pred_partial_ent = (abundance == stats.GetNumPredCreatures()) ? 0.0 : -(pred_p * Log(pred_p)); 
           pred_entropy += pred_partial_ent;
+        }
+        else {
+          const double tpred_p = ((double) abundance) / (double) stats.GetNumTopPredCreatures();
+          const double tpred_partial_ent = (abundance == stats.GetNumTopPredCreatures()) ? 0.0 : -(tpred_p * Log(tpred_p));
+          tpred_entropy += tpred_partial_ent;
         }
       }
       
@@ -155,6 +163,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     stats.SetPreyEntropy(prey_entropy);
     stats.SetPredEntropy(pred_entropy);
+    stats.SetTopPredEntropy(tpred_entropy);
   }
     
   // Handle dominant genotype stats

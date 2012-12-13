@@ -96,7 +96,7 @@ cPopulation::cPopulation(cWorld* world)
 , num_organisms(0)
 , num_prey_organisms(0)
 , num_pred_organisms(0)
-, pop_enforce(0)
+, num_top_pred_organisms(0)
 , m_has_predatory_res(false)
 , sync_events(false)
 , m_hgt_resid(-1)
@@ -337,7 +337,6 @@ cPopulation::cPopulation(cWorld* world)
   if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
     m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
-  min_prey_failures.Resize(0);
 }
 
 bool cPopulation::InitiatePop(cUserFeedback* feedback)
@@ -994,6 +993,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
+    else if (in_organism->GetForageTarget() < -2) num_top_pred_organisms++;
     else num_pred_organisms++;
   }
   if (deme_array.GetSize() > 0) {
@@ -1795,8 +1795,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
     organism->GetOrgInterface().RemoveAllAV();
   }
 
-  bool is_prey = true;
-  if (organism->GetForageTarget() <= -2) is_prey = false;
+  const int ft = organism->GetForageTarget();
   
   RemoveLiveOrg(organism); 
   UpdateQs(organism, false);
@@ -1833,8 +1832,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Update count statistics...
   num_organisms--;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    if (is_prey) num_prey_organisms--;
-    else num_pred_organisms--;
+    if (ft > -2) num_prey_organisms--;
+    else if (ft == -2) num_pred_organisms--;
+    else num_top_pred_organisms--;
   }
 
   // Handle deme updates.
@@ -4676,7 +4676,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
   if (pop_cap > 0 && num_organisms >= pop_cap) {
     int num_kills = 1;
-    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
+//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       int target = m_world->GetRandom().GetUInt(live_org_list.GetSize());
@@ -4695,7 +4695,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
   if (pop_eldest > 0 && num_organisms >= pop_eldest) {
     int num_kills = 1;
-    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
+//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       double max_age = 0.0;
@@ -5532,6 +5532,12 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
   stats.SumPredCreatureAge().Clear();
   stats.SumPredGeneration().Clear();
   
+  stats.SumTopPredFitness().Clear();
+  stats.SumTopPredGestation().Clear();
+  stats.SumTopPredMerit().Clear();
+  stats.SumTopPredCreatureAge().Clear();
+  stats.SumTopPredGeneration().Clear();
+
   //  stats.ZeroFTReactions();   ****
   
   stats.ZeroFTInst();
@@ -5542,7 +5548,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
     
-    if(organism->GetForageTarget() > -2) {
+    if (organism->GetForageTarget() > -2) {
       stats.SumPreyFitness().Add(cur_fitness);
       stats.SumPreyGestation().Add(phenotype.GetGestationTime());
       stats.SumPreyMerit().Add(cur_merit.GetDouble());
@@ -5557,12 +5563,8 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
         prey_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
-      tArray<cIntSum>& prey_inst_fail_exe_counts = stats.InstPreyFailedExeCountsForInstSet(organism->GetGenome().GetInstSet());
-      for (int j = 0; j < phenotype.GetLastFailedInstCount().GetSize(); j++) {
-        prey_inst_fail_exe_counts[j].Add(organism->GetPhenotype().GetLastFailedInstCount()[j]);
-      }
     }
-    else {
+    else if (organism->GetForageTarget() == -2) {
       stats.SumPredFitness().Add(cur_fitness);
       stats.SumPredGestation().Add(phenotype.GetGestationTime());
       stats.SumPredMerit().Add(cur_merit.GetDouble());
@@ -5577,9 +5579,21 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
         pred_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
-      tArray<cIntSum>& pred_inst_fail_exe_counts = stats.InstPredFailedExeCountsForInstSet(organism->GetGenome().GetInstSet());
-      for (int j = 0; j < phenotype.GetLastFailedInstCount().GetSize(); j++) {
-        pred_inst_fail_exe_counts[j].Add(organism->GetPhenotype().GetLastFailedInstCount()[j]);
+    }
+    else {
+      stats.SumTopPredFitness().Add(cur_fitness);
+      stats.SumTopPredGestation().Add(phenotype.GetGestationTime());
+      stats.SumTopPredMerit().Add(cur_merit.GetDouble());
+      stats.SumTopPredCreatureAge().Add(phenotype.GetAge());
+      stats.SumTopPredGeneration().Add(phenotype.GetGeneration());
+      
+      tArray<cIntSum>& tpred_inst_exe_counts = stats.InstTopPredExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        tpred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+      tArray<cIntSum>& tpred_from_sensor_exec_counts = stats.InstTopPredFromSensorExeCountsForInstSet(organism->GetGenome().GetInstSet());
+      for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
+        tpred_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
     }
     

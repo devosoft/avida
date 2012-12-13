@@ -100,8 +100,7 @@ private:
   int num_organisms;                   // Cell count with living organisms
   int num_prey_organisms;
   int num_pred_organisms;
-  int pop_enforce;
-  tArray<int> min_prey_failures;
+  int num_top_pred_organisms;
   bool m_has_predatory_res;
   
   tArray<cDeme> deme_array;            // Deme structure of the population.
@@ -146,8 +145,6 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 
-  
-  void SetPopCapEnforcement(int rate) { pop_enforce = rate; }
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
@@ -315,13 +312,17 @@ public:
 
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
-
   int GetNumPreyOrganisms() { return num_prey_organisms; }
   int GetNumPredOrganisms() { return num_pred_organisms; }
+  int GetNumTopPredOrganisms() { return num_top_pred_organisms; }
+
   void DecNumPreyOrganisms() { num_prey_organisms--; }
   void DecNumPredOrganisms() { num_pred_organisms--; }
+  void DecNumTopPredOrganisms() { num_top_pred_organisms--; }
+
   void IncNumPreyOrganisms() { num_prey_organisms++; }
   void IncNumPredOrganisms() { num_pred_organisms++; }
+  void IncNumTopPredOrganisms() { num_top_pred_organisms++; }
   
   void RemovePredators(cAvidaContext& ctx);
   void InjectPreyClone(cAvidaContext& ctx, cOrganism* org_to_clone);

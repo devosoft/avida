@@ -155,8 +155,6 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
   m_world->GetStats().InstPredExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPreyFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
-  m_world->GetStats().InstPreyFailedExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
-  m_world->GetStats().InstPredFailedExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstMaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstFemaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   

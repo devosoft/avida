@@ -110,10 +110,13 @@ STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
 STATS_OUT_FILE(PrintPreyAverageData,        prey_average.dat   );
 STATS_OUT_FILE(PrintPredatorAverageData,    predator_average.dat   );
+STATS_OUT_FILE(PrintTopPredatorAverageData,    top_pred_average.dat   );
 STATS_OUT_FILE(PrintPreyErrorData,          prey_error.dat   );
 STATS_OUT_FILE(PrintPredatorErrorData,      predator_error.dat   );
+STATS_OUT_FILE(PrintTopPredatorErrorData,      top_pred_error.dat   );
 STATS_OUT_FILE(PrintPreyVarianceData,       prey_variance.dat   );
 STATS_OUT_FILE(PrintPredatorVarianceData,   predator_variance.dat   );
+STATS_OUT_FILE(PrintTopPredatorVarianceData,   top_pred_variance.dat   );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
@@ -200,6 +203,7 @@ STATS_OUT_FILE(PrintKaboom, kabooms.dat);
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,                 groupids.dat);
 STATS_OUT_FILE(PrintTargets,                  targets.dat);
+STATS_OUT_FILE(PrintTopPredTargets,           top_pred_targets.dat);
 STATS_OUT_FILE(PrintToleranceInstructionData, toleranceinstruction.dat); 
 STATS_OUT_FILE(PrintToleranceData,            tolerance.dat);
 
@@ -432,61 +436,32 @@ public:
   }
 };
 
-class cActionPrintPreyFailedInstructionData : public cAction
+class cActionPrintTopPredatorInstructionData : public cAction
 {
 private:
   cString m_filename;
   cString m_inst_set;
   
 public:
-  cActionPrintPreyFailedInstructionData(cWorld* world, const cString& args, Feedback&)
+  cActionPrintTopPredatorInstructionData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
   {
     cString largs(args);
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
     else {
-      if (m_filename == "") m_filename = "prey_failed_instruction.dat";
+      if (m_filename == "") m_filename = "top_pred_instruction.dat";
     }
     if (largs.GetSize()) m_inst_set = largs.PopWord();
     
-    if (m_filename == "") m_filename.Set("prey_failed_instruction-%s.dat", (const char*)m_inst_set);
+    if (m_filename == "") m_filename.Set("top_pred_instruction-%s.dat", (const char*)m_inst_set);
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"prey_failed_instruction-${inst_set}.dat\"] [string inst_set]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"top_pred_instruction-${inst_set}.dat\"] [string inst_set]"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetStats().PrintPreyFailedInstructionData(m_filename, m_inst_set);
-  }
-};
-
-class cActionPrintPredatorFailedInstructionData : public cAction
-{
-private:
-  cString m_filename;
-  cString m_inst_set;
-  
-public:
-  cActionPrintPredatorFailedInstructionData(cWorld* world, const cString& args, Feedback&)
-  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
-  {
-    cString largs(args);
-    largs.Trim();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-    else {
-      if (m_filename == "") m_filename = "predator_failed_instruction.dat";
-    }
-    if (largs.GetSize()) m_inst_set = largs.PopWord();
-    
-    if (m_filename == "") m_filename.Set("predator_failed_instruction-%s.dat", (const char*)m_inst_set);
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"predator_failed_instruction-${inst_set}.dat\"] [string inst_set]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    m_world->GetStats().PrintPredatorFailedInstructionData(m_filename, m_inst_set);
+    m_world->GetStats().PrintTopPredatorInstructionData(m_filename, m_inst_set);
   }
 };
 
@@ -545,6 +520,35 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetStats().PrintPredatorFromSensorInstructionData(m_filename, m_inst_set);
+  }
+};
+
+class cActionPrintTopPredatorFromSensorInstructionData : public cAction
+{
+private:
+  cString m_filename;
+  cString m_inst_set;
+  
+public:
+  cActionPrintTopPredatorFromSensorInstructionData(cWorld* world, const cString& args, Feedback&)
+  : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
+  {
+    cString largs(args);
+    largs.Trim();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "top_pred_from_sensor_exec.dat";
+    }
+    if (largs.GetSize()) m_inst_set = largs.PopWord();
+    
+    if (m_filename == "") m_filename.Set("top_pred_from_sensor_exec-%s.dat", (const char*)m_inst_set);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"top_pred_from_sensor_exec-${inst_set}.dat\"] [string inst_set]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetStats().PrintTopPredatorFromSensorInstructionData(m_filename, m_inst_set);
   }
 };
 
@@ -1200,11 +1204,11 @@ public:
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     int num_fts = 1;
-    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) num_fts = 2;
+    if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) num_fts = 3;
     else num_fts = 1;  // account for -1's
     std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
     set <int>::iterator itr;    
-    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2) num_fts++; 
+    for(itr = fts_avail.begin();itr!=fts_avail.end();itr++) if (*itr != -1 && *itr != -2 && *itr != -3) num_fts++;
     
     tSmartArray<int> birth_forage_types_checked;
     cBioGroup* bg = it->Next();
@@ -4982,18 +4986,23 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
+  
   action_lib->Register<cActionPrintPreyAverageData>("PrintPreyAverageData");
   action_lib->Register<cActionPrintPredatorAverageData>("PrintPredatorAverageData");
+  action_lib->Register<cActionPrintTopPredatorAverageData>("PrintTopPredatorAverageData");
   action_lib->Register<cActionPrintPreyErrorData>("PrintPreyErrorData");
   action_lib->Register<cActionPrintPredatorErrorData>("PrintPredatorErrorData");
+  action_lib->Register<cActionPrintTopPredatorErrorData>("PrintTopPredatorErrorData");
   action_lib->Register<cActionPrintPreyVarianceData>("PrintPreyVarianceData");
   action_lib->Register<cActionPrintPredatorVarianceData>("PrintPredatorVarianceData");
+  action_lib->Register<cActionPrintTopPredatorVarianceData>("PrintTopPredatorVarianceData");
   action_lib->Register<cActionPrintPreyInstructionData>("PrintPreyInstructionData");
   action_lib->Register<cActionPrintPredatorInstructionData>("PrintPredatorInstructionData");
-  action_lib->Register<cActionPrintPreyFailedInstructionData>("PrintPreyFailedInstructionData");
-  action_lib->Register<cActionPrintPredatorFailedInstructionData>("PrintPredatorFailedInstructionData");
+  action_lib->Register<cActionPrintTopPredatorInstructionData>("PrintTopPredatorInstructionData");
   action_lib->Register<cActionPrintPreyFromSensorInstructionData>("PrintPreyFromSensorInstructionData");
   action_lib->Register<cActionPrintPredatorFromSensorInstructionData>("PrintPredatorFromSensorInstructionData");
+  action_lib->Register<cActionPrintTopPredatorFromSensorInstructionData>("PrintTopPredatorFromSensorInstructionData");
+  
   action_lib->Register<cActionPrintMaleInstructionData>("PrintMaleInstructionData");
   action_lib->Register<cActionPrintFemaleInstructionData>("PrintFemaleInstructionData");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
@@ -5182,6 +5191,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintToleranceInstructionData>("PrintToleranceInstructionData"); 
   action_lib->Register<cActionPrintToleranceData>("PrintToleranceData"); 
   action_lib->Register<cActionPrintTargets>("PrintTargets");
+  action_lib->Register<cActionPrintTopPredTargets>("PrintTopPredTargets");
   
   action_lib->Register<cActionPrintDonateSpecificData>("PrintDonateSpecificData"); 
   
