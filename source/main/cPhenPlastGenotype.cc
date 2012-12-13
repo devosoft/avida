@@ -20,9 +20,12 @@
  */
 
 #include "cPhenPlastGenotype.h"
+#include "cPhenPlastSummary.h"
 #include <iostream>
 #include <cmath>
 #include <cfloat>
+
+const Apto::String cPhenPlastSummary::ObjectKey("cPhenPlastSummary");
 
 cPhenPlastGenotype::cPhenPlastGenotype(const Genome& in_genome, int num_trials, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx)
 : m_genome(in_genome), m_num_trials(num_trials), m_world(world)

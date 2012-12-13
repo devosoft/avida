@@ -46,7 +46,7 @@ using namespace Avida;
 
 class cPhenPlastGenotype
 {
-  private:
+private:
 
   typedef set<cPhenotype*, cPhenotype::PhenotypeCompare  > UniquePhenotypes;  //Actually, these are cPlasticPhenotypes*
   tList<cPlasticPhenotype> m_plastic_phenotypes;  //This will store a list of our unique plastic phenotype pointers  

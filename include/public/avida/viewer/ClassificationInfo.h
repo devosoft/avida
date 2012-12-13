@@ -72,6 +72,8 @@ namespace Avida {
     public:
       struct MapColor : public Systematics::GroupData
       {
+        static const Apto::String ObjectKey;
+        
         char color;
         
         MapColor() : color(-1) { ; }

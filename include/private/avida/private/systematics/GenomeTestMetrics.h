@@ -51,6 +51,9 @@ namespace Avida {
     
     class GenomeTestMetrics : public GroupData
     {
+    public:
+      static const Apto::String ObjectKey;
+      
     private:
       bool m_is_viable;
       double m_fitness;
@@ -62,22 +65,24 @@ namespace Avida {
       Apto::Array<int> m_task_counts;
       
       
-      LIB_LOCAL GenomeTestMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr bg);
+      LIB_EXPORT GenomeTestMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr bg);
       
     public:
-      LIB_LOCAL bool Serialize(ArchivePtr ar) const;
+      LIB_EXPORT ~GenomeTestMetrics();
       
-      LIB_LOCAL bool IsViable() const { return m_is_viable; }
-      LIB_LOCAL double GetFitness() const { return m_fitness; }
-      LIB_LOCAL double GetColonyFitness() const { return m_colony_fitness; }
-      LIB_LOCAL double GetMerit() const { return m_merit; }
-      LIB_LOCAL int GetLinesCopied() const { return m_copied_size; }
-      LIB_LOCAL int GetLinesExecuted() const { return m_executed_size; }
-      LIB_LOCAL int GetGestationTime() const { return m_gestation_time; }
-      LIB_LOCAL const Apto::Array<int>& GetTaskCounts() const { return m_task_counts; }
+      LIB_EXPORT bool Serialize(ArchivePtr ar) const;
+      
+      LIB_EXPORT bool IsViable() const { return m_is_viable; }
+      LIB_EXPORT double GetFitness() const { return m_fitness; }
+      LIB_EXPORT double GetColonyFitness() const { return m_colony_fitness; }
+      LIB_EXPORT double GetMerit() const { return m_merit; }
+      LIB_EXPORT int GetLinesCopied() const { return m_copied_size; }
+      LIB_EXPORT int GetLinesExecuted() const { return m_executed_size; }
+      LIB_EXPORT int GetGestationTime() const { return m_gestation_time; }
+      LIB_EXPORT const Apto::Array<int>& GetTaskCounts() const { return m_task_counts; }
       
       
-      LIB_LOCAL static GenomeTestMetricsPtr GetMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr bg);
+      LIB_EXPORT static GenomeTestMetricsPtr GetMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr bg);
     };
     
   };

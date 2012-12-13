@@ -76,7 +76,7 @@ namespace Avida {
     
   LIB_EXPORT inline bool operator==(const Property& lhs, const Property& rhs)
   {
-    return (typeid(lhs) == typeid(rhs)) ? lhs.isEqual(rhs) : (lhs.StringValue() == rhs.StringValue());
+    return (lhs.StringValue() == rhs.StringValue());
   }
 
   LIB_EXPORT inline bool operator!=(const Property& lhs, const Property& rhs) { return !(lhs == rhs); }

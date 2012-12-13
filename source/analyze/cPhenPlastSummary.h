@@ -28,6 +28,9 @@
 
 class cPhenPlastSummary : public Systematics::GroupData
 {
+public:
+  static const Apto::String ObjectKey;
+  
   public:
     int     m_recalculate_trials;  
     int     m_num_phenotypes;

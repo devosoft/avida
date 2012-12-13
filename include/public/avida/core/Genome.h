@@ -79,16 +79,15 @@ namespace Avida {
     // Epigenetic Objects
     template <typename T> bool AttachEpigeneticObject(Apto::SmartPtr<T> obj)
     {
-      Apto::String type_id_str(typeid(T).name());
-      if (m_epigenetic_objs.Has(type_id_str)) return false;
-      m_epigenetic_objs.Set(type_id_str, obj);
+      if (m_epigenetic_objs.Has(T::ObjectKey)) return false;
+      m_epigenetic_objs.Set(T::ObjectKey, obj);
       return true;
     }
     
     template <typename T> Apto::SmartPtr<T> GetEpigeneticObject()
     {
       Apto::SmartPtr<T> rtn;
-      rtn.DynamicCastFrom(m_epigenetic_objs.Get(Apto::String(typeid(T).name())));
+      rtn.DynamicCastFrom(m_epigenetic_objs.Get(T::ObjectKey));
       return rtn;
     }
     

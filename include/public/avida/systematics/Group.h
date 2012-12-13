@@ -90,19 +90,20 @@ namespace Avida {
 
       
       // Group Data
-      template <typename T> bool AttachData(Apto::SmartPtr<T> obj)
+      template <typename T> LIB_EXPORT bool AttachData(Apto::SmartPtr<T> obj)
       {
         assert(obj);
-        Apto::String type_id_str(typeid(T).name());
-        if (m_data.Get(type_id_str)) return false;
-        m_data.Set(type_id_str, obj);
+        if (m_data.Get(T::ObjectKey)) return false;
+        m_data.Set(T::ObjectKey, obj);
         return true;
       }
       
-      template <typename T> Apto::SmartPtr<T> GetData()
+      template <typename T> LIB_EXPORT Apto::SmartPtr<T> GetData()
       {
         Apto::SmartPtr<T> rtn;
-        rtn.DynamicCastFrom(m_data.Get(Apto::String(typeid(T).name())));
+        Apto::SmartPtr<GroupData> dp(m_data.Get(T::ObjectKey));
+        rtn.DynamicCastFrom(dp);
+        if (dp) assert(rtn);
         return rtn;
       }
     };

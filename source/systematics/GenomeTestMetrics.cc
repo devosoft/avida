@@ -31,6 +31,9 @@
 #include "cTestCPU.h"
 #include "cWorld.h"
 
+const Apto::String Avida::Systematics::GenomeTestMetrics::ObjectKey("Avida::Systematics::GenomeTestMetrics");
+
+
 
 Avida::Systematics::GenomeTestMetrics::GenomeTestMetrics(cWorld* world, cAvidaContext& ctx, GroupPtr g)
 {
@@ -50,6 +53,9 @@ Avida::Systematics::GenomeTestMetrics::GenomeTestMetrics(cWorld* world, cAvidaCo
   m_gestation_time = phenotype.GetGestationTime();
   m_task_counts = phenotype.GetLastTaskCount();
 }
+
+
+Avida::Systematics::GenomeTestMetrics::~GenomeTestMetrics() { ; }
 
 
 bool Avida::Systematics::GenomeTestMetrics::Serialize(ArchivePtr) const

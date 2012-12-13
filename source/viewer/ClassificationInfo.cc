@@ -32,6 +32,9 @@
 #include "cBitArray.h"
 
 
+const Apto::String Avida::Viewer::ClassificationInfo::MapColor::ObjectKey("Avida::Viewer::ClassificationInfo::MapColor");
+
+
 bool Avida::Viewer::ClassificationInfo::MapColor::Serialize(ArchivePtr) const
 {
   // @TODO - map color serialize

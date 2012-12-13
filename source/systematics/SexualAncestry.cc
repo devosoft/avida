@@ -27,6 +27,7 @@
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
 
+const Apto::String Avida::Systematics::SexualAncestry::ObjectKey("Avida::Systematics::SexualAncestry");
 
 Avida::Systematics::SexualAncestry::SexualAncestry(GroupPtr g)
 {

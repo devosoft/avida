@@ -50,6 +50,9 @@ namespace Avida {
     
     class SexualAncestry : public GroupData
     {
+    public:
+      static const Apto::String ObjectKey;
+
     private:
       int m_id;
       int m_ancestor_ids[6];
