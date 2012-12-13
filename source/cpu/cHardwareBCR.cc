@@ -274,7 +274,6 @@ cHardwareBCR::cHardwareBCR(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   
   m_spec_die = false;
   
-  m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
@@ -292,6 +291,8 @@ cHardwareBCR::cHardwareBCR(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 
 void cHardwareBCR::internalReset()
 {
+  m_spec_stall = false;
+
   m_cycle_count = 0;
   m_last_output = 0;
   
@@ -304,7 +305,6 @@ void cHardwareBCR::internalReset()
   
   // Threads
   m_threads.Resize(0);
-  m_cur_thread = 0;
   m_waiting_threads = 0;
   m_running_threads = 0;
   
@@ -413,36 +413,52 @@ void cHardwareBCR::Thread::Reset(cHardwareBCR* in_hardware, const Head& start_po
 
 bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
-  assert(!speculative || (speculative && !m_thread_slicing_parallel));
+  // If speculatively stalled, stay that way until a real instruction comes
+  if (speculative && m_spec_stall) return false;
+  
   
   // Mark this organism as running...
   m_organism->SetRunning(true);
   
+  
+  // Handle if this organism died while speculatively executing
   if (!speculative && m_spec_die) {
     m_organism->Die(ctx);
     m_organism->SetRunning(false);
     return false;
   }
   
+
   cPhenotype& phenotype = m_organism->GetPhenotype();
   
-  m_cycle_count++;
-  phenotype.IncCPUCyclesUsed();
-  if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
+  
+  if (m_spec_stall) {
+    m_spec_stall = false;
+  } else {
+    // Update cycle counts
+    m_cycle_count++;
+    phenotype.IncCPUCyclesUsed();
+    if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
 
+    // Wake any stalled threads
+    for (int i = 0; i < m_threads.GetSize(); i++) {
+      if (!m_threads[i].active && m_threads[i].wait_reg == -1) m_threads[i].active = true;
+    }
 
-  // Wake any stalled threads
-  for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (!m_threads[i].active && m_threads[i].wait_reg == -1) m_threads[i].active = true;
+    // Reset behavioral class 
+    m_behav_class_used[0] = false;
+    m_behav_class_used[1] = false;
+    m_behav_class_used[2] = false;
+    
+    // Reset execution state
+    m_cur_uop = 0;
+    m_cur_thread = 0;
   }
-
-  bool speculative_stall = false;
-  bool behav_class_used[3] = { false, false, false };
   
   // Execute specified number of micro ops per cpu cycle on each thread in a round robin fashion
   const int uop_ratio = m_inst_set->GetUOpsPerCycle();
-  for (int i = 0; i < uop_ratio; i++) {
-    for (m_cur_thread = 0; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
+  for (; m_cur_uop < uop_ratio; m_cur_uop++) {
+    for (; m_cur_thread < m_threads.GetSize(); m_cur_thread++) {
       // Setup the hardware for the next instruction to be executed.
       
       // If the currently selected thread is inactive, proceed to the next thread
@@ -460,10 +476,8 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       
       if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
         // Speculative instruction stall, flag it and halt the thread
-        speculative_stall = true;
-        m_threads[m_cur_thread].active = false;
-        m_threads[m_cur_thread].wait_reg = -1;
-        continue;
+        m_spec_stall = true;
+        return false;
       }
       
       // Print the short form status of this CPU at each step...
@@ -475,7 +489,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       BehavClass behav_class = m_inst_set->GetInstLib()->Get(m_inst_set->GetLibFunctionIndex(ip.GetInst())).GetBehavClass();
       
       // Check if this instruction class has been used and should cause the thread to stall?
-      if (behav_class < BEHAV_CLASS_NONE && behav_class_used[behav_class]) {
+      if (behav_class < BEHAV_CLASS_NONE && m_behav_class_used[behav_class]) {
         m_threads[m_cur_thread].active = false;
         m_threads[m_cur_thread].wait_reg = -1;
         continue;
@@ -527,7 +541,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
 
 
         // mark behavior class as used, when appropriate
-        if (behav_class < BEHAV_CLASS_NONE) behav_class_used[behav_class] = true;
+        if (behav_class < BEHAV_CLASS_NONE) m_behav_class_used[behav_class] = true;
       }
       
       // if using mini traces, report success or failure of execution
@@ -569,7 +583,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
   m_organism->SetRunning(false);
   CheckImplicitRepro(ctx);
   
-  return !m_spec_die && !speculative_stall;
+  return !m_spec_die && !m_spec_stall;
 }
 
 

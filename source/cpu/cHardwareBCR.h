@@ -253,14 +253,16 @@ private:
     unsigned int m_cycle_count:16;
     unsigned int m_last_output:16;
 
+    unsigned int m_cur_uop:8;
+
     int m_cur_offspring:5;
     
     int m_use_avatar:3;
     
     bool m_advance_ip:1;         // Should the IP advance after this instruction?
+    bool m_spec_stall:1;
     bool m_spec_die:1;
     
-    bool m_thread_slicing_parallel:1;
     bool m_no_cpu_cycle_time:1;
     
     bool m_slip_read_head:1;
@@ -268,6 +270,7 @@ private:
     unsigned int m_waiting_threads:4;
     unsigned int m_running_threads:4;
   };
+  bool m_behav_class_used[3];
   
   cHeadCPU m_placeholder_head;
   
