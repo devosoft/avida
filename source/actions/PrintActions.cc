@@ -544,7 +544,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetStats().PrintPreyFromSensorInstructionData(m_filename, m_inst_set);
+    m_world->GetStats().PrintPredatorFromSensorInstructionData(m_filename, m_inst_set);
   }
 };
 
