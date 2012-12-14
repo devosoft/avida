@@ -477,6 +477,7 @@ bool cHardwareBCR::SingleProcess(cAvidaContext& ctx, bool speculative)
       if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
         // Speculative instruction stall, flag it and halt the thread
         m_spec_stall = true;
+        m_organism->SetRunning(false);
         return false;
       }
       
