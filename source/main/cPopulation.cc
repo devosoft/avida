@@ -1768,7 +1768,7 @@ void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
   while (org_to_kill == org) {
     cOrganism* org_at = TriedIdx[idx];
     // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
-    if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() <= -2)) org_to_kill = org_at;
+    if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() > -2)) org_to_kill = org_at;
     else TriedIdx.Swap(idx, --list_size);
     if (list_size == 1) break;
     idx = m_world->GetRandom().GetUInt(list_size);
