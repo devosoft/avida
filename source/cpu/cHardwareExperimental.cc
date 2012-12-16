@@ -4127,7 +4127,7 @@ bool cHardwareExperimental::Inst_SetForageTarget(cAvidaContext& ctx)
   // return false if trying to become predator and there are none in the experiment
   if (prop_target <= -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() < 0) return false;
   
-  // return false if trying to become predator this has been disallowed via setforagetarget
+  // return false if trying to become predator or top predator and this has been disallowed via setforagetarget
   if (prop_target <= -2 && m_world->GetConfig().PRED_PREY_SWITCH.Get() == 2) return false;
   
   // a little mod help...can't set to -1, that's for juevniles only...so only exception to mod help is -2 or -3
