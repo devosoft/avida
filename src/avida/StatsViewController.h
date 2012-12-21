@@ -1,8 +1,8 @@
 //
-//  AvidaWorkspaceSelectWindowController.h
+//  StatsViewController.h
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 12/7/12.
+//  Created by David M. Bryson on 12/21/12.
 //  Copyright 2012 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -29,6 +29,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AvidaWorkspaceSelectWindowController : NSWindowController
+@interface StatsViewController : NSViewController
 
 @end

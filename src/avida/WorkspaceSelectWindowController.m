@@ -1,5 +1,5 @@
 //
-//  AvidaWorkspaceSelectWindowController.mm
+//  WorkspaceSelectWindowController.mm
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 12/7/12.
@@ -27,13 +27,13 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#import "AvidaWorkspaceSelectWindowController.h"
+#import "WorkspaceSelectWindowController.h"
 
-@interface AvidaWorkspaceSelectWindowController ()
+@interface WorkspaceSelectWindowController ()
 
 @end
 
-@implementation AvidaWorkspaceSelectWindowController
+@implementation WorkspaceSelectWindowController
 
 - (id)initWithWindow:(NSWindow *)window
 {

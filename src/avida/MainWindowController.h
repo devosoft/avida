@@ -36,7 +36,7 @@
 @class MapGridView;
 
 
-@interface AvidaMainWindowController : NSWindowController <NSWindowDelegate>
+@interface MainWindowController : NSWindowController <NSWindowDelegate>
 {
   AvidaAppDelegate* app;
 }
