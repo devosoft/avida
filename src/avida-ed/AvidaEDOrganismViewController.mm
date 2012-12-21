@@ -129,6 +129,7 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
   
   for (NSUInteger i = 0; i < [envActions entryCount]; i++) {
     NSString* entry_name = [envActions entryAtIndex:i];
+    NSString* local_name = entry_name;
     if ([entry_name isEqual:@"oro"]) {
       entry_name = @"or";
     } else if ([entry_name isEqual:@"ant"]) {
@@ -137,7 +138,7 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
       entry_name = @"nand";
     }
 
-    [envActions updateEntry:entry_name withValue:[NSNumber numberWithInt:snapshot.FunctionCount([entry_name UTF8String])]];
+    [envActions updateEntry:local_name withValue:[NSNumber numberWithInt:snapshot.FunctionCount([entry_name UTF8String])]];
   }
   [tblTaskCounts reloadData];
 }
@@ -540,7 +541,15 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
     for (int i = 0; i < trace->SnapshotCount(); i++) {
       NSMutableSet* foundset = [[NSMutableSet alloc] init];
       for (NSString* entry_name in nameset) {
-        if (trace->Snapshot(i).FunctionCount([entry_name UTF8String]) > 0) {
+        NSString* avida_name = entry_name;
+        if ([entry_name isEqual:@"oro"]) {
+          avida_name = @"or";
+        } else if ([entry_name isEqual:@"ant"]) {
+          avida_name = @"andn";
+        } else if ([entry_name isEqual:@"nan"]) {
+          avida_name = @"nand";
+        }
+        if (trace->Snapshot(i).FunctionCount([avida_name UTF8String]) > 0) {
           [timelineView addEntryWithLabel:[[envActions valueOfEntry:entry_name forKey:@"Order"] stringValue] atLocation:i];
           [foundset addObject:entry_name];
         }

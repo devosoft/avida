@@ -556,6 +556,12 @@ static const int MAX_GRAPH_POINTS = 1000;
   [run attachRecorder:org_recorder concurrentUpdate:YES];
 }
 
+- (void) mapViewModeChanged:(MapGridView*)mapView {
+  if (genome != "") {
+    [boxOrgColor setColor:[mapView colorOfX:selectedOrgCoords.x Y:selectedOrgCoords.y]];
+  }
+}
+
 
 - (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard {
   if (genome == "") return NO;
@@ -654,6 +660,8 @@ static const int MAX_GRAPH_POINTS = 1000;
 //  }
   
   // Set box color based on color from the map object
+  selectedOrgCoords.x = values->x;
+  selectedOrgCoords.y = values->y;
   [boxOrgColor setColor:[[ctlr mapView] colorOfX:values->x Y:values->y]];
 
   // Update the data source for the organism environment actions

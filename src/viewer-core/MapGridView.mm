@@ -48,6 +48,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 - (void) setup;
 - (void) adjustZoom;
+- (void) updateColorCache;
 @end
 
 @implementation MapGridView (hidden)
@@ -87,6 +88,33 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     [self setNeedsDisplay:YES];
   }  
 }
+
+- (void) updateColorCache {
+  if (num_colors != [color_cache count]) {
+    [color_cache removeAllObjects];
+    if (num_colors == 10) {
+      [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:0.0f alpha:1.0f] atIndex:0]; // greenColor
+      [color_cache insertObject:[NSColor redColor] atIndex:1];
+      [color_cache insertObject:[NSColor blueColor] atIndex:2];
+      [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:1.0f alpha:1.0f] atIndex:3]; // cyanColor
+      [color_cache insertObject:[NSColor yellowColor] atIndex:4];
+      [color_cache insertObject:[NSColor magentaColor] atIndex:5];
+      [color_cache insertObject:[NSColor orangeColor] atIndex:6];
+      [color_cache insertObject:[NSColor purpleColor] atIndex:7];
+      [color_cache insertObject:[NSColor brownColor] atIndex:8];
+      [color_cache insertObject:[NSColor colorWithCalibratedWhite:0.8f alpha:1.0f] atIndex:9];
+    } else {
+      for (int i = 0; i < num_colors; i++) {
+        CGFloat x = 0.1 + 0.8 * (static_cast<CGFloat>(i) / (num_colors - 1));
+        CGFloat h = fmod((x + .27), 1.0);
+        CGFloat s = sigmoid(1.0 - x, 0.1, 30);
+        CGFloat b = sigmoid(x, 0.3, 10);
+        [color_cache insertObject:[NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1.0] atIndex:i];
+      }
+    }
+  }
+}
+
 @end
 
 
@@ -112,29 +140,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   [[NSColor lightGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
   
-  if (num_colors != [color_cache count]) {
-    [color_cache removeAllObjects];
-    if (num_colors == 10) {
-      [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:0.0f alpha:1.0f] atIndex:0]; // greenColor
-      [color_cache insertObject:[NSColor redColor] atIndex:1];
-      [color_cache insertObject:[NSColor blueColor] atIndex:2];
-      [color_cache insertObject:[NSColor colorWithCalibratedRed:0.0f green:0.7f blue:1.0f alpha:1.0f] atIndex:3]; // cyanColor
-      [color_cache insertObject:[NSColor yellowColor] atIndex:4];
-      [color_cache insertObject:[NSColor magentaColor] atIndex:5];
-      [color_cache insertObject:[NSColor orangeColor] atIndex:6];
-      [color_cache insertObject:[NSColor purpleColor] atIndex:7];
-      [color_cache insertObject:[NSColor brownColor] atIndex:8];
-      [color_cache insertObject:[NSColor colorWithCalibratedWhite:0.8f alpha:1.0f] atIndex:9];
-    } else {
-      for (int i = 0; i < num_colors; i++) {
-        CGFloat x = 0.1 + 0.8 * (static_cast<CGFloat>(i) / (num_colors - 1));
-        CGFloat h = fmod((x + .27), 1.0);
-        CGFloat s = sigmoid(1.0 - x, 0.1, 30);
-        CGFloat b = sigmoid(x, 0.3, 10);
-        [color_cache insertObject:[NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1.0] atIndex:i];
-      }
-    }
-  }
+  [self updateColorCache];
   
   CGFloat block_size = zoom;
   CGFloat grid_width = (block_size > 5.0) ? 1.0 : 0.0;
@@ -303,6 +309,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 
 - (NSColor*) colorOfX:(int)x Y:(int)y {
+  [self updateColorCache];
   int color = map_colors[x + (y * map_width)];
   switch (color) {
     case -4:  return [NSColor blackColor];

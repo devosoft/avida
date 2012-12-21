@@ -37,6 +37,7 @@
 
 - (void) awakeFromNib {  
   mutRate = 0.0;
+  randomSeed = -1;
   [sldMutRate setFloatValue:sldMutRate.minValue];
   [txtMutRate setFloatValue:mutRate];
   [matRepeatability selectCellWithTag:0];

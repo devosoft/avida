@@ -1099,6 +1099,7 @@ static NSInteger sortFreezerItems(id f1, id f2, void* context)
     map->SetMode(map_mode_to_color[[mapViewMode indexOfSelectedItem]]);
     [mapView updateState:map];
     [mapScaleView updateState:map];
+    [popViewStatView mapViewModeChanged:mapView];
   } else {
     if ([mapViewMode indexOfSelectedItem] == 3) {
       NSMutableArray* tempAncestors = [[NSMutableArray alloc] init];

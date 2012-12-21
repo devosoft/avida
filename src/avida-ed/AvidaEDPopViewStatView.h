@@ -66,6 +66,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
   IBOutlet NSTextField* txtOrgAncestor;
   IBOutlet NSTableView* tblOrgEnvActions;
   Apto::String genome;
+  NSPoint selectedOrgCoords;
   
   AvidaRun* run;
   Avida::Data::RecorderPtr recorder;
@@ -100,6 +101,7 @@ class AvidaEDPopViewStatViewTimeRecorder;
 
 - (BOOL) mapView:(MapGridView*)mapView shouldSelectObjectAtPoint:(NSPoint)point;
 - (void) mapViewSelectionChanged:(MapGridView*)mapView;
+- (void) mapViewModeChanged:(MapGridView*)mapView;
 - (BOOL) mapView:(MapGridView*)mapView writeSelectionToPasteboard:(NSPasteboard*)pboard;
 
 - (IBAction) changeGraph:(id)sender;
