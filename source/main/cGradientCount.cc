@@ -221,29 +221,30 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     if (chooseUpDown == 0) {
     int chooseEW = rng.GetUInt(0,2);
       if (chooseEW == 0) {
-        m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
+        m_peakx = rng.GetUInt(max(0,m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height),
                               m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
       } else {
-        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
-                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+        m_peakx = rng.GetUInt(max(0,m_halo_anchor_x + m_halo_inner_radius + temp_height),
+                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1); 
       }
-      m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+      m_peaky = rng.GetUInt(max(0,m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height),
                             m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
     else {
       int chooseNS = rng.GetUInt(0,2);
       if (chooseNS == 0) { 
-        m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+        m_peaky = rng.GetUInt(max(0,m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height),
                               m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
       } else {
-        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
+        m_peaky = rng.GetUInt(max(0,m_halo_anchor_y + m_halo_inner_radius + temp_height),
                               m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
       }
-      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height,
+      m_peakx = rng.GetUInt(max(0,m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height),
                             m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
   }
-  
+  assert(m_peakx >= 0 && m_peaky >= 0 && m_peakx < GetX() && m_peaky < GetY());
+
   SetModified(false);
   m_counter = 0;
   m_skip_counter = 0;
@@ -420,7 +421,7 @@ void cGradientCount::moveRes(cAvidaContext& ctx)
   // if we are working with moving resources and it's time to update direction
   if (m_move_counter == m_updatestep && m_move_a_scaler > 1) {
     m_move_counter = 1;
-    if (m_halo == 1) current_orbit = setHaloPeakMovement(ctx, current_orbit);
+    if (m_halo == 1) current_orbit = setHaloOrbit(ctx, current_orbit);
     else setPeakMoveMovement(ctx);
   }    
   else m_move_counter++;
@@ -447,7 +448,7 @@ void cGradientCount::setPeakMoveMovement(cAvidaContext& ctx)
   }
 } 
 
-int cGradientCount::setHaloPeakMovement(cAvidaContext& ctx, int current_orbit)
+int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
 {    
   // move cones by moving m_peakx & m_peaky 
   // halo resources orbit at a fixed org walking distance from an anchor point
@@ -472,7 +473,12 @@ int cGradientCount::setHaloPeakMovement(cAvidaContext& ctx, int current_orbit)
       
       // we have to check that we are still going to be within the halo after an orbit change
       // if we go out of bounds, we need to go the other way instead, taking two steps back on current_orbit
-      if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2) || current_orbit < (m_halo_inner_radius + temp_height + 2)) {
+      if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2) ||
+          current_orbit < (m_halo_inner_radius + temp_height + 2) ||
+          m_halo_anchor_y + current_orbit - 1 >= GetY() ||
+          m_halo_anchor_x + current_orbit - 1 >= GetX() ||
+          m_halo_anchor_y + current_orbit - 1 < 0 ||
+          m_halo_anchor_x + current_orbit - 1 < 0) {
         orbit_shift *= -1;
         current_orbit += 2 * orbit_shift;
       }
@@ -555,13 +561,7 @@ void cGradientCount::moveHaloPeak(int current_orbit)
       m_peaky = m_peaky + (m_halo_dir * m_move_speed);
     }
   }
-  
-  if ( m_peakx < 0 || m_peaky < 0 || m_peakx > 370 || m_peaky > 370) {
-    bool nothing;
-    cout << m_peakx << " " << m_peaky << endl;
-  }
-//  cout << m_peakx << " " << m_peaky << endl;
-  assert(m_peakx >= 0 && m_peaky >= 0 || m_peakx < GetX() || m_peaky < GetY());
+  assert(m_peakx >= 0 && m_peaky >= 0 && m_peakx < GetX() && m_peaky < GetY());
 }
 
 void cGradientCount::movePeak()
