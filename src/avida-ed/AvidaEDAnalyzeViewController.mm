@@ -107,7 +107,7 @@
   textStyle.fontSize = 10;
   CPTMutableTextStyle* titleTextStyle = [CPTMutableTextStyle textStyle];
   titleTextStyle.fontName = @"Helvetica";
-  titleTextStyle.fontSize = 11;
+  titleTextStyle.fontSize = 12;
   
   CPTXYAxis* x = axisSet.xAxis;
   x.titleTextStyle = titleTextStyle;

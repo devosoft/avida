@@ -60,7 +60,7 @@
   NSString* buildString = [infoDict objectForKey:@"CFBundleVersion"];
   assert(buildString != nil);
 
-  [lblVersion setStringValue:[NSString stringWithFormat:@"Avida-ED v%@ (build %@)", versionString, buildString]];
+  [lblVersion setStringValue:[NSString stringWithFormat:@"Avida-ED v%@ beta (build %@)", versionString, buildString]];
 }
 
 

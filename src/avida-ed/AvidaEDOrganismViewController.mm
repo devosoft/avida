@@ -94,7 +94,6 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
   
   if (curSnapshotIndex == 0) {
     [viewOffspringDrag removeFromSuperview];
-    [btnBegin setEnabled:NO];
     [btnBack setEnabled:NO];
     [btnGo setEnabled:YES];
     [btnForward setEnabled:YES];
@@ -104,7 +103,6 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
   } else if (curSnapshotIndex == (trace->SnapshotCount() - 1)) {
     if (trace->Snapshot(snapshot).IsPostDivide()) [orgView addSubview:viewOffspringDrag];
     [self stopAnimation];
-    [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
     [btnGo setEnabled:NO];
     [btnForward setEnabled:NO];
@@ -113,7 +111,6 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
     [[[txtWillExec textStorage] mutableString] setString:@"(none)"];
   } else {
     [viewOffspringDrag removeFromSuperview];
-    [btnBegin setEnabled:YES];
     [btnBack setEnabled:YES];
     [btnGo setEnabled:YES];
     [btnForward setEnabled:YES];
@@ -432,8 +429,8 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
 }
 
 - (IBAction) firstSnapshot:(id)sender {
-  [self stopAnimation];
-  [self setSnapshot:0];
+  Avida::GenomePtr genome(new Avida::Genome(*trace->OrganismGenome()));
+  [self setGenome:genome withName:[self getOrganismName]];
 }
 
 - (IBAction) lastSnapshot:(id)sender {
@@ -517,6 +514,9 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
 
 
 - (void) setGenome:(Avida::GenomePtr)genome withName:(NSString*)name {
+  
+  [self stopAnimation];
+
   // Trace genome
   trace = Avida::Viewer::OrganismTracePtr(new Avida::Viewer::OrganismTrace([testWorld oldworld], genome, ctlrSettings.mutRate, ctlrSettings.randomSeed));
   
@@ -563,6 +563,7 @@ static const CGFloat SPLIT_RIGHT_MIN = 202;
     }
     
     
+    [btnBegin setEnabled:YES];
     [btnGo setEnabled:YES];
     [btnGo setTitle:@"Run"];
     
