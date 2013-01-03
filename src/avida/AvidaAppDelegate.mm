@@ -31,9 +31,18 @@
 
 @implementation AvidaAppDelegate
 
+@synthesize appController=ctlr;
+
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-  // Insert code here to initialize your application
+  [ctlr applicationDidFinishLaunching];
+}
+
+
+- (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename {
+  NSURL* fileURL = [NSURL fileURLWithPath:filename];
+  return [ctlr applicationOpenFile:fileURL];
 }
 
 @end

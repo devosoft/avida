@@ -204,7 +204,7 @@
 											<int key="NSvFlags">2322</int>
 											<string key="NSFrameSize">{264, 124}</string>
 											<reference key="NSSuperview" ref="496292288"/>
-											<reference key="NSNextKeyView" ref="165533002"/>
+											<reference key="NSNextKeyView" ref="612903795"/>
 											<string key="NSReuseIdentifierKey">_NS:13</string>
 											<object class="NSTextContainer" key="NSTextContainer" id="501553954">
 												<object class="NSLayoutManager" key="NSLayoutManager">
@@ -433,6 +433,7 @@ wGw</bytes>
 									<int key="NSvFlags">256</int>
 									<string key="NSFrame">{{265, 1}, {15, 124}}</string>
 									<reference key="NSSuperview" ref="262653493"/>
+									<reference key="NSNextKeyView"/>
 									<string key="NSReuseIdentifierKey">_NS:83</string>
 									<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 									<reference key="NSTarget" ref="262653493"/>
@@ -457,7 +458,7 @@ wGw</bytes>
 							</array>
 							<string key="NSFrame">{{20, 20}, {281, 126}}</string>
 							<reference key="NSSuperview" ref="1006"/>
-							<reference key="NSNextKeyView" ref="496292288"/>
+							<reference key="NSNextKeyView" ref="165533002"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<int key="NSsFlags">133138</int>
 							<reference key="NSVScroller" ref="612903795"/>
@@ -472,7 +473,7 @@ wGw</bytes>
 					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="147855628"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMinSize">{321, 596}</string>
 				<string key="NSMaxSize">{321, 596}</string>
 				<bool key="NSWindowIsRestorable">NO</bool>

@@ -29,27 +29,29 @@
 
 #import "WorkspaceSelectWindowController.h"
 
+
 @interface WorkspaceSelectWindowController ()
 
 @end
 
+
 @implementation WorkspaceSelectWindowController
 
-- (id)initWithWindow:(NSWindow *)window
+- (id) init
 {
-    self = [super initWithWindow:window];
-    if (self) {
-        // Initialization code here.
-    }
+  self = [super initWithWindowNibName:@"Avida-WorkspaceSelectWindow"];
+  if (self) {
     
-    return self;
+  }
+  
+  return self;
 }
 
 - (void)windowDidLoad
 {
-    [super windowDidLoad];
-    
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+  [super windowDidLoad];
+  
+  // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
 }
 
 @end

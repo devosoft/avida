@@ -27,7 +27,10 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
+#import <AppKit/AppKit.h>
+
 #import <AvidaCore/ACGenome.h>
+
 
 @interface ACGenome (NSPasteboardAdditions) <NSPasteboardReading, NSPasteboardWriting>
 

@@ -53,6 +53,8 @@
 		704B83971600E3C100D40AEA /* AvidaED-credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 704B83961600E3C100D40AEA /* AvidaED-credits.rtf */; };
 		705DE43D15EBFD2300B9D838 /* TaskTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 705DE43C15EBFD2300B9D838 /* TaskTimelineView.m */; };
 		705E042E15F112FE005F0361 /* CAAnimationBlockDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 705E042D15F112FE005F0361 /* CAAnimationBlockDelegate.m */; };
+		705E52E51696361F00392BA7 /* PopViewerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 70C2DB8515824EBA004B2423 /* PopViewerIcon.png */; };
+		705E52E61696361F00392BA7 /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		7061AB5013588B0E0000B036 /* AvidaEDPopViewStatView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB4F13588B0E0000B036 /* AvidaEDPopViewStatView.mm */; };
 		708308EB14B6A6E50051B354 /* ImageFlipperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EA14B6A6E50051B354 /* ImageFlipperView.m */; };
 		708308EF14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 708308EE14B6A7270051B354 /* NSBitmapImageRep+GLExtensions.m */; };
@@ -71,6 +73,7 @@
 		709AE96B1684E6CE00E50275 /* GraphingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE96A1684E6CE00E50275 /* GraphingViewController.m */; };
 		709AE96F1684E6F900E50275 /* OrganismAnalysisViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE96E1684E6F900E50275 /* OrganismAnalysisViewController.m */; };
 		709AE9731684E86100E50275 /* ActivityListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9721684E86100E50275 /* ActivityListViewController.m */; };
+		709AE9B61695F49D00E50275 /* AvidaController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9B51695F49D00E50275 /* AvidaController.mm */; };
 		70A2A6E2156423000086456A /* AvidaEDExportAccessoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */; };
 		70A420CA15E6B97E002B2218 /* trash_can.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A420C915E6B97E002B2218 /* trash_can.png */; };
 		70A523A915139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70A523A815139C6800AF6B7B /* AvidaEDOrganismSettingsViewController.m */; };
@@ -231,6 +234,8 @@
 		709AE96E1684E6F900E50275 /* OrganismAnalysisViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrganismAnalysisViewController.m; sourceTree = "<group>"; };
 		709AE9711684E86100E50275 /* ActivityListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityListViewController.h; sourceTree = "<group>"; };
 		709AE9721684E86100E50275 /* ActivityListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityListViewController.m; sourceTree = "<group>"; };
+		709AE9B41695F49D00E50275 /* AvidaController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaController.h; sourceTree = "<group>"; };
+		709AE9B51695F49D00E50275 /* AvidaController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaController.mm; sourceTree = "<group>"; };
 		70A2A6E0156423000086456A /* AvidaEDExportAccessoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDExportAccessoryController.h; sourceTree = "<group>"; };
 		70A2A6E1156423000086456A /* AvidaEDExportAccessoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvidaEDExportAccessoryController.m; sourceTree = "<group>"; };
 		70A420C915E6B97E002B2218 /* trash_can.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash_can.png; sourceTree = "<group>"; };
@@ -411,6 +416,8 @@
 				70FA3F79164422750003971F /* Avida-main.mm */,
 				70FA3F7A164422750003971F /* AvidaAppDelegate.h */,
 				70FA3F7B164422750003971F /* AvidaAppDelegate.mm */,
+				709AE9B41695F49D00E50275 /* AvidaController.h */,
+				709AE9B51695F49D00E50275 /* AvidaController.mm */,
 				703549AE1337AD0500D3865C /* MainWindowController.h */,
 				703549AF1337AD0500D3865C /* MainWindowController.mm */,
 				70C99132167299B5004823A2 /* WorkspaceSelectWindowController.h */,
@@ -732,6 +739,8 @@
 				70FA3F74164421730003971F /* Avida-MainMenu.xib in Resources */,
 				70FA3F751644217E0003971F /* Avida-MainWindow.xib in Resources */,
 				70C99139167299F2004823A2 /* Avida-WorkspaceSelectWindow.xib in Resources */,
+				705E52E51696361F00392BA7 /* PopViewerIcon.png in Resources */,
+				705E52E61696361F00392BA7 /* petri128.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -796,6 +805,7 @@
 				709AE96B1684E6CE00E50275 /* GraphingViewController.m in Sources */,
 				709AE96F1684E6F900E50275 /* OrganismAnalysisViewController.m in Sources */,
 				709AE9731684E86100E50275 /* ActivityListViewController.m in Sources */,
+				709AE9B61695F49D00E50275 /* AvidaController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -911,6 +921,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = $BUILT_PRODUCTS_DIR/AvidaCore.framework/Versions/Current/CPPHeaders/;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -931,6 +942,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = $BUILT_PRODUCTS_DIR/AvidaCore.framework/Versions/Current/CPPHeaders/;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

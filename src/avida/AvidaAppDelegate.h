@@ -3,7 +3,7 @@
 //  avida/apps/viewer-macos
 //
 //  Created by David M. Bryson on 11/2/12.
-//  Copyright 2012 Michigan State University. All rights reserved.
+//  Copyright 2012-2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -29,8 +29,19 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AvidaAppDelegate : NSObject <NSApplicationDelegate>
+#import "AvidaController.h"
 
-@property (assign) IBOutlet NSWindow *window;
+
+@interface AvidaAppDelegate : NSObject <NSApplicationDelegate> {
+  AvidaController* ctlr;
+}
+
+
+@property (strong) IBOutlet AvidaController* appController;
+
+
+// NSApplicationDelegate Protocol
+- (void) applicationDidFinishLaunching:(NSNotification*)aNotification;
+- (BOOL) application:(NSApplication*)theApplication openFile:(NSString*)filename;
 
 @end

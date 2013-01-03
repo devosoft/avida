@@ -29,6 +29,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface WorkspaceSelectWindowController : NSWindowController
+@interface WorkspaceSelectWindowController : NSWindowController {
+  IBOutlet NSPathControl* pathControl;
+  IBOutlet NSArrayController* workspaceArrayCtlr;
+  IBOutlet NSButton* openBtn;
+}
+
+- (id) init;
 
 @end

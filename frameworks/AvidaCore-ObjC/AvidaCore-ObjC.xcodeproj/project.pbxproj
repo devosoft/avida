@@ -33,8 +33,8 @@
 		7041AC5216558B98008413DB /* ACGenome+NSPasteboardAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7041AC5016558B98008413DB /* ACGenome+NSPasteboardAdditions.mm */; };
 		7041AC5516558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7041AC5616558DF1008413DB /* AvidaCore_Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7041AC5416558DF1008413DB /* AvidaCore_Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; };
-		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; };
+		709AE9771684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		709AE9781684F52E00E50275 /* ACWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = 709AE9751684F52E00E50275 /* ACWorkspace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		709AE9791684F52E00E50275 /* ACWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.m */; };
 		709AE97A1684F52E00E50275 /* ACWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 709AE9761684F52E00E50275 /* ACWorkspace.m */; };
 /* End PBXBuildFile section */
@@ -255,6 +255,7 @@
 				7041ABFC1655825A008413DB /* Frameworks */,
 				7041ABFD1655825A008413DB /* Headers */,
 				7041ABFE1655825A008413DB /* Resources */,
+				705E52E316962D1C00392BA7 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -318,6 +319,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		705E52E316962D1C00392BA7 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mkdir -p $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/../CPPHeaders\n\n# Copy avida-core headers\nrm -rf $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/../CPPHeaders/avida\ncp -r $PROJECT_DIR/../../../../avida-core/include/public/avida $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/../CPPHeaders/\n\n# Copy apto headers\nrm -rf $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/../CPPHeaders/apto\ncp -r $PROJECT_DIR/../../../../libs/apto/include/apto $BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH/../CPPHeaders/\n\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7041ABFB1655825A008413DB /* Sources */ = {
@@ -389,6 +407,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "resources/AvidaCore-OSX-Info.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
 				SDKROOT = macosx10.7;
@@ -420,6 +439,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "resources/AvidaCore-OSX-Info.plist";
 				INSTALL_PATH = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AvidaCore;
 				SDKROOT = macosx10.7;

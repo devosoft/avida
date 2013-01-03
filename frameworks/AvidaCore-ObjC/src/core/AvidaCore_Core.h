@@ -29,4 +29,5 @@
 
 #import <AvidaCore/ACFramework.h>
 #import <AvidaCore/ACGenome.h>
+#import <AvidaCore/ACWorkspace.h>
 #import <AvidaCore/NSString+Apto.h>
