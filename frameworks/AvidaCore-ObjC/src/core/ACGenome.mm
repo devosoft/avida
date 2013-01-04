@@ -46,8 +46,13 @@ NSString* const AvidaPasteboardTypeGenome = @"org.devosoft.avida.genome";
 
 
 - (ACGenome*) initWithGenome:(NSString*)genome name:(NSString*)genomeName {
-  genomeStr = genome;
-  name = genomeName;
+  self = [super init];
+  
+  if (self) {
+    genomeStr = genome;
+    name = genomeName;
+  }
+  
   return self;
 }
 

@@ -29,6 +29,68 @@
 
 #import "ACWorkspace.h"
 
+#import "ACFramework.h"
+
+
+NSString* const ACWorkspaceFiletypes[] = {@"org.devosoft.avida.avida-workspace", @"avidaworkspace"};
+
+
 @implementation ACWorkspace
+
+@synthesize name;
+@synthesize location=workspaceURL;
+
++ (void) initialize {
+  if (self == [ACWorkspace class]) {
+    [ACFramework self];
+  }
+}
+
+- (id) initWithURL:(NSURL*)url {
+  NSError* err = nil;
+  if (![url isFileURL] || ![url checkResourceIsReachableAndReturnError:&err]) return nil;
+  
+  self = [super init];
+  
+  if (self) {
+    workspaceURL = [url fileReferenceURL];
+  }
+  
+  return self;
+}
+
+
+- (NSString*) detailsString {
+  return @"workspace details here...";
+}
+
+
+- (NSString*) lastOpenedString {
+  NSError* err = nil;
+  NSDictionary* resVals = [workspaceURL resourceValuesForKeys:@[NSURLContentAccessDateKey] error:&err];
+  
+  NSDate* lastOpenedDate = [resVals objectForKey:NSURLContentAccessDateKey];
+  if (lastOpenedDate) {
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+    [dateFormatter setDoesRelativeDateFormatting:YES];
+    NSString* dateString = [dateFormatter stringFromDate:lastOpenedDate];
+    
+    return dateString;
+  }
+  
+  return @"unknown";
+}
+
+
++ (NSArray*) fileTypes {
+  static NSArray* workspaceFiletypes = nil;
+  if (workspaceFiletypes == nil) {
+    workspaceFiletypes = [[NSArray alloc] initWithObjects:ACWorkspaceFiletypes count:2];
+  }
+  
+  return workspaceFiletypes;
+}
 
 @end

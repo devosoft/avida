@@ -29,6 +29,9 @@
 
 #import "WorkspaceSelectWindowController.h"
 
+#import "AvidaController.h"
+#import "AvidaPreferences.h"
+
 
 @interface WorkspaceSelectWindowController ()
 
@@ -37,21 +40,84 @@
 
 @implementation WorkspaceSelectWindowController
 
-- (id) init
+// Initialization
+// --------------------------------------------------------------------------------------------------------------
+
+- (id) initWithAvidaController:(AvidaController*)ctlr
 {
   self = [super initWithWindowNibName:@"Avida-WorkspaceSelectWindow"];
   if (self) {
-    
+    avidaCtlr = ctlr;
   }
   
   return self;
 }
 
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+
+- (IBAction) cancelWorkspaceSelection:(id)sender {
+  [self close];
+  [avidaCtlr workspaceSelectionCancelled];
+}
+
+
+- (IBAction) locateWorkspace:(id)sender {
+  [self close];
+
+  NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+  [openDlg setCanChooseFiles:YES];
+  [openDlg setAllowedFileTypes:[ACWorkspace fileTypes]];
+  
+  // Display the dialog.  If the OK button was pressed, process the files.
+  if ([openDlg runModal] == NSFileHandlingPanelOKButton) {
+    NSArray* files = [openDlg URLs];
+    NSURL* workspaceURL = [files objectAtIndex:0];
+    
+    ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
+    if (workspace) {
+      [avidaCtlr workspaceSelected:workspace];
+      return;
+    }
+  }
+  
+  [self showWindow:sender];
+}
+
+
+- (IBAction) openWorkspace:(id)sender {
+  
+}
+
+
+
+- (IBAction) newWorkspace:(id)sender {
+  
+}
+
+
+
+// NSWindowController
+// --------------------------------------------------------------------------------------------------------------
+
 - (void)windowDidLoad
 {
   [super windowDidLoad];
   
-  // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSArray* knownWorkspaces = [userDefaults arrayForKey:PrefKeyWorkspaceURLs];
+  
+  // Load all known workspaces
+  for (NSData* urlData in knownWorkspaces) {
+    NSURL* workspaceURL = (NSURL*)[NSUnarchiver unarchiveObjectWithData:urlData];
+    if (workspaceURL) {
+      ACWorkspace* workspace = [[ACWorkspace alloc] initWithURL:workspaceURL];
+      
+      [workspaceArrayCtlr addObject:workspace];
+    }
+  }
 }
 
 @end

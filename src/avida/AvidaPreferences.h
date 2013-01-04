@@ -1,8 +1,8 @@
 //
-//  AvidaController.h
+//  AvidaPreferences.h
 //  avida/apps/viewer-macos
 //
-//  Created by David M. Bryson on 1/3/13.
+//  Created by David M. Bryson on 1/4/13.
 //  Copyright 2013 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
@@ -28,34 +28,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AvidaCore/AvidaCore.h>
-
-@class MainWindowController;
-@class WorkspaceSelectWindowController;
 
 
-@interface AvidaController : NSObject {
-  // Core Data Objects
-  ACWorkspace* workspace;
-  
-  // Workspace Selection
-  WorkspaceSelectWindowController* workspaceSelectWindow;
-  
-  // Main Window
-  MainWindowController* mainWindow;
-}
+extern NSString* const PrefKeyWorkspaceURLs;
+extern NSString* const PrefKeyDefaultWorkspace;
 
 
-// Application Events
-// --------------------------------------------------------------------------------------------------------------
-- (void) applicationDidFinishLaunching;
-- (BOOL) applicationOpenFile:(NSURL*)fileURL;
+@interface AvidaPreferences : NSObject
 
-
-// Workspace Selection Events
-// --------------------------------------------------------------------------------------------------------------
-- (void) workspaceSelectionCancelled;
-- (void) workspaceSelected:(ACWorkspace*)selectedWorkspace;
-
++ (void) registerDefaults;
 
 @end

@@ -34,14 +34,26 @@
 
 @implementation AvidaController
 
+// Application Events
+// --------------------------------------------------------------------------------------------------------------
+
 - (void) applicationDidFinishLaunching {
-  workspaceSelectWindow = [[WorkspaceSelectWindowController alloc] init];
+  workspaceSelectWindow = [[WorkspaceSelectWindowController alloc] initWithAvidaController:self];
   [workspaceSelectWindow showWindow:self];
 }
 
 
 - (BOOL) applicationOpenFile:(NSURL*)fileURL {
   return NO;
+}
+
+
+
+// Workspace Selection Events
+// --------------------------------------------------------------------------------------------------------------
+
+- (void) workspaceSelectionCancelled {
+  
 }
 
 

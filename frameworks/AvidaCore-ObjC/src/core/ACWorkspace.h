@@ -29,6 +29,24 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ACWorkspace : NSObject
+
+@interface ACWorkspace : NSObject {
+  NSURL* workspaceURL;
+  NSString* name;
+}
+
++ (void) initialize;
+
+
+- (id) initWithURL:(NSURL*)url;
+
+
+@property (readonly) NSString* name;
+@property (readonly) NSString* detailsString;
+@property (readonly) NSString* lastOpenedString;
+@property (readonly) NSURL* location;
+
+
++ (NSArray*) fileTypes;
 
 @end

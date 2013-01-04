@@ -29,12 +29,35 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class AvidaController;
+
+
 @interface WorkspaceSelectWindowController : NSWindowController {
+  AvidaController* avidaCtlr;
+  
   IBOutlet NSPathControl* pathControl;
   IBOutlet NSArrayController* workspaceArrayCtlr;
   IBOutlet NSButton* openBtn;
 }
 
-- (id) init;
+// Initialization
+// --------------------------------------------------------------------------------------------------------------
+
+- (id) initWithAvidaController:(AvidaController*)ctlr;
+
+
+// Actions
+// --------------------------------------------------------------------------------------------------------------
+
+- (IBAction) cancelWorkspaceSelection:(id)sender;
+- (IBAction) locateWorkspace:(id)sender;
+- (IBAction) openWorkspace:(id)sender;
+- (IBAction) newWorkspace:(id)sender;
+
+
+// NSWindowController
+// --------------------------------------------------------------------------------------------------------------
+
+- (void)windowDidLoad;
 
 @end
