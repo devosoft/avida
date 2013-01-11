@@ -373,16 +373,14 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const Instru
   // parent's resources have already been halved or reset in DivideReset;
   // offspring gets that value (half or 0) too.
   cur_rbins_avail.SetAll(0);
-  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {
-    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   
-      cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
-    }
-    if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {   
-      cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
-      cur_rbins_avail[resource] = cur_rbins_avail[resource] + m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
-    } 
+  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
+    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
   }
+  if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    cur_rbins_avail[resource] += m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+  }
+  
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   first_reaction_cycles.SetAll(-1);
@@ -851,10 +849,14 @@ void cPhenotype::DivideReset(const InstructionSequence& _genome)
   if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
     // resources available are split in half -- the offspring gets the other half
     for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
-  }
-  else if (m_world->GetConfig().DIVIDE_METHOD.Get() != 0) {
+  } else if (m_world->GetConfig().DIVIDE_METHOD.Get() != 0) {
     cur_rbins_avail.SetAll(0);
     cur_rbins_total.SetAll(0);  // total resources collected in lifetime
+    
+    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
+      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+      cur_rbins_avail[resource] += m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+    }
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
