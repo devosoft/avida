@@ -221,29 +221,30 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     if (chooseUpDown == 0) {
     int chooseEW = rng.GetUInt(0,2);
       if (chooseEW == 0) {
-        m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
+        m_peakx = rng.GetUInt(max(0,m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height),
                               m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
       } else {
-        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
-                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+        m_peakx = rng.GetUInt(max(0,m_halo_anchor_x + m_halo_inner_radius + temp_height),
+                              m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1); 
       }
-      m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+      m_peaky = rng.GetUInt(max(0,m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height),
                             m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
     else {
       int chooseNS = rng.GetUInt(0,2);
       if (chooseNS == 0) { 
-        m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+        m_peaky = rng.GetUInt(max(0,m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height),
                               m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
       } else {
-        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
+        m_peaky = rng.GetUInt(max(0,m_halo_anchor_y + m_halo_inner_radius + temp_height),
                               m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
       }
-      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height,
+      m_peakx = rng.GetUInt(max(0,m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height),
                             m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
   }
-  
+  assert(m_peakx >= 0 && m_peaky >= 0 && m_peakx < GetX() && m_peaky < GetY());
+
   SetModified(false);
   m_counter = 0;
   m_skip_counter = 0;
@@ -420,7 +421,7 @@ void cGradientCount::moveRes(cAvidaContext& ctx)
   // if we are working with moving resources and it's time to update direction
   if (m_move_counter == m_updatestep && m_move_a_scaler > 1) {
     m_move_counter = 1;
-    if (m_halo == 1) current_orbit = setHaloPeakMovement(ctx, current_orbit);
+    if (m_halo == 1) current_orbit = setHaloOrbit(ctx, current_orbit);
     else setPeakMoveMovement(ctx);
   }    
   else m_move_counter++;
@@ -447,14 +448,14 @@ void cGradientCount::setPeakMoveMovement(cAvidaContext& ctx)
   }
 } 
 
-int cGradientCount::setHaloPeakMovement(cAvidaContext& ctx, int current_orbit)
+int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
 {    
   // move cones by moving m_peakx & m_peaky 
   // halo resources orbit at a fixed org walking distance from an anchor point
   // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
   // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
   //    between the anchor point and any orbit
-
+  
   //choose to change orbit (0) or direction (1)    
   int random_shift = ctx.GetRandom().GetUInt(0,2);
   // if changing orbit, choose to go in or out one orbit
@@ -462,48 +463,34 @@ int cGradientCount::setHaloPeakMovement(cAvidaContext& ctx, int current_orbit)
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
+
   if (random_shift == 0) {
     //do nothing unless there's room to change orbit
     if (m_halo_width > (temp_height * 2)) {
-      int orbit_shift = ctx.GetRandom().GetUInt(0,2); 
-      if (orbit_shift == 0) {
-        current_orbit = current_orbit - 1; 
-        if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-          m_peaky = m_old_peaky - 1;
-        else 
-          m_peakx = m_old_peakx - 1;
+      int orbit_shift = 1;
+      if (!ctx.GetRandom().GetUInt(0,2)) orbit_shift = -1;
+      current_orbit += orbit_shift;
+      
+      // we have to check that we are still going to be within the halo after an orbit change
+      // if we go out of bounds, we need to go the other way instead, taking two steps back on current_orbit
+      if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2) ||
+          current_orbit < (m_halo_inner_radius + temp_height + 2) ||
+          m_halo_anchor_y + current_orbit - 1 >= GetY() ||
+          m_halo_anchor_x + current_orbit - 1 >= GetX() ||
+          m_halo_anchor_y + current_orbit - 1 < 0 ||
+          m_halo_anchor_x + current_orbit - 1 < 0) {
+        orbit_shift *= -1;
+        current_orbit += 2 * orbit_shift;
       }
-      else if (orbit_shift == 1) {
-        current_orbit = current_orbit + 1;  
-        if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-          m_peaky = m_old_peaky + 1;
-        else 
-          m_peakx = m_old_peakx + 1;
-      }
-      // we have to check that we are still going to be within the halo after an orbit change       
-      if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2)) {
-        // if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
-        current_orbit = current_orbit - 2;
-        if (abs(m_halo_anchor_y - m_old_peaky) > abs(m_halo_anchor_x - m_old_peakx))
-          m_peaky = m_old_peaky + 1;
-        else 
-          m_peakx = m_old_peakx + 1;
-      }
-      else if (current_orbit < (m_halo_inner_radius + temp_height + 2)) {
-        current_orbit = current_orbit + 2;
-        if (abs(m_halo_anchor_y - m_old_peaky) > abs(m_halo_anchor_x - m_old_peakx))
-          m_peaky = m_old_peaky - 1;
-        else 
-          m_peakx = m_old_peakx - 1;          
-      }
+
+      if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx)) m_peaky = m_old_peaky + orbit_shift;
+      else m_peakx = m_old_peakx + orbit_shift;  
     }
     // if there was no room to change orbit, change the direction instead of the orbit
     else random_shift = 1;
   }
   // if changing direction of rotation, we just switch sign of rotation
-  else if (random_shift == 1) {
-    m_halo_dir = m_halo_dir * -1; 
-  }
+  if (random_shift == 1) m_halo_dir = m_halo_dir * -1;
   return current_orbit;
 }
 
@@ -574,6 +561,7 @@ void cGradientCount::moveHaloPeak(int current_orbit)
       m_peaky = m_peaky + (m_halo_dir * m_move_speed);
     }
   }
+  assert(m_peakx >= 0 && m_peaky >= 0 && m_peakx < GetX() && m_peaky < GetY());
 }
 
 void cGradientCount::movePeak()
@@ -1044,7 +1032,7 @@ void cGradientCount::updateBounds(int x, int y)
   if (x < m_min_usedx || m_min_usedx == -1) m_min_usedx = x;
   if (y < m_min_usedy || m_min_usedy == -1) m_min_usedy = y;
   if (x > m_max_usedx || m_max_usedx == -1) m_max_usedx = x;
-  if (y > m_max_usedy || m_max_usedy == -1) m_max_usedy = y;  
+  if (y > m_max_usedy || m_max_usedy == -1) m_max_usedy = y;
 }
 
 void cGradientCount::resetUsedBounds()
