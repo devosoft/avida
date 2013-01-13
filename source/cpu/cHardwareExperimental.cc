@@ -5005,10 +5005,12 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
   }
   else {
     // add prey's merit to predator's--this will result in immediately applying merit increases; adjustments to bonus, give increase in next generation
+    double effic = m_world->GetConfig().PRED_EFFICIENCY.Get();
+    if (m_organism->GetForageTarget() <= -3) effic *= 0.5;
     if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
       const double target_merit = target->GetPhenotype().GetMerit().GetDouble();
       double attacker_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
-      attacker_merit += target_merit * m_world->GetConfig().PRED_EFFICIENCY.Get();
+      attacker_merit += target_merit * effic;
       m_organism->UpdateMerit(attacker_merit);
     }
     
@@ -5021,14 +5023,14 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
     
     // and add current merit bonus after adjusting for conversion efficiency
     const double target_bonus = target->GetPhenotype().GetCurBonus();
-    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+    m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() + (target_bonus * effic));
     
     // now add the victims internal resource bins to your own, if enabled, after correcting for conversion efficiency
     if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
       tArray<double> target_bins = target->GetRBins();
       for (int i = 0; i < target_bins.GetSize(); i++) {
-        m_organism->AddToRBin(i, target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get());
-        target->AddToRBin(i, -1 * (target_bins[i] * m_world->GetConfig().PRED_EFFICIENCY.Get()));
+        m_organism->AddToRBin(i, target_bins[i] * effic);
+        target->AddToRBin(i, -1 * (target_bins[i] * effic));
       }
       const int spec_bin = (int) (m_organism->GetRBins()[m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get()]);
       setInternalValue(bin_reg, spec_bin, true);
