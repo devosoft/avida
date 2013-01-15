@@ -5045,7 +5045,10 @@ bool cHardwareExperimental::Inst_AttackPrey(cAvidaContext& ctx)
       for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
-    setInternalValue(success_reg, 1, true);   
+    cString inst = "attack-prey";
+    UpdateGroupAttackStats(inst);
+
+    setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
   return true;
@@ -5271,6 +5274,9 @@ bool cHardwareExperimental::Inst_AttackPreyGroup(cAvidaContext& ctx)
       for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
+    cString inst = "attack-prey-group";
+    UpdateGroupAttackStats(inst);
+
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
@@ -5315,7 +5321,10 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
     m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
     for (int j = 0; j < neighborhood.GetSize(); j++) {
       if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
-      pack.Push(m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetRandPredAV());
+        tArray<cOrganism*> predators = m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetCellInputAVs();
+        for (int i = 0; i < predators.GetSize(); i++) {
+          if (!predators[i]->IsDead() && predators[i]->GetForageTarget() <= -2) pack.Push(predators[i]);
+         }
       }
     }
   }
@@ -5325,7 +5334,7 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   int pred_count = pack.GetSize();
-  if (pred_count == 1) return false;
+  if (pred_count <= 1) return false;
   if (pred_count > 1) odds = 0.1 + (odds * pred_count); // 1 friend = 20%, 8 friends = 100%
   
   const int success_reg = FindModifiedRegister(rBX);
@@ -5385,8 +5394,11 @@ bool cHardwareExperimental::Inst_AttackPreyShare(cAvidaContext& ctx)
     if (m_world->GetConfig().MIN_PREY.Get() < 0 && m_world->GetStats().GetNumPreyCreatures() <= abs(m_world->GetConfig().MIN_PREY.Get())) {
       // prey numbers can be crashing for other reasons and we wouldn't be using this switch if we didn't want an absolute min num prey
       int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
-      for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
+      for (int i = 0; i < num_clones; i++) m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
+
+    cString inst = "attack-prey-share";
+    UpdateGroupAttackStats(inst);
 
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
@@ -5452,7 +5464,7 @@ bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
   
   double odds = m_world->GetConfig().PRED_ODDS.Get();
   int pred_count = pack.GetSize();
-  if (pred_count == 1) return false;
+  if (pred_count <= 1) return false;
   if (pred_count > 1) odds = 0.1 + (odds * pred_count); // 1 friend = 20%, 8 friends = 100%
 
   const int success_reg = FindModifiedRegister(rBX);
@@ -5508,6 +5520,9 @@ bool cHardwareExperimental::Inst_AttackPreyGroupShare(cAvidaContext& ctx)
       for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
     
+    cString inst = "attack-prey-group-share";
+    UpdateGroupAttackStats(inst);
+
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
@@ -5698,6 +5713,10 @@ bool cHardwareExperimental::Inst_AttackFTPrey(cAvidaContext& ctx)
       int num_clones = abs(m_world->GetConfig().MIN_PREY.Get()) - m_world->GetStats().GetNumPreyCreatures();
       for (int i = 0; i < num_clones; i++)m_organism->GetOrgInterface().InjectPreyClone(ctx);
     }
+    
+    cString inst = "attack-ft-prey";
+    UpdateGroupAttackStats(inst);
+    
     setInternalValue(success_reg, 1, true);
     setInternalValue(bonus_reg, (int) (target_bonus), true);
   }
@@ -6779,4 +6798,70 @@ bool cHardwareExperimental::TestAttackPred(cAvidaContext& ctx)
   else if (m_use_avatar == 2 && !m_organism->GetOrgInterface().FacedHasPredAV()) return false;
   
   return true;
+}
+
+void cHardwareExperimental::UpdateGroupAttackStats(cString& inst) {
+  int idx = 0;
+  tArray<cString> attack_inst = m_world->GetStats().GetGroupAttackInsts(m_inst_set->GetInstSetName());
+  for (int i = 0; i < attack_inst.GetSize(); i++) {
+    if (attack_inst[i] == inst) idx = i;
+    break;
+  }
+  
+  bool has_opinion = false;
+  int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
+  if (m_organism->HasOpinion()) {
+    has_opinion = true;
+    opinion = m_organism->GetOpinion().first;
+  }
+  
+  tArray<int> neighborhood;
+  int gr_pack_size = 0;
+  int fr_pack_size = 0;
+  if (!m_use_avatar) {
+    m_organism->GetOrgInterface().GetNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->IsOccupied() &&
+          !m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->IsDead()) {
+        if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetForageTarget() <= -2) {
+          fr_pack_size++;
+          if (has_opinion) {
+            if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->HasOpinion()) {
+              if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetOrganism()->GetOpinion().first == opinion) {
+                gr_pack_size++;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  else {
+    m_organism->GetOrgInterface().GetAVNeighborhoodCellIDs(neighborhood);
+    for (int j = 0; j < neighborhood.GetSize(); j++) {
+      if (m_organism->GetOrgInterface().GetCell(neighborhood[j])->HasPredAV()) {
+        tArray<cOrganism*> predators = m_organism->GetOrgInterface().GetCell(neighborhood[j])->GetCellInputAVs();
+        for (int i = 0; i < predators.GetSize(); i++) {
+          if (!predators[i]->IsDead() && predators[i]->GetForageTarget() <= -2) {
+            fr_pack_size++;
+            if (has_opinion) {
+              if (predators[i]->HasOpinion()) {
+                if (predators[i]->GetOpinion().first == opinion) gr_pack_size++;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (gr_pack_size > 8) gr_pack_size = 9;
+  if (fr_pack_size > 8) fr_pack_size = 9;
+  if (m_organism->GetForageTarget() == -2) {
+    m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, fr_pack_size);
+    m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10);
+  }
+  else if (m_organism->GetForageTarget() < -2) {
+    m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, fr_pack_size);
+    m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10);
+  }
 }

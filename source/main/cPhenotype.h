@@ -141,8 +141,10 @@ private:
   tArray<int> cur_inst_count;                 // Instruction exection counter
   tArray<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
   tArray<int> cur_failed_inst_count;          // Failed instruction exection counter (returned false -- not for counting 'paused' exec due to cpu cost)
-  tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
-  tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
+  tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
+  tArray< tArray<int> > cur_group_attack_count;
+  tArray< tArray<int> > cur_top_pred_group_attack_count;
+  tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB
   tArray<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
   tHashMap<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
@@ -188,6 +190,8 @@ private:
   tArray<int> last_from_sensor_count;
   tArray<int> last_failed_inst_count;
   tArray<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB 
+  tArray<tArray <int> > last_group_attack_count;
+  tArray<tArray <int> > last_top_pred_group_attack_count;
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
@@ -306,6 +310,7 @@ private:
   
 
   inline void SetInstSetSize(int inst_set_size);
+  inline void SetGroupAttackInstSetSize(int num_group_attack_inst);
   
 public:
   cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
@@ -434,6 +439,8 @@ public:
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurFromSensorInstCount() const { assert(initialized == true); return cur_from_sensor_count; }
+  const tArray< tArray<int> >& GetCurGroupAttackInstCount() const { assert(initialized == true); return cur_group_attack_count; }
+  const tArray< tArray<int> >& GetCurTopPredGroupAttackInstCount() const { assert(initialized == true); return cur_top_pred_group_attack_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
@@ -477,6 +484,8 @@ public:
   const tArray<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
   const tArray<int>& GetLastFailedInstCount() const { assert(initialized == true); return last_failed_inst_count; }
   const tArray<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
+  const tArray< tArray<int> >& GetLastGroupAttackInstCount() const { assert(initialized == true); return last_group_attack_count; }
+  const tArray< tArray<int> >& GetLastTopPredGroupAttackInstCount() const { assert(initialized == true); return last_top_pred_group_attack_count; }
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
   const tArray<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
@@ -654,6 +663,8 @@ public:
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
   void IncCurFromSensorInstCount(int _inst_num)  { assert(initialized == true); cur_from_sensor_count[_inst_num]++; }
+  void IncCurGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_group_attack_count[_inst_num][pack_size_idx]++; }
+  void IncCurTopPredGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_top_pred_group_attack_count[_inst_num][pack_size_idx]++; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
@@ -730,6 +741,20 @@ inline void cPhenotype::SetInstSetSize(int inst_set_size)
   last_inst_count.Resize(inst_set_size, 0);
   last_from_sensor_count.Resize(inst_set_size, 0);
   last_failed_inst_count.Resize(inst_set_size, 0);
+}
+
+inline void cPhenotype::SetGroupAttackInstSetSize(int num_group_attack_inst)
+{
+  last_group_attack_count.Resize(num_group_attack_inst);
+  last_top_pred_group_attack_count.Resize(num_group_attack_inst);
+  cur_group_attack_count.Resize(num_group_attack_inst);
+  cur_top_pred_group_attack_count.Resize(num_group_attack_inst);
+    for (int i = 0; i < last_group_attack_count.GetSize(); i++) {
+    last_group_attack_count[i].Resize(20, 0);
+    last_top_pred_group_attack_count[i].Resize(20, 0);
+    cur_group_attack_count[i].Resize(20, 0);
+    cur_top_pred_group_attack_count[i].Resize(20, 0);
+  }
 }
 
 inline void cPhenotype::SetBirthCellID(int birth_cell) { birth_cell_id = birth_cell; }

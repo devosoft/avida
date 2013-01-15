@@ -695,6 +695,7 @@ public:
   void MakeTopPred(cAvidaContext& ctx);
   bool TestAttack(cAvidaContext& ctx);
   bool TestAttackPred(cAvidaContext& ctx);
+  void UpdateGroupAttackStats(cString& inst);
 };
 
 

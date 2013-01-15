@@ -2459,6 +2459,68 @@ void cStats::PrintGermlineData(const cString& filename)
   m_germline_generation.Clear();
 }
 
+void cStats::SetGroupAttackInstNames(const cString& inst_set) {
+  cString inst;
+  tSmartArray <cString> names;
+  for (int i = 0; i < m_is_inst_names_map[inst_set].GetSize(); i++) {
+    inst = m_is_inst_names_map[inst_set][i];
+    if (inst == "attack-prey" || inst == "attack-ft-prey" || inst == "attack-prey-group" ||
+        inst == "attack-prey-share" || inst == "attack-prey-group-share") {
+      names.Push(inst);
+    }
+  }
+  m_group_attack_names[inst_set].Resize(names.GetSize());
+  for (int i = 0; i < m_group_attack_names[inst_set].GetSize(); i++) {
+    m_group_attack_names[inst_set][i] = names[i];
+  }
+}
+
+void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_set) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Attack Instruction Execution Circumstances");
+    df.WriteComment("Gives count of attacks with given number of neighbors present.");
+    df.WriteTimeStamp();
+    
+    df.WriteComment("Update");
+    df.WriteComment("Instruction");
+    df.WriteComment("0Neighbors");
+    df.WriteComment("1Neighbors");
+    df.WriteComment("2Neighbors");
+    df.WriteComment("3Neighbors");
+    df.WriteComment("4Neighbors");
+    df.WriteComment("5Neighbors");
+    df.WriteComment("6Neighbors");
+    df.WriteComment("7Neighbors");
+    df.WriteComment("8Neighbors");
+    df.WriteComment("8+Neighbors");
+    df.WriteComment("0InGroupNeighbors");
+    df.WriteComment("1InGroupNeighbors");
+    df.WriteComment("2InGroupNeighbors");
+    df.WriteComment("3InGroupNeighbors");
+    df.WriteComment("4InGroupNeighbors");
+    df.WriteComment("5InGroupNeighbors");
+    df.WriteComment("6InGroupNeighbors");
+    df.WriteComment("7InGroupNeighbors");
+    df.WriteComment("8InGroupNeighbors");
+    df.WriteComment("8+InGroupNeighbors");
+    df.FlushComments();
+    df.Endl();
+  }
+
+  std::ofstream& fp = df.GetOFStream();
+  cString inst;
+  for (int i = 0; i < m_group_attack_names[inst_set].GetSize(); i++) {
+    inst = m_group_attack_names[inst_set][i];
+    fp << inst << ",";
+    for (int j = 0; j < m_group_attack_exe_map[inst_set][inst].GetSize() - 1; j++) {
+      fp << m_group_attack_exe_map[inst_set][inst][j].Sum() << ",";
+    }
+    fp << m_group_attack_exe_map[inst_set][inst][m_group_attack_exe_map[inst_set][inst].GetSize() - 1].Sum() << endl;
+  }
+  m_world->GetDataFileManager().Remove(filename);
+}
 
 /*! Print the genotype IDs of the founders of recently born demes.
 
@@ -4331,7 +4393,6 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 	df.Endl();
 }
 
-
 void cStats::PrintDenData(const cString& filename) {
   if (m_world->GetConfig().USE_AVATARS.Get() <= 0) return; 
   
@@ -4428,9 +4489,6 @@ void cStats::PrintDenData(const cString& filename) {
 	df.Endl();  
 
 }
-
-
-
 
 /*! Print statistics related to the diversity of reactions performed by a deme
  prior to replication.  */

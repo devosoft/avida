@@ -5542,7 +5542,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
   
   stats.ZeroFTInst();
   
-  for (int i = 0; i < live_org_list.GetSize(); i++) {  
+  for (int i = 0; i < live_org_list.GetSize(); i++) {
     cOrganism* organism = live_org_list[i];
     const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
@@ -5579,6 +5579,13 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
         pred_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
+      tArray<cString> att_inst = m_world->GetStats().GetGroupAttackInsts(organism->GetGenome().GetInstSet());
+      for (int k = 0; k < att_inst.GetSize(); k++) {
+        tArray<cIntSum>& group_attack_inst_exe_counts = stats.ExecCountsForGroupAttackInst(organism->GetGenome().GetInstSet(), att_inst[k]);
+        for (int j = 0; j < phenotype.GetLastGroupAttackInstCount()[k].GetSize(); j++) {
+          group_attack_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastGroupAttackInstCount()[k][j]);
+        }
+      }
     }
     else {
       stats.SumTopPredFitness().Add(cur_fitness);
@@ -5594,6 +5601,13 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
       tArray<cIntSum>& tpred_from_sensor_exec_counts = stats.InstTopPredFromSensorExeCountsForInstSet(organism->GetGenome().GetInstSet());
       for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
         tpred_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
+      }
+      tArray<cString> att_inst = m_world->GetStats().GetGroupAttackInsts(organism->GetGenome().GetInstSet());
+      for (int k = 0; k < att_inst.GetSize(); k++) {
+        tArray<cIntSum>& group_attack_inst_exe_counts = stats.ExecCountsForGroupAttackInst(organism->GetGenome().GetInstSet(), att_inst[k]);
+        for (int j = 0; j < phenotype.GetLastTopPredGroupAttackInstCount()[k].GetSize(); j++) {
+          group_attack_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastTopPredGroupAttackInstCount()[k][j]);
+        }
       }
     }
     

@@ -150,6 +150,8 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
   tArray<cString> names(inst_set->GetSize());
   for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
   m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
+  m_world->GetStats().SetGroupAttackInstNames(inst_set->GetInstSetName());
+
   m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   
   m_world->GetStats().InstPreyExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
@@ -159,6 +161,15 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
   m_world->GetStats().InstPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstTopPredFromSensorExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
 
+  m_world->GetStats().ExecCountsForGroupAttackInstSet(inst_set->GetInstSetName()).Clear();
+  tArray<cString> att_inst = m_world->GetStats().GetGroupAttackInsts(inst_set->GetInstSetName());
+  for (int i = 0; i < att_inst.GetSize(); i++) {
+    m_world->GetStats().ExecCountsForGroupAttackInst(inst_set->GetInstSetName(), att_inst[i]).Resize(20);
+    for (int j = 0; j < 20; j++) {
+      m_world->GetStats().ExecCountsForGroupAttackInst(inst_set->GetInstSetName(), att_inst[i])[j].Clear();
+    }
+  }
+  
   m_world->GetStats().InstMaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   m_world->GetStats().InstFemaleExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
   

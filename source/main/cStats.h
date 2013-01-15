@@ -177,6 +177,9 @@ private:
   tArrayMap<cString, tArray<cIntSum> > m_is_pred_from_sensor_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_tpred_from_sensor_inst_map;
   
+  tArrayMap<cString, tArray<cString> > m_group_attack_names;
+  tArrayMap<cString, tArrayMap<cString, tArray<cIntSum> > > m_group_attack_exe_map; // exec_count_per_num_neighbor = exe_map[inst_set[inst[num_neigbors]]]
+
   tArrayMap<cString, tArray<cIntSum> > m_is_male_exe_inst_map;
   tArrayMap<cString, tArray<cIntSum> > m_is_female_exe_inst_map;
   
@@ -620,6 +623,9 @@ public:
   tArray<cIntSum>& InstTopPredExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_exe_inst_map[inst_set]; }
   tArray<cIntSum>& InstTopPredFromSensorExeCountsForInstSet(const cString& inst_set) { return m_is_tpred_from_sensor_inst_map[inst_set]; }
 
+  tArrayMap<cString, tArray<cIntSum> >& ExecCountsForGroupAttackInstSet(const cString& inst_set) { return m_group_attack_exe_map[inst_set]; }
+  tArray<cIntSum>& ExecCountsForGroupAttackInst(const cString& inst_set, const cString& inst) { return m_group_attack_exe_map[inst_set][inst]; }
+
   void ZeroFTInst();
   
   //mating type/male-female accessors
@@ -927,6 +933,8 @@ public:
   int GetNumPredCreatures() const;
   int GetNumTopPredCreatures() const;
   int GetNumTotalPredCreatures() const;
+  void SetGroupAttackInstNames(const cString& inst_set);
+  tArray<cString>& GetGroupAttackInsts(const cString& inst_set) { return m_group_attack_names[inst_set]; }
   
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -961,11 +969,12 @@ public:
   void PrintPreyFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
   void PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set);
+  void PrintGroupAttackData(const cString& filename, const cString& inst_set);
 
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
   void PrintThreadsData(const cString& filename);
-	void PrintMessageData(const cString& filename);
+  void PrintMessageData(const cString& filename);
   void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
