@@ -5541,6 +5541,7 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext& ctx)
   //  stats.ZeroFTReactions();   ****
   
   stats.ZeroFTInst();
+  stats.ZeroGroupAttackInst();
   
   for (int i = 0; i < live_org_list.GetSize(); i++) {
     cOrganism* organism = live_org_list[i];

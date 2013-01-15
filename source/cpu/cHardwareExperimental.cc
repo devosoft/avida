@@ -6810,7 +6810,7 @@ void cHardwareExperimental::UpdateGroupAttackStats(cString& inst) {
   
   bool has_opinion = false;
   int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
-  if (m_organism->HasOpinion()) {
+  if (m_organism->HasOpinion() && m_world->GetConfig().USE_FORM_GROUPS.Get()) {
     has_opinion = true;
     opinion = m_organism->GetOpinion().first;
   }
@@ -6856,12 +6856,13 @@ void cHardwareExperimental::UpdateGroupAttackStats(cString& inst) {
   }
   if (gr_pack_size > 8) gr_pack_size = 9;
   if (fr_pack_size > 8) fr_pack_size = 9;
+  
   if (m_organism->GetForageTarget() == -2) {
     m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, fr_pack_size);
-    m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10);
+    if (opinion) m_organism->GetPhenotype().IncCurGroupAttackInstCount(idx, gr_pack_size + 10);
   }
   else if (m_organism->GetForageTarget() < -2) {
     m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, fr_pack_size);
-    m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10);
+    if (opinion) m_organism->GetPhenotype().IncCurTopPredGroupAttackInstCount(idx, gr_pack_size + 10);
   }
 }

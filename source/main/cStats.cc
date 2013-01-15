@@ -198,9 +198,9 @@ cStats::cStats(cWorld* world)
   task_internal_cur_max_quality.SetAll(0.0);
   task_internal_last_max_quality.SetAll(0.0);
 
-
   ZeroInst();
   ZeroFTInst();
+  ZeroGroupAttackInst();
 
   const int num_reactions = env.GetNumReactions();
   m_reaction_cur_count.Resize(num_reactions);
@@ -538,6 +538,21 @@ void cStats::ZeroFTInst()
   }
   for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_tpred_from_sensor_inst_map.begin(); it != m_is_tpred_from_sensor_inst_map.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
+  }
+}
+
+void cStats::ZeroGroupAttackInst()
+{
+  for (tArrayMap<cString, tArrayMap<cString, tArray<cIntSum> > >::iterator it = m_group_attack_exe_map.begin(); it != m_group_attack_exe_map.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) {
+      cString inst_set = (*it).Key();
+      for (int j = 0; j < m_group_attack_names[inst_set].GetSize(); j++) {
+        for (int k = 0; k < m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]].GetSize(); k++) {
+          m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]][k].Clear();
+        }
+//      tArrayMap<cString, tArrayMap<cString, tArray<cIntSum> > > m_group_attack_exe_map; // exec_count_per_num_neighbor = exe_map[inst_set[inst[num_neigbors]]]
+      }
+    }
   }
 }
 
@@ -2483,8 +2498,8 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
     df.WriteComment("Gives count of attacks with given number of neighbors present.");
     df.WriteTimeStamp();
     
-    df.WriteComment("Update");
     df.WriteComment("Instruction");
+    df.WriteComment("Update");
     df.WriteComment("0Neighbors");
     df.WriteComment("1Neighbors");
     df.WriteComment("2Neighbors");
@@ -2508,18 +2523,17 @@ void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_s
     df.FlushComments();
     df.Endl();
   }
-
+  
   std::ofstream& fp = df.GetOFStream();
   cString inst;
   for (int i = 0; i < m_group_attack_names[inst_set].GetSize(); i++) {
     inst = m_group_attack_names[inst_set][i];
-    fp << inst << ",";
+    fp << GetUpdate() << "," << inst << "," ;
     for (int j = 0; j < m_group_attack_exe_map[inst_set][inst].GetSize() - 1; j++) {
       fp << m_group_attack_exe_map[inst_set][inst][j].Sum() << ",";
     }
     fp << m_group_attack_exe_map[inst_set][inst][m_group_attack_exe_map[inst_set][inst].GetSize() - 1].Sum() << endl;
   }
-  m_world->GetDataFileManager().Remove(filename);
 }
 
 /*! Print the genotype IDs of the founders of recently born demes.

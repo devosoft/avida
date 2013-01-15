@@ -566,14 +566,14 @@ public:
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
     else {
-      if (m_filename == "") m_filename = "attack.dat";
+      if (m_filename == "") m_filename = "group_attacks.dat";
     }
     if (largs.GetSize()) m_inst_set = largs.PopWord();
     
-    if (m_filename == "") m_filename.Set("attack-%s.dat", (const char*)m_inst_set);
+    if (m_filename == "") m_filename.Set("group_attacks-%s.dat", (const char*)m_inst_set);
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"attack-${inst_set}.dat\"] [string inst_set]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"group_attacks-${inst_set}.dat\"] [string inst_set]"; }
   
   void Process(cAvidaContext& ctx)
   {

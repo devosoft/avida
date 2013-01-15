@@ -438,10 +438,6 @@ public:
   const tArray<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
-  const tArray<int>& GetCurFromSensorInstCount() const { assert(initialized == true); return cur_from_sensor_count; }
-  const tArray< tArray<int> >& GetCurGroupAttackInstCount() const { assert(initialized == true); return cur_group_attack_count; }
-  const tArray< tArray<int> >& GetCurTopPredGroupAttackInstCount() const { assert(initialized == true); return cur_top_pred_group_attack_count; }
-  const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
@@ -749,7 +745,7 @@ inline void cPhenotype::SetGroupAttackInstSetSize(int num_group_attack_inst)
   last_top_pred_group_attack_count.Resize(num_group_attack_inst);
   cur_group_attack_count.Resize(num_group_attack_inst);
   cur_top_pred_group_attack_count.Resize(num_group_attack_inst);
-    for (int i = 0; i < last_group_attack_count.GetSize(); i++) {
+  for (int i = 0; i < last_group_attack_count.GetSize(); i++) {
     last_group_attack_count[i].Resize(20, 0);
     last_top_pred_group_attack_count[i].Resize(20, 0);
     cur_group_attack_count[i].Resize(20, 0);

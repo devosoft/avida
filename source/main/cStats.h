@@ -627,6 +627,7 @@ public:
   tArray<cIntSum>& ExecCountsForGroupAttackInst(const cString& inst_set, const cString& inst) { return m_group_attack_exe_map[inst_set][inst]; }
 
   void ZeroFTInst();
+  void ZeroGroupAttackInst();
   
   //mating type/male-female accessors
   cDoubleSum& SumMaleFitness()       { return sum_male_fitness; }
