@@ -498,14 +498,10 @@ void cStats::ZeroFTInst()
 
 void cStats::ZeroGroupAttackInst()
 {
-  for (Apto::Map<cString, Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > >::ValueIterator it = m_group_attack_exe_map.Values(); it.Next();) {
-    for (int i = 0; i < (*it.Get()).GetSize(); i++) {
-      //cString inst_set = (*it.Get()).Keys()[i];
-      cString inst_set = m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
-      for (int j = 0; j < m_group_attack_names[inst_set].GetSize(); j++) {
-        for (int k = 0; k < m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]].GetSize(); k++) {
-          m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]][k].Clear();
-        }
+  for (Apto::Map<cString, Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > >::ValueIterator oit = m_group_attack_exe_map.Values(); oit.Next();) {
+    for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator iit = (*oit.Get()).Values(); iit.Next();) {
+      for (int i = 0; i < (*iit.Get()).GetSize(); i++) {
+        (*iit.Get())[i].Clear();
       }
     }
   }
