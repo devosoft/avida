@@ -165,8 +165,8 @@ cStats::cStats(cWorld* world)
   task_internal_cur_max_quality.SetAll(0.0);
   task_internal_last_max_quality.SetAll(0.0);
 
-
   ZeroFTInst();
+  ZeroGroupAttackInst();
 
   const int num_reactions = env.GetNumReactions();
   m_reaction_cur_count.Resize(num_reactions);
@@ -471,8 +471,6 @@ void cStats::ZeroReactions()
   m_reaction_last_add_reward.SetAll(0);
 }
 
-
-
 void cStats::ZeroFTInst()
 {
   for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_exe_inst_map.Values(); it.Next();) {
@@ -481,10 +479,10 @@ void cStats::ZeroFTInst()
   for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_fail_exe_inst_map.Values(); it.Next();) {
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_fail_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
-  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_fail_exe_inst_map.Values(); it.Next();) {
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_tpred_exe_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
   }
   for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_prey_from_sensor_inst_map.Values(); it.Next();) {
@@ -492,6 +490,24 @@ void cStats::ZeroFTInst()
   }
   for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_pred_from_sensor_inst_map.Values(); it.Next();) {
     for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
+  for (Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > >::ValueIterator it = m_is_tpred_from_sensor_inst_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) (*it.Get())[i].Clear();
+  }
+}
+
+void cStats::ZeroGroupAttackInst()
+{
+  for (Apto::Map<cString, Apto::Map<cString, Apto::Array<Apto::Stat::Accumulator<int> > > >::ValueIterator it = m_group_attack_exe_map.Values(); it.Next();) {
+    for (int i = 0; i < (*it.Get()).GetSize(); i++) {
+      //cString inst_set = (*it.Get()).Keys()[i];
+      cString inst_set = m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
+      for (int j = 0; j < m_group_attack_names[inst_set].GetSize(); j++) {
+        for (int k = 0; k < m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]].GetSize(); k++) {
+          m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]][k].Clear();
+        }
+      }
+    }
   }
 }
 
@@ -587,6 +603,16 @@ int cStats::GetNumPreyCreatures() const
 int cStats::GetNumPredCreatures() const
 { 
   return m_world->GetPopulation().GetNumPredOrganisms(); 
+}
+
+int cStats::GetNumTopPredCreatures() const
+{ 
+  return m_world->GetPopulation().GetNumTopPredOrganisms();
+}
+
+int cStats::GetNumTotalPredCreatures() const
+{ 
+  return m_world->GetPopulation().GetNumTopPredOrganisms() + m_world->GetPopulation().GetNumPredOrganisms();
 }
 
 void cStats::PrintDataFile(const cString& filename, const cString& format, char sep)
@@ -801,6 +827,25 @@ void cStats::PrintPredatorAverageData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintTopPredatorAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Top predator Average Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                          "Update");
+  df.Write(sum_tpred_fitness.Average(),        "Fitness");
+  df.Write(sum_tpred_gestation.Average(),      "Gestation Time");
+  df.Write(sum_tpred_merit.Average(),          "Merit");
+  df.Write(sum_tpred_creature_age.Average(),   "Creature Age");
+  df.Write(sum_tpred_generation.Average(),     "Generation");
+  df.Write(sum_tpred_size.Average(),           "Genome Length");
+  df.Write(tpred_entropy,                      "Total Top Predator Genotypic Entropy");
+  
+  df.Endl();
+}
+
 void cStats::PrintPreyErrorData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
@@ -833,6 +878,24 @@ void cStats::PrintPredatorErrorData(const cString& filename)
   df.Write(sum_pred_creature_age.StdError(),    "Creature Age");
   df.Write(sum_pred_generation.StdError(),      "Generation");
   df.Write(sum_pred_size.StdError(),            "Genome Length");
+  
+  df.Endl();
+}
+
+void cStats::PrintTopPredatorErrorData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Top predator Standard Error Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_tpred_fitness.StdError(),         "Fitness");
+  df.Write(sum_tpred_gestation.StdError(),       "Gestation Time");
+  df.Write(sum_tpred_merit.StdError(),           "Merit");
+  df.Write(sum_tpred_creature_age.StdError(),    "Creature Age");
+  df.Write(sum_tpred_generation.StdError(),      "Generation");
+  df.Write(sum_tpred_size.StdError(),            "Genome Length");
   
   df.Endl();
 }
@@ -873,6 +936,24 @@ void cStats::PrintPredatorVarianceData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintTopPredatorVarianceData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Top predator Variance Data");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update,                            "Update");
+  df.Write(sum_tpred_fitness.Variance(),         "Fitness");
+  df.Write(sum_tpred_gestation.Variance(),       "Gestation Time");
+  df.Write(sum_tpred_merit.Variance(),           "Merit");
+  df.Write(sum_tpred_creature_age.Variance(),    "Creature Age");
+  df.Write(sum_tpred_generation.Variance(),      "Generation");
+  df.Write(sum_tpred_size.Variance(),            "Genome Length");
+  
+  df.Endl();
+}
+
 void cStats::PrintPreyInstructionData(const cString& filename, const cString& inst_set)
 {
   cDataFile& df = m_world->GetDataFile(filename);
@@ -903,32 +984,17 @@ void cStats::PrintPredatorInstructionData(const cString& filename, const cString
   df.Endl();
 }
 
-void cStats::PrintPreyFailedInstructionData(const cString& filename, const cString& inst_set)
+void cStats::PrintTopPredatorInstructionData(const cString& filename, const cString& inst_set)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   
-  df.WriteComment("Prey org instruction execution failure data");
+  df.WriteComment("Top predator org instruction execution data");
   df.WriteTimeStamp();
   
   df.Write(m_update, "Update");
   
-  for (int i = 0; i < m_is_prey_fail_exe_inst_map[inst_set].GetSize(); i++) {
-    df.Write(m_is_prey_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
-  }
-  df.Endl();
-}
-
-void cStats::PrintPredatorFailedInstructionData(const cString& filename, const cString& inst_set)
-{
-  cDataFile& df = m_world->GetDataFile(filename);
-  
-  df.WriteComment("Predator org instruction execution failure data");
-  df.WriteTimeStamp();
-  
-  df.Write(m_update, "Update");
-  
-  for (int i = 0; i < m_is_pred_fail_exe_inst_map[inst_set].GetSize(); i++) {
-    df.Write(m_is_pred_fail_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  for (int i = 0; i < m_is_tpred_exe_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_tpred_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
   df.Endl();
 }
@@ -959,6 +1025,21 @@ void cStats::PrintPredatorFromSensorInstructionData(const cString& filename, con
   
   for (int i = 0; i < m_is_pred_from_sensor_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_pred_from_sensor_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintTopPredatorFromSensorInstructionData(const cString& filename, const cString& inst_set)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Top predator org instruction execution data using values originating from sensory input");
+  df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < m_is_tpred_from_sensor_inst_map[inst_set].GetSize(); i++) {
+    df.Write(m_is_tpred_from_sensor_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
   df.Endl();
 }
@@ -2112,6 +2193,67 @@ void cStats::PrintGermlineData(const cString& filename)
   m_germline_generation.Clear();
 }
 
+void cStats::SetGroupAttackInstNames(const cString& inst_set) {
+  cString inst;
+  Apto::Array <cString, Apto::Smart> names;
+  for (int i = 0; i < m_is_inst_names_map[inst_set].GetSize(); i++) {
+    inst = m_is_inst_names_map[inst_set][i];
+    if (inst == "attack-prey" || inst == "attack-ft-prey" || inst == "attack-prey-group" ||
+        inst == "attack-prey-share" || inst == "attack-prey-group-share") {
+      names.Push(inst);
+    }
+  }
+  m_group_attack_names[inst_set].Resize(names.GetSize());
+  for (int i = 0; i < m_group_attack_names[inst_set].GetSize(); i++) {
+    m_group_attack_names[inst_set][i] = names[i];
+  }
+}
+
+void cStats::PrintGroupAttackData(const cString& filename, const cString& inst_set) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  if (!df.HeaderDone()) {
+    df.WriteComment("Attack Instruction Execution Circumstances");
+    df.WriteComment("Gives count of attacks with given number of neighbors present.");
+    df.WriteTimeStamp();
+    
+    df.WriteComment("Instruction");
+    df.WriteComment("Update");
+    df.WriteComment("0Neighbors");
+    df.WriteComment("1Neighbors");
+    df.WriteComment("2Neighbors");
+    df.WriteComment("3Neighbors");
+    df.WriteComment("4Neighbors");
+    df.WriteComment("5Neighbors");
+    df.WriteComment("6Neighbors");
+    df.WriteComment("7Neighbors");
+    df.WriteComment("8Neighbors");
+    df.WriteComment("8+Neighbors");
+    df.WriteComment("0InGroupNeighbors");
+    df.WriteComment("1InGroupNeighbors");
+    df.WriteComment("2InGroupNeighbors");
+    df.WriteComment("3InGroupNeighbors");
+    df.WriteComment("4InGroupNeighbors");
+    df.WriteComment("5InGroupNeighbors");
+    df.WriteComment("6InGroupNeighbors");
+    df.WriteComment("7InGroupNeighbors");
+    df.WriteComment("8InGroupNeighbors");
+    df.WriteComment("8+InGroupNeighbors");
+    df.FlushComments();
+    df.Endl();
+  }
+  
+  std::ofstream& fp = df.GetOFStream();
+  cString inst;
+  for (int i = 0; i < m_group_attack_names[inst_set].GetSize(); i++) {
+    inst = m_group_attack_names[inst_set][i];
+    fp << GetUpdate() << "," << inst << "," ;
+    for (int j = 0; j < m_group_attack_exe_map[inst_set][inst].GetSize() - 1; j++) {
+      fp << m_group_attack_exe_map[inst_set][inst][j].Sum() << ",";
+    }
+    fp << m_group_attack_exe_map[inst_set][inst][m_group_attack_exe_map[inst_set][inst].GetSize() - 1].Sum() << endl;
+  }
+}
 
 /*! Print the genotype IDs of the founders of recently born demes.
 
@@ -3657,6 +3799,99 @@ void cStats::PrintTargets(const cString& filename)
   df.Endl();
 }
 
+/*
+ Print data regarding the living org targets.
+ */
+void cStats::PrintTopPredTargets(const cString& filename)
+{
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Targets in use on update boundary.");
+  df.WriteComment("-3: is top predator, -2: is predator, -1: no targets(default), >=0: id of environmental resource targeted).");
+  df.WriteComment("Format is update + target0 + count0 + target1 + count1 ...");
+	df.WriteTimeStamp();
+
+  df.Write(m_update, "Update");
+  
+  bool has_pred = false;
+  int offset = 1;
+  if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) { 
+    has_pred = true;
+    offset = 3;
+  }
+    
+  // ft's may not be sequentially numbered
+  bool dec_prey = false;
+  bool dec_pred = false;
+  bool dec_tpred = false;
+  int num_targets = 0;
+  std::set<int> fts_avail = m_world->GetEnvironment().GetTargetIDs();
+  set <int>::iterator itr;    
+  for (itr = fts_avail.begin();itr!=fts_avail.end();itr++) {
+    num_targets++; 
+    if (*itr == -1 && !dec_prey) { 
+      offset--; 
+      dec_prey = true; 
+    }
+    if (*itr == -2 && !dec_pred) {
+      offset--;  
+      dec_pred = true; 
+    }
+    if (*itr == -3 && !dec_tpred) {
+      offset--;  
+      dec_tpred = true;
+    }
+  }
+
+  Apto::Array<int> raw_target_list;
+  raw_target_list.Resize(num_targets);
+  raw_target_list.SetAll(0);
+  int this_index = 0;
+  for (itr = fts_avail.begin(); itr!=fts_avail.end(); itr++) {
+    raw_target_list[this_index] = *itr; 
+    this_index++;
+  }
+    
+  Apto::Array<int> target_list;
+  int tot_targets = num_targets + offset;
+  target_list.Resize(tot_targets);
+  target_list.SetAll(0);
+
+  target_list[0] = -1;
+  if (has_pred) {
+    target_list[0] = -3;
+    target_list[1] = -2;
+    target_list[2] = -1;
+  }
+      
+  for (int i = 0; i < raw_target_list.GetSize(); i++) {
+    if (raw_target_list[i] >= 0) target_list[i + offset] = raw_target_list[i];
+  }
+  
+  Apto::Array<int> org_targets;
+  org_targets.Resize(tot_targets);
+  org_targets.SetAll(0);
+  
+  const Apto::Array <cOrganism*, Apto::Smart> live_orgs = m_world->GetPopulation().GetLiveOrgList();
+  for (int i = 0; i < live_orgs.GetSize(); i++) {  
+    cOrganism* org = live_orgs[i];
+    int this_target = org->GetForageTarget();
+    if (this_target < -3) this_target = -3;
+    int this_index = this_target;
+    for (int i = 0; i < target_list.GetSize(); i++) {
+      if (target_list[i] == this_target) {
+        this_index = i;
+        break;
+      }
+    }
+    org_targets[this_index]++;
+  }
+  for (int target = 0; target < org_targets.GetSize(); target++) {
+      df.Write(target_list[target], "Target ID");
+      df.Write(org_targets[target], "Num Orgs Targeting ID");
+  }
+  df.Endl();
+}
+
 /*! Track named network stats.
  */
 void cStats::NetworkTopology(const network_stats_t& ns) {
@@ -3844,7 +4079,6 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 	df.Endl();
 }
 
-
 void cStats::PrintDenData(const cString& filename) {
   if (m_world->GetConfig().USE_AVATARS.Get() <= 0) return; 
   
@@ -3941,9 +4175,6 @@ void cStats::PrintDenData(const cString& filename) {
 	df.Endl();  
 
 }
-
-
-
 
 /*! Print statistics related to the diversity of reactions performed by a deme
  prior to replication.  */

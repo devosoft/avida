@@ -163,6 +163,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PredictNuLandscape">PredictNuLandscape</a><br>
       <a href="#PredictWLandscape">PredictWLandscape</a><br>
       <a href="#PrintAgePolyethismData">PrintAgePolyethismData</a><br>
+      <a href="#PrintGroupAttackData">PrintGroupAttackData</a><br>
       <a href="#PrintAveNumTasks">PrintAveNumTasks</a><br>
       <a href="#PrintAverageData">PrintAverageData</a><br>
       <a href="#PrintAvgDemeTasksExeData">PrintAvgDemeTasksExeData</a><br>
@@ -331,7 +332,6 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetMutProb">SetMutProb</a><br>
       <a href="#SetNumInstBefore0Energy">SetNumInstBefore0Energy</a><br>
       <a href="#SetOptimizeMinMax">SetOptimizeMinMax</a><br>
-      <a href="#SetPopCapEnforcement">SetPopCapEnforcement</a><br>
       <a href="#SetPeriodicResource">SetPeriodicResource</a><br>
       <a href="#SetPredatoryResource">SetPredatoryResource</a><br>
       <a href="#SetProbabilisticResource">SetProbabilisticResource</a><br>
@@ -657,15 +657,6 @@ and reaction parameters.
   </p>
   <p>
   
-  </p>
-</li>
-<li><p>
-  <strong><a name="SetPopCapEnforcement">SetPopCapEnforcement</a></strong>
-  <i>[int cap=0] [int rate=1]</i>
-  </p>
-  <p>
-  Will set POPULATION_CAP to cap and begin killing orgs off at rate rate by killing rate # orgs + 1 every time a new org is born.
-  Accepts string args (e.g. SetPopCapEnforcement cap=0:rate=1).
   </p>
 </li>
 <li><p>
@@ -1862,6 +1853,13 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintGroupAttackData">PrintGroupAttackData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintAveNumTasks">PrintAveNumTasks</a></strong>
   <i>[string fname=""]</i>
   </p>
@@ -2850,7 +2848,7 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
-  <strong><a name="PrintPredatorFailedInstructionData">PrintPredatorFailedInstructionData</a></strong>
+  <strong><a name="PrintPredatorFromSensorInstructionData">PrintPredatorFromSensorInstructionData</a></strong>
   </p>
   <p>
   
@@ -2863,6 +2861,43 @@ a single, complete file for each trigger.
   
   </p>
 </li>
+
+<li><p>
+  <strong><a name="PrintTopPredatorAverageData">PrintPredatorAverageData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintTopPredatorErrorData">PrintPredatorErrorData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintTopPredatorInstructionData">PrintPredatorInstructionData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintTopPredatorFromSensorInstructionData">PrintPredatorFromSensorInstructionData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintTopPredatorVarianceData">PrintPredatorVarianceData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+
 <li><p>
   <strong><a name="PrintPredicatedMessages">PrintPredicatedMessages</a></strong>
   </p>
@@ -2892,7 +2927,7 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
-  <strong><a name="PrintPreyFailedInstructionData">PrintPreyFailedInstructionData</a></strong>
+  <strong><a name="PrintPreyFromSensorInstructionData">PrintPreyFromSensorInstructionData</a></strong>
   </p>
   <p>
   

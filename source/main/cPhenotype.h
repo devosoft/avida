@@ -127,7 +127,9 @@ private:
   Apto::Array<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   Apto::Array<int> cur_inst_count;                 // Instruction exection counter
   Apto::Array<int> cur_from_sensor_count;           // Use of inputs that originated from sensory data were used in execution of this instruction.
-  Apto::Array<int> cur_failed_inst_count;          // Failed instruction exection counter (returned false -- not for counting 'paused' exec due to cpu cost)
+  Apto::Array< Apto::Array<int> > cur_group_attack_count;
+  Apto::Array< Apto::Array<int> > cur_top_pred_group_attack_count;
+
   Apto::Array<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB
   Apto::Array<double> sensed_resources;            // Resources which the organism has sensed; @JEB
   Apto::Array<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
@@ -174,9 +176,10 @@ private:
   Apto::Array<int> last_reaction_count;
   Apto::Array<double> last_reaction_add_reward;
   Apto::Array<int> last_inst_count;	  // Instruction exection counter
-  Apto::Array<int> last_failed_inst_count;	  // Instruction exection counter
   Apto::Array<int> last_from_sensor_count;
   Apto::Array<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB
+  Apto::Array< Apto::Array<int> > last_group_attack_count;
+  Apto::Array< Apto::Array<int> > last_top_pred_group_attack_count;
 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
@@ -296,6 +299,7 @@ private:
   
 
   inline void SetInstSetSize(int inst_set_size);
+  inline void SetGroupAttackInstSetSize(int num_group_attack_inst);
   
 public:
   cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme Apto::Array usage.
@@ -424,7 +428,6 @@ public:
   const Apto::Array<int>& GetStolenReactionCount() const { assert(initialized == true); return cur_stolen_reaction_count;}
   const Apto::Array<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const Apto::Array<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
-  const Apto::Array<int>& GetCurFailedInstCount() const { assert(initialized == true); return cur_failed_inst_count; }
   const Apto::Array<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
 
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
@@ -469,8 +472,9 @@ public:
   const Apto::Array<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const Apto::Array<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const Apto::Array<int>& GetLastFromSensorInstCount() const { assert(initialized == true); return last_from_sensor_count; }
-  const Apto::Array<int>& GetLastFailedInstCount() const { assert(initialized == true); return last_failed_inst_count; }
   const Apto::Array<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
+  const Apto::Array< Apto::Array<int> >& GetLastGroupAttackInstCount() const { assert(initialized == true); return last_group_attack_count; }
+  const Apto::Array< Apto::Array<int> >& GetLastTopPredGroupAttackInstCount() const { assert(initialized == true); return last_top_pred_group_attack_count; }
 
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
@@ -648,7 +652,9 @@ public:
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
-  void IncCurFailedInstCount(int _inst_num)  { assert(initialized == true); cur_failed_inst_count[_inst_num]++; }
+  void IncCurFromSensorInstCount(int _inst_num)  { assert(initialized == true); cur_from_sensor_count[_inst_num]++; }
+  void IncCurGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_group_attack_count[_inst_num][pack_size_idx]++; }
+  void IncCurTopPredGroupAttackInstCount(int _inst_num, int pack_size_idx)  { assert(initialized == true); cur_top_pred_group_attack_count[_inst_num][pack_size_idx]++; }
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
@@ -720,10 +726,23 @@ public:
 inline void cPhenotype::SetInstSetSize(int inst_set_size)
 {
   cur_inst_count.Resize(inst_set_size, 0);
-  cur_failed_inst_count.Resize(inst_set_size, 0);
+  cur_from_sensor_count.Resize(inst_set_size, 0);
   last_inst_count.Resize(inst_set_size, 0);
   last_from_sensor_count.Resize(inst_set_size, 0);
-  last_failed_inst_count.Resize(inst_set_size, 0);
+}
+
+inline void cPhenotype::SetGroupAttackInstSetSize(int num_group_attack_inst)
+{
+  last_group_attack_count.Resize(num_group_attack_inst);
+  last_top_pred_group_attack_count.Resize(num_group_attack_inst);
+  cur_group_attack_count.Resize(num_group_attack_inst);
+  cur_top_pred_group_attack_count.Resize(num_group_attack_inst);
+  for (int i = 0; i < last_group_attack_count.GetSize(); i++) {
+    last_group_attack_count[i].Resize(20, 0);
+    last_top_pred_group_attack_count[i].Resize(20, 0);
+    cur_group_attack_count[i].Resize(20, 0);
+    cur_top_pred_group_attack_count[i].Resize(20, 0);
+  }
 }
 
 inline void cPhenotype::SetBirthCellID(int birth_cell) { birth_cell_id = birth_cell; }

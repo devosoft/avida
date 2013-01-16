@@ -2634,7 +2634,7 @@ bool cHardwareMBE::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareMBE::Inst_SetForageTarget(cAvidaContext&)
+bool cHardwareMBE::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int prop_target = GetRegister(FindModifiedRegister(rBX));
@@ -2676,9 +2676,9 @@ bool cHardwareMBE::Inst_SetForageTarget(cAvidaContext&)
   if (m_use_avatar && (((prop_target == -2 || prop_target == -3) && old_target > -2) || (prop_target > -2 && (old_target == -2 || old_target == -3))) &&
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
     m_organism->GetOrgInterface().SwitchPredPrey();
-    m_organism->SetForageTarget(prop_target);
+    m_organism->SetForageTarget(ctx, prop_target);
   }
-  else m_organism->SetForageTarget(prop_target);
+  else m_organism->SetForageTarget(ctx, prop_target);
     
   // Set the new target and return the value
   m_organism->RecordFTSet();
@@ -2716,7 +2716,7 @@ bool cHardwareMBE::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
         prop_target = *itr;
       }
       // Set the new target and return the value
-      m_organism->SetForageTarget(prop_target);
+      m_organism->SetForageTarget(ctx, prop_target);
       m_organism->RecordFTSet();
       setInternalValue(FindModifiedRegister(rBX), prop_target, false);
       return true;

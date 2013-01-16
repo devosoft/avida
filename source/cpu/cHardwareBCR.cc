@@ -2773,7 +2773,7 @@ bool cHardwareBCR::Inst_SenseFacedHabitat(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext&)
+bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   int prop_target = getRegister(FindModifiedRegister(rBX));
@@ -2815,9 +2815,9 @@ bool cHardwareBCR::Inst_SetForageTarget(cAvidaContext&)
   if (m_use_avatar && (((prop_target == -2 || prop_target == -3) && old_target > -2) || (prop_target > -2 && (old_target == -2 || old_target == -3))) &&
       (m_organism->GetOrgInterface().GetAVCellID() != -1)) {
     m_organism->GetOrgInterface().SwitchPredPrey();
-    m_organism->SetForageTarget(prop_target);
+    m_organism->SetForageTarget(ctx, prop_target);
   }
-  else m_organism->SetForageTarget(prop_target);
+  else m_organism->SetForageTarget(ctx, prop_target);
     
   // Set the new target and return the value
   m_organism->RecordFTSet();
@@ -2855,7 +2855,7 @@ bool cHardwareBCR::Inst_SetRandForageTargetOnce(cAvidaContext& ctx)
         prop_target = *itr;
       }
       // Set the new target and return the value
-      m_organism->SetForageTarget(prop_target);
+      m_organism->SetForageTarget(ctx, prop_target);
       m_organism->RecordFTSet();
       setRegister(FindModifiedRegister(rBX), prop_target, false);
       return true;
@@ -3185,9 +3185,9 @@ void cHardwareBCR::makePred(cAvidaContext& ctx)
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(-2);
+      m_organism->SetForageTarget(ctx, -2);
     }
-    else m_organism->SetForageTarget(-2);
+    else m_organism->SetForageTarget(ctx, -2);
   }
 }
 
@@ -3198,11 +3198,11 @@ void cHardwareBCR::makeTopPred(cAvidaContext& ctx)
     // switching between predator and prey means having to switch avatar list...don't run this for orgs with AVCell == -1 (avatars off or test cpu)
     if (m_use_avatar && m_organism->GetOrgInterface().GetAVCellID() != -1) {
       m_organism->GetOrgInterface().SwitchPredPrey();
-      m_organism->SetForageTarget(-3);
+      m_organism->SetForageTarget(ctx, -3);
     }
-    else m_organism->SetForageTarget(-3);
+    else m_organism->SetForageTarget(ctx, -3);
   }
-  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(-3);
+  else if (m_organism->GetForageTarget() == -2) m_organism->SetForageTarget(ctx, -3);
 }
 
 bool cHardwareBCR::testAttack(cAvidaContext& ctx)

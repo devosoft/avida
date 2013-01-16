@@ -188,7 +188,7 @@ cPopulation::cPopulation(cWorld* world)
 , num_organisms(0)
 , num_prey_organisms(0)
 , num_pred_organisms(0)
-, pop_enforce(0)
+, num_top_pred_organisms(0)
 , m_has_predatory_res(false)
 , sync_events(false)
 , m_hgt_resid(-1)
@@ -393,7 +393,6 @@ void cPopulation::SetupCellGrid()
   if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
     m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
-  min_prey_failures.Resize(0);
 }
 
 
@@ -1124,6 +1123,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
     // ft should be nearly always -1 so long as it is not being inherited
     if (in_organism->GetForageTarget() > -2) num_prey_organisms++;
+    else if (in_organism->GetForageTarget() < -2) num_top_pred_organisms++;
     else num_pred_organisms++;
   }
   if (deme_array.GetSize() > 0) {
@@ -1870,7 +1870,47 @@ void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
   KillOrganism(loser_cell, ctx); 
 }
 
-void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx) 
+void cPopulation::KillRandPred(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* org_to_kill = org;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_kill == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude prey
+    if (org_at->GetParentFT() <= -2 || org_at->GetForageTarget() <= -2) org_to_kill = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
+void cPopulation::KillRandPrey(cAvidaContext& ctx, cOrganism* org)
+{
+  cOrganism* org_to_kill = org;
+  const Apto::Array<cOrganism*, Apto::Smart>& live_org_list = GetLiveOrgList();
+  Apto::Array<cOrganism*> TriedIdx(live_org_list.GetSize());
+  int list_size = TriedIdx.GetSize();
+  for (int i = 0; i < list_size; i ++) { TriedIdx[i] = live_org_list[i]; }
+  
+  int idx = m_world->GetRandom().GetUInt(list_size);
+  while (org_to_kill == org) {
+    cOrganism* org_at = TriedIdx[idx];
+    // exclude predators and juvenilles with predatory parents (include juvs with non-predatory parents)
+    if (org_at->GetForageTarget() > -1 || (org_at->GetForageTarget() == -1 && org_at->GetParentFT() > -2)) org_to_kill = org_at;
+    else TriedIdx.Swap(idx, --list_size);
+    if (list_size == 1) break;
+    idx = m_world->GetRandom().GetUInt(list_size);
+  }
+  if (org_to_kill != org) m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(org_to_kill->GetCellID()), ctx);
+}
+
+void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
 {
   // do we actually have something to kill?
   if (in_cell.IsOccupied() == false) return;
@@ -1888,10 +1928,8 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   if (m_world->GetConfig().USE_AVATARS.Get() && m_world->GetConfig().NEURAL_NETWORKING.Get()) {
     organism->GetOrgInterface().RemoveAllAV();
   }
-  
-  bool is_prey = true;
-  if (organism->GetForageTarget() <= -2) is_prey = false;
-  
+
+  const int ft = organism->GetForageTarget();
 
   RemoveLiveOrg(organism);
   UpdateQs(organism, false);
@@ -1914,8 +1952,9 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // Update count statistics...
   num_organisms--;
   if (m_world->GetConfig().PRED_PREY_SWITCH.Get() == -2 || m_world->GetConfig().PRED_PREY_SWITCH.Get() > -1) {
-    if (is_prey) num_prey_organisms--;
-    else num_pred_organisms--;
+    if (ft > -2) num_prey_organisms--;
+    else if (ft == -2) num_pred_organisms--;
+    else num_top_pred_organisms--;
   }
   
   // Handle deme updates.
@@ -4733,7 +4772,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
   if (pop_cap > 0 && num_organisms >= pop_cap) {
     int num_kills = 1;
-    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
+//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       int target = m_world->GetRandom().GetUInt(live_org_list.GetSize());
@@ -4752,7 +4791,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
   if (pop_eldest > 0 && num_organisms >= pop_eldest) {
     int num_kills = 1;
-    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
+//    if (pop_enforce > 1 && num_organisms != pop_cap) num_kills += min(num_organisms - pop_cap, pop_enforce);
     
     while (num_kills > 0) {
       double max_age = 0.0;
@@ -4779,8 +4818,13 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     }
   }
   
-  // increment the number of births in the **parent deme**.  in the case of a
-  // migration, only the origin has its birth count incremented.
+  // for juvs with non-predatory parents...
+  if (m_world->GetConfig().MAX_PREY.Get() && m_world->GetStats().GetNumPreyCreatures() >= m_world->GetConfig().MAX_PREY.Get() && parent_cell.GetOrganism()->GetForageTarget() > -2) {
+    KillRandPrey(ctx, parent_cell.GetOrganism());
+  }
+  
+	// increment the number of births in the **parent deme**.  in the case of a
+	// migration, only the origin has its birth count incremented.
   if (deme_array.GetSize() > 0) {
     const int deme_id = parent_cell.GetDemeID();
     deme_array[deme_id].IncBirthCount();
@@ -5593,17 +5637,24 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
   stats.SumPredCreatureAge().Clear();
   stats.SumPredGeneration().Clear();
   
+  stats.SumTopPredFitness().Clear();
+  stats.SumTopPredGestation().Clear();
+  stats.SumTopPredMerit().Clear();
+  stats.SumTopPredCreatureAge().Clear();
+  stats.SumTopPredGeneration().Clear();
+
   //  stats.ZeroFTReactions();   ****
   
   stats.ZeroFTInst();
+  stats.ZeroGroupAttackInst();
   
-  for (int i = 0; i < live_org_list.GetSize(); i++) {  
+  for (int i = 0; i < live_org_list.GetSize(); i++) {
     cOrganism* organism = live_org_list[i];
     const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
     
-    if(organism->GetForageTarget() > -2) {
+    if (organism->GetForageTarget() > -2) {
       stats.SumPreyFitness().Add(cur_fitness);
       stats.SumPreyGestation().Add(phenotype.GetGestationTime());
       stats.SumPreyMerit().Add(cur_merit.GetDouble());
@@ -5614,17 +5665,12 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         prey_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
-      Apto::Array<Apto::Stat::Accumulator<int> >& prey_inst_fail_exe_counts = stats.InstPreyFailedExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
-      for (int j = 0; j < phenotype.GetLastFailedInstCount().GetSize(); j++) {
-        prey_inst_fail_exe_counts[j].Add(organism->GetPhenotype().GetLastFailedInstCount()[j]);
-      }
-
       Apto::Array<Apto::Stat::Accumulator<int> >& prey_from_sensor_exec_counts = stats.InstPreyFromSensorExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
         prey_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
       }
     }
-    else {
+    else if (organism->GetForageTarget() == -2) {
       stats.SumPredFitness().Add(cur_fitness);
       stats.SumPredGestation().Add(phenotype.GetGestationTime());
       stats.SumPredMerit().Add(cur_merit.GetDouble());
@@ -5635,13 +5681,41 @@ void cPopulation::UpdateFTOrgStats(cAvidaContext&)
       for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
         pred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
       }
-      Apto::Array<Apto::Stat::Accumulator<int> >& pred_inst_fail_exe_counts = stats.InstPredFailedExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
-      for (int j = 0; j < phenotype.GetLastFailedInstCount().GetSize(); j++) {
-        pred_inst_fail_exe_counts[j].Add(organism->GetPhenotype().GetLastFailedInstCount()[j]);
-      }
+
       Apto::Array<Apto::Stat::Accumulator<int> >& pred_from_sensor_exec_counts = stats.InstPredFromSensorExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
       for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
         pred_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
+      }
+
+      Apto::Array<cString> att_inst = m_world->GetStats().GetGroupAttackInsts((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      for (int k = 0; k < att_inst.GetSize(); k++) {
+        Apto::Array<Apto::Stat::Accumulator<int> >& group_attack_inst_exe_counts = stats.ExecCountsForGroupAttackInst((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue(), att_inst[k]);
+        for (int j = 0; j < phenotype.GetLastGroupAttackInstCount()[k].GetSize(); j++) {
+          group_attack_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastGroupAttackInstCount()[k][j]);
+        }
+      }
+    }
+    else {
+      stats.SumTopPredFitness().Add(cur_fitness);
+      stats.SumTopPredGestation().Add(phenotype.GetGestationTime());
+      stats.SumTopPredMerit().Add(cur_merit.GetDouble());
+      stats.SumTopPredCreatureAge().Add(phenotype.GetAge());
+      stats.SumTopPredGeneration().Add(phenotype.GetGeneration());
+      
+      Apto::Array<Apto::Stat::Accumulator<int> >& tpred_inst_exe_counts = stats.InstTopPredExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+        tpred_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      }
+      Apto::Array<Apto::Stat::Accumulator<int> >& tpred_from_sensor_exec_counts = stats.InstTopPredFromSensorExeCountsForInstSet((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      for (int j = 0; j < phenotype.GetLastFromSensorInstCount().GetSize(); j++) {
+        tpred_from_sensor_exec_counts[j].Add(organism->GetPhenotype().GetLastFromSensorInstCount()[j]);
+      }
+      Apto::Array<cString> att_inst = m_world->GetStats().GetGroupAttackInsts((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue());
+      for (int k = 0; k < att_inst.GetSize(); k++) {
+        Apto::Array<Apto::Stat::Accumulator<int> >& group_attack_inst_exe_counts = stats.ExecCountsForGroupAttackInst((const char*)organism->GetGenome().Properties().Get(s_prop_id_instset).StringValue(), att_inst[k]);
+        for (int j = 0; j < phenotype.GetLastTopPredGroupAttackInstCount()[k].GetSize(); j++) {
+          group_attack_inst_exe_counts[j].Add(organism->GetPhenotype().GetLastTopPredGroupAttackInstCount()[k][j]);
+        }
       }
     }
     
@@ -6415,7 +6489,7 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
           if (tmp.forager_types.GetSize() != 0) forager_type = tmp.forager_types[cell_i]; 
           new_organism->SetOpinion(group_id);
           JoinGroup(new_organism, group_id);
-          new_organism->SetForageTarget(forager_type);  
+          new_organism->SetForageTarget(ctx, forager_type);
           new_organism->GetPhenotype().SetBirthCellID(cell_id);
           new_organism->GetPhenotype().SetBirthGroupID(group_id);
           new_organism->GetPhenotype().SetBirthForagerType(forager_type);
@@ -6550,7 +6624,7 @@ void cPopulation::Inject(const Genome& genome, Systematics::Source src, cAvidaCo
   if (inject_group) {
     cell_array[cell_id].GetOrganism()->SetOpinion(group_id);
     cell_array[cell_id].GetOrganism()->JoinGroup(group_id);
-    cell_array[cell_id].GetOrganism()->SetForageTarget(forager_type);  
+    cell_array[cell_id].GetOrganism()->SetForageTarget(ctx, forager_type);
     
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthCellID(cell_id);
     cell_array[cell_id].GetOrganism()->GetPhenotype().SetBirthGroupID(group_id);
