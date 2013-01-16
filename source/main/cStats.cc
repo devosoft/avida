@@ -543,14 +543,10 @@ void cStats::ZeroFTInst()
 
 void cStats::ZeroGroupAttackInst()
 {
-  for (tArrayMap<cString, tArrayMap<cString, tArray<cIntSum> > >::iterator it = m_group_attack_exe_map.begin(); it != m_group_attack_exe_map.end(); it++) {
-    for (int i = 0; i < (*it).Value().GetSize(); i++) {
-      cString inst_set = (*it).Key();
-      for (int j = 0; j < m_group_attack_names[inst_set].GetSize(); j++) {
-        for (int k = 0; k < m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]].GetSize(); k++) {
-          m_group_attack_exe_map[inst_set][m_group_attack_names[inst_set][j]][k].Clear();
-        }
-//      tArrayMap<cString, tArrayMap<cString, tArray<cIntSum> > > m_group_attack_exe_map; // exec_count_per_num_neighbor = exe_map[inst_set[inst[num_neigbors]]]
+  for (tArrayMap<cString, tArrayMap<cString, tArray<cIntSum> > >::iterator oit = m_group_attack_exe_map.begin(); oit != m_group_attack_exe_map.end(); oit++) {
+    for (tArrayMap<cString, tArray<cIntSum> >::iterator iit = (*oit).Value().begin(); iit != (*oit).Value().end(); iit++) {
+      for (int i = 0; i < (*iit).Value().GetSize(); i++) {
+        (*iit).Value()[i].Clear();
       }
     }
   }
