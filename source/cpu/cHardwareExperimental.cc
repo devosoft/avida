@@ -6801,13 +6801,15 @@ bool cHardwareExperimental::TestAttackPred(cAvidaContext& ctx)
 }
 
 void cHardwareExperimental::UpdateGroupAttackStats(cString& inst) {
-  int idx = 0;
+  int idx = -1;
   tArray<cString> attack_inst = m_world->GetStats().GetGroupAttackInsts(m_inst_set->GetInstSetName());
   for (int i = 0; i < attack_inst.GetSize(); i++) {
-    if (attack_inst[i] == inst) idx = i;
-    break;
+    if (attack_inst[i] == inst) {
+      idx = i;
+      break;
+    }
   }
-  
+  assert(idx >= 0);
   bool has_opinion = false;
   int opinion = m_world->GetConfig().DEFAULT_GROUP.Get();
   if (m_organism->HasOpinion() && m_world->GetConfig().USE_FORM_GROUPS.Get()) {
