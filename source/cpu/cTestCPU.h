@@ -26,7 +26,7 @@
 #include <fstream>
 
 #include "cString.h"
-#include "cResourceCount.h"
+#include "cResource.h"
 #include "cCPUTestInfo.h"
 #include "cWorld.h"
 
@@ -34,7 +34,7 @@
 class cAvidaContext;
 class cBioGroup;
 class cInstSet;
-class cResourceCount;
+class cResource;
 class cResourceHistory;
 
 using namespace Avida;
@@ -60,10 +60,10 @@ private:
   int m_res_cpu_cycle_offset;
 
   // Actual CPU resources.
-  cResourceCount m_resource_count;
-  cResourceCount m_faced_cell_resource_count;
-  cResourceCount m_deme_resource_count;
-  cResourceCount m_cell_resource_count;
+  cResource m_resource_count;
+  cResource m_faced_cell_resource_count;
+  cResource m_deme_resource_count;
+  cResource m_cell_resource_count;
     
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
@@ -112,7 +112,7 @@ public:
   
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  cResourceCount& GetResourceCount() { return m_resource_count; }
+  cResource& GetResourceCount() { return m_resource_count; }
 };
 
 

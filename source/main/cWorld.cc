@@ -227,7 +227,7 @@ void cWorld::GetEvents(cAvidaContext& ctx)
 
 int cWorld::GetNumResources()
 {
-  return m_env->GetResourceLib().GetSize();
+  return m_env->GetResDefLib().GetSize();
 }
 
 

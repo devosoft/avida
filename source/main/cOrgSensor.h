@@ -25,7 +25,7 @@
 #define cOrgSensor_h
 
 #include "cOrganism.h"
-#include "cResourceLib.h"
+#include "cResourceDefLib.h"
 #include "cWorld.h"
 
 struct sOrgDisplay 
@@ -87,10 +87,10 @@ class cOrgSensor
   
   void Reset() { ResetOrgSensor(); }
   const sLookOut SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft);
-  sSearchInfo TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type, 
+  sSearchInfo TestCell(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, const int search_type, 
                       const Apto::Coord<int>& target_cell_coords, const Apto::Array<int, Apto::Smart>& val_res, bool first_step,
                       bool stop_at_first_found);
-  sLookOut WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, const int search_type,
+  sLookOut WalkCells(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, const int search_type,
                       const int distance_sought, const int id_sought, const int facing, const int cell_id);
   sLookOut FindOrg(cOrganism* target_org, const int distance, const int facing);
   sLookOut GlobalVal(cAvidaContext& ctx, const int habitat_used, const int id_sought, const int search_type);
@@ -100,7 +100,7 @@ class cOrgSensor
   int GetMaxDist(const int worldx, const int cell_id, const int distance_sought, sBounds& res_bounds);
   sBounds GetBounds(cAvidaContext& ctx, const int res_id);
   inline bool TestBounds(const Apto::Coord<int>& cell_id, sBounds& bounds_set);
-  Apto::Array <int, Apto::Smart> BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound);
+  Apto::Array <int, Apto::Smart> BuildResArray(const int habitat_used, const int id_sought, const cResourceDefLib& resource_lib, bool single_bound);
   
   void SetReturnRelativeFacing(bool do_set) { m_return_rel_facing = do_set; }
   int ReturnRelativeFacing(cOrganism* sighted_org);

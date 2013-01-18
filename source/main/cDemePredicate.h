@@ -33,7 +33,7 @@
 #include <iostream>
 #include <functional>
 
-#include "cResourceCount.h"
+#include "cResource.h"
 #include "cStats.h"
 
 class cAvidaContext;
@@ -71,7 +71,7 @@ public:
 	
 	bool operator()(cAvidaContext& ctx, void* arg) {
 		assert(arg != NULL);
-		double resourceLevel = static_cast<cResourceCount*>(arg)->Get(ctx, static_cast<cResourceCount*>(arg)->GetResourceCountID(demeResourceName));
+		double resourceLevel = static_cast<cResource*>(arg)->Get(ctx, static_cast<cResource*>(arg)->GetResourceCountID(demeResourceName));
 
 		if(compareOperator == ">=") {
 			if(resourceLevel >= resourceThresholdValue) {

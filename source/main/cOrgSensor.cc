@@ -25,8 +25,8 @@
 
 #include "cEnvironment.h"
 #include "cPopulationCell.h"  
+#include "cResourceDef.h"
 #include "cResource.h"
-#include "cResourceCount.h"
 
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism)
@@ -39,7 +39,7 @@ void cOrgSensor::ResetOrgSensor()
   m_use_avatar = m_world->GetConfig().USE_AVATARS.Get();
   m_return_rel_facing = false;
   m_has_seen_display = false;
-  m_soloBounds.Resize(m_world->GetEnvironment().GetResourceLib().GetSize());
+  m_soloBounds.Resize(m_world->GetEnvironment().GetResDefLib().GetSize());
 }
 
 const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit& in_defs, int facing, int cell_id, bool use_ft)
@@ -49,7 +49,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   int search_type = in_defs.search_type;
   int id_sought = in_defs.id_sought;
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
   const int lib_size = resource_lib.GetSize();
   const int worldx = m_world->GetConfig().WORLD_X.Get();
   const int worldy = m_world->GetConfig().WORLD_Y.Get();
@@ -121,7 +121,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
       if (forage < 0 || forage >= lib_size) id_sought = -1;                             // e.g. predators looking for res or wacky forage target
       else id_sought = forage;
     }
-    if (id_sought != -1) habitat_used = resource_lib.GetResource(id_sought)->GetHabitat();    
+    if (id_sought != -1) habitat_used = resource_lib.GetResDef(id_sought)->GetHabitat();    
   }
   // if looking for org...
   else if (habitat_used == -2) {
@@ -161,17 +161,17 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
   
   // habitat is 0 and any of the resources are non-gradient types, are we dealing with global resources and can just use the global val
   if (habitat_used == 0 || habitat_used > 5) {
-    if (id_sought != -1 && resource_lib.GetResource(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
+    if (id_sought != -1 && resource_lib.GetResDef(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
       return GlobalVal(ctx, habitat_used, id_sought, search_type);
     }
     else if (id_sought == -1) {
       bool all_global = true;
       for (int i = 0; i < lib_size; i++) {
-        if (resource_lib.GetResource(i)->GetGeometry() == nGeometry::GLOBAL) {
+        if (resource_lib.GetResDef(i)->GetGeometry() == nGeometry::GLOBAL) {
           cOrgSensor::sLookOut globalval = GlobalVal(ctx, habitat_used, i, search_type);
           if (globalval.value >= 1 && search_type == 0) return globalval;
         }
-        else if (resource_lib.GetResource(i)->GetGeometry() != nGeometry::GLOBAL && (resource_lib.GetResource(i)->GetHabitat() == 0 || resource_lib.GetResource(i)->GetHabitat() > 5)) { 
+        else if (resource_lib.GetResDef(i)->GetGeometry() != nGeometry::GLOBAL && (resource_lib.GetResDef(i)->GetHabitat() == 0 || resource_lib.GetResDef(i)->GetHabitat() > 5)) { 
           all_global = false; 
           if (search_type == 1) break;
         }
@@ -304,7 +304,7 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
   return stuff_seen;
 }
 
-cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, 
+cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, 
                                                                 const int search_type, const int distance_sought, const int id_sought,
                                                                 const int facing, const int cell)
 {
@@ -411,7 +411,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
   val_res.Resize(0);
   // END definitions
   
-  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResource(id_sought)->GetGradient());
+  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResDef(id_sought)->GetGradient());
   if (habitat_used != -2 && habitat_used != 3) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound);
   
   // set geometric bounds, and fast-forward, if possible
@@ -435,7 +435,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
     bool global_only = true;
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
-      if (resource_lib.GetResource(val_res[i])->GetGradient()) {
+      if (resource_lib.GetResDef(val_res[i])->GetGradient()) {
         int this_start_dist = 0;
         sBounds res_bounds = GetBounds(ctx, val_res[i]);
         this_start_dist = GetMinDist(worldx, res_bounds, cell, distance_sought, facing);
@@ -454,7 +454,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
         }
       } else {
         // if any res is global, we just need to make sure we check at least one cell
-        if (resource_lib.GetResource(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
+        if (resource_lib.GetResDef(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
         // if any res is spatial and non-gradient, we can't bound things because those res don't track the variables we use for bounding
         else {
           global_only = false;
@@ -629,7 +629,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceLi
  *    otherwise, returns the number of objects we're looking for that are in target_cell
  *    
  */
-cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResourceLib& resource_lib, const int habitat_used, 
+cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResourceDefLib& resource_lib, const int habitat_used, 
                                               const int search_type, const Apto::Coord<int>& target_cell_coords,
                                               const Apto::Array <int, Apto::Smart>& val_res, bool first_step,
                                               bool stop_at_first_found)
@@ -648,17 +648,17 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
     for (int k = 0; k < val_res.GetSize(); k++) {
       if (!TestBounds(target_cell_coords, m_soloBounds[val_res[k]])) continue;
       double cell_res = m_organism->GetOrgInterface().GetFrozenCellResVal(ctx, target_cell_num, val_res[k]);
-      double edible_threshold = resource_lib.GetResource(val_res[k])->GetThreshold();
+      double edible_threshold = resource_lib.GetResDef(val_res[k])->GetThreshold();
       if (habitat_used == 0 || habitat_used > 5) {
         if (search_type == 0 && cell_res >= edible_threshold) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];                                          // get FIRST whole resource id
           returnInfo.has_edible = true;
-          if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
+          if (first_step || resource_lib.GetResDef(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += floor(cell_res / edible_threshold);                                                         
           }
         }
         else if (search_type == 1 && cell_res < edible_threshold && cell_res > 0) {         // only get sum amounts when < threshold if search = get counts
-          if (first_step || resource_lib.GetResource(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
+          if (first_step || resource_lib.GetResDef(val_res[k])->GetGeometry() != nGeometry::GLOBAL) {             // avoid counting global res more than once (ever)
             returnInfo.amountFound += cell_res;                                                         
           }
         } 
@@ -669,7 +669,7 @@ cOrgSensor::sSearchInfo cOrgSensor::TestCell(cAvidaContext& ctx, const cResource
         returnInfo.amountFound += cell_res;
       }
       else if (habitat_used == 5 && cell_res > 0) {                                                   // simulated predators work with any vals > 0 and have chance of detection failing
-        if (ctx.GetRandom().P(resource_lib.GetResource(val_res[k])->GetDetectionProb())) {
+        if (ctx.GetRandom().P(resource_lib.GetResDef(val_res[k])->GetDetectionProb())) {
           if (!returnInfo.has_edible) returnInfo.resource_id = val_res[k];   
           returnInfo.has_edible = true;
           returnInfo.amountFound += cell_res;
@@ -871,7 +871,7 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const int res_id)
   res_bounds.max_x = m_world->GetConfig().WORLD_X.Get() - 1;
   res_bounds.max_y = m_world->GetConfig().WORLD_Y.Get() - 1;
 
-  cResourceCount* res_count = m_organism->GetOrgInterface().GetResourceCount();
+  cResource* res_count = m_organism->GetOrgInterface().GetResourceCount();
   if (res_count != NULL) {
     int min_x = res_count->GetMinUsedX(res_id);
     int min_y = res_count->GetMinUsedY(res_id);
@@ -896,7 +896,7 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const int res_id)
   return res_bounds;
 }
 
-Apto::Array<int, Apto::Smart> cOrgSensor::BuildResArray(const int habitat_used, const int id_sought, const cResourceLib& resource_lib, bool single_bound)
+Apto::Array<int, Apto::Smart> cOrgSensor::BuildResArray(const int habitat_used, const int id_sought, const cResourceDefLib& resource_lib, bool single_bound)
 {
   // for hills and walls, we treat them all as generic and don't allow orgs to select individuals instances of that sort of resource
   Apto::Array<int, Apto::Smart> val_res;
@@ -904,7 +904,7 @@ Apto::Array<int, Apto::Smart> cOrgSensor::BuildResArray(const int habitat_used, 
   if (single_bound) val_res.Push(id_sought);
   else if (!single_bound) { 
     for (int i = 0; i < resource_lib.GetSize(); i++) { 
-      if (resource_lib.GetResource(i)->GetHabitat() == habitat_used) val_res.Push(i); 
+      if (resource_lib.GetResDef(i)->GetHabitat() == habitat_used) val_res.Push(i); 
     }
   }
   return val_res;

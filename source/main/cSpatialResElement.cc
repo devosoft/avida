@@ -1,5 +1,5 @@
 /*
- *  cSpatialCountElem.cc
+ *  cSpatialResElement.cc
  *  Avida
  *
  *  Called "spatial_count_elem.cc" prior to 12/5/05.
@@ -23,14 +23,14 @@
 /* Class to store information about amount of local/spatial resource in a
    given cell. */
 
-#include "cSpatialCountElem.h"
+#include "cSpatialResElement.h"
 
 const int MAXFLOWPTS = 8;
 
 
 /* Intial spatial resource count elements with an initial amount */
 
-cSpatialCountElem::cSpatialCountElem(double initamount)
+cSpatialResElement::cSpatialResElement(double initamount)
 {
   amount = initamount;
   delta = 0.0;
@@ -43,7 +43,7 @@ cSpatialCountElem::cSpatialCountElem(double initamount)
 
 /* Intial spatial resource count elements without an initial amount */
 
-cSpatialCountElem::cSpatialCountElem()
+cSpatialResElement::cSpatialResElement()
 {
   amount = 0.0;
   delta = 0.0;
@@ -56,7 +56,7 @@ cSpatialCountElem::cSpatialCountElem()
 
 /* Set pointer to one other elements from the current element */  
 
-void cSpatialCountElem::SetPtr(int innum, int inelempt, int inxdist, int inydist, double indist)
+void cSpatialResElement::SetPtr(int innum, int inelempt, int inxdist, int inydist, double indist)
 {
   elempt[innum] = inelempt;
   xdist[innum] = inxdist;

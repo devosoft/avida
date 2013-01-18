@@ -48,15 +48,15 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
 , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
 , cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
-, cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
-, cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
+, cur_rbins_total(m_world->GetEnvironment().GetResDefLib().GetSize())
+, cur_rbins_avail(m_world->GetEnvironment().GetResDefLib().GetSize())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , first_reaction_cycles(m_world->GetEnvironment().GetReactionLib().GetSize())
 , first_reaction_execs(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_stolen_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_sense_count(m_world->GetStats().GetSenseSize())
-, sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
+, sensed_resources(m_world->GetEnvironment().GetResDefLib().GetSize())
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
 , m_tolerance_immigrants()
 , m_tolerance_offspring_own()
@@ -74,8 +74,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , last_task_quality(m_world->GetEnvironment().GetNumTasks())
 , last_task_value(m_world->GetEnvironment().GetNumTasks())
 , last_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
-, last_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
-, last_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
+, last_rbins_total(m_world->GetEnvironment().GetResDefLib().GetSize())
+, last_rbins_avail(m_world->GetEnvironment().GetResDefLib().GetSize())
 , last_collect_spec_counts()
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
@@ -98,7 +98,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
     if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   }
   
-  double num_resources = m_world->GetEnvironment().GetResourceLib().GetSize();
+  double num_resources = m_world->GetEnvironment().GetResDefLib().GetSize();
   if (num_resources <= 0 || num_nops <= 0) return;
   double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
   cur_collect_spec_counts.Resize(int((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0)));
@@ -1420,7 +1420,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   taskctx.SetTaskStates(&m_task_states);
   
   const cEnvironment& env = m_world->GetEnvironment();
-  const int num_resources = env.GetResourceLib().GetSize();
+  const int num_resources = env.GetResDefLib().GetSize();
   const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
   

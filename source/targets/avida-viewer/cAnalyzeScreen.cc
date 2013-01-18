@@ -17,7 +17,7 @@
 #include "cPopulation.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
-#include "cResource.h"
+#include "cResourceDef.h"
 #include "cStats.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"

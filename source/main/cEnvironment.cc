@@ -42,7 +42,7 @@
 #include "cReactionProcess.h"
 #include "cReactionRequisite.h"
 #include "cReactionResult.h"
-#include "cResource.h"
+#include "cResourceDef.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
@@ -157,11 +157,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
 
     // Now that we know we have a variable name and its value, set it!
     if (var_name == "resource") {
-      cResource* test_resource = resource_lib.GetResource(var_value);
+      cResourceDef* test_resource = resource_lib.GetResDef(var_value);
       if (!AssertInputValid(test_resource, "resource", var_type, var_value, feedback)) {
         return false;
       }
-      new_process->SetResource(test_resource);
+      new_process->SetResourceDef(test_resource);
     }
     else if (var_name == "value") {
       if (!AssertInputDouble(var_value, "value", var_type, feedback)) return false;
@@ -201,11 +201,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
       new_process->SetKsubM(in_k_sub_m);
     }
     else if (var_name == "product") {
-      cResource* test_resource = resource_lib.GetResource(var_value);
+      cResourceDef* test_resource = resource_lib.GetResDef(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value, feedback)) {
         return false;
       }
-      new_process->SetProduct(test_resource);
+      new_process->SetProductDef(test_resource);
     }
     else if (var_name == "conversion") {
       if (!AssertInputDouble(var_value, "conversion", var_type, feedback)) return false;
@@ -235,7 +235,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedba
       new_process->SetIsGermline(var_value.AsInt());
     }
     else if (var_name == "detect") {
-      cResource* test_resource = resource_lib.GetResource(var_value);
+      cResourceDef* test_resource = resource_lib.GetResDef(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value, feedback)) {
         return false;
       }
@@ -442,11 +442,11 @@ bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
      exists (for instance was created as a cell resource) pull it out of
      the library and modify the existing values */
 
-    cResource* new_resource;
+    cResourceDef* new_resource;
     if (! resource_lib.DoesResourceExist(name)) {
-      new_resource = resource_lib.AddResource(name);
+      new_resource = resource_lib.AddResourceDef(name);
     } else {
-      new_resource = resource_lib.GetResource(name);
+      new_resource = resource_lib.GetResDef(name);
     }
 
     while (cur_resource.GetSize() != 0) {
@@ -626,7 +626,7 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
     return false;
   }
 
-  cResource* this_resource;
+  cResourceDef* this_resource;
   while (desc.GetSize() > 0) {
     cString cur_resource = desc.PopWord();
     const cString name = cur_resource.Pop(':');
@@ -635,7 +635,7 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
      set some default global values */
 
     if (! resource_lib.DoesResourceExist(name)) {
-      this_resource = resource_lib.AddResource(name);
+      this_resource = resource_lib.AddResourceDef(name);
       this_resource->SetInitial(0.0);
       this_resource->SetInflow(0.0);
       this_resource->SetOutflow(0.0);
@@ -654,7 +654,7 @@ bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
       this_resource->SetYGravity(0.0);
       this_resource->SetDemeResource("false");
     } else {
-      this_resource = resource_lib.GetResource(name);
+      this_resource = resource_lib.GetResDef(name);
     }
     cString cell_list_str = cur_resource.Pop(':');
     Apto::Array<int> cell_list = cStringUtil::ReturnArray(cell_list_str);
@@ -792,11 +792,11 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
     /* If resource does not already exist create it, however if it already
      exists (for instance was created as a cell resource) return an error*/
     
-    cResource* new_resource;
+    cResourceDef* new_resource;
     if (!resource_lib.DoesResourceExist(name)) {
-      new_resource = resource_lib.AddResource(name);
+      new_resource = resource_lib.AddResourceDef(name);
     } else {
-      new_resource = resource_lib.GetResource(name);
+      new_resource = resource_lib.GetResDef(name);
     }
     
     new_resource->SetGeometry("grid");
@@ -1549,7 +1549,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
 
     // Determine resource consumption
     double consumed = 0.0;
-    cResource* in_resource = cur_process->GetResource();
+    cResourceDef* in_resource = cur_process->GetResDef();
 
     if (in_resource == NULL) {
       // Test if infinite resource
@@ -1726,7 +1726,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     }
 
     // Determine detection events
-    cResource* detected = cur_process->GetDetect();
+    cResourceDef* detected = cur_process->GetDetect();
     if (detected != NULL) {
       const int detected_id = detected->GetID();
       const double real_amount = resource_count[detected_id];
@@ -1739,7 +1739,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     }
     
     // Determine byproducts
-    cResource* product = cur_process->GetProduct();
+    cResourceDef* product = cur_process->GetProduct();
     if (product != NULL) {
       int product_id = product->GetID();
       double product_size = consumed * cur_process->GetConversion();
@@ -1892,7 +1892,7 @@ bool cEnvironment::SetReactionTask(const cString& name, const cString& task)
 
 bool cEnvironment::SetResourceInflow(const cString& name, double _inflow )
 {
-  cResource* found_resource = resource_lib.GetResource(name);
+  cResourceDef* found_resource = resource_lib.GetResDef(name);
   if (found_resource == NULL) return false;
   found_resource->SetInflow( _inflow );
   return true;
@@ -1900,7 +1900,7 @@ bool cEnvironment::SetResourceInflow(const cString& name, double _inflow )
 
 bool cEnvironment::SetResourceOutflow(const cString& name, double _outflow )
 {
-  cResource* found_resource = resource_lib.GetResource(name);
+  cResourceDef* found_resource = resource_lib.GetResDef(name);
   if (found_resource == NULL) return false;
   found_resource->SetOutflow( _outflow );
   return true;

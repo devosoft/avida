@@ -1,5 +1,5 @@
 /*
- *  cGradientCount.cc
+ *  cGradientRes.cc
  *  Avida
  *
  *  Copyright 2010-2011 Michigan State University. All rights reserved.
@@ -21,7 +21,7 @@
  *
  */
 
-#include "cGradientCount.h"
+#include "cGradientRes.h"
 
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
@@ -37,7 +37,7 @@
 using namespace Avida;
 
 
-/* cGradientCount is designed to give moving peaks of resources. Peaks are <optionally> capped with plateaus. The slope of the peaks
+/* cGradientRes is designed to give moving peaks of resources. Peaks are <optionally> capped with plateaus. The slope of the peaks
 is height / distance. Consequently, when height = distance from center of peak, the value at that cell = 1. This was 
 designed this way because the organims used for this could only consume resources when the value is >= 1. Thus, height also 
 gives radius of 'edible' resources (aka the plateau). If plateaus are >1, you get sloped edges leading up to plateau 
@@ -58,7 +58,7 @@ updates) is reached, whichever comes first.
   Peak values are refreshed to match initial height, spread, and plateau, but for non-halo peaks, the placement of the 
 refreshed peak is random within the min/max x and y area. For halo peaks, the peak is currently refreshed at the SE 
 corner of the orbit.
-cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially.
+cGradientRes cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially.
   We use movesign to determine direction of peak movement
   First, to get smooth movements, for non-halo resources we only allow either the x or y direction change to be evaluated in 
  a single update. For halo resources, we only evaluate either the orbit or the direction in a given update.
@@ -67,7 +67,7 @@ from -1 to 1, without first changing to 0
   Finally, we only toy with movement direction when # updates since last change = updatestep.
  */
 
-cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay, 
+cGradientRes::cGradientRes(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
@@ -116,14 +116,14 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   ResetGradRes(m_world->GetDefaultContext(), worldx, worldy);
 }
 
-cGradientCount::~cGradientCount() { ; }
+cGradientRes::~cGradientRes() { ; }
 
-void cGradientCount::StateAll()
+void cGradientRes::StateAll()
 {
   return;
 }
 
-void cGradientCount::UpdateCount(cAvidaContext& ctx)
+void cGradientRes::UpdateCount(cAvidaContext& ctx)
 { 
   m_old_peakx = m_peakx;
   m_old_peaky = m_peaky;
@@ -133,7 +133,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   else updatePeakRes(ctx);
 }
 
-void cGradientCount::updatePeakRes(cAvidaContext& ctx)
+void cGradientRes::updatePeakRes(cAvidaContext& ctx)
 {  
   bool has_edible = false; 
   
@@ -188,7 +188,7 @@ void cGradientCount::updatePeakRes(cAvidaContext& ctx)
   if (m_predator) UpdatePredatoryRes(ctx);
 }
 
-void cGradientCount::generatePeak(cAvidaContext& ctx)
+void cGradientRes::generatePeak(cAvidaContext& ctx)
 {
   // Get initial peak cell x, y coordinates and movement directions.
   Apto::Random& rng = ctx.GetRandom();
@@ -252,7 +252,7 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
   fillinResourceValues();
 }
 
-void cGradientCount::fillinResourceValues()
+void cGradientRes::fillinResourceValues()
 {  
   int max_pos_x;
   int min_pos_x;
@@ -384,7 +384,7 @@ void cGradientCount::fillinResourceValues()
   m_just_reset = false;
 }
 
-void cGradientCount::getCurrentPlatValues()
+void cGradientRes::getCurrentPlatValues()
 { 
   int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
@@ -413,7 +413,7 @@ void cGradientCount::getCurrentPlatValues()
   m_ave_plat_cell_loss = amount_devoured / plateau_cell;
 } 
 
-void cGradientCount::moveRes(cAvidaContext& ctx)
+void cGradientRes::moveRes(cAvidaContext& ctx)
 {
   // for halo peaks, find current orbit. Add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;  
@@ -433,7 +433,7 @@ void cGradientCount::moveRes(cAvidaContext& ctx)
   m_skip_counter = 0;
 }
 
-void cGradientCount::setPeakMoveMovement(cAvidaContext& ctx)  
+void cGradientRes::setPeakMoveMovement(cAvidaContext& ctx)  
 {
   int choosesign = ctx.GetRandom().GetInt(1,3);
   if (choosesign == 1) {
@@ -448,7 +448,7 @@ void cGradientCount::setPeakMoveMovement(cAvidaContext& ctx)
   }
 } 
 
-int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
+int cGradientRes::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
 {    
   // move cones by moving m_peakx & m_peaky 
   // halo resources orbit at a fixed org walking distance from an anchor point
@@ -494,7 +494,7 @@ int cGradientCount::setHaloOrbit(cAvidaContext& ctx, int current_orbit)
   return current_orbit;
 }
 
-void cGradientCount::moveHaloPeak(int current_orbit)
+void cGradientRes::moveHaloPeak(int current_orbit)
 {
   // what quadrant we are in determines whether we are changing x's or y's (= changling)
   // if we are on a corner, we just stick with the current changling
@@ -564,7 +564,7 @@ void cGradientCount::moveHaloPeak(int current_orbit)
   assert(m_peakx >= 0 && m_peaky >= 0 && m_peakx < GetX() && m_peaky < GetY());
 }
 
-void cGradientCount::movePeak()
+void cGradientRes::movePeak()
 {
   // for non-halo peaks keep cones inside their bounding boxes, bouncing them if they hit the edge 
   int temp_height = 0;
@@ -584,7 +584,7 @@ void cGradientCount::movePeak()
   m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
 }  
 
-void cGradientCount::generateBarrier(cAvidaContext& ctx)
+void cGradientRes::generateBarrier(cAvidaContext& ctx)
 // If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
 { 
   // generate/regenerate walls when counter == config updatestep
@@ -753,7 +753,7 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
   else m_topo_counter++; 
 }
 
-void cGradientCount::generateHills(cAvidaContext& ctx)
+void cGradientRes::generateHills(cAvidaContext& ctx)
 // If habitat == 1 we are creating hills which slow movement, not really gradient resources
 { 
   // generate/regenerate hills when counter == config updatestep
@@ -824,7 +824,7 @@ void cGradientCount::generateHills(cAvidaContext& ctx)
   else m_topo_counter++; 
 }
 
-void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
+void cGradientRes::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
 {
   if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
@@ -867,7 +867,7 @@ void cGradientCount::ResetGradRes(cAvidaContext& ctx, int worldx, int worldy)
   m_initial = false;
 }
 
-void cGradientCount::SetGradPlatVarInflow(double mean, double variance, int type)
+void cGradientRes::SetGradPlatVarInflow(double mean, double variance, int type)
 {
   if (variance > 0) {
     m_mean_plat_inflow = mean;
@@ -895,7 +895,7 @@ void cGradientCount::SetGradPlatVarInflow(double mean, double variance, int type
   else SetGradPlatInflow(mean);
 }
 
-void cGradientCount::UpdatePredatoryRes(cAvidaContext& ctx)
+void cGradientRes::UpdatePredatoryRes(cAvidaContext& ctx)
 {
   // kill off up to 1 org per update within the predator radius (plateau area), with prob of death for selected prey = m_pred_odds
   if (m_predator) {
@@ -907,14 +907,14 @@ void cGradientCount::UpdatePredatoryRes(cAvidaContext& ctx)
   }
 }
 
-void cGradientCount::SetPredatoryResource(double odds, int juvsper)
+void cGradientRes::SetPredatoryResource(double odds, int juvsper)
 {
   m_predator = true;
   m_pred_odds = odds;
   m_guarded_juvs_per_adult = juvsper;
 }
 
-void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells)
+void cGradientRes::SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells)
 {
   m_probabilistic = true;
   m_initial_plat = initial;
@@ -924,7 +924,7 @@ void cGradientCount::SetProbabilisticResource(cAvidaContext& ctx, double initial
   BuildProbabilisticRes(ctx, lambda, theta, x , y, num_cells);
 }
 
-void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells)
+void cGradientRes::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells)
 {
   if (m_min_usedx != -1) clearExistingProbRes();
   resetUsedBounds();
@@ -1006,7 +1006,7 @@ void cGradientCount::BuildProbabilisticRes(cAvidaContext& ctx, double lambda, do
   while (m_prob_res_cells.GetSize() > cells_used) m_prob_res_cells.Pop();
 }
 
-void cGradientCount::UpdateProbabilisticRes()
+void cGradientRes::UpdateProbabilisticRes()
 {
   if (m_plateau_outflow > 0 || m_plateau_inflow > 0) {
     for (int i = 0; i < m_prob_res_cells.GetSize(); i++) {
@@ -1018,7 +1018,7 @@ void cGradientCount::UpdateProbabilisticRes()
   }
 }
 
-void cGradientCount::clearExistingProbRes()
+void cGradientRes::clearExistingProbRes()
 {
   for (int x = m_min_usedx; x < m_max_usedx + 1; x ++) {
     for (int y = m_min_usedy; y < m_max_usedy + 1; y ++) {
@@ -1027,7 +1027,7 @@ void cGradientCount::clearExistingProbRes()
   }
 }
 
-void cGradientCount::updateBounds(int x, int y)
+void cGradientRes::updateBounds(int x, int y)
 {
   if (x < m_min_usedx || m_min_usedx == -1) m_min_usedx = x;
   if (y < m_min_usedy || m_min_usedy == -1) m_min_usedy = y;
@@ -1035,7 +1035,7 @@ void cGradientCount::updateBounds(int x, int y)
   if (y > m_max_usedy || m_max_usedy == -1) m_max_usedy = y;
 }
 
-void cGradientCount::resetUsedBounds()
+void cGradientRes::resetUsedBounds()
 {
   m_min_usedx = -1;
   m_min_usedy = -1;

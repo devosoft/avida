@@ -28,7 +28,7 @@
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cResource.h"
+#include "cResourceDef.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cOrgMessagePredicate.h"
@@ -368,7 +368,7 @@ void cDeme::ProcessUpdate(cAvidaContext& ctx)
     if(event.IsActive() && event.GetDelay() < _age && _age <= event.GetDelay()+event.GetDuration()) {
       //remove energy from cells  (should be done with outflow, but this will work for now)
       int eventCell = event.GetNextEventCellID();
-      cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource("CELL_ENERGY");
+      cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef("CELL_ENERGY");
       
       while(eventCell != -1) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(eventCell));
@@ -706,7 +706,7 @@ void cDeme::ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double>& re
   deme_resource_count.ModifyCell(ctx, res_change, relative_cell_id);
 }
 
-void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) {               
+void cDeme::SetupDemeRes(int id, cResourceDef* res, int verbosity, cWorld* world) {
   const double decay = 1.0 - res->GetOutflow();
   //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
   
@@ -722,15 +722,7 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetOutflowX2(), res->GetOutflowY1(), 
                             res->GetOutflowY2(), res->GetCellListPtr(),
                             res->GetCellIdListPtr(), verbosity,
-                            res->GetPeaks(), 
-                            res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
-                            res->GetAh(), res->GetAr(),
-                            res->GetAcx(), res->GetAcy(),
-                            res->GetHStepscale(), res->GetRStepscale(),
-                            res->GetCStepscaleX(), res->GetCStepscaleY(),
-                            res->GetHStep(), res->GetRStep(),
-                            res->GetCStepX(), res->GetCStepY(),
-                            res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
+                            res->GetPeakX(), res->GetPeakY(),
                             res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
                             res->GetMaxX(), res->GetMaxY(), res->GetMinX(), res->GetMinY(), 
                             res->GetAscaler(), res->GetUpdateStep(),
@@ -1272,7 +1264,7 @@ void cDeme::DoDemeOutput(cAvidaContext& ctx, int value)
   taskctx.SetTaskStates(&m_task_states);
 
   const cEnvironment& env = m_world->GetEnvironment();
-  const int num_resources = env.GetResourceLib().GetSize();
+  const int num_resources = env.GetResDefLib().GetSize();
   const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
 

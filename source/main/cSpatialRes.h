@@ -1,5 +1,5 @@
 /*
- *  cSpatialResCount.h
+ *  cSpatialRes.h
  *  Avida
  *
  *  Called "spatial_res_count.hh" prior to 12/5/05.
@@ -22,18 +22,18 @@
 
 /*! Class to keep track of amounts of localized resources. */
 
-#ifndef cSpatialResCount_h
-#define cSpatialResCount_h
+#ifndef cSpatialRes_h
+#define cSpatialRes_h
 
 #include "cAvidaContext.h"
-#include "cSpatialCountElem.h"
-#include "cResource.h"
+#include "cSpatialResElement.h"
+#include "cResourceDef.h"
 
 
-class cSpatialResCount
+class cSpatialRes
 {
 private:
-  Apto::Array<cSpatialCountElem> grid;
+  Apto::Array<cSpatialResElement> grid;
   double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;
@@ -47,12 +47,12 @@ private:
   bool m_modified;
   
 public:
-  cSpatialResCount();
-  cSpatialResCount(int inworld_x, int inworld_y, int ingeometry);
-  cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, 
+  cSpatialRes();
+  cSpatialRes(int inworld_x, int inworld_y, int ingeometry);
+  cSpatialRes(int inworld_x, int inworld_y, int ingeometry, 
                    double inxdiffuse, double inydiffuse,
                    double inxgravity, double inygravity);
-  virtual ~cSpatialResCount();
+  virtual ~cSpatialRes();
   
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
   void SetPointers();
@@ -62,7 +62,7 @@ public:
   int GetX() const { return world_x; }
   int GetY() const { return world_y; }
   int GetCellListSize() const { return cell_list_ptr->GetSize(); }
-  cSpatialCountElem& Element(int x) { return grid[x]; }
+  cSpatialResElement& Element(int x) { return grid[x]; }
   void Rate(int x, double ratein) const;
   void Rate(int x, int y, double ratein) const;
   void State(int x);
@@ -97,57 +97,6 @@ public:
   void ResetResourceCounts();
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
-  
-  virtual void SetGradInitialPlat(double) { ; }
-  virtual void SetGradPeakX(int) { ; }
-  virtual void SetGradPeakY(int) { ; }
-  virtual void SetGradHeight(int) { ; }
-  virtual void SetGradSpread(int) { ; }
-  virtual void SetGradPlateau(double) { ; }
-  virtual void SetGradDecay(int) { ; }
-  virtual void SetGradMaxX(int) { ; }
-  virtual void SetGradMaxY(int) { ; }
-  virtual void SetGradMinX(int) { ; }
-  virtual void SetGradMinY(int) { ; }
-  virtual void SetGradMoveScaler(double) { ; }
-  virtual void SetGradUpdateStep(int) { ; }
-  virtual void SetGradIsHalo(bool) { ; }
-  virtual void SetGradHaloInnerRad(int) { ; }
-  virtual void SetGradHaloWidth(int) { ; }
-  virtual void SetGradHaloX(int) { ; }
-  virtual void SetGradHaloY(int) { ; }
-  virtual void SetGradMoveSpeed(int) { ; }
-  virtual void SetGradPlatInflow(double) { ; }
-  virtual void SetGradPlatOutflow(double) { ; }
-  virtual void SetGradConeInflow(double) { ; }
-  virtual void SetGradConeOutflow(double) { ; }
-  virtual void SetGradientInflow(double) { ; }
-  virtual void SetGradPlatVarInflow(double, double, int) { ; }
-  virtual void SetPredatoryResource(double, int) { ; }
-  virtual void SetProbabilisticResource(cAvidaContext& ctx, double, double, double, double, double, int, int, int) { ; }
-  virtual void SetGradPlatIsCommon(bool) { ; }
-  virtual void SetGradFloor(double) { ; }
-  virtual void SetGradHabitat(int) { ; }
-  virtual void SetGradMinSize(int) { ; }
-  virtual void SetGradMaxSize(int) { ; }
-  virtual void SetGradConfig(int) { ; }
-  virtual void SetGradCount(int) { ; }
-  virtual void SetGradResistance(double) { ; }
-  virtual void SetGradThreshold(double) { ; }
-  virtual void SetGradRefuge(int) { ; }
-
-  virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) { (void)ctx, (void)worldx, (void)worldy; }
-  
-  void SetCurrPeakX(int in_curr_x) { curr_peakx = in_curr_x; }
-  void SetCurrPeakY(int in_curr_y) { curr_peaky = in_curr_y; }
-  int GetCurrPeakX() { return curr_peakx; } 
-  int GetCurrPeakY() { return curr_peaky; }
-  
-  virtual Apto::Array<int>* GetWallCells() { return NULL; }
-  virtual int GetMinUsedX() { return -1; }
-  virtual int GetMinUsedY() { return -1; }
-  virtual int GetMaxUsedX() { return -1; }
-  virtual int GetMaxUsedY() { return -1; }
 };
 
 #endif

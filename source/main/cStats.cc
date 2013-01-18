@@ -1474,9 +1474,9 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
   
   df.Write(m_update,   "Update");
 
-  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
-    if (resLib.GetResource(i)->GetGradient()) {
+    if (resLib.GetResDef(i)->GetGradient()) {
       df.Write(m_world->GetPopulation().GetCurrPeakX(ctx, i) + (m_world->GetPopulation().GetCurrPeakY(ctx, i) * m_world->GetConfig().WORLD_X.Get()), "CellID");
     }
   }
@@ -1497,9 +1497,9 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
   std::ofstream& fp = df.GetOFStream();
   fp << m_update << " ";
 
-  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
-    if (resLib.GetResource(i)->GetGradient() && resLib.GetResource(i)->GetHabitat() == 2) {
+    if (resLib.GetResDef(i)->GetGradient() && resLib.GetResDef(i)->GetHabitat() == 2) {
       Apto::Array<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
       for (int i = 0; i < cells.GetSize() - 1; i++) {
         fp << cells[i] << ",";
@@ -4080,7 +4080,7 @@ void cStats::PrintDenData(const cString& filename) {
   
   int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
   
   int num_juvs = 0;
   int num_adults = 0;
@@ -4101,7 +4101,7 @@ void cStats::PrintDenData(const cString& filename) {
     
     bool is_active = false;    
     for (int j = 0; j < cell_res.GetSize(); j++) {
-      if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+      if ((resource_lib.GetResDef(j)->GetHabitat() == 4 || resource_lib.GetResDef(j)->GetHabitat() == 3) && cell_res[j] > 0) {
         Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs(); 
         for (int k = 0; k < cell_avs.GetSize(); k++) {
           if (cell_avs[k]->GetPhenotype().GetTimeUsed() < juv_age) { 

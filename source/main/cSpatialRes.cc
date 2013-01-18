@@ -1,5 +1,5 @@
 /*
- *  cSpatialResCount.cc
+ *  cSpatialRes.cc
  *  Avida
  *
  *  Called "spatial_res_count.cc" prior to 12/5/05.
@@ -19,7 +19,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cSpatialResCount.h"
+#include "cSpatialRes.h"
 
 #include "AvidaTools.h"
 #include "nGeometry.h"
@@ -31,7 +31,7 @@ using namespace AvidaTools;
 
 /* Setup a single spatial resource with known flows */
 
-cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
+cSpatialRes::cSpatialRes(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
                                    double inxgravity, double inygravity)
 : grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
@@ -46,7 +46,7 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry,
   geometry = ingeometry;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
-    cSpatialCountElem tmpelem;
+    cSpatialResElement tmpelem;
     grid[i] = tmpelem;
   } 
   SetPointers();
@@ -54,7 +54,7 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry,
 
 /* Setup a single spatial resource using default flow amounts  */
 
-cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
+cSpatialRes::cSpatialRes(int inworld_x, int inworld_y, int ingeometry)
 : grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
   int i;
@@ -68,21 +68,21 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
   geometry = ingeometry;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
-    cSpatialCountElem tmpelem;
+    cSpatialResElement tmpelem;
     grid[i] = tmpelem;
    } 
    SetPointers();
 }
 
-cSpatialResCount::cSpatialResCount() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
+cSpatialRes::cSpatialRes() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
 {
   geometry = nGeometry::GLOBAL;
 }
 
-cSpatialResCount::~cSpatialResCount() { ; }
+cSpatialRes::~cSpatialRes() { ; }
 
 
-void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
+void cSpatialRes::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
 {
   int i;
  
@@ -92,13 +92,13 @@ void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
   geometry = ingeometry;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
-    cSpatialCountElem tmpelem;
+    cSpatialResElement tmpelem;
     grid[i] = tmpelem;
    } 
    SetPointers();
 }
 
-void cSpatialResCount::SetPointers()
+void cSpatialRes::SetPointers()
 {
   /* Pointer 0 will point to the cell above and to the left the current cell
      and will go clockwise around the cell.                               */
@@ -150,7 +150,7 @@ void cSpatialResCount::SetPointers()
 }
 
 
-void cSpatialResCount::CheckRanges()
+void cSpatialRes::CheckRanges()
 {
 
   // Check that the x, y ranges of the inflow and outflow rectangles 
@@ -213,7 +213,7 @@ void cSpatialResCount::CheckRanges()
 }
 
 /* Set all the individual cells to their initial values */
-void cSpatialResCount::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
+void cSpatialRes::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
 {
   cell_list_ptr = in_cell_list_ptr;
   for (int i = 0; i < cell_list_ptr->GetSize(); i++) {
@@ -232,7 +232,7 @@ void cSpatialResCount::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
 
 /* Set the rate variable for one element using the array index */
 
-void cSpatialResCount::Rate(int x, double ratein) const {
+void cSpatialRes::Rate(int x, double ratein) const {
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].Rate(ratein);
   } else {
@@ -242,7 +242,7 @@ void cSpatialResCount::Rate(int x, double ratein) const {
 
 /* Set the rate variable for one element using the x,y coordinate */
 
-void cSpatialResCount::Rate(int x, int y, double ratein) const { 
+void cSpatialRes::Rate(int x, int y, double ratein) const { 
   if (x >= 0 && x < world_x && y>= 0 && y < world_y) {
     grid[y * world_x + x].Rate(ratein);
   } else {
@@ -253,7 +253,7 @@ void cSpatialResCount::Rate(int x, int y, double ratein) const {
 /* Fold the rate variable into the resource state for one element using 
    the array index */
    
-void cSpatialResCount::State(int x) { 
+void cSpatialRes::State(int x) { 
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].State();
   } else {
@@ -264,7 +264,7 @@ void cSpatialResCount::State(int x) {
 /* Fold the rate variable into the resource state for one element using 
    the x,y coordinate */
    
-void cSpatialResCount::State(int x, int y) { 
+void cSpatialRes::State(int x, int y) { 
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     grid[y*world_x + x].State();
   } else {
@@ -274,7 +274,7 @@ void cSpatialResCount::State(int x, int y) {
 
 /* Get the state of one element using the array index */
 
-double cSpatialResCount::GetAmount(int x) const { 
+double cSpatialRes::GetAmount(int x) const { 
   if (x >= 0 && x < grid.GetSize()) {
     return grid[x].GetAmount(); 
   } else {
@@ -284,7 +284,7 @@ double cSpatialResCount::GetAmount(int x) const {
 
 /* Get the state of one element using the the x,y coordinate */
 
-double cSpatialResCount::GetAmount(int x, int y) const { 
+double cSpatialRes::GetAmount(int x, int y) const { 
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     return grid[y*world_x + x].GetAmount(); 
   } else {
@@ -292,7 +292,7 @@ double cSpatialResCount::GetAmount(int x, int y) const {
   }
 }
 
-void cSpatialResCount::RateAll(double ratein) {
+void cSpatialRes::RateAll(double ratein) {
 
   int i;
  
@@ -304,7 +304,7 @@ void cSpatialResCount::RateAll(double ratein) {
 /* For each cell in the grid add the changes stored in the rate variable
    with the total of the resource */
 
-void cSpatialResCount::StateAll() {
+void cSpatialRes::StateAll() {
 
   int i;
  
@@ -313,7 +313,7 @@ void cSpatialResCount::StateAll() {
   } 
 }
 
-void cSpatialResCount::FlowAll() {
+void cSpatialRes::FlowAll() {
 
   // @JEB save time if diffusion and gravity off...
   if ((xdiffuse == 0.0) && (ydiffuse == 0.0) && (xgravity == 0.0) && (ygravity == 0.0)) return;
@@ -341,7 +341,7 @@ void cSpatialResCount::FlowAll() {
 
 /* Total up all the resources in each cell */
 
-double cSpatialResCount::SumAll() const{
+double cSpatialRes::SumAll() const{
 
   int i;
   double sum = 0.0;
@@ -355,7 +355,7 @@ double cSpatialResCount::SumAll() const{
 /* Take a given amount of resource and spread it among all the cells in the 
    inflow rectange */
 
-void cSpatialResCount::Source(double amount) const {
+void cSpatialRes::Source(double amount) const {
   int     i, j, elem;
   double  totalcells;
 
@@ -372,7 +372,7 @@ void cSpatialResCount::Source(double amount) const {
 
 /* Handle the inflow for a list of individual cells */
 
-void cSpatialResCount::CellInflow() const {
+void cSpatialRes::CellInflow() const {
   for (int i=0; i < cell_list_ptr->GetSize(); i++) {
     const int cell_id = (*cell_list_ptr)[i].GetId();
     
@@ -387,7 +387,7 @@ void cSpatialResCount::CellInflow() const {
 
 /* Take away a give percentage of a resource from outflow rectangle */
 
-void cSpatialResCount::Sink(double decay) const {
+void cSpatialRes::Sink(double decay) const {
 
   int     i, j, elem;
   double  deltaamount;
@@ -405,7 +405,7 @@ void cSpatialResCount::Sink(double decay) const {
 
 /* Take away a give percentage of a resource from individual cells */
 
-void cSpatialResCount::CellOutflow() const {
+void cSpatialRes::CellOutflow() const {
 
   double deltaamount = 0.0;
 
@@ -422,7 +422,7 @@ void cSpatialResCount::CellOutflow() const {
   }
 }
 
-void cSpatialResCount::SetCellAmount(int cell_id, double res)
+void cSpatialRes::SetCellAmount(int cell_id, double res)
 {
   if (cell_id >= 0 && cell_id < grid.GetSize())
   {
@@ -431,7 +431,7 @@ void cSpatialResCount::SetCellAmount(int cell_id, double res)
 }
 
 
-void cSpatialResCount::ResetResourceCounts()
+void cSpatialRes::ResetResourceCounts()
 {
   for (int i = 0; i < grid.GetSize(); i++) grid[i].ResetResourceCount(m_initial);
 }

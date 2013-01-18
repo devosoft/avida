@@ -1,7 +1,8 @@
 /*
- *  cResourceLib.h
+ *  cResourceDefLib.h
  *  Avida
  *
+ *  Called "cResourceLib.h" prior to 01/17/13.
  *  Called "resource_lib.hh" prior to 12/5/05.
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
@@ -20,38 +21,38 @@
  *
  */
 
-#ifndef cResourceLib_h
-#define cResourceLib_h
+#ifndef cResourceDefLib_h
+#define cResourceDefLib_h
 
 #include "avida/core/Types.h"
 
-class cResource;
+class cResourceDef;
 class cResourceHistory;
 class cString;
 
 
-class cResourceLib
+class cResourceDefLib
 {
 private:
-  Apto::Array<cResource*> m_resource_array;
+  Apto::Array<cResourceDef*> m_resource_array;
   mutable cResourceHistory* m_initial_levels;
   int m_num_deme_resources;
   
-  cResourceLib(const cResourceLib&); // @not_implemented
-  cResourceLib& operator=(const cResourceLib&); // @not_implemented
+  cResourceDefLib(const cResourceDefLib&); // @not_implemented
+  cResourceDefLib& operator=(const cResourceDefLib&); // @not_implemented
   
 public:
-  cResourceLib() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
-  ~cResourceLib();
+  cResourceDefLib() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
+  ~cResourceDefLib();
 
   int GetSize() const { return m_resource_array.GetSize(); }
 
-  cResource* AddResource(const cString& res_name);
-  cResource* GetResource(const cString& res_name) const;
-  inline cResource* GetResource(int id) const { return m_resource_array[id]; }
+  cResourceDef* AddResourceDef(const cString& res_name);
+  cResourceDef* GetResDef(const cString& res_name) const;
+  inline cResourceDef* GetResDef(int id) const { return m_resource_array[id]; }
   const cResourceHistory& GetInitialResourceLevels() const;
   bool DoesResourceExist(const cString& res_name);
-  void SetResourceIndex(cResource* res);
+  void SetResourceIndex(cResourceDef* res);
 };
 
 #endif

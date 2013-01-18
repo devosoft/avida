@@ -31,10 +31,10 @@
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cResourceDef.h"
 #include "cResource.h"
-#include "cResourceCount.h"
 #include "cResourceHistory.h"
-#include "cResourceLib.h"
+#include "cResourceDefLib.h"
 #include "cStringUtil.h"
 #include "cTestCPUInterface.h"
 #include "cWorld.h"
@@ -84,10 +84,10 @@ void cTestCPU::InitResources(cAvidaContext& ctx, int res_method, cResourceHistor
     // be changed if LOAD_RESOURCES analyze command is called.  If there are
     // no resources in the environment or there is no environment, the list
     // is empty then the all resources will default to 0.0
-    m_res = &m_world->GetEnvironment().GetResourceLib().GetInitialResourceLevels();
+    m_res = &m_world->GetEnvironment().GetResDefLib().GetInitialResourceLevels();
   }
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
   assert(resource_lib.GetSize() >= 0);
   
   // Set the resource count to zero by default
@@ -171,7 +171,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
     // This is a clumsy way to insert it in the trace file, but works for my purposes @JEB
     if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
     {
-      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
       assert(resource_lib.GetSize() >= 0);
       *tracerStream << "Resources:";
       // Print out resources
@@ -189,7 +189,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   // Output final resource information @JEB
   if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
   {
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
     assert(resource_lib.GetSize() >= 0);
     *tracerStream << "Resources:";
     // Print out resources
@@ -439,7 +439,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   	df.WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
   	for (int i = 0; i < rbins_total.GetSize(); i++) {
   		df.WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
-  		                      static_cast<const char*>(env.GetResourceLib().GetResource(i)->GetName()),
+  		                      static_cast<const char*>(env.GetResDefLib().GetResDef(i)->GetName()),
   		                      rbins_total[i], rbins_avail[i]));
   	}
   }

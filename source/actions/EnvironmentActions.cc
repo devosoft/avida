@@ -31,7 +31,7 @@
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cResource.h"
+#include "cResourceDef.h"
 #include "cStats.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
@@ -54,7 +54,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
     if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), m_res_count);
   }
 };
@@ -86,7 +86,7 @@ public:
     if (ave_merit <= 0.0) ave_merit = 1.0; // make sure that we don't get NAN's or negative numbers
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
     if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), (m_res_count / ave_merit));
   }
 };
@@ -118,7 +118,7 @@ public:
     if (ave_merit <= 0.0) ave_merit = 1.0; // make sure that we don't get NAN's or negative numbers
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
     
     double res_level = m_world->GetPopulation().GetResource(ctx, res->GetID());
     double scaled_perc = 1 / (1 + ave_merit * (1 - m_res_percent) / m_res_percent);
@@ -192,9 +192,9 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+    cResourceDefLib & res_lib = m_world->GetEnvironment().GetResDefLib();
     for (int i=0; i < res_lib.GetSize(); i++)  {
-      cResource* res = res_lib.GetResource(i);
+      cResourceDef* res = res_lib.GetResDef(i);
       m_world->GetPopulation().SetResource(ctx, res->GetID(), 0.0);
     }
   }
@@ -222,7 +222,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
     
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
     assert(res);
     m_res_id = res->GetID(); // Save the id so we don't have to do many string conversions
   }
@@ -231,7 +231,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_id);
+    cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_id);
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
@@ -261,7 +261,7 @@ public:
     if (largs.GetSize()) largs.PopWord();
     if (largs.GetSize()) m_res_name = largs.PopWord().Pop(':');
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string env_string>"; }
@@ -280,7 +280,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
         
-    m_world->GetPopulation().UpdateGradientCount(ctx, m_world->GetVerbosity(), m_world, m_res_name);        
+    m_world->GetPopulation().UpdateGradientRes(ctx, m_world->GetVerbosity(), m_world, m_res_name);        
   } 
 };
 
@@ -297,7 +297,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
@@ -321,7 +321,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
@@ -345,7 +345,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
@@ -369,7 +369,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
@@ -393,7 +393,7 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
@@ -421,7 +421,7 @@ public:
     if (largs.GetSize()) m_variance = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_type = largs.PopWord().AsInt();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double mean> <double variance>"; }
@@ -449,7 +449,7 @@ public:
     if (largs.GetSize()) m_juvs_per = largs.PopWord().AsInt();
     if (largs.GetSize()) m_detection_prob = largs.PopWord().AsDouble();
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double kill_odds> <int guarded_juvs_per_adult> <double detection_prob>"; }
@@ -478,7 +478,7 @@ public:
                                   m_initial(0.0), m_inflow(0.0), m_outflow(0.0), m_lambda(1.0), m_theta(0.0), m_x(-1), m_y(-1), m_count(-1)
   {
     cArgSchema schema(':','=');
-    schema.AddEntry("res_name", 0, (const char*)m_world->GetEnvironment().GetResourceLib().GetResource(0)->GetName());
+    schema.AddEntry("res_name", 0, (const char*)m_world->GetEnvironment().GetResDefLib().GetResDef(0)->GetName());
     
     schema.AddEntry("initial", 0, 0.0);
     schema.AddEntry("inflow", 1, 0.0);
@@ -506,7 +506,7 @@ public:
       m_count = argc->GetInt(2);
     }
     
-    assert(m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name));
+    assert(m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name));
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <double initial> <double inflow> <double outflow> <double lambda> <double theta> <int x> <int y> <int num>"; }
@@ -991,8 +991,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cResource* deme_res = m_world->GetEnvironment().GetResourceLib().GetResource(m_deme_res_name);
-    cResource* global_res = m_world->GetEnvironment().GetResourceLib().GetResource(m_global_res_name);
+    cResourceDef* deme_res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_deme_res_name);
+    cResourceDef* global_res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_global_res_name);
     
     if (deme_res != NULL && global_res != NULL) {
       cPopulation& pop = m_world->GetPopulation();
@@ -1056,7 +1056,7 @@ public:
 	{
 		int time = m_world->GetStats().GetUpdate();
 		double m_res_count = -1*(0.4*tanh(((double)time-182500.0)/50000.0)+0.5)*(0.5*sin((double)time/58.091)+0.5)+1;
-		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+		cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
 		if (res != NULL)
 			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);
 	}
@@ -1086,7 +1086,7 @@ public:
 		double m_res_count = -m_scale*(tanh(((double)time-182500.0)/50000.0)+1.0)*(0.5*sin((double)time/58.091)+0.5)+1.0;
 		if(m_res_count < 0.0)
 			m_res_count = 0.0;
-		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+		cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
 		if (res != NULL)
 			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);			
 	}
@@ -1118,7 +1118,7 @@ public:
 		double m_res_count = -m_scale*(tanh(((double)time-1825000.0)/500000.0)+1.0)*(0.5*sin((double)time/58.091)+0.5)+1.0;
 		if(m_res_count < 0.0)
 			m_res_count = 0.0;
-		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+		cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
 		if (res != NULL)
 			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);			
 	}
@@ -1156,7 +1156,7 @@ public:
   {
     int time = m_world->GetStats().GetUpdate();
     m_res_count = (amplitude * sin(3.14159/frequency * time - phaseShift * 3.14159) + initY) / 2;
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
     if (res != NULL) m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);
 
   }

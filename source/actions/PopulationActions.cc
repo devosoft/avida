@@ -1131,7 +1131,7 @@ public:
     if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().Feedback().Error("Den AttackDen requires use of avatars.");
     int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
     
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
     
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
@@ -1142,7 +1142,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if ((resource_lib.GetResource(j)->GetHabitat() == 4 ||resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+        if ((resource_lib.GetResDef(j)->GetHabitat() == 4 ||resource_lib.GetResDef(j)->GetHabitat() == 3) && cell_res[j] > 0) {
           // for every x juvs, we require 1 adult...otherwise use killprob on the rest
           Apto::Array<cOrganism*> cell_avs = cell.GetCellAVs();    // cell avs are already randomized
           Apto::Array<cOrganism*> juvs;
@@ -1194,7 +1194,7 @@ public:
     if (m_world->GetConfig().USE_AVATARS.Get() <= 0) m_world->GetDriver().Feedback().Error("Den RaidDen requires use of avatars.");
     int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
     
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
     
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
@@ -1203,7 +1203,7 @@ public:
       cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
-        if ((resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) && cell_res[j] > 0) {
+        if ((resource_lib.GetResDef(j)->GetHabitat() == 4 || resource_lib.GetResDef(j)->GetHabitat() == 3) && cell_res[j] > 0) {
           if (cell_res[m_res_id] <= 0) break;
           
           // for every x units of res, we require 1 adult guard...otherwise apply outflow to rest
@@ -1760,7 +1760,7 @@ public:
           adjusted_amount = 0;
         }
         
-        cResourceCount res = deme.GetDemeResourceCount();
+        cResource res = deme.GetDemeResourceCount();
         const int resid = res.GetResourceByName(m_resname);
         
         if(resid == -1)
@@ -5406,7 +5406,7 @@ public:
       cDeme& deme = m_world->GetPopulation().GetDeme(d);
       int deme_size = deme.GetWidth() * deme.GetHeight();
       
-      const cResourceCount &res = deme.GetDemeResourceCount();
+      const cResource &res = deme.GetDemeResourceCount();
       const int resid = res.GetResourceByName(m_res);
       
       if(resid == -1) {

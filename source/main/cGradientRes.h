@@ -1,5 +1,5 @@
 /*
- *  cGradientCount.h
+ *  cGradientRes.h
  *  Avida
  *
  *  Copyright 2010-2011 Michigan State University. All rights reserved.
@@ -21,14 +21,14 @@
  *
  */
 
-#ifndef cGradientCount_h
-#define cGradientCount_h
+#ifndef cGradientRes_h
+#define cGradientRes_h
 
-#include "cSpatialResCount.h"
+#include "cDynamicRes.h"
 
 class cWorld;
 
-class cGradientCount : public cSpatialResCount
+class cGradientRes : public cDynamicRes
 {
 private:
   cWorld* m_world;
@@ -111,14 +111,14 @@ private:
   int m_max_usedy;
     
 public:
-  cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
+  cGradientRes(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
                  double cone_inflow, double cone_outflow, double gradient_inflow, int is_plateau_common, 
                  double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double init_plat);
-  ~cGradientCount();
+  ~cGradientRes();
 
   void UpdateCount(cAvidaContext& ctx);
   void StateAll();

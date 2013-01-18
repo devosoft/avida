@@ -547,14 +547,14 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
   const int logic_id = ctx.GetLogicId();
   if (!(logic_id == 63 || logic_id == 95 || logic_id == 119)) return 0.0;
 		
-  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
-  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cResource& resource_count = m_world->GetPopulation().GetResourceCount();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
 	
   double pher_amount = 0;
-  cResource* res = resLib.GetResource("pheromone");
+  cResourceDef* res = resLib.GetResDef("pheromone");
 	
   if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
     pher_amount += resource_count_array[res->GetID()];
@@ -572,15 +572,15 @@ double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
   const int logic_id = ctx.GetLogicId();
   if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))  return 0.0;
 	
-  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
-  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cResource& resource_count = m_world->GetPopulation().GetResourceCount();
   
   //if (resource_count.GetSize() == 0) assert(false); // change to: return false;
   assert(resource_count.GetSize() != 0);
 	
   double pher_amount = 0;
-  cResource* res = resLib.GetResource("pheromone");
+  cResourceDef* res = resLib.GetResDef("pheromone");
   
   if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
     pher_amount += resource_count_array[res->GetID()];

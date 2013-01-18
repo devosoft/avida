@@ -29,7 +29,7 @@
 #include "cDeme.h"
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
-#include "cResourceCount.h"
+#include "cResource.h"
 #include "cString.h"
 #include "cWorld.h"
 #include "tList.h"
@@ -68,7 +68,7 @@ private:
   Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
-  cResourceCount resource_count;       // Global resources available
+  cResource resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
   Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
@@ -239,7 +239,7 @@ public:
   void PrintDemeReceiver();
   void PrintDemeResource(cAvidaContext& ctx); 
   void PrintDemeGlobalResources(cAvidaContext& ctx); 
-  void PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext& ctx) const; 
+  void PrintDemeSpatialResData(const cResource& res, const int i, const int deme_id, cAvidaContext& ctx) const; 
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
@@ -322,7 +322,7 @@ public:
   void SetResource(cAvidaContext& ctx, int id, double new_level);
   void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);
   double GetResource(cAvidaContext& ctx, int id) const { return resource_count.Get(ctx, id); }
-  cResourceCount& GetResourceCount() { return resource_count; }
+  cResource& GetResourceCount() { return resource_count; }
   void SetResourceInflow(const cString res_name, double new_level);
   void SetResourceOutflow(const cString res_name, double new_level);
   
@@ -373,7 +373,7 @@ public:
   void UpdateResourceCount(const int Verbosity, cWorld* world);        
   
   // Let users change Gradient Resource variables during the run JW
-  void UpdateGradientCount(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
+  void UpdateGradientRes(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
   void UpdateGradientPlatInflow(const cString res_name, const double inflow);
   void UpdateGradientPlatOutflow(const cString res_name, const double outflow);
   void UpdateGradientConeInflow(const cString res_name, const double inflow);

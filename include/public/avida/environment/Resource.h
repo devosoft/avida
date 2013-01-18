@@ -1,5 +1,5 @@
 /*
- *  environment/Resource.h
+ *  environment/cResourceDef.h
  *  avida-core
  *
  *  Created by David on 6/24/11.

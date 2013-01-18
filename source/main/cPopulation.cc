@@ -56,8 +56,8 @@
 #include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
+#include "cResourceDef.h"
 #include "cResource.h"
-#include "cResourceCount.h"
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cTopology.h"
@@ -315,26 +315,26 @@ void cPopulation::SetupCellGrid()
   
   
   // Setup the resources...
-  const cResourceLib& resource_lib = environment.GetResourceLib();
+  const cResourceDefLib& resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   int deme_res_index = -1;
   int num_deme_res = 0;
   
-  for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResource(i)->GetDemeResource()) num_deme_res++;
+  for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResDef(i)->GetDemeResource()) num_deme_res++;
   
-  cResourceCount tmp_res_count(resource_lib.GetSize() - num_deme_res);
+  cResource tmp_res_count(resource_lib.GetSize() - num_deme_res);
   resource_count = tmp_res_count;
   resource_count.ResizeSpatialGrids(world_x, world_y);
   
   for(int i = 0; i < GetNumDemes(); i++) {
-    cResourceCount tmp_deme_res_count(num_deme_res);
+    cResource tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
     GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
   }
   
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     
     // check to see if this is the hgt resource:
     if (res->GetHGTMetabolize()) {
@@ -358,15 +358,7 @@ void cPopulation::SetupCellGrid()
                            res->GetOutflowX2(), res->GetOutflowY1(),
                            res->GetOutflowY2(), res->GetCellListPtr(),
                            res->GetCellIdListPtr(), m_world->GetVerbosity(),
-                           res->GetPeaks(),
-                           res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
-                           res->GetAh(), res->GetAr(),
-                           res->GetAcx(), res->GetAcy(),
-                           res->GetHStepscale(), res->GetRStepscale(),
-                           res->GetCStepscaleX(), res->GetCStepscaleY(),
-                           res->GetHStep(), res->GetRStep(),
-                           res->GetCStepX(), res->GetCStepY(),
-                           res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
+                           res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
@@ -1179,7 +1171,7 @@ bool cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
             JoinGroup(in_organism, op);                    
           }
           else if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) {
-            op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResourceLib().GetSize() + 1);
+            op = ctx.GetRandom().GetInt(0, m_world->GetEnvironment().GetResDefLib().GetSize() + 1);
             in_organism->SetOpinion(op);
             JoinGroup(in_organism, op);          
           }
@@ -1701,16 +1693,16 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }    
   
   // get the resource library
-  const cResourceLib& resource_lib = environment.GetResourceLib();
+  const cResourceDefLib& resource_lib = environment.GetResDefLib();
   
   // test for death by predatory resource
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->IsPredatory()) {
+    if (resource_lib.GetResDef(i)->IsPredatory()) {
       // get the destination cell resource levels
       double dest_cell_resources = GetCellResVal(ctx, dest_cell_id, i);
       if (dest_cell_resources > 0) {
         // if you step on a predatory resource, we're going to try to kill you regardless of whether there is a den there
-        if (ctx.GetRandom().P(resource_lib.GetResource(i)->GetPredatorResOdds())) {
+        if (ctx.GetRandom().P(resource_lib.GetResDef(i)->GetPredatorResOdds())) {
           if (true_cell != -1) KillOrganism(GetCell(true_cell), ctx);
           else if (true_cell == -1) KillOrganism(src_cell, ctx);
           return false;
@@ -1724,7 +1716,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   bool curr_is_barrier = false;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     // get the current cell resource levels
-    if (resource_lib.GetResource(i)->GetHabitat() == 2 ) {
+    if (resource_lib.GetResDef(i)->GetHabitat() == 2 ) {
       if (GetCellResVal(ctx, src_cell_id, i) > 0) {
         curr_is_barrier = true;
         break;
@@ -1733,7 +1725,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }
   if (!curr_is_barrier) {
     for (int i = 0; i < resource_lib.GetSize(); i++) {
-      if (resource_lib.GetResource(i)->GetHabitat() == 2 && resource_lib.GetResource(i)->GetResistance() != 0) {
+      if (resource_lib.GetResDef(i)->GetHabitat() == 2 && resource_lib.GetResDef(i)->GetResistance() != 0) {
         // fail if faced cell has this wall resource
         if (GetCellResVal(ctx, dest_cell_id, i) > 0) return false;
       }    
@@ -1743,17 +1735,17 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   int steepest_hill = 0;
   double curr_resistance = 1.0;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    if (resource_lib.GetResource(i)->GetHabitat() == 1) {
+    if (resource_lib.GetResDef(i)->GetHabitat() == 1) {
       if (GetCellResVal(ctx, src_cell_id, i) != 0) {
-        if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
-          curr_resistance = resource_lib.GetResource(i)->GetResistance();
+        if (resource_lib.GetResDef(i)->GetResistance() > curr_resistance) {
+          curr_resistance = resource_lib.GetResDef(i)->GetResistance();
           steepest_hill = i;
         }
       }
     }
   } 
   // apply the chance of move failing for the steepest hill in this cell, if there is a hill at all
-  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1) {
+  if (resource_lib.GetResDef(steepest_hill)->GetHabitat() == 1) {
     if (GetCellResVal(ctx, src_cell_id, steepest_hill) > 0) {
       // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
       int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
@@ -4553,7 +4545,7 @@ void cPopulation::PrintDemeResource(cAvidaContext& ctx) {
     cDeme & cur_deme = deme_array[deme_id];
     
     cur_deme.UpdateDemeRes(ctx); 
-    const cResourceCount& res = GetDeme(deme_id).GetDemeResourceCount();
+    const cResource& res = GetDeme(deme_id).GetDemeResourceCount();
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
@@ -4580,7 +4572,7 @@ void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) {
     cDeme & cur_deme = deme_array[deme_id];
     cur_deme.UpdateDemeRes(ctx);
     
-    const cResourceCount & res = GetDeme(deme_id).GetDemeResourceCount();
+    const cResource & res = GetDeme(deme_id).GetDemeResourceCount();
     const int num_res = res.GetSize();
     
     df.WriteBlockElement(deme_id, 0, num_res + 1);
@@ -4627,7 +4619,7 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
 }
 
 // Write spatial data to a file that can easily be read into Matlab
-void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext&) const { 
+void cPopulation::PrintDemeSpatialResData(const cResource& res, const int i, const int deme_id, cAvidaContext&) const { 
   const char* tmpResName = res.GetResName(i);
   cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
   cDataFile& df = m_world->GetDataFile(tmpfilename);
@@ -4635,7 +4627,7 @@ void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i
   
   df.WriteRaw(UpdateStr);
   
-  const cSpatialResCount& sp_res = res.GetSpatialResource(i); 
+  const cSpatialRes& sp_res = res.GetSpatialResource(i); 
   int gridsize = sp_res.GetSize();
   
   for (int j = 0; j < gridsize; j++) {
@@ -6694,7 +6686,7 @@ void cPopulation::SetResource(cAvidaContext& ctx, int res_index, double new_leve
  */
 void cPopulation::SetResource(cAvidaContext& ctx, const cString res_name, double new_level)
 {
-  cResource* res = environment.GetResourceLib().GetResource(res_name);
+  cResourceDef* res = environment.GetResDefLib().GetResDef(res_name);
   if (res != NULL) SetResource(ctx, res->GetIndex(), new_level);
 }
 
@@ -6725,7 +6717,7 @@ void cPopulation::SetResourceOutflow(const cString res_name, double new_level)
  */
 void cPopulation::SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level)
 {
-  cResource* res = environment.GetResourceLib().GetResource(res_name);
+  cResourceDef* res = environment.GetResDefLib().GetResDef(res_name);
   if (res != NULL) {
     int num_demes = GetNumDemes();
     for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
@@ -7751,20 +7743,20 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
  middle of a run.  This is designed to work with cActionSetGradient Count */
 //JW
 
-void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, cWorld* world, const cString res_name)
+void cPopulation::UpdateGradientRes(cAvidaContext& ctx, const int verbosity, cWorld* world, const cString res_name)
 {
   (void)verbosity;
   
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     
     if (!res->GetDemeResource()) global_res_index++;
     
     if (res->GetName() == res_name) {
-      resource_count.SetGradientCount(ctx, world, global_res_index, res->GetPeakX(), res->GetPeakY(),
+      resource_count.SetGradientRes(ctx, world, global_res_index, res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
@@ -7779,11 +7771,11 @@ void cPopulation::UpdateGradientCount(cAvidaContext& ctx, const int verbosity, c
 
 void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double inflow)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPlateauInflow(inflow);
@@ -7794,11 +7786,11 @@ void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double 
 
 void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double outflow)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPlateauOutflow(outflow);
@@ -7809,11 +7801,11 @@ void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double
 
 void cPopulation::UpdateGradientConeInflow(const cString res_name, const double inflow)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetConeInflow(inflow);
@@ -7824,11 +7816,11 @@ void cPopulation::UpdateGradientConeInflow(const cString res_name, const double 
 
 void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double outflow)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetConeOutflow(outflow);
@@ -7839,11 +7831,11 @@ void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double
 
 void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetGradientInflow(inflow);
@@ -7854,11 +7846,11 @@ void cPopulation::UpdateGradientInflow(const cString res_name, const double infl
 
 void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       resource_count.SetGradPlatVarInflow(global_res_index, mean, variance, type);
@@ -7868,11 +7860,11 @@ void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean
 
 void cPopulation::SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       res->SetPredatoryResource(odds, juvsper, detection_prob);
@@ -7887,11 +7879,11 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
 void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
   const double outflow, const double lambda, const double theta, const int x, const int y, const int count)
 {
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
       resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lambda, theta, x, y, count);
@@ -7905,11 +7897,11 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
   const int juv_age = m_world->GetConfig().JUV_PERIOD.Get();
   
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
   
   bool cell_has_den = false;
   for (int j = 0; j < resource_lib.GetSize(); j++) {
-    if (resource_lib.GetResource(j)->GetHabitat() == 4 || resource_lib.GetResource(j)->GetHabitat() == 3) {
+    if (resource_lib.GetResDef(j)->GetHabitat() == 4 || resource_lib.GetResDef(j)->GetHabitat() == 3) {
       if (GetCellResVal(ctx, cell_id, j) > 0) {
         cell_has_den = true;
         break;
@@ -7972,25 +7964,25 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
 }
 
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
-  const cResourceLib & resource_lib = environment.GetResourceLib();
+  const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   int deme_res_index = -1;
   int num_deme_res = 0;
   
   //setting size of global and deme-level resources
   for(int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (res->GetDemeResource())
       num_deme_res++;
   }
   
   for(int i = 0; i < GetNumDemes(); i++) {
-    cResourceCount tmp_deme_res_count(num_deme_res);
+    cResource tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
   }
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
@@ -8004,15 +7996,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetOutflowX2(), res->GetOutflowY1(),
                            res->GetOutflowY2(), res->GetCellListPtr(),
                            res->GetCellIdListPtr(), Verbosity,
-                           res->GetPeaks(), 
-                           res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
-                           res->GetAh(), res->GetAr(),
-                           res->GetAcx(), res->GetAcy(),
-                           res->GetHStepscale(), res->GetRStepscale(),
-                           res->GetCStepscaleX(), res->GetCStepscaleY(),
-                           res->GetHStep(), res->GetRStep(),
-                           res->GetCStepX(), res->GetCStepY(),
-                           res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
+                           res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),

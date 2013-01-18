@@ -383,7 +383,7 @@ double cPopulationInterface::GetCellResVal(cAvidaContext& ctx, int cell_id, int 
   return m_world->GetPopulation().GetCellResVal(ctx, cell_id, res_id);
 }
 
-cResourceCount* cPopulationInterface::GetResourceCount()
+cResource* cPopulationInterface::GetResourceCount()
 {
   return &m_world->GetPopulation().GetResourceCount();
 }

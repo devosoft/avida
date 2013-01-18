@@ -22,7 +22,7 @@
 #include "cResourceHistory.h"
 
 #include "cInitFile.h"
-#include "cResourceCount.h"
+#include "cResource.h"
 #include "cStringList.h"
 
 
@@ -47,7 +47,7 @@ int cResourceHistory::getEntryForUpdate(int update, bool exact) const
   return entry;
 }
 
-bool cResourceHistory::GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResourceCount& rc, bool exact) const
+bool cResourceHistory::GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResource& rc, bool exact) const
 {
   int entry = getEntryForUpdate(update, exact);
   if (entry == -1) return false;
