@@ -23,13 +23,16 @@
  */
 
 #include "cBirthMatingTypeGlobalHandler.h"
+
+#include "avida/core/Genome.h"
+#include "avida/output/File.h"
+
 #include "cBirthChamber.h"
 #include "cOrganism.h"
 #include "cWorld.h"
 #include "cEnvironment.h"
 #include "cTaskEntry.h"
 #include "cString.h"
-#include "avida/core/Genome.h"
 
 #include <iostream>
 
@@ -370,20 +373,19 @@ int cBirthMatingTypeGlobalHandler::getWaitingOffspringMostTask(int which_mating_
 }
 
 //Outputs the entire birth chamber to a file
-void cBirthMatingTypeGlobalHandler::PrintBirthChamber(const cString& filename, cWorld* world)
-{ 
-  cDataFile& df = world->GetDataFile(filename);
-  df.WriteTimeStamp();
-  df.WriteComment(cBirthEntry::GetPhenotypeStringFormat());
-  df.Endl();
+void cBirthMatingTypeGlobalHandler::PrintBirthChamber(const cString& filename)
+{
+  Apto::String file_path((const char*)filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
+  df->WriteTimeStamp();
+  df->WriteComment(cBirthEntry::GetPhenotypeStringFormat());
+  df->Endl();
   
-  std::ofstream& df_stream = df.GetOFStream();
+  std::ofstream& df_stream = df->OFStream();
   
   for (int i = 0; i < m_entries.GetSize(); i++) {
     if (m_bc->ValidateBirthEntry(m_entries[i])) {
       df_stream << m_entries[i].GetPhenotypeString() << endl;
     }
   }
-  
-  world->GetDataFileManager().Remove(filename);
 }

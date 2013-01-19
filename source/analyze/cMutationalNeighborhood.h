@@ -24,6 +24,7 @@
 
 #include "apto/core.h"
 #include "avida/core/Genome.h"
+#include "avida/output/Types.h"
 
 #include "tList.h"
 #include "tMatrix.h"
@@ -31,7 +32,6 @@
 class cAvidaContext;
 class cCPUMemory;
 class cCPUTestInfo;
-class cDataFile;
 class cInstSet;
 class cTestCPU;
 class cWorld;
@@ -265,7 +265,7 @@ private:
   
   // cMutationalNeighborhoodResults Backing Methods
   // -----------------------------------------------------------------------------------------------------------------------
-  void PrintStats(cDataFile& df, int update = -1) const;
+  void PrintStats(Avida::Output::File& df, int update = -1) const;
   
   inline int GetTargetTask() const { return m_target; }
 

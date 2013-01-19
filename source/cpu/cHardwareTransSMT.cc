@@ -339,7 +339,7 @@ void cHardwareTransSMT::ProcessBonusInst(cAvidaContext& ctx, const Instruction& 
   m_organism->SetRunning(true);
 	
   // Print the status of this CPU at each step...
-  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
+  if (m_tracer) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -351,9 +351,9 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetTimeUsed() << " "
   << "THREAD: " << m_cur_thread << ", " << m_threads.GetSize() << "   "
-	<< "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")    "
+	<< "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")" << " (" << GetInstSet().GetName(IP().GetInst()) << ")" << endl;
 	
-	<< "AX:" << Stack(STACK_AX).Top() << " "
+	fp << "AX:" << Stack(STACK_AX).Top() << " "
 	<< setbase(16) << "[0x" << Stack(STACK_AX).Top() << "]  " << setbase(10)
 	
 	<< "BX:" << Stack(STACK_BX).Top() << " "

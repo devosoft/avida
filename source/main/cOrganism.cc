@@ -725,7 +725,7 @@ double cOrganism::GetNeutralMin() const { return m_world->GetConfig().NEUTRAL_MI
 double cOrganism::GetNeutralMax() const { return m_world->GetConfig().NEUTRAL_MAX.Get(); }
 
 
-void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
+void cOrganism::PrintStatus(ostream& fp)
 {
   fp << "---------------------------" << endl;
 	fp << "U:" << m_world->GetStats().GetUpdate() << endl;
@@ -751,14 +751,11 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   fp << endl;
   
   fp << setfill(' ') << setbase(10);
-  
-  fp << "---------------------------" << endl;
-  fp << "ABOUT TO EXECUTE: " << next_name << endl;
 }
 
-void cOrganism::PrintMiniTraceStatus(cAvidaContext& ctx, ostream & fp, const cString& next_name)
+void cOrganism::PrintMiniTraceStatus(cAvidaContext& ctx, ostream & fp)
 {
-  m_hardware->PrintMiniTraceStatus(ctx, fp, next_name);
+  m_hardware->PrintMiniTraceStatus(ctx, fp);
 }
 
 void cOrganism::PrintMiniTraceSuccess(ostream & fp, const int exec_success)
@@ -782,7 +779,7 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
     
     ConstInstructionSequencePtr seq;
     seq.DynamicCastFrom(m_offspring_genome.Representation());
-    fp << "# Child Memory: " << seq->AsString() << endl;
+    fp << "# Offspring Memory: " << seq->AsString() << endl;
   }
 }
 
@@ -1120,20 +1117,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
       deme->AddPheromone(destcellID, pher_amount, ctx); 
     }
   } // End laying pheromone
-  
-  // Write some logging information if LOG_PHEROMONE is set.  This is done
-  // out here so that non-pheromone moves are recorded.
-  if (m_world->GetConfig().LOG_PHEROMONE.Get() == 1 &&
-      m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) {
-    cDataFile& df = m_world->GetDataFile("movelog.dat");
     
-    int rel_srcid = GetDeme()->GetRelativeCellID(fromcellID);
-    int rel_destid = GetDeme()->GetRelativeCellID(destcellID);
-    
-    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,5",  m_world->GetStats().GetUpdate(), GetID(), GetDeme()->GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-    df.WriteRaw(UpdateStr);
-  }
-  
   // don't trigger reactions on move if you're not supposed to! 
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();

@@ -21,6 +21,8 @@
 #ifndef cDemeTopologyNetwork_h
 #define cDemeTopologyNetwork_h
 
+#include "avida/output/File.h"
+
 /* THIS HEADER REQUIRES BOOST */
 #include <boost/graph/adjacency_list.hpp>
 #include <map>
@@ -113,7 +115,7 @@ public:
 	virtual cStats::network_stats_t Measure() const;
 	
 	//! Print this network's topology.
-	virtual void PrintTopology(cDataFile& df) const;
+	virtual void PrintTopology(Avida::Output::File& df) const;
 	
 protected:
 	//! Ensure that the active edge of the given vertex is valid.

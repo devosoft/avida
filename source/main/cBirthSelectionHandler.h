@@ -47,8 +47,7 @@ public:
   
   virtual int GetWaitingOffspringNumber(int which_mating_type);
   virtual void GetWaitingOffspringTaskData(int task_id, float results_array[]);
-  virtual void PrintWaitingMatingTypeData(cWorld* world, const cString& filename);
-  virtual void PrintBirthChamber(const cString& filename, cWorld* world);
+  virtual void PrintBirthChamber(const cString& filename);
 
 };
 

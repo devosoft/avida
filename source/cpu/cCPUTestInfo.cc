@@ -24,8 +24,8 @@
 
 #include "cCPUTestInfo.h"
 
+#include "cHardwareTracer.h"
 #include "cInstSet.h"
-#include "cHardwareStatusPrinter.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cResourceHistory.h"
@@ -62,10 +62,7 @@ cCPUTestInfo& cCPUTestInfo::operator=(const cCPUTestInfo& test_info)
   use_random_inputs = test_info.use_random_inputs;
 	use_manual_inputs = test_info.use_manual_inputs;
   manual_inputs = test_info.manual_inputs; 
-  m_tracer = NULL;
-  if (test_info.m_tracer) {
-    *m_tracer = *test_info.m_tracer;
-  }
+  if (test_info.m_tracer) { m_tracer = test_info.m_tracer; }
   m_mut_rates = test_info.m_mut_rates;
   m_cur_sg = test_info.m_cur_sg;
   is_viable = test_info.is_viable;

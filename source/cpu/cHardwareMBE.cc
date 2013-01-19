@@ -25,6 +25,7 @@
 
 #include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
+#include "avida/output/File.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
@@ -476,7 +477,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
       assert(bc_exec_count < 0x8000);
       
       // Print the status of this CPU at each step...
-      if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
+      if (m_tracer) m_tracer->TraceHardware(ctx, *this);
       
       // Find the instruction to be executed
       const Instruction& cur_inst = ip.GetInst();
@@ -490,7 +491,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
       }
       
       // Print the short form status of this CPU at each step...
-      if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true);
+      if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true);
       
       // Test if costs have been paid and it is okay to execute this now...
       bool exec = true;
@@ -526,7 +527,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
         }
         // Check if the instruction just executed caused premature death, break out of execution if so
         if (phenotype.GetToDelete()) {
-          if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+          if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
           break;
         }
         
@@ -538,7 +539,7 @@ bool cHardwareMBE::SingleProcess(cAvidaContext& ctx, bool speculative)
         phenotype.IncTimeUsed(addl_time_cost);
       }
       // if using mini traces, report success or failure of execution
-      if (m_minitracer != NULL) m_minitracer->TraceHardware(ctx, *this, false, true, exec_success);
+      if (m_tracer) m_tracer->TraceHardware(ctx, *this, false, true, exec_success);
       
       bool do_record = false;
       // record exec failed if the org just now started paying precosts
@@ -618,7 +619,7 @@ void cHardwareMBE::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
+  if (m_tracer) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -630,7 +631,7 @@ void cHardwareMBE::PrintStatus(ostream& fp)
 {
   fp << "CPU CYCLE:" << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "THREAD:" << m_cur_thread << "  ";
-  fp << "IP:" << getIP().GetPosition() << "    ";
+  fp << "IP:" << getIP().GetPosition() << " (" << GetInstSet().GetName(IP().GetInst()) << ")" << endl;
   
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -669,14 +670,13 @@ void cHardwareMBE::PrintStatus(ostream& fp)
   fp.flush();
 }
 
-void cHardwareMBE::SetupMiniTraceFileHeader(const cString& filename, const int gen_id, const cString& genotype)
+void cHardwareMBE::SetupMiniTraceFileHeader(Avida::Output::File& df, const int gen_id, const Apto::String& genotype)
 {
   const Genome& in_genome = m_organism->GetGenome();
   ConstInstructionSequencePtr in_seq_p;
   in_seq_p.DynamicCastFrom(in_genome.Representation());
   const InstructionSequence& in_seq = *in_seq_p;
 
-  cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   cString org_dat("");
   df.WriteComment(org_dat.Set("Update Born: %d", m_world->GetStats().GetUpdate()));
@@ -711,7 +711,7 @@ void cHardwareMBE::SetupMiniTraceFileHeader(const cString& filename, const int g
   df.Endl();
 }
 
-void cHardwareMBE::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const cString& next_name)
+void cHardwareMBE::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp)
 {
   // basic status info
   fp << m_cycle_count << " ";
@@ -756,6 +756,7 @@ void cHardwareMBE::PrintMiniTraceStatus(cAvidaContext& ctx, ostream& fp, const c
   fp << hill << " ";
   fp << wall << " ";
   // instruction about to be executed
+  cString next_name(GetInstSet().GetName(IP().GetInst()));
   fp << next_name << " ";
   // any trailing nops (up to NUM_REGISTERS)
   cCPUMemory& memory = m_memory;

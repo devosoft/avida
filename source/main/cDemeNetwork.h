@@ -21,12 +21,13 @@
 #ifndef cDemeNetwork_h
 #define cDemeNetwork_h
 
+#include "avida/output/Types.h"
+
 #include "cStats.h"
 
 #include "cPopulationCell.h"
 
 class cDeme;
-class cDataFile;
 class cWorld;
 class cPopulationInterface;
 
@@ -91,7 +92,7 @@ public:
 	virtual cStats::network_stats_t Measure() const = 0;
 	
 	//! Print this network's topology.
-	virtual void PrintTopology(cDataFile& df) const = 0;
+	virtual void PrintTopology(Avida::Output::File& df) const = 0;
 	
 protected:
 	//! Constructor, called by derived classes only.

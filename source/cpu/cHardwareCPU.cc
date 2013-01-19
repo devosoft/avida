@@ -923,7 +923,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this);
+    if (m_tracer) m_tracer->TraceHardware(ctx, *this);
     
     // Find the instruction to be executed
     const Instruction& cur_inst = ip.GetInst();
@@ -1075,7 +1075,7 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
   bool prev_run_state = m_organism->IsRunning();
   m_organism->SetRunning(true);
   
-  if (m_tracer != NULL) m_tracer->TraceHardware(ctx, *this, true);
+  if (m_tracer) m_tracer->TraceHardware(ctx, *this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
@@ -1086,7 +1086,7 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const Instruction& inst)
 void cHardwareCPU::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
-  fp << "IP:" << getIP().GetPosition() << "    ";
+  fp << "IP:" << getIP().GetPosition() << " (" << GetInstSet().GetName(IP().GetInst()) << ")" << endl;
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
@@ -4360,24 +4360,6 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
       double receiverMerit = to_org->GetPhenotype().ConvertEnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio());
       to_org->UpdateMerit(receiverMerit);
     }
-  }
-  
-  
-  if (m_world->GetConfig().LOG_ENERGY_SHARING.Get() == 1) {    
-    cString tmpfilename = cStringUtil::Stringf("energy_sharing_log.dat");
-    cDataFile& df = m_world->GetDataFile(tmpfilename);
-    
-    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%f,%f,%d,%f,%f", 
-                                             m_world->GetStats().GetUpdate(),
-                                             m_world->GetConfig().ENERGY_SHARING_METHOD.Get(),
-                                             m_organism->GetID(),
-                                             energy_given,
-                                             phenotype.GetStoredEnergy(),
-                                             to_org->GetID(),
-                                             energy_received,
-                                             to_org->GetPhenotype().GetStoredEnergy());
-    df.WriteRaw(UpdateStr);
-    
   }
   
 } //End DoEnergyDonateAmount()
@@ -8565,29 +8547,6 @@ bool cHardwareCPU::Inst_DropPheromone(cAvidaContext& ctx)
      }
      */
     deme.AddPheromone(cellid, pher_amount, ctx); 
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if ( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-        (m_world->GetStats().GetUpdate() >= m_world->GetConfig().PHEROMONE_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("drop-pheromone-log.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_cellid = deme.GetRelativeCellID(cellid);
-      double pher_amount;
-      const int drop_mode =  m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      // By columns: update ID, org ID, source cell (relative), destination cell (relative), amount dropped, drop mode
-      if ( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-          (m_organism->GetPheromoneStatus() == true) ) {
-        pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      } else {
-        pher_amount = 0;
-      }
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%f,%d",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_cellid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
     
   } //End laying pheromone
   

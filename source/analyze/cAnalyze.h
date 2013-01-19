@@ -275,7 +275,6 @@ private:
   void AnalyzeMuts(cString cur_string);
   void AnalyzeInstructions(cString cur_string);
   void AnalyzeInstPop(cString cur_string);
-  void AnalyzeBranching(cString cur_string);
   void AnalyzeMutationTraceback(cString cur_string);
   void AnalyzeComplexity(cString cur_string);
   void AnalyzeLineageComplexitySitesN(cString cur_string);

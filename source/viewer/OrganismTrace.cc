@@ -210,10 +210,13 @@ void Private::SnapshotTracer::TraceGenome(GenomePtr genome, Apto::Array<Hardware
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU(ctx);
   
   // Setup test info to trace into this tracer
+  HardwareTracerPtr thisPtr(this);
+  this->AddReference();
+  
   cCPUTestInfo test_info(1);
   test_info.MutationRates().SetCopyMutProb(mut_rate);
   test_info.UseRandomInputs();
-  test_info.SetTraceExecution(this);
+  test_info.SetTraceExecution(thisPtr);
   
   // Test the actual genome
   testcpu->TestGenome(ctx, test_info, *genome);
@@ -229,8 +232,9 @@ void Private::SnapshotTracer::TraceHardware(cAvidaContext& ctx, cHardwareBase& h
 {
   (void)ctx;
   (void)bonus;
-  (void)mini;
   (void)exec_success;
+  
+  if (mini) return;
   
   // Create snapshot based on current hardware state
   m_snapshot_count++;

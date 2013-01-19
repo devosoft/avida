@@ -26,6 +26,7 @@
 
 #include "avida/data/Manager.h"
 #include "avida/environment/Manager.h"
+#include "avida/output/Manager.h"
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Manager.h"
 
@@ -49,7 +50,7 @@ using namespace AvidaTools;
 
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
-  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL), m_datafile_mgr(NULL)
+  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL)
   , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_mig_mat(NULL), m_driver(NULL), m_data_mgr(NULL)
   , m_own_driver(false)
 {
@@ -79,10 +80,6 @@ cWorld::~cWorld()
   delete m_event_list; m_event_list = NULL;
   delete m_hw_mgr; m_hw_mgr = NULL;
 
-  // Delete after all classes that may be logging items
-  if (m_datafile_mgr) { m_datafile_mgr->FlushAll(); }
-  delete m_datafile_mgr; m_datafile_mgr = NULL;
-
   delete m_mig_mat; 
   
   // Delete Last
@@ -107,8 +104,6 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
   m_ctx = new cAvidaContext(NULL, m_rng);
   m_srng.ResetSeed(m_conf->RANDOM_SEED.Get());
   
-  m_datafile_mgr = new cDataFileManager(cString(Apto::FileSystem::GetAbsolutePath(Apto::String(m_conf->DATA_DIR.Get()), Apto::String(m_working_dir))), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
-  
   // Initialize new API-based data structures here for now
   {
     // Data Manager
@@ -118,6 +113,9 @@ bool cWorld::setup(World* new_world, cUserFeedback* feedback, const Apto::Map<Ap
     // Environment
     Environment::ManagerPtr(new Environment::Manager)->AttachTo(new_world);
     
+    // Output Manager
+    Apto::String opath = Apto::FileSystem::GetAbsolutePath(Apto::String(m_conf->DATA_DIR.Get()), Apto::String(m_working_dir));
+    Output::ManagerPtr(new Output::Manager(opath))->AttachTo(new_world);
   }
   
 

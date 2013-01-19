@@ -22,12 +22,14 @@
 
 #include "cTestCPU.h"
 
+#include "avida/output/File.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cHardwareStatusPrinter.h"
+#include "cHardwareTracer.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -149,15 +151,10 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   InitResources(ctx, test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
 	
 	
-  // Determine if we're tracing and what we need to print.
-  cHardwareTracer* tracer = test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
-  std::ostream * tracerStream = NULL;
-  if (tracer != NULL) tracerStream = tracer->GetStream();
-
   // This way of keeping track of time is only used to update resources...
   int time_used = m_res_cpu_cycle_offset; // Note: the offset is zero by default if no resources being used @JEB
   
-  organism.GetHardware().SetTrace(tracer);
+  organism.GetHardware().SetTrace(test_info.GetTracer());
   while (time_used < time_allocated && organism.GetPhenotype().GetNumDivides() == 0 && !organism.IsDead())
   {
     time_used++;
@@ -167,44 +164,13 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
     // Resources will be updated as if each update takes a number of cpu cycles equal to the average time slice
     UpdateResources(ctx, time_used);
     
-    // Add extra info to trace files so that we can watch resource changes. 
-    // This is a clumsy way to insert it in the trace file, but works for my purposes @JEB
-    if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
-    {
-      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-      assert(resource_lib.GetSize() >= 0);
-      *tracerStream << "Resources:";
-      // Print out resources
-      for(int i=0; i<resource_lib.GetSize(); i++) 
-      {     
-         *tracerStream << " " << m_resource_count.Get(ctx, i);
-      }
-      *tracerStream << endl;
-     }
-     
-     organism.GetHardware().SingleProcess(ctx);
+    organism.GetHardware().SingleProcess(ctx);
   }
   
-  
-  // Output final resource information @JEB
-  if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
-  {
-    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-    assert(resource_lib.GetSize() >= 0);
-    *tracerStream << "Resources:";
-    // Print out resources
-    for(int i=0; i<resource_lib.GetSize(); i++) 
-    {     
-       *tracerStream << " " << m_resource_count.Get(ctx, i);
-    }
-    *tracerStream << endl;
-   }
-
-  
-  organism.GetHardware().SetTrace(NULL);
+  organism.GetHardware().SetTrace(HardwareTracerPtr(NULL));
 
   // Print out some final info in trace...
-  if (tracer != NULL) tracer->TraceTestCPU(time_used, time_allocated, organism);
+  if (test_info.GetTracer()) test_info.GetTracer()->TraceTestCPU(time_used, time_allocated, organism);
 
   // For now, always return true.
   return true;
@@ -360,96 +326,95 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const Genome& genome, cString fil
   TestGenome(ctx, test_info, genome);
   
   // Open the file...
-  cDataFile& df = m_world->GetDataFile(filename);
+  Apto::String file_path((const char*)filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
   
   // Print the useful info at the top...
-  df.WriteTimeStamp();  
+  df->WriteTimeStamp();  
   cString c("");
   
-  df.WriteComment(c.Set("Filename........: %s", static_cast<const char*>(filename)));
+  df->WriteComment(c.Set("Filename........: %s", static_cast<const char*>(filename)));
   
-  if (update >= 0) df.WriteComment(c.Set("Update Output...: %d", update));
-  else df.WriteComment("Update Output...: N/A");
+  if (update >= 0) df->WriteComment(c.Set("Update Output...: %d", update));
+  else df->WriteComment("Update Output...: N/A");
   
-  df.WriteComment(c.Set("Is Viable.......: %d", test_info.IsViable()));
-  df.WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
-  df.WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
+  df->WriteComment(c.Set("Is Viable.......: %d", test_info.IsViable()));
+  df->WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
+  df->WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
   
-  df.WriteComment("");
+  df->WriteComment("");
   
   const int num_levels = test_info.GetMaxDepth() + 1;
   for (int j = 0; j < num_levels; j++) {
-    df.WriteComment(c.Set("Generation: %d", j));
+    df->WriteComment(c.Set("Generation: %d", j));
 
     cOrganism* organism = test_info.GetTestOrganism(j);
     assert(organism != NULL);
     cPhenotype& phenotype = organism->GetPhenotype();
     
-    df.WriteComment(c.Set("Merit...........: %f", phenotype.GetMerit().GetDouble()));
-    df.WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
-    df.WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
-    df.WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
-    df.WriteComment(c.Set("Genome Size.....: %d", seq->GetSize()));
-    df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
-    df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
+    df->WriteComment(c.Set("Merit...........: %f", phenotype.GetMerit().GetDouble()));
+    df->WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
+    df->WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
+    df->WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
+    df->WriteComment(c.Set("Genome Size.....: %d", seq->GetSize()));
+    df->WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
+    df->WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
     
     if (for_groups) {
-      df.WriteComment(c.Set("Last Birth Group ID........: %d", last_group_id));
-      df.WriteComment(c.Set("Last Birth Forager Type....: %d", last_forager_type));   
-      df.WriteComment(c.Set("Last Birth Cell............: %d", last_birth_cell));               
+      df->WriteComment(c.Set("Last Birth Group ID........: %d", last_group_id));
+      df->WriteComment(c.Set("Last Birth Forager Type....: %d", last_forager_type));   
+      df->WriteComment(c.Set("Last Birth Cell............: %d", last_birth_cell));               
     }
     
     if (phenotype.GetNumDivides() == 0)
-      df.WriteComment("Offspring.......: NONE");
+      df->WriteComment("Offspring.......: NONE");
     else if (phenotype.CopyTrue())
-      df.WriteComment("Offspring.......: SELF");
+      df->WriteComment("Offspring.......: SELF");
     else if (test_info.GetCycleTo() != -1)
-      df.WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
+      df->WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
     else
-      df.WriteComment(c.Set("Offspring.......: %d", j + 1));
+      df->WriteComment(c.Set("Offspring.......: %d", j + 1));
     
-    df.WriteComment("");
+    df->WriteComment("");
   }
   
-  df.WriteComment("Tasks Performed:");
+  df->WriteComment("Tasks Performed:");
   
   const cEnvironment& env = m_world->GetEnvironment();
   const Apto::Array<int>& task_count = test_info.GetTestPhenotype().GetLastTaskCount();
   const Apto::Array<double>& task_qual = test_info.GetTestPhenotype().GetLastTaskQuality();
   for (int i = 0; i < task_count.GetSize(); i++) {
-    df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+    df->WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
                           task_count[i], task_qual[i]));
   }
   
   // if resource bins are being used, print relevant information
   if(m_world->GetConfig().USE_RESOURCE_BINS.Get())  {
-  	df.WriteComment("Tasks Performed Using Internal Resources:");
+  	df->WriteComment("Tasks Performed Using Internal Resources:");
   	
   	const Apto::Array<int>& internal_task_count = test_info.GetTestPhenotype().GetLastInternalTaskCount();
   	const Apto::Array<double>& internal_task_qual = test_info.GetTestPhenotype().GetLastInternalTaskQuality();
   	
   	for (int i = 0; i < task_count.GetSize(); i++) {
-  		df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+  		df->WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
   		                      internal_task_count[i], internal_task_qual[i]));
   	}
   	
   	const Apto::Array<double>& rbins_total = test_info.GetTestPhenotype().GetLastRBinsTotal();
   	const Apto::Array<double>& rbins_avail = test_info.GetTestPhenotype().GetLastRBinsAvail();
   	
-  	df.WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
+  	df->WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
   	for (int i = 0; i < rbins_total.GetSize(); i++) {
-  		df.WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
+  		df->WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
   		                      static_cast<const char*>(env.GetResourceLib().GetResource(i)->GetName()),
   		                      rbins_total[i], rbins_avail[i]));
   	}
   }
 
-  df.Endl();
+  df->Endl();
   
   // Display the genome
-  test_info.GetTestOrganism()->GetHardware().GetInstSet().SaveInstructionSequence(df.GetOFStream(), *seq);
-  
-  m_world->GetDataFileManager().Remove(filename);
+  test_info.GetTestOrganism()->GetHardware().GetInstSet().SaveInstructionSequence(df->OFStream(), *seq);  
 }
 
 

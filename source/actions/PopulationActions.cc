@@ -37,7 +37,9 @@
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cDoubleSum.h"
+#include "cHardwareBase.h"
 #include "cHardwareManager.h"
+#include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
@@ -82,6 +84,7 @@ private:
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
+  cString m_trace_filename;
 public:
   cActionInject(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
@@ -91,9 +94,10 @@ public:
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_trace_filename = largs.PopWord();
   }
   
-  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0] [string trace_filename]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -113,7 +117,12 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
     if (!genome) return;
-    m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false); 
+    m_world->GetPopulation().Inject(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, false);
+    
+    if (m_trace_filename.GetSize()) {
+      HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)m_trace_filename));
+      m_world->GetPopulation().GetCell(m_cell_id).GetOrganism()->GetHardware().SetTrace(tracer);
+    }
   }
 };
 
@@ -517,6 +526,7 @@ private:
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
+  cString m_trace_filename;
 public:
   cActionInjectGroup(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_cell_id(0), m_group_id(m_world->GetConfig().DEFAULT_GROUP.Get()), m_forager_type(-1), m_trace(false),m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
@@ -529,6 +539,7 @@ public:
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_trace_filename = largs.PopWord();
   }
   
   static const cString GetDescription() { return "Arguments: <string fname> [int cell_id=0] [int group_id=-1] [int forager_type=-1] [bool trace=false] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
@@ -553,6 +564,11 @@ public:
     }
     if (!genome) return;
     m_world->GetPopulation().InjectGroup(*genome, Systematics::Source(Systematics::DIVISION, "", true), ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric, m_group_id, m_forager_type, m_trace); 
+  
+    if (m_trace_filename.GetSize()) {
+      HardwareTracerPtr tracer(new cHardwareStatusPrinter(m_world->GetNewWorld(), (const char*)m_trace_filename));
+      m_world->GetPopulation().GetCell(m_cell_id).GetOrganism()->GetHardware().SetTrace(tracer);
+    }
   }
 };
 
@@ -1468,325 +1484,6 @@ public:
 	}
 };
 
-/*
- Randomly removes organisms proportional to number of a specific instruction in genome.
- Proportion is based on instruction count weight and exponent.
- 
- Parameters:
- 1. instruction type (string) default: "nand"
- - The type of instruction in question.
- 2. weight value multiplied by instruction count
- 3. exponent applied to weighted instruction count
- */
-class cAction_TherapyStructuralNumInst : public cAction {
-private:
-	cString m_inst;
-	double m_exprWeight;
-	double m_exponent;
-	int m_printUpdate;
-	Apto::Stat::Accumulator<int> m_instCount;
-	Apto::Stat::Accumulator<int> m_totalkilled;
-	cDoubleSum m_killProd;
-  
-public:
-	cAction_TherapyStructuralNumInst(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0), m_printUpdate(100)
-	{
-		cString largs(args);
-		if (largs.GetSize()) m_inst = largs.PopWord();
-		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
-		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
-		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
-		m_instCount.Clear();
-		m_totalkilled.Clear();
-		m_killProd.Clear();
-	}
-	
-	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)]"; }
-	
-	void Process(cAvidaContext& ctx)
-	{
-		int totalkilled = 0;
-		Apto::Stat::Accumulator<int> currentInstCount;
-		cDoubleSum currentKillProb;
-		currentInstCount.Clear();
-		currentKillProb.Clear();
-    
-		// for each deme in the population...
-		cPopulation& pop = m_world->GetPopulation();
-		const int numDemes = pop.GetNumDemes();
-		for (int demeCounter = 0; demeCounter < numDemes; ++demeCounter) {
-			cDeme& currentDeme = pop.GetDeme(demeCounter);
-			
-			// if deme treatable?
-			if(currentDeme.IsTreatableNow() == false)
-				continue; //No, go to next deme
-			
-			//Yes
-			for(int cellInDeme = 0; cellInDeme < currentDeme.GetSize(); ++cellInDeme) {
-				cPopulationCell& cell = currentDeme.GetCell(cellInDeme);
-        
-				if (cell.IsOccupied() == false)
-					continue;
-				
-				// count the number of target instructions in the genome
-        ConstInstructionSequencePtr seq;
-        seq.DynamicCastFrom(cell.GetOrganism()->GetGenome().Representation());
-				int count = seq->CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().Properties().Get("instset").StringValue()).GetInst(m_inst));
-				currentInstCount.Add(count);
-        
-				double killprob;
-				if(m_exponent == -1.0)
-					killprob = min(1.0/(m_exprWeight+ exp(double(-count))), 100.0)/100.0;  //sigmoid
-				else
-					killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;  // linear and exponential
-				
-				// cout << count << " " << killprob << endl;
-				
-				currentKillProb.Add(killprob);
-				// decide if it should be killed or not, based on the kill probability
-				if (ctx.GetRandom().P(killprob)) {
-					m_world->GetPopulation().KillOrganism(cell, ctx); 
-					++totalkilled;
-				}
-			}
-		}
-		m_instCount.Add(currentInstCount.Mean());
-		m_totalkilled.Add(totalkilled);
-		m_killProd.Add(currentKillProb.Average());
-    
-		const int update = m_world->GetStats().GetUpdate();
-		if(update % m_printUpdate == 0) {
-			cDataFile& df = m_world->GetDataFile("TherapyStructuralNumInst_kill.dat");
-			df.WriteComment("Number of organisms killed by structural therapy NumInst");
-			df.Write(update, "Update");
-			df.Write(m_instCount.Mean(), "Mean organisms instruction count update since last print");
-			df.Write(m_totalkilled.Mean(), "Mean organisms killed per update since last print");
-			df.Write(m_killProd.Average(), "Mean organism kill probablity");
-			df.Endl();
-			m_instCount.Clear();
-			m_totalkilled.Clear();
-			m_killProd.Clear();
-		}
-	}
-};
-
-/*
- Randomly removes organisms proportional to minimum distance between two instances of the same instruction in its genome.
- Proportion is based on instruction count weight and exponent.
- 
- Parameters:
- 1. instruction type (string) default: "nand"
- - The type of instruction in question.
- 2. weight value multiplied by instruction count
- 3. exponent applied to weighted instruction count
- */
-class cAction_TherapyStructuralRatioDistBetweenNearest : public cAction {
-private:
-	cString m_inst;
-	double m_exprWeight;
-	double m_exponent;
-	int m_printUpdate;
-	Apto::Stat::Accumulator<int> m_minDist;
-	Apto::Stat::Accumulator<int> m_totalkilled;
-	cDoubleSum m_killProd;
-	
-public:
-	cAction_TherapyStructuralRatioDistBetweenNearest(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0), m_printUpdate(100)
-	{
-		cString largs(args);
-		if (largs.GetSize()) m_inst = largs.PopWord();
-		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
-		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
-		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
-		m_minDist.Clear();
-		m_totalkilled.Clear();
-		m_killProd.Clear();
-	}
-	
-	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)] [int print=100]"; }
-	
-	void Process(cAvidaContext& ctx)
-	{
-		int totalkilled = 0;
-		Apto::Stat::Accumulator<int> currentMinDist;
-		cDoubleSum currentKillProb;
-		currentMinDist.Clear();
-		currentKillProb.Clear();
-		// for each deme in the population...
-		cPopulation& pop = m_world->GetPopulation();
-		const int numDemes = pop.GetNumDemes();
-    
-		for (int demeCounter = 0; demeCounter < numDemes; ++demeCounter) {
-			cDeme& currentDeme = pop.GetDeme(demeCounter);
-			
-			// if deme treatable?
-			if(currentDeme.IsTreatableNow() == false)
-				continue; //No, go to next deme
-			
-			//Yes
-			for(int cellInDeme = 0; cellInDeme < currentDeme.GetSize(); ++cellInDeme) {
-				cPopulationCell& cell = currentDeme.GetCell(cellInDeme);
-				
-				if (cell.IsOccupied() == false)
-					continue;
-				
-				// count the number of target instructions in the genome
-        const Genome& mg = cell.GetOrganism()->GetGenome();
-        ConstInstructionSequencePtr seq;
-        seq.DynamicCastFrom(mg.Representation());
-				const InstructionSequence& genome = *seq;
-				const double genomeSize = static_cast<double>(genome.GetSize());
-				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.Properties().Get("instset").StringValue()).GetInst(m_inst));
-				currentMinDist.Add(minDist);
-				
-				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));
-				double killprob = (genomeSize - static_cast<double>(ratioNumerator))/genomeSize;
-				// cout<<minDist << " " << killprob<<endl;
-				currentKillProb.Add(killprob);
-				// decide if it should be killed or not, based on the kill probability
-				if (ctx.GetRandom().P(killprob)) {
-					m_world->GetPopulation().KillOrganism(cell, ctx);
-					++totalkilled;
-				}
-			}
-		}
-		m_minDist.Add(int(currentMinDist.Mean()));
-		m_totalkilled.Add(totalkilled);
-		m_killProd.Add(currentKillProb.Average());
-		
-		const int update = m_world->GetStats().GetUpdate();
-		if(update % m_printUpdate == 0) {
-			cDataFile& df = m_world->GetDataFile("TherapyStructuralRatioDistBetweenNearest_kill.dat");
-			df.WriteComment("Number of organisms killed by structural therapy RatioDistBetweenNearest");
-			df.Write(update, "Update");
-			df.Write(m_minDist.Mean(), "Mean minimum distance between instructions organism genome per update since last print");
-			df.Write(m_totalkilled.Mean(), "Mean organisms killed per update since last print");
-			df.Write(m_killProd.Average(), "Mean organism kill probablity");
-			df.Endl();
-			m_minDist.Clear();
-			m_totalkilled.Clear();
-			m_killProd.Clear();
-		}
-	}
-};
-
-
-/*
- Decay the given resource in treatable demes over time
- 
- Parameters:
- - The name of resource to decay
- - How the amount of decay decreases over time ['const', 'lin', 'taper'] -- CASE SENSITIVE!
- - none: the amount of resource decayed remains constant over time
- - lin: the amount of resource decayed decreases linearly throughout the duration
- - taper: retains a slowly-decreasing amount of decay then drops off sharply at the end of the duration
- - Base amount to be removed.
- - Duration (how long this resource decay should last.  works only with lin and exp.  none lasts infinitely.)
- */
-
-class cAction_TherapyDecayDemeResource : public cAction
-{
-private:
-  cString m_resname;
-  cString m_decrtype;
-  double m_amount;
-  double m_duration;
-public:
-  cAction_TherapyDecayDemeResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_amount(0), m_duration(1)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_resname = largs.PopWord();
-    if (largs.GetSize()) m_decrtype = largs.PopWord();
-    if (largs.GetSize()) m_amount = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
-    assert(m_amount >= 0);
-    assert(m_amount <= 1);
-    assert(m_duration >= 1);
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string resource_name=resname, string decrease_type=(none|lin|exp), double amount=0.2]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    double adjusted_amount;
-    int time_since_treatment;
-    int latest_treatment_age;
-    std::set<int> treatment_ages;
-    int deme_age;
-    
-    //adjusted amount will be something like max(0, 1 - (m_amount * time_since_treatment)) for linear
-    
-    cPopulation& pop = m_world->GetPopulation();
-    
-    for (int d = 0; d < pop.GetNumDemes(); d++) {
-      
-      cDeme &deme = pop.GetDeme(d);
-      deme_age = deme.GetAge();
-      latest_treatment_age = -1;
-      time_since_treatment = INT_MAX;
-      
-      if(deme.isTreatable()) {
-        
-        treatment_ages = deme.GetTreatmentAges();
-        
-        // Find out the last update at which this treatment was started
-        for (std::set<int>::iterator it = treatment_ages.begin(); it != treatment_ages.end(); it++) {
-          if( (*it < deme_age) && (*it > latest_treatment_age) ) {
-            latest_treatment_age = *it;
-            time_since_treatment = deme_age - latest_treatment_age;
-          }
-        }
-        
-        // If we haven't begun treatment on this deme, or if this treatment is over, skip it.
-        if ((latest_treatment_age == -1) || (time_since_treatment > m_duration)) {
-          continue;
-        }
-        
-        // Find out how much to decrease the resource by
-        // none - as long as the treatment is ongoing, it is at full force
-        // lin - as the treatment continues, the amount decayed decreases linearly
-        // exp - as treatment continues, the amount decayed decreases exponentially
-        if(m_decrtype == "const") {
-          if(time_since_treatment >= m_duration) {
-            adjusted_amount = 0;
-          } else {
-            adjusted_amount = m_amount;
-          }
-        } else if (m_decrtype == "lin") {
-          adjusted_amount = max(0.0, 1 - (time_since_treatment/m_duration)) * m_amount;
-        } else if (m_decrtype == "taper") {
-          adjusted_amount = max(0.0, 1 - pow(time_since_treatment/m_duration, 2)) * m_amount;
-        } else {
-          adjusted_amount = 0;
-        }
-        
-        cResourceCount res = deme.GetDemeResourceCount();
-        const int resid = res.GetResourceByName(m_resname);
-        
-        if(resid == -1)
-        {
-          //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
-          cerr << "Error: Resource \"" << m_resname << "\" not defined for this deme" << endl;
-          continue;
-        }
-        
-        if(res.IsSpatial(resid)) {
-          for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
-            deme.AdjustSpatialResource(ctx, c, resid, -1 * deme.GetSpatialResource(c, resid, ctx) * adjusted_amount); 
-          } //End iterating through all cells
-        }
-        else
-        {
-          deme.AdjustResource(ctx, resid, -1 * res.Get(ctx, resid) * adjusted_amount);
-        }
-        
-      } //End if deme is treatable
-      
-    } //End iterating through all demes
-    
-  } //End Process()
-  
-};
 
 
 /*
@@ -5786,11 +5483,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionRaidDen>("RaidDen");
   action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
   action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
-	
-  // Theraputic deme actions
-  action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");
-  action_lib->Register<cAction_TherapyStructuralRatioDistBetweenNearest>("TherapyStructuralRatioDistBetweenNearest");
-  action_lib->Register< cAction_TherapyDecayDemeResource>("TherapyDecayDemeResource");
 	
 	
   action_lib->Register<cActionToggleRewardInstruction>("ToggleRewardInstruction");

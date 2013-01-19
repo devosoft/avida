@@ -594,5 +594,5 @@ int cBirthChamber::GetWaitingOffspringNumber(int which_mating_type, int hw_type)
 void cBirthChamber::PrintBirthChamber(const cString& filename, int hw_type)
 {
   cBirthSelectionHandler* temp_handler = getSelectionHandler(hw_type);
-  temp_handler->PrintBirthChamber(filename, m_world);
+  temp_handler->PrintBirthChamber(filename);
 }

@@ -28,6 +28,7 @@
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 #include "avida/data/Util.h"
+#include "avida/output/File.h"
 #include "avida/systematics/Arbiter.h"
 #include "avida/systematics/Group.h"
 #include "avida/systematics/Manager.h"
@@ -44,7 +45,6 @@
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cCodeLabel.h"
-#include "cDataFile.h"
 #include "cDemePlaceholderUnit.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -1258,14 +1258,13 @@ void cPopulation::SetupMiniTrace(cOrganism* in_organism)
   const int target = in_organism->GetParentFT();
   const int id = in_organism->GetID();
   int group_id = m_world->GetConfig().DEFAULT_GROUP.Get();
-  const char* genotype_name = in_organism->SystematicsGroup("genotype")->Properties().Get("genotype").StringValue();
   
   if (in_organism->HasOpinion()) group_id = in_organism->GetOpinion().first;
   else group_id = in_organism->GetParentGroup();
   
   cString filename = cStringUtil::Stringf("minitraces/org%d-ud%d-grp%d_ft%d-gt%d.trc", id, m_world->GetStats().GetUpdate(), group_id, target, in_organism->SystematicsGroup("genotype")->ID());
   
-  if (!use_micro_traces) in_organism->GetHardware().SetMiniTrace(filename, in_organism->SystematicsGroup("genotype")->ID(), genotype_name);
+  if (!use_micro_traces) in_organism->GetHardware().SetMiniTrace(filename);
   else in_organism->GetHardware().SetMicroTrace();
   
   if (print_mini_trace_genomes) {
@@ -2706,13 +2705,9 @@ void cPopulation::ReplicateDeme(cDeme& source_deme, cAvidaContext& ctx)
   // Write some logging information if LOG_DEMES_REPLICATE is set.
   if ( (m_world->GetConfig().LOG_DEMES_REPLICATE.Get() == 1) &&
       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().DEMES_REPLICATE_LOG_START.Get()) ) {
-    cString tmpfilename = cStringUtil::Stringf("deme_replication.dat");
-    cDataFile& df = m_world->GetDataFile(tmpfilename);
-    
-    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d",
-                                             m_world->GetStats().GetUpdate(),
-                                             source_deme.GetDemeID(), target_id);
-    df.WriteRaw(UpdateStr);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_replication.dat");
+    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d", m_world->GetStats().GetUpdate(), source_deme.GetDemeID(), target_id);
+    df->WriteRaw(UpdateStr);
   }
   
   if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 3) {
@@ -3926,10 +3921,10 @@ void cPopulation::PrintDonationStats()
   
   cStats& stats = m_world->GetStats();
   
-  cDataFile & dn_donors = m_world->GetDataFile("donations.dat");
-  dn_donors.WriteComment("Info about organisms giving donations in the population");
-  dn_donors.WriteTimeStamp();
-  dn_donors.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr dn_donors = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "donations.dat");
+  dn_donors->WriteComment("Info about organisms giving donations in the population");
+  dn_donors->WriteTimeStamp();
+  dn_donors->Write(stats.GetUpdate(), "update");
   
   
   for (int i = 0; i < cell_array.GetSize(); i++)
@@ -3985,23 +3980,23 @@ void cPopulation::PrintDonationStats()
     
   }
   
-  dn_donors.Write(donation_makers.Sum(), "parent made at least one donation");
-  dn_donors.Write(donation_receivers.Sum(), "parent received at least one donation");
-  dn_donors.Write(donation_cheaters.Sum(),  "parent received at least one donation but did not make one");
-  dn_donors.Write(edit_donation_makers.Sum(), "parent made at least one edit_donation");
-  dn_donors.Write(edit_donation_receivers.Sum(), "parent received at least one edit_donation");
-  dn_donors.Write(edit_donation_cheaters.Sum(),  "parent received at least one edit_donation but did not make one");
-  dn_donors.Write(kin_donation_makers.Sum(), "parent made at least one kin_donation");
-  dn_donors.Write(kin_donation_receivers.Sum(), "parent received at least one kin_donation");
-  dn_donors.Write(kin_donation_cheaters.Sum(),  "parent received at least one kin_donation but did not make one");
-  dn_donors.Write(threshgb_donation_makers.Sum(), "parent made at least one threshgb_donation");
-  dn_donors.Write(threshgb_donation_receivers.Sum(), "parent received at least one threshgb_donation");
-  dn_donors.Write(threshgb_donation_cheaters.Sum(),  "parent received at least one threshgb_donation but did not make one");
-  dn_donors.Write(quanta_threshgb_donation_makers.Sum(), "parent made at least one quanta_threshgb_donation");
-  dn_donors.Write(quanta_threshgb_donation_receivers.Sum(), "parent received at least one quanta_threshgb_donation");
-  dn_donors.Write(quanta_threshgb_donation_cheaters.Sum(),  "parent received at least one quanta_threshgb_donation but did not make one");
+  dn_donors->Write(donation_makers.Sum(), "parent made at least one donation");
+  dn_donors->Write(donation_receivers.Sum(), "parent received at least one donation");
+  dn_donors->Write(donation_cheaters.Sum(),  "parent received at least one donation but did not make one");
+  dn_donors->Write(edit_donation_makers.Sum(), "parent made at least one edit_donation");
+  dn_donors->Write(edit_donation_receivers.Sum(), "parent received at least one edit_donation");
+  dn_donors->Write(edit_donation_cheaters.Sum(),  "parent received at least one edit_donation but did not make one");
+  dn_donors->Write(kin_donation_makers.Sum(), "parent made at least one kin_donation");
+  dn_donors->Write(kin_donation_receivers.Sum(), "parent received at least one kin_donation");
+  dn_donors->Write(kin_donation_cheaters.Sum(),  "parent received at least one kin_donation but did not make one");
+  dn_donors->Write(threshgb_donation_makers.Sum(), "parent made at least one threshgb_donation");
+  dn_donors->Write(threshgb_donation_receivers.Sum(), "parent received at least one threshgb_donation");
+  dn_donors->Write(threshgb_donation_cheaters.Sum(),  "parent received at least one threshgb_donation but did not make one");
+  dn_donors->Write(quanta_threshgb_donation_makers.Sum(), "parent made at least one quanta_threshgb_donation");
+  dn_donors->Write(quanta_threshgb_donation_receivers.Sum(), "parent received at least one quanta_threshgb_donation");
+  dn_donors->Write(quanta_threshgb_donation_cheaters.Sum(),  "parent received at least one quanta_threshgb_donation but did not make one");
   
-  dn_donors.Endl();
+  dn_donors->Endl();
 }
 // Copy a single indvidual out of a deme into a new one (which is first purged
 // of existing organisms.)
@@ -4110,15 +4105,15 @@ void cPopulation::PrintDemeAllStats(cAvidaContext& ctx)
 void cPopulation::PrintDemeTestamentStats(const cString& filename) {
   cStats& stats = m_world->GetStats();
   
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteTimeStamp();
-  df.Write(m_world->GetStats().GetUpdate(), "Update");
-  df.Write(stats.SumEnergyTestamentToDemeOrganisms().Average(),     "Energy Testament to Deme Organisms");
-  df.Write(stats.SumEnergyTestamentToFutureDeme().Average(),        "Energy Testament to Future Deme");
-  df.Write(stats.SumEnergyTestamentToNeighborOrganisms().Average(), "Energy Testament to Neighbor Organisms");
-  df.Write(stats.SumEnergyTestamentAcceptedByDeme().Average(),      "Energy Testament Accepted by Future Deme");
-  df.Write(stats.SumEnergyTestamentAcceptedByOrganisms().Average(), "Energy Testament Accepted by Organisms");
-  df.Endl();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
+  df->Write(stats.SumEnergyTestamentToDemeOrganisms().Average(),     "Energy Testament to Deme Organisms");
+  df->Write(stats.SumEnergyTestamentToFutureDeme().Average(),        "Energy Testament to Future Deme");
+  df->Write(stats.SumEnergyTestamentToNeighborOrganisms().Average(), "Energy Testament to Neighbor Organisms");
+  df->Write(stats.SumEnergyTestamentAcceptedByDeme().Average(),      "Energy Testament Accepted by Future Deme");
+  df->Write(stats.SumEnergyTestamentAcceptedByOrganisms().Average(), "Energy Testament Accepted by Organisms");
+  df->Endl();
   
   
   stats.SumEnergyTestamentToDemeOrganisms().Clear();
@@ -4135,21 +4130,21 @@ void cPopulation::PrintCurrentMeanDemeDensity(const cString& filename) {
     demeDensity.Add(cur_deme.GetDensity());
   }
   
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteTimeStamp();
-  df.Write(m_world->GetStats().GetUpdate(), "Update");
-  df.Write(demeDensity.Average(), "Current mean deme density");
-  df.Endl();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
+  df->Write(demeDensity.Average(), "Current mean deme density");
+  df->Endl();
 }
 
 // Print some stats about the energy sharing behavior of each deme
 void cPopulation::PrintDemeEnergySharingStats() {
   const int num_demes = deme_array.GetSize();
   cStats& stats = m_world->GetStats();
-  cDataFile & df_donor = m_world->GetDataFile("deme_energy_sharing.dat");
-  df_donor.WriteComment("Average energy donation statistics for each deme in population");
-  df_donor.WriteTimeStamp();
-  df_donor.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_enerty_sharing.dat");
+  df->WriteComment("Average energy donation statistics for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   double num_requestors = 0.0;
   double num_donors = 0.0;
@@ -4180,16 +4175,16 @@ void cPopulation::PrintDemeEnergySharingStats() {
     }
   }
   
-  df_donor.Write(num_requestors/num_demes, "Average number of organisms that have requested energy");
-  df_donor.Write(num_donors/num_demes, "Average number of organisms that have donated energy");
-  df_donor.Write(num_receivers/num_demes, "Average number of organisms that have received energy");
-  df_donor.Write(num_donations/num_demes, "Average number of donations per deme");
-  df_donor.Write(num_receptions/num_demes, "Average number of receipts per deme");
-  df_donor.Write(num_applications/num_demes, "Average number of applications per deme");
-  df_donor.Write(amount_donated/num_demes, "Average total amount of energy donated per deme");
-  df_donor.Write(amount_received/num_demes, "Average total amount of energy received per deme");
-  df_donor.Write(amount_applied/num_demes, "Average total amount of donated energy applied per deme");
-  df_donor.Endl();
+  df->Write(num_requestors/num_demes, "Average number of organisms that have requested energy");
+  df->Write(num_donors/num_demes, "Average number of organisms that have donated energy");
+  df->Write(num_receivers/num_demes, "Average number of organisms that have received energy");
+  df->Write(num_donations/num_demes, "Average number of donations per deme");
+  df->Write(num_receptions/num_demes, "Average number of receipts per deme");
+  df->Write(num_applications/num_demes, "Average number of applications per deme");
+  df->Write(amount_donated/num_demes, "Average total amount of energy donated per deme");
+  df->Write(amount_received/num_demes, "Average total amount of energy received per deme");
+  df->Write(amount_applied/num_demes, "Average total amount of donated energy applied per deme");
+  df->Endl();
   
 } //End PrintDemeEnergySharingStats()
 
@@ -4208,11 +4203,11 @@ void cPopulation::PrintDemeEnergyDistributionStats(cAvidaContext& ctx) {
   cDoubleSum overall_variance;
   cDoubleSum overall_stddev;
   
-  cDataFile & df_dist = m_world->GetDataFile("deme_energy_distribution.dat");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_energy_distribution.dat");
   comment.Set("Average distribution of energy among cells in each of %d %d x %d demes", num_demes, world_x, world_y / num_demes);
-  df_dist.WriteComment(comment);
-  df_dist.WriteTimeStamp();
-  df_dist.Write(stats.GetUpdate(), "Update");
+  df->WriteComment(comment);
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "Update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     const cDeme & cur_deme = deme_array[deme_id];
@@ -4235,11 +4230,11 @@ void cPopulation::PrintDemeEnergyDistributionStats(cAvidaContext& ctx) {
     
   }
   
-  df_dist.Write(overall_average.Average(), "Average of Average Energy Level");
-  df_dist.Write(overall_variance.Average(), "Average of Energy Level Variance");
-  df_dist.Write(overall_stddev.Average(), "Average of Energy Level Standard Deviations");
+  df->Write(overall_average.Average(), "Average of Average Energy Level");
+  df->Write(overall_variance.Average(), "Average of Energy Level Variance");
+  df->Write(overall_stddev.Average(), "Average of Energy Level Standard Deviations");
   
-  df_dist.Endl();
+  df->Endl();
   
 } //End PrintDemeEnergyDistributionStats()
 
@@ -4258,11 +4253,11 @@ void cPopulation::PrintDemeOrganismEnergyDistributionStats() {
   cDoubleSum overall_variance;
   cDoubleSum overall_stddev;
   
-  cDataFile & df_dist = m_world->GetDataFile("deme_org_energy_distribution.dat");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_org_energy_distribution.dat");
   comment.Set("Average distribution of energy among organisms in each of %d %d x %d demes", num_demes, world_x, world_y / num_demes);
-  df_dist.WriteComment(comment);
-  df_dist.WriteTimeStamp();
-  df_dist.Write(stats.GetUpdate(), "Update");
+  df->WriteComment(comment);
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "Update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     const cDeme & cur_deme = deme_array[deme_id];
@@ -4285,11 +4280,11 @@ void cPopulation::PrintDemeOrganismEnergyDistributionStats() {
     
   }
   
-  df_dist.Write(overall_average.Average(), "Average of Average Energy Level");
-  df_dist.Write(overall_variance.Average(), "Average of Energy Level Variance");
-  df_dist.Write(overall_stddev.Average(), "Average of Energy Level Standard Deviations");
+  df->Write(overall_average.Average(), "Average of Average Energy Level");
+  df->Write(overall_variance.Average(), "Average of Energy Level Variance");
+  df->Write(overall_stddev.Average(), "Average of Energy Level Standard Deviations");
   
-  df_dist.Endl();
+  df->Endl();
   
 } //End PrintDemeOrganismEnergyDistributionStats()
 
@@ -4297,10 +4292,10 @@ void cPopulation::PrintDemeOrganismEnergyDistributionStats() {
 void cPopulation::PrintDemeDonor() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_donor = m_world->GetDataFile("deme_donor.dat");
-  df_donor.WriteComment("Num orgs doing doing a donate for each deme in population");
-  df_donor.WriteTimeStamp();
-  df_donor.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_donor.dat");
+  df->WriteComment("Num orgs doing doing a donate for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4314,18 +4309,18 @@ void cPopulation::PrintDemeDonor() {
       single_deme_donor.Add(phenotype.IsDonorLast());
     }
     comment.Set("Deme %d", deme_id);
-    df_donor.Write(single_deme_donor.Sum(), comment);
+    df->Write(single_deme_donor.Sum(), comment);
   }
-  df_donor.Endl();
+  df->Endl();
 }
 
 void cPopulation::PrintDemeFitness() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_fit = m_world->GetDataFile("deme_fitness.dat");
-  df_fit.WriteComment("Average fitnesses for each deme in the population");
-  df_fit.WriteTimeStamp();
-  df_fit.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_fitness.dat");
+  df->WriteComment("Average fitnesses for each deme in the population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4339,36 +4334,36 @@ void cPopulation::PrintDemeFitness() {
       single_deme_fitness.Add(phenotype.GetFitness());
     }
     comment.Set("Deme %d", deme_id);
-    df_fit.Write(single_deme_fitness.Ave(), comment);
+    df->Write(single_deme_fitness.Ave(), comment);
   }
-  df_fit.Endl();
+  df->Endl();
 }
 
 void cPopulation::PrintDemeTotalAvgEnergy(cAvidaContext& ctx) { 
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_fit = m_world->GetDataFile("deme_totalAvgEnergy.dat");
-  df_fit.WriteComment("Average energy for demes in the population");
-  df_fit.WriteTimeStamp();
-  df_fit.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_totalAvgEnergy.dat");
+  df->WriteComment("Average energy for demes in the population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   cDoubleSum avg_energy;
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     const cDeme & cur_deme = deme_array[deme_id];
     avg_energy.Add(cur_deme.CalculateTotalEnergy(ctx)); 
   }
-  df_fit.Write(avg_energy.Ave(), "Total Average Energy");
-  df_fit.Endl();
+  df->Write(avg_energy.Ave(), "Total Average Energy");
+  df->Endl();
 }
 
 void cPopulation::PrintDemeGestationTime()
 {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_gest = m_world->GetDataFile("deme_gest_time.dat");
-  df_gest.WriteComment("Average gestation time for each deme in population");
-  df_gest.WriteTimeStamp();
-  df_gest.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_gest_time.dat");
+  df->WriteComment("Average gestation time for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4382,9 +4377,9 @@ void cPopulation::PrintDemeGestationTime()
       single_deme_gest_time.Add(phenotype.GetGestationTime());
     }
     comment.Set("Deme %d", deme_id);
-    df_gest.Write(single_deme_gest_time.Ave(), comment);
+    df->Write(single_deme_gest_time.Ave(), comment);
   }
-  df_gest.Endl();
+  df->Endl();
 }
 
 void cPopulation::PrintDemeInstructions()
@@ -4397,10 +4392,10 @@ void cPopulation::PrintDemeInstructions()
       const cString& inst_set = m_world->GetHardwareManager().GetInstSet(is_id).GetInstSetName();
       int num_inst = m_world->GetHardwareManager().GetInstSet(is_id).GetSize();
       
-      cDataFile& df_inst = m_world->GetDataFile(cStringUtil::Stringf("deme_instruction-%d-%s.dat", deme_id, (const char*)inst_set));
-      df_inst.WriteComment(cStringUtil::Stringf("Number of times each instruction is exectued in deme %d", deme_id));
-      df_inst.WriteTimeStamp();
-      df_inst.Write(stats.GetUpdate(), "update");
+      Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), Apto::FormatStr("deme_instruction-%d-%s.dat", deme_id, (const char*)inst_set));
+      df->WriteComment(cStringUtil::Stringf("Number of times each instruction is exectued in deme %d", deme_id));
+      df->WriteTimeStamp();
+      df->Write(stats.GetUpdate(), "update");
       
       Apto::Array<Apto::Stat::Accumulator<int> > single_deme_inst(num_inst);
       
@@ -4414,8 +4409,8 @@ void cPopulation::PrintDemeInstructions()
         for (int j = 0; j < num_inst; j++) single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
       }
       
-      for (int j = 0; j < num_inst; j++) df_inst.Write((int)single_deme_inst[j].Sum(), cStringUtil::Stringf("Inst %d", j));
-      df_inst.Endl();
+      for (int j = 0; j < num_inst; j++) df->Write((int)single_deme_inst[j].Sum(), cStringUtil::Stringf("Inst %d", j));
+      df->Endl();
     }
   }
 }
@@ -4424,10 +4419,10 @@ void cPopulation::PrintDemeLifeFitness()
 {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_life_fit = m_world->GetDataFile("deme_lifetime_fitness.dat");
-  df_life_fit.WriteComment("Average life fitnesses for each deme in the population");
-  df_life_fit.WriteTimeStamp();
-  df_life_fit.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_lifetime_fitness.dat");
+  df->WriteComment("Average life fitnesses for each deme in the population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4441,19 +4436,19 @@ void cPopulation::PrintDemeLifeFitness()
       single_deme_life_fitness.Add(phenotype.GetLifeFitness());
     }
     comment.Set("Deme %d", deme_id);
-    df_life_fit.Write(single_deme_life_fitness.Ave(), comment);
+    df->Write(single_deme_life_fitness.Ave(), comment);
   }
-  df_life_fit.Endl();
+  df->Endl();
 }
 
 void cPopulation::PrintDemeMerit()
 {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile& df_merit = m_world->GetDataFile("deme_merit.dat");
-  df_merit.WriteComment("Average merits for each deme in population");
-  df_merit.WriteTimeStamp();
-  df_merit.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_merit.dat");
+  df->WriteComment("Average merits for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4467,35 +4462,35 @@ void cPopulation::PrintDemeMerit()
       single_deme_merit.Add(phenotype.GetMerit().GetDouble());
     }
     comment.Set("Deme %d", deme_id);
-    df_merit.Write(single_deme_merit.Ave(), comment);
+    df->Write(single_deme_merit.Ave(), comment);
   }
-  df_merit.Endl();
+  df->Endl();
 }
 
 //@JJB**
 void cPopulation::PrintDemesMeritsData()
 {
   const int num_demes = deme_array.GetSize();
-  cDataFile& df_merits = m_world->GetDataFile("demes_merits.dat");
-  df_merits.WriteComment("Each deme's current calculated merit");
-  df_merits.WriteTimeStamp();
-  df_merits.Write(m_world->GetStats().GetUpdate(), "Update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_merits.dat");
+  df->WriteComment("Each deme's current calculated merit");
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
     comment.Set("Deme %d", deme_id);
-    df_merits.Write(deme_array[deme_id].CalcCurMerit().GetDouble(), comment);
+    df->Write(deme_array[deme_id].CalcCurMerit().GetDouble(), comment);
   }
-  df_merits.Endl();
+  df->Endl();
 }
 
 void cPopulation::PrintDemeMutationRate() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_mut_rates = m_world->GetDataFile("deme_mut_rates.dat");
-  df_mut_rates.WriteComment("Average mutation rates for organisms in each deme");
-  df_mut_rates.WriteTimeStamp();
-  df_mut_rates.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_mut_rates.dat");
+  df->WriteComment("Average mutation rates for organisms in each deme");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   cDoubleSum total_mut_rate;
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
@@ -4509,20 +4504,20 @@ void cPopulation::PrintDemeMutationRate() {
       single_deme_mut_rate.Add(GetCell(cur_cell).GetOrganism()->MutationRates().GetCopyMutProb());
     }
     comment.Set("Deme %d", deme_id);
-    df_mut_rates.Write(single_deme_mut_rate.Ave(), comment);
+    df->Write(single_deme_mut_rate.Ave(), comment);
     total_mut_rate.Add(single_deme_mut_rate.Ave());
   }
-  df_mut_rates.Write(total_mut_rate.Ave(), "Average deme mutation rate averaged across Demes.");
-  df_mut_rates.Endl();
+  df->Write(total_mut_rate.Ave(), "Average deme mutation rate averaged across Demes.");
+  df->Endl();
 }
 
 void cPopulation::PrintDemeReceiver() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_receiver = m_world->GetDataFile("deme_receiver.dat");
-  df_receiver.WriteComment("Num orgs doing receiving a donate for each deme in population");
-  df_receiver.WriteTimeStamp();
-  df_receiver.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_receiver.dat");
+  df->WriteComment("Num orgs doing receiving a donate for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4536,18 +4531,18 @@ void cPopulation::PrintDemeReceiver() {
       single_deme_receiver.Add(phenotype.IsReceiver());
     }
     comment.Set("Deme %d", deme_id);
-    df_receiver.Write(single_deme_receiver.Sum(), comment);
+    df->Write(single_deme_receiver.Sum(), comment);
   }
-  df_receiver.Endl();
+  df->Endl();
 }
 
 void cPopulation::PrintDemeResource(cAvidaContext& ctx) { 
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
-  df_resources.WriteComment("Avida deme resource data");
-  df_resources.WriteTimeStamp();
-  df_resources.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_resources.dat");
+  df->WriteComment("Avida deme resource data");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cDeme & cur_deme = deme_array[deme_id];
@@ -4556,25 +4551,25 @@ void cPopulation::PrintDemeResource(cAvidaContext& ctx) {
     const cResourceCount& res = GetDeme(deme_id).GetDemeResourceCount();
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
-      df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
+      df->Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
       if ((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL && (res.GetResourcesGeometry())[j] != nGeometry::PARTIAL) {
         PrintDemeSpatialResData(res, j, deme_id, ctx); 
       }
     }
   }
-  df_resources.Endl();
+  df->Endl();
 }
 
 //Write deme global resource levels to a file that can be easily read into Matlab.
 //Each time this runs, a Matlab array is created that contains an array.  Each row in the array contains <deme id> <res level 0> ... <res level n>
-void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) { 
+void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) {
   const int num_demes = deme_array.GetSize();
-  cDataFile & df = m_world->GetDataFile("deme_global_resources.dat");
-  df.WriteComment("Avida deme resource data");
-  df.WriteTimeStamp();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_global_resources.dat");
+  df->WriteComment("Avida deme resource data");
+  df->WriteTimeStamp();
   
   cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
-  df.WriteRaw(UpdateStr);
+  df->WriteRaw(UpdateStr);
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cDeme & cur_deme = deme_array[deme_id];
@@ -4583,19 +4578,19 @@ void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) {
     const cResourceCount & res = GetDeme(deme_id).GetDemeResourceCount();
     const int num_res = res.GetSize();
     
-    df.WriteBlockElement(deme_id, 0, num_res + 1);
+    df->WriteBlockElement(deme_id, 0, num_res + 1);
     
     for(int r = 0; r < num_res; r++) {
       if (!res.IsSpatial(r)) {
-        df.WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
+        df->WriteBlockElement(res.Get(ctx, r), r + 1, num_res + 1);
       }
       
     } //End iterating through resources
     
   } //End iterating through demes
   
-  df.WriteRaw("];");
-  df.Endl();
+  df->WriteRaw("];");
+  df->Endl();
 }
 
 
@@ -4606,23 +4601,23 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
   
   for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
     cString tmpfilename = cStringUtil::Stringf( "deme_%07i_spatial_energy.m", i);  // moved here for easy movie making
-    cDataFile& df = m_world->GetDataFile(tmpfilename);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)tmpfilename);
     cString UpdateStr = cStringUtil::Stringf( "deme_%07i_energy_%07i = [ ...", i, update );
-    df.WriteRaw(UpdateStr);
+    df->WriteRaw(UpdateStr);
     
     int gridsize = m_world->GetPopulation().GetDeme(i).GetSize();
     // write grid to file
     for (int j = 0; j < gridsize; j++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(cellID);
       if (cell.IsOccupied()) {
-        df.WriteBlockElement(cell.GetOrganism()->GetPhenotype().GetStoredEnergy(), j, world_x);
+        df->WriteBlockElement(cell.GetOrganism()->GetPhenotype().GetStoredEnergy(), j, world_x);
       } else {
-        df.WriteBlockElement(0.0, j, world_x);
+        df->WriteBlockElement(0.0, j, world_x);
       }
       cellID++;
     }
-    df.WriteRaw("];");
-    df.Endl();
+    df->WriteRaw("];");
+    df->Endl();
   }
 }
 
@@ -4630,31 +4625,31 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
 void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext&) const { 
   const char* tmpResName = res.GetResName(i);
   cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
-  cDataFile& df = m_world->GetDataFile(tmpfilename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)tmpfilename);
   cString UpdateStr = cStringUtil::Stringf( "deme_%07i_%s_%07i = [ ...", deme_id, static_cast<const char*>(res.GetResName(i)), m_world->GetStats().GetUpdate() );
   
-  df.WriteRaw(UpdateStr);
+  df->WriteRaw(UpdateStr);
   
   const cSpatialResCount& sp_res = res.GetSpatialResource(i); 
   int gridsize = sp_res.GetSize();
   
   for (int j = 0; j < gridsize; j++) {
-    df.WriteBlockElement(sp_res.GetAmount(j), j, world_x);
+    df->WriteBlockElement(sp_res.GetAmount(j), j, world_x);
   }
-  df.WriteRaw("];");
-  df.Endl();
+  df->WriteRaw("];");
+  df->Endl();
 }
 
 // Write spatial energy data to a file that can easily be read into Matlab
 void cPopulation::PrintDemeSpatialSleepData() const {
   int cellID = 0;
   cString tmpfilename = "deme_spatial_sleep.m";
-  cDataFile& df = m_world->GetDataFile(tmpfilename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)tmpfilename);
   int update = m_world->GetStats().GetUpdate();
   
   for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
     cString UpdateStr = cStringUtil::Stringf( "deme_%07i_sleep_%07i = [ ...", i, update);
-    df.WriteRaw(UpdateStr);
+    df->WriteRaw(UpdateStr);
     
     int gridsize = m_world->GetPopulation().GetDeme(i).GetSize();
     
@@ -4662,14 +4657,14 @@ void cPopulation::PrintDemeSpatialSleepData() const {
     for (int j = 0; j < gridsize; j++) {
       cPopulationCell cell = m_world->GetPopulation().GetCell(cellID);
       if (cell.IsOccupied()) {
-        df.WriteBlockElement(cell.GetOrganism()->IsSleeping(), j, world_x);
+        df->WriteBlockElement(cell.GetOrganism()->IsSleeping(), j, world_x);
       } else {
-        df.WriteBlockElement(0.0, j, world_x);
+        df->WriteBlockElement(0.0, j, world_x);
       }
       cellID++;
     }
-    df.WriteRaw("];");
-    df.Endl();
+    df->WriteRaw("];");
+    df->Endl();
   }
 }
 
@@ -4677,10 +4672,10 @@ void cPopulation::PrintDemeTasks() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
   const int num_task = environment.GetNumTasks();
-  cDataFile & df_task = m_world->GetDataFile("deme_task.dat");
-  df_task.WriteComment("Num orgs doing each task for each deme in population");
-  df_task.WriteTimeStamp();
-  df_task.Write(stats.GetUpdate(), "update");
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), "deme_task.dat");
+  df->WriteComment("Num orgs doing each task for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(stats.GetUpdate(), "update");
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString comment;
@@ -4700,10 +4695,10 @@ void cPopulation::PrintDemeTasks() {
     }
     for (int j = 0; j < num_task; j++) {
       comment.Set("Deme %d, Task %d", deme_id, j);
-      df_task.Write((int) single_deme_task[j].Sum(), comment);
+      df->Write((int) single_deme_task[j].Sum(), comment);
     }
   }
-  df_task.Endl();
+  df->Endl();
 }
 
 void cPopulation::DumpDemeFounders(ofstream& fp) {
@@ -5863,10 +5858,11 @@ struct sGroupInfo {
 
 bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bool save_groupings, bool save_avatars, bool save_rebirth)
 {
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.SetFileType("genotype_data");
-  df.WriteComment("Structured Population Save");
-  df.WriteTimeStamp();
+  Apto::String file_path((const char*)filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
+  df->SetFileType("genotype_data");
+  df->WriteComment("Structured Population Save");
+  df->WriteTimeStamp();
   
   // Build up hash table of all current genotypes and the cells in which the organisms reside
   Apto::Map<int, sGroupInfo*> genotype_map;
@@ -5967,7 +5963,7 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
     sGroupInfo* group_info = *it.Get();
     Systematics::GroupPtr genotype = group_info->bg;
     
-    genotype->LegacySave(&df);
+    genotype->LegacySave(Apto::GetInternalPtr(df));
     
     Apto::Array<sOrgInfo>& cells = group_info->orgs;
     cString cellstr;
@@ -6024,52 +6020,52 @@ bool cPopulation::SavePopulation(const cString& filename, bool save_historic, bo
       }
     }
 
-    df.Write(cellstr, "Occupied Cell IDs", "cells");
-    if (group_info->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
-    else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
-    df.Write(lineagestr, "Lineage Label", "lineage");
+    df->Write(cellstr, "Occupied Cell IDs", "cells");
+    if (group_info->parasite) df->Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
+    else df->Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
+    df->Write(lineagestr, "Lineage Label", "lineage");
       if (!save_rebirth) {
         if (save_groupings) {
-          df.Write(groupstr, "Current Group IDs", "group_id");
-          df.Write(foragestr, "Current Forager Types", "forager_type");
-          df.Write(birthstr, "Birth Cells", "birth_cell");
+          df->Write(groupstr, "Current Group IDs", "group_id");
+          df->Write(foragestr, "Current Forager Types", "forager_type");
+          df->Write(birthstr, "Birth Cells", "birth_cell");
         }
         if (save_avatars) {
-          df.Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
-          df.Write(avatarbstr, "Avatar Birth Cell", "av_bcell");
+          df->Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
+          df->Write(avatarbstr, "Avatar Birth Cell", "av_bcell");
         }
       }
       else if (save_rebirth) {
-        df.Write(groupstr, "Current Group IDs", "group_id");
-        df.Write(foragestr, "Current Forager Types", "forager_type");
-        df.Write(birthstr, "Birth Cells", "birth_cell");
-        df.Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
-        df.Write(avatarbstr, "Avatar Birth Cell", "av_bcell");
-        df.Write(pforagestr, "Parent forager type", "parent_ft");
-        df.Write(pteachstr, "Was Parent a Teacher", "parent_is_teach");
-        df.Write(pmeritstr, "Parent Merit", "parent_merit");
+        df->Write(groupstr, "Current Group IDs", "group_id");
+        df->Write(foragestr, "Current Forager Types", "forager_type");
+        df->Write(birthstr, "Birth Cells", "birth_cell");
+        df->Write(avatarstr, "Current Avatar Cell Locations", "avatar_cell");
+        df->Write(avatarbstr, "Avatar Birth Cell", "av_bcell");
+        df->Write(pforagestr, "Parent forager type", "parent_ft");
+        df->Write(pteachstr, "Was Parent a Teacher", "parent_is_teach");
+        df->Write(pmeritstr, "Parent Merit", "parent_merit");
       }
-    df.Endl();
+    df->Endl();
     
     delete group_info;
   }
   
   // Output historic genotypes
   if (save_historic) {
-    Systematics::Manager::Of(m_world->GetNewWorld())->ArbiterForRole("genotype")->LegacySave(&df);
+    Systematics::Manager::Of(m_world->GetNewWorld())->ArbiterForRole("genotype")->LegacySave(Apto::GetInternalPtr(df));
   }
   
-  m_world->GetDataFileManager().Remove(filename);
   return true;
 }
 
 
 bool cPopulation::SaveStructuredSystematicsGroup(const Systematics::RoleID& role, const cString& filename)
 {
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.SetFileType("systematics_data");
-  df.WriteComment("Structured Systematics Group Save");
-  df.WriteTimeStamp();
+  Apto::String file_path((const char*)filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
+  df->SetFileType("systematics_data");
+  df->WriteComment("Structured Systematics Group Save");
+  df->WriteTimeStamp();
   
   // Build up hash table of all current genotypes and the cells in which the organisms reside
   Apto::Map<int, sGroupInfo*> group_map;
@@ -6116,19 +6112,18 @@ bool cPopulation::SaveStructuredSystematicsGroup(const Systematics::RoleID& role
     sGroupInfo* group_info = *it.Get();
     Systematics::GroupPtr group = group_info->bg;
     
-    group->LegacySave(&df);
+    group->LegacySave(Apto::GetInternalPtr(df));
     
     Apto::Array<sOrgInfo>& cells = group_info->orgs;
     cString cellstr;
     cellstr.Set("%d", cells[0].cell_id);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
-    df.Write(cellstr, "Occupied Cell IDs", "cells");
-    df.Endl();
+    df->Write(cellstr, "Occupied Cell IDs", "cells");
+    df->Endl();
     
     delete group_info;
   }
   
-  m_world->GetDataFileManager().Remove(filename);
   return true;
 }
 
@@ -6167,9 +6162,10 @@ bool cPopulation::LoadStructuredSystematicsGroup(cAvidaContext& ctx, const Syste
 
 bool cPopulation::SaveFlameData(const cString& filename)
 {
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteComment("Flame Data Save");
-  df.WriteTimeStamp();
+  Apto::String file_path((const char*)filename);
+  Avida::Output::FilePtr df = Avida::Output::File::CreateWithPath(m_world->GetNewWorld(), file_path);
+  df->WriteComment("Flame Data Save");
+  df->WriteTimeStamp();
   
   // Build up hash table of all current genotypes
   Apto::Map<int, sGroupInfo*> genotype_map;
@@ -6216,13 +6212,13 @@ bool cPopulation::SaveFlameData(const cString& filename)
     sGroupInfo* group_info = *it.Get();
     Systematics::GroupPtr genotype = group_info->bg;
     
-    df.Write(genotype->ID(), "ID", "genotype_id");
-    df.Write(genotype->NumUnits(), "Number of currently living organisms", "num_units");
-    df.Write(genotype->Depth(), "Phylogenetic Depth", "depth");
-    df.Endl();    
+    df->Write(genotype->ID(), "ID", "genotype_id");
+    df->Write(genotype->NumUnits(), "Number of currently living organisms", "num_units");
+    df->Write(genotype->Depth(), "Phylogenetic Depth", "depth");
+    df->Endl();    
     delete group_info;
   }  
-  m_world->GetDataFileManager().Remove(filename);
+
   return true;
 }
 
@@ -7032,13 +7028,13 @@ void cPopulation::InjectGenome(int cell_id, Systematics::Source src, const Genom
       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().INJECT_LOG_START.Get()) ){
     
     cString tmpfilename = cStringUtil::Stringf("injectlog.dat");
-    cDataFile& df = m_world->GetDataFile(tmpfilename);
+    Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)tmpfilename);
     
-    df.Write(m_world->GetStats().GetUpdate(), "Update");
-    df.Write(new_organism->GetID(), "Organism ID");
-    df.Write(m_world->GetPopulation().GetCell(cell_id).GetDemeID(), "Deme ID");
-    df.Write(new_organism->GetFacing(), "Facing");
-    df.Endl();
+    df->Write(m_world->GetStats().GetUpdate(), "Update");
+    df->Write(new_organism->GetID(), "Organism ID");
+    df->Write(m_world->GetPopulation().GetCell(cell_id).GetDemeID(), "Deme ID");
+    df->Write(new_organism->GetFacing(), "Facing");
+    df->Endl();
   }
 }
 
@@ -7156,24 +7152,24 @@ void cPopulation::PrintPhenotypeData(const cString& filename)
   average_shannon_diversity /= static_cast<double>(num_orgs);
   average_num_tasks /= num_orgs;
   
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteTimeStamp();
-  df.Write(m_world->GetStats().GetUpdate(), "Update");
-  df.Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
-  df.Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
-  df.Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
-  df.Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
-  df.Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
-  df.Endl();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
+  df->Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
+  df->Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
+  df->Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
+  df->Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
+  df->Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
+  df->Endl();
 }
 
 void cPopulation::PrintPhenotypeStatus(const cString& filename)
 {
-  cDataFile& df_phen = m_world->GetDataFile(filename);
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
   
-  df_phen.WriteComment("Num orgs doing each task for each deme in population");
-  df_phen.WriteTimeStamp();
-  df_phen.Write(m_world->GetStats().GetUpdate(), "Update");
+  df->WriteComment("Num orgs doing each task for each deme in population");
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
   
   cString comment;
   
@@ -7185,31 +7181,31 @@ void cPopulation::PrintPhenotypeStatus(const cString& filename)
     const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
     
     comment.Set("cur_merit %d;", i);
-    df_phen.Write(phenotype.GetMerit().GetDouble(), comment);
+    df->Write(phenotype.GetMerit().GetDouble(), comment);
     
     comment.Set("cur_merit_base %d;", i);
-    df_phen.Write(phenotype.GetCurMeritBase(), comment);
+    df->Write(phenotype.GetCurMeritBase(), comment);
     
     comment.Set("cur_merit_bonus %d;", i);
-    df_phen.Write(phenotype.GetCurBonus(), comment);
+    df->Write(phenotype.GetCurBonus(), comment);
     
     //    comment.Set("last_merit %d", i);
-    //    df_phen.Write(phenotype.GetLastMerit(), comment);
+    //    df->Write(phenotype.GetLastMerit(), comment);
     
     comment.Set("last_merit_base %d", i);
-    df_phen.Write(phenotype.GetLastMeritBase(), comment);
+    df->Write(phenotype.GetLastMeritBase(), comment);
     
     comment.Set("last_merit_bonus %d", i);
-    df_phen.Write(phenotype.GetLastBonus(), comment);
+    df->Write(phenotype.GetLastBonus(), comment);
     
     comment.Set("life_fitness %d", i);
-    df_phen.Write(phenotype.GetLifeFitness(), comment);
+    df->Write(phenotype.GetLifeFitness(), comment);
     
     comment.Set("*");
-    df_phen.Write("*", comment);
+    df->Write("*", comment);
     
   }
-  df_phen.Endl();
+  df->Endl();
   
 }
 
@@ -7280,15 +7276,15 @@ void cPopulation::PrintHostPhenotypeData(const cString& filename)
   average_shannon_diversity /= static_cast<double>(num_orgs);
   average_num_tasks /= num_orgs;
   
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteTimeStamp();
-  df.Write(m_world->GetStats().GetUpdate(), "Update");
-  df.Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
-  df.Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
-  df.Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
-  df.Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
-  df.Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
-  df.Endl();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
+  df->Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
+  df->Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
+  df->Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
+  df->Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
+  df->Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
+  df->Endl();
 }
 
 void cPopulation::PrintParasitePhenotypeData(const cString& filename)
@@ -7358,15 +7354,15 @@ void cPopulation::PrintParasitePhenotypeData(const cString& filename)
   average_shannon_diversity /= static_cast<double>(num_orgs);
   average_num_tasks /= num_orgs;
   
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteTimeStamp();
-  df.Write(m_world->GetStats().GetUpdate(), "Update");
-  df.Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
-  df.Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
-  df.Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
-  df.Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
-  df.Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
-  df.Endl();
+  Avida::Output::FilePtr df = Avida::Output::File::StaticWithPath(m_world->GetNewWorld(), (const char*)filename);
+  df->WriteTimeStamp();
+  df->Write(m_world->GetStats().GetUpdate(), "Update");
+  df->Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
+  df->Write(shannon_diversity_of_phenotypes, "Shannon Diversity of Phenotypes (by task done)");
+  df->Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
+  df->Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
+  df->Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
+  df->Endl();
 }
 
 bool cPopulation::UpdateMerit(int cell_id, double new_merit)

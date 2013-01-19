@@ -27,11 +27,11 @@
 #include "apto/core/Set.h"
 #include "avida/core/Feedback.h"
 #include "avida/core/InstructionSequence.h"
+#include "avida/output/File.h"
 
 #include "cInstSet.h"
 #include "cHardwareManager.h"
 
-#include "cDataFile.h"
 #include "cInitFile.h"
 #include "cStringUtil.h"
 
@@ -124,7 +124,7 @@ Avida::GenomePtr Avida::Genome::Deserialize(ArchivePtr)
 
 bool Avida::Genome::LegacySave(void* dfp) const
 {
-  cDataFile& df = *static_cast<cDataFile*>(dfp);
+  Avida::Output::File& df = *static_cast<Avida::Output::File*>(dfp);
   df.Write(m_hw_type, "Hardware Type ID", "hw_type");
   df.Write(m_props.Get(s_prop_id_instset).StringValue(), "Inst Set Name" , "inst_set");
   df.Write(m_representation->AsString(), "Genome Sequence", "sequence");

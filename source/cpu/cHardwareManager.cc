@@ -284,12 +284,6 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       break;
   }
   
-  // Are we tracing the execution of this cpu?
-  if (m_world->GetConfig().TRACE_EXECUTION.Get()) {
-    cString filename =  cStringUtil::Stringf("trace-%d.trace", org->GetID());
-    hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename)));
-  }
-    
   assert(hw != 0);
   return hw;
 }
