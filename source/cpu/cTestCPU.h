@@ -25,8 +25,8 @@
 
 #include <fstream>
 
+#include "cPopulationResources.h"
 #include "cString.h"
-#include "cResource.h"
 #include "cCPUTestInfo.h"
 #include "cWorld.h"
 
@@ -60,10 +60,10 @@ private:
   int m_res_cpu_cycle_offset;
 
   // Actual CPU resources.
-  cResource m_resource_count;
-  cResource m_faced_cell_resource_count;
-  cResource m_deme_resource_count;
-  cResource m_cell_resource_count;
+  cPopulationResources m_resource_count;
+  cPopulationResources m_faced_cell_resource_count;
+  cPopulationResources m_deme_resource_count;
+  cPopulationResources m_cell_resource_count;
     
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
@@ -112,7 +112,7 @@ public:
   
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  cResource& GetResourceCount() { return m_resource_count; }
+  cPopulationResources& GetResourceCount() { return m_resource_count; }
 };
 
 

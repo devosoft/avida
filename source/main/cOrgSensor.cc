@@ -26,7 +26,7 @@
 #include "cEnvironment.h"
 #include "cPopulationCell.h"  
 #include "cResourceDef.h"
-#include "cResource.h"
+#include "cPopulationResources.h"
 
 cOrgSensor::cOrgSensor(cWorld* world, cOrganism* in_organism)
 : m_world(world), m_organism(in_organism)
@@ -74,8 +74,8 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
     }
   }
   
-  // first reg gives habitat type sought (aligns with org m_target settings and gradient res habitat types)
-  // if sensing food resource, habitat = 0 (gradients)
+  // first reg gives habitat type sought (aligns with org m_target settings and dynamic res habitat types)
+  // if sensing food resource, habitat = 0 (basic res)
   // if sensing topography, habitat = 1 (hills)
   // if sensing objects, habitat = 2 (walls)  
   // habitat 4 = unhidden den resource
@@ -159,7 +159,7 @@ const cOrgSensor::sLookOut cOrgSensor::SetLooking(cAvidaContext& ctx, sLookInit&
    // add ability to target specific forager type
    */
   
-  // habitat is 0 and any of the resources are non-gradient types, are we dealing with global resources and can just use the global val
+  // habitat is 0 and any of the resources are non-dynamic res types, are we dealing with global resources and can just use the global val
   if (habitat_used == 0 || habitat_used > 5) {
     if (id_sought != -1 && resource_lib.GetResDef(id_sought)->GetGeometry() == nGeometry::GLOBAL) {
       return GlobalVal(ctx, habitat_used, id_sought, search_type);
@@ -293,7 +293,7 @@ cOrgSensor::sLookOut cOrgSensor::GlobalVal(cAvidaContext& ctx, const int habitat
   stuff_seen.group = -9;    
   stuff_seen.forage = -9;
   
-  // can't use threshold...those only apply to gradient resources, so this is arbitrarily set at any (> 0)
+  // can't use threshold...those only apply to dynamic resources, so this is arbitrarily set at any (> 0)
   if (val > 0) {
     stuff_seen.distance = 0;
     stuff_seen.count = 1;
@@ -411,7 +411,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceDe
   val_res.Resize(0);
   // END definitions
   
-  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResDef(id_sought)->GetGradient());
+  bool single_bound = ((habitat_used == 0 || habitat_used >= 4) && id_sought != -1 && resource_lib.GetResDef(id_sought)->IsDynamic());
   if (habitat_used != -2 && habitat_used != 3) val_res = BuildResArray(habitat_used, id_sought, resource_lib, single_bound);
   
   // set geometric bounds, and fast-forward, if possible
@@ -435,7 +435,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceDe
     bool global_only = true;
     int temp_start_dist = distance_sought;
     for (int i = 0; i < val_res.GetSize(); i++) {
-      if (resource_lib.GetResDef(val_res[i])->GetGradient()) {
+      if (resource_lib.GetResDef(val_res[i])->IsDynamic()) {
         int this_start_dist = 0;
         sBounds res_bounds = GetBounds(ctx, val_res[i]);
         this_start_dist = GetMinDist(worldx, res_bounds, cell, distance_sought, facing);
@@ -455,7 +455,7 @@ cOrgSensor::sLookOut cOrgSensor::WalkCells(cAvidaContext& ctx, const cResourceDe
       } else {
         // if any res is global, we just need to make sure we check at least one cell
         if (resource_lib.GetResDef(val_res[i])->GetGeometry() == nGeometry::GLOBAL) has_global = true;
-        // if any res is spatial and non-gradient, we can't bound things because those res don't track the variables we use for bounding
+        // if any res is spatial and non-dynamic, we can't bound things because those res don't track the variables we use for bounding
         else {
           global_only = false;
           tot_bounds = worldBounds;
@@ -871,7 +871,7 @@ cOrgSensor::sBounds cOrgSensor::GetBounds(cAvidaContext& ctx, const int res_id)
   res_bounds.max_x = m_world->GetConfig().WORLD_X.Get() - 1;
   res_bounds.max_y = m_world->GetConfig().WORLD_Y.Get() - 1;
 
-  cResource* res_count = m_organism->GetOrgInterface().GetResourceCount();
+  cPopulationResources* res_count = m_organism->GetOrgInterface().GetResourceCount();
   if (res_count != NULL) {
     int min_x = res_count->GetMinUsedX(res_id);
     int min_y = res_count->GetMinUsedY(res_id);

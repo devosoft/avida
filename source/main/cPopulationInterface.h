@@ -125,7 +125,7 @@ public:
   int GetCurrPeakY(cAvidaContext& ctx, int res_id);
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id); 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id);
-  cResource* GetResourceCount();
+  cPopulationResources* GetResourceCount();
   void TriggerDoUpdates(cAvidaContext& ctx);
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);

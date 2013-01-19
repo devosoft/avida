@@ -1,5 +1,5 @@
 /*
- *  cSpatialResElement.h
+ *  cResourceElement.h
  *  Avida
  *
  *  Called "spatial_count_elem.hh" prior to 12/5/05.
@@ -20,13 +20,13 @@
  *
  */
 
-#ifndef cSpatialResElement_h
-#define cSpatialResElement_h
+#ifndef cResourceElement_h
+#define cResourceElement_h
 
 #include "avida/core/Types.h"
 
 
-class cSpatialResElement
+class cResourceElement
 {
 private:
   mutable double amount, delta, initial;
@@ -34,8 +34,8 @@ private:
   Apto::Array<double> dist;
   
 public:
-  cSpatialResElement();
-  cSpatialResElement(double initamount);
+  cResourceElement();
+  cResourceElement(double initamount);
   
   void Rate(double ratein) const { delta += ratein; }
   void State() { amount += delta; delta = 0.0; }
@@ -46,7 +46,7 @@ public:
   int GetPtrXdist(int innum) { return xdist[innum]; }
   int GetPtrYdist(int innum) { return ydist[innum]; }
   double GetPtrDist(int innum) { return dist[innum]; }
-  friend void FlowMatter(cSpatialResElement&, cSpatialResElement&, double, double, double, double,
+  friend void FlowMatter(cResourceElement&, cResourceElement&, double, double, double, double,
                          int, int, double);
   void SetInitial(double init) { initial = init; }
   double GetInitial() { return initial; }

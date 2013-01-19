@@ -118,7 +118,7 @@ public:
   int GetFrozenPeakX(cAvidaContext& ctx, int res_id) { return 0; } 
   int GetFrozenPeakY(cAvidaContext& ctx, int res_id) { return 0; } 
 
-  cResource* GetResourceCount() { return NULL; }
+  cPopulationResources* GetResourceCount() { return NULL; }
   void TriggerDoUpdates(cAvidaContext&) { }
   void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
   void UpdateAVResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);

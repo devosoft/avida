@@ -1760,7 +1760,7 @@ public:
           adjusted_amount = 0;
         }
         
-        cResource res = deme.GetDemeResourceCount();
+        cPopulationResources res = deme.GetDemeResourceCount();
         const int resid = res.GetResourceByName(m_resname);
         
         if(resid == -1)
@@ -5406,7 +5406,7 @@ public:
       cDeme& deme = m_world->GetPopulation().GetDeme(d);
       int deme_size = deme.GetWidth() * deme.GetHeight();
       
-      const cResource &res = deme.GetDemeResourceCount();
+      const cPopulationResources &res = deme.GetDemeResourceCount();
       const int resid = res.GetResourceByName(m_res);
       
       if(resid == -1) {

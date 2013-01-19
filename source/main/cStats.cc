@@ -1476,7 +1476,7 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
 
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
-    if (resLib.GetResDef(i)->GetGradient()) {
+    if (resLib.GetResDef(i)->IsDynamic()) {
       df.Write(m_world->GetPopulation().GetCurrPeakX(ctx, i) + (m_world->GetPopulation().GetCurrPeakY(ctx, i) * m_world->GetConfig().WORLD_X.Get()), "CellID");
     }
   }
@@ -1499,7 +1499,7 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
 
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
-    if (resLib.GetResDef(i)->GetGradient() && resLib.GetResDef(i)->GetHabitat() == 2) {
+    if (resLib.GetResDef(i)->IsDynamic() && resLib.GetResDef(i)->GetHabitat() == 2) {
       Apto::Array<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
       for (int i = 0; i < cells.GetSize() - 1; i++) {
         fp << cells[i] << ",";

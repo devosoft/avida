@@ -26,11 +26,10 @@
 #ifndef cResourceDef_h
 #define cResourceDef_h
 
+#include "cAvidaContext.h"
 #include "cString.h"
 
-
 /*! class to hold resource information for individual cells (mini-chemostats) */
-
 class cCellResource
 {
 private:
@@ -52,7 +51,6 @@ public:
 };
 
 /* class to hold all information for a single resource */
-
 class cResourceDef
 {
 private:
@@ -63,6 +61,11 @@ private:
   double inflow;
   double outflow;
   int geometry;
+
+  bool isdiffusion;
+  bool isdynamic;
+  bool isspatial;
+
   int inflowX1;
   int inflowX2;
   int inflowY1;
@@ -101,7 +104,7 @@ private:
   double m_plateau_outflow;
   double m_cone_inflow;
   double m_cone_outflow;
-  double m_gradient_inflow;
+  double m_res_inflow;
   int m_is_plateau_common;
   double m_floor;
   int m_habitat;
@@ -110,16 +113,16 @@ private:
   int m_config;
   int m_count; 
   double m_resistance;
-  double m_init_plat;
+  double m_initial_plat;
   double m_threshold;
   int m_refuge;
-  bool isgradient;
   Apto::Array<cCellResource> cell_list;
   Apto::Array<int> cell_id_list;
   double m_predator_odds;
   bool m_predator;
   double m_guard_juvs_per;
   double m_prob_detect;
+  bool m_probabilistic;
   
   bool hgt_metabolize;
   bool collectable;
@@ -137,6 +140,31 @@ public:
   double GetInflow() const { return inflow; }
   double GetOutflow() const { return outflow; }
   int GetGeometry() const { return geometry; }
+
+  void SetIndex(int _index) { if (index < 0) index = _index; } // can only be assigned once
+  void SetInitial(double _initial) { initial = _initial; }
+  void SetInflow (double _inflow ) { inflow  = _inflow; }
+  void SetOutflow(double _outflow) { outflow = _outflow; }
+  bool SetGeometry(cString _geometry);
+
+  bool GetDemeResource() const { return deme_resource; }
+  bool GetEnergyResource() const { return energy_resource; }
+
+  bool GetHGTMetabolize() const { return hgt_metabolize; }
+  bool GetCollectable() { return collectable; }
+
+  void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
+  cCellResource *GetCellResourcePtr(int _id);
+  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,
+                          double _inflow, double _outflow);
+  void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
+  void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
+
+  bool IsSpatial() { return isspatial; }
+  void SetSpatial(bool _spatial) { isspatial = _spatial; }
+
+  // diffusion resources (old spatial resources)
+  bool IsDiffusion() { return isdiffusion; }
   int GetInflowX1() const { return inflowX1; }
   int GetInflowX2() const { return inflowX2; }
   int GetInflowY1() const { return inflowY1; }
@@ -149,59 +177,8 @@ public:
   double GetXGravity() const { return xgravity; }
   double GetYDiffuse() const { return ydiffuse; }
   double GetYGravity() const { return ygravity; }
-  bool GetDemeResource() const { return deme_resource; }
-  bool GetEnergyResource() const { return energy_resource; }
 
-  int GetPeakX() { return m_peakx; }
-  int GetPeakY() { return m_peaky; }
-  int GetHeight() { return m_height; }
-  int GetSpread() { return m_spread; }
-  double GetPlateau() { return m_plateau; }
-  int GetDecay() { return m_decay; }
-  int GetMaxX() { return m_max_x; }
-  int GetMaxY() { return m_max_y; }
-  int GetMinX() { return m_min_x; }
-  int GetMinY() { return m_min_y; }
-  double GetAscaler() { return m_move_a_scaler; }
-  int GetUpdateStep() const { return m_updatestep; } //JW
-  int GetHalo() { return m_halo;}
-  int GetHaloInnerRadius() { return m_halo_inner_radius; }
-  int GetHaloWidth() { return m_halo_width; }
-  int GetHaloAnchorX() { return m_halo_anchor_x; }
-  int GetHaloAnchorY() { return m_halo_anchor_y; }
-  int GetMoveSpeed() { return m_move_speed; }
-  double GetPlateauInflow() { return m_plateau_inflow; }
-  double GetPlateauOutflow() { return m_plateau_outflow; }
-  double GetConeInflow() { return m_cone_inflow; }
-  double GetConeOutflow() { return m_cone_outflow; }
-  double GetGradientInflow() { return m_gradient_inflow; }
-  int GetIsPlateauCommon() { return m_is_plateau_common; }
-  double GetFloor() { return m_floor; }
-  int GetHabitat() { return m_habitat; }
-  int GetMinSize() { return m_min_size; }
-  int GetMaxSize() { return m_max_size; }
-  int GetConfig() { return m_config; }
-  int GetCount() { return m_count; }
-  double GetResistance() { return m_resistance; }
-  bool GetGradient() { return isgradient; }
-  double GetInitialPlatVal() { return m_init_plat; }
-  double GetThreshold() { return m_threshold; }
-  int GetRefuge() { return m_refuge; }
-  Apto::Array<cCellResource>* GetCellListPtr() { return &cell_list; }
-  Apto::Array<int>* GetCellIdListPtr() { return &cell_id_list; }
-  bool IsPredatory() { return m_predator; }
-  double GetPredatorResOdds() { return m_predator_odds; }
-  double GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
-  double GetDetectionProb() { return m_prob_detect; }
-  
-  bool GetHGTMetabolize() const { return hgt_metabolize; }
-  bool GetCollectable() { return collectable; }
-
-  void SetIndex(int _index) { if (index < 0) index = _index; } // can only be assigned once
-  void SetInitial(double _initial) { initial = _initial; }
-  void SetInflow (double _inflow ) { inflow  = _inflow; }
-  void SetOutflow(double _outflow) { outflow = _outflow; }
-  bool SetGeometry(cString _geometry);
+  void SetDiffusion(bool _diffusion) { isdiffusion = _diffusion; }
   void SetInflowX1(int _inflowX1) { inflowX1 = _inflowX1; }
   void SetInflowX2(int _inflowX2) { inflowX2 = _inflowX2; }
   void SetInflowY1(int _inflowY1) { inflowY1 = _inflowY1; }
@@ -219,6 +196,50 @@ public:
   bool SetOrgResource(cString _org_resource);  
   bool SetEnergyResource(cString _energy_resource);
   
+  // dynamic resources
+  bool IsDynamic() { return isdynamic; }
+  int GetPeakX() { return m_peakx; }
+  int GetPeakY() { return m_peaky; }
+  int GetHeight() { return m_height; }
+  int GetSpread() { return m_spread; }
+  double GetPlateau() { return m_plateau; }
+  int GetDecay() { return m_decay; }
+  int GetMaxX() { return m_max_x; }
+  int GetMaxY() { return m_max_y; }
+  int GetMinX() { return m_min_x; }
+  int GetMinY() { return m_min_y; }
+  double GetMoveScaler() { return m_move_a_scaler; }
+  int GetUpdateStep() const { return m_updatestep; } //JW
+  int GetHalo() { return m_halo;}
+  int GetHaloInnerRadius() { return m_halo_inner_radius; }
+  int GetHaloWidth() { return m_halo_width; }
+  int GetHaloX() { return m_halo_anchor_x; }
+  int GetHaloY() { return m_halo_anchor_y; }
+  int GetMoveSpeed() { return m_move_speed; }
+  double GetPlateauInflow() { return m_plateau_inflow; }
+  double GetPlateauOutflow() { return m_plateau_outflow; }
+  double GetConeInflow() { return m_cone_inflow; }
+  double GetConeOutflow() { return m_cone_outflow; }
+  double GetDynamicResInflow() { return m_res_inflow; }
+  int GetIsPlateauCommon() { return m_is_plateau_common; }
+  double GetFloor() { return m_floor; }
+  int GetHabitat() { return m_habitat; }
+  int GetMinSize() { return m_min_size; }
+  int GetMaxSize() { return m_max_size; }
+  int GetConfig() { return m_config; }
+  int GetCount() { return m_count; }
+  double GetResistance() { return m_resistance; }
+  double GetInitialPlatVal() { return m_init_plat; }
+  double GetThreshold() { return m_threshold; }
+  int GetRefuge() { return m_refuge; }
+  Apto::Array<cCellResource>* GetCellListPtr() { return &cell_list; }
+  Apto::Array<int>* GetCellIdListPtr() { return &cell_id_list; }
+  bool IsPredatory() { return m_predator; }
+  double GetPredatorResOdds() { return m_predator_odds; }
+  double GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
+  double GetDetectionProb() { return m_prob_detect; }
+  
+  void SetDynamic(bool _dynamic) { isdynamic = _dynamic; }
   void SetPeakX(int _peakx) { m_peakx = _peakx; }
   void SetPeakY(int _peaky) { m_peaky = _peaky; }
   void SetHeight(int _height) { m_height = _height; }
@@ -229,20 +250,20 @@ public:
   void SetMaxY(int _max_y) { m_max_y = _max_y; }
   void SetMinX(int _min_x) { m_min_x = _min_x; }
   void SetMinY(int _min_y) { m_min_y = _min_y; }
-  void SetAscaler(double _move_a_scaler) { m_move_a_scaler = _move_a_scaler; }
+  void SetMoveScaler(double _move_a_scaler) { m_move_a_scaler = _move_a_scaler; }
   void SetUpdateStep(int _updatestep) { m_updatestep = _updatestep; } 
-  void SetHalo(int _halo) { m_halo = _halo; }
+  void SetIsHalo(int _halo) { m_halo = _halo; }
   void SetHaloInnerRadius(int _halo_inner_radius) { m_halo_inner_radius = _halo_inner_radius; }
   void SetHaloWidth(int _halo_width) { m_halo_width = _halo_width; }
-  void SetHaloAnchorX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
-  void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
+  void SetHaloX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
+  void SetHaloY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
   void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
   void SetPlateauInflow(double _plateau_inflow) { m_plateau_inflow = _plateau_inflow; }  
-  void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
+  void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; }
   void SetConeInflow(double _cone_inflow) { m_cone_inflow = _cone_inflow; }  
-  void SetConeOutflow(double _cone_outflow) { m_cone_outflow = _cone_outflow; } 
-  void SetGradientInflow(double _gradient_inflow) { m_gradient_inflow = _gradient_inflow; }  
-  void SetPlatInitial(double _initial_plat_val) { m_init_plat = _initial_plat_val; } 
+  void SetConeOutflow(double _cone_outflow) { m_cone_outflow = _cone_outflow; }
+  void SetDynamicResInflow(double _res_inflow) { m_res_inflow = _res_inflow; }
+  void SetInitialPlat(double _initial_plat_val) { m_init_plat = _initial_plat_val; } 
   void SetIsPlateauCommon(int _is_plateau_common) { m_is_plateau_common = _is_plateau_common; }
   void SetFloor(double _floor) { m_floor = _floor; }
   void SetHabitat(int _habitat) { m_habitat = _habitat; }
@@ -253,15 +274,14 @@ public:
   void SetResistance(double _resistance) { m_resistance = _resistance; }
   void SetThreshold(double _threshold) { m_threshold = _threshold; } 
   void SetRefuge(int _refuge) { m_refuge = _refuge; }
-  void SetGradient(bool _gradient) { isgradient = _gradient; }
-  void SetPredatoryResource(double _odds, int _juvsper, double _prob) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; m_prob_detect = _prob; } 
-
-  void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
-  cCellResource *GetCellResourcePtr(int _id);
-  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,
-                          double _inflow, double _outflow);
-  void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
-  void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
+  inline void SetPredatoryResource(double _odds, int _juvsper, double _prob) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; m_prob_detect = _prob; }
+  inline void SetPredatoryResource(double _odds, int _juvsper) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; }
+  inline void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells) {
+    m_probabilistic = true;
+    m_init_plat = initial;
+    m_plateau_inflow = inflow;
+    m_plateau_outflow = outflow;
+  }
 };
 
 #endif

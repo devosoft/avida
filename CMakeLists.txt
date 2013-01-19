@@ -229,12 +229,12 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDeme.cc
   ${MAIN_DIR}/cDemeNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
+  ${MAIN_DIR}/cDiffusionRes.cc
   ${MAIN_DIR}/cDynamicRes.cc
-  ${MAIN_DIR}/cDynamicResElement.cc
+  ${MAIN_DIR}/cDynamicResController.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
   ${MAIN_DIR}/cGenomeUtil.cc
-  ${MAIN_DIR}/cGradientRes.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cMigrationMatrix.cc
   ${MAIN_DIR}/cMutationRates.cc
@@ -256,8 +256,8 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cResource.cc
   ${MAIN_DIR}/cResourceHistory.cc
   ${MAIN_DIR}/cResourceDefLib.cc
-  ${MAIN_DIR}/cSpatialResElement.cc
   ${MAIN_DIR}/cSpatialRes.cc
+  ${MAIN_DIR}/cResourceElement.cc
   ${MAIN_DIR}/cStats.cc
   ${MAIN_DIR}/cTaskLib.cc
   ${MAIN_DIR}/cWorld.cc

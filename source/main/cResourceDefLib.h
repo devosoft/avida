@@ -44,9 +44,9 @@ private:
 public:
   cResourceDefLib() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
   ~cResourceDefLib();
-
+  
   int GetSize() const { return m_resource_array.GetSize(); }
-
+  
   cResourceDef* AddResourceDef(const cString& res_name);
   cResourceDef* GetResDef(const cString& res_name) const;
   inline cResourceDef* GetResDef(int id) const { return m_resource_array[id]; }

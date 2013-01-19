@@ -25,15 +25,15 @@
 #include <vector>
 
 #include "avida/systematics/Types.h"
-#include "cDemeCellEvent.h"
-#include "cGermline.h"
-#include "cPhenotype.h"
-#include "cMerit.h"
-#include "cDemeNetwork.h"
 #include "tBuffer.h"
-#include "cResource.h"
-#include "cStringList.h"
+#include "cDemeCellEvent.h"
+#include "cDemeNetwork.h"
 #include "cDoubleSum.h"
+#include "cGermline.h"
+#include "cMerit.h"
+#include "cPhenotype.h"
+#include "cPopulationResources.h"
+#include "cStringList.h"
 
 class cResource;
 class cWorld;
@@ -115,13 +115,13 @@ private:
 
   cDeme(const cDeme&); // @not_implemented
   
-  cResource deme_resource_count; //!< Resources available to the deme
+  cPopulationResources deme_resource_count; //!< Resources available to the deme
   Apto::Array<int> energy_res_ids; //!< IDs of energy resources
   
   Apto::Array<cDemeCellEvent, Apto::Smart> cell_events;
   std::vector<std::pair<int, int> > event_slot_end_points; // (slot end point, slot flow rate)
   
-  int         m_germline_genotype_id; // Genotype id of germline (if in use)
+  int m_germline_genotype_id; // Genotype id of germline (if in use)
   Apto::Array<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
                                       // Keep a lease on these genotypes for the deme's lifetime.
   Apto::Array<cPhenotype> m_founder_phenotypes; // List of phenotypes of founder organsisms
@@ -133,11 +133,11 @@ private:
   Apto::Array<cOrgMessagePredicate*, Apto::Smart> message_pred_list; // Message Predicates
   Apto::Array<cOrgMovementPredicate*, Apto::Smart> movement_pred_list;  // Movement Predicates
 	
-	// For the points infrastructure
-	double points; 
-	unsigned int migrations_out; 
-	unsigned int migrations_in;
-	unsigned int suicides;
+  // For the points infrastructure
+  double points; 
+  unsigned int migrations_out; 
+  unsigned int migrations_in;
+  unsigned int suicides;
 	
 public:
 	//! Constructor.
@@ -260,13 +260,13 @@ public:
   //! Called when an organism living in a cell in this deme is about to be killed.
   void OrganismDeath(cPopulationCell& cell);
   
-  const cResource& GetDemeResourceCount() const { return deme_resource_count; }
-  cResource& GetDemeResources() { return deme_resource_count; }
+  const cPopulationResources& GetDemeResourceCount() const { return deme_resource_count; }
+  cPopulationResources& GetDemeResources() { return deme_resource_count; }
   void SetResource(cAvidaContext& ctx, int id, double new_level) { deme_resource_count.Set(ctx, id, new_level); }
   double GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const;
   void AdjustSpatialResource(cAvidaContext& ctx, int rel_cellid, int resource_id, double amount);
   void AdjustResource(cAvidaContext& ctx, int resource_id, double amount);
-  void SetDemeResourceCount(const cResource in_res) { deme_resource_count = in_res; }
+  void SetDemeResourceCount(const cPopulationResources in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
   void ModifyDemeResCount(cAvidaContext& ctx, const Apto::Array<double> & res_change, const int absolute_cell_id);
   double GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const; 

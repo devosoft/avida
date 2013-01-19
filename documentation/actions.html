@@ -320,14 +320,14 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetEnvironmentInputs">SetEnvironmentInputs</a><br>
       <a href="#SetEnvironmentRandomMask">SetEnvironmentRandomMask</a><br>
       <a href="#SetFracDemeTreatable">SetFracDemeTreatable</a><br>
-      <a href="#SetGradientResource">SetGradientResource</a><br>
-      <a href="#SetGradientInflow">SetGradientInflow</a><br>
-      <a href="#SetGradientOutflow">SetGradientOutflow</a><br>
-      <a href="#SetGradientConeInflow">SetGradientConeInflow</a><br>
-      <a href="#SetGradientConeOutflow">SetGradientConeOutflow</a><br>
-      <a href="#SetGradientPlatInflow">SetGradientPlatInflow</a><br>
-      <a href="#SetGradientPlatOutflow">SetGradientPlatOutflow</a><br>
-      <a href="#SetGradPlatVarInflow">SetGradPlatVarInflow</a><br>
+      <a href="#SetDyamicResource">SetDynamicResource</a><br>
+      <a href="#SetDynResInflow">SetDynResInflow</a><br>
+      <a href="#SetDynResOutflow">SetDynResOutflow</a><br>
+      <a href="#SetDynResConeInflow">SetDynResConeInflow</a><br>
+      <a href="#SetDynResConeOutflow">SetDynResConeOutflow</a><br>
+      <a href="#SetDynResPlatInflow">SetDynResPlatInflow</a><br>
+      <a href="#SetDynResPlatOutflow">SetDynResPlatOutflow</a><br>
+      <a href="#SetDynResPlatVarInflow">SetDynResVarInflow</a><br>
       <a href="#SetMigrationRate">SetMigrationRate</a><br>
       <a href="#SetMutProb">SetMutProb</a><br>
       <a href="#SetNumInstBefore0Energy">SetNumInstBefore0Energy</a><br>
@@ -569,13 +569,13 @@ and reaction parameters.
   </p>
 </li>
   <li><p>
-    <strong><a name="SetGradientResource">SetGradientResource</a></strong>
+    <strong><a name="SetDynamicResource">SetDynamicResource</a></strong>
     <i>&lt;string env_string&gt;</i>
     </p>
     <p>
-    Action designed to read in and process a line for ONE gradient resource,
-    formatted as if it were in the <a href="gradient.html">environment</a> file.  
-    This will change environmental settings for this one gradient resource on the fly.  
+    Action designed to read in and process a line for ONE dynamic resource,
+    formatted as if it were in the <a href="ResourceElement.html">environment</a> file.
+    This will change environmental settings for this one dynamic resource on the fly.
     You should create the resource in the environment file and only use this file to 
     change this resource. <br>
     Unlike with ChangeEnvironment, no resources other than the one specified in the event
@@ -583,40 +583,40 @@ and reaction parameters.
     </p>
   </li>  
   <li><p>
-    <strong><a name="SetGradientInflow">SetGradientInflow</a></strong>
+    <strong><a name="SetDynResInflow">SetDynResInflow</a></strong>
     <i>&lt;string res_name&gt; &lt;double res_inflow&gt;</i>
     </p>
     <p>
-    Set existing gradient resource plateau inflow rate to a new value, without redrawing
+    Set existing dynamic resource plateau inflow rate to a new value, without redrawing
     the entire resource.
     </p>
   </li>  
   <li><p>
-    <strong><a name="SetGradientOutflow">SetGradientOutflow</a></strong>
+    <strong><a name="SetDynResOutflow">SetDynResOutflow</a></strong>
     <i>&lt;string res_name&gt; &lt;double res_outflow&gt;</i>
     </p>
     <p>
-    Set existing gradient resource plateau outflow rate to a new value, without redrawing
+    Set existing dynamic resource plateau outflow rate to a new value, without redrawing
     the entire resource.
     </p>
   </li>  
     <li><p>
-    <strong><a name="SetGradientConeInflow">SetGradientConeInflow</a></strong>
+    <strong><a name="SetDynResConeInflow">SetDynResConeInflow</a></strong>
     <i>&lt;string res_name&gt; &lt;double res_inflow&gt;</i>
   </p>
 </li>
     <li><p>
-    <strong><a name="SetGradientConeOutflow">SetGradientConeOutflow</a></strong>
+    <strong><a name="SetDynResConeOutflow">SetDynResConeOutflow</a></strong>
     <i>&lt;string res_name&gt; &lt;double res_outflow&gt;</i>
   </p>
 </li>
     <li><p>
-    <strong><a name="SetGradientPlatInflow">SetGradientPlatInflow</a></strong>
+    <strong><a name="SetDynResPlatInflow">SetDynResPlatInflow</a></strong>
     <i>&lt;string res_name&gt; &lt;double res_inflow&gt;</i>
   </p>
 </li>
     <li><p>
-    <strong><a name="SetGradientPlatOutflow">SetGradientPlatOutflow</a></strong>
+    <strong><a name="SetDynResPlatOutflow">SetDynResPlatOutflow</a></strong>
     <i>&lt;string res_name&gt; &lt;double res_outflow&gt;</i>
   </p>
 </li>
@@ -625,7 +625,7 @@ and reaction parameters.
     <i>&lt;string res_name&gt; &lt;double mean&gt; &lt;double variance&gt; &lt;int type&gt;</i>
   </p>
     <p>
-    Set existing gradient resource plateau inflow rate to a new value, without redrawing
+    Set existing dynamic resource plateau inflow rate to a new value, without redrawing
     the entire resource, based on a random number pull from normal distribution of this
     mean and variance. As such, this uses a half normal or folded normal approach with 
     expected value = sigma * sqrt(2 /pi).
@@ -664,7 +664,7 @@ and reaction parameters.
     <i>&lt;string res_name&gt; &lt;double kill_odds&gt; &lt;int guarded_juvs_per_adult&gt;double detection_prob&gt;</i>
   </p>
     <p>
-    A gradient resource with teeth. If set in motion, will kill with prob kill_odds 1 random org 
+    A dynamic resource with teeth. If set in motion, will kill with prob kill_odds 1 random org
     in each cell of plateau. If it passes over a den resource, will kill unguarded offspring with
     probability kill_odds. If an org steps on the resource, the org is killed with probability
     kill_odds. detection_prob sets the probability of orgs detecting the predator via look sensors.
@@ -675,7 +675,7 @@ and reaction parameters.
     <i>&lt;string res_name&gt; &lt;double initial&gt; &lt;double inflow&gt; &lt;double outflow&gt; &lt;double lambda&gt; &lt;double theta&gt; &lt;int x&gt; &lt;int y&gt; &lt;int num &gt;</i>
   </p>
     <p>
-    A gradient resource with probabilistically distributed cells. If x and y are not specified, a random 'seed' cell
+    A dynamic resource with probabilistically distributed cells. If x and y are not specified, a random 'seed' cell
     is chosen. That cell is given the initial value. Then, we look at all of the other cells in
     the world and add resource with prob = PDF from half normal distribution given lambda and the 
     current distance from the center cell. Normally you'd leave theta for the PDF alone at the fixed value 

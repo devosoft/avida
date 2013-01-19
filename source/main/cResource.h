@@ -24,147 +24,87 @@
 #ifndef cResource_h
 #define cResource_h
 
-#include "avida/Avida.h"
-
-#include "cAvidaContext.h"
-#include "cDynamicRes.h"
-#include "nGeometry.h"
-#include "tMatrix.h"
-#include "cSpatialRes.h"
-#include "cString.h"
-
-class cWorld;
+#include "cEnvironment.h"
+#include "cResourceDef.h"
+#include "cResourceElement.h"
+#include "cWorld.h"
 
 class cResource
 {
 private:
-  mutable Apto::Array<cString> resource_name;
-  mutable Apto::Array<double> resource_initial;  // Initial quantity of each resource
-  mutable Apto::Array<double> resource_count;  // Current quantity of each resource
-  Apto::Array<double> decay_rate;      // Multiplies resource count at each step
-  Apto::Array<double> inflow_rate;     // An increment for resource at each step
-  tMatrix<double> decay_precalc;  // Precalculation of decay values
-  tMatrix<double> inflow_precalc; // Precalculation of inflow values
-  Apto::Array<int> geometry;           // Spatial layout of each resource
-  mutable Apto::Array<cSpatialRes* > spatial_resource_count;
-  mutable Apto::Array<cDynamicRes* > dynamic_resources;
-  mutable Apto::Array<double> curr_grid_res_cnt;
-  mutable Apto::Array< Apto::Array<double> > curr_spatial_res_cnt;
-  int verbosity;
-  Apto::Array< Apto::Array<int> > cell_lists;
-
-  // Setup the update process to use lazy evaluation...
   cWorld* m_world;
-  mutable double update_time;     // Portion of an update compleated...
-  mutable double spatial_update_time;
-  mutable int m_last_updated;
-  mutable int m_spatial_update;
 
-  void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
+  cString m_name;
+  int m_id;
 
-  // A few constants to describe update process...
-  static const double UPDATE_STEP;   // Fraction of an update per step
-  static const double EPSILON;       // Tolorance for round off errors
-  static const int PRECALC_DISTANCE; // Number of steps to precalculate
-  
 public:
-  cResource(int num_resources = 0);
-  cResource(const cResource&);
-  ~cResource();
-
-  const cResource& operator=(const cResource&);
-
-  void SetSize(int num_resources);
-  void SetCellResources(int cell_id, const Apto::Array<double> & res);
-
-  void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      
-	   const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
-	   const double& in_ydiffuse, const double& in_ygravity,
-	   const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
-	   const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
-	   const int& in_outflowY2, Apto::Array<cCellResource> *in_cell_list_ptr,
-	   Apto::Array<int> *in_cell_id_list_ptr, const int& verbosity_level,
-       const int& in_peakx, const int& in_peaky,
-	   const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay, 
-     const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
-     const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
-     const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, 
-     const double& in_plateau_inflow, const double& in_plateau_outflow, const double& in_cone_inflow, const double& in_cone_outflow,
-     const double& in_gradient_inflow, const int& in_is_plateau_common, const double& in_floor, const int& in_habitat, 
-     const int& in_min_size, const int& in_max_size, const int& in_config, const int& in_count, const double& in_resistance, 
-     const double& in_init_plat, const double& in_threshold, const int& in_refuge, const bool& isgradient
-	   ); 
+  cResource();
+  cResource(const cString& _name, int _id);
   
-  void SetGradientRes(cAvidaContext& ctx, cWorld* world, const int& res_id, const int& peakx, const int& peaky,
-    const int& height, const int& spread, const double& plateau, const int& decay, 
-    const int& max_x, const int& min_x, const int& max_y, const int& min_y, const double& move_a_scaler,
-    const int& updatestep, const int& halo, const int& halo_inner_radius, const int& halo_width,
-    const int& halo_anchor_x, const int& halo_anchor_y, const int& move_speed, 
-    const double& plateau_inflow, const double& plateau_outflow, const double& cone_inflow, const double& cone_outflow, 
-    const double& gradient_inflow, const int& is_plateau_common, const double& floor, const int& habitat, 
-    const int& min_size, const int& max_size, const int& config, const int& count, const double& resistance, 
-    const double& plat_val, const double& threshold, const int& refuge); 
-
-  void SetGradientPlatInflow(const int& res_id, const double& inflow);
-  void SetGradientPlatOutflow(const int& res_id, const double& outflow);
-  void SetGradientConeInflow(const int& res_id, const double& inflow);
-  void SetGradientConeOutflow(const int& res_id, const double& outflow);
-  void SetGradientInflow(const int& res_id, const double& inflow);
-  void SetGradPlatVarInflow(const int& res_id, const double& mean, const double& variance, const int& type);
-  void SetPredatoryResource(const int& res_id, const double& odds, const int& juvsper);
-  void SetProbabilisticResource(cAvidaContext& ctx, const int& res_id, const double& initial, const double& inflow, 
-                                const double& outflow, const double& lambda, const double& theta, const int& x, const int& y, const int& count);
-
-  int GetResourceCountID(const cString& res_name);
-  double GetInflow(const cString& name);
-  void SetInflow(const cString& name, const double _inflow);
-  double GetDecay(const cString& name);
-  void SetDecay(const cString& name, const double _decay);
+  inline cResourceDef* GetResDef() { return m_world->GetEnvironment().GetResDefLib().GetResDef(m_id); }
   
-  void Update(double in_time);
+  virtual ~cResource() { ; }
 
-  int GetSize(void) const { return resource_count.GetSize(); }
-  const Apto::Array<double>& ReadResources(void) const { return resource_count; }
-  const Apto::Array<double>& GetResources(cAvidaContext& ctx) const; 
-  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
-  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const;
-  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const;
-  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const;
-  const Apto::Array<int>& GetResourcesGeometry() const;
-  int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
-  const Apto::Array<Apto::Array<double> >& GetSpatialRes(cAvidaContext& ctx);
-  const Apto::Array<Apto::Array<int> >& GetCellIdLists() const { return cell_lists; }
-  void Modify(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void Modify(cAvidaContext& ctx, int id, double change);
-  void ModifyCell(cAvidaContext& ctx, const Apto::Array<double> & res_change, int cell_id);
-  void Set(cAvidaContext& ctx, int id, double new_level);
-  double Get(cAvidaContext& ctx, int id) const;
-  void ResizeSpatialGrids(int in_x, int in_y);
+  cResourceElement& Element(int x);
+  double GetAmount(int x);
+  double GetAmount(int x, int y);
+  virtual int GetSize() const;
+  virtual double GetInitial() const;
+  virtual int GetX() const;
+  virtual int GetY() const;
+  virtual bool GetModified();
 
-  cSpatialRes GetSpatialResource(int id) { return *(spatial_resource_count[id]); }
-  const cSpatialRes& GetSpatialResource(int id) const { return *(spatial_resource_count[id]); }
-  cDynamicRes GetDynamicRes(int id) { return *(dynamic_resources[id]); }
-  const cDynamicRes& GetDynamicRes(int id) const { return *(dynamic_resources[id]); }
+  virtual void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);
+  virtual void SetCellAmount(int cell_id, double res);
+  virtual void SetInitial(double initial);
+  virtual void SetModified(bool in_modified);
 
-  void ReinitializeResources(cAvidaContext& ctx, double additional_resource);
-  double GetInitialResourceValue(int resourceID) const { return resource_initial[resourceID]; }
-  const cString& GetResName(int id) const { return resource_name[id]; }
-  bool IsSpatial(int id) const { return ((geometry[id] != nGeometry::GLOBAL) && (geometry[id] != nGeometry::PARTIAL)); }
-  int GetResourceByName(cString name) const;
+  // diffusion res only
+  virtual void ResizeClear(int inworld_x, int inworld_y, int ingeometry) { ; }
+  virtual void StateAll() { ; }
+  virtual void Rate(int x, double ratein) const { ; }
+  virtual void Rate(int x, int y, double ratein) const { ; }
+  virtual void RateAll(double ratein) { ; }
+  virtual void State(int x) { ; }
+  virtual void State(int x, int y) { ; }
+  virtual void Source(double amount) const { ; }
+  virtual void Sink(double percent) const { ; }
+  virtual void CellInflow() const { ; }
+  virtual void CellOutflow() const { ; }
+  virtual void FlowAll() { ; }
+  virtual void ResetResourceCounts() { ; }
+
+  virtual double SumAll() const { return 0; }
+  virtual int GetCellListSize() const { return 0; }
+
+  virtual void SetGeometry(int in_geometry) { ; }
+  virtual void SetXdiffuse(double in_xdiffuse) { ; }
+  virtual void SetXgravity(double in_xgravity) { ; }
+  virtual void SetYdiffuse(double in_ydiffuse) { ; }
+  virtual void SetYgravity(double in_ygravity) { ; }
+  virtual void SetInflowX1(int in_inflowX1) { ; }
+  virtual void SetInflowX2(int in_inflowX2) { ; }
+  virtual void SetInflowY1(int in_inflowY1) { ; }
+  virtual void SetInflowY2(int in_inflowY2) { ; }
+  virtual void SetOutflowX1(int in_outflowX1) { ; }
+  virtual void SetOutflowX2(int in_outflowX2) { ; }
+  virtual void SetOutflowY1(int in_outflowY1) { ; }
+  virtual void SetOutflowY2(int in_outflowY2) { ; }
+  virtual void SetPointers() { ; }
   
-  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const;
-  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const;
-  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const;
-  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const;
-  Apto::Array<int>* GetWallCells(int res_id);
-  int GetMinUsedX(int res_id);
-  int GetMinUsedY(int res_id);
-  int GetMaxUsedX(int res_id);
-  int GetMaxUsedY(int res_id);
-  
-  void SetSpatialUpdate(int update) { m_spatial_update = update; }
-  void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }
-  void UpdateResources(cAvidaContext& ctx) { DoUpdates(ctx, false); }
+  // dynamic res only
+  virtual int GetCurrPeakX() { return 0; }
+  virtual int GetCurrPeakY() { return 0; }
+  virtual Apto::Array<int>* GetWallCells() { return NULL; }
+  virtual int GetMinUsedX() { return -1; }
+  virtual int GetMinUsedY() { return -1; }
+  virtual int GetMaxUsedX() { return -1; }
+  virtual int GetMaxUsedY() { return -1; }
+
+  virtual void UpdateDynamicRes(cAvidaContext& ctx) { ; }
+  virtual void ResetDynamicRes(cAvidaContext& ctx, int worldx, int worldy) { ; }
+  virtual void SetInitialPlat(double plat_val) { ; }
+  virtual void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells) { ; }
+  virtual void SetPlatVarInflow(double mean, double variance, int type) { ; }
 };
-
 #endif

@@ -1,7 +1,8 @@
 /*
- *  cSpatialRes.h
+ *  cDiffusionRes.h
  *  Avida
  *
+ *  Called "SpatialResCount" prior to 01/18/13.
  *  Called "spatial_res_count.hh" prior to 12/5/05.
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology.
@@ -22,18 +23,18 @@
 
 /*! Class to keep track of amounts of localized resources. */
 
-#ifndef cSpatialRes_h
-#define cSpatialRes_h
+#ifndef cDiffusionRes_h
+#define cDiffusionRes_h
 
 #include "cAvidaContext.h"
-#include "cSpatialResElement.h"
+#include "cResource.h"
 #include "cResourceDef.h"
+#include "cResourceElement.h"
 
-
-class cSpatialRes
+class cDiffusionRes : public cResource
 {
 private:
-  Apto::Array<cSpatialResElement> grid;
+  Apto::Array<cResourceElement> grid;
   double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;
@@ -47,12 +48,12 @@ private:
   bool m_modified;
   
 public:
-  cSpatialRes();
-  cSpatialRes(int inworld_x, int inworld_y, int ingeometry);
-  cSpatialRes(int inworld_x, int inworld_y, int ingeometry, 
+  cDiffusionRes();
+  cDiffusionRes(int inworld_x, int inworld_y, int ingeometry);
+  cDiffusionRes(int inworld_x, int inworld_y, int ingeometry,
                    double inxdiffuse, double inydiffuse,
                    double inxgravity, double inygravity);
-  virtual ~cSpatialRes();
+  virtual ~cDiffusionRes();
   
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
   void SetPointers();
@@ -62,7 +63,7 @@ public:
   int GetX() const { return world_x; }
   int GetY() const { return world_y; }
   int GetCellListSize() const { return cell_list_ptr->GetSize(); }
-  cSpatialResElement& Element(int x) { return grid[x]; }
+  cResourceElement& Element(int x) { return grid[x]; }
   void Rate(int x, double ratein) const;
   void Rate(int x, int y, double ratein) const;
   void State(int x);
@@ -70,7 +71,7 @@ public:
   double GetAmount(int x) const;
   double GetAmount(int x, int y) const;
   void RateAll(double ratein); 
-  virtual void StateAll();
+  void StateAll();
   void FlowAll(); 
   double SumAll() const;
   void Source(double amount) const;
@@ -93,7 +94,6 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
-  virtual void UpdateCount(cAvidaContext&) { ; }
   void ResetResourceCounts();
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }

@@ -25,7 +25,7 @@
 #include "avida/core/Types.h"
 
 class cAvidaContext;
-class cResource;
+class cPopulationResources;
 class cString;
 
 
@@ -49,7 +49,7 @@ private:
 public:
   cResourceHistory() { ; }
   
-  bool GetResourceCountForUpdate(cAvidaContext& ctx, int update, cResource& rc, bool exact = false) const;
+  bool GetResourceCountForUpdate(cAvidaContext& ctx, int update, cPopulationResources& rc, bool exact = false) const;
   bool GetResourceLevelsForUpdate(int update, Apto::Array<double>& levels, bool exact = false) const;
   void AddEntry(int update, const Apto::Array<double>& values);
   

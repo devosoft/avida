@@ -56,8 +56,8 @@
 #include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
+#include "cPopulationResources.h"
 #include "cResourceDef.h"
-#include "cResource.h"
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cTopology.h"
@@ -221,14 +221,12 @@ cPopulation::cPopulation(cWorld* world)
   m_world->GetDataManager()->Register("core.population.inst_exec_counts[]", isp_activate);
 }
 
-
 void cPopulation::ClearCellGrid()
 {
   delete sleep_log; sleep_log = NULL;
   reaper_queue.Clear();
   delete m_scheduler; m_scheduler = NULL;
 }
-
 
 void cPopulation::SetupCellGrid()
 {
@@ -239,7 +237,7 @@ void cPopulation::SetupCellGrid()
   if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) sleep_log = new Apto::Array<pair<int,int>, Apto::Smart>(world_x * world_y);
   else sleep_log = NULL;
   
-  if (num_demes <= 0) num_demes = 1; // One population == one deme.  
+  if (num_demes <= 0) num_demes = 1; // One population == one deme.
   assert(num_demes == 1 || m_world->GetConfig().BIRTH_METHOD.Get() != POSITION_OFFSPRING_FULL_SOUP_ELDEST);
   
   // Allocate the cells, resources, and market.
@@ -252,7 +250,7 @@ void cPopulation::SetupCellGrid()
   // Setup the cells.  Do things that are not dependent upon topology here.
   bool fill_reaper_queue = (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST);
   for (int i = 0; i < num_cells; i++) {
-    cell_array[i].Setup(m_world, i, environment.GetMutRates(), i % world_x, i / world_x);    
+    cell_array[i].Setup(m_world, i, environment.GetMutRates(), i % world_x, i / world_x);
     if (fill_reaper_queue) reaper_queue.Push(&(cell_array[i]));
   }
   
@@ -306,13 +304,15 @@ void cPopulation::SetupCellGrid()
                          m_world->GetConfig().SCALE_FREE_ALPHA.Get(), m_world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
                          m_world->GetRandom());
         break;
+      case nGeometry::DYNAMIC:
+        build_grid(cell_array.Range(i, i + deme_size - 1), deme_size_x, deme_size_y);
+        break;
       default:
         assert(false);
     }
   }
   
   BuildTimeSlicer();
-  
   
   // Setup the resources...
   const cResourceDefLib& resource_lib = environment.GetResDefLib();
@@ -322,16 +322,15 @@ void cPopulation::SetupCellGrid()
   
   for (int i = 0; i < resource_lib.GetSize(); i++) if (resource_lib.GetResDef(i)->GetDemeResource()) num_deme_res++;
   
-  cResource tmp_res_count(resource_lib.GetSize() - num_deme_res);
-  resource_count = tmp_res_count;
-  resource_count.ResizeSpatialGrids(world_x, world_y);
+  cPopulationResources tmp_res_count(resource_lib.GetSize() - num_deme_res);
+  resources = tmp_res_count;
+  resources.ResizeSpatialGrids(world_x, world_y);
   
   for(int i = 0; i < GetNumDemes(); i++) {
-    cResource tmp_deme_res_count(num_deme_res);
+    cPopulationResources tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
     GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
   }
-  
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResourceDef* res = resource_lib.GetResDef(i);
@@ -346,33 +345,36 @@ void cPopulation::SetupCellGrid()
     }
     
     if (!res->GetDemeResource()) {
+      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
-      resource_count.Setup(m_world, global_res_index, res->GetName(), res->GetInitial(),
-                           res->GetInflow(), decay,
-                           res->GetGeometry(), res->GetXDiffuse(),
-                           res->GetXGravity(), res->GetYDiffuse(),
-                           res->GetYGravity(), res->GetInflowX1(),
-                           res->GetInflowX2(), res->GetInflowY1(),
-                           res->GetInflowY2(), res->GetOutflowX1(),
-                           res->GetOutflowX2(), res->GetOutflowY1(),
-                           res->GetOutflowY2(), res->GetCellListPtr(),
-                           res->GetCellIdListPtr(), m_world->GetVerbosity(),
-                           res->GetPeakX(), res->GetPeakY(),
-                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
-                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),res->GetUpdateStep(),
-                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
-                           res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
-                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
-                           ); 
-      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
+      if (!res->IsSpatial()) {
+        resources.SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
+                                      res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+      }
+      else {
+        if (res->IsDynamic()) {
+          resources.SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
+        }
+        else if (res->IsDiffusion()) {
+          resources.SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
+                                           res->GetGeometry(), res->GetXDiffuse(),
+                                           res->GetXGravity(), res->GetYDiffuse(),
+                                           res->GetYGravity(), res->GetInflowX1(),
+                                           res->GetInflowX2(), res->GetInflowY1(),
+                                           res->GetInflowY2(), res->GetOutflowX1(),
+                                           res->GetOutflowX2(), res->GetOutflowY1(),
+                                           res->GetOutflowY2(), res->GetCellListPtr(),
+                                           res->GetCellIdListPtr(), m_world->GetVerbosity());
+        }
+        else
+          m_world->GetDriver().Feedback().Error("Spatial resource \"%s\"is not a diffusion or dynamic resource.", (const char*)res->GetName());
+        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+      }
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
-        GetDeme(j).SetupDemeRes(deme_res_index, res, m_world->GetVerbosity(), m_world);                                  
+        GetDeme(j).SetupDemeRes(deme_res_index, res, m_world->GetVerbosity(), m_world);
         // could add deme resources to global resource stats here
       }
     } else {
@@ -387,8 +389,6 @@ void cPopulation::SetupCellGrid()
   }
 }
 
-
-
 void cPopulation::ResizeCellGrid(int x, int y)
 {
   ClearCellGrid();
@@ -396,9 +396,6 @@ void cPopulation::ResizeCellGrid(int x, int y)
   world_y = y;
   SetupCellGrid();
 }
-
-
-
 
 Data::ConstDataSetPtr cPopulation::Provides() const
 {
@@ -4545,7 +4542,7 @@ void cPopulation::PrintDemeResource(cAvidaContext& ctx) {
     cDeme & cur_deme = deme_array[deme_id];
     
     cur_deme.UpdateDemeRes(ctx); 
-    const cResource& res = GetDeme(deme_id).GetDemeResourceCount();
+    const cPopulationResources& res = GetDeme(deme_id).GetDemeResourceCount();
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
@@ -4572,7 +4569,7 @@ void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) {
     cDeme & cur_deme = deme_array[deme_id];
     cur_deme.UpdateDemeRes(ctx);
     
-    const cResource & res = GetDeme(deme_id).GetDemeResourceCount();
+    const cPopulationResources & res = GetDeme(deme_id).GetDemeResourceCount();
     const int num_res = res.GetSize();
     
     df.WriteBlockElement(deme_id, 0, num_res + 1);
@@ -4619,7 +4616,7 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
 }
 
 // Write spatial data to a file that can easily be read into Matlab
-void cPopulation::PrintDemeSpatialResData(const cResource& res, const int i, const int deme_id, cAvidaContext&) const { 
+void cPopulation::PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext&) const {
   const char* tmpResName = res.GetResName(i);
   cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
   cDataFile& df = m_world->GetDataFile(tmpfilename);
@@ -4627,7 +4624,7 @@ void cPopulation::PrintDemeSpatialResData(const cResource& res, const int i, con
   
   df.WriteRaw(UpdateStr);
   
-  const cSpatialRes& sp_res = res.GetSpatialResource(i); 
+  const cResource& sp_res = res.GetResource(i);
   int gridsize = sp_res.GetSize();
   
   for (int j = 0; j < gridsize; j++) {
@@ -5295,7 +5292,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   }
   
   m_world->GetStats().IncExecuted();
-  resource_count.Update(step_size);
+  resources.Update(step_size);
   
   // These must be done even if there is only one deme.
   for(int i = 0; i < GetNumDemes(); i++) {
@@ -5358,7 +5355,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
   }
   
   m_world->GetStats().IncExecuted();
-  resource_count.Update(step_size);
+  resources.Update(step_size);
 }
 
 // Loop through all the demes getting stats and doing calculations
@@ -5608,7 +5605,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.SetMinGestationTime(min_gestation_time);
   stats.SetMinGenomeLength(min_genome_length);
   
-  resource_count.UpdateGlobalResources(ctx);   
+  resources.UpdateGlobalResources(ctx);   
 }
 
 void cPopulation::UpdateFTOrgStats(cAvidaContext&) 
@@ -5784,14 +5781,14 @@ void cPopulation::UpdateMaleFemaleOrgStats(cAvidaContext& ctx)
 void cPopulation::UpdateResStats(cAvidaContext& ctx) 
 {
   cStats& stats = m_world->GetStats();
-  stats.SetResources(resource_count.GetResources(ctx)); 
-  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); 
-  stats.SetResourcesGeometry(resource_count.GetResourcesGeometry()); 
+  stats.SetResources(resources.GetResources(ctx)); 
+  stats.SetSpatialRes(resources.GetSpatialRes(ctx));
+  stats.SetResourcesGeometry(resources.GetResourcesGeometry()); 
 }
 
 void cPopulation::ProcessPreUpdate()
 {
-  resource_count.SetSpatialUpdate(m_world->GetStats().GetUpdate());
+  resources.SetSpatialUpdate(m_world->GetStats().GetUpdate());
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessPreUpdate();   
 }
 
@@ -6656,17 +6653,17 @@ void cPopulation::InjectParasite(const cString& label, const InstructionSequence
 
 void cPopulation::UpdateResources(cAvidaContext& ctx, const Apto::Array<double> & res_change)
 {
-  resource_count.Modify(ctx, res_change);
+  resources.Modify(ctx, res_change);
 }
 
 void cPopulation::UpdateResource(cAvidaContext& ctx, int res_index, double change)
 {
-  resource_count.Modify(ctx, res_index, change);
+  resources.Modify(ctx, res_index, change);
 }
 
 void cPopulation::UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
 {
-  resource_count.ModifyCell(ctx, res_change, cell_id);
+  resources.ModifyCell(ctx, res_change, cell_id);
 }
 
 void cPopulation::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id)
@@ -6676,7 +6673,7 @@ void cPopulation::UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<
 
 void cPopulation::SetResource(cAvidaContext& ctx, int res_index, double new_level)
 {
-  resource_count.Set(ctx, res_index, new_level);
+  resources.Set(ctx, res_index, new_level);
 }
 
 /* This version of SetResource takes the name of the resource.
@@ -6697,7 +6694,7 @@ void cPopulation::SetResource(cAvidaContext& ctx, const cString res_name, double
 void cPopulation::SetResourceInflow(const cString res_name, double new_level)
 {
   environment.SetResourceInflow(res_name, new_level);
-  resource_count.SetInflow(res_name, new_level);
+  resources.SetInflow(res_name, new_level);
 }
 
 /* This method sets the outflow of the named resource.
@@ -6708,7 +6705,7 @@ void cPopulation::SetResourceInflow(const cString res_name, double new_level)
 void cPopulation::SetResourceOutflow(const cString res_name, double new_level)
 {
   environment.SetResourceOutflow(res_name, new_level);
-  resource_count.SetDecay(res_name, 1 - new_level);
+  resources.SetDecay(res_name, 1 - new_level);
 }
 
 /* This method sets a deme resource to the same level across
@@ -7739,37 +7736,19 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
 }
 
 
-/* This routine is designed to change values in the resource count in the
- middle of a run.  This is designed to work with cActionSetGradient Count */
-//JW
-
-void cPopulation::UpdateGradientRes(cAvidaContext& ctx, const int verbosity, cWorld* world, const cString res_name)
+/* This routine is designed to change resource definitions in the middle of a run */
+void cPopulation::UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, const cString res_name)
 {
-  (void)verbosity;
-  
   const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    
-    if (!res->GetDemeResource()) global_res_index++;
-    
-    if (res->GetName() == res_name) {
-      resource_count.SetGradientRes(ctx, world, global_res_index, res->GetPeakX(), res->GetPeakY(),
-                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
-                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
-                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
-                           res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(),
-                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(),
-                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge()); 
+    cResourceDef* res_def = resource_lib.GetResDef(i);
+    if (res_def->GetName() == res_name) {
+      resources.ResetDynamicRes(ctx, world, res_def->GetID());
     } 
   }
 }
 
-void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double inflow)
+void cPopulation::SetDynamicResPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
 {
   const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
@@ -7778,82 +7757,7 @@ void cPopulation::UpdateGradientPlatInflow(const cString res_name, const double 
     cResourceDef* res = resource_lib.GetResDef(i);
     if (!res->GetDemeResource()) global_res_index++;
     if (res->GetName() == res_name) {
-      res->SetPlateauInflow(inflow);
-      resource_count.SetGradientPlatInflow(global_res_index, inflow);
-    }
-  } 
-}
-
-void cPopulation::UpdateGradientPlatOutflow(const cString res_name, const double outflow)
-{
-  const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      res->SetPlateauOutflow(outflow);
-      resource_count.SetGradientPlatOutflow(global_res_index, outflow);
-    }
-  } 
-}
-
-void cPopulation::UpdateGradientConeInflow(const cString res_name, const double inflow)
-{
-  const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      res->SetConeInflow(inflow);
-      resource_count.SetGradientConeInflow(global_res_index, inflow);
-    }
-  } 
-}
-
-void cPopulation::UpdateGradientConeOutflow(const cString res_name, const double outflow)
-{
-  const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      res->SetConeOutflow(outflow);
-      resource_count.SetGradientConeOutflow(global_res_index, outflow);
-    }
-  } 
-}
-
-void cPopulation::UpdateGradientInflow(const cString res_name, const double inflow)
-{
-  const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      res->SetGradientInflow(inflow);
-      resource_count.SetGradientInflow(global_res_index, inflow);
-    }
-  } 
-}
-
-void cPopulation::SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type)
-{
-  const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      resource_count.SetGradPlatVarInflow(global_res_index, mean, variance, type);
+      resources.SetDynamicResPlatVarInflow(global_res_index, mean, variance, type);
     }
   } 
 }
@@ -7870,26 +7774,11 @@ void cPopulation::SetPredatoryResource(const cString res_name, const double odds
       res->SetPredatoryResource(odds, juvsper, detection_prob);
       res->SetHabitat(5);
       environment.AddHabitat(5);
-      resource_count.SetPredatoryResource(global_res_index, odds, juvsper);
-    }
-  }
-  m_has_predatory_res = true; 
-}
-
-void cPopulation::SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
-  const double outflow, const double lambda, const double theta, const int x, const int y, const int count)
-{
-  const cResourceDefLib & resource_lib = environment.GetResDefLib();
-  int global_res_index = -1;
-  
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResourceDef* res = resource_lib.GetResDef(i);
-    if (!res->GetDemeResource()) global_res_index++;
-    if (res->GetName() == res_name) {
-      resource_count.SetProbabilisticResource(ctx, global_res_index, initial, inflow, outflow, lambda, theta, x, y, count);
+      resources.SetPredatoryResource(global_res_index, odds, juvsper);
       break;
     }
   }
+  m_has_predatory_res = true; 
 }
 
 void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per)
@@ -7963,7 +7852,7 @@ void cPopulation::ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id
   }
 }
 
-void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
+void cPopulation::UpdateResource(const int Verbosity, cWorld* world) {
   const cResourceDefLib & resource_lib = environment.GetResDefLib();
   int global_res_index = -1;
   int deme_res_index = -1;
@@ -7977,7 +7866,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
   }
   
   for(int i = 0; i < GetNumDemes(); i++) {
-    cResource tmp_deme_res_count(num_deme_res);
+    cPopulationResources tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
   }
   
@@ -7986,43 +7875,44 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
-      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),
-                           res->GetInflow(), decay,
-                           res->GetGeometry(), res->GetXDiffuse(),
-                           res->GetXGravity(), res->GetYDiffuse(),
-                           res->GetYGravity(), res->GetInflowX1(),
-                           res->GetInflowX2(), res->GetInflowY1(),
-                           res->GetInflowY2(), res->GetOutflowX1(),
-                           res->GetOutflowX2(), res->GetOutflowY1(),
-                           res->GetOutflowY2(), res->GetCellListPtr(),
-                           res->GetCellIdListPtr(), Verbosity,
-                           res->GetPeakX(), res->GetPeakY(),
-                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
-                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
-                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
-                           res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(), 
-                           res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                           res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
-                           ); 
-      
+      if (!res->IsSpatial()) {
+        resources.SetupGlobalRes(m_world, global_res_index, res->GetName(), res->GetInitial(),
+                                 res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+      }
+      else {
+        if (res->IsDynamic()) {
+          resources.SetupDynamicRes(m_world, global_res_index, res, m_world->GetVerbosity());
+        }
+        else if (res->IsDiffusion()) {
+          resources.SetupDiffusionRes(m_world, global_res_index, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
+                                      res->GetGeometry(), res->GetXDiffuse(),
+                                      res->GetXGravity(), res->GetYDiffuse(),
+                                      res->GetYGravity(), res->GetInflowX1(),
+                                      res->GetInflowX2(), res->GetInflowY1(),
+                                      res->GetInflowY2(), res->GetOutflowX1(),
+                                      res->GetOutflowX2(), res->GetOutflowY1(),
+                                      res->GetOutflowY2(), res->GetCellListPtr(),
+                                      res->GetCellIdListPtr(), m_world->GetVerbosity());
+        }
+        else
+          cerr<< "ERROR: Spatial resource \"" << res->GetName() <<"\"is not a diffusion or dynamic resource.  Exit";
+        exit(1);
+      }
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
-        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);       
+        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);
         // could add deme resources to global resource stats here
       }
     } else {
       cerr<< "ERROR: Resource \"" << res->GetName() <<"\"is not a global or deme resource.  Exit";
       exit(1);
     }
-  }
-  
+  }  
 }
 
 
-// Adds an organism to live org list  
+// Adds an organism to live org list
 void  cPopulation::AddLiveOrg(cOrganism* org)
 {
   live_org_list.Push(org);
@@ -8658,7 +8548,7 @@ int& cPopulation::GetGroupIntolerances(int group_id, int tol_num, int mating_typ
 void cPopulation::AdjustHGTResource(cAvidaContext& ctx, double delta)
 {
   if (m_hgt_resid != -1) {
-    resource_count.Modify(ctx, m_hgt_resid, delta);
+    resources.Modify(ctx, m_hgt_resid, delta);
   }
 }
 

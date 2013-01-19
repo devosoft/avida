@@ -29,7 +29,7 @@
 #include "cDeme.h"
 #include "cOrgInterface.h"
 #include "cPopulationInterface.h"
-#include "cResource.h"
+#include "cPopulationResources.h"
 #include "cString.h"
 #include "cWorld.h"
 #include "tList.h"
@@ -68,7 +68,7 @@ private:
   Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
-  cResource resource_count;       // Global resources available
+  cPopulationResources resources;       // Resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
   Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
@@ -239,7 +239,7 @@ public:
   void PrintDemeReceiver();
   void PrintDemeResource(cAvidaContext& ctx); 
   void PrintDemeGlobalResources(cAvidaContext& ctx); 
-  void PrintDemeSpatialResData(const cResource& res, const int i, const int deme_id, cAvidaContext& ctx) const; 
+  void PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext& ctx) const; 
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
@@ -296,21 +296,21 @@ public:
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
-  const Apto::Array<double>& GetResources(cAvidaContext& ctx) const { return resource_count.GetResources(ctx); }
-  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resource_count.GetCellResources(cell_id, ctx); } 
-  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resource_count.GetFrozenResources(ctx, cell_id); }
-  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resource_count.GetFrozenCellResVal(ctx, cell_id, res_id); }
-  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resource_count.GetCellResVal(ctx, cell_id, res_id); }
+  const Apto::Array<double>& GetResources(cAvidaContext& ctx) const { return resources.GetResources(ctx); }
+  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resources.GetCellResources(cell_id, ctx); } 
+  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resources.GetFrozenResources(ctx, cell_id); }
+  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resources.GetFrozenCellResVal(ctx, cell_id, res_id); }
+  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resources.GetCellResVal(ctx, cell_id, res_id); }
   const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
   const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
-  void TriggerDoUpdates(cAvidaContext& ctx) { resource_count.UpdateResources(ctx); }
-  const Apto::Array< Apto::Array<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
+  void TriggerDoUpdates(cAvidaContext& ctx) { resources.UpdateResources(ctx); }
+  const Apto::Array< Apto::Array<int> >& GetCellIdLists() const { return resources.GetCellIdLists(); }
 
-  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakX(ctx, res_id); } 
-  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetCurrPeakY(ctx, res_id); } 
-  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakX(ctx, res_id); } 
-  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resource_count.GetFrozenPeakY(ctx, res_id); } 
-  Apto::Array<int>* GetWallCells(int res_id) { return resource_count.GetWallCells(res_id); }
+  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resources.GetCurrPeakX(ctx, res_id); } 
+  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resources.GetCurrPeakY(ctx, res_id); } 
+  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resources.GetFrozenPeakX(ctx, res_id); } 
+  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resources.GetFrozenPeakY(ctx, res_id); } 
+  Apto::Array<int>* GetWallCells(int res_id) { return resources.GetWallCells(res_id); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
@@ -321,8 +321,8 @@ public:
   
   void SetResource(cAvidaContext& ctx, int id, double new_level);
   void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);
-  double GetResource(cAvidaContext& ctx, int id) const { return resource_count.Get(ctx, id); }
-  cResource& GetResourceCount() { return resource_count; }
+  double GetResource(cAvidaContext& ctx, int id) const { return resources.Get(ctx, id); }
+  cPopulationResources& GetResourceCount() { return resources; }
   void SetResourceInflow(const cString res_name, double new_level);
   void SetResourceOutflow(const cString res_name, double new_level);
   
@@ -369,20 +369,13 @@ public:
   void NewTrial(cAvidaContext& ctx);
   void CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive);
   
-  // Let users change environmental variables durning the run @BDB 22-Feb-2008
-  void UpdateResourceCount(const int Verbosity, cWorld* world);        
+  // Let users change environmental variables durning the run 
+  void UpdateResource(const int Verbosity, cWorld* world);        
   
-  // Let users change Gradient Resource variables during the run JW
-  void UpdateGradientRes(cAvidaContext& ctx, const int Verbosity, cWorld* world, const cString res_name);
-  void UpdateGradientPlatInflow(const cString res_name, const double inflow);
-  void UpdateGradientPlatOutflow(const cString res_name, const double outflow);
-  void UpdateGradientConeInflow(const cString res_name, const double inflow);
-  void UpdateGradientConeOutflow(const cString res_name, const double outflow);
-  void UpdateGradientInflow(const cString res_name, const double inflow);
-  void SetGradPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
+  // Let users change Dynami Resource variables during the run JW
+  void UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, const cString res_name);
+  void SetDynamicResPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
   void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
-  void SetProbabilisticResource(cAvidaContext& ctx, const cString res_name, const double initial, const double inflow, 
-                                const double outflow, const double lambda, const double theta, const int x, const int y, const int count);
   void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
   bool HasPredatoryRes() { return m_has_predatory_res; }
  

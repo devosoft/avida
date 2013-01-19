@@ -25,14 +25,14 @@
 #define cDynamicRes_h
 
 #include "cAvidaContext.h"
-#include "cDynamicResElement.h"
+#include "cResource.h"
 #include "cResourceDef.h"
+#include "cResourceElement.h"
 
-
-class cDynamicRes
+class cDynamicRes : public cResource
 {
 private:
-  Apto::Array<cDynamicResElement> grid;
+  Apto::Array<cResourceElement> grid;
   double m_initial;
   int    geometry;
   int    world_x, world_y, num_cells;
@@ -46,86 +46,31 @@ public:
   cDynamicRes(int inworld_x, int inworld_y, int ingeometry);
   virtual ~cDynamicRes();
   
-  void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
-  void SetPointers();
-  
-  void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);
+  void UpdateDynamicRes(cAvidaContext&) { ; }
+
+  cResourceElement& Element(int x) { return grid[x]; }
   int GetSize() const { return grid.GetSize(); }
   int GetX() const { return world_x; }
   int GetY() const { return world_y; }
-  int GetCellListSize() const { return cell_list_ptr->GetSize(); }
-  cDynamicResElement& Element(int x) { return grid[x]; }
-
-  void Rate(int x, double ratein) const;
-  void Rate(int x, int y, double ratein) const;
-  void State(int x);
-  void State(int x, int y);
-  void RateAll(double ratein); 
-  virtual void StateAll();
-  double SumAll() const;
-
   double GetAmount(int x) const;
   double GetAmount(int x, int y) const;
-
-  void SetCellAmount(int cell_id, double res);
-  void SetInitial(double initial) { m_initial = initial; }
   double GetInitial() const { return m_initial; }
-  void SetGeometry(int in_geometry) { geometry = in_geometry; }
-  virtual void UpdateCount(cAvidaContext&) { ; }
-  void ResetResourceCounts();
-  void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }
+  int GetCurrPeakX() { return curr_peakx; }
+  int GetCurrPeakY() { return curr_peaky; }
   
-  virtual void SetGradInitialPlat(double) { ; }
-  virtual void SetGradPeakX(int) { ; }
-  virtual void SetGradPeakY(int) { ; }
-  virtual void SetGradHeight(int) { ; }
-  virtual void SetGradSpread(int) { ; }
-  virtual void SetGradPlateau(double) { ; }
-  virtual void SetGradDecay(int) { ; }
-  virtual void SetGradMaxX(int) { ; }
-  virtual void SetGradMaxY(int) { ; }
-  virtual void SetGradMinX(int) { ; }
-  virtual void SetGradMinY(int) { ; }
-  virtual void SetGradMoveScaler(double) { ; }
-  virtual void SetGradUpdateStep(int) { ; }
-  virtual void SetGradIsHalo(bool) { ; }
-  virtual void SetGradHaloInnerRad(int) { ; }
-  virtual void SetGradHaloWidth(int) { ; }
-  virtual void SetGradHaloX(int) { ; }
-  virtual void SetGradHaloY(int) { ; }
-  virtual void SetGradMoveSpeed(int) { ; }
-  virtual void SetGradPlatInflow(double) { ; }
-  virtual void SetGradPlatOutflow(double) { ; }
-  virtual void SetGradConeInflow(double) { ; }
-  virtual void SetGradConeOutflow(double) { ; }
-  virtual void SetGradientInflow(double) { ; }
-  virtual void SetGradPlatVarInflow(double, double, int) { ; }
-  virtual void SetPredatoryResource(double, int) { ; }
-  virtual void SetProbabilisticResource(cAvidaContext& ctx, double, double, double, double, double, int, int, int) { ; }
-  virtual void SetGradPlatIsCommon(bool) { ; }
-  virtual void SetGradFloor(double) { ; }
-  virtual void SetGradHabitat(int) { ; }
-  virtual void SetGradMinSize(int) { ; }
-  virtual void SetGradMaxSize(int) { ; }
-  virtual void SetGradConfig(int) { ; }
-  virtual void SetGradCount(int) { ; }
-  virtual void SetGradResistance(double) { ; }
-  virtual void SetGradThreshold(double) { ; }
-  virtual void SetGradRefuge(int) { ; }
-
-  virtual void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy) { (void)ctx, (void)worldx, (void)worldy; }
+  virtual Apto::Array<int>* GetWallCells();
+  virtual int GetMinUsedX();
+  virtual int GetMinUsedY();
+  virtual int GetMaxUsedX();
+  virtual int GetMaxUsedY();
   
   void SetCurrPeakX(int in_curr_x) { curr_peakx = in_curr_x; }
   void SetCurrPeakY(int in_curr_y) { curr_peaky = in_curr_y; }
-  int GetCurrPeakX() { return curr_peakx; } 
-  int GetCurrPeakY() { return curr_peaky; }
-  
-  virtual Apto::Array<int>* GetWallCells() { return NULL; }
-  virtual int GetMinUsedX() { return -1; }
-  virtual int GetMinUsedY() { return -1; }
-  virtual int GetMaxUsedX() { return -1; }
-  virtual int GetMaxUsedY() { return -1; }
+  void SetGeometry(int in_geometry) { geometry = in_geometry; }
+  void SetModified(bool in_modified) { m_modified = in_modified; }
+  void SetCellAmount(int cell_id, double res);
+  void SetInitial(double initial) { m_initial = initial; }
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
- *  cGradientRes.h
+ *  cDynamicResController.h
  *  Avida
  *
  *  Copyright 2010-2011 Michigan State University. All rights reserved.
@@ -21,17 +21,18 @@
  *
  */
 
-#ifndef cGradientRes_h
-#define cGradientRes_h
+#ifndef cDynamicResController_h
+#define cDynamicResController_h
 
 #include "cDynamicRes.h"
 
 class cWorld;
 
-class cGradientRes : public cDynamicRes
+class cDynamicResController : public cDynamicRes
 {
 private:
   cWorld* m_world;
+  int m_res_def;
   
   // Configuration Arguments
   int m_peakx;
@@ -56,7 +57,7 @@ private:
   double m_plateau_outflow;
   double m_cone_inflow;
   double m_cone_outflow;
-  double m_gradient_inflow;
+  double m_res_inflow;
   int m_is_plateau_common;
   double m_floor;
   int m_habitat;
@@ -111,51 +112,19 @@ private:
   int m_max_usedy;
     
 public:
-  cGradientRes(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
+  cDynamicResController(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
-                 double cone_inflow, double cone_outflow, double gradient_inflow, int is_plateau_common, 
+                 double cone_inflow, double cone_outflow, double res_inflow, int is_plateau_common,
                  double floor, int habitat, int min_size, int max_size, int config, int count, 
                  double init_plat);
-  ~cGradientRes();
+  ~cDynamicResController();
 
-  void UpdateCount(cAvidaContext& ctx);
-  void StateAll();
+  void UpdateDynamicRes(cAvidaContext& ctx);
+  void ResetDynamicRes(cAvidaContext& ctx, int worldx, int worldy);
   
-  void SetGradInitialPlat(double plat_val) { m_initial_plat = plat_val; m_initial = true; }
-  void SetGradPeakX(int peakx) { m_peakx = peakx; }
-  void SetGradPeakY(int peaky) { m_peaky = peaky; }
-  void SetGradHeight(int height) { m_height = height; }
-  void SetGradSpread(int spread) { m_spread = spread; }
-  void SetGradPlateau(double plateau) { m_plateau = plateau; }
-  void SetGradDecay(int decay) { m_decay = decay; }
-  void SetGradMaxX(int max_x) { m_max_x = max_x; }
-  void SetGradMaxY(int max_y) { m_max_y = max_y; }
-  void SetGradMinX(int min_x) { m_min_x = min_x; }
-  void SetGradMinY(int min_y) { m_min_y = min_y; }
-  void SetGradMoveScaler(double move_a_scaler) { m_move_a_scaler = move_a_scaler; }
-  void SetGradUpdateStep(int updatestep) { m_updatestep = updatestep; }
-  void SetGradIsHalo(bool halo) { m_halo = halo; }
-  void SetGradHaloInnerRad(int halo_inner_radius) { m_halo_inner_radius = halo_inner_radius; }
-  void SetGradHaloWidth(int halo_width) { m_halo_width = halo_width; }
-  void SetGradHaloX(int halo_anchor_x) { m_halo_anchor_x = halo_anchor_x; }
-  void SetGradHaloY(int halo_anchor_y) { m_halo_anchor_y = halo_anchor_y; }
-  void SetGradMoveSpeed(int move_speed) { m_move_speed = move_speed; }
-  void SetGradPlatInflow(double plateau_inflow) { m_plateau_inflow = plateau_inflow; }
-  void SetGradPlatOutflow(double plateau_outflow) { m_plateau_outflow = plateau_outflow; }
-  void SetGradConeInflow(double cone_inflow) { m_cone_inflow = cone_inflow; }
-  void SetGradConeOutflow(double cone_outflow) { m_cone_outflow = cone_outflow; }
-  void SetGradientInflow(double gradient_inflow) { m_gradient_inflow = gradient_inflow; }
-  void SetGradPlatIsCommon(bool is_plateau_common) { m_is_plateau_common = is_plateau_common; }
-  void SetGradFloor(double floor) { m_floor = floor; }
-  void SetGradHabitat(int habitat) { m_habitat = habitat; }
-  void SetGradMinSize(int min_size) { m_min_size = min_size; }
-  void SetGradMaxSize(int max_size) { m_max_size = max_size; }
-  void SetGradConfig(int config) { m_config = config; }
-  void SetGradCount(int count) { m_count = count; }
- 
-  void SetGradPlatVarInflow(double mean, double variance, int type);
+  void SetPlatVarInflow(double mean, double variance, int type);
   
   void SetPredatoryResource(double odds, int juvsper);
   void UpdatePredatoryRes(cAvidaContext& ctx); 
@@ -164,8 +133,6 @@ public:
   void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
   void UpdateProbabilisticRes();
  
-  void ResetGradRes(cAvidaContext& ctx, int worldx, int worldy); 
-  
   Apto::Array<int>* GetWallCells() { return &m_wall_cells; }
   int GetMinUsedX() { return m_min_usedx; }
   int GetMinUsedY() { return m_min_usedy; }

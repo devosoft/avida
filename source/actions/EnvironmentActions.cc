@@ -246,15 +246,15 @@ public:
 };
 
 
-/*Change the settings of a Gradient Resource*/
-class cActionSetGradientResource : public cAction
+/*Change the settings of a Dynamic Resource*/
+class cActionSetDynamicResource : public cAction
 {
 private:
   cString env_string;
   cString m_res_name;
   
 public:
-  cActionSetGradientResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), env_string("")
+  cActionSetDynamicResource(cWorld* world, const cString& args, Feedback&) : cAction(world, args), env_string("")
   {
     cString largs(args);
     if (largs.GetSize()) env_string = largs;
@@ -280,18 +280,18 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
         
-    m_world->GetPopulation().UpdateGradientRes(ctx, m_world->GetVerbosity(), m_world, m_res_name);        
+    m_world->GetPopulation().UpdateDynamicRes(ctx, m_world, m_res_name);
   } 
 };
 
-class cActionSetGradientPlatInflow : public cAction
+class cActionSetDynamicResPlateauInflow : public cAction
 {
 private:
   cString m_res_name;
   double m_inflow;
   
 public:
-  cActionSetGradientPlatInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
+  cActionSetDynamicResPlateauInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -304,18 +304,18 @@ public:
   
   void Process(cAvidaContext&)
   {
-    m_world->GetPopulation().UpdateGradientPlatInflow(m_res_name, m_inflow);        
+    m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetPlateauInflow(m_inflow);
   } 
 };
 
-class cActionSetGradientPlatOutflow : public cAction
+class cActionSetDynamicResPlateauOutflow : public cAction
 {
 private:
   cString m_res_name;
   double m_outflow;
   
 public:
-  cActionSetGradientPlatOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
+  cActionSetDynamicResPlateauOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -328,18 +328,18 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateGradientPlatOutflow(m_res_name, m_outflow);        
+    m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetPlateauOutflow(m_outflow);
   } 
 };
 
-class cActionSetGradientConeInflow : public cAction
+class cActionSetDynamicResConeInflow : public cAction
 {
 private:
   cString m_res_name;
   double m_inflow;
   
 public:
-  cActionSetGradientConeInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
+  cActionSetDynamicResConeInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -352,18 +352,18 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateGradientConeInflow(m_res_name, m_inflow);        
+    m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetConeInflow(m_inflow);
   } 
 };
 
-class cActionSetGradientConeOutflow : public cAction
+class cActionSetDynamicResConeOutflow : public cAction
 {
 private:
   cString m_res_name;
   double m_outflow;
   
 public:
-  cActionSetGradientConeOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
+  cActionSetDynamicResConeOutflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_outflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -376,18 +376,18 @@ public:
   
   void Process(cAvidaContext&)
   {
-    m_world->GetPopulation().UpdateGradientConeOutflow(m_res_name, m_outflow);        
+    m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetConeOutflow(m_outflow);
   } 
 };
 
-class cActionSetGradientInflow : public cAction
+class cActionSetDynamicResInflow : public cAction
 {
 private:
   cString m_res_name;
   double m_inflow;
   
 public:
-  cActionSetGradientInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
+  cActionSetDynamicResInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_inflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -400,11 +400,11 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateGradientInflow(m_res_name, m_inflow);        
+    m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetDynamicResInflow(m_inflow);
   } 
 };
 
-class cActionSetGradPlatVarInflow : public cAction
+class cActionSetDynamicResPlatVarInflow : public cAction
 {
 private:
   cString m_res_name;
@@ -413,7 +413,7 @@ private:
   int m_type;
   
 public:
-  cActionSetGradPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0), m_type(0)
+  cActionSetDynamicResPlatVarInflow(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_res_name(""), m_mean(0.0), m_variance(0.0), m_type(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -428,7 +428,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetGradPlatVarInflow(m_res_name, m_mean, m_variance, m_type);        
+    m_world->GetPopulation().SetDynamicResPlatVarInflow(m_res_name, m_mean, m_variance, m_type);
   } 
 };
 
@@ -513,7 +513,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetProbabilisticResource(ctx, m_res_name, m_initial, m_inflow, m_outflow, m_lambda, m_theta, m_x, m_y, m_count);        
+    m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name)->SetProbabilisticResource(ctx, m_initial, m_inflow, m_outflow, m_lambda, m_theta, m_x, m_y, m_count);
   } 
 };
 
@@ -546,7 +546,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
 
-    m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity(), m_world);          
+    m_world->GetPopulation().UpdateResource(m_world->GetVerbosity(), m_world);          
   }
 };
 
@@ -1562,8 +1562,6 @@ public:
   }
 };
 
-
-
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionSetFracDemeTreatable>("SetFracDemeTreatable");
@@ -1578,13 +1576,13 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetCellResource>("SetCellResource");
   action_lib->Register<cActionMergeResourceAcrossDemes>("MergeResourceAcrossDemes");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
-  action_lib->Register<cActionSetGradientResource>("SetGradientResource");
-  action_lib->Register<cActionSetGradientPlatInflow>("SetGradientPlatInflow");
-  action_lib->Register<cActionSetGradientPlatOutflow>("SetGradientPlatOutflow");
-  action_lib->Register<cActionSetGradientConeInflow>("SetGradientConeInflow");
-  action_lib->Register<cActionSetGradientConeOutflow>("SetGradientConeOutflow");
-  action_lib->Register<cActionSetGradientInflow>("SetGradientInflow");
-  action_lib->Register<cActionSetGradPlatVarInflow>("SetGradPlatVarInflow");
+  action_lib->Register<cActionSetDynamicResource>("SetDynamicResource");
+  action_lib->Register<cActionSetDynamicResPlateauInflow>("SetDynamicResPlateauInflow");
+  action_lib->Register<cActionSetDynamicResPlateauOutflow>("SetDynamicResPlateauOutflow");
+  action_lib->Register<cActionSetDynamicResConeInflow>("SetDynamicResConeInflow");
+  action_lib->Register<cActionSetDynamicResConeOutflow>("SetDynamicResConeOutflow");
+  action_lib->Register<cActionSetDynamicResInflow>("SetDynamicResInflow");
+  action_lib->Register<cActionSetDynamicResPlatVarInflow>("SetDynamicResPlatVarInflow");
   action_lib->Register<cActionSetPredatoryResource>("SetPredatoryResource");
   action_lib->Register<cActionSetProbabilisticResource>("SetProbabilisticResource");
 

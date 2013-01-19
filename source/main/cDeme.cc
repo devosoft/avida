@@ -712,28 +712,27 @@ void cDeme::SetupDemeRes(int id, cResourceDef* res, int verbosity, cWorld* world
   
   int* temp = &id;
   
-  deme_resource_count.Setup(world, *temp, res->GetName(), res->GetInitial(),                
-                            res->GetInflow(), decay,
-                            res->GetGeometry(), res->GetXDiffuse(),
-                            res->GetXGravity(), res->GetYDiffuse(), 
-                            res->GetYGravity(), res->GetInflowX1(), 
-                            res->GetInflowX2(), res->GetInflowY1(), 
-                            res->GetInflowY2(), res->GetOutflowX1(), 
-                            res->GetOutflowX2(), res->GetOutflowY1(), 
-                            res->GetOutflowY2(), res->GetCellListPtr(),
-                            res->GetCellIdListPtr(), verbosity,
-                            res->GetPeakX(), res->GetPeakY(),
-                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
-                            res->GetMaxX(), res->GetMaxY(), res->GetMinX(), res->GetMinY(), 
-                            res->GetAscaler(), res->GetUpdateStep(),
-                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
-                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                            res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetConeInflow(), res->GetConeOutflow(),                           
-                            res->GetGradientInflow(), res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), 
-                            res->GetInitialPlatVal(), res->GetThreshold(), res->GetRefuge(), res->GetGradient()
-                            ); 
-  
+  if (!res->IsSpatial()) {
+    deme_resource_count.SetupGlobalRes(m_world, *temp, res->GetName(), res->GetInitial(),
+                                       res->GetInflow(), decay, res->GetGeometry(), m_world->GetVerbosity());
+  }
+  else {
+    if (res->IsDynamic()) {
+      deme_resource_count.SetupDynamicRes(m_world, *temp, res, m_world->GetVerbosity());
+    }
+    else if (res->IsDiffusion()) {
+      deme_resource_count.SetupDiffusionRes(m_world, *temp, res->GetName(), res->GetInitial(), res->GetInflow(), decay,
+                                            res->GetGeometry(), res->GetXDiffuse(),
+                                            res->GetXGravity(), res->GetYDiffuse(),
+                                            res->GetYGravity(), res->GetInflowX1(),
+                                            res->GetInflowX2(), res->GetInflowY1(),
+                                            res->GetInflowY2(), res->GetOutflowX1(),
+                                            res->GetOutflowX2(), res->GetOutflowY1(),
+                                            res->GetOutflowY2(), res->GetCellListPtr(),
+                                            res->GetCellIdListPtr(), m_world->GetVerbosity());
+      
+    }
+  }
   if(res->GetEnergyResource()) {
     energy_res_ids.Push(id);
   }

@@ -56,7 +56,6 @@ cResourceDef* cResourceDefLib::GetResDef(const cString& res_name) const
   return NULL;
 }
 
-
 const cResourceHistory& cResourceDefLib::GetInitialResourceLevels() const
 {
   if (!m_initial_levels) {
@@ -68,7 +67,6 @@ const cResourceHistory& cResourceDefLib::GetInitialResourceLevels() const
  
   return *m_initial_levels;
 }
-
 
 bool cResourceDefLib::DoesResourceExist(const cString& res_name) 
 {

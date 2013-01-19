@@ -1,7 +1,8 @@
 /*
- *  cSpatialRes.cc
+ *  cDiffusionRes.cc
  *  Avida
  *
+ *  Called "SpatialResCount" prior to 01/18/13.
  *  Called "spatial_res_count.cc" prior to 12/5/05.
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology.
@@ -19,7 +20,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cSpatialRes.h"
+#include "cDiffusionRes.h"
 
 #include "AvidaTools.h"
 #include "nGeometry.h"
@@ -29,9 +30,9 @@
 using namespace std;
 using namespace AvidaTools;
 
-/* Setup a single spatial resource with known flows */
+/* Setup a single diffusion resource with known flows */
 
-cSpatialRes::cSpatialRes(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
+cDiffusionRes::cDiffusionRes(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
                                    double inxgravity, double inygravity)
 : grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
@@ -46,15 +47,15 @@ cSpatialRes::cSpatialRes(int inworld_x, int inworld_y, int ingeometry, double in
   geometry = ingeometry;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
-    cSpatialResElement tmpelem;
+    cResourceElement tmpelem;
     grid[i] = tmpelem;
   } 
   SetPointers();
 }
 
-/* Setup a single spatial resource using default flow amounts  */
+/* Setup a single diffusion resource using default flow amounts  */
 
-cSpatialRes::cSpatialRes(int inworld_x, int inworld_y, int ingeometry)
+cDiffusionRes::cDiffusionRes(int inworld_x, int inworld_y, int ingeometry)
 : grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
   int i;
@@ -68,21 +69,21 @@ cSpatialRes::cSpatialRes(int inworld_x, int inworld_y, int ingeometry)
   geometry = ingeometry;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
-    cSpatialResElement tmpelem;
+    cResourceElement tmpelem;
     grid[i] = tmpelem;
    } 
    SetPointers();
 }
 
-cSpatialRes::cSpatialRes() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
+cDiffusionRes::cDiffusionRes() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
 {
   geometry = nGeometry::GLOBAL;
 }
 
-cSpatialRes::~cSpatialRes() { ; }
+cDiffusionRes::~cDiffusionRes() { ; }
 
 
-void cSpatialRes::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
+void cDiffusionRes::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
 {
   int i;
  
@@ -92,13 +93,13 @@ void cSpatialRes::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
   geometry = ingeometry;
   num_cells = world_x * world_y;
   for (i = 0; i < GetSize(); i++) {
-    cSpatialResElement tmpelem;
+    cResourceElement tmpelem;
     grid[i] = tmpelem;
    } 
    SetPointers();
 }
 
-void cSpatialRes::SetPointers()
+void cDiffusionRes::SetPointers()
 {
   /* Pointer 0 will point to the cell above and to the left the current cell
      and will go clockwise around the cell.                               */
@@ -150,7 +151,7 @@ void cSpatialRes::SetPointers()
 }
 
 
-void cSpatialRes::CheckRanges()
+void cDiffusionRes::CheckRanges()
 {
 
   // Check that the x, y ranges of the inflow and outflow rectangles 
@@ -213,7 +214,7 @@ void cSpatialRes::CheckRanges()
 }
 
 /* Set all the individual cells to their initial values */
-void cSpatialRes::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
+void cDiffusionRes::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
 {
   cell_list_ptr = in_cell_list_ptr;
   for (int i = 0; i < cell_list_ptr->GetSize(); i++) {
@@ -232,7 +233,7 @@ void cSpatialRes::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
 
 /* Set the rate variable for one element using the array index */
 
-void cSpatialRes::Rate(int x, double ratein) const {
+void cDiffusionRes::Rate(int x, double ratein) const {
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].Rate(ratein);
   } else {
@@ -242,7 +243,7 @@ void cSpatialRes::Rate(int x, double ratein) const {
 
 /* Set the rate variable for one element using the x,y coordinate */
 
-void cSpatialRes::Rate(int x, int y, double ratein) const { 
+void cDiffusionRes::Rate(int x, int y, double ratein) const {
   if (x >= 0 && x < world_x && y>= 0 && y < world_y) {
     grid[y * world_x + x].Rate(ratein);
   } else {
@@ -253,7 +254,7 @@ void cSpatialRes::Rate(int x, int y, double ratein) const {
 /* Fold the rate variable into the resource state for one element using 
    the array index */
    
-void cSpatialRes::State(int x) { 
+void cDiffusionRes::State(int x) {
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].State();
   } else {
@@ -264,7 +265,7 @@ void cSpatialRes::State(int x) {
 /* Fold the rate variable into the resource state for one element using 
    the x,y coordinate */
    
-void cSpatialRes::State(int x, int y) { 
+void cDiffusionRes::State(int x, int y) {
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     grid[y*world_x + x].State();
   } else {
@@ -274,7 +275,7 @@ void cSpatialRes::State(int x, int y) {
 
 /* Get the state of one element using the array index */
 
-double cSpatialRes::GetAmount(int x) const { 
+double cDiffusionRes::GetAmount(int x) const {
   if (x >= 0 && x < grid.GetSize()) {
     return grid[x].GetAmount(); 
   } else {
@@ -284,7 +285,7 @@ double cSpatialRes::GetAmount(int x) const {
 
 /* Get the state of one element using the the x,y coordinate */
 
-double cSpatialRes::GetAmount(int x, int y) const { 
+double cDiffusionRes::GetAmount(int x, int y) const {
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     return grid[y*world_x + x].GetAmount(); 
   } else {
@@ -292,7 +293,7 @@ double cSpatialRes::GetAmount(int x, int y) const {
   }
 }
 
-void cSpatialRes::RateAll(double ratein) {
+void cDiffusionRes::RateAll(double ratein) {
 
   int i;
  
@@ -304,7 +305,7 @@ void cSpatialRes::RateAll(double ratein) {
 /* For each cell in the grid add the changes stored in the rate variable
    with the total of the resource */
 
-void cSpatialRes::StateAll() {
+void cDiffusionRes::StateAll() {
 
   int i;
  
@@ -313,7 +314,7 @@ void cSpatialRes::StateAll() {
   } 
 }
 
-void cSpatialRes::FlowAll() {
+void cDiffusionRes::FlowAll() {
 
   // @JEB save time if diffusion and gravity off...
   if ((xdiffuse == 0.0) && (ydiffuse == 0.0) && (xgravity == 0.0) && (ygravity == 0.0)) return;
@@ -341,7 +342,7 @@ void cSpatialRes::FlowAll() {
 
 /* Total up all the resources in each cell */
 
-double cSpatialRes::SumAll() const{
+double cDiffusionRes::SumAll() const{
 
   int i;
   double sum = 0.0;
@@ -355,7 +356,7 @@ double cSpatialRes::SumAll() const{
 /* Take a given amount of resource and spread it among all the cells in the 
    inflow rectange */
 
-void cSpatialRes::Source(double amount) const {
+void cDiffusionRes::Source(double amount) const {
   int     i, j, elem;
   double  totalcells;
 
@@ -372,7 +373,7 @@ void cSpatialRes::Source(double amount) const {
 
 /* Handle the inflow for a list of individual cells */
 
-void cSpatialRes::CellInflow() const {
+void cDiffusionRes::CellInflow() const {
   for (int i=0; i < cell_list_ptr->GetSize(); i++) {
     const int cell_id = (*cell_list_ptr)[i].GetId();
     
@@ -387,7 +388,7 @@ void cSpatialRes::CellInflow() const {
 
 /* Take away a give percentage of a resource from outflow rectangle */
 
-void cSpatialRes::Sink(double decay) const {
+void cDiffusionRes::Sink(double decay) const {
 
   int     i, j, elem;
   double  deltaamount;
@@ -405,7 +406,7 @@ void cSpatialRes::Sink(double decay) const {
 
 /* Take away a give percentage of a resource from individual cells */
 
-void cSpatialRes::CellOutflow() const {
+void cDiffusionRes::CellOutflow() const {
 
   double deltaamount = 0.0;
 
@@ -422,7 +423,7 @@ void cSpatialRes::CellOutflow() const {
   }
 }
 
-void cSpatialRes::SetCellAmount(int cell_id, double res)
+void cDiffusionRes::SetCellAmount(int cell_id, double res)
 {
   if (cell_id >= 0 && cell_id < grid.GetSize())
   {
@@ -430,8 +431,7 @@ void cSpatialRes::SetCellAmount(int cell_id, double res)
   }
 }
 
-
-void cSpatialRes::ResetResourceCounts()
+void cDiffusionRes::ResetResourceCounts()
 {
   for (int i = 0; i < grid.GetSize(); i++) grid[i].ResetResourceCount(m_initial);
 }

@@ -44,7 +44,7 @@ class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
 class cPopulationCell;
-class cResource;
+class cPopulationResources;
 class cString;
 
 using namespace Avida;
@@ -123,7 +123,7 @@ public:
   virtual int GetCurrPeakY(cAvidaContext& ctx, int res_id) = 0;
   virtual int GetFrozenPeakX(cAvidaContext& ctx, int res_id) = 0; 
   virtual int GetFrozenPeakY(cAvidaContext& ctx, int res_id) = 0;
-  virtual cResource* GetResourceCount() = 0;
+  virtual cPopulationResources* GetResourceCount() = 0;
   virtual void TriggerDoUpdates(cAvidaContext& ctx) = 0;
   virtual void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;
   virtual void UpdateDemeResources(cAvidaContext& ctx, const Apto::Array<double>& res_change) = 0;

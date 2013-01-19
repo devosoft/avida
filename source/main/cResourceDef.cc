@@ -50,6 +50,9 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , inflow(0.0)
   , outflow(0.0)
   , geometry(nGeometry::GLOBAL)
+  , isdiffusion(false)
+  , isdynamic(false)
+  , isspatial(false)
   , inflowX1(-99)
   , inflowX2(-99)
   , inflowY1(-99)
@@ -86,7 +89,7 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , m_plateau_outflow(0.0)
   , m_cone_inflow(0.0)
   , m_cone_outflow(0.0)
-  , m_gradient_inflow(0.0)
+  , m_res_inflow(0.0)
   , m_is_plateau_common(0)
   , m_floor(0.0)
   , m_habitat(0)
@@ -98,20 +101,18 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , m_init_plat(-1.0)
   , m_threshold(1.0)
   , m_refuge(0)
-  , isgradient(false)
   , m_predator_odds(0.0)
   , m_predator(false)
   , m_guard_juvs_per(0)
   , m_prob_detect(1.0)
+  , m_probabilistic(false)
   , hgt_metabolize(false)
   , collectable(true)
 {
 }
 
 bool cResourceDef::SetGeometry(cString _geometry)
-
 /* Set the geometry for the resource */
-
 {
      _geometry.ToLower();
      if (_geometry == "global") {
@@ -128,10 +129,15 @@ bool cResourceDef::SetGeometry(cString _geometry)
           geometry = nGeometry::PARTIAL;
           return true;
 	 }
+	 else if (_geometry == "dynamic") {
+          geometry = nGeometry::DYNAMIC;
+          return true;
+	 }
 	 else {
           return false;
      }
 }
+
 void cResourceDef::SetCellIdList(Apto::Array<int>& id_list) {
 	cell_id_list.ResizeClear(id_list.GetSize());
 	cell_id_list=id_list;
