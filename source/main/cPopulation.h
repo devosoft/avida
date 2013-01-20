@@ -37,7 +37,6 @@
 #include <fstream>
 #include <map>
 
-
 class cAvidaContext;
 class cCodeLabel;
 class cEnvironment;
@@ -65,10 +64,10 @@ class cPopulation : public Data::ArgumentedProvider
 private:
   // Components...
   cWorld* m_world;
+  cPopulationResources m_pop_res;           // Resources available
   Apto::PriorityScheduler* m_scheduler;                // Handles allocation of CPU cycles
   Apto::Array<cPopulationCell> cell_array;  // Local cells composing the population
   Apto::Array<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
-  cPopulationResources resources;       // Resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   //Keeps track of which organisms are in which group.
   Apto::Map<int, Apto::Array<cOrganism*, Apto::Smart> > m_group_list;
@@ -108,7 +107,6 @@ private:
   int num_pred_organisms;
   int pop_enforce;
   int num_top_pred_organisms;
-  bool m_has_predatory_res;
   
   Apto::Array<cDeme> deme_array;            // Deme structure of the population.
  
@@ -120,8 +118,6 @@ private:
   std::map<int, int> m_group_females; //<! Maps the group id to the number of females in the group
   std::map<int, int> m_group_males; //<! Maps the group id to the number of males in the group
 
-  int m_hgt_resid; //!< HGT resource ID.
-
   cPopulation(); // @not_implemented
   cPopulation(const cPopulation&); // @not_implemented
   cPopulation& operator=(const cPopulation&); // @not_implemented
@@ -132,6 +128,8 @@ public:
   ~cPopulation();
 
 
+  cPopulationResources& GetResources() { return m_pop_res; }
+  
   // Data::Provider
   Data::ConstDataSetPtr Provides() const;
   void UpdateProvidedValues(Update current_update);
@@ -237,15 +235,12 @@ public:
   void PrintDemeMerit();
   void PrintDemeMutationRate();
   void PrintDemeReceiver();
-  void PrintDemeResource(cAvidaContext& ctx); 
-  void PrintDemeGlobalResources(cAvidaContext& ctx); 
-  void PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext& ctx) const; 
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
   void PrintDemeTotalAvgEnergy(cAvidaContext& ctx);
   void PrintDemesMeritsData(); //@JJB**
-  
+
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);
   
@@ -260,7 +255,6 @@ public:
   // Calculate the statistics from the most recent update.
   void ProcessPostUpdate(cAvidaContext& ctx);
   void ProcessPreUpdate();
-  void UpdateResStats(cAvidaContext& ctx);
   void ProcessUpdateCellActions(cAvidaContext& ctx);
 
   // Clear all but a subset of cells...
@@ -296,42 +290,9 @@ public:
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
-  const Apto::Array<double>& GetResources(cAvidaContext& ctx) const { return resources.GetResources(ctx); }
-  const Apto::Array<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const { return resources.GetCellResources(cell_id, ctx); } 
-  const Apto::Array<double>& GetFrozenResources(cAvidaContext& ctx, int cell_id) const { return resources.GetFrozenResources(ctx, cell_id); }
-  double GetFrozenCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resources.GetFrozenCellResVal(ctx, cell_id, res_id); }
-  double GetCellResVal(cAvidaContext& ctx, int cell_id, int res_id) const { return resources.GetCellResVal(ctx, cell_id, res_id); }
-  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); }  
-  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } 
-  void TriggerDoUpdates(cAvidaContext& ctx) { resources.UpdateResources(ctx); }
-  const Apto::Array< Apto::Array<int> >& GetCellIdLists() const { return resources.GetCellIdLists(); }
-
-  int GetCurrPeakX(cAvidaContext& ctx, int res_id) const { return resources.GetCurrPeakX(ctx, res_id); } 
-  int GetCurrPeakY(cAvidaContext& ctx, int res_id) const { return resources.GetCurrPeakY(ctx, res_id); } 
-  int GetFrozenPeakX(cAvidaContext& ctx, int res_id) const { return resources.GetFrozenPeakX(ctx, res_id); } 
-  int GetFrozenPeakY(cAvidaContext& ctx, int res_id) const { return resources.GetFrozenPeakY(ctx, res_id); } 
-  Apto::Array<int>* GetWallCells(int res_id) { return resources.GetWallCells(res_id); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
-  void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
-  void UpdateResource(cAvidaContext& ctx, int id, double change);
-  void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
-  void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
-  
-  void SetResource(cAvidaContext& ctx, int id, double new_level);
-  void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);
-  double GetResource(cAvidaContext& ctx, int id) const { return resources.Get(ctx, id); }
-  cPopulationResources& GetResourceCount() { return resources; }
-  void SetResourceInflow(const cString res_name, double new_level);
-  void SetResourceOutflow(const cString res_name, double new_level);
-  
-  void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);
-  void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);
-  void SetDemeResourceInflow(const cString res_name, double new_level);
-  void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
-  void SetDemeResourceOutflow(const cString res_name, double new_level);
-  
   void ResetInputs(cAvidaContext& ctx);
 
   cEnvironment& GetEnvironment() { return environment; }
@@ -369,16 +330,6 @@ public:
   void NewTrial(cAvidaContext& ctx);
   void CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive);
   
-  // Let users change environmental variables durning the run 
-  void UpdateResource(const int Verbosity, cWorld* world);        
-  
-  // Let users change Dynami Resource variables during the run JW
-  void UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, const cString res_name);
-  void SetDynamicResPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
-  void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
-  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
-  bool HasPredatoryRes() { return m_has_predatory_res; }
- 
   // Add an org to live org list
   void AddLiveOrg(cOrganism* org);  
   // Remove an org from live org list
@@ -420,10 +371,6 @@ public:
   double CalcGroupAveOthers(int group_id);
   double CalcGroupSDevOthers(int group_id);
   int& GetGroupIntolerances(int group_id, int tol_num, int mating_type);
-
-  // -------- HGT support --------
-  //! Modify current level of the HGT resource.
-  void AdjustHGTResource(cAvidaContext& ctx, double delta);
 
   // -------- Population mixing support --------
   //! Mix all organisms in the population.

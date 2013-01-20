@@ -1477,7 +1477,7 @@ void cStats::PrintResourceLocData(const cString& filename, cAvidaContext& ctx)
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
     if (resLib.GetResDef(i)->IsDynamic()) {
-      df.Write(m_world->GetPopulation().GetCurrPeakX(ctx, i) + (m_world->GetPopulation().GetCurrPeakY(ctx, i) * m_world->GetConfig().WORLD_X.Get()), "CellID");
+      df.Write(m_world->GetPopulation().GetResources().GetCurrPeakX(ctx, i) + (m_world->GetPopulation().GetResources().GetCurrPeakY(ctx, i) * m_world->GetConfig().WORLD_X.Get()), "CellID");
     }
   }
   df.Endl();
@@ -1500,7 +1500,7 @@ void cStats::PrintResWallLocData(const cString& filename, cAvidaContext& ctx)
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   for (int i = 0; i < resLib.GetSize(); i++) {
     if (resLib.GetResDef(i)->IsDynamic() && resLib.GetResDef(i)->GetHabitat() == 2) {
-      Apto::Array<int>& cells = *(m_world->GetPopulation().GetWallCells(i));
+      Apto::Array<int>& cells = *(m_world->GetPopulation().GetResources().GetWallCells(i));
       for (int i = 0; i < cells.GetSize() - 1; i++) {
         fp << cells[i] << ",";
       }
@@ -4097,7 +4097,7 @@ void cStats::PrintDenData(const cString& filename) {
     if (!cell.HasAV()) continue;
     
     Apto::Array<double> cell_res;
-    cell_res = m_world->GetPopulation().GetCellResources(i, m_world->GetDefaultContext());
+    cell_res = m_world->GetPopulation().GetResources().GetCellResources(i, m_world->GetDefaultContext());
     
     bool is_active = false;    
     for (int j = 0; j < cell_res.GetSize(); j++) {

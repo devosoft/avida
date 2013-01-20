@@ -55,7 +55,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
-    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), m_res_count);
+    if (res != NULL) m_world->GetPopulation().GetResources().UpdateResource(ctx, res->GetID(), m_res_count);
   }
 };
 
@@ -87,7 +87,7 @@ public:
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
     cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
-    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), (m_res_count / ave_merit));
+    if (res != NULL) m_world->GetPopulation().GetResources().UpdateResource(ctx, res->GetID(), (m_res_count / ave_merit));
   }
 };
 
@@ -120,11 +120,11 @@ public:
 
     cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
     
-    double res_level = m_world->GetPopulation().GetResource(ctx, res->GetID());
+    double res_level = m_world->GetPopulation().GetResources().GetResource(ctx, res->GetID());
     double scaled_perc = 1 / (1 + ave_merit * (1 - m_res_percent) / m_res_percent);
     res_level -= res_level * scaled_perc;
     
-    if (res != NULL) m_world->GetPopulation().UpdateResource(ctx, res->GetID(), res_level);
+    if (res != NULL) m_world->GetPopulation().GetResources().UpdateResource(ctx, res->GetID(), res_level);
   }
 };
 
@@ -148,7 +148,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetResource(ctx, m_res_name, m_res_count);
+    m_world->GetPopulation().GetResources().SetResource(ctx, m_res_name, m_res_count);
   }
 };
 
@@ -172,7 +172,7 @@ class cActionSetDemeResource : public cAction
 		
 		void Process(cAvidaContext& ctx)
 		{    
-      m_world->GetPopulation().SetDemeResource(ctx, m_res_name, m_res_count);
+      m_world->GetPopulation().GetResources().SetDemeResource(ctx, m_res_name, m_res_count);
 		}
 	};
 
@@ -195,7 +195,7 @@ public:
     cResourceDefLib & res_lib = m_world->GetEnvironment().GetResDefLib();
     for (int i=0; i < res_lib.GetSize(); i++)  {
       cResourceDef* res = res_lib.GetResDef(i);
-      m_world->GetPopulation().SetResource(ctx, res->GetID(), 0.0);
+      m_world->GetPopulation().GetResources().SetResource(ctx, res->GetID(), 0.0);
     }
   }
 };
@@ -235,11 +235,11 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
-      Apto::Array<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, ctx);
+      Apto::Array<double> counts = m_world->GetPopulation().GetResources().GetCellResources(m_cell_id, ctx);
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         counts[res->GetID()] = m_res_count;
-        m_world->GetPopulation().GetResourceCount().SetCellResources(m_cell_id, counts);
+        m_world->GetPopulation().GetResources().SetCellResources(m_cell_id, counts);
       }
     }
   }
@@ -280,7 +280,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
         
-    m_world->GetPopulation().UpdateDynamicRes(ctx, m_world, m_res_name);
+    m_world->GetPopulation().GetResources().UpdateDynamicRes(ctx, m_world, m_res_name);
   } 
 };
 
@@ -428,7 +428,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetDynamicResPlatVarInflow(m_res_name, m_mean, m_variance, m_type);
+    m_world->GetPopulation().GetResources().SetDynamicResPlatVarInflow(m_res_name, m_mean, m_variance, m_type);
   } 
 };
 
@@ -456,7 +456,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SetPredatoryResource(m_res_name, m_odds, m_juvs_per, m_detection_prob);        
+    m_world->GetPopulation().GetResources().SetPredatoryResource(m_res_name, m_odds, m_juvs_per, m_detection_prob);        
   } 
 };
 
@@ -546,7 +546,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
 
-    m_world->GetPopulation().UpdateResource(m_world->GetVerbosity(), m_world);          
+    m_world->GetPopulation().GetResources().UpdateResource(m_world->GetVerbosity(), m_world);          
   }
 };
 
@@ -755,7 +755,7 @@ public:
   
   void Process(cAvidaContext&)
   {
-    m_world->GetPopulation().SetResourceInflow(m_name, m_inflow);
+    m_world->GetPopulation().GetResources().SetResourceInflow(m_name, m_inflow);
   }
 };
 
@@ -793,7 +793,7 @@ class cActionSetDemeResourceInflow : public cAction
     
     void Process(cAvidaContext&)
     {
-      m_world->GetPopulation().SetSingleDemeResourceInflow(m_demeid, m_name, m_inflow);
+      m_world->GetPopulation().GetResources().SetSingleDemeResourceInflow(m_demeid, m_name, m_inflow);
     }
   };
 
@@ -818,7 +818,7 @@ public:
   
   void Process(cAvidaContext&)
   {
-    m_world->GetPopulation().SetResourceOutflow(m_name, m_outflow);
+    m_world->GetPopulation().GetResources().SetResourceOutflow(m_name, m_outflow);
   }
 };
 
@@ -855,7 +855,7 @@ class cActionSetDemeResourceOutflow : public cAction
     
     void Process(cAvidaContext&)
     {
-      m_world->GetPopulation().SetSingleDemeResourceOutflow(m_demeid, m_name, m_outflow);
+      m_world->GetPopulation().GetResources().SetSingleDemeResourceOutflow(m_demeid, m_name, m_outflow);
     }
   };
 
@@ -1006,10 +1006,10 @@ public:
       }
       
       // Set global resource to deme sum level
-      pop.SetResource(ctx, m_global_res_name, res_total);
+      pop.GetResources().SetResource(ctx, m_global_res_name, res_total);
       
       // Set deme resource to zero
-      pop.SetDemeResource(ctx, m_deme_res_name, 0.0);
+      pop.GetResources().SetDemeResource(ctx, m_deme_res_name, 0.0);
             
       // Find the total inflow across demes
       double inflow_total = 0.0;
@@ -1019,19 +1019,19 @@ public:
       }
       
       // Set global inflow to deme sum level
-      pop.SetResourceInflow(m_global_res_name, inflow_total);
+      pop.GetResources().SetResourceInflow(m_global_res_name, inflow_total);
       
       // For each deme, set deme inflow to 0
-      pop.SetDemeResourceInflow(m_deme_res_name, 0.0);
+      pop.GetResources().SetDemeResourceInflow(m_deme_res_name, 0.0);
       
       // Find the deme outflow level
       double outflow = deme_res->GetOutflow();
       
       // Set global outflow to deme level (since outflow is percentage, no sum here)
-      pop.SetResourceOutflow(m_global_res_name, outflow);
+      pop.GetResources().SetResourceOutflow(m_global_res_name, outflow);
       
       // For each deme, set deme outflow to 0
-      pop.SetDemeResourceOutflow(m_deme_res_name, 0.0);
+      pop.GetResources().SetDemeResourceOutflow(m_deme_res_name, 0.0);
     }
   }
 };
@@ -1058,7 +1058,7 @@ public:
 		double m_res_count = -1*(0.4*tanh(((double)time-182500.0)/50000.0)+0.5)*(0.5*sin((double)time/58.091)+0.5)+1;
 		cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);
+			m_world->GetPopulation().GetResources().SetResource(ctx, res->GetID(), m_res_count);
 	}
 };
 
@@ -1088,7 +1088,7 @@ public:
 			m_res_count = 0.0;
 		cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);			
+			m_world->GetPopulation().GetResources().SetResource(ctx, res->GetID(), m_res_count);			
 	}
 };
 
@@ -1120,7 +1120,7 @@ public:
 			m_res_count = 0.0;
 		cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);			
+			m_world->GetPopulation().GetResources().SetResource(ctx, res->GetID(), m_res_count);			
 	}
 };
 
@@ -1157,7 +1157,7 @@ public:
     int time = m_world->GetStats().GetUpdate();
     m_res_count = (amplitude * sin(3.14159/frequency * time - phaseShift * 3.14159) + initY) / 2;
     cResourceDef* res = m_world->GetEnvironment().GetResDefLib().GetResDef(m_res_name);
-    if (res != NULL) m_world->GetPopulation().SetResource(ctx, res->GetID(), m_res_count);
+    if (res != NULL) m_world->GetPopulation().GetResources().SetResource(ctx, res->GetID(), m_res_count);
 
   }
 };

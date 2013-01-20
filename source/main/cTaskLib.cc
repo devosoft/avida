@@ -549,7 +549,7 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
 		
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
 	
@@ -574,7 +574,7 @@ double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
 	
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(m_world->GetDefaultContext());
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
   
   //if (resource_count.GetSize() == 0) assert(false); // change to: return false;
   assert(resource_count.GetSize() != 0);

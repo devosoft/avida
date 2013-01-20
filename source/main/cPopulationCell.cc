@@ -503,7 +503,7 @@ void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const InstructionSe
 	assert(genome.GetSize()>0); // oh, sweet sanity.
 	InitHGTSupport();
 	
-	m_world->GetPopulation().AdjustHGTResource(ctx, genome.GetSize());
+	m_world->GetPopulation().GetResources().AdjustHGTResource(ctx, genome.GetSize());
 	
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
@@ -513,7 +513,7 @@ void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const InstructionSe
 	
 	// pop off the front of this cell's buffer until we have <= HGT_MAX_FRAGMENTS_PER_CELL.
 	while(m_hgt->fragments.size()>(unsigned int)m_world->GetConfig().HGT_MAX_FRAGMENTS_PER_CELL.Get()) {
-		m_world->GetPopulation().AdjustHGTResource(ctx, -m_hgt->fragments.front().GetSize());
+		m_world->GetPopulation().GetResources().AdjustHGTResource(ctx, -m_hgt->fragments.front().GetSize());
 		m_hgt->fragments.pop_front();
 	}
 }
@@ -551,7 +551,7 @@ cPopulationCell::fragment_list_type& cPopulationCell::GetFragments() {
 void cPopulationCell::ClearFragments(cAvidaContext& ctx) {
 	InitHGTSupport();
 	for(fragment_list_type::iterator i=m_hgt->fragments.begin(); i!=m_hgt->fragments.end(); ++i) {
-		m_world->GetPopulation().AdjustHGTResource(ctx, -i->GetSize());
+		m_world->GetPopulation().GetResources().AdjustHGTResource(ctx, -i->GetSize());
 	}
 	m_hgt->fragments.clear();
 }

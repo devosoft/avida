@@ -848,7 +848,7 @@ void cDynamicRes::updatePredatoryRes(cAvidaContext& ctx)
   if (m_res_def.IsPredatory()) {
     for (int i = 0; i < m_plateau_cell_IDs.GetSize(); i ++) {
       if (Element(m_plateau_cell_IDs[i]).GetAmount() >= 1) {
-        m_world->GetPopulation().ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_res_def.GetPredatorResOdds(), m_res_def.GetJuvAdultGuardRatio());
+        m_world->GetPopulation().GetResources().ExecutePredatoryResource(ctx, m_plateau_cell_IDs[i], m_res_def.GetPredatorResOdds(), m_res_def.GetJuvAdultGuardRatio());
       }
     }
   }

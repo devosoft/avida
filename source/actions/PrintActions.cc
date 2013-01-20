@@ -247,7 +247,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"resource.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetPopulation().GetResources().UpdateResStats(ctx);
     m_world->GetStats().PrintResourceData(m_filename);
   }
 };
@@ -265,7 +265,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"resourceloc.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().TriggerDoUpdates(ctx);
+    m_world->GetPopulation().GetResources().TriggerDoUpdates(ctx);
     m_world->GetStats().PrintResourceLocData(m_filename, ctx);
   }
 };
@@ -284,7 +284,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"reswallloc.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().TriggerDoUpdates(ctx);
+    m_world->GetPopulation().GetResources().TriggerDoUpdates(ctx);
     m_world->GetStats().PrintResWallLocData(m_filename, ctx);
   }
 };
@@ -302,7 +302,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"grouptolerance.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetPopulation().GetResources().UpdateResStats(ctx);
     m_world->GetStats().PrintGroupTolerance(m_filename);
   }
 };
@@ -320,7 +320,7 @@ public:
   static const cString GetDescription() { return "Arguments: [string fname=\"groupMTtolerance.dat\"]"; }
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().UpdateResStats(ctx);
+    m_world->GetPopulation().GetResources().UpdateResStats(ctx);
     m_world->GetStats().PrintGroupMTTolerance(m_filename);
   }
 };
@@ -3617,7 +3617,7 @@ public:
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-        const Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx);
+        const Apto::Array<double> res_count = m_world->GetPopulation().GetResources().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx);
         double max_resource = 0.0;    
         // get the resource library
         const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
@@ -4484,8 +4484,8 @@ public:
       
       //Find out if the organism is in a den:
       bool on_den = false;
-      Apto::Array<double> res_count = m_world->GetPopulation().GetCellResources(loc, ctx);
-      if (use_av) res_count = m_world->GetPopulation().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
+      Apto::Array<double> res_count = m_world->GetPopulation().GetResources().GetCellResources(loc, ctx);
+      if (use_av) res_count = m_world->GetPopulation().GetResources().GetCellResources(org->GetOrgInterface().GetAVCellID(), ctx);
       const cResourceDefLib& resource_lib = m_world->GetEnvironment().GetResDefLib();
       for (int i = 0; i < res_count.GetSize(); i++) {
         int hab_type = resource_lib.GetResDef(i)->GetHabitat();
@@ -4647,7 +4647,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeResource(ctx); 
+    m_world->GetPopulation().GetResources().PrintDemeResource(ctx); 
   }
 };
 
@@ -4660,7 +4660,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeGlobalResources(ctx); 
+    m_world->GetPopulation().GetResources().PrintDemeGlobalResources(ctx); 
   }
 };
 

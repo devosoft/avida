@@ -1139,7 +1139,7 @@ public:
       if (!cell.HasAV()) continue;
       
       Apto::Array<double> cell_res;
-      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+      cell_res = m_world->GetPopulation().GetResources().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
         if ((resource_lib.GetResDef(j)->GetHabitat() == 4 ||resource_lib.GetResDef(j)->GetHabitat() == 3) && cell_res[j] > 0) {
@@ -1200,7 +1200,7 @@ public:
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       
       Apto::Array<double> cell_res;
-      cell_res = m_world->GetPopulation().GetCellResources(i, ctx);
+      cell_res = m_world->GetPopulation().GetResources().GetCellResources(i, ctx);
       
       for (int j = 0; j < cell_res.GetSize(); j++) {
         if ((resource_lib.GetResDef(j)->GetHabitat() == 4 || resource_lib.GetResDef(j)->GetHabitat() == 3) && cell_res[j] > 0) {
@@ -1219,7 +1219,7 @@ public:
           Apto::Array<double> res_change(cell_res.GetSize());
           res_change.SetAll(0.0);
           res_change[m_res_id] = -1 * unguarded_res * m_loss;          
-          m_world->GetPopulation().UpdateCellResources(ctx, res_change, i);
+          m_world->GetPopulation().GetResources().UpdateCellResources(ctx, res_change, i);
           
           break;  // only do this once if two dens overlap
         }
@@ -4652,7 +4652,7 @@ public:
     double level;
     int target_cell;
     cPopulation& pop = m_world->GetPopulation();
-    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    int res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_resname);
     
     assert(res_id != -1);
     
@@ -4662,7 +4662,7 @@ public:
     
     for(int i=0; i < m_numkills; i++) {
       target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
-      level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell); 
+      level = m_world->GetPopulation().GetResources().GetSpatialResource(res_id).GetAmount(target_cell); 
       cells_scanned++;
       
       if(level < m_threshold) {
@@ -4735,7 +4735,7 @@ public:
     assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
     
     cPopulation& pop = m_world->GetPopulation();
-    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    int res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_resname);
     
     assert(res_id != -1);
     
@@ -4746,7 +4746,7 @@ public:
     for (int i = 0; i < m_numradii; i++) {
       
       int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-      double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell); 
+      double level = pop.GetResources().GetSpatialResource(res_id).GetAmount(target_cell); 
       
       if(level < m_threshold) {
         const int current_row = target_cell / world_x;
@@ -4848,7 +4848,7 @@ public:
     cDoubleSum resourcesum;
     
     cPopulation& pop = m_world->GetPopulation();
-    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    int res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_resname);
     
     assert(res_id != -1);
     
@@ -4883,7 +4883,7 @@ public:
           }
           
           int current_cell = (world_x * row_adj) + col_adj;
-          resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));           
+          resourcesum.Add(pop.GetResources().GetSpatialResource(res_id).GetAmount(current_cell));           
           cells_scanned++;
         }
       }
@@ -4990,11 +4990,11 @@ public:
     cPopulation& pop = m_world->GetPopulation();
     
     // Get the kill resource
-    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    int res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_resname);
     assert(res_id != -1);
     
     // Get the adversity resource
-    int adv_res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_adv_resname);
+    int adv_res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_adv_resname);
     assert(adv_res_id != -1);
     
     long cells_scanned = 0;
@@ -5007,7 +5007,7 @@ public:
       resourcesum.Clear();
       
       // Get the level of adversity.  Bounded by [0,1]
-      double kill_prob = pop.GetResourceCount().GetSpatialResource(adv_res_id).GetAmount(target_cell);
+      double kill_prob = pop.GetResources().GetSpatialResource(adv_res_id).GetAmount(target_cell);
       kill_prob = min(1.0, max(0.0, kill_prob));
       
       const int current_row = target_cell / world_x;
@@ -5032,7 +5032,7 @@ public:
           }
           
           int current_cell = (world_x * row_adj) + col_adj;
-          resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
+          resourcesum.Add(pop.GetResources().GetSpatialResource(res_id).GetAmount(current_cell));
           cells_scanned++;
         }
       }
@@ -5130,7 +5130,7 @@ public:
 		assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
 		
 		cPopulation& pop = m_world->GetPopulation();
-		int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+		int res_id = m_world->GetPopulation().GetResources().GetResourceCountID(m_resname);
 		
 		assert(res_id != -1);
     
@@ -5166,7 +5166,7 @@ public:
 					cPopulationCell& cell = pop.GetCell(current_cell);
 					cells_scanned++;
 					
-					double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell); 
+					double level = pop.GetResources().GetSpatialResource(res_id).GetAmount(current_cell); 
 					
 					if(level < m_threshold) {
 						if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {

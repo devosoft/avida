@@ -58,6 +58,9 @@ private:
   mutable double spatial_update_time;
   mutable int m_last_updated;
   mutable int m_spatial_update;
+  bool m_has_predatory_res;
+
+  int m_hgt_resid; //!< HGT resource ID.
 
   void DoUpdates(cAvidaContext& ctx, bool global_only = false) const;         // Update resource count based on update time
 
@@ -106,6 +109,7 @@ public:
   void SetInflow(const cString& name, const double _inflow);
   double GetDecay(const cString& name);
   void SetDecay(const cString& name, const double _decay);
+  int& GetHGTResidID() { return m_hgt_resid; }
   
   void Update(double in_time);
 
@@ -139,6 +143,8 @@ public:
   const cString& GetResName(int id) const { return resource_names[id]; }
   bool IsSpatial(int id) const { return ((geometry[id] != nGeometry::GLOBAL) && (geometry[id] != nGeometry::PARTIAL)); }
   int GetResourceByName(cString name) const;
+  const Apto::Array<double>& GetDemeResources(int deme_id, cAvidaContext& ctx);
+  const Apto::Array<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext& ctx);
   
   // dynamic resources
   int GetCurrPeakX(cAvidaContext& ctx, int res_id) const;
@@ -154,6 +160,46 @@ public:
   void SetSpatialUpdate(int update) { m_spatial_update = update; }
   void UpdateGlobalResources(cAvidaContext& ctx) { DoUpdates(ctx, true); }
   void UpdateResources(cAvidaContext& ctx) { DoUpdates(ctx, false); }
+  
+  // ported from cPopulation
+  void PrintDemeResource(cAvidaContext& ctx); 
+  void PrintDemeGlobalResources(cAvidaContext& ctx); 
+  void PrintDemeSpatialResData(const cPopulationResources& res, const int i, const int deme_id, cAvidaContext& ctx) const; 
+  void UpdateResStats(cAvidaContext& ctx);
+  void TriggerDoUpdates(cAvidaContext& ctx) { UpdateResources(ctx); }
+
+  void UpdateResources(cAvidaContext& ctx, const Apto::Array<double>& res_change);
+  void UpdateResource(cAvidaContext& ctx, int id, double change);
+  void UpdateCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
+  void UpdateDemeCellResources(cAvidaContext& ctx, const Apto::Array<double>& res_change, const int cell_id);
+  
+  void SetResource(cAvidaContext& ctx, int id, double new_level);
+  void SetResource(cAvidaContext& ctx, const cString res_name, double new_level);
+  double GetResource(cAvidaContext& ctx, int id) const { return Get(ctx, id); }
+  void SetResourceInflow(const cString res_name, double new_level);
+  void SetResourceOutflow(const cString res_name, double new_level);
+  
+  void SetDemeResource(cAvidaContext& ctx, const cString res_name, double new_level);
+  void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);
+  void SetDemeResourceInflow(const cString res_name, double new_level);
+  void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
+  void SetDemeResourceOutflow(const cString res_name, double new_level);
+  
+  // Let users change environmental variables durning the run 
+  void UpdateResource(const int Verbosity, cWorld* world);        
+  
+  // Let users change Dynami Resource variables during the run JW
+  void UpdateDynamicRes(cAvidaContext& ctx, cWorld* world, const cString res_name);
+  void SetDynamicResPlatVarInflow(const cString res_name, const double mean, const double variance, const int type);
+  void SetPredatoryResource(const cString res_name, const double odds, const int juvsper, const double detection_prob);
+  void ExecutePredatoryResource(cAvidaContext& ctx, const int cell_id, const double pred_odds, const int juvs_per);
+  bool HasPredatoryRes() { return m_has_predatory_res; }
+ 
+  // -------- HGT support --------
+  //! Modify current level of the HGT resource.
+  void AdjustHGTResource(cAvidaContext& ctx, double delta);
+
+
 };
 
 #endif

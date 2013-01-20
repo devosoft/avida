@@ -2307,7 +2307,7 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx)
   
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
   
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
   
@@ -2332,7 +2332,7 @@ bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx)
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
 	
@@ -2357,7 +2357,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx)
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
   
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
 	
@@ -2381,7 +2381,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx)
   
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
   
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
   
@@ -3909,8 +3909,8 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvi
   
   cPopulation& pop = m_world->GetPopulation();
   
-  const Apto::Array<double> & res_count = pop.GetCellResources(cell_id, ctx) +
-  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx); 
+  const Apto::Array<double> & res_count = pop.GetResources().GetCellResources(cell_id, ctx) +
+  pop.GetResources().GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx);
   
   // Make sure we have the resource requested
   if (resid >= res_count.GetSize()) return false;
@@ -5565,7 +5565,7 @@ void cHardwareCPU::DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell,
   assert(resource_id >= 0);
   
   const Apto::Array<double> &src_resources = m_organism->GetOrgInterface().GetResources(ctx);
-  const Apto::Array<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell, ctx);
+  const Apto::Array<double> &dest_resources = m_world->GetPopulation().GetResources().GetCellResources(to_cell, ctx);
   
   assert(resource_id < src_resources.GetSize());
   assert(resource_id < dest_resources.GetSize());
@@ -5586,7 +5586,7 @@ void cHardwareCPU::DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell,
   dest_change[resource_id] = (1 - decay) * donation;
   
   m_organism->GetOrgInterface().UpdateResources(ctx, src_change);
-  m_world->GetPopulation().UpdateCellResources(ctx, dest_change, to_cell);
+  m_world->GetPopulation().GetResources().UpdateCellResources(ctx, dest_change, to_cell);
   
 } //End DoResourceDonateAmount()
 
@@ -6177,7 +6177,7 @@ bool cHardwareCPU::Inst_ResMoveHead(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(m_organism->GetCellID()).GetDemeID());
   
   const cPopulationResources& deme_resources = deme.GetDemeResourceCount();
-  const cPopulationResources& resources = pop.GetResourceCount();
+  const cPopulationResources& resources = pop.GetResources();
   
   int resid = deme_resources.GetResourceByName(resname);
   
@@ -6228,7 +6228,7 @@ bool cHardwareCPU::Inst_ResJumpHead(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(m_organism->GetCellID()).GetDemeID());
   
   const cPopulationResources& deme_resources = deme.GetDemeResourceCount();
-  const cPopulationResources& resources = pop.GetResourceCount();
+  const cPopulationResources& resources = pop.GetResources();
   
   int resid = deme_resources.GetResourceByName(resname);
   
@@ -7718,7 +7718,7 @@ bool cHardwareCPU::DoSenseFacing(cAvidaContext& ctx, int conversion_method, doub
   
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const Apto::Array<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id, ctx);
+  const Apto::Array<double> & res_count = m_world->GetPopulation().GetResources().GetCellResources(faced_id, ctx);
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
@@ -7948,7 +7948,7 @@ bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEF
   
   const cResourceDefLib& resLib = m_world->GetEnvironment().GetResDefLib();
   const Apto::Array<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(ctx);
-  const cPopulationResources& resource_count = m_world->GetPopulation().GetResourceCount();
+  const cPopulationResources& resource_count = m_world->GetPopulation().GetResources();
 	
   if (resource_count.GetSize() == 0) assert(false); // change to: return false;
   
