@@ -173,9 +173,6 @@ public:
 };
 
 
-
-
-
 cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
 , m_scheduler(NULL)
@@ -324,12 +321,12 @@ void cPopulation::SetupCellGrid()
   
   cPopulationResources tmp_res_count(resource_lib.GetSize() - num_deme_res);
   resources = tmp_res_count;
-  resources.ResizeSpatialGrids(world_x, world_y);
+  resources.ResizeSpatialGrids(world_x, world_y, geometry);
   
   for(int i = 0; i < GetNumDemes(); i++) {
     cPopulationResources tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
-    GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
+    GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y, geometry);
   }
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -4546,7 +4543,7 @@ void cPopulation::PrintDemeResource(cAvidaContext& ctx) {
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df_resources.Write(res.Get(ctx, j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
-      if ((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL && (res.GetResourcesGeometry())[j] != nGeometry::PARTIAL) {
+      if ((res.GetResourceGeometries())[j] != nGeometry::GLOBAL && (res.GetResourceGeometries())[j] != nGeometry::PARTIAL) {
         PrintDemeSpatialResData(res, j, deme_id, ctx); 
       }
     }
@@ -5782,8 +5779,8 @@ void cPopulation::UpdateResStats(cAvidaContext& ctx)
 {
   cStats& stats = m_world->GetStats();
   stats.SetResources(resources.GetResources(ctx)); 
-  stats.SetSpatialRes(resources.GetSpatialRes(ctx));
-  stats.SetResourcesGeometry(resources.GetResourcesGeometry()); 
+//  stats.SetSpatialRes(resources.GetSpatialRes(ctx));
+  stats.SetResourceGeometries(resources.GetResourceGeometries());
 }
 
 void cPopulation::ProcessPreUpdate()

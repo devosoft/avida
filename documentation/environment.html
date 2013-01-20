@@ -21,12 +21,12 @@ Revised 2006-09-05 DMB<br>
 This is the setup file for the task/resource system in Avida.
 </p>
 <p>
-Six main keywords are used in this file, RESOURCE, <a href="gradient.html">GRADIENT_RESOURCE</a>, REACTION, CELL, MUTATION, 
+Six main keywords are used in this file, RESOURCE, <a href="dynamic_res.html">DYNAMIC_RESOURCE</a>, REACTION, CELL, MUTATION,
 and SET_ACTIVE.  Their formats are:
 </p>
 <pre>
   <a href="#RESOURCE">RESOURCE</a>  resource_name[:options]  {resource_name ...}
-  <a href="gradient.html">GRADIENT_RESOURCE</a>  gradient_resource_name[:options]  {gradient_resource_name ...}
+  <a href="dynamic_res.html">DYNAMIC_RESOURCE</a>  resource_name[:options]  {resource_name ...}
   <a href="#REACTION">REACTION</a>  reaction_name  task  [process:...]  [requisite:...]
   <a href="#CELL">CELL</a> resource_name:cell_list[:flow]
   <a href="#MUTATION">MUTATION</a> name trigger scope type rate

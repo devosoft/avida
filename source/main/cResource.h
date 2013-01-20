@@ -25,42 +25,57 @@
 #define cResource_h
 
 #include "cEnvironment.h"
-#include "cResourceDef.h"
 #include "cResourceElement.h"
-#include "cWorld.h"
+
+class cResourceDef;
 
 class cResource
 {
 private:
   cWorld* m_world;
-
   cString m_name;
   int m_id;
+  Apto::Array<cResourceElement> grid;
+  int geometry;
+  int world_x, world_y, num_cells;
+  double m_initial;
+  bool m_modified;
 
 public:
   cResource();
   cResource(const cString& _name, int _id);
-  
-  inline cResourceDef* GetResDef() { return m_world->GetEnvironment().GetResDefLib().GetResDef(m_id); }
+  cResource(const cString& _name, int _id, int inworld_x, int inworld_y, int ingeometry);
+  cResource(int inworld_x, int inworld_y, int ingeometry);
   
   virtual ~cResource() { ; }
 
-  cResourceElement& Element(int x);
-  double GetAmount(int x);
-  double GetAmount(int x, int y);
-  virtual int GetSize() const;
-  virtual double GetInitial() const;
-  virtual int GetX() const;
-  virtual int GetY() const;
-  virtual bool GetModified();
+  inline cResourceDef* GetResDef() { return m_world->GetEnvironment().GetResDefLib().GetResDef(m_id); }
+  inline void SetResDef(cResourceDef new_def) { m_world->GetEnvironment().GetResDefLib().SetResDef(new_def, m_id); }
+  
+  cResourceElement& Element(int x) { return grid[x]; }
+  Apto::Array<cResourceElement>& GetElements() { return grid; }
+  double GetAmount(int x) const;
+  double GetAmount(int x, int y) const;
+  int GetSize() const { return grid.GetSize(); }
+  int GetX() const { return world_x; }
+  int GetY() const { return world_y; }
+  double GetInitial() const { return m_initial; }
+  bool GetModified() { return m_modified; }
+  int GetGeometry() { return geometry; }
 
-  virtual void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);
-  virtual void SetCellAmount(int cell_id, double res);
-  virtual void SetInitial(double initial);
-  virtual void SetModified(bool in_modified);
+  void SetCellAmount(int cell_id, double res);
+  void SetGeometry(int in_geometry) { geometry = in_geometry; }
+  void SetInitial(double initial) { m_initial = initial; }
+  void SetModified(bool in_modified) { m_modified = in_modified; }
+
+  void RateElement(int element, int rate) const { grid[element].Rate(rate); }
 
   // diffusion res only
-  virtual void ResizeClear(int inworld_x, int inworld_y, int ingeometry) { ; }
+  virtual double SumAll() const { return 0; }
+  virtual int GetCellListSize() const { return 0; }
+
+  virtual void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr) { ; }
+  virtual void ResizeClear(int size_x, int size_y, int geometry) { ; }
   virtual void StateAll() { ; }
   virtual void Rate(int x, double ratein) const { ; }
   virtual void Rate(int x, int y, double ratein) const { ; }
@@ -74,10 +89,6 @@ public:
   virtual void FlowAll() { ; }
   virtual void ResetResourceCounts() { ; }
 
-  virtual double SumAll() const { return 0; }
-  virtual int GetCellListSize() const { return 0; }
-
-  virtual void SetGeometry(int in_geometry) { ; }
   virtual void SetXdiffuse(double in_xdiffuse) { ; }
   virtual void SetXgravity(double in_xgravity) { ; }
   virtual void SetYdiffuse(double in_ydiffuse) { ; }
@@ -103,7 +114,6 @@ public:
 
   virtual void UpdateDynamicRes(cAvidaContext& ctx) { ; }
   virtual void ResetDynamicRes(cAvidaContext& ctx, int worldx, int worldy) { ; }
-  virtual void SetInitialPlat(double plat_val) { ; }
   virtual void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells) { ; }
   virtual void SetPlatVarInflow(double mean, double variance, int type) { ; }
 };

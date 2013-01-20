@@ -46,8 +46,7 @@ public:
   int GetPtrXdist(int innum) { return xdist[innum]; }
   int GetPtrYdist(int innum) { return ydist[innum]; }
   double GetPtrDist(int innum) { return dist[innum]; }
-  friend void FlowMatter(cResourceElement&, cResourceElement&, double, double, double, double,
-                         int, int, double);
+  friend void FlowMatter(cResourceElement&, cResourceElement&, double, double, double, double, int, int, double);
   void SetInitial(double init) { initial = init; }
   double GetInitial() { return initial; }
   

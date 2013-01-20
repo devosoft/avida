@@ -667,7 +667,7 @@ public:
   void ZeroReactions();
 
   void SetResources(const Apto::Array<double> &_in) { resource_count = _in; }
-  void SetResourcesGeometry(const Apto::Array<int> &_in) { resource_geometry = _in;}
+  void SetResourceGeometries(const Apto::Array<int> &_in) { resource_geometry = _in;}
   void SetSpatialRes(const Apto::Array< Apto::Array<double> > &_in) { spatial_res_count = _in; }
 
   void SetInstNames(const cString& inst_set, const Apto::Array<cString>& names) { m_is_inst_names_map[inst_set] = names; }

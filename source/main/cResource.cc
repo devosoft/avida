@@ -23,10 +23,65 @@
 
 #include "cResource.h"
 
-using namespace std;
-
-cResource::cResource(const cString & _name, int _id)
-  : m_name(_name)
-  , m_id(_id)
+cResource::cResource(const cString & _name, int _id, int inworld_x, int inworld_y, int ingeometry)
+  : m_name(_name), m_id(_id), m_initial(0.0), m_modified(false)
 {
+  int i;
+ 
+  world_x = inworld_x;
+  world_y = inworld_y;
+  geometry = ingeometry;
+  num_cells = world_x * world_y;
+  for (i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    grid[i] = tmpelem;
+  } 
 }
+
+cResource::cResource(int inworld_x, int inworld_y, int ingeometry)
+: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
+{
+  int i;
+ 
+  world_x = inworld_x;
+  world_y = inworld_y;
+  geometry = ingeometry;
+  num_cells = world_x * world_y;
+  for (i = 0; i < GetSize(); i++) {
+    cResourceElement tmpelem;
+    Element(i) = tmpelem;
+  } 
+}
+
+cResource::cResource() : m_modified(false)
+{
+  geometry = nGeometry::GLOBAL;
+}
+
+
+double cResource::GetAmount(int x) const {
+  if (x >= 0 && x < grid.GetSize()) {
+    return grid[x].GetAmount(); 
+  } else {
+    return -99.9;
+  }
+}
+
+/* Get the state of one element using the the x,y coordinate */
+
+double cResource::GetAmount(int x, int y) const {
+  if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
+    return grid[y*world_x + x].GetAmount(); 
+  } else {
+    return -99.9;
+  }
+}
+
+void cResource::SetCellAmount(int cell_id, double res)
+{
+  if (cell_id >= 0 && cell_id < grid.GetSize())
+  {
+    Element(cell_id).SetAmount(res);
+  }
+}
+

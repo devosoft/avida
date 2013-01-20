@@ -21,13 +21,12 @@
  *
  */
 
-/*! Classes to hold global and local information about a given resource */
-
 #ifndef cResourceDef_h
 #define cResourceDef_h
 
-#include "cAvidaContext.h"
 #include "cString.h"
+
+class cAvidaContext;
 
 /*! class to hold resource information for individual cells (mini-chemostats) */
 class cCellResource
@@ -133,35 +132,34 @@ public:
   cResourceDef(const cString& _name, int _id);
   ~cResourceDef() { ; }
 
-  const cString & GetName() const { return name; }
+  void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
+  cCellResource* GetCellResourcePtr(int _id);
+  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, double _inflow, double _outflow);
+  bool SetDemeResource(cString _deme_resource);
+  bool SetEnergyResource(cString _energy_resource);
+  bool SetGeometry(cString _geometry);
+
+  const cString& GetName() const { return name; }
   int GetID() const { return id; }
   int GetIndex() const { return index; }
   double GetInitial() const { return initial; }
   double GetInflow() const { return inflow; }
   double GetOutflow() const { return outflow; }
   int GetGeometry() const { return geometry; }
+  bool IsSpatial() { return isspatial; }
 
   void SetIndex(int _index) { if (index < 0) index = _index; } // can only be assigned once
   void SetInitial(double _initial) { initial = _initial; }
   void SetInflow (double _inflow ) { inflow  = _inflow; }
   void SetOutflow(double _outflow) { outflow = _outflow; }
-  bool SetGeometry(cString _geometry);
+  void SetSpatial(bool _spatial) { isspatial = _spatial; }
 
   bool GetDemeResource() const { return deme_resource; }
   bool GetEnergyResource() const { return energy_resource; }
-
   bool GetHGTMetabolize() const { return hgt_metabolize; }
   bool GetCollectable() { return collectable; }
-
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
-  cCellResource *GetCellResourcePtr(int _id);
-  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,
-                          double _inflow, double _outflow);
-  void SetCellIdList(Apto::Array<int>& id_list); //SLG partial resources
   void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
-
-  bool IsSpatial() { return isspatial; }
-  void SetSpatial(bool _spatial) { isspatial = _spatial; }
 
   // diffusion resources (old spatial resources)
   bool IsDiffusion() { return isdiffusion; }
@@ -192,14 +190,11 @@ public:
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
   void SetCollectable(int _collectable) { collectable = _collectable; }
-  bool SetDemeResource(cString _deme_resource);
-  bool SetOrgResource(cString _org_resource);  
-  bool SetEnergyResource(cString _energy_resource);
   
   // dynamic resources
   bool IsDynamic() { return isdynamic; }
-  int GetPeakX() { return m_peakx; }
-  int GetPeakY() { return m_peaky; }
+  int& GetPeakX() { return m_peakx; }
+  int& GetPeakY() { return m_peaky; }
   int GetHeight() { return m_height; }
   int GetSpread() { return m_spread; }
   double GetPlateau() { return m_plateau; }
@@ -209,19 +204,19 @@ public:
   int GetMinX() { return m_min_x; }
   int GetMinY() { return m_min_y; }
   double GetMoveScaler() { return m_move_a_scaler; }
-  int GetUpdateStep() const { return m_updatestep; } //JW
-  int GetHalo() { return m_halo;}
+  int GetUpdateStep() const { return m_updatestep; } 
+  int IsHalo() { return m_halo;}
   int GetHaloInnerRadius() { return m_halo_inner_radius; }
   int GetHaloWidth() { return m_halo_width; }
   int GetHaloX() { return m_halo_anchor_x; }
   int GetHaloY() { return m_halo_anchor_y; }
-  int GetMoveSpeed() { return m_move_speed; }
+  int& GetMoveSpeed() { return m_move_speed; }
   double GetPlateauInflow() { return m_plateau_inflow; }
   double GetPlateauOutflow() { return m_plateau_outflow; }
   double GetConeInflow() { return m_cone_inflow; }
   double GetConeOutflow() { return m_cone_outflow; }
   double GetDynamicResInflow() { return m_res_inflow; }
-  int GetIsPlateauCommon() { return m_is_plateau_common; }
+  int IsPlateauCommon() { return m_is_plateau_common; }
   double GetFloor() { return m_floor; }
   int GetHabitat() { return m_habitat; }
   int GetMinSize() { return m_min_size; }
@@ -229,7 +224,7 @@ public:
   int GetConfig() { return m_config; }
   int GetCount() { return m_count; }
   double GetResistance() { return m_resistance; }
-  double GetInitialPlatVal() { return m_init_plat; }
+  double GetInitialPlatVal() { return m_initial_plat; }
   double GetThreshold() { return m_threshold; }
   int GetRefuge() { return m_refuge; }
   Apto::Array<cCellResource>* GetCellListPtr() { return &cell_list; }
@@ -238,6 +233,7 @@ public:
   double GetPredatorResOdds() { return m_predator_odds; }
   double GetJuvAdultGuardRatio() { return m_guard_juvs_per; }
   double GetDetectionProb() { return m_prob_detect; }
+  bool IsProbabilistic() { return m_probabilistic; } 
   
   void SetDynamic(bool _dynamic) { isdynamic = _dynamic; }
   void SetPeakX(int _peakx) { m_peakx = _peakx; }
@@ -263,7 +259,7 @@ public:
   void SetConeInflow(double _cone_inflow) { m_cone_inflow = _cone_inflow; }  
   void SetConeOutflow(double _cone_outflow) { m_cone_outflow = _cone_outflow; }
   void SetDynamicResInflow(double _res_inflow) { m_res_inflow = _res_inflow; }
-  void SetInitialPlat(double _initial_plat_val) { m_init_plat = _initial_plat_val; } 
+  void SetInitialPlat(double _initial_plat_val) { m_initial_plat = _initial_plat_val; }
   void SetIsPlateauCommon(int _is_plateau_common) { m_is_plateau_common = _is_plateau_common; }
   void SetFloor(double _floor) { m_floor = _floor; }
   void SetHabitat(int _habitat) { m_habitat = _habitat; }
@@ -278,7 +274,7 @@ public:
   inline void SetPredatoryResource(double _odds, int _juvsper) { m_predator = true; m_predator_odds = _odds; m_guard_juvs_per = _juvsper; }
   inline void SetProbabilisticResource(cAvidaContext& ctx, double initial, double inflow, double outflow, double lambda, double theta, int x, int y, int num_cells) {
     m_probabilistic = true;
-    m_init_plat = initial;
+    m_initial_plat = initial;
     m_plateau_inflow = inflow;
     m_plateau_outflow = outflow;
   }

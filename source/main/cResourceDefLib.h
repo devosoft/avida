@@ -25,11 +25,10 @@
 #define cResourceDefLib_h
 
 #include "avida/core/Types.h"
+#include "cResourceDef.h"
 
-class cResourceDef;
 class cResourceHistory;
 class cString;
-
 
 class cResourceDefLib
 {
@@ -47,12 +46,15 @@ public:
   
   int GetSize() const { return m_resource_array.GetSize(); }
   
-  cResourceDef* AddResourceDef(const cString& res_name);
   cResourceDef* GetResDef(const cString& res_name) const;
   inline cResourceDef* GetResDef(int id) const { return m_resource_array[id]; }
   const cResourceHistory& GetInitialResourceLevels() const;
   bool DoesResourceExist(const cString& res_name);
-  void SetResourceIndex(cResourceDef* res);
+
+  cResourceDef* AddResourceDef(const cString& res_name);
+  void SetResDef(cResourceDef new_def, cString& res_name);
+  void SetResDef(cResourceDef new_def, int id) { m_resource_array[id] = &new_def; }
+  void SetResourceIndex(cResourceDef* res_def);
 };
 
 #endif

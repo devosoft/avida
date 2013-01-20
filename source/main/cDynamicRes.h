@@ -24,53 +24,100 @@
 #ifndef cDynamicRes_h
 #define cDynamicRes_h
 
-#include "cAvidaContext.h"
 #include "cResource.h"
-#include "cResourceDef.h"
-#include "cResourceElement.h"
+
+class cAvidaContext;
+class cResourceDef;
+class cWorld;
 
 class cDynamicRes : public cResource
 {
-private:
-  Apto::Array<cResourceElement> grid;
-  double m_initial;
-  int    geometry;
-  int    world_x, world_y, num_cells;
-  int    curr_peakx, curr_peaky;
-  /* instead of creating a new array use the existing one from cResource */
-  Apto::Array<cCellResource> *cell_list_ptr;
-  bool m_modified;
-  
 public:
   cDynamicRes();
-  cDynamicRes(int inworld_x, int inworld_y, int ingeometry);
+  cDynamicRes(cWorld* world);
+  cDynamicRes(cWorld* world, cResourceDef& res_def);
+
   virtual ~cDynamicRes();
   
-  void UpdateDynamicRes(cAvidaContext&) { ; }
+// base class
+public:
+  void UpdateDynamicRes(cAvidaContext& ctx);
+  void ResetDynamicRes(cAvidaContext& ctx, int worldx, int worldy);
+  void BuildProbabilisticRes(cAvidaContext& ctx, double lambda, double theta, int x, int y, int num_cells);
+  void SetPlatVarInflow(double mean, double variance, int type);
 
-  cResourceElement& Element(int x) { return grid[x]; }
-  int GetSize() const { return grid.GetSize(); }
-  int GetX() const { return world_x; }
-  int GetY() const { return world_y; }
-  double GetAmount(int x) const;
-  double GetAmount(int x, int y) const;
-  double GetInitial() const { return m_initial; }
-  bool GetModified() { return m_modified; }
   int GetCurrPeakX() { return curr_peakx; }
   int GetCurrPeakY() { return curr_peaky; }
   
-  virtual Apto::Array<int>* GetWallCells();
-  virtual int GetMinUsedX();
-  virtual int GetMinUsedY();
-  virtual int GetMaxUsedX();
-  virtual int GetMaxUsedY();
-  
+  Apto::Array<int>* GetWallCells() { return &m_wall_cells; }
+  int GetMinUsedX() { return m_min_usedx; }
+  int GetMinUsedY() { return m_min_usedy; }
+  int GetMaxUsedX() { return m_max_usedx; }
+  int GetMaxUsedY() { return m_max_usedy; }
+    
   void SetCurrPeakX(int in_curr_x) { curr_peakx = in_curr_x; }
   void SetCurrPeakY(int in_curr_y) { curr_peaky = in_curr_y; }
-  void SetGeometry(int in_geometry) { geometry = in_geometry; }
-  void SetModified(bool in_modified) { m_modified = in_modified; }
-  void SetCellAmount(int cell_id, double res);
-  void SetInitial(double initial) { m_initial = initial; }
+
+// internal variables
+private:
+  cWorld* m_world;
+  int curr_peakx, curr_peaky;
+  cResourceDef& m_res_def;
+  
+  bool m_initial;
+  
+  double m_move_y_scaler;
+  
+  int m_counter;
+  int m_move_counter;
+  int m_topo_counter;
+  int m_movesignx;
+  int m_movesigny;
+  
+  int m_old_peakx;
+  int m_old_peaky;
+  
+  int m_halo_dir;
+  int m_changling;
+  bool m_just_reset;
+  double m_past_height;
+  double m_current_height;
+  double m_ave_plat_cell_loss;
+  double m_common_plat_height;
+  int m_skip_moves;
+  int m_skip_counter;
+  Apto::Array<double> m_plateau_array;
+  Apto::Array<int> m_plateau_cell_IDs;
+  Apto::Array<int> m_wall_cells;
+  
+  double m_mean_plat_inflow;
+  double m_var_plat_inflow;
+  
+  Apto::Array<int> m_prob_res_cells;
+
+  int m_min_usedx;
+  int m_min_usedy;
+  int m_max_usedx;
+  int m_max_usedy;
+    
+// internal functions
+private:
+  void fillinResourceValues();
+  void updatePeakRes(cAvidaContext& ctx);
+  void moveRes(cAvidaContext& ctx);
+  int setHaloOrbit(cAvidaContext& ctx, int current_orbit);
+  void setPeakMoveMovement(cAvidaContext& ctx);
+  void moveHaloPeak(int current_orbit);
+  void movePeak();
+  void generatePeak(cAvidaContext& ctx);
+  void getCurrentPlatValues();
+  void generateBarrier(cAvidaContext& ctx);
+  void generateHills(cAvidaContext& ctx);    
+  void updateBounds(int x, int y);
+  void resetUsedBounds();
+  void clearExistingProbRes();
+  void updatePredatoryRes(cAvidaContext& ctx);
+  void updateProbabilisticRes();
 };
 
 #endif

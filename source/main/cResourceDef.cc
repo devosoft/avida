@@ -23,8 +23,6 @@
 
 #include "nGeometry.h"
 
-using namespace std;
-
 cCellResource::cCellResource()
   : cell_id(-99)
   , initial(0.0)
@@ -33,8 +31,7 @@ cCellResource::cCellResource()
 {
 }
 
-cCellResource::cCellResource(int _cell_id, double _initial, double _inflow,
-                             double _outflow)
+cCellResource::cCellResource(int _cell_id, double _initial, double _inflow, double _outflow)
   : cell_id(_cell_id)
   , initial(_initial)
   , inflow(_inflow)
@@ -98,7 +95,7 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
   , m_config(0)
   , m_count(1)
   , m_resistance(1.0)
-  , m_init_plat(-1.0)
+  , m_initial_plat(-1.0)
   , m_threshold(1.0)
   , m_refuge(0)
   , m_predator_odds(0.0)
@@ -111,36 +108,33 @@ cResourceDef::cResourceDef(const cString & _name, int _id)
 {
 }
 
-bool cResourceDef::SetGeometry(cString _geometry)
-/* Set the geometry for the resource */
-{
-     _geometry.ToLower();
-     if (_geometry == "global") {
-          geometry = nGeometry::GLOBAL;
-          return true;
-     } else if (_geometry == "grid") {
-          geometry = nGeometry::GRID;
-          return true;
-     } else if (_geometry == "torus") {
-          geometry = nGeometry::TORUS;
-          return true;
-     }
-	 else if (_geometry == "partial") {
-          geometry = nGeometry::PARTIAL;
-          return true;
-	 }
-	 else if (_geometry == "dynamic") {
-          geometry = nGeometry::DYNAMIC;
-          return true;
-	 }
-	 else {
-          return false;
-     }
+/* Return a pointer to cell resource with a given cell id, if there is no
+   cell resource with that id return NULL */
+cCellResource *cResourceDef::GetCellResourcePtr(int _id) {
+  bool found = false;
+  int cell_index = 0;
+  while (cell_index < cell_list.GetSize() && !found) {
+    if (cell_list[cell_index].GetId() == _id) {
+      return(&cell_list[cell_index]);
+      found = true;
+    } else {
+      cell_index++;
+    }
+  }
+  return(NULL);
 }
 
 void cResourceDef::SetCellIdList(Apto::Array<int>& id_list) {
 	cell_id_list.ResizeClear(id_list.GetSize());
 	cell_id_list=id_list;
+}
+
+/* Update the values of given cell resource */
+void cResourceDef::UpdateCellResource(cCellResource *_CellResourcePtr, double _initial,
+                        double _inflow, double _outflow) {
+  _CellResourcePtr->SetInitial(_initial);
+  _CellResourcePtr->SetInflow(_inflow);
+  _CellResourcePtr->SetOutflow(_outflow);
 }
 
 /* Set if the resource is going to be accessable by demes */
@@ -169,27 +163,29 @@ bool cResourceDef::SetEnergyResource(cString _energy_resource) {
   return false;
 }
 
-/* Return a pointer to cell resource with a given cell id, if there is no
-   cell resource with that id return NULL */
-cCellResource *cResourceDef::GetCellResourcePtr(int _id) {
-
-  bool found = false;
-  int cell_index = 0;
-  while (cell_index < cell_list.GetSize() && !found) {
-    if (cell_list[cell_index].GetId() == _id) {
-      return(&cell_list[cell_index]);
-      found = true;
-    } else {
-      cell_index++;
-    }
+bool cResourceDef::SetGeometry(cString _geometry)
+/* Set the geometry for the resource */
+{
+  _geometry.ToLower();
+  if (_geometry == "global") {
+    geometry = nGeometry::GLOBAL;
+    return true;
+  } else if (_geometry == "grid") {
+    geometry = nGeometry::GRID;
+    return true;
+  } else if (_geometry == "torus") {
+    geometry = nGeometry::TORUS;
+    return true;
   }
-  return(NULL);
-}
-
-/* Update the values of given cell resource */
-void cResourceDef::UpdateCellResource(cCellResource *_CellResourcePtr, double _initial,
-                        double _inflow, double _outflow) {
-  _CellResourcePtr->SetInitial(_initial);
-  _CellResourcePtr->SetInflow(_inflow);
-  _CellResourcePtr->SetOutflow(_outflow);
+  else if (_geometry == "partial") {
+    geometry = nGeometry::PARTIAL;
+    return true;
+  }
+  else if (_geometry == "dynamic") {
+    geometry = nGeometry::DYNAMIC;
+    return true;
+  }
+  else {
+    return false;
+  }
 }

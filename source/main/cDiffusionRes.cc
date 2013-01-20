@@ -27,74 +27,42 @@
 
 #include <cmath>
 
-using namespace std;
 using namespace AvidaTools;
 
 /* Setup a single diffusion resource with known flows */
 
-cDiffusionRes::cDiffusionRes(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
-                                   double inxgravity, double inygravity)
-: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
+cDiffusionRes::cDiffusionRes(double inxdiffuse, double inydiffuse, double inxgravity, double inygravity)
 {
-  int i;
- 
   xdiffuse = inxdiffuse;
   ydiffuse = inydiffuse;
   xgravity = inxgravity;
   ygravity = inygravity;
-  world_x = inworld_x;
-  world_y = inworld_y;
-  geometry = ingeometry;
-  num_cells = world_x * world_y;
-  for (i = 0; i < GetSize(); i++) {
-    cResourceElement tmpelem;
-    grid[i] = tmpelem;
-  } 
   SetPointers();
 }
 
 /* Setup a single diffusion resource using default flow amounts  */
 
-cDiffusionRes::cDiffusionRes(int inworld_x, int inworld_y, int ingeometry)
-: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
+cDiffusionRes::cDiffusionRes()
 {
-  int i;
- 
   xdiffuse = 1.0;
   ydiffuse = 1.0;
   xgravity = 0.0;
   ygravity = 0.0;
-  world_x = inworld_x;
-  world_y = inworld_y;
-  geometry = ingeometry;
-  num_cells = world_x * world_y;
-  for (i = 0; i < GetSize(); i++) {
-    cResourceElement tmpelem;
-    grid[i] = tmpelem;
-   } 
-   SetPointers();
-}
-
-cDiffusionRes::cDiffusionRes() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
-{
-  geometry = nGeometry::GLOBAL;
+  SetPointers();
 }
 
 cDiffusionRes::~cDiffusionRes() { ; }
 
 
-void cDiffusionRes::ResizeClear(int inworld_x, int inworld_y, int ingeometry)
+void cDiffusionRes::ResizeClear(int x_size, int y_size, int geometry)
 {
   int i;
  
-  grid.ResizeClear(inworld_x * inworld_y); 
-  world_x = inworld_x;
-  world_y = inworld_y;
-  geometry = ingeometry;
-  num_cells = world_x * world_y;
+  GetElements().ResizeClear(x_size * y_size);
+  SetGeometry(geometry);
   for (i = 0; i < GetSize(); i++) {
     cResourceElement tmpelem;
-    grid[i] = tmpelem;
+    Element(i) = tmpelem;
    } 
    SetPointers();
 }
@@ -110,42 +78,42 @@ void cDiffusionRes::SetPointers()
   /* First treat all cells like they are in a torus */
 
   for (i = 0; i < GetSize(); i++) {
-    grid[i].SetPtr(0 ,GridNeighbor(i, world_x, world_y, -1, -1), -1, -1, SQRT2);
-    grid[i].SetPtr(1 ,GridNeighbor(i, world_x, world_y,  0, -1),  0, -1, 1.0);
-    grid[i].SetPtr(2 ,GridNeighbor(i, world_x, world_y, +1, -1), +1, -1, SQRT2);
-    grid[i].SetPtr(3 ,GridNeighbor(i, world_x, world_y, +1,  0), +1,  0, 1.0);
-    grid[i].SetPtr(4 ,GridNeighbor(i, world_x, world_y, +1, +1), +1, +1, SQRT2);
-    grid[i].SetPtr(5 ,GridNeighbor(i, world_x, world_y,  0, +1),  0, +1, 1.0);
-    grid[i].SetPtr(6 ,GridNeighbor(i, world_x, world_y, -1, +1), -1, +1, SQRT2);
-    grid[i].SetPtr(7 ,GridNeighbor(i, world_x, world_y, -1,  0), -1,  0, 1.0);
+    Element(i).SetPtr(0 ,GridNeighbor(i, GetX(), GetY(), -1, -1), -1, -1, SQRT2);
+    Element(i).SetPtr(1 ,GridNeighbor(i, GetX(), GetY(),  0, -1),  0, -1, 1.0);
+    Element(i).SetPtr(2 ,GridNeighbor(i, GetX(), GetY(), +1, -1), +1, -1, SQRT2);
+    Element(i).SetPtr(3 ,GridNeighbor(i, GetX(), GetY(), +1,  0), +1,  0, 1.0);
+    Element(i).SetPtr(4 ,GridNeighbor(i, GetX(), GetY(), +1, +1), +1, +1, SQRT2);
+    Element(i).SetPtr(5 ,GridNeighbor(i, GetX(), GetY(),  0, +1),  0, +1, 1.0);
+    Element(i).SetPtr(6 ,GridNeighbor(i, GetX(), GetY(), -1, +1), -1, +1, SQRT2);
+    Element(i).SetPtr(7 ,GridNeighbor(i, GetX(), GetY(), -1,  0), -1,  0, 1.0);
   }
  
   /* Fix links for top, bottom and sides for non-torus */
   
-  if (geometry == nGeometry::GRID) {
+  if (GetGeometry() == nGeometry::GRID) {
     /* Top and bottom */
 
-    for (i = 0; i < world_x; i++) {
-      grid[i].SetPtr(0, -99, -99, -99, -99.0);
-      grid[i].SetPtr(1, -99, -99, -99, -99.0);
-      grid[i].SetPtr(2, -99, -99, -99, -99.0);
-      ii = num_cells-1-i;
-      grid[ii].SetPtr(4, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(5, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(6, -99, -99, -99, -99.0);
+    for (i = 0; i < GetX(); i++) {
+      Element(i).SetPtr(0, -99, -99, -99, -99.0);
+      Element(i).SetPtr(1, -99, -99, -99, -99.0);
+      Element(i).SetPtr(2, -99, -99, -99, -99.0);
+      ii = GetSize()-1-i;
+      Element(ii).SetPtr(4, -99, -99, -99, -99.0);
+      Element(ii).SetPtr(5, -99, -99, -99, -99.0);
+      Element(ii).SetPtr(6, -99, -99, -99, -99.0);
     }
 
     /* fix links for right and left sides */
 
-    for (i = 0; i < world_y; i++) {
-      ii = i * world_x;    
-      grid[ii].SetPtr(0, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(7, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(6, -99, -99, -99, -99.0);
-      ii = ((i + 1) * world_x) - 1;
-      grid[ii].SetPtr(2, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(3, -99, -99, -99, -99.0);
-      grid[ii].SetPtr(4, -99, -99, -99, -99.0);
+    for (i = 0; i < GetY(); i++) {
+      ii = i * GetX();
+      Element(ii).SetPtr(0, -99, -99, -99, -99.0);
+      Element(ii).SetPtr(7, -99, -99, -99, -99.0);
+      Element(ii).SetPtr(6, -99, -99, -99, -99.0);
+      ii = ((i + 1) * GetX()) - 1;
+      Element(ii).SetPtr(2, -99, -99, -99, -99.0);
+      Element(ii).SetPtr(3, -99, -99, -99, -99.0);
+      Element(ii).SetPtr(4, -99, -99, -99, -99.0);
     }
   }
 }
@@ -161,55 +129,55 @@ void cDiffusionRes::CheckRanges()
 
   if (inflowX1 < 0) { 
     inflowX1 = 0; 
-  } else if (inflowX1 > world_x) { 
-    inflowX1 = world_x; 
+  } else if (inflowX1 > GetX()) { 
+    inflowX1 = GetX(); 
   }
   if (inflowX2 < 0) { 
      inflowX2 = 0; 
-  } else if (inflowX2 > world_x) { 
-     inflowX2 = world_x; 
+  } else if (inflowX2 > GetX()) { 
+     inflowX2 = GetX();
   }
   if (inflowY1 < 0) { 
     inflowY1 = 0; 
-  } else if (inflowY1 > world_y) { 
-    inflowY1 = world_y; 
+  } else if (inflowY1 > GetY()) { 
+    inflowY1 = GetY(); 
   }
   if (inflowY2 < 0) { 
     inflowY2 = 0; 
-  } else if (inflowY2 > world_y) { 
-    inflowY2 = world_y; 
+  } else if (inflowY2 > GetY()) { 
+    inflowY2 = GetY(); 
   }
 
   /* allow for rectangles that cross over the zero X or zero Y boundry */
 
-  if (inflowX2 < inflowX1) { inflowX2 += world_x; }
-  if (inflowY2 < inflowY1) { inflowY2 += world_y; }
+  if (inflowX2 < inflowX1) { inflowX2 += GetX(); }
+  if (inflowY2 < inflowY1) { inflowY2 += GetY(); }
 
   if (outflowX1 < 0) { 
     outflowX1 = 0; 
-  } else if (outflowX1 > world_x) { 
-    outflowX1 = world_x; 
+  } else if (outflowX1 > GetX()) { 
+    outflowX1 = GetX(); 
   }
   if (outflowX2 < 0) { 
      outflowX2 = 0; 
-  } else if (outflowX2 > world_x) { 
-     outflowX2 = world_x; 
+  } else if (outflowX2 > GetX()) { 
+     outflowX2 = GetX(); 
   }
   if (outflowY1 < 0) { 
     outflowY1 = 0; 
-  } else if (outflowY1 > world_y) { 
-    outflowY1 = world_y; 
+  } else if (outflowY1 > GetY()) { 
+    outflowY1 = GetY(); 
   }
   if (outflowY2 < 0) { 
     outflowY2 = 0; 
-  } else if (outflowY2 > world_y) { 
-    outflowY2 = world_y; 
+  } else if (outflowY2 > GetY()) { 
+    outflowY2 = GetY(); 
   }
 
   /* allow for rectangles that cross over the zero X or zero Y boundry */
 
-  if (outflowX2 < outflowX1) { outflowX2 += world_x; }
-  if (outflowY2 < outflowY1) { outflowY2 += world_y; }
+  if (outflowX2 < outflowX1) { outflowX2 += GetX(); }
+  if (outflowY2 < outflowY1) { outflowY2 += GetY(); }
 
 }
 
@@ -223,7 +191,7 @@ void cDiffusionRes::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
     /* Be sure the user entered a valid cell id or if the the program is loading
        the resource for the testCPU that does not have a grid set up */
        
-    if (cell_id >= 0 && cell_id <= grid.GetSize()) {
+    if (cell_id >= 0 && cell_id <= GetElements().GetSize()) {
       Rate((*cell_list_ptr)[i].GetId(), (*cell_list_ptr)[i].GetInitial());
       State((*cell_list_ptr)[i].GetId());
       Element(cell_id).SetInitial((*cell_list_ptr)[i].GetInitial());
@@ -234,8 +202,8 @@ void cDiffusionRes::SetCellList(Apto::Array<cCellResource>* in_cell_list_ptr)
 /* Set the rate variable for one element using the array index */
 
 void cDiffusionRes::Rate(int x, double ratein) const {
-  if (x >= 0 && x < grid.GetSize()) {
-    grid[x].Rate(ratein);
+  if (x >= 0 && x < GetSize()) {
+    RateElement(x, ratein);
   } else {
     assert(false); // x not valid id
   }
@@ -244,8 +212,8 @@ void cDiffusionRes::Rate(int x, double ratein) const {
 /* Set the rate variable for one element using the x,y coordinate */
 
 void cDiffusionRes::Rate(int x, int y, double ratein) const {
-  if (x >= 0 && x < world_x && y>= 0 && y < world_y) {
-    grid[y * world_x + x].Rate(ratein);
+  if (x >= 0 && x < GetX() && y>= 0 && y < GetY()) {
+    RateElement(y * GetX() + x, ratein);
   } else {
     assert(false); // x or y not valid id
   }
@@ -255,8 +223,8 @@ void cDiffusionRes::Rate(int x, int y, double ratein) const {
    the array index */
    
 void cDiffusionRes::State(int x) {
-  if (x >= 0 && x < grid.GetSize()) {
-    grid[x].State();
+  if (x >= 0 && x < GetElements().GetSize()) {
+    Element(x).State();
   } else {
     assert(false); // x not valid id
   }
@@ -266,30 +234,10 @@ void cDiffusionRes::State(int x) {
    the x,y coordinate */
    
 void cDiffusionRes::State(int x, int y) {
-  if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
-    grid[y*world_x + x].State();
+  if (x >= 0 && x < GetX() && y >= 0 && y < GetY()) {
+    Element(y*GetX() + x).State();
   } else {
     assert(false); // x or y not valid id
-  }
-}
-
-/* Get the state of one element using the array index */
-
-double cDiffusionRes::GetAmount(int x) const {
-  if (x >= 0 && x < grid.GetSize()) {
-    return grid[x].GetAmount(); 
-  } else {
-    return -99.9;
-  }
-}
-
-/* Get the state of one element using the the x,y coordinate */
-
-double cDiffusionRes::GetAmount(int x, int y) const {
-  if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
-    return grid[y*world_x + x].GetAmount(); 
-  } else {
-    return -99.9;
   }
 }
 
@@ -297,8 +245,8 @@ void cDiffusionRes::RateAll(double ratein) {
 
   int i;
  
-  for (i = 0; i < num_cells; i++) {
-    grid[i].Rate(ratein);
+  for (i = 0; i < GetSize(); i++) {
+    Element(i).Rate(ratein);
   } 
 }
 
@@ -309,8 +257,8 @@ void cDiffusionRes::StateAll() {
 
   int i;
  
-  for (i = 0; i < num_cells; i++) {
-    grid[i].State();
+  for (i = 0; i < GetSize(); i++) {
+    Element(i).State();
   } 
 }
 
@@ -322,18 +270,18 @@ void cDiffusionRes::FlowAll() {
   int     i,k,ii,xdist,ydist;
   double  dist;
  
-  for (i = 0; i < num_cells; i++) {
+  for (i = 0; i < GetSize(); i++) {
       
     /* because flow is two way we must check only half the neighbors to 
        prevent double flow calculations */
 
     for (k = 3; k <= 6; k++) {
-      ii = grid[i].GetElemPtr(k);
-      xdist = grid[i].GetPtrXdist(k);
-      ydist = grid[i].GetPtrYdist(k);
-      dist = grid[i].GetPtrDist(k);
+      ii = Element(i).GetElemPtr(k);
+      xdist = Element(i).GetPtrXdist(k);
+      ydist = Element(i).GetPtrYdist(k);
+      dist = Element(i).GetPtrDist(k);
       if (ii >= 0) {
-        FlowMatter(grid[i],grid[ii],xdiffuse,ydiffuse,xgravity,ygravity,
+        FlowMatter(Element(i),Element(ii),xdiffuse,ydiffuse,xgravity,ygravity,
                    xdist, ydist, dist);
       }
     }
@@ -347,7 +295,7 @@ double cDiffusionRes::SumAll() const{
   int i;
   double sum = 0.0;
 
-  for (i = 0; i < num_cells; i++) {
+  for (i = 0; i < GetSize(); i++) {
     sum += GetAmount(i);
   } 
   return sum;
@@ -365,7 +313,7 @@ void cDiffusionRes::Source(double amount) const {
 
   for (i = inflowY1; i <= inflowY2; i++) {
     for (j = inflowX1; j <= inflowX2; j++) {
-      elem = (Mod(i,world_y) * world_x) + Mod(j,world_x);
+      elem = (Mod(i,GetY()) * GetX()) + Mod(j,GetX());
       Rate(elem,amount); 
     }
   }
@@ -380,7 +328,7 @@ void cDiffusionRes::CellInflow() const {
     /* Be sure the user entered a valid cell id or if the the program is loading
        the resource for the testCPU that does not have a grid set up */
        
-    if (cell_id >= 0 && cell_id < grid.GetSize()) {
+    if (cell_id >= 0 && cell_id < GetSize()) {
       Rate(cell_id, (*cell_list_ptr)[i].GetInflow());
     }
   }
@@ -397,7 +345,7 @@ void cDiffusionRes::Sink(double decay) const {
   
   for (i = outflowY1; i <= outflowY2; i++) {
     for (j = outflowX1; j <= outflowX2; j++) {
-      elem = (Mod(i,world_y) * world_x) + Mod(j,world_x);
+      elem = (Mod(i,GetY()) * GetX()) + Mod(j,GetX());
       deltaamount = Apto::Max((GetAmount(elem) * (1.0 - decay)), 0.0);
       Rate(elem,-deltaamount); 
     }
@@ -416,22 +364,14 @@ void cDiffusionRes::CellOutflow() const {
     /* Be sure the user entered a valid cell id or if the the program is loading
        the resource for the testCPU that does not have a grid set up */
        
-    if (cell_id >= 0 && cell_id < grid.GetSize()) {
+    if (cell_id >= 0 && cell_id < GetSize()) {
       deltaamount = Apto::Max((GetAmount(cell_id) * (*cell_list_ptr)[i].GetOutflow()), 0.0);
     }                     
     Rate((*cell_list_ptr)[i].GetId(), -deltaamount); 
   }
 }
 
-void cDiffusionRes::SetCellAmount(int cell_id, double res)
-{
-  if (cell_id >= 0 && cell_id < grid.GetSize())
-  {
-    Element(cell_id).SetAmount(res);
-  }
-}
-
 void cDiffusionRes::ResetResourceCounts()
 {
-  for (int i = 0; i < grid.GetSize(); i++) grid[i].ResetResourceCount(m_initial);
+  for (int i = 0; i < GetSize(); i++) Element(i).ResetResourceCount(GetInitial());
 }

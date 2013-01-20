@@ -23,7 +23,6 @@
 
 #include "cResourceDefLib.h"
 
-#include "cResourceDef.h"
 #include "cResourceHistory.h"
 
 using namespace std;
@@ -33,18 +32,6 @@ cResourceDefLib::~cResourceDefLib()
 {
   for (int i = 0; i < m_resource_array.GetSize(); i++) delete m_resource_array[i];
   delete m_initial_levels;
-}
-
-cResourceDef* cResourceDefLib::AddResourceDef(const cString& res_name)
-{
-  if (m_initial_levels) return NULL; // Initial levels calculated, cannot add more resources
-  
-  const int new_id = m_resource_array.GetSize();
-  cResourceDef* new_resource = new cResourceDef(res_name, new_id);
-  m_resource_array.Resize(new_id + 1);
-  m_resource_array[new_id] = new_resource;
-  
-  return new_resource;
 }
 
 cResourceDef* cResourceDefLib::GetResDef(const cString& res_name) const
@@ -74,6 +61,18 @@ bool cResourceDefLib::DoesResourceExist(const cString& res_name)
   return false;
 }
 
+cResourceDef* cResourceDefLib::AddResourceDef(const cString& res_name)
+{
+  if (m_initial_levels) return NULL; // Initial levels calculated, cannot add more resources
+  
+  const int new_id = m_resource_array.GetSize();
+  cResourceDef* new_resource = new cResourceDef(res_name, new_id);
+  m_resource_array.Resize(new_id + 1);
+  m_resource_array[new_id] = new_resource;
+  
+  return new_resource;
+}
+
 /* This assigns an index to a resource within its own type (deme vs. non-deme)
  * If the resource already has a positive id nothing will be assigned.
  * (Enforced by cResource::SetIndex())
@@ -92,5 +91,13 @@ void cResourceDefLib::SetResourceIndex(cResourceDef* res)
   else {
     res->SetIndex(m_resource_array.GetSize() - 1 - m_num_deme_resources);
   }
+}
+
+void cResourceDefLib::SetResDef(cResourceDef new_def, cString& res_name)
+{
+  for (int i = 0; i < m_resource_array.GetSize(); i++) {
+    if (m_resource_array[i]->GetName() == res_name) m_resource_array[i] = &new_def;
+  }
+  cerr << "Error: Unknown resource '" << res_name << "'." << endl;
 }
 

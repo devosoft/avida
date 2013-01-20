@@ -26,50 +26,34 @@
 #ifndef cDiffusionRes_h
 #define cDiffusionRes_h
 
-#include "cAvidaContext.h"
 #include "cResource.h"
-#include "cResourceDef.h"
-#include "cResourceElement.h"
 
 class cDiffusionRes : public cResource
 {
 private:
-  Apto::Array<cResourceElement> grid;
-  double m_initial;
   double xdiffuse, ydiffuse;
   double xgravity, ygravity;
   int    inflowX1, inflowX2, inflowY1, inflowY2;
   int    outflowX1, outflowX2, outflowY1, outflowY2;
-  int    geometry;
-  int    world_x, world_y, num_cells;
   int    curr_peakx, curr_peaky;
   /* instead of creating a new array use the existing one from cResource */
   Apto::Array<cCellResource> *cell_list_ptr;
-  bool m_modified;
   
 public:
   cDiffusionRes();
-  cDiffusionRes(int inworld_x, int inworld_y, int ingeometry);
-  cDiffusionRes(int inworld_x, int inworld_y, int ingeometry,
-                   double inxdiffuse, double inydiffuse,
-                   double inxgravity, double inygravity);
+  cDiffusionRes(double inxdiffuse, double inydiffuse, double inxgravity, double inygravity);
   virtual ~cDiffusionRes();
   
-  void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
+  void ResizeClear(int x_size, int y_size, int geometry);
   void SetPointers();
   void CheckRanges();
   void SetCellList(Apto::Array<cCellResource> *in_cell_list_ptr);
-  int GetSize() const { return grid.GetSize(); }
-  int GetX() const { return world_x; }
-  int GetY() const { return world_y; }
   int GetCellListSize() const { return cell_list_ptr->GetSize(); }
-  cResourceElement& Element(int x) { return grid[x]; }
+
   void Rate(int x, double ratein) const;
   void Rate(int x, int y, double ratein) const;
   void State(int x);
   void State(int x, int y);
-  double GetAmount(int x) const;
-  double GetAmount(int x, int y) const;
   void RateAll(double ratein); 
   void StateAll();
   void FlowAll(); 
@@ -78,10 +62,7 @@ public:
   void CellInflow() const;
   void Sink(double percent) const;
   void CellOutflow() const;
-  void SetCellAmount(int cell_id, double res);
-  void SetInitial(double initial) { m_initial = initial; }
-  double GetInitial() const { return m_initial; }
-  void SetGeometry(int in_geometry) { geometry = in_geometry; }
+
   void SetXdiffuse(double in_xdiffuse) { xdiffuse = in_xdiffuse; }
   void SetXgravity(double in_xgravity) { xgravity = in_xgravity; }
   void SetYdiffuse(double in_ydiffuse) { ydiffuse = in_ydiffuse; }
@@ -95,8 +76,6 @@ public:
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
   void ResetResourceCounts();
-  void SetModified(bool in_modified) { m_modified = in_modified; }
-  bool GetModified() { return m_modified; }
 };
 
 #endif

@@ -231,7 +231,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cDiffusionRes.cc
   ${MAIN_DIR}/cDynamicRes.cc
-  ${MAIN_DIR}/cDynamicResController.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
   ${MAIN_DIR}/cGenomeUtil.cc

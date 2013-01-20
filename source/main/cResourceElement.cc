@@ -20,13 +20,12 @@
  *
  */
 
-/* Class to store information about amount of local/spatial resource in a
-   given cell. */
+/* Class to store information about amount of resource in a given cell. */
 
 #include "cResourceElement.h"
 
-const int MAXFLOWPTS = 8;
 
+const int MAXFLOWPTS = 8;
 
 /* Intial spatial resource count elements with an initial amount */
 
